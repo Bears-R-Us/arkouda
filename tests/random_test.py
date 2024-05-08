@@ -1,5 +1,4 @@
 import numpy as np
-import pytest
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
@@ -179,6 +178,7 @@ class RandomTest(ArkoudaTest):
     def test_choice_flags(self):
         # use numpy to randomly generate a set seed
         seed = np.random.default_rng().choice(2**63)
+        cfg = ak.get_config()
 
         rng = ak.random.default_rng(seed)
         weights = rng.uniform(size=10)
@@ -206,7 +206,11 @@ class RandomTest(ArkoudaTest):
                     for p in [None, weights]:
                         previous = choice_arrays.pop(0)
                         current = rng.choice(a, size, replace, p)
-                        self.assertTrue(np.allclose(previous.to_list(), current.to_list()))
+                        res = np.allclose(previous.to_list(), current.to_list())
+                        if not res:
+                            print(f"\nnum locales: {cfg['numLocales']}")
+                            print(f"Failure with seed:\n{seed}")
+                        self.assertTrue(res)
 
     def test_legacy_randint(self):
         testArray = ak.random.randint(0, 10, 5)
