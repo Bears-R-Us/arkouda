@@ -803,6 +803,42 @@ Functions
       they are unregistered.
 
 
+   .. py:method:: sample(values: groupable, n=None, frac=None, replace=False, weights=None, random_state=None, return_indices=False, permute_samples=False)
+
+      Return a random sample from each group. You can either specify the number of elements
+      or the fraction of elements to be sampled. random_state can be used for reproducibility
+
+      :param values: The values from which to sample, according to their group membership.
+      :type values: (list of) pdarray-like
+      :param n: Number of items to return for each group.
+                Cannot be used with frac and must be no larger than
+                the smallest group unless replace is True.
+                Default is one if frac is None.
+      :type n: int, optional
+      :param frac: Fraction of items to return. Cannot be used with n.
+      :type frac: float, optional
+      :param replace: Allow or disallow sampling of the value more than once.
+      :type replace: bool, default False
+      :param weights: Default None results in equal probability weighting.
+                      If passed a pdarray, then values must have the same length as the groupby keys
+                      and will be used as sampling probabilities after normalization within each group.
+                      Weights must be non-negative with at least one positive element within each group.
+      :type weights: pdarray, optional
+      :param random_state: If int, seed for random number generator.
+                           If ak.random.Generator, use as given.
+      :type random_state: int or ak.random.Generator, optional
+      :param return_indices: if True, return the indices of the sampled values.
+                             Otherwise, return the sample values.
+      :type return_indices: bool, default False
+      :param permute_samples: if True, return permute the samples according to group
+                              Otherwise, keep samples in original order.
+      :type permute_samples: bool, default False
+
+      :returns: if return_indices is True, return the indices of the sampled values.
+                Otherwise, return the sample values.
+      :rtype: pdarray
+
+
    .. py:method:: size() -> Tuple[groupable, pdarray]
 
       Count the number of elements in each group, i.e. the number of times
@@ -887,10 +923,11 @@ Functions
 
       :param values: The values to group and sum
       :type values: pdarray
+      :param skipna: boolean which determines if NANs should be skipped
+      :type skipna: bool
 
       :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
                 * **group_sums** (*pdarray*) -- One sum per unique key in the GroupBy instance
-                * **skipna** (*bool*) -- boolean which determines if NANs should be skipped
 
       :raises TypeError: Raised if the values array is not a pdarray object
       :raises ValueError: Raised if the key array size does not match the values size or

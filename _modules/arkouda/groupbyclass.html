@@ -370,15 +370,18 @@
 <span class="kn">from</span> <span class="nn">typeguard</span> <span class="kn">import</span> <span class="n">typechecked</span>
 
 <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
-<span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">bigint</span>
+<span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">_val_isinstance_of_union</span><span class="p">,</span> <span class="n">bigint</span>
+<span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">to_numpy_dtype</span>
 <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">float64</span> <span class="k">as</span> <span class="n">akfloat64</span>
+<span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">float_scalars</span>
 <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">int64</span> <span class="k">as</span> <span class="n">akint64</span>
 <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">int_scalars</span>
 <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">uint64</span> <span class="k">as</span> <span class="n">akuint64</span>
 <span class="kn">from</span> <span class="nn">arkouda.logger</span> <span class="kn">import</span> <span class="n">getArkoudaLogger</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">RegistrationError</span><span class="p">,</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">is_sorted</span><span class="p">,</span> <span class="n">pdarray</span>
-<span class="kn">from</span> <span class="nn">arkouda.pdarraycreation</span> <span class="kn">import</span> <span class="n">arange</span>
-<span class="kn">from</span> <span class="nn">arkouda.sorting</span> <span class="kn">import</span> <span class="n">argsort</span>
+<span class="kn">from</span> <span class="nn">arkouda.pdarraycreation</span> <span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">full</span>
+<span class="kn">from</span> <span class="nn">arkouda.random</span> <span class="kn">import</span> <span class="n">default_rng</span>
+<span class="kn">from</span> <span class="nn">arkouda.sorting</span> <span class="kn">import</span> <span class="n">argsort</span><span class="p">,</span> <span class="n">sort</span>
 <span class="kn">from</span> <span class="nn">arkouda.strings</span> <span class="kn">import</span> <span class="n">Strings</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;unique&quot;</span><span class="p">,</span> <span class="s2">&quot;GroupBy&quot;</span><span class="p">,</span> <span class="s2">&quot;broadcast&quot;</span><span class="p">,</span> <span class="s2">&quot;GROUPBY_REDUCTION_TYPES&quot;</span><span class="p">]</span>
@@ -1052,6 +1055,9 @@
 <span class="sd">        ----------</span>
 <span class="sd">        values : pdarray</span>
 <span class="sd">            The values to group and sum</span>
+<span class="sd">        skipna: bool</span>
+<span class="sd">            boolean which determines if NANs should be skipped</span>
+
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1059,8 +1065,6 @@
 <span class="sd">            The unique keys, in grouped order</span>
 <span class="sd">        group_sums : pdarray</span>
 <span class="sd">            One sum per unique key in the GroupBy instance</span>
-<span class="sd">        skipna: bool</span>
-<span class="sd">            boolean which determines if NANs should be skipped</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
@@ -1936,6 +1940,167 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">mode</span> <span class="o">=</span> <span class="p">[</span><span class="n">uv</span><span class="p">[</span><span class="n">mode_idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">uv</span> <span class="ow">in</span> <span class="n">unique_values</span><span class="p">]</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">,</span> <span class="n">mode</span>  <span class="c1"># type: ignore</span></div>
+
+
+<div class="viewcode-block" id="GroupBy.sample">
+<a class="viewcode-back" href="../../usage/groupby.html#arkouda.groupbyclass.GroupBy.sample">[docs]</a>
+    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">values</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span>
+        <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">frac</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">return_indices</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">permute_samples</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a random sample from each group. You can either specify the number of elements</span>
+<span class="sd">        or the fraction of elements to be sampled. random_state can be used for reproducibility</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        values : (list of) pdarray-like</span>
+<span class="sd">            The values from which to sample, according to their group membership.</span>
+
+<span class="sd">        n: int, optional</span>
+<span class="sd">            Number of items to return for each group.</span>
+<span class="sd">            Cannot be used with frac and must be no larger than</span>
+<span class="sd">            the smallest group unless replace is True.</span>
+<span class="sd">            Default is one if frac is None.</span>
+
+<span class="sd">        frac: float, optional</span>
+<span class="sd">            Fraction of items to return. Cannot be used with n.</span>
+
+<span class="sd">        replace: bool, default False</span>
+<span class="sd">            Allow or disallow sampling of the value more than once.</span>
+
+<span class="sd">        weights: pdarray, optional</span>
+<span class="sd">            Default None results in equal probability weighting.</span>
+<span class="sd">            If passed a pdarray, then values must have the same length as the groupby keys</span>
+<span class="sd">            and will be used as sampling probabilities after normalization within each group.</span>
+<span class="sd">            Weights must be non-negative with at least one positive element within each group.</span>
+
+<span class="sd">        random_state: int or ak.random.Generator, optional</span>
+<span class="sd">            If int, seed for random number generator.</span>
+<span class="sd">            If ak.random.Generator, use as given.</span>
+
+<span class="sd">        return_indices: bool, default False</span>
+<span class="sd">            if True, return the indices of the sampled values.</span>
+<span class="sd">            Otherwise, return the sample values.</span>
+
+<span class="sd">        permute_samples: bool, default False</span>
+<span class="sd">            if True, return permute the samples according to group</span>
+<span class="sd">            Otherwise, keep samples in original order.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pdarray</span>
+<span class="sd">            if return_indices is True, return the indices of the sampled values.</span>
+<span class="sd">            Otherwise, return the sample values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">arkouda.numeric</span> <span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
+        <span class="kn">from</span> <span class="nn">arkouda.numeric</span> <span class="kn">import</span> <span class="nb">round</span> <span class="k">as</span> <span class="n">akround</span>
+
+        <span class="k">if</span> <span class="n">frac</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">n</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Please enter a value for `frac` OR `n`, not both&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">frac</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Attempt to group values using key array of different length&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">values</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Attempt to group values using key array of different length&quot;</span><span class="p">)</span>
+
+        <span class="n">_</span><span class="p">,</span> <span class="n">seg_lens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">_val_isinstance_of_union</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">int_scalars</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;n must be an int scalar.&quot;</span><span class="p">)</span>
+            <span class="n">num_samples</span> <span class="o">=</span> <span class="n">full</span><span class="p">(</span><span class="n">seg_lens</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">akint64</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">frac</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">_val_isinstance_of_union</span><span class="p">(</span><span class="n">frac</span><span class="p">,</span> <span class="n">float_scalars</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;frac must be a float scalar.&quot;</span><span class="p">)</span>
+            <span class="n">num_samples</span> <span class="o">=</span> <span class="n">akcast</span><span class="p">(</span><span class="n">akround</span><span class="p">(</span><span class="n">frac</span> <span class="o">*</span> <span class="n">seg_lens</span><span class="p">),</span> <span class="n">dt</span><span class="o">=</span><span class="n">akint64</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">replace</span> <span class="ow">and</span> <span class="p">(</span><span class="n">num_samples</span> <span class="o">&gt;</span> <span class="n">seg_lens</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot take a larger sample than population when replace is False&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">num_samples</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot take a negative number of samples&quot;</span><span class="p">)</span>
+
+        <span class="n">has_weights</span> <span class="o">=</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">has_weights</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;weights must be a pdarray&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">weights</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Weights and values to be sampled must be of same length&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="n">weights</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Weights may not include negative values&quot;</span><span class="p">)</span>
+
+            <span class="n">permuted_weights</span> <span class="o">=</span> <span class="n">weights</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">permutation</span><span class="p">]</span>
+
+            <span class="c1"># the below is equivalent to doing `_, weight_sum = self.sum(weights)`, but</span>
+            <span class="c1"># by calling segmentedReduction directly, we avoid permuting the weights twice.</span>
+            <span class="c1"># it&#39;s unclear if this is worth the additional code complexity</span>
+            <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;segmentedReduction&quot;</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;values&quot;</span><span class="p">:</span> <span class="n">permuted_weights</span><span class="p">,</span>
+                    <span class="s2">&quot;segments&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="p">,</span>
+                    <span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;sum&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;skip_nan&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="s2">&quot;ddof&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+            <span class="n">weight_sum</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="n">weight_sum</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All segments must have at least one value of non-zero weight&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">permuted_weights</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">akfloat64</span><span class="p">:</span>
+                <span class="n">permuted_weights</span> <span class="o">=</span> <span class="n">akcast</span><span class="p">(</span><span class="n">permuted_weights</span><span class="p">,</span> <span class="n">akfloat64</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">permuted_weights</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="n">random_state</span> <span class="o">=</span> <span class="n">default_rng</span><span class="p">(</span><span class="n">random_state</span><span class="p">)</span>
+        <span class="n">gen_name</span> <span class="o">=</span> <span class="n">random_state</span><span class="o">.</span><span class="n">_name_dict</span><span class="p">[</span><span class="n">to_numpy_dtype</span><span class="p">(</span><span class="n">akfloat64</span> <span class="k">if</span> <span class="n">has_weights</span> <span class="k">else</span> <span class="n">akint64</span><span class="p">)]</span>
+
+        <span class="n">has_seed</span> <span class="o">=</span> <span class="n">random_state</span><span class="o">.</span><span class="n">_seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;segmentedSample&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;genName&quot;</span><span class="p">:</span> <span class="n">gen_name</span><span class="p">,</span>
+                <span class="s2">&quot;perm&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span><span class="p">,</span>
+                <span class="s2">&quot;segs&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="p">,</span>
+                <span class="s2">&quot;segLens&quot;</span><span class="p">:</span> <span class="n">seg_lens</span><span class="p">,</span>
+                <span class="s2">&quot;weights&quot;</span><span class="p">:</span> <span class="n">permuted_weights</span><span class="p">,</span>
+                <span class="s2">&quot;numSamples&quot;</span><span class="p">:</span> <span class="n">num_samples</span><span class="p">,</span>
+                <span class="s2">&quot;replace&quot;</span><span class="p">:</span> <span class="n">replace</span><span class="p">,</span>
+                <span class="s2">&quot;hasWeights&quot;</span><span class="p">:</span> <span class="n">has_weights</span><span class="p">,</span>
+                <span class="s2">&quot;hasSeed&quot;</span><span class="p">:</span> <span class="n">has_seed</span><span class="p">,</span>
+                <span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="n">random_state</span><span class="o">.</span><span class="n">_seed</span> <span class="k">if</span> <span class="n">has_seed</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="n">random_state</span><span class="o">.</span><span class="n">_state</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="n">random_state</span><span class="o">.</span><span class="n">_state</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+        <span class="c1"># sorting the sample permutation gives the sampled indices</span>
+        <span class="n">sampled_idx</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span> <span class="k">if</span> <span class="n">permute_samples</span> <span class="k">else</span> <span class="n">sort</span><span class="p">(</span><span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">return_indices</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">sampled_idx</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">values</span><span class="p">[</span><span class="n">sampled_idx</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">val</span><span class="p">[</span><span class="n">sampled_idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">values</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="GroupBy.unique">

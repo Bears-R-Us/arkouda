@@ -1615,7 +1615,7 @@ arkouda server which was registered using register().</p>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame">arkouda.dataframe.DataFrame</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../index.html#id447" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if user_defined_name is not registered</p>
+<dd class="field-even"><p><a class="reference internal" href="../index.html#id452" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if user_defined_name is not registered</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -2777,7 +2777,7 @@ appending rows.</p>
 <dd class="field-even"><p>bool</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id447" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mismatch of registered components.</p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id452" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mismatch of registered components.</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -3748,7 +3748,7 @@ Please note you cannot register two different DataFrames with the same name.</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str.</p></li>
-<li><p><a class="reference internal" href="../index.html#id447" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the DataFrame with the user_defined_name.</p></li>
+<li><p><a class="reference internal" href="../index.html#id452" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the DataFrame with the user_defined_name.</p></li>
 </ul>
 </dd>
 </dl>
@@ -4912,7 +4912,7 @@ a supported dtype</p></li>
 registered using register() and/or attached to using attach().</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id447" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id452" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
 when attempting to unregister.</p>
 </dd>
 </dl>
@@ -4948,7 +4948,7 @@ with the arkouda server via register().</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – If user_defined_name is not a string.</p></li>
-<li><p><a class="reference internal" href="../index.html#id447" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If there is an issue attempting to unregister any underlying components.</p></li>
+<li><p><a class="reference internal" href="../index.html#id452" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If there is an issue attempting to unregister any underlying components.</p></li>
 </ul>
 </dd>
 </dl>
@@ -5474,6 +5474,138 @@ Aggregate operations (mean,min,max,std,var) can be done on the results.</p>
 <dd class="field-even"><p><a class="reference internal" href="#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame">arkouda.dataframe.DataFrame</a></p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.dataframe.DataFrameGroupBy.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frac</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/dataframe.html#DataFrameGroupBy.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.dataframe.DataFrameGroupBy.sample" title="Link to this definition">¶</a></dt>
+<dd><p>Return a random sample from each group. You can either specify the number of elements
+or the fraction of elements to be sampled. random_state can be used for reproducibility</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of items to return for each group.
+Cannot be used with frac and must be no larger than
+the smallest group unless replace is True.
+Default is one if frac is None.</p></li>
+<li><p><strong>frac</strong> (<em>float</em><em>, </em><em>optional</em>) – Fraction of items to return. Cannot be used with n.</p></li>
+<li><p><strong>replace</strong> (<em>bool</em><em>, </em><em>default False</em>) – Allow or disallow sampling of the same row more than once.</p></li>
+<li><p><strong>weights</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>optional</em>) – Default None results in equal probability weighting.
+If passed a pdarray, then values must have the same length as the underlying DataFrame
+and will be used as sampling probabilities after normalization within each group.
+Weights must be non-negative with at least one positive element within each group.</p></li>
+<li><p><strong>random_state</strong> (<em>int</em><em> or </em><em>ak.random.Generator</em><em>, </em><em>optional</em>) – If int, seed for random number generator.
+If ak.random.Generator, use as given.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new DataFrame containing items randomly sampled from each group
+sorted according to the grouped columns.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame">DataFrame</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arkouda</span> <span class="k">as</span> <span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;A&quot;</span><span class="p">:[</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span><span class="s2">&quot;B&quot;</span><span class="p">:[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">]})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">display</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="go">+----+-----+-----+</span>
+<span class="go">|    |   A |   B |</span>
+<span class="go">+====+=====+=====+</span>
+<span class="go">|  0 |   3 |   3 |</span>
+<span class="go">+----+-----+-----+</span>
+<span class="go">|  1 |   1 |   4 |</span>
+<span class="go">+----+-----+-----+</span>
+<span class="go">|  2 |   2 |   5 |</span>
+<span class="go">+----+-----+-----+</span>
+<span class="go">|  3 |   1 |   6 |</span>
+<span class="go">+----+-----+-----+</span>
+<span class="go">|  4 |   2 |   7 |</span>
+<span class="go">+----+-----+-----+</span>
+<span class="go">|  5 |   3 |   8 |</span>
+<span class="go">+----+-----+-----+</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"><p>A</p></th>
+<th class="head"><p>B</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>3</p></td>
+<td><p>1</p></td>
+<td><p>6</p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p>2</p></td>
+<td><p>7</p></td>
+</tr>
+<tr class="row-even"><td><p>5</p></td>
+<td><p>3</p></td>
+<td><p>8</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">frac</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
+</pre></div>
+</div>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"><p>A</p></th>
+<th class="head"><p>B</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>2</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>3</p></td>
+<td><p>3</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">7</span><span class="p">))</span>
+<span class="go">+----+-----+-----+</span>
+<span class="go">|    |   A |   B |</span>
+<span class="go">+====+=====+=====+</span>
+<span class="go">|  1 |   1 |   4 |</span>
+<span class="go">+----+-----+-----+</span>
+<span class="go">|  3 |   1 |   6 |</span>
+<span class="go">+----+-----+-----+</span>
+<span class="go">|  1 |   1 |   4 |</span>
+<span class="go">+----+-----+-----+</span>
+<span class="go">|  4 |   2 |   7 |</span>
+<span class="go">+----+-----+-----+</span>
+<span class="go">|  4 |   2 |   7 |</span>
+<span class="go">+----+-----+-----+</span>
+<span class="go">|  4 |   2 |   7 |</span>
+<span class="go">+----+-----+-----+</span>
+<span class="go">|  0 |   3 |   3 |</span>
+<span class="go">+----+-----+-----+</span>
+<span class="go">|  5 |   3 |   8 |</span>
+<span class="go">+----+-----+-----+</span>
+<span class="go">|  5 |   3 |   8 |</span>
+<span class="go">+----+-----+-----+</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -6356,6 +6488,7 @@ Otherwise, the DataFrame is not sorted.</p></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrameGroupBy.mode"><code class="docutils literal notranslate"><span class="pre">DataFrameGroupBy.mode()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrameGroupBy.nunique"><code class="docutils literal notranslate"><span class="pre">DataFrameGroupBy.nunique()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrameGroupBy.prod"><code class="docutils literal notranslate"><span class="pre">DataFrameGroupBy.prod()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.dataframe.DataFrameGroupBy.sample"><code class="docutils literal notranslate"><span class="pre">DataFrameGroupBy.sample()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrameGroupBy.size"><code class="docutils literal notranslate"><span class="pre">DataFrameGroupBy.size()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrameGroupBy.std"><code class="docutils literal notranslate"><span class="pre">DataFrameGroupBy.std()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrameGroupBy.sum"><code class="docutils literal notranslate"><span class="pre">DataFrameGroupBy.sum()</span></code></a></li>

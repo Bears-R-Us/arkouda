@@ -3023,6 +3023,103 @@ Functions
       :rtype: arkouda.dataframe.DataFrame
 
 
+   .. py:method:: sample(n=None, frac=None, replace=False, weights=None, random_state=None)
+
+      Return a random sample from each group. You can either specify the number of elements
+      or the fraction of elements to be sampled. random_state can be used for reproducibility
+
+      :param n: Number of items to return for each group.
+                Cannot be used with frac and must be no larger than
+                the smallest group unless replace is True.
+                Default is one if frac is None.
+      :type n: int, optional
+      :param frac: Fraction of items to return. Cannot be used with n.
+      :type frac: float, optional
+      :param replace: Allow or disallow sampling of the same row more than once.
+      :type replace: bool, default False
+      :param weights: Default None results in equal probability weighting.
+                      If passed a pdarray, then values must have the same length as the underlying DataFrame
+                      and will be used as sampling probabilities after normalization within each group.
+                      Weights must be non-negative with at least one positive element within each group.
+      :type weights: pdarray, optional
+      :param random_state: If int, seed for random number generator.
+                           If ak.random.Generator, use as given.
+      :type random_state: int or ak.random.Generator, optional
+
+      :returns: A new DataFrame containing items randomly sampled from each group
+                sorted according to the grouped columns.
+      :rtype: DataFrame
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> df = ak.DataFrame({"A":[3,1,2,1,2,3],"B":[3,4,5,6,7,8]})
+      >>> display(df)
+      +----+-----+-----+
+      |    |   A |   B |
+      +====+=====+=====+
+      |  0 |   3 |   3 |
+      +----+-----+-----+
+      |  1 |   1 |   4 |
+      +----+-----+-----+
+      |  2 |   2 |   5 |
+      +----+-----+-----+
+      |  3 |   1 |   6 |
+      +----+-----+-----+
+      |  4 |   2 |   7 |
+      +----+-----+-----+
+      |  5 |   3 |   8 |
+      +----+-----+-----+
+
+      >>> df.groupby("A").sample(random_state=6)
+
+      +----+-----+-----+
+      |    |   A |   B |
+      +====+=====+=====+
+      |  3 |   1 |   6 |
+      +----+-----+-----+
+      |  4 |   2 |   7 |
+      +----+-----+-----+
+      |  5 |   3 |   8 |
+      +----+-----+-----+
+
+      >>> df.groupby("A").sample(frac=0.5, random_state=3, weights=ak.array([1,1,1,0,0,0]))
+
+      +----+-----+-----+
+      |    |   A |   B |
+      +====+=====+=====+
+      |  1 |   1 |   4 |
+      +----+-----+-----+
+      |  2 |   2 |   5 |
+      +----+-----+-----+
+      |  0 |   3 |   3 |
+      +----+-----+-----+
+
+      >>> df.groupby("A").sample(n=3, replace=True, random_state=ak.random.default_rng(7))
+      +----+-----+-----+
+      |    |   A |   B |
+      +====+=====+=====+
+      |  1 |   1 |   4 |
+      +----+-----+-----+
+      |  3 |   1 |   6 |
+      +----+-----+-----+
+      |  1 |   1 |   4 |
+      +----+-----+-----+
+      |  4 |   2 |   7 |
+      +----+-----+-----+
+      |  4 |   2 |   7 |
+      +----+-----+-----+
+      |  4 |   2 |   7 |
+      +----+-----+-----+
+      |  0 |   3 |   3 |
+      +----+-----+-----+
+      |  5 |   3 |   8 |
+      +----+-----+-----+
+      |  5 |   3 |   8 |
+      +----+-----+-----+
+
+
    .. py:method:: size(as_series=None, sort_index=True)
 
       Compute the size of each value as the total number of rows, including NaN values.

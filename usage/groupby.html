@@ -811,7 +811,7 @@ arkouda server which was registered using register()</p>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.GroupBy" title="arkouda.GroupBy">GroupBy</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../autoapi/arkouda/index.html#id447" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if user_defined_name is not registered</p>
+<dd class="field-even"><p><a class="reference internal" href="../autoapi/arkouda/index.html#id452" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if user_defined_name is not registered</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -968,7 +968,7 @@ each value to the non-zero elements in the corresponding row.</p>
 <dd class="field-even"><p>bool</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#id447" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mismatch of registered components</p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#id452" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mismatch of registered components</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1324,7 +1324,7 @@ Please note you cannot register two different GroupBys with the same name.</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
-<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#id447" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the GroupBy with the user_defined_name</p></li>
+<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#id452" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the GroupBy with the user_defined_name</p></li>
 </ul>
 </dd>
 </dl>
@@ -1335,6 +1335,43 @@ Please note you cannot register two different GroupBys with the same name.</p>
 <p class="rubric">Notes</p>
 <p>Objects registered with the server are immune to deletion until
 they are unregistered.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.GroupBy.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frac</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">permute_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/groupbyclass.html#GroupBy.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.sample" title="Link to this definition">¶</a></dt>
+<dd><p>Return a random sample from each group. You can either specify the number of elements
+or the fraction of elements to be sampled. random_state can be used for reproducibility</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>values</strong> (<em>(</em><em>list of</em><em>) </em><em>pdarray-like</em>) – The values from which to sample, according to their group membership.</p></li>
+<li><p><strong>n</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of items to return for each group.
+Cannot be used with frac and must be no larger than
+the smallest group unless replace is True.
+Default is one if frac is None.</p></li>
+<li><p><strong>frac</strong> (<em>float</em><em>, </em><em>optional</em>) – Fraction of items to return. Cannot be used with n.</p></li>
+<li><p><strong>replace</strong> (<em>bool</em><em>, </em><em>default False</em>) – Allow or disallow sampling of the value more than once.</p></li>
+<li><p><strong>weights</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>optional</em>) – Default None results in equal probability weighting.
+If passed a pdarray, then values must have the same length as the groupby keys
+and will be used as sampling probabilities after normalization within each group.
+Weights must be non-negative with at least one positive element within each group.</p></li>
+<li><p><strong>random_state</strong> (<em>int</em><em> or </em><em>ak.random.Generator</em><em>, </em><em>optional</em>) – If int, seed for random number generator.
+If ak.random.Generator, use as given.</p></li>
+<li><p><strong>return_indices</strong> (<em>bool</em><em>, </em><em>default False</em>) – if True, return the indices of the sampled values.
+Otherwise, return the sample values.</p></li>
+<li><p><strong>permute_samples</strong> (<em>bool</em><em>, </em><em>default False</em>) – if True, return permute the samples according to group
+Otherwise, keep samples in original order.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>if return_indices is True, return the indices of the sampled values.
+Otherwise, return the sample values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1443,7 +1480,10 @@ unbiased estimate of the standard deviation per se.</p>
 another array of values and sum each group’s values.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>values</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The values to group and sum</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>values</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The values to group and sum</p></li>
+<li><p><strong>skipna</strong> (<em>bool</em>) – boolean which determines if NANs should be skipped</p></li>
+</ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">pdarray</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Strings</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><code class="xref py py-class docutils literal notranslate"><span class="pre">Categorical</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">pdarray</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Strings</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><code class="xref py py-class docutils literal notranslate"><span class="pre">Categorical</span></code></a>]]], <a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">pdarray</span></code></a>]</span></p>
@@ -1452,7 +1492,6 @@ another array of values and sum each group’s values.</p>
 <dd class="field-odd"><p><ul class="simple">
 <li><p><strong>unique_keys</strong> (<em>(list of) pdarray or Strings</em>) – The unique keys, in grouped order</p></li>
 <li><p><strong>group_sums</strong> (<em>pdarray</em>) – One sum per unique key in the GroupBy instance</p></li>
-<li><p><strong>skipna</strong> (<em>bool</em>) – boolean which determines if NANs should be skipped</p></li>
 </ul>
 </p>
 </dd>
@@ -1538,7 +1577,7 @@ This is only supported by HDF5 files and will have no impact of Parquet Files.</
 registered using register() and/or attached to using attach()</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#id447" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#id452" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
     when attempting to unregister</p>
 </dd>
 </dl>
@@ -1563,7 +1602,7 @@ with the arkouda server via register()</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – if user_defined_name is not a string</p></li>
-<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#id447" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if there is an issue attempting to unregister any underlying components</p></li>
+<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#id452" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if there is an issue attempting to unregister any underlying components</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -1726,6 +1765,7 @@ normally distributed variables.</p>
 <li><a class="reference internal" href="#arkouda.GroupBy.nunique"><code class="docutils literal notranslate"><span class="pre">GroupBy.nunique()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.GroupBy.prod"><code class="docutils literal notranslate"><span class="pre">GroupBy.prod()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.GroupBy.register"><code class="docutils literal notranslate"><span class="pre">GroupBy.register()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.sample"><code class="docutils literal notranslate"><span class="pre">GroupBy.sample()</span></code></a></li>
 <li><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">GroupBy.size()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.GroupBy.std"><code class="docutils literal notranslate"><span class="pre">GroupBy.std()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.GroupBy.sum"><code class="docutils literal notranslate"><span class="pre">GroupBy.sum()</span></code></a></li>

@@ -35,9 +35,13 @@ or
 
    .. method:: proc ref sample(d: domain(?), n: int, withReplacement = false): [] d.idxType throws where is1DRectangularDomain(d)
 
+   .. method:: proc ref sample(const x: [?dom], size: ?sizeType = none, replace = true) throws
+
    .. method:: proc ref next(): eltType
 
    .. method:: proc skipTo(n: int)
 
 .. function:: proc sample(arr: [?d] ?t, n: int, withReplacement: bool): [] t throws
+
+.. function:: proc choiceUniform(stream, X: domain(?), size: ?sizeType, replace: bool) throws
 
