@@ -1011,7 +1011,8 @@ class pdarray:
                         for i in range(self.ndim):
                             if slice_shape[i] > self.shape[i]:
                                 raise ValueError(
-                                    f"slice indices ({key}) out of bounds for array of shape {self.shape}"
+                                    f"slice indices ({key}) out of bounds for array of " +
+                                    f"shape {self.shape}"
                                 )
 
                         if value.ndim == len(slice_shape):
@@ -1019,7 +1020,8 @@ class pdarray:
                             for i in range(self.ndim):
                                 if slice_shape[i] != value.shape[i]:
                                     raise ValueError(
-                                        f"slice shape ({slice_shape}) must match shape of value array ({value.shape})"
+                                        f"slice shape ({slice_shape}) must match shape of value " +
+                                        f"array ({value.shape})"
                                     )
                             value_ = value
                         elif value.ndim < len(slice_shape):
@@ -1032,14 +1034,16 @@ class pdarray:
                                     iv += 1
                                 else:
                                     raise ValueError(
-                                        f"slice shape ({slice_shape}) must be compatible with shape of value array ({value.shape})"
+                                        f"slice shape ({slice_shape}) must be compatible with shape " +
+                                        f"of value array ({value.shape})"
                                     )
 
                             # reshape to add singleton dimensions as needed
                             value_ = _reshape(value, slice_shape)
                         else:
                             raise ValueError(
-                                f"value array must not have more dimensions ({value.ndim}) than the slice ({len(slice_shape)})"
+                                f"value array must not have more dimensions ({value.ndim}) than the" +
+                                f"slice ({len(slice_shape)})"
                             )
                     else:
                         raise ValueError(
