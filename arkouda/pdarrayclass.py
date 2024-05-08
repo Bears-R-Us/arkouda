@@ -950,12 +950,12 @@ class pdarray:
                 logger.debug(f"start: {start} stop: {stop} stride: {stride}")
                 if isinstance(value, pdarray):
                     generic_msg(
-                        cmd="[slice]=pdarray",
+                        cmd="[slice]=pdarray-1D",
                         args={
                             "array": self,
-                            "start": start,
-                            "stop": stop,
-                            "stride": stride,
+                            "starts": start,
+                            "stops": stop,
+                            "strides": stride,
                             "value": value,
                         },
                     )
@@ -974,14 +974,16 @@ class pdarray:
             else:
                 raise TypeError(f"Unhandled key type: {key} ({type(key)})")
         else:
-            if isinstance(key, tuple) and not isinstance(value, pdarray):
-                allScalar = True
+            if isinstance(key, tuple):
+                # TODO: add support for an Ellipsis in the key tuple
+                # (inserts ':' for any unspecified dimensions)
+                all_scalar_keys = True
                 starts = []
                 stops = []
                 strides = []
                 for dim, k in enumerate(key):
                     if isinstance(k, slice):
-                        allScalar = False
+                        all_scalar_keys = False
                         (start, stop, stride) = k.indices(self.shape[dim])
                         starts.append(start)
                         stops.append(stop)
@@ -998,10 +1000,63 @@ class pdarray:
                         else:
                             # treat this as a single element slice
                             starts.append(k)
-                            stops.append(k + 1)
+                            stops.append(k+1)
                             strides.append(1)
 
-                if allScalar:
+                if isinstance(value, pdarray):
+                    if len(starts) == self.ndim:
+                        slice_shape = tuple([stops[i] - starts[i] for i in range(self.ndim)])
+
+                        # check that the slice is within the bounds of the array
+                        for i in range(self.ndim):
+                            if slice_shape[i] > self.shape[i]:
+                                raise ValueError(
+                                    f"slice indices ({key}) out of bounds for array of shape {self.shape}"
+                                )
+
+                        if value.ndim == len(slice_shape):
+                            # check that the slice shape matches the value shape
+                            for i in range(self.ndim):
+                                if slice_shape[i] != value.shape[i]:
+                                    raise ValueError(
+                                        f"slice shape ({slice_shape}) must match shape of value array ({value.shape})"
+                                    )
+                            value_ = value
+                        elif value.ndim < len(slice_shape):
+                            # check that the value shape is compatible with the slice shape
+                            iv = 0
+                            for i in range(self.ndim):
+                                if slice_shape[i] == 1:
+                                    continue
+                                elif slice_shape[i] == value.shape[iv]:
+                                    iv += 1
+                                else:
+                                    raise ValueError(
+                                        f"slice shape ({slice_shape}) must be compatible with shape of value array ({value.shape})"
+                                    )
+
+                            # reshape to add singleton dimensions as needed
+                            value_ = _reshape(value, slice_shape)
+                        else:
+                            raise ValueError(
+                                f"value array must not have more dimensions ({value.ndim}) than the slice ({len(slice_shape)})"
+                            )
+                    else:
+                        raise ValueError(
+                            f"slice rank ({len(starts)}) must match array rank ({self.ndim})"
+                        )
+
+                    generic_msg(
+                        cmd=f"[slice]=pdarray-{self.ndim}D",
+                        args={
+                            "array": self,
+                            "starts": tuple(starts),
+                            "stops": tuple(stops),
+                            "strides": tuple(strides),
+                            "value": value_,
+                        },
+                    )
+                elif all_scalar_keys:
                     # use simpler indexing if we got a tuple of only scalars
                     generic_msg(
                         cmd=f"[int]=val-{self.ndim}D",
