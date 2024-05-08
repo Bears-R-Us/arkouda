@@ -1,0 +1,3 @@
+module ArkoudaZarrCompat {
+  use Zarr;
+}
