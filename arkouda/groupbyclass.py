@@ -21,15 +21,18 @@ import numpy as np  # type: ignore
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
-from arkouda.dtypes import bigint
+from arkouda.dtypes import _val_isinstance_of_union, bigint
+from arkouda.dtypes import dtype as to_numpy_dtype
 from arkouda.dtypes import float64 as akfloat64
+from arkouda.dtypes import float_scalars
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import int_scalars
 from arkouda.dtypes import uint64 as akuint64
 from arkouda.logger import getArkoudaLogger
 from arkouda.pdarrayclass import RegistrationError, create_pdarray, is_sorted, pdarray
-from arkouda.pdarraycreation import arange
-from arkouda.sorting import argsort
+from arkouda.pdarraycreation import arange, full
+from arkouda.random import default_rng
+from arkouda.sorting import argsort, sort
 from arkouda.strings import Strings
 
 __all__ = ["unique", "GroupBy", "broadcast", "GROUPBY_REDUCTION_TYPES"]
@@ -678,6 +681,9 @@ class GroupBy:
         ----------
         values : pdarray
             The values to group and sum
+        skipna: bool
+            boolean which determines if NANs should be skipped
+
 
         Returns
         -------
@@ -685,8 +691,6 @@ class GroupBy:
             The unique keys, in grouped order
         group_sums : pdarray
             One sum per unique key in the GroupBy instance
-        skipna: bool
-            boolean which determines if NANs should be skipped
 
         Raises
         ------
@@ -1511,6 +1515,164 @@ class GroupBy:
         else:
             mode = [uv[mode_idx] for uv in unique_values]
         return self.unique_keys, mode  # type: ignore
+
+    def sample(
+        self,
+        values: groupable,
+        n=None,
+        frac=None,
+        replace=False,
+        weights=None,
+        random_state=None,
+        return_indices=False,
+        permute_samples=False,
+    ):
+        """
+        Return a random sample from each group. You can either specify the number of elements
+        or the fraction of elements to be sampled. random_state can be used for reproducibility
+
+        Parameters
+        ----------
+        values : (list of) pdarray-like
+            The values from which to sample, according to their group membership.
+
+        n: int, optional
+            Number of items to return for each group.
+            Cannot be used with frac and must be no larger than
+            the smallest group unless replace is True.
+            Default is one if frac is None.
+
+        frac: float, optional
+            Fraction of items to return. Cannot be used with n.
+
+        replace: bool, default False
+            Allow or disallow sampling of the value more than once.
+
+        weights: pdarray, optional
+            Default None results in equal probability weighting.
+            If passed a pdarray, then values must have the same length as the groupby keys
+            and will be used as sampling probabilities after normalization within each group.
+            Weights must be non-negative with at least one positive element within each group.
+
+        random_state: int or ak.random.Generator, optional
+            If int, seed for random number generator.
+            If ak.random.Generator, use as given.
+
+        return_indices: bool, default False
+            if True, return the indices of the sampled values.
+            Otherwise, return the sample values.
+
+        permute_samples: bool, default False
+            if True, return permute the samples according to group
+            Otherwise, keep samples in original order.
+
+        Returns
+        -------
+        pdarray
+            if return_indices is True, return the indices of the sampled values.
+            Otherwise, return the sample values.
+        """
+        from arkouda.numeric import cast as akcast
+        from arkouda.numeric import round as akround
+
+        if frac is not None and n is not None:
+            raise ValueError("Please enter a value for `frac` OR `n`, not both")
+        if frac is None and n is None:
+            n = 1
+
+        if not isinstance(values, Sequence):
+            if values.size != self.length:
+                raise ValueError("Attempt to group values using key array of different length")
+        else:
+            if any(val.size != self.length for val in values):
+                raise ValueError("Attempt to group values using key array of different length")
+
+        _, seg_lens = self.size()
+
+        if n is not None:
+            if not _val_isinstance_of_union(n, int_scalars):
+                raise TypeError("n must be an int scalar.")
+            num_samples = full(seg_lens.size, n, akint64)
+
+        if frac is not None:
+            if not _val_isinstance_of_union(frac, float_scalars):
+                raise TypeError("frac must be a float scalar.")
+            num_samples = akcast(akround(frac * seg_lens), dt=akint64)
+
+        if not replace and (num_samples > seg_lens).any():
+            raise ValueError("Cannot take a larger sample than population when replace is False")
+
+        if (num_samples <= 0).any():
+            raise ValueError("Cannot take a negative number of samples")
+
+        has_weights = weights is not None
+        if has_weights:
+            if not isinstance(weights, pdarray):
+                raise TypeError("weights must be a pdarray")
+
+            if weights.size != self.length:
+                raise ValueError("Weights and values to be sampled must be of same length")
+
+            if (weights < 0).any():
+                raise ValueError("Weights may not include negative values")
+
+            permuted_weights = weights[self.permutation]
+
+            # the below is equivalent to doing `_, weight_sum = self.sum(weights)`, but
+            # by calling segmentedReduction directly, we avoid permuting the weights twice.
+            # it's unclear if this is worth the additional code complexity
+            repMsg = generic_msg(
+                cmd="segmentedReduction",
+                args={
+                    "values": permuted_weights,
+                    "segments": self.segments,
+                    "op": "sum",
+                    "skip_nan": True,
+                    "ddof": 1,
+                },
+            )
+            weight_sum = create_pdarray(repMsg)
+
+            if (weight_sum == 0).any():
+                raise ValueError("All segments must have at least one value of non-zero weight")
+
+            if permuted_weights.dtype != akfloat64:
+                permuted_weights = akcast(permuted_weights, akfloat64)
+        else:
+            permuted_weights = ""
+
+        random_state = default_rng(random_state)
+        gen_name = random_state._name_dict[to_numpy_dtype(akfloat64 if has_weights else akint64)]
+
+        has_seed = random_state._seed is not None
+
+        repMsg = generic_msg(
+            cmd="segmentedSample",
+            args={
+                "genName": gen_name,
+                "perm": self.permutation,
+                "segs": self.segments,
+                "segLens": seg_lens,
+                "weights": permuted_weights,
+                "numSamples": num_samples,
+                "replace": replace,
+                "hasWeights": has_weights,
+                "hasSeed": has_seed,
+                "seed": random_state._seed if has_seed else "",
+                "state": random_state._state,
+            },
+        )
+        random_state._state += self.length
+
+        self.logger.debug(repMsg)
+        # sorting the sample permutation gives the sampled indices
+        sampled_idx = create_pdarray(repMsg) if permute_samples else sort(create_pdarray(repMsg))
+        if return_indices:
+            return sampled_idx
+        elif not isinstance(values, Sequence):
+            return values[sampled_idx]
+        else:
+            return [val[sampled_idx] for val in values]
 
     def unique(self, values: groupable):  # type: ignore
         """

@@ -206,6 +206,124 @@ class DataFrameGroupBy:
         else:
             return self._return_agg_dataframe(self.gb.size(), "size", sort_index=sort_index)
 
+    def sample(self, n=None, frac=None, replace=False, weights=None, random_state=None):
+        """
+        Return a random sample from each group. You can either specify the number of elements
+        or the fraction of elements to be sampled. random_state can be used for reproducibility
+
+        Parameters
+        ----------
+        n: int, optional
+            Number of items to return for each group.
+            Cannot be used with frac and must be no larger than
+            the smallest group unless replace is True.
+            Default is one if frac is None.
+
+        frac: float, optional
+            Fraction of items to return. Cannot be used with n.
+
+        replace: bool, default False
+            Allow or disallow sampling of the same row more than once.
+
+        weights: pdarray, optional
+            Default None results in equal probability weighting.
+            If passed a pdarray, then values must have the same length as the underlying DataFrame
+            and will be used as sampling probabilities after normalization within each group.
+            Weights must be non-negative with at least one positive element within each group.
+
+        random_state: int or ak.random.Generator, optional
+            If int, seed for random number generator.
+            If ak.random.Generator, use as given.
+
+        Returns
+        -------
+        DataFrame
+            A new DataFrame containing items randomly sampled from each group
+            sorted according to the grouped columns.
+
+        Examples
+        --------
+
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> df = ak.DataFrame({"A":[3,1,2,1,2,3],"B":[3,4,5,6,7,8]})
+        >>> display(df)
+        +----+-----+-----+
+        |    |   A |   B |
+        +====+=====+=====+
+        |  0 |   3 |   3 |
+        +----+-----+-----+
+        |  1 |   1 |   4 |
+        +----+-----+-----+
+        |  2 |   2 |   5 |
+        +----+-----+-----+
+        |  3 |   1 |   6 |
+        +----+-----+-----+
+        |  4 |   2 |   7 |
+        +----+-----+-----+
+        |  5 |   3 |   8 |
+        +----+-----+-----+
+
+        >>> df.groupby("A").sample(random_state=6)
+
+        +----+-----+-----+
+        |    |   A |   B |
+        +====+=====+=====+
+        |  3 |   1 |   6 |
+        +----+-----+-----+
+        |  4 |   2 |   7 |
+        +----+-----+-----+
+        |  5 |   3 |   8 |
+        +----+-----+-----+
+
+        >>> df.groupby("A").sample(frac=0.5, random_state=3, weights=ak.array([1,1,1,0,0,0]))
+
+        +----+-----+-----+
+        |    |   A |   B |
+        +====+=====+=====+
+        |  1 |   1 |   4 |
+        +----+-----+-----+
+        |  2 |   2 |   5 |
+        +----+-----+-----+
+        |  0 |   3 |   3 |
+        +----+-----+-----+
+
+        >>> df.groupby("A").sample(n=3, replace=True, random_state=ak.random.default_rng(7))
+        +----+-----+-----+
+        |    |   A |   B |
+        +====+=====+=====+
+        |  1 |   1 |   4 |
+        +----+-----+-----+
+        |  3 |   1 |   6 |
+        +----+-----+-----+
+        |  1 |   1 |   4 |
+        +----+-----+-----+
+        |  4 |   2 |   7 |
+        +----+-----+-----+
+        |  4 |   2 |   7 |
+        +----+-----+-----+
+        |  4 |   2 |   7 |
+        +----+-----+-----+
+        |  0 |   3 |   3 |
+        +----+-----+-----+
+        |  5 |   3 |   8 |
+        +----+-----+-----+
+        |  5 |   3 |   8 |
+        +----+-----+-----+
+        """
+        return self.df[
+            self.gb.sample(
+                values=self.df.index.values,
+                n=n,
+                frac=frac,
+                replace=replace,
+                weights=weights,
+                random_state=random_state,
+                return_indices=True,
+                permute_samples=True,
+            )
+        ]
+
     def _return_agg_series(self, values, sort_index=True):
         if self.as_index is True:
             if isinstance(self.gb_key_names, str):
