@@ -7,10 +7,10 @@ from typeguard import typechecked
 
 from arkouda.client import generic_msg
 from arkouda.client_dtypes import BitVector
+from arkouda.dtypes import bigint
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import uint64 as akuint64
-from arkouda.dtypes import bigint
 from arkouda.groupbyclass import GroupBy, groupable, groupable_element_type, unique
 from arkouda.logger import getArkoudaLogger
 from arkouda.pdarrayclass import create_pdarray, pdarray
@@ -232,22 +232,27 @@ def in1dmulti(a, b, assume_unique=False, symmetric=False):
     return in1d(a, b, assume_unique=assume_unique, symmetric=symmetric)
 
 
-def indexof1d(keys: groupable, arr: groupable) -> Union[pdarray, groupable]:
+def indexof1d(query: groupable, space: groupable) -> pdarray:
     """
-    Returns an integer array of the index values where the values of the first
-    array appear in the second.
+    Return indices of query items in a search list of items. Items not found will be excluded.
+    When duplicate terms are present in search space return indices of all occurrences.
 
     Parameters
     ----------
-    keys : pdarray or Strings or Categorical
-        Input array of values to find the indices of in `arr`.
-    arr : pdarray or Strings or Categorical
-        The values to search.
+    query : (sequence of) pdarray or Strings or Categorical
+        The items to search for. If multiple arrays, each "row" is an item.
+    space : (sequence of) pdarray or Strings or Categorical
+        The set of items in which to search. Must have same shape/dtype as query.
 
     Returns
     -------
-    pdarray, int
-        The indices of the values of `keys` in `arr`.
+    indices : pdarray, int64
+        For each item in query, its index in space.
+
+    Notes
+    -----
+    This is an alias of
+    `ak.find(query, space, all_occurrences=True, remove_missing=True).values`
 
     Raises
     ------
@@ -257,19 +262,17 @@ def indexof1d(keys: groupable, arr: groupable) -> Union[pdarray, groupable]:
     RuntimeError
         Raised if the dtype of either array is not supported
     """
+    from arkouda.alignment import find as akfind
     from arkouda.categorical import Categorical as Categorical_
 
-    if isinstance(keys, (pdarray, Strings, Categorical_)):
-        if isinstance(keys, (Strings, Categorical_)) and not isinstance(arr, (Strings, Categorical_)):
+    if isinstance(query, (pdarray, Strings, Categorical_)):
+        if isinstance(query, (Strings, Categorical_)) and not isinstance(space, (Strings, Categorical_)):
             raise TypeError("Arguments must have compatible types, Strings/Categorical")
-        elif isinstance(keys, pdarray) and not isinstance(arr, pdarray):
+        elif isinstance(query, pdarray) and not isinstance(space, pdarray):
             raise TypeError("If keys is pdarray, arr must also be pdarray")
 
-    repMsg = generic_msg(
-        cmd="indexof1d",
-        args={"keys": keys, "arr": arr},
-    )
-    return create_pdarray(cast(str, repMsg))
+    found = akfind(query, space, all_occurrences=True, remove_missing=True)
+    return found if isinstance(found, pdarray) else found.values
 
 
 # fmt: off

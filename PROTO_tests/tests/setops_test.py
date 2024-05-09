@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import pytest
 
 import arkouda as ak
@@ -50,8 +51,8 @@ class TestSetOps:
             a = np.array([-1, -3, 0, 1, 2, 3]).astype(dtype1)
             c = np.array([-1, 0, 0, 7, 8, 3]).astype(dtype1)
         elif dtype1 == ak.bigint:
-            a = np.array([-1, -3, 0, 1, 2, 3]).astype(ak.uint64) + 2 ** 200
-            c = np.array([-1, 0, 0, 7, 8, 3]).astype(ak.uint64) + 2 ** 200
+            a = np.array([-1, -3, 0, 1, 2, 3]).astype(ak.uint64) + 2**200
+            c = np.array([-1, 0, 0, 7, 8, 3]).astype(ak.uint64) + 2**200
         elif dtype1 == ak.bool:
             a = np.array([True, False, False, True, True])
             c = np.array([True, True, False, False, True])
@@ -62,8 +63,8 @@ class TestSetOps:
             b = np.array([-1, -11, 0, 4, 5, 3]).astype(dtype2)
             d = np.array([-1, -4, 0, 7, 8, 3]).astype(dtype2)
         elif dtype2 == ak.bigint:
-            b = np.array([-1, -11, 0, 4, 5, 3]).astype(ak.uint64) + 2 ** 200
-            d = np.array([-1, -4, 0, 7, 8, 3]).astype(ak.uint64) + 2 ** 200
+            b = np.array([-1, -11, 0, 4, 5, 3]).astype(ak.uint64) + 2**200
+            d = np.array([-1, -4, 0, 7, 8, 3]).astype(ak.uint64) + 2**200
         elif dtype2 == ak.bool:
             b = np.array([True, True, False, False, True])
             d = np.array([True, True, False, False, True])
@@ -674,3 +675,47 @@ class TestSetOps:
         x = [ak.arange(3, dtype=ak.uint64), ak.arange(3)]
         with pytest.raises(TypeError):
             ak.pdarraysetops.multiarray_setop_validation(x, y)
+
+    def test_index_of(self):
+        # index of nan (reproducer from #3009)
+        s = ak.Series(ak.array([1, 2, 3]), index=ak.array([1, 2, np.nan]))
+        assert ak.indexof1d(ak.array([np.nan]), s.index.values).to_list() == [2]
+
+        select_from_list = [
+            ak.randint(-(2**32), 2**32, 10),
+            ak.linspace(-(2**32), 2**32, 10),
+            ak.random_strings_uniform(1, 16, 10),
+        ]
+        for select_from in select_from_list:
+            arr1 = select_from[ak.randint(0, select_from.size, 20)]
+
+            # test unique search space, this should be identical to find
+            # be sure to test when all items are present and when there are items missing
+            for arr2 in select_from, select_from[:5], select_from[5:]:
+                found_in_second = ak.in1d(arr1, arr2)
+                idx_of_first_in_second = ak.indexof1d(arr1, arr2)
+
+                # ensure we match find
+                assert (idx_of_first_in_second == ak.find(arr1, arr2, remove_missing=True)).all()
+
+                # if an element of arr1 is found in arr2, return the index of that item in arr2
+                assert (arr2[idx_of_first_in_second] == arr1[found_in_second]).all()
+
+            # test duplicate items in search space, the easiest way I can think
+            # of to do this is to compare against pandas series getitem
+            arr2 = select_from[ak.randint(0, select_from.size, 20)]
+            pd_s = pd.Series(index=arr1.to_ndarray(), data=arr2.to_ndarray())
+            ak_s = ak.Series(index=arr1, data=arr2)
+
+            arr1_keys = ak.GroupBy(arr1).unique_keys
+            arr2_keys = ak.GroupBy(arr2).unique_keys
+            in_both = ak.intersect1d(arr1_keys, arr2_keys)
+
+            for i in in_both.to_list():
+                pd_i = pd_s[i]
+                ak_i = ak_s[i]
+                if isinstance(pd_i, pd.Series):
+                    assert isinstance(ak_i, ak.Series)
+                    assert pd_i.values.tolist() == ak_i.values.to_list()
+                else:
+                    assert pd_i == ak_i
