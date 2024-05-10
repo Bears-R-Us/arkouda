@@ -209,6 +209,45 @@ class Generator:
         self._state += size
         return create_pdarray(rep_msg)
 
+    def normal(self, loc=0.0, scale=1.0, size=None):
+        """
+        Draw samples from a normal distribution
+
+        Parameters
+        ----------
+        loc: float or pdarray of floats, optional
+            Mean of the distribution. Default of 0.
+
+        scale: float or pdarray of floats, optional
+            Standard deviation of the distribution. Must be non-negative. Default of 1.
+
+        size: numeric_scalars, optional
+            Output shape. Default is None, in which case a single value is returned.
+
+        Returns
+        -------
+        pdarray
+            Pdarray of floats (unless size=None, in which case a single float is returned).
+
+        See Also
+        --------
+        standard_normal
+        uniform
+
+        Examples
+        --------
+        >>> ak.random.default_rng(17).normal(3, 2.5, 10)
+        array([2.3673425816523577 4.0532529435624589 2.0598322696795694])
+        """
+        if size is None:
+            # delegate to numpy when return size is 1
+            return self._np_generator.standard_normal(loc, scale)
+
+        if (scale < 0).any() if isinstance(scale, pdarray) else scale < 0:
+            raise TypeError("scale must be non-negative.")
+
+        return loc + scale * self.standard_normal(size=size)
+
     def random(self, size=None):
         """
         Return random floats in the half-open interval [0.0, 1.0).
@@ -289,12 +328,20 @@ class Generator:
         >>> rng.standard_normal(3)
         array([0.8797352989638163, -0.7085325853376141, 0.021728052940979934])  # random
         """
-        from arkouda.random._legacy import standard_normal
-
         if size is None:
             # delegate to numpy when return size is 1
             return self._np_generator.standard_normal()
-        return standard_normal(size=size, seed=self._seed)
+        rep_msg = generic_msg(
+            cmd="standardNormalGenerator",
+            args={
+                "name": self._name_dict[akfloat64],
+                "size": size,
+                "state": self._state,
+            },
+        )
+        # since we generate 2*size uniform samples for box-muller transform
+        self._state += (size * 2)
+        return create_pdarray(rep_msg)
 
     def shuffle(self, x):
         """
