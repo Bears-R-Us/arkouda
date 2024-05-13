@@ -2472,7 +2472,7 @@ def is_sorted(pda: pdarray) -> np.bool_:
 
 
 @typechecked
-def sum(pda: pdarray) -> np.float64:
+def sum(pda: pdarray) -> numeric_and_bool_scalars:
     """
     Return the sum of all elements in the array.
 
