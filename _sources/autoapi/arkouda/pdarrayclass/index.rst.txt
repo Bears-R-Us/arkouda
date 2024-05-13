@@ -1636,7 +1636,7 @@ Functions
    unbiased estimate of the standard deviation per se.
 
 
-.. py:function:: sum(pda: pdarray) -> numpy.float64
+.. py:function:: sum(pda: pdarray) -> arkouda.dtypes.numeric_and_bool_scalars
 
    Return the sum of all elements in the array.
 
