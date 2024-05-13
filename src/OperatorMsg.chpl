@@ -148,7 +148,7 @@ module OperatorMsg
           when (DType.Bool, DType.Bool) {
             var l = toSymEntry(left,bool, nd);
             var r = toSymEntry(right,bool, nd);
-            if (op == "<<") || (op == ">>" )  {
+            if (op == "<<") || (op == ">>" ) {
               var e = st.addEntry(rname, l.tupShape, int);
               return doBinOpvv(l, r, e, op, rname, pn, st);
             }
@@ -1346,6 +1346,7 @@ module OperatorMsg
                     when "|=" {l.a |= r.a;}
                     when "&=" {l.a &= r.a;}
                     when "^=" {l.a ^= r.a;}
+                    when "+=" {l.a |= r.a;}
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -1831,6 +1832,18 @@ module OperatorMsg
                     when "*=" {l.a *= val:uint;}
                     when ">>=" { l.a >>= val:uint;}
                     when "<<=" { l.a <<= val:uint;}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                    }
+                }
+            }
+            when (DType.Bool, DType.Bool) {
+                var l = toSymEntry(left, bool, nd);
+                var val = value.getBoolValue();
+                select op {
+                    when "+=" {l.a |= val;}
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);

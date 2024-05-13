@@ -177,9 +177,9 @@ def compute_join_size(a: pdarray, b: pdarray) -> Tuple[int, int]:
     both the number of elements and number of bytes required for the join.
     """
     bya = GroupBy(a)
-    ua, asize = bya.count()
+    ua, asize = bya.size()
     byb = GroupBy(b)
-    ub, bsize = byb.count()
+    ub, bsize = byb.size()
     afact = asize[in1d(ua, ub)]
     bfact = bsize[in1d(ub, ua)]
     nelem = (afact * bfact).sum()

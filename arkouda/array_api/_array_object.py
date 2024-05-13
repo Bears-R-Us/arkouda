@@ -27,6 +27,7 @@ from ._dtypes import (
     _result_type,
     _dtype_categories,
 )
+from ._creation_functions import asarray
 
 from typing import TYPE_CHECKING, Optional, Tuple, Union, Any, Dict, Callable
 import types
@@ -384,6 +385,8 @@ class Array:
                 k = key._array[0]
             else:
                 k = key._array
+        elif isinstance(key, np.ndarray):
+            k = asarray(key)
         elif isinstance(key, tuple):
             k = []
             for kt in key:
@@ -392,6 +395,8 @@ class Array:
                         k.append(kt._array[0])
                     else :
                         k.append(kt._array)
+                elif isinstance(kt, np.ndarray):
+                    k.append(asarray(kt)._array)
                 else:
                     k.append(kt)
             k = tuple(k)

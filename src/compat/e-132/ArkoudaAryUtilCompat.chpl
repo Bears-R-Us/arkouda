@@ -26,7 +26,7 @@ module ArkoudaAryUtilCompat {
     return D[{(...outDims)}];
   }
 
-  proc domOnAxis(D: domain, idx: D.rank*int, axes: [?aD] int): domain throws {
+  proc domOnAxis(D: domain(?), idx: D.rank*int, axes: [?aD] int): domain throws {
     if axes.size >= D.rank then
       throw new Error("Cannot create a " + axes.size:string + "-dimensional slice from a " + D.rank:string + "-dimensional domain");
 
@@ -69,7 +69,7 @@ module ArkoudaAryUtilCompat {
     return D[{(...outDims)}];
   }
 
-  proc domOffAxis(D: domain, axes: [?aD] int): domain throws {
+  proc domOffAxis(D: domain(?), axes: [?aD] int): domain throws {
     if axes.size >= D.rank then
       throw new Error("Cannot create a " + axes.size:string + "-dimensional slice from a " + D.rank:string + "-dimensional domain");
 
@@ -97,7 +97,7 @@ module ArkoudaAryUtilCompat {
     first 'nChunks-1' chunks will be empty, and the last chunk will contain
     the entire domain)
   */
-  proc subDomChunk(dom: domain, chunkIdx: int, nChunks: int): domain {
+  proc subDomChunk(dom: domain(?), chunkIdx: int, nChunks: int): domain {
     const dimSizes = [i in 0..<dom.rank] dom.dim(i).size,
           (maxDim, maxDimIdx) = maxloc reduce zip(dimSizes, dimSizes.domain);
 

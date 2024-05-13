@@ -2,7 +2,7 @@ from collections import namedtuple
 
 import numpy as np
 from numpy import asarray
-from scipy.stats import chi2
+from scipy.stats import chi2  # type: ignore
 
 import arkouda as ak
 from arkouda.scipy.special import xlogy
@@ -74,7 +74,7 @@ def power_divergence(f_obs, f_exp=None, ddof=0, lambda_=None):
 
     >>> import arkouda as ak
     >>> ak.connect()
-    >>> from arkouda.akstats import power_divergence
+    >>> from arkouda.stats import power_divergence
     >>> x = ak.array([10, 20, 30, 10])
     >>> y = ak.array([10, 30, 20, 10])
     >>> power_divergence(x, y, lambda_="pearson")
@@ -191,7 +191,7 @@ def chisquare(f_obs, f_exp=None, ddof=0):
 
     >>> import arkouda as ak
     >>> ak.connect()
-    >>> from arkouda.akstats import chisquare
+    >>> from arkouda.stats import chisquare
     >>> chisquare(ak.array([10, 20, 30, 10]), ak.array([10, 30, 20, 10]))
     Power_divergenceResult(statistic=8.333333333333334, pvalue=0.03960235520756414)
 

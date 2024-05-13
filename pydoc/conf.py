@@ -12,18 +12,19 @@
 #
 import os
 import sys
-from arkouda import _version
 
-sys.path.insert(0, os.path.abspath('../benchmarks'))
-sys.path.insert(0, os.path.abspath('..'))
 
-sys.path.append('_ext')
+sys.path.insert(0, os.path.abspath("../benchmarks"))
+sys.path.insert(0, os.path.abspath(".."))
+
+sys.path.append("_ext")
+
 
 # -- Project information -----------------------------------------------------
 
-project = 'arkouda'
-copyright = '2020, Michael Merrill and William Reus'
-author = 'Michael Merrill and William Reus'
+project = "arkouda"
+copyright = "2020, Michael Merrill and William Reus"
+author = "Michael Merrill and William Reus"
 
 # The full version, including alpha/beta/rc tags
 # release = _version.get_versions()["version"]
@@ -31,41 +32,76 @@ release = ""
 
 
 # -- General configuration ---------------------------------------------------
-master_doc = 'index'
+master_doc = "index"
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon', 
-              'sphinxarg.ext', 'sphinx.ext.githubpages',
-              'sphinx.ext.coverage', 'autoapi.extension',
-              'ak_sphinx_extensions', 'myst_parser', 
-              'sphinx.ext.viewcode'
-             ]
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.napoleon",
+    "sphinxarg.ext",
+    "sphinx.ext.githubpages",
+    "sphinx.ext.coverage",
+    "autoapi.extension",
+    "ak_sphinx_extensions",
+    "myst_parser",
+    "sphinx.ext.viewcode",
+    "sphinx_autodoc_typehints",
+    "sphinx.ext.mathjax",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.intersphinx",
+    "sphinx_design",
+    "matplotlib.sphinxext.plot_directive",
+]
 
-source_suffix = ['.rst', '.md']
+
+mathjax_path = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+
+
+# Include __init__.pyi files
+autodoc_mock_imports = ["arkouda.numpy", "arkouda.scipy"]
+
+source_suffix = [".rst", ".md"]
 
 myst_enable_extensions = ["deflist", "linkify"]
 
 
 # path to directory containing files to autogenerate docs from comments
-autoapi_dirs = ['../arkouda']
+autoapi_dirs = ["../arkouda"]
 
-autoapi_options = ['members', 'undoc-members', 'show-inheritance', 'show-module-summary', 'imported-members', ]
+autoapi_options = [
+    "members",
+    "undoc-members",
+    "show-inheritance",
+    "show-module-summary",
+    "imported-members",
+]
 
 autoapi_member_order = "alphabetical"
 
 # do not create api reference for
-autoapi_ignore = ['*migrations*', "*_version.py", "*decorators.py", "*message.py"]
+autoapi_ignore = [
+    "*migrations*",
+    "*_version.py",
+    "*decorators.py",
+    "*message.py",
+    "*arkouda/dataframe.py",
+    "*arkouda/groupbyclass.py",
+    "*arkouda/series.py",
+    "*arkouda/numpy/*py",
+    "*arkouda/scipy/*py",
+    "*arkouda/scipy/stats/*py",
+    "*arkouda/scipy/special/*py",
+]
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
-
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -73,12 +109,12 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # a list of builtin themes.
 #
 
-html_theme = 'furo'
+html_theme = "furo"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = ["_static"]
 
 # Add release substitution variable
 substitutions = [("|release|", release)]

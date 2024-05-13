@@ -248,7 +248,7 @@ def _parse_none_and_ellipsis_keys(key, ndim):
     ret_key = key
 
     # how many 'None' arguments are in the key tuple
-    num_none = ret_key.count(None)
+    num_none = reduce(lambda x, y: x + (1 if y is None else 0), ret_key, 0)
 
     # replace '...' with the appropriate number of ':'
     elipsis_axis_idx = -1
@@ -2472,7 +2472,7 @@ def is_sorted(pda: pdarray) -> np.bool_:
 
 
 @typechecked
-def sum(pda: pdarray) -> np.float64:
+def sum(pda: pdarray) -> numeric_and_bool_scalars:
     """
     Return the sum of all elements in the array.
 

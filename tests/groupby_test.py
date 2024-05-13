@@ -5,6 +5,7 @@ from context import arkouda as ak
 
 from arkouda.dtypes import float64, int64
 from arkouda.groupbyclass import GroupByReductionType
+from arkouda.scipy import chisquare as akchisquare
 
 SIZE = 100
 GROUPS = 8
@@ -85,10 +86,10 @@ def run_test(levels, verbose=False):
     failures = 0
     not_impl = 0
     if verbose:
-        print("Doing .count()")
+        print("Doing .size()")
     tests += 1
     pdkeys, pdvals = groupby_to_arrays(df, keyname, "int64", "count", levels)
-    akkeys, akvals = akg.count()
+    akkeys, akvals = akg.size()
     akvals = akvals.to_ndarray()
     failures += compare_keys(pdkeys, akkeys, levels, pdvals, akvals)
     for vname in ("int64", "uint64", "float64", "bool"):
@@ -188,7 +189,7 @@ class GroupByTest(ArkoudaTest):
         a = ak.array([True, False, True, True, False])
         true_ct = a.sum()
         g = ak.GroupBy(a)
-        k, ct = g.count()
+        k, ct = g.size()
 
         self.assertEqual(ct[1], true_ct)
         self.assertListEqual(k.to_list(), [False, True])
@@ -201,7 +202,7 @@ class GroupByTest(ArkoudaTest):
 
         b = ak.array([False, False, True, False, False])
         g = ak.GroupBy([a, b])
-        k, ct = g.count()
+        k, ct = g.size()
         self.assertListEqual(ct.to_list(), [2, 2, 1])
         self.assertListEqual(k[0].to_list(), [False, True, True])
         self.assertListEqual(k[1].to_list(), [False, False, True])
@@ -251,7 +252,7 @@ class GroupByTest(ArkoudaTest):
             )
 
     def test_broadcast_ints(self):
-        keys, counts = self.igb.count()
+        keys, counts = self.igb.size()
 
         self.assertListEqual([1, 4, 2, 1, 2], counts.to_list())
         self.assertListEqual([1, 2, 3, 4, 5], keys.to_list())
@@ -275,7 +276,7 @@ class GroupByTest(ArkoudaTest):
         self.assertListEqual([1, 1, 1, 0, 0, 0, 1, 1, 0, 1], results.to_list())
 
     def test_broadcast_uints(self):
-        keys, counts = self.ugb.count()
+        keys, counts = self.ugb.size()
         self.assertListEqual([1, 4, 2, 1, 2], counts.to_list())
         self.assertListEqual([1, 2, 3, 4, 5], keys.to_list())
 
@@ -305,7 +306,7 @@ class GroupByTest(ArkoudaTest):
         self.assertListEqual(i_results.to_list(), u_results.to_list())
 
     def test_broadcast_strings(self):
-        keys, counts = self.sgb.count()
+        keys, counts = self.sgb.size()
         self.assertListEqual([1, 4, 2, 1, 2], counts.to_list())
         self.assertListEqual(["1", "2", "3", "4", "5"], keys.to_list())
 
@@ -346,7 +347,7 @@ class GroupByTest(ArkoudaTest):
         self.assertEqual(bi_broad.max_bits, a.max_bits)
 
         # do the same tests as uint and compare the results
-        keys, counts = self.bigb.count()
+        keys, counts = self.bigb.size()
         self.assertListEqual([1, 4, 2, 1, 2], counts.to_list())
         self.assertListEqual([1, 2, 3, 4, 5], keys.to_list())
 
@@ -378,7 +379,7 @@ class GroupByTest(ArkoudaTest):
         self.assertListEqual(bi_results.to_list(), u_results.to_list())
 
     def test_broadcast_booleans(self):
-        keys, counts = self.igb.count()
+        keys, counts = self.igb.size()
 
         self.assertListEqual([1, 4, 2, 1, 2], counts.to_list())
         self.assertListEqual([1, 2, 3, 4, 5], keys.to_list())
@@ -402,7 +403,7 @@ class GroupByTest(ArkoudaTest):
         self.assertListEqual([1, 1, 1, 0, 0, 0, 1, 1, 0, 1], results.to_list())
 
     def test_count(self):
-        keys, counts = self.igb.count()
+        keys, counts = self.igb.size()
 
         self.assertListEqual([1, 2, 3, 4, 5], keys.to_list())
         self.assertListEqual([1, 4, 2, 1, 2], counts.to_list())
@@ -528,6 +529,29 @@ class GroupByTest(ArkoudaTest):
         self.assertListEqual(u_unique_keys.to_list(), i_unique_keys.to_list())
         self.assertListEqual(u_group_nunique.to_list(), i_group_nunique.to_list())
 
+    def test_groupby_count(self):
+        a = ak.array([1, 0, -1, 1, -1, -1])
+        b0 = ak.array([1, np.nan, 1, 1, np.nan, np.nan])
+
+        dtypes = ["float64", "bool", "int64"]
+
+        gb = ak.GroupBy(a)
+
+        for dt in dtypes:
+            b = ak.cast(b0, dt=dt)
+            keys, counts = gb.count(b)
+            self.assertTrue(np.allclose(keys.to_ndarray(), np.array([-1, 0, 1]), equal_nan=True))
+
+            if dt == "float64":
+                self.assertTrue(np.allclose(counts.to_ndarray(), np.array([1, 0, 2]), equal_nan=True))
+            else:
+                self.assertTrue(np.allclose(counts.to_ndarray(), np.array([3, 1, 2]), equal_nan=True))
+
+        #   Test BigInt separately
+        b = ak.array(np.array([1, 0, 1, 1, 0, 0]), dtype="bigint")
+        self.assertTrue(np.allclose(keys.to_ndarray(), np.array([-1, 0, 1]), equal_nan=True))
+        self.assertTrue(np.allclose(counts.to_ndarray(), np.array([3, 1, 2]), equal_nan=True))
+
     def test_bigint_groupby(self):
         bi = 2**200
         # these bigint arrays are the int arrays shifted up by 2**200
@@ -540,8 +564,8 @@ class GroupByTest(ArkoudaTest):
         int_arrays = [a, b]
         bigint_arrays = [bi_a, bi_b]
         for i_arr, bi_arr in zip(int_arrays, bigint_arrays):
-            i_unique, i_counts = ak.GroupBy(i_arr).count()
-            bi_unique, bi_counts = ak.GroupBy(bi_arr).count()
+            i_unique, i_counts = ak.GroupBy(i_arr).size()
+            bi_unique, bi_counts = ak.GroupBy(bi_arr).size()
             shift_down = ak.cast(bi_unique - bi, ak.int64)
             # order isn't guaranteed so argsort and permute
             i_perm = ak.argsort(i_unique)
@@ -550,8 +574,8 @@ class GroupByTest(ArkoudaTest):
             self.assertListEqual(i_unique[i_perm].to_list(), shift_down[bi_perm].to_list())
 
         # multilevel groupby
-        (i1_unique, i2_unique), i_counts = ak.GroupBy(int_arrays).count()
-        (bi1_unique, bi2_unique), bi_counts = ak.GroupBy(bigint_arrays).count()
+        (i1_unique, i2_unique), i_counts = ak.GroupBy(int_arrays).size()
+        (bi1_unique, bi2_unique), bi_counts = ak.GroupBy(bigint_arrays).size()
         shift_down1 = ak.cast(bi1_unique - bi, ak.int64)
         shift_down2 = ak.cast(bi2_unique - bi, ak.int64)
         # order isn't guaranteed so argsort and permute
@@ -564,7 +588,7 @@ class GroupByTest(ArkoudaTest):
         # verify we can groupby bigint with other typed arrays
         mixted_types_arrays = [[bi_a, b], [a, bi_b], [bi_b, a], [b, bi_a]]
         for arrs in mixted_types_arrays:
-            ak.GroupBy(arrs).count()
+            ak.GroupBy(arrs).size()
 
     def test_bigint_groupby_aggregations(self):
         # test equivalent to uint when max_bits=64
@@ -650,6 +674,93 @@ class GroupByTest(ArkoudaTest):
             self.assertListEqual(a, r)
         for a, r in zip(ans, res2[1].to_list()):
             self.assertListEqual(a, r)
+
+    def test_sample_hypothesis_testing(self):
+        # perform a weighted sample and use chisquare to test
+        # if the observed frequency matches the expected frequency
+
+        # I tested this many times without a set seed, but with no seed
+        # it's expected to fail one out of every ~20 runs given a pval limit of 0.05
+        rng = ak.random.default_rng(43)
+        num_samples = 10**4
+
+        prob_arr = ak.array([0.35, 0.10, 0.55])
+        weights = ak.concatenate([prob_arr, prob_arr, prob_arr])
+        keys = ak.concatenate([ak.zeros(3, int), ak.ones(3, int), ak.full(3, 2, int)])
+        values = ak.arange(9)
+
+        g = ak.GroupBy(keys)
+
+        weighted_sample = g.sample(
+            values, n=num_samples, replace=True, weights=weights, random_state=rng
+        )
+
+        # count how many of each category we saw
+        uk, f_obs = ak.GroupBy(weighted_sample).size()
+
+        # I think the keys should always be sorted but just in case
+        if not ak.is_sorted(uk):
+            f_obs = f_obs[ak.argsort(uk)]
+
+        f_exp = weights * num_samples
+
+        _, pval = akchisquare(f_obs=f_obs, f_exp=f_exp)
+
+        # if pval <= 0.05, the difference from the expected distribution is significant
+        self.assertTrue(pval > 0.05)
+
+    def test_sample_flags(self):
+        # use numpy to randomly generate a set seed
+        seed = np.random.default_rng().choice(2**63)
+        cfg = ak.get_config()
+
+        rng = ak.random.default_rng(seed)
+        weights = rng.uniform(size=12)
+        a_vals = [
+            rng.integers(0, 2**32, size=12, dtype="uint"),
+            rng.uniform(-1.0, 1.0, size=12),
+            rng.integers(0, 1, size=12, dtype="bool"),
+            rng.integers(-(2**32), 2**32, size=12, dtype="int"),
+        ]
+        grouping_keys = ak.concatenate([ak.zeros(4, int), ak.ones(4, int), ak.full(4, 2, int)])
+        rng.shuffle(grouping_keys)
+
+        choice_arrays = []
+        # return_indices and permute_samples are tested by the dataframe version
+        rng = ak.random.default_rng(seed)
+        for a in a_vals:
+            for size in 2, 4:
+                for replace in True, False:
+                    for p in [None, weights]:
+                        g = ak.GroupBy(grouping_keys)
+                        choice_arrays.append(
+                            g.sample(a, n=size, replace=replace, weights=p, random_state=rng)
+                        )
+                        choice_arrays.append(
+                            g.sample(a, frac=(size / 4), replace=replace, weights=p, random_state=rng)
+                        )
+
+        # reset generator to ensure we get the same arrays
+        rng = ak.random.default_rng(seed)
+        for a in a_vals:
+            for size in 2, 4:
+                for replace in True, False:
+                    for p in [None, weights]:
+                        previous1 = choice_arrays.pop(0)
+                        previous2 = choice_arrays.pop(0)
+                        g = ak.GroupBy(grouping_keys)
+                        current1 = g.sample(a, n=size, replace=replace, weights=p, random_state=rng)
+                        current2 = g.sample(
+                            a, frac=(size / 4), replace=replace, weights=p, random_state=rng
+                        )
+
+                        res = np.allclose(previous1.to_list(), current1.to_list()) and np.allclose(
+                            previous2.to_list(), current2.to_list()
+                        )
+                        if not res:
+                            print(f"\nnum locales: {cfg['numLocales']}")
+                            print(f"Failure with seed:\n{seed}")
+                        self.assertTrue(res)
 
     def test_nunique_ordering_bug(self):
         keys = ak.array(["1" for _ in range(8)] + ["2" for _ in range(3)])

@@ -2058,8 +2058,9 @@ int cpp_getNumRowGroups(int64_t readerIdx) {
 }
 
 void cpp_freeMapValues(void* row) {
-  auto curr = static_cast<parquet::ByteArray*>(row);
-  delete curr;
+  parquet::ByteArray* string_values =
+    static_cast<parquet::ByteArray*>(row);
+  free(string_values);
   globalColumnReaders.clear();
   globalRowGroupReaders.clear();
   globalFiles.clear();

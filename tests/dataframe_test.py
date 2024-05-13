@@ -15,6 +15,8 @@ from pandas.testing import assert_frame_equal, assert_series_equal
 from arkouda import io_util
 from arkouda.index import Index
 from arkouda.dtypes import float64 as akfloat64
+from arkouda.scipy import chisquare as akchisquare
+
 
 
 def build_ak_df():
@@ -456,38 +458,6 @@ class DataFrameTest(ArkoudaTest):
         hdf_ref = ref_df.tail(2).reset_index(drop=True)
         self.assertTrue(hdf_ref.equals(hdf.to_pandas()))
 
-    def test_groupby_standard(self):
-        df = build_ak_df()
-        gb = df.GroupBy("userName")
-        keys, count = gb.count()
-        self.assertListEqual(keys.to_list(), ["Bob", "Alice", "Carol"])
-        self.assertListEqual(count.to_list(), [2, 3, 1])
-        self.assertListEqual(gb.permutation.to_list(), [1, 4, 0, 2, 5, 3])
-
-        gb = df.GroupBy(["userName", "userID"])
-        keys, count = gb.count()
-        self.assertEqual(len(keys), 2)
-        self.assertListEqual(keys[0].to_list(), ["Bob", "Alice", "Carol"])
-        self.assertListEqual(keys[1].to_list(), [222, 111, 333])
-        self.assertListEqual(count.to_list(), [2, 3, 1])
-
-        # testing counts with IPv4 column
-        s = ak.DataFrame({"a": ak.IPv4(ak.arange(1, 5))}).groupby("a").count(as_series=True)
-        pds = pd.Series(
-            data=np.ones(4, dtype=np.int64),
-            index=pd.Index(data=np.array(["0.0.0.1", "0.0.0.2", "0.0.0.3", "0.0.0.4"], dtype="<U7")),
-        )
-        self.assertTrue(s.to_pandas().equals(other=pds))
-
-        # testing counts with Categorical column
-        s = (
-            ak.DataFrame({"a": ak.Categorical(ak.array(["a", "a", "a", "b"]))})
-            .groupby("a")
-            .count(as_series=True)
-        )
-        pds = pd.Series(data=np.array([3, 1]), index=pd.Index(data=np.array(["a", "b"], dtype="<U7")))
-        self.assertTrue(s.to_pandas().equals(other=pds))
-
     def test_gb_series(self):
         username = ak.array(["Alice", "Bob", "Alice", "Carol", "Bob", "Alice"])
         userid = ak.array([111, 222, 111, 333, 222, 111])
@@ -508,7 +478,7 @@ class DataFrameTest(ArkoudaTest):
 
         gb = df.GroupBy("userName", use_series=True)
 
-        c = gb.count(as_series=True)
+        c = gb.size(as_series=True)
         self.assertIsInstance(c, ak.Series)
         self.assertListEqual(c.index.to_list(), ["Alice", "Bob", "Carol"])
         self.assertListEqual(c.values.to_list(), [3, 2, 1])
@@ -522,20 +492,49 @@ class DataFrameTest(ArkoudaTest):
         pd_df = pd_df[cols_without_str]
 
         group_on = "userID"
-        for agg in ["sum", "first"]:
-            for col in df.columns:
-                if col == group_on:
-                    # pandas groupby doesn't return the column used to group
-                    continue
-                ak_ans = getattr(df.groupby(group_on), agg)()[col]
-                pd_ans = getattr(pd_df.groupby(group_on), agg)()[col]
-                self.assertListEqual(ak_ans.to_list(), pd_ans.to_list())
+        for agg in ["sum", "first", "count"]:
+            ak_result = getattr(df.groupby(group_on), agg)()
+            pd_result = getattr(pd_df.groupby(group_on), agg)()
+            assert_frame_equal(ak_result.to_pandas(retain_index=True), pd_result)
 
-            # pandas groupby doesn't return the column used to group
-            cols_without_group_on = list(set(df.columns) - {group_on})
-            ak_ans = getattr(df.groupby(group_on), agg)()[cols_without_group_on]
-            pd_ans = getattr(pd_df.groupby(group_on), agg)()[cols_without_group_on]
-            assert_frame_equal(pd_ans, ak_ans.to_pandas(retain_index=True))
+    def test_gb_aggregations_example_numeric_types(self):
+        df = build_ak_df_example_numeric_types()
+        pd_df = df.to_pandas()
+
+        aggs_to_test = [
+            "count",
+            "first",
+            "sum",
+        ]
+
+        group_on = "gb_id"
+        for agg in aggs_to_test:
+            ak_result = getattr(df.groupby(group_on), agg)()
+            pd_result = getattr(pd_df.groupby(group_on), agg)()
+            assert_frame_equal(ak_result.to_pandas(retain_index=True), pd_result)
+
+    def test_gb_aggregations_with_nans(self):
+        df = build_ak_df_with_nans()
+        # @TODO handle bool columns correctly
+        df.drop("bools", axis=1, inplace=True)
+        pd_df = df.to_pandas()
+
+        aggs_to_test = [
+            "count",
+            "max",
+            "mean",
+            "median",
+            "min",
+            "std",
+            "sum",
+            "var",
+        ]
+
+        group_on = ["key1", "key2"]
+        for agg in aggs_to_test:
+            ak_result = getattr(df.groupby(group_on), agg)()
+            pd_result = getattr(pd_df.groupby(group_on, as_index=False), agg)()
+            assert_frame_equal(ak_result.to_pandas(retain_index=True), pd_result)
 
     def test_gb_aggregations_return_dataframe(self):
         ak_df = build_ak_df_example2()
@@ -576,37 +575,6 @@ class DataFrameTest(ArkoudaTest):
             ak_df.groupby(["gb_id"]).sum().to_pandas(retain_index=True), pd_df.groupby(["gb_id"]).sum()
         )
         assert set(ak_df.groupby(["gb_id"]).sum().columns) == set(pd_df.groupby(["gb_id"]).sum().columns)
-
-    def test_gb_count_single(self):
-        ak_df = build_ak_df_example_numeric_types()
-        pd_df = ak_df.to_pandas(retain_index=True)
-
-        assert_frame_equal(
-            ak_df.groupby("gb_id").count(as_series=False).to_pandas(retain_index=True),
-            pd_df.groupby("gb_id")
-            .count()
-            .drop(["int64", "uint64", "bigint"], axis=1)
-            .rename(columns={"float64": "count"}, errors="raise"),
-        )
-
-        assert_frame_equal(
-            ak_df.groupby(["gb_id"]).count(as_series=False).to_pandas(retain_index=True),
-            pd_df.groupby(["gb_id"])
-            .count()
-            .drop(["int64", "uint64", "bigint"], axis=1)
-            .rename(columns={"float64": "count"}, errors="raise"),
-        )
-
-    def test_gb_count_multiple(self):
-        ak_df = build_ak_df_example2()
-        pd_df = ak_df.to_pandas(retain_index=True)
-
-        pd_result1 = (
-            pd_df.groupby(["key1", "key2"], as_index=False).count().drop(["nums", "key3"], axis=1)
-        )
-        ak_result1 = ak_df.groupby(["key1", "key2"], as_index=False).count()
-        assert_frame_equal(pd_result1, ak_result1.to_pandas(retain_index=True))
-        assert isinstance(ak_result1, ak.dataframe.DataFrame)
 
     def test_gb_size_single(self):
         ak_df = build_ak_df_example_numeric_types()
@@ -1355,6 +1323,122 @@ class DataFrameTest(ArkoudaTest):
             }
         )
 
+    def test_isna_notna(self):
+        df = ak.DataFrame(
+            {
+                "A": [np.nan, 2, 2, 3],
+                "B": [3, np.nan, 5, 0],
+                "C": [1, np.nan, 2, np.nan],
+                "D": ["a", "b", "c", ""],
+            }
+        )
+        assert_frame_equal(df.isna().to_pandas(), df.to_pandas().isna())
+        assert_frame_equal(df.notna().to_pandas(), df.to_pandas().notna())
+
+    def test_any_all(self):
+        df1 = ak.DataFrame(
+            {
+                "A": [True, True, True, True],
+                "B": [True, True, True, False],
+                "C": [True, False, True, False],
+                "D": [False, False, False, False],
+                "E": [0, 1, 2, 3],
+                "F": ["a", "b", "c", ""],
+            }
+        )
+
+        df2 = ak.DataFrame(
+            {
+                "A": [True, True, True, True],
+                "B": [True, True, True, True],
+            }
+        )
+
+        df3 = ak.DataFrame(
+            {
+                "A": [False, False],
+                "B": [False, False],
+            }
+        )
+
+        df4 = ak.DataFrame({"A": [1, 2, 3], "B": ["a", "b", "c"]})
+
+        df5 = ak.DataFrame()
+
+        for df in [df1, df2, df3, df4, df5]:
+            for axis in [0, 1, "index", "columns"]:
+                # There's a bug in assert_series_equal where two empty series will not register as equal.
+                if df.to_pandas().any(axis=axis, bool_only=True).empty:
+                    self.assertTrue(df.any(axis=axis).to_pandas().empty)
+                else:
+                    assert_series_equal(
+                        df.any(axis=axis).to_pandas(), df.to_pandas().any(axis=axis, bool_only=True)
+                    )
+                if df.to_pandas().all(axis=axis, bool_only=True).empty:
+                    self.assertTrue(df.all(axis=axis).to_pandas().empty)
+                else:
+                    assert_series_equal(
+                        df.all(axis=axis).to_pandas(), df.to_pandas().all(axis=axis, bool_only=True)
+                    )
+            # Test is axis=None
+            self.assertEqual(df.any(axis=None), df.to_pandas().any(axis=None, bool_only=True))
+            self.assertEqual(df.all(axis=None), df.to_pandas().all(axis=None, bool_only=True))
+
+    def test_dropna(self):
+        df1 = ak.DataFrame(
+            {
+                "A": [True, True, True, True],
+                "B": [1, np.nan, 2, np.nan],
+                "C": [1, 2, 3, np.nan],
+                "D": [False, False, False, False],
+                "E": [1, 2, 3, 4],
+                "F": ["a", "b", "c", "d"],
+                "G": [1, 2, 3, 4],
+            }
+        )
+
+        df2 = ak.DataFrame(
+            {
+                "A": [True, True, True, True],
+                "B": [True, True, True, True],
+            }
+        )
+
+        df3 = ak.DataFrame(
+            {
+                "A": [False, False],
+                "B": [False, False],
+            }
+        )
+
+        df4 = ak.DataFrame({"A": [1, 2, 3], "B": ["a", "b", "c"]})
+
+        df5 = ak.DataFrame()
+
+        for df in [df1, df2, df3, df4, df5]:
+            for axis in [0, 1, "index", "columns"]:
+                for how in ["any", "all"]:
+                    for ignore_index in [True, False]:
+                        assert_frame_equal(
+                            df.dropna(axis=axis, how=how, ignore_index=ignore_index).to_pandas(
+                                retain_index=True
+                            ),
+                            df.to_pandas(retain_index=True).dropna(
+                                axis=axis, how=how, ignore_index=ignore_index
+                            ),
+                        )
+
+                for thresh in [0, 1, 2, 3, 4, 5]:
+                    if df.to_pandas(retain_index=True).dropna(axis=axis, thresh=thresh).empty:
+                        self.assertTrue(
+                            df.dropna(axis=axis, thresh=thresh).to_pandas(retain_index=True).empty
+                        )
+                    else:
+                        assert_frame_equal(
+                            df.dropna(axis=axis, thresh=thresh).to_pandas(retain_index=True),
+                            df.to_pandas(retain_index=True).dropna(axis=axis, thresh=thresh),
+                        )
+
     def test_multi_col_merge(self):
         size = 1000
         seed = 1
@@ -1429,6 +1513,95 @@ class DataFrameTest(ArkoudaTest):
             df.to_pandas().to_markdown(tablefmt="grid", index=False),
         )
         self.assertEqual(df.to_markdown(tablefmt="jira"), df.to_pandas().to_markdown(tablefmt="jira"))
+
+    def test_sample_hypothesis_testing(self):
+        # perform a weighted sample and use chisquare to test
+        # if the observed frequency matches the expected frequency
+
+        # I tested this many times without a set seed, but with no seed
+        # it's expected to fail one out of every ~20 runs given a pval limit of 0.05
+        rng = ak.random.default_rng(43)
+        num_samples = 10**4
+
+        prob_arr = ak.array([0.35, 0.10, 0.55])
+        weights = ak.concatenate([prob_arr, prob_arr, prob_arr])
+        keys = ak.concatenate([ak.zeros(3, int), ak.ones(3, int), ak.full(3, 2, int)])
+        values = ak.arange(9)
+
+        akdf = ak.DataFrame({"keys": keys, "vals": values})
+
+        g = akdf.groupby("keys")
+
+        weighted_sample = g.sample(n=num_samples, replace=True, weights=weights, random_state=rng)
+
+        # count how many of each category we saw
+        uk, f_obs = ak.GroupBy(weighted_sample["vals"]).size()
+
+        # I think the keys should always be sorted but just in case
+        if not ak.is_sorted(uk):
+            f_obs = f_obs[ak.argsort(uk)]
+
+        f_exp = weights * num_samples
+        _, pval = akchisquare(f_obs=f_obs, f_exp=f_exp)
+
+        # if pval <= 0.05, the difference from the expected distribution is significant
+        self.assertTrue(pval > 0.05)
+
+    def test_sample_flags(self):
+        # use numpy to randomly generate a set seed
+        seed = np.random.default_rng().choice(2**63)
+        cfg = ak.get_config()
+
+        rng = ak.random.default_rng(seed)
+        weights = rng.uniform(size=12)
+        a_vals = [
+            rng.integers(0, 2**32, size=12, dtype="uint"),
+            rng.uniform(-1.0, 1.0, size=12),
+            rng.integers(0, 1, size=12, dtype="bool"),
+            rng.integers(-(2**32), 2**32, size=12, dtype="int"),
+        ]
+        grouping_keys = ak.concatenate([ak.zeros(4, int), ak.ones(4, int), ak.full(4, 2, int)])
+        rng.shuffle(grouping_keys)
+
+        choice_arrays = []
+        # return_indices and permute_samples are tested by the dataframe version
+        rng = ak.random.default_rng(seed)
+        for a in a_vals:
+            for size in 2, 4:
+                for replace in True, False:
+                    for p in [None, weights]:
+                        akdf = ak.DataFrame({"keys": grouping_keys, "vals": a})
+                        g = akdf.groupby("keys")
+                        choice_arrays.append(
+                            g.sample(n=size, replace=replace, weights=p, random_state=rng)
+                        )
+                        choice_arrays.append(
+                            g.sample(frac=(size / 4), replace=replace, weights=p, random_state=rng)
+                        )
+
+        # reset generator to ensure we get the same arrays
+        rng = ak.random.default_rng(seed)
+        for a in a_vals:
+            for size in 2, 4:
+                for replace in True, False:
+                    for p in [None, weights]:
+                        previous1 = choice_arrays.pop(0)
+                        previous2 = choice_arrays.pop(0)
+
+                        akdf = ak.DataFrame({"keys": grouping_keys, "vals": a})
+                        g = akdf.groupby("keys")
+                        current1 = g.sample(n=size, replace=replace, weights=p, random_state=rng)
+                        current2 = g.sample(
+                            frac=(size / 4), replace=replace, weights=p, random_state=rng
+                        )
+
+                        res = (
+                            np.allclose(previous1["vals"].to_list(), current1["vals"].to_list())
+                        ) and (np.allclose(previous2["vals"].to_list(), current2["vals"].to_list()))
+                        if not res:
+                            print(f"\nnum locales: {cfg['numLocales']}")
+                            print(f"Failure with seed:\n{seed}")
+                        self.assertTrue(res)
 
 
     def make_dfs_and_refs(self):
