@@ -1110,8 +1110,8 @@ class Series:
         axis  :  Whether or not to do a verticle (axis=0) or horizontal (axis=1) concatenation
         index_labels:  column names(s) to label the index.
         value_labels:  column names to label values of each series.
-        ordered:  If True (default), the arrays will be appended in the order given. If False, array 
-                    data may be interleaved in blocks, which can greatly improve performance but 
+        ordered:  If True (default), the arrays will be appended in the order given. If False, array
+                    data may be interleaved in blocks, which can greatly improve performance but
                     results in non-deterministic ordering of elements.
 
         Returns

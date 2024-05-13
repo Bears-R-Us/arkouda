@@ -313,7 +313,7 @@ class DataFrameGroupBy:
         |  5 |   3 |   8 |
         +----+-----+-----+
         """
-        return self.df[
+        return self.df.loc[
             self.gb.sample(
                 values=self.df.index.values,
                 n=n,
@@ -805,10 +805,11 @@ class DataFrame(UserDict):
 
             # If the index param was passed in, use that instead of
             # creating a new one.
-            if self.index is None:
-                self._set_index(arange(self._nrows))
-            else:
+            if index is not None:
                 self._set_index(index)
+            elif self.index is None:
+                self._set_index(arange(self._nrows))
+
             self.update_nrows()
 
     def __getattr__(self, key):
@@ -1338,7 +1339,8 @@ class DataFrame(UserDict):
             for k in self._columns:
                 current_col = UserDict.__getitem__(self, k)
                 default_val = np.nan if current_col.dtype == akfloat64 else 0
-                new_col = concatenate([current_col, full(len(new_keys), default_val, dtype=current_col.dtype)])
+                new_col = concatenate([current_col,
+                                       full(len(new_keys), default_val, dtype=current_col.dtype)])
                 UserDict.__setitem__(self, k, new_col)
 
             self.update_nrows()
@@ -4810,8 +4812,8 @@ class DataFrame(UserDict):
         from arkouda.util import is_numeric
 
         def is_nan_col(col: str):
-            if is_numeric(self[col]):
-                return isnan(self[col])
+            if is_numeric(self[col].values):
+                return isnan(self[col].values)
             else:
                 return full(self.shape[0], False, dtype=akbool)
 
@@ -4865,8 +4867,8 @@ class DataFrame(UserDict):
         from arkouda.util import is_numeric
 
         def not_nan_col(col: str):
-            if is_numeric(self[col]):
-                return ~isnan(self[col])
+            if is_numeric(self[col].values):
+                return ~isnan(self[col].values)
             else:
                 return full(self.shape[0], True, dtype=akbool)
 
@@ -4951,7 +4953,7 @@ class DataFrame(UserDict):
         bool_cols = [col for col in self.columns.values if self.dtypes[col] == "bool"]
         if (isinstance(axis, int) and axis == 0) or (isinstance(axis, str) and axis == "index"):
             return Series(
-                array([akany(self[col]) for col in bool_cols]),
+                array([akany(self[col].values) for col in bool_cols]),
                 index=Index(bool_cols),
             )
         elif (isinstance(axis, int) and axis == 1) or (isinstance(axis, str) and axis == "columns"):
@@ -4967,7 +4969,7 @@ class DataFrame(UserDict):
                 mask = full(self.shape[0], False, dtype=bool)
             return Series(mask, index=self.index.values[:])
         elif axis is None:
-            return any([akany(self[col]) for col in bool_cols])
+            return any([akany(self[col].values) for col in bool_cols])
         else:
             raise ValueError("axis must have value 0, 1, 'index', 'columns', or None.")
 
@@ -5048,7 +5050,7 @@ class DataFrame(UserDict):
         bool_cols = [col for col in self.columns.values if self.dtypes[col] == "bool"]
         if (isinstance(axis, int) and axis == 0) or (isinstance(axis, str) and axis == "index"):
             return Series(
-                array([akall(self[col]) for col in bool_cols]),
+                array([akall(self[col].values) for col in bool_cols]),
                 index=Index(bool_cols),
             )
         elif (isinstance(axis, int) and axis == 1) or (isinstance(axis, str) and axis == "columns"):
@@ -5065,7 +5067,7 @@ class DataFrame(UserDict):
 
             return Series(mask, index=self.index.values[:])
         elif axis is None:
-            return all([akall(self[col]) for col in bool_cols])
+            return all([akall(self[col].values) for col in bool_cols])
         else:
             raise ValueError("axis must have value 0, 1, 'index', 'columns', or None.")
 
@@ -5229,7 +5231,7 @@ class DataFrame(UserDict):
                 if isinstance(mask, Series):
                     for col, truth in zip(mask.index.values.to_list(), mask.values.to_list()):
                         if truth is True:
-                            result[col] = self[col][:]
+                            result[col] = self[col].values[:]
 
         if ignore_index is True and result.empty is False:
             result = result.reset_index()
@@ -5666,7 +5668,7 @@ class _LocIndexer:
         if is_supported_scalar(val):
             return self._set_row_col_scalar_val(row_key, col_key, val)
         else:
-            assert(isinstance(val, (pdarray, Series, Strings, SegArray))), "Invalid value type"
+            assert (isinstance(val, (pdarray, Series, Strings, SegArray))), "Invalid value type"
             return self._set_row_col_vector_val(row_key, col_key, val)
 
     def _set_row_col_scalar_val(self, row_key, col_key, val):
