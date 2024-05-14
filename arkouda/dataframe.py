@@ -981,7 +981,7 @@ class DataFrame(UserDict):
             self._columns.append(key)
             self._empty = False
             if is_supported_scalar(value):
-                value = full(1, value)
+                value = full(1, value, resolve_scalar_dtype(value))
             UserDict.__setitem__(self, key, value)
             self._set_index(Index(arange(len(value))))
             self.update_nrows()
