@@ -71,8 +71,8 @@ Running your benchmark
 ======================
 
 To ensure your benchmark is working, you can run it by running the command from your root directory:
-``./benchmarks/run_benchmarks.py myMethod.py``
-where "myMethod.py" is replaced with your filename.
+``./benchmarks/run_benchmarks.py myMethod``
+where "myMethod" is replaced with your filename.
 
 Once everything is working here, correctness testing and numpy testing should be added to your benchmark in the following manner:
 
