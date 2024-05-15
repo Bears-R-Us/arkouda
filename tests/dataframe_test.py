@@ -1878,6 +1878,16 @@ class DataFrameTest(ArkoudaTest):
         _df[_df['ints'] == 3][['ints','floats']] = _df2[0:2][['ints','floats']]
         df[df['ints'] == 3][['ints','floats']] = df2[0:2][['ints','floats']]
         assert_frame_equal(_df, df.to_pandas())
+        
+        _df3 = pd.DataFrame({"ints": np.array(ints), "floats":np.array(floats)})    
+        df3 = ak.DataFrame({"ints": ak.array(ints), "floats":ak.array(floats)})
+        _df4 = pd.DataFrame({"ints": np.array(ints2), "floats":np.array(floats2)})    
+        df4 = ak.DataFrame({"ints": ak.array(ints2), "floats":ak.array(floats2)})
+        # boolean mask, assignment of dataframe
+        _df3[[True, True, False, False, False]] = _df4[0:2]
+        df3[[True, True, False, False, False]] = df4[0:2]
+        assert_frame_equal(_df3, df3.to_pandas())
+
 
     def test_loc_get(self):
         (df1,_df1,df2,_df2,df3,_df3) = self.make_dfs_and_refs()

@@ -21,7 +21,7 @@ from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import uint64 as akuint64
-from arkouda.dtypes import dtype
+from arkouda.dtypes import dtype, resolve_scalar_dtype
 from arkouda.groupbyclass import GROUPBY_REDUCTION_TYPES
 from arkouda.groupbyclass import GroupBy as akGroupBy
 from arkouda.groupbyclass import unique
@@ -31,6 +31,7 @@ from arkouda.numeric import cast as akcast
 from arkouda.numeric import cumsum, where
 from arkouda.pdarrayclass import RegistrationError, pdarray
 from arkouda.pdarrayclass import any as akany
+from arkouda.pdarrayclass import sum as aksum
 from arkouda.pdarraycreation import arange, array, create_pdarray, full, zeros
 from arkouda.pdarraysetops import concatenate, in1d, intersect1d, indexof1d
 from arkouda.row import Row
@@ -39,6 +40,7 @@ from arkouda.series import Series, is_supported_scalar
 from arkouda.sorting import argsort, coargsort
 from arkouda.strings import Strings
 from arkouda.timeclass import Datetime, Timedelta
+from arkouda.alignment import find as akfind
 
 # This is necessary for displaying DataFrames with BitVector columns,
 # because pandas _html_repr automatically truncates the number of displayed bits
@@ -835,6 +837,8 @@ class DataFrame(UserDict):
         self.update_nrows()
 
     def validate_key(self, key):
+        if key is None:
+            raise ValueError("Key cannot be None")
         if isinstance(key, Series):
             # TODO: check index alignment
             return self.validate_key(key.values)
@@ -847,10 +851,11 @@ class DataFrame(UserDict):
             if key.stop is not None and key.stop > len(self):
                 raise ValueError("Slice stop index out of range")
             return key
-
+        
         if is_supported_scalar(key):
-            if len(self._columns) != 0 and dtype(type(key)) != dtype(type(self._columns[0])):
-                raise TypeError(f"Expected key of type {type(self._columns[0])}, received {type(key)}")
+            # Extra None check for empty DataFrames
+            if self.column_label_type() != resolve_scalar_dtype(key) and self.column_label_type() is not None:
+                raise TypeError(f"Expected key of type {self.column_label_type()}, received {type(key)}")
             return key
 
         if isinstance(key, pdarray) and key.dtype == akbool:
@@ -860,7 +865,7 @@ class DataFrame(UserDict):
 
         if isinstance(key, (pdarray, Strings, Categorical, SegArray)):
             k = key[0]
-            if len(self.columns) != 0 and dtype(type(k)) != dtype(type(self.columns[0])):
+            if len(self.columns) != 0 and resolve_scalar_dtype(k) != self.column_label_type():
                 raise TypeError(
                     "Expected key of type {}, received {}".format(type(self.columns[0]), type(k)))
             return key
@@ -869,9 +874,9 @@ class DataFrame(UserDict):
 
     def column_label_type(self):
         if len(self._columns) != 0:
-            return type(self._columns[0])
+            return resolve_scalar_dtype(self._columns[0])
         else:
-            return type(None)
+            return None
 
     def __getitem__(self, key):
         """
@@ -919,9 +924,7 @@ class DataFrame(UserDict):
 
         # slice
         if isinstance(key, slice):
-            start_index = key.start if key.start is not None else 0
-            stop_index = key.stop if key.stop is not None else len(self.index)
-            return self._get_rows(arange(start_index, stop_index, 1))
+            return self._get_rows(key)
 
         if isinstance(key, (pdarray, Strings)):
             for k in key.to_ndarray():
@@ -986,11 +989,13 @@ class DataFrame(UserDict):
             self._set_index(Index(arange(len(value))))
             self.update_nrows()
             return
+
         # Update or insert a single column into the dataframe
-        if isinstance(key, self.column_label_type()):
+        if resolve_scalar_dtype(key) == self.column_label_type():
             if is_supported_scalar(value):
-                value = full(len(self), value, dtype=dtype(type(value)))
-            if isinstance(value, pdarray) and len(value) != len(self):
+                value = full(len(self), value, resolve_scalar_dtype(value))
+            assert isinstance(value, (pdarray, Strings, Categorical, SegArray))
+            if len(value) != len(self):
                 raise ValueError("Column length must match DataFrame length")
 
             # Set a single column in the dataframe using a scalar value
@@ -1001,25 +1006,27 @@ class DataFrame(UserDict):
             UserDict.__setitem__(self, key, value)
             return
 
-        if isinstance(key, pdarray) and key.dtype == akbool:
-            # TODO: validate length and width of value matches number of entries needed
+        # Boolean mask
+        elif isinstance(key, pdarray) and key.dtype == akbool:
             if not isinstance(value, DataFrame):
                 raise ValueError("Expected DataFrame type for boolean mask assignment")
-            if len(intersect1d(self.columns, value.columns)) != 0:
+            shared_columns = intersect1d(array(self.columns.values), array(value.columns.values))
+            if len(shared_columns) != len(self.columns) or len(shared_columns) != len(value.columns):
                 raise ValueError("Right-hand side columns do not match left-hand side columns")
-            g = akGroupBy(key)
-            keys, counts = g.count()
-            # True is the second option
-            mask_size = (counts[-1]
-                         if len(counts) == 2 or (len(counts) == 1 and counts[0] is True) else 0)
-            if len(value) != mask_size:
+            if len(value) != aksum(key):
                 raise IndexError("Boolean mask length must match DataFrame length")
+            for k in self.columns:
+                self[k].values[key] = value[k].values
+            return
 
+        # Index lists
         if isinstance(key, (pdarray, Strings)):
             if isinstance(value, DataFrame):
                 if not len(key) == len(value.columns):
                     raise ValueError(
                         f"Number of keys and values must match: {len(key)} != {len(value.columns)}")
+            else:
+                raise ValueError("When setting multiple columns, value must be a DataFrame")
 
             for (k, valueColumn) in zip(key.to_ndarray(), value.columns):
                 v = value[valueColumn].values
@@ -1030,7 +1037,7 @@ class DataFrame(UserDict):
                     self._columns.append(k)
                 UserDict.__setitem__(self, k, v)
             return
-
+    
         raise TypeError("Setting on dataframe with unexpected type: {}".format(type(key)))
 
     @property
@@ -3981,7 +3988,7 @@ class DataFrame(UserDict):
             i = self.coargsort(by, ascending=ascending)
         else:
             raise TypeError("Column name(s) must be str or list/tuple of str")
-        return self._get_rows(i)
+        return self.iloc[i]
 
     def apply_permutation(self, perm):
         """
@@ -5627,9 +5634,9 @@ class _LocIndexer:
             return self.df._get_rows(indexof1d(key, self.df.index.values))
 
         if isinstance(key, slice):
-            if key.start is not None and not akany(in1d(array([key.start]), self.df.index.values)):
+            if key.start is not None and akfind(array([key.start]), self.df.index.values) == -1:
                 raise KeyError(f"Index {key.start} not found in DataFrame index")
-            if key.stop is not None and not akany(in1d(array([key.stop]), self.df.index.values)):
+            if key.stop is not None and akfind(array([key.stop]), self.df.index.values) == -1:
                 raise KeyError(f"Index {key.stop} not found in DataFrame index")
 
             start_idx = (indexof1d(array([key.start]), self.df.index.values)[0]
@@ -5675,7 +5682,7 @@ class _LocIndexer:
         if is_supported_scalar(row_key):
             if not self.df.index.dtype == dtype(type(row_key)):
                 raise TypeError("Row key must be of the same type as the DataFrame index")
-            if akany(in1d(array([row_key]), self.df.index.values, invert=True)):
+            if akfind(array([row_key]), self.df.index.values) == -1:
                 self.df._add_new_rows(row_key)
             # updating a single row
             row_idx = indexof1d(array([row_key]), self.df.index.values)
@@ -5694,16 +5701,16 @@ class _LocIndexer:
         if isinstance(row_key, pdarray) and row_key.dtype == akbool:
             self.df.data[col_key][row_key] = val
         if isinstance(row_key, slice):
-            if row_key.start is not None and not (in1d(array([row_key.start]), self.df.index.values)):
-                raise ValueError(f"Index {row_key.start} not found in DataFrame index")
-            if row_key.stop is not None and not akany(in1d(array([row_key.stop]), self.df.index.values)):
-                raise ValueError(f"Index {row_key.stop} not found in DataFrame index")
+            if row_key.start is not None and akfind(array([row_key.start]), self.df.index.values) == -1:
+                raise KeyError(f"Index {row_key.start} not found in DataFrame index")
+            if row_key.stop is not None and akfind(array([row_key.stop]), self.df.index.values) == -1:
+                raise KeyError(f"Index {row_key.stop} not found in DataFrame index")
 
-            start_idx = (indexof1d(array([row_key.start]), self.df.index.values)[0]
+            start_idx = (akfind(array([row_key.start]), self.df.index.values)[0]
                          if row_key.start is not None else 0)
-            stop_idx = (indexof1d(array([row_key.stop]), self.df.index.values)[0] + 1
+            stop_idx = (akfind(array([row_key.stop]), self.df.index.values)[0] + 1
                         if row_key.stop is not None else self.df.index.size)
-
+            print("start and stop: ", start_idx, stop_idx)
             indices = arange(start_idx, stop_idx)
             self.df.data[col_key][indices] = val
         return None
@@ -5720,9 +5727,9 @@ class _LocIndexer:
             row_idx = indexof1d(row_key, self.df.index.values)
             self.df.data[col_key][row_idx] = val
         if isinstance(row_key, slice):
-            if row_key.start is not None and not (in1d(array([row_key.start]), self.df.index.values)):
+            if row_key.start is not None and akfind(array([row_key.start]), self.df.index.values) == -1:
                 raise ValueError(f"Index {row_key.start} not found in DataFrame index")
-            if row_key.stop is not None and not akany(in1d(array([row_key.stop]), self.df.index.values)):
+            if row_key.stop is not None and akfind(array([row_key.stop]), self.df.index.values) == -1:
                 raise ValueError(f"Index {row_key.stop} not found in DataFrame index")
 
             start_idx = (indexof1d(array([row_key.start]), self.df.index.values)[0]
