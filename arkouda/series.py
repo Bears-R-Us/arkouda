@@ -265,13 +265,14 @@ class Series:
         elif isinstance(key, slice):
             start = key.start if key.start is not None else 0
             stop = key.stop if key.stop is not None else self.size
+            stride = key.step if key.step is not None else 1
             if start < 0:
                 raise IndexError("Slice start must be non-negative")
             if stop > self.size:
                 raise IndexError("Slice stop must be less than or equal to the size of the Series")
             if start > stop:
                 raise IndexError("Slice start must be less than or equal to the stop")
-            key = arange(start, stop)
+            key = arange(start, stop, stride)
         else:
             raise TypeError(
                 "Series [] only supports indexing by scalars, lists of scalars, "
@@ -1634,13 +1635,14 @@ class _iLocIndexer:
         elif isinstance(key, slice):
             start = key.start if key.start is not None else 0
             stop = key.stop if key.stop is not None else self.series.size
+            stride = key.step if key.step is not None else 1
             if start < 0:
                 raise IndexError("Slice start must be non-negative")
             if stop > self.series.size:
                 raise IndexError("Slice stop must be less than or equal to the size of the Series")
             if start > stop:
                 raise IndexError("Slice start must be less than or equal to the stop")
-            key = arange(start, stop)
+            key = arange(start, stop, stride)
         else:
             raise TypeError(".{} requires integer keys".format(self.name))
 

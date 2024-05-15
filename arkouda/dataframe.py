@@ -851,10 +851,12 @@ class DataFrame(UserDict):
             if key.stop is not None and key.stop > len(self):
                 raise ValueError("Slice stop index out of range")
             return key
-        
+
         if is_supported_scalar(key):
-            # Extra None check for empty DataFrames
-            if self.column_label_type() != resolve_scalar_dtype(key) and self.column_label_type() is not None:
+            if len(self.columns) == 0:
+                # Empty DataFrame, scalar key is valid
+                return key
+            if self.column_label_type() != resolve_scalar_dtype(key):
                 raise TypeError(f"Expected key of type {self.column_label_type()}, received {type(key)}")
             return key
 
@@ -1037,7 +1039,7 @@ class DataFrame(UserDict):
                     self._columns.append(k)
                 UserDict.__setitem__(self, k, v)
             return
-    
+
         raise TypeError("Setting on dataframe with unexpected type: {}".format(type(key)))
 
     @property
