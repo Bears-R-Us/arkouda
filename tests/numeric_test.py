@@ -1,4 +1,5 @@
 import numpy as np
+from math import isclose
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
@@ -1424,6 +1425,60 @@ class NumericTest(ArkoudaTest):
         _, floatmean = g.mean(floatval)
         ak_mse = ak.mean((intmean - floatmean) ** 2)
         self.assertTrue(np.isclose(ak_mse, 0.0))
+
+    def test_median(self):
+
+        # ints
+
+        sample_e = np.random.permutation(120)
+        pda_e = ak.array(sample_e)
+        assert isclose(np.median(sample_e), ak.median(pda_e))
+
+        sample_o = np.random.permutation(121)
+        pda_o = ak.array(sample_o)
+        assert isclose(np.median(sample_o), ak.median(pda_o))
+
+        # floats
+
+        sample_e = np.random.permutation(120).astype(np.float64)
+        pda_e = ak.array(sample_e)
+        assert isclose(np.median(sample_e), ak.median(pda_e))
+
+        sample_o = np.random.permutation(121).astype(np.float64)
+        pda_o = ak.array(sample_o)
+        assert isclose(np.median(sample_o), ak.median(pda_o))
+
+    # count_nonzero can operate on numerics, bools, or strings.
+    # counts are ints, so the test is based on np result == ak result,
+    # rather than isclose.
+
+    def test_count_nonzero(self):
+
+        # ints
+
+        sample = np.random.randint(20, size=120)
+        pda = ak.array(sample)
+        assert np.count_nonzero(sample) == ak.count_nonzero(pda)
+
+        # floats
+
+        sample = np.random.randint(20, size=120).astype(np.float64)
+        pda = ak.array(sample)
+        assert np.count_nonzero(sample) == ak.count_nonzero(pda)
+
+        # bool
+
+        sample = np.random.randint(2, size=120).astype(bool)
+        pda = ak.array(sample)
+        assert np.count_nonzero(sample) == ak.count_nonzero(pda)
+
+        # string
+
+        sample = sample.astype(str)
+        for i in range(10):
+            sample[np.random.randint(120)] = ""  # empty some strings at random
+        pda = ak.array(sample)
+        assert np.count_nonzero(sample) == ak.count_nonzero(pda)
 
     # test clip on ints, floats, and mash-ups; note if any input is float, output is float
 
