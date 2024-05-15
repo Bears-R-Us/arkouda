@@ -242,6 +242,14 @@ class TestGroupBy:
                 == ak.broadcast(compressed_segs, compressed_vals, size, perm).to_list()
             )
 
+    def test_nan_broadcast(self):
+        # verify the reproducer from issue #3001 gives correct answer
+        # test with int and bool vals
+        res = ak.broadcast(
+            ak.array([0, 2, 4]), ak.array([np.nan, 5.0, 25.0]), permutation=ak.array([0, 1, 2, 3, 4])
+        )
+        assert np.allclose(res.to_ndarray(), np.array([np.nan, np.nan, 5.0, 5.0, 25.0]), equal_nan=True)
+
     def test_count(self):
         keys, counts = self.igb.size()
 
