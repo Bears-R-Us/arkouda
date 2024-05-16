@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import builtins
 import json
 from typing import TYPE_CHECKING, Sequence, Tuple, Union, cast
@@ -421,7 +423,7 @@ def convert_bytes(nbytes, unit="B"):
         return nbytes / gb
 
 
-def is_numeric(arry: Union[pdarray, Strings, Categorical]) -> builtins.bool:
+def is_numeric(arry: Union[pdarray, Strings, Categorical]) -> builtins.bool:  # noqa: F821
     """
     Check if the dtype of the given array is numeric.
 
@@ -452,7 +454,7 @@ def is_numeric(arry: Union[pdarray, Strings, Categorical]) -> builtins.bool:
         return False
 
 
-def is_float(arry: Union[pdarray, Strings, Categorical]):
+def is_float(arry: Union[pdarray, Strings, Categorical]):  # noqa: F821
     """
     Check if the dtype of the given array is float.
 
@@ -483,7 +485,7 @@ def is_float(arry: Union[pdarray, Strings, Categorical]):
         return False
 
 
-def is_int(arry: Union[pdarray, Strings, Categorical]):
+def is_int(arry: Union[pdarray, Strings, Categorical]):  # noqa: F821
     """
     Check if the dtype of the given array is int.
 
@@ -566,7 +568,9 @@ def map(
     gb_keys = gb.unique_keys
 
     if isinstance(mapping, dict):
-        mapping = Series([array(list(mapping.keys())), array(list(mapping.values()))])
+        mapping = Series(
+            [array(list(mapping.keys())), array(list(mapping.values()))]  # type: ignore [assignment]
+        )
 
     if isinstance(mapping, Series):
         xtra_keys = gb_keys[in1d(gb_keys, mapping.index.values, invert=True)]
