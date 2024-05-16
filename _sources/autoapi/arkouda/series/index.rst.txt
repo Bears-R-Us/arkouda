@@ -27,7 +27,7 @@ Classes
                  optional
    :type index: pdarray, Strings
    :param data: a 1D array. Must not be None.
-   :type data: Tuple, List, groupable_element_type
+   :type data: Tuple, List, groupable_element_type, Series, SegArray
 
    :raises TypeError: Raised if index is not a pdarray or Strings object
        Raised if data is not a pdarray, Strings, or Categorical object
@@ -55,6 +55,9 @@ Classes
       :param key: The key or container of keys to access entries for
       :type key: pdarray, Strings, Series, list, supported_scalars
 
+   .. py:property:: dtype
+
+
    .. py:property:: iat
       :type: Series
 
@@ -79,6 +82,9 @@ Classes
       :param key: The key or container of keys to access entries for
       :type key: pdarray, Strings, Series, list, supported_scalars
 
+   .. py:property:: ndim
+
+
    .. py:property:: shape
 
 
@@ -102,7 +108,7 @@ Classes
       :type nkeys: number of keys, if a multi-index was registerd
 
 
-   .. py:method:: concat(arrays: List, axis: int = 0, index_labels: Union[List[str], None] = None, value_labels: Union[List[str], None] = None) -> Union[arkouda.dataframe.DataFrame, Series]
+   .. py:method:: concat(arrays: List, axis: int = 0, index_labels: Union[List[str], None] = None, value_labels: Union[List[str], None] = None, ordered=False) -> Union[arkouda.dataframe.DataFrame, Series]
 
       Concatenate in arkouda a list of arkouda Series or grouped arkouda arrays horizontally or
               vertically. If a list of grouped arkouda arrays is passed they are converted to a series. Each
@@ -117,6 +123,9 @@ Classes
               axis  :  Whether or not to do a verticle (axis=0) or horizontal (axis=1) concatenation
               index_labels:  column names(s) to label the index.
               value_labels:  column names to label values of each series.
+              ordered:  If True (default), the arrays will be appended in the order given. If False, array
+                          data may be interleaved in blocks, which can greatly improve performance but
+                          results in non-deterministic ordering of elements.
 
               Returns
               -------
@@ -769,6 +778,9 @@ Classes
       +----+----------+
 
 
+   .. py:method:: to_ndarray()
+
+
    .. py:method:: to_pandas() -> pd.Series
 
       Convert the series to a local PANDAS series
@@ -806,7 +818,7 @@ Classes
       they are unregistered.
 
 
-   .. py:method:: validate_key(key: Union[Series, pdarray, Strings, Categorical, List, supported_scalars]) -> Union[pdarray, Strings, Categorical, supported_scalars]
+   .. py:method:: validate_key(key: Union[Series, pdarray, Strings, Categorical, List, supported_scalars, SegArray]) -> Union[pdarray, Strings, Categorical, supported_scalars, SegArray]
 
       Validates type requirements for keys when reading or writing the Series.
       Also converts list and tuple arguments into pdarrays.

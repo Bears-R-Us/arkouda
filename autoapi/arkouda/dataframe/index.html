@@ -406,8 +406,8 @@
 <li><p><strong>initialdata</strong> (<em>List</em><em> or </em><em>dictionary</em><em> of </em><em>lists</em><em>, </em><em>tuples</em><em>, or </em><em>pdarrays</em>) – Each list/dictionary entry corresponds to one column of the data and
 should be a homogenous type. Different columns may have different
 types. If using a dictionary, keys should be strings.</p></li>
-<li><p><strong>index</strong> (<a class="reference internal" href="../../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><em>Strings</em></a>) – Index for the resulting frame. Defaults to an integer range.</p></li>
-<li><p><strong>columns</strong> (<em>List</em><em>, </em><em>tuple</em><em>, </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><em>Strings</em></a>) – Column labels to use if the data does not include them. Elements must
+<li><p><strong>index</strong> (<a class="reference internal" href="../../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../index.html#id669" title="arkouda.Strings"><em>Strings</em></a>) – Index for the resulting frame. Defaults to an integer range.</p></li>
+<li><p><strong>columns</strong> (<em>List</em><em>, </em><em>tuple</em><em>, </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../index.html#id669" title="arkouda.Strings"><em>Strings</em></a>) – Column labels to use if the data does not include them. Elements must
 be strings. Defaults to an stringified integer range.</p></li>
 </ul>
 </dd>
@@ -712,6 +712,21 @@ be strings. Defaults to an stringified integer range.</p></li>
 </table>
 </div>
 <dl class="py property">
+<dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.at">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">at</span></span><a class="headerlink" href="#arkouda.dataframe.DataFrame.at" title="Link to this definition">¶</a></dt>
+<dd><p>Access a single value for a row/column by label. Similar to <cite>.loc</cite>.
+Use only if you need to get or set a single value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>KeyError</strong> – Raised if a label is not present in the DataFrame.</p></li>
+<li><p><strong>TypeError</strong> – Raised if the key or value types are not supported.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.columns">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">columns</span></span><a class="headerlink" href="#arkouda.dataframe.DataFrame.columns" title="Link to this definition">¶</a></dt>
 <dd><p>An Index where the values are the column names of the dataframe.</p>
@@ -842,6 +857,42 @@ be strings. Defaults to an stringified integer range.</p></li>
 </dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.iat">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">iat</span></span><a class="headerlink" href="#arkouda.dataframe.DataFrame.iat" title="Link to this definition">¶</a></dt>
+<dd><p>Access a single value for a row/column pair by integer position.
+Similar to <cite>.iloc</cite>. Use only if you need to get or set a single value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>IndexError</strong> – Raised if an index is out of range.</p></li>
+<li><p><strong>TypeError</strong> – Raised if the key or value types are not supported.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.iloc">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">iloc</span></span><a class="headerlink" href="#arkouda.dataframe.DataFrame.iloc" title="Link to this definition">¶</a></dt>
+<dd><p>Position-based row indexing. Supports getting and setting. If there
+is a single indexing argument, it is interpreted as a row selector.
+If there are two, the first is interpreted as a row selector and the
+second as a column selector. Selectors can be scalar integer values;
+lists, pdarrays, or slices of integer values; boolean masks as pdarrays;
+or integer Series. Setting values with .iloc requires both the row and
+column selectors to be present.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if the keys or value types are not supported.</p></li>
+<li><p><strong>IndexError</strong> – Raised if an index is out of range.</p></li>
+<li><p><strong>ValueError</strong> – Raised if a boolean mask is of the wrong length.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.index">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">index</span></span><a class="headerlink" href="#arkouda.dataframe.DataFrame.index" title="Link to this definition">¶</a></dt>
 <dd><p>The index of the dataframe.</p>
@@ -929,6 +980,26 @@ be strings. Defaults to an stringified integer range.</p></li>
 <span class="go">&quot;DataFrame([&#39;col1&#39;, &#39;col2&#39;], 2 rows, 20 B)&quot;</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.loc">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">loc</span></span><a class="headerlink" href="#arkouda.dataframe.DataFrame.loc" title="Link to this definition">¶</a></dt>
+<dd><p>Label-based row indexing. Supports getting and setting. If there is
+a single indexing argument, it is interpreted as a row selector. If
+there are two, the first is interpreted as a row selector and the
+second as a column selector. Selectors can be scalar label values;
+lists, pdarrays, or slices of label values; boolean masks as pdarrays;
+or Series. Setting values with .loc requires both the row and column
+selectors to be present.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>KeyError</strong> – Raised if a label is not present in the DataFrame.</p></li>
+<li><p><strong>TypeError</strong> – Raised if the key or value types are not supported.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
@@ -1615,7 +1686,7 @@ arkouda server which was registered using register().</p>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame">arkouda.dataframe.DataFrame</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../index.html#id452" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if user_defined_name is not registered</p>
+<dd class="field-even"><p><a class="reference internal" href="../index.html#id461" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if user_defined_name is not registered</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1689,6 +1760,17 @@ arkouda server which was registered using register().</p>
 <span class="gp">&gt;&gt;&gt;</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.column_label_type">
+<span class="sig-name descname"><span class="pre">column_label_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/dataframe.html#DataFrame.column_label_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.dataframe.DataFrame.column_label_type" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.column_labels">
+<span class="sig-name descname"><span class="pre">column_labels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/dataframe.html#DataFrame.column_labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.dataframe.DataFrame.column_labels" title="Link to this definition">¶</a></dt>
+<dd><p>Return the column labels.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2777,7 +2859,7 @@ appending rows.</p>
 <dd class="field-even"><p>bool</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id452" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mismatch of registered components.</p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id461" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mismatch of registered components.</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -3748,7 +3830,7 @@ Please note you cannot register two different DataFrames with the same name.</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str.</p></li>
-<li><p><a class="reference internal" href="../index.html#id452" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the DataFrame with the user_defined_name.</p></li>
+<li><p><a class="reference internal" href="../index.html#id461" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the DataFrame with the user_defined_name.</p></li>
 </ul>
 </dd>
 </dl>
@@ -4195,6 +4277,11 @@ locale number.</p>
 </table>
 </div>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.set_row">
+<span class="sig-name descname"><span class="pre">set_row</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/dataframe.html#DataFrame.set_row"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.dataframe.DataFrame.set_row" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.sort_index">
@@ -4912,7 +4999,7 @@ a supported dtype</p></li>
 registered using register() and/or attached to using attach().</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id452" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id461" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
 when attempting to unregister.</p>
 </dd>
 </dl>
@@ -4948,7 +5035,7 @@ with the arkouda server via register().</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – If user_defined_name is not a string.</p></li>
-<li><p><a class="reference internal" href="../index.html#id452" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If there is an issue attempting to unregister any underlying components.</p></li>
+<li><p><a class="reference internal" href="../index.html#id461" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If there is an issue attempting to unregister any underlying components.</p></li>
 </ul>
 </dd>
 </dl>
@@ -5068,6 +5155,16 @@ file sizes to expand.</p></li>
 <span class="sig-name descname"><span class="pre">update_nrows</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/dataframe.html#DataFrame.update_nrows"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.dataframe.DataFrame.update_nrows" title="Link to this definition">¶</a></dt>
 <dd><p>Computes the number of rows on the arkouda server and updates the size parameter.</p>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.validate_key">
+<span class="sig-name descname"><span class="pre">validate_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/dataframe.html#DataFrame.validate_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.dataframe.DataFrame.validate_key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.validate_value">
+<span class="sig-name descname"><span class="pre">validate_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/dataframe.html#DataFrame.validate_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.dataframe.DataFrame.validate_value" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -5884,8 +5981,8 @@ that the caller gets the indices of values present in both arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – An array of strings.</p></li>
-<li><p><strong>b</strong> (<a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – An array of strings.</p></li>
+<li><p><strong>a</strong> (<a class="reference internal" href="../index.html#id669" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – An array of strings.</p></li>
+<li><p><strong>b</strong> (<a class="reference internal" href="../index.html#id669" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – An array of strings.</p></li>
 <li><p><strong>positions</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Return tuple of boolean pdarrays that indicate positions in <cite>a</cite> and <cite>b</cite>
 of the intersection values.</p></li>
 <li><p><strong>unique</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If the number of distinct values in <cite>a</cite> (and <cite>b</cite>) is equal to the size of
@@ -6412,11 +6509,15 @@ Otherwise, the DataFrame is not sorted.</p></li>
 <li><a class="reference internal" href="#classes">Classes</a></li>
 <li><a class="reference internal" href="#functions">Functions</a><ul>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame"><code class="docutils literal notranslate"><span class="pre">DataFrame</span></code></a><ul>
+<li><a class="reference internal" href="#arkouda.dataframe.DataFrame.at"><code class="docutils literal notranslate"><span class="pre">DataFrame.at</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.columns"><code class="docutils literal notranslate"><span class="pre">DataFrame.columns</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.dtypes"><code class="docutils literal notranslate"><span class="pre">DataFrame.dtypes</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.empty"><code class="docutils literal notranslate"><span class="pre">DataFrame.empty</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.dataframe.DataFrame.iat"><code class="docutils literal notranslate"><span class="pre">DataFrame.iat</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.dataframe.DataFrame.iloc"><code class="docutils literal notranslate"><span class="pre">DataFrame.iloc</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.index"><code class="docutils literal notranslate"><span class="pre">DataFrame.index</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.info"><code class="docutils literal notranslate"><span class="pre">DataFrame.info</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.dataframe.DataFrame.loc"><code class="docutils literal notranslate"><span class="pre">DataFrame.loc</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.shape"><code class="docutils literal notranslate"><span class="pre">DataFrame.shape</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.size"><code class="docutils literal notranslate"><span class="pre">DataFrame.size</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.GroupBy"><code class="docutils literal notranslate"><span class="pre">DataFrame.GroupBy()</span></code></a></li>
@@ -6427,6 +6528,8 @@ Otherwise, the DataFrame is not sorted.</p></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.argsort"><code class="docutils literal notranslate"><span class="pre">DataFrame.argsort()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.attach"><code class="docutils literal notranslate"><span class="pre">DataFrame.attach()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.coargsort"><code class="docutils literal notranslate"><span class="pre">DataFrame.coargsort()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.dataframe.DataFrame.column_label_type"><code class="docutils literal notranslate"><span class="pre">DataFrame.column_label_type()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.dataframe.DataFrame.column_labels"><code class="docutils literal notranslate"><span class="pre">DataFrame.column_labels()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.concat"><code class="docutils literal notranslate"><span class="pre">DataFrame.concat()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.corr"><code class="docutils literal notranslate"><span class="pre">DataFrame.corr()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.count"><code class="docutils literal notranslate"><span class="pre">DataFrame.count()</span></code></a></li>
@@ -6453,6 +6556,7 @@ Otherwise, the DataFrame is not sorted.</p></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.reset_index"><code class="docutils literal notranslate"><span class="pre">DataFrame.reset_index()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.sample"><code class="docutils literal notranslate"><span class="pre">DataFrame.sample()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.save"><code class="docutils literal notranslate"><span class="pre">DataFrame.save()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.dataframe.DataFrame.set_row"><code class="docutils literal notranslate"><span class="pre">DataFrame.set_row()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.sort_index"><code class="docutils literal notranslate"><span class="pre">DataFrame.sort_index()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.sort_values"><code class="docutils literal notranslate"><span class="pre">DataFrame.sort_values()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.tail"><code class="docutils literal notranslate"><span class="pre">DataFrame.tail()</span></code></a></li>
@@ -6466,6 +6570,8 @@ Otherwise, the DataFrame is not sorted.</p></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.unregister_dataframe_by_name"><code class="docutils literal notranslate"><span class="pre">DataFrame.unregister_dataframe_by_name()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.update_hdf"><code class="docutils literal notranslate"><span class="pre">DataFrame.update_hdf()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.update_nrows"><code class="docutils literal notranslate"><span class="pre">DataFrame.update_nrows()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.dataframe.DataFrame.validate_key"><code class="docutils literal notranslate"><span class="pre">DataFrame.validate_key()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.dataframe.DataFrame.validate_value"><code class="docutils literal notranslate"><span class="pre">DataFrame.validate_value()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrameGroupBy"><code class="docutils literal notranslate"><span class="pre">DataFrameGroupBy</span></code></a><ul>
