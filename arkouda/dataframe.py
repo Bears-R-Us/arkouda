@@ -5712,7 +5712,6 @@ class _LocIndexer:
                          if row_key.start is not None else 0)
             stop_idx = (akfind(array([row_key.stop]), self.df.index.values)[0] + 1
                         if row_key.stop is not None else self.df.index.size)
-            print("start and stop: ", start_idx, stop_idx)
             indices = arange(start_idx, stop_idx)
             self.df.data[col_key][indices] = val
         return None
