@@ -808,7 +808,7 @@ class Categorical:
         newvals = inverse[self.codes]
         return argsort(newvals)
 
-    def sort(self):
+    def sort_values(self):
         # __doc__ = sort.__doc__
         idxperm = argsort(self.categories)
         inverse = zeros_like(idxperm)

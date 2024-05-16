@@ -484,7 +484,7 @@ class CategoricalTest(ArkoudaTest):
         rand_codes = ak.randint(0, rand_cats.size, 100)
         cat = ak.Categorical.from_codes(codes=rand_codes, categories=rand_cats)
 
-        self.assertEqual(sorted(cat.to_list()), cat.sort().to_list())
+        self.assertEqual(sorted(cat.to_list()), cat.sort_values().to_list())
 
     def tearDown(self):
         super(CategoricalTest, self).tearDown()

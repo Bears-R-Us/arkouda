@@ -250,4 +250,4 @@ class TestCategorical:
         rand_codes = ak.randint(0, rand_cats.size, 100)
         cat = ak.Categorical.from_codes(codes=rand_codes, categories=rand_cats)
 
-        assert sorted(cat.to_list()) == cat.sort().to_list()
+        assert sorted(cat.to_list()) == cat.sort_values().to_list()
