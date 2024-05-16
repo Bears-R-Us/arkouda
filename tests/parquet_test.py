@@ -477,7 +477,7 @@ class ParquetTest(ArkoudaTest):
             # read files and ensure that all resulting fields are as expected
             rd_data = ak.read_parquet(f"{tmp_dirname}/multicol_parquet*")
             for k, v in rd_data.items():
-                self.assertListEqual(v.to_list(), akdf[k].to_list())
+                self.assertListEqual(v.to_list(), akdf[k].values.to_list())
 
             # extra insurance, check dataframes are equivalent
             rd_df = ak.DataFrame(rd_data)
@@ -509,20 +509,20 @@ class ParquetTest(ArkoudaTest):
             data = ak.read_parquet(fname + "_*")
             self.assertTrue("idx" in data)
             self.assertTrue("seg" in data)
-            self.assertListEqual(df["idx"].to_list(), data["idx"].to_list())
-            self.assertListEqual(df["seg"].to_list(), data["seg"].to_list())
+            self.assertListEqual(df["idx"].values.to_list(), data["idx"].to_list())
+            self.assertListEqual(df["seg"].values.to_list(), data["seg"].to_list())
 
             # test read with read_nested=false and no supplied datasets
             data = ak.read_parquet(fname + "_*", read_nested=False)
             self.assertIsInstance(data, ak.pdarray)
-            self.assertListEqual(df["idx"].to_list(), data.to_list())
+            self.assertListEqual(df["idx"].values.to_list(), data.to_list())
 
             # test read with read_nested=false and user supplied datasets. Should ignore read_nested
             data = ak.read_parquet(fname + "_*", datasets=["idx", "seg"], read_nested=False)
             self.assertTrue("idx" in data)
             self.assertTrue("seg" in data)
-            self.assertListEqual(df["idx"].to_list(), data["idx"].to_list())
-            self.assertListEqual(df["seg"].to_list(), data["seg"].to_list())
+            self.assertListEqual(df["idx"].values.to_list(), data["idx"].to_list())
+            self.assertListEqual(df["seg"].values.to_list(), data["seg"].to_list())
 
     def test_segarray_string(self):
         words = ak.array(["one,two,three", "uno,dos,tres"])
