@@ -16309,7 +16309,7 @@ Attributes
       
 
 
-.. py:class:: MultiIndex(values, name=None, names=None)
+.. py:class:: MultiIndex(values: Union[list, arkouda.pdarrayclass.pdarray, arkouda.Strings, arkouda.Categorical], name: Optional[str] = None, names: Optional[list[str]] = None)
 
 
    Bases: :py:obj:`Index`

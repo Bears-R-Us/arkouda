@@ -352,8 +352,8 @@
 <span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>  <span class="c1"># type: ignore</span>
-<span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">Series</span>  <span class="c1"># type: ignore</span>
-<span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">Timestamp</span>  <span class="c1"># type: ignore</span>
+<span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">Series</span> <span class="k">as</span> <span class="n">pdSeries</span>  <span class="c1"># type: ignore</span>
+<span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">Timestamp</span> <span class="k">as</span> <span class="n">pdTimestamp</span>  <span class="c1"># type: ignore</span>
 <span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">Timedelta</span> <span class="k">as</span> <span class="n">pdTimedelta</span>  <span class="c1"># type: ignore</span>
 <span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">date_range</span> <span class="k">as</span> <span class="n">pd_date_range</span>  <span class="c1"># type: ignore</span>
 <span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">timedelta_range</span> <span class="k">as</span> <span class="n">pd_timedelta_range</span>  <span class="c1"># type: ignore</span>
@@ -455,10 +455,10 @@
             <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">):</span>
                 <span class="c1"># M = datetime64, m = timedelta64</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid dtype: </span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">Series</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">pdSeries</span><span class="p">):</span>
                 <span class="c1"># Pandas Datetime and Timedelta</span>
                 <span class="c1"># Get units of underlying numpy datetime64 array</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">datetime_data</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">dtype</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">datetime_data</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">dtype</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># type: ignore [arg-type]</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_factor</span> <span class="o">=</span> <span class="n">_get_factor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
                 <span class="c1"># Create pdarray</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">from_series</span><span class="p">(</span><span class="n">pda</span><span class="p">)</span>
@@ -729,7 +729,7 @@
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_is_datetime_scalar</span><span class="p">(</span><span class="n">scalar</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span>
-            <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalar</span><span class="p">,</span> <span class="n">Timestamp</span><span class="p">)</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalar</span><span class="p">,</span> <span class="n">pdTimestamp</span><span class="p">)</span>
             <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">scalar</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">datetime64</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">scalar</span><span class="p">))</span>
             <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalar</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">)</span>
         <span class="p">)</span>
@@ -971,7 +971,7 @@
 
     <span class="k">def</span> <span class="nf">_scalar_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scalar</span><span class="p">):</span>
         <span class="c1"># Formats a scalar return value as pandas Timestamp</span>
-        <span class="k">return</span> <span class="n">Timestamp</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">scalar</span><span class="p">),</span> <span class="n">unit</span><span class="o">=</span><span class="n">_BASE_UNIT</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pdTimestamp</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">scalar</span><span class="p">),</span> <span class="n">unit</span><span class="o">=</span><span class="n">_BASE_UNIT</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_is_supported_scalar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scalar</span><span class="p">):</span>

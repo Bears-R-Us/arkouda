@@ -479,7 +479,7 @@
         <span class="k">if</span> <span class="n">dt</span> <span class="o">==</span> <span class="s2">&quot;object&quot;</span><span class="p">:</span>
             <span class="n">dt</span> <span class="o">=</span> <span class="s2">&quot;string&quot;</span>
 
-        <span class="n">n_array</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">SeriesDTypes</span><span class="p">[</span><span class="n">dt</span><span class="p">])</span>
+        <span class="n">n_array</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">SeriesDTypes</span><span class="p">[</span><span class="n">dt</span><span class="p">])</span>  <span class="c1"># type: ignore</span>
     <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;dtype </span><span class="si">{</span><span class="n">dt</span><span class="si">}</span><span class="s2"> is unsupported. Supported dtypes are bool, float64, int64, string, &quot;</span>

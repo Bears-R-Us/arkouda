@@ -347,7 +347,9 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.util</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">builtins</span>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">builtins</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 <span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
@@ -832,7 +834,7 @@
 
 <div class="viewcode-block" id="is_numeric">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.is_numeric">[docs]</a>
-<span class="k">def</span> <span class="nf">is_numeric</span><span class="p">(</span><span class="n">arry</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">builtins</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">is_numeric</span><span class="p">(</span><span class="n">arry</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">builtins</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>  <span class="c1"># noqa: F821</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if the dtype of the given array is numeric.</span>
 
@@ -866,7 +868,7 @@
 
 <div class="viewcode-block" id="is_float">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.is_float">[docs]</a>
-<span class="k">def</span> <span class="nf">is_float</span><span class="p">(</span><span class="n">arry</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]):</span>
+<span class="k">def</span> <span class="nf">is_float</span><span class="p">(</span><span class="n">arry</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]):</span>  <span class="c1"># noqa: F821</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if the dtype of the given array is float.</span>
 
@@ -900,7 +902,7 @@
 
 <div class="viewcode-block" id="is_int">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.is_int">[docs]</a>
-<span class="k">def</span> <span class="nf">is_int</span><span class="p">(</span><span class="n">arry</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]):</span>
+<span class="k">def</span> <span class="nf">is_int</span><span class="p">(</span><span class="n">arry</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]):</span>  <span class="c1"># noqa: F821</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if the dtype of the given array is int.</span>
 
@@ -986,7 +988,9 @@
     <span class="n">gb_keys</span> <span class="o">=</span> <span class="n">gb</span><span class="o">.</span><span class="n">unique_keys</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="n">mapping</span> <span class="o">=</span> <span class="n">Series</span><span class="p">([</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">())),</span> <span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">values</span><span class="p">()))])</span>
+        <span class="n">mapping</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">())),</span> <span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">values</span><span class="p">()))]</span>  <span class="c1"># type: ignore [assignment]</span>
+        <span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="n">Series</span><span class="p">):</span>
         <span class="n">xtra_keys</span> <span class="o">=</span> <span class="n">gb_keys</span><span class="p">[</span><span class="n">in1d</span><span class="p">(</span><span class="n">gb_keys</span><span class="p">,</span> <span class="n">mapping</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
