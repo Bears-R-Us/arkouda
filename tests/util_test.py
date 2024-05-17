@@ -44,25 +44,58 @@ class UtilTest(ArkoudaTest):
             self.assertTrue(cond)
 
     def test_is_numeric(self):
-        a = ak.array(["a", "b"])
-        b = ak.array([1, 2])
-        c = ak.Categorical(a)
-        d = ak.array([1, np.nan])
+        strings = ak.array(["a", "b"])
+        ints = ak.array([1, 2])
+        categoricals = ak.Categorical(strings)
+        floats = ak.array([1, np.nan])
 
-        self.assertFalse(is_numeric(a))
-        self.assertTrue(is_numeric(b))
-        self.assertFalse(is_numeric(c))
-        self.assertTrue(is_numeric(d))
+        from arkouda.series import Series
+        from arkouda.index import Index
 
-        self.assertFalse(is_int(a))
-        self.assertTrue(is_int(b))
-        self.assertFalse(is_int(c))
-        self.assertFalse(is_int(d))
+        for item in [
+            strings,
+            Index(strings),
+            Series(strings),
+            categoricals,
+            Index(categoricals),
+            Series(categoricals),
+        ]:
+            self.assertFalse(is_numeric(item))
 
-        self.assertFalse(is_float(a))
-        self.assertFalse(is_float(b))
-        self.assertFalse(is_float(c))
-        self.assertTrue(is_float(d))
+        for item in [ints, Index(ints), Series(ints), floats, Index(floats), Series(floats)]:
+            self.assertTrue(is_numeric(item))
+
+        for item in [
+            strings,
+            Index(strings),
+            Series(strings),
+            categoricals,
+            Index(categoricals),
+            Series(categoricals),
+            floats,
+            Index(floats),
+            Series(floats),
+        ]:
+            self.assertFalse(is_int(item))
+
+        for item in [ints, Index(ints), Series(ints)]:
+            self.assertTrue(is_int(item))
+
+        for item in [
+            strings,
+            Index(strings),
+            Series(strings),
+            ints,
+            Index(ints),
+            Series(ints),
+            categoricals,
+            Index(categoricals),
+            Series(categoricals),
+        ]:
+            self.assertFalse(is_float(item))
+
+        for item in [floats, Index(floats), Series(floats)]:
+            self.assertTrue(is_float(item))
 
     def test_map(self):
         a = ak.array(["1", "1", "4", "4", "4"])

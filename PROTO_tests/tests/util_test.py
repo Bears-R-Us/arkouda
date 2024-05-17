@@ -25,25 +25,58 @@ class TestUtil:
         assert (merge_vals == sort_vals).all()
 
     def test_is_numeric(self):
-        a = ak.array(["a", "b"])
-        b = ak.array([1, 2])
-        c = ak.Categorical(a)
-        d = ak.array([1, np.nan])
+        strings = ak.array(["a", "b"])
+        ints = ak.array([1, 2])
+        categoricals = ak.Categorical(strings)
+        floats = ak.array([1, np.nan])
 
-        assert ~is_numeric(a)
-        assert is_numeric(b)
-        assert ~is_numeric(c)
-        assert is_numeric(d)
+        from arkouda.series import Series
+        from arkouda.index import Index
 
-        assert ~is_int(a)
-        assert is_int(b)
-        assert ~is_int(c)
-        assert ~is_int(d)
+        for item in [
+            strings,
+            Index(strings),
+            Series(strings),
+            categoricals,
+            Index(categoricals),
+            Series(categoricals),
+        ]:
+            assert ~is_numeric(item)
 
-        assert ~is_float(a)
-        assert ~is_float(b)
-        assert ~is_float(c)
-        assert is_float(d)
+        for item in [ints, Index(ints), Series(ints), floats, Index(floats), Series(floats)]:
+            assert is_numeric(item)
+
+        for item in [
+            strings,
+            Index(strings),
+            Series(strings),
+            categoricals,
+            Index(categoricals),
+            Series(categoricals),
+            floats,
+            Index(floats),
+            Series(floats),
+        ]:
+            assert ~is_int(item)
+
+        for item in [ints, Index(ints), Series(ints)]:
+            assert is_int(item)
+
+        for item in [
+            strings,
+            Index(strings),
+            Series(strings),
+            ints,
+            Index(ints),
+            Series(ints),
+            categoricals,
+            Index(categoricals),
+            Series(categoricals),
+        ]:
+            assert ~is_float(item)
+
+        for item in [floats, Index(floats), Series(floats)]:
+            assert is_float(item)
 
     def test_map(self):
         a = ak.array(["1", "1", "4", "4", "4"])
