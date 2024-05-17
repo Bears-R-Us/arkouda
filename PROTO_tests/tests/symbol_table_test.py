@@ -612,7 +612,7 @@ class TestRegistration:
 
         # verify that components seen as registered after original unregistered
         s.unregister()
-        assert df["SegArray"].is_registered()
+        assert df["SegArray"].values.is_registered()
 
     @pytest.mark.parametrize("dtype", DTYPES)
     def test_error_handling(self, dtype):
