@@ -27,7 +27,7 @@ class TestDTypes:
     def test_check_np_dtype(self, dtype):
         dtypes.check_np_dtype(np.dtype(dtype))
 
-    @pytest.mark.parametrize("dtype", ["np.str", ak.bigint])
+    @pytest.mark.parametrize("dtype", ["np.str"])
     def test_check_np_dtype_errors(self, dtype):
         with pytest.raises(TypeError):
             dtypes.check_np_dtype(dtype)

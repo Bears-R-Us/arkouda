@@ -75,8 +75,9 @@ module BroadcastMsg {
         }
         when DType.Float64 {
           const vals = toSymEntry(gv, real);
+          const transmuted = [ei in vals.a] ei.transmute(uint(64));
           var res = st.addEntry(rname, size, real);
-          res.a = broadcast(perm.a, segs.a, vals.a);
+          res.a = [bi in broadcast(perm.a, segs.a, transmuted)] bi.transmute(real(64));
         }
         when DType.BigInt {
           const vals = toSymEntry(gv, bigint);
