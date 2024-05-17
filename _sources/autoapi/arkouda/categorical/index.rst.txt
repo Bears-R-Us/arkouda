@@ -476,7 +476,7 @@ Classes
       :rtype: Categorical
 
 
-   .. py:method:: sort()
+   .. py:method:: sort_values()
 
 
    .. py:method:: standardize_categories(arrays, NAvalue='N/A')

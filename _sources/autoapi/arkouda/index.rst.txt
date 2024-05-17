@@ -1172,7 +1172,7 @@ Attributes
       :rtype: Categorical
 
 
-   .. py:method:: sort()
+   .. py:method:: sort_values()
 
 
    .. py:method:: standardize_categories(arrays, NAvalue='N/A')
@@ -1895,7 +1895,7 @@ Attributes
       :rtype: Categorical
 
 
-   .. py:method:: sort()
+   .. py:method:: sort_values()
 
 
    .. py:method:: standardize_categories(arrays, NAvalue='N/A')
@@ -2618,7 +2618,7 @@ Attributes
       :rtype: Categorical
 
 
-   .. py:method:: sort()
+   .. py:method:: sort_values()
 
 
    .. py:method:: standardize_categories(arrays, NAvalue='N/A')
