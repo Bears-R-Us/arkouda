@@ -44,13 +44,13 @@ class IndexTest(ArkoudaTest):
         # test list generation
         idx = ak.MultiIndex([ak.arange(5), ak.arange(5)])
         self.assertIsInstance(idx, ak.MultiIndex)
-        self.assertEqual(idx.levels, 2)
+        self.assertEqual(idx.nlevels, 2)
         self.assertEqual(idx.size, 5)
 
         # test tuple generation
         idx = ak.MultiIndex((ak.arange(5), ak.arange(5)))
         self.assertIsInstance(idx, ak.MultiIndex)
-        self.assertEqual(idx.levels, 2)
+        self.assertEqual(idx.nlevels, 2)
         self.assertEqual(idx.size, 5)
 
         with self.assertRaises(TypeError):
@@ -58,6 +58,14 @@ class IndexTest(ArkoudaTest):
 
         with self.assertRaises(ValueError):
             idx = ak.MultiIndex([ak.arange(5), ak.arange(3)])
+
+    def test_nlevels(self):
+        i = ak.Index([1, 2, 3], name="test")
+        assert i.nlevels == 1
+
+        size = 10
+        m = ak.MultiIndex([ak.arange(size), ak.arange(size) * -1])
+        assert m.nlevels == 2
 
     def test_memory_usage(self):
         from arkouda.dtypes import BigInt
