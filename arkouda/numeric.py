@@ -2132,25 +2132,34 @@ def median(pda):
     Parameters
     ----------
     pda: pdarray
-        the input data, in pdarray form, numeric type
+        The input data, in pdarray form, numeric type or boolean
 
     Returns
     -------
-    an np.float64 value, which is the median of the entire pdarray
+    np.float64
+        The median of the entire pdarray
+        The array is sorted, and then if the number of elements is odd,
+            the return value is the middle element.  If even, then the
+            mean of the two middle elements.
 
     Examples
     --------
-    pda = [0,4,7,8,1,3,5,2,-1]
-      is sorted to [-1,0,1,2,3,4,5,7,8]
-      number of elements is odd, so median = the center element = 3
-    pda = [0,1,3,3,1,2,3,4,2,3]
-      is sorted to [0,1,1,2,2,3,3,3,3,4]
-      number of elements is odd, so median = average of 2 center elements = (2+3)/2 = 2.5
+    >>> import arkouda as ak
+    >>> arkouda.connect()
+    >>> pda = ak.array ([0,4,7,8,1,3,5,2,-1])
+    >>> ak.median(pda)
+    3
+    >>> pda = ak.array([0,1,3,3,1,2,3,4,2,3])
+    2.5
+
     """
 
     #  Now do the computation
 
-    pda_srtd = sort(pda)
+    if pda.dtype == bool:
+        pda_srtd = sort(cast(pda, dt=np.int64))
+    else:
+        pda_srtd = sort(pda)
     if len(pda_srtd) % 2 == 1:
         return pda_srtd[len(pda_srtd) // 2].astype(np.float64)
     else:
@@ -2166,23 +2175,32 @@ def count_nonzero(pda):
     Parameters
     ----------
     pda: pdarray
-        the input data, in pdarray form, numeric, bool, or str
+        The input data, in pdarray form, numeric, bool, or str
 
     Returns
     -------
-    an np.int64 value, which is the nonzero count of the entire pdarray
+    np.int64
+        The nonzero count of the entire pdarray
 
     Examples
     --------
-    pda = [0,4,7,8,1,3,5,2,-1] returns 9 (9 nonzero numerical elements)
-    pda = [False,True,False,True,False] returns 3 (3 True booleans)
-    pda = ["hello","","there"] returns 2 (2 non-empty strings)
+    >>> pda = ak.array([0,4,7,8,1,3,5,2,-1])
+    >>> ak.count_nonzero(pda)
+    9
+    >>> pda = ak.array([False,True,False,True,False])
+    >>> ak.count_nonzero(pda)
+    3
+    >>> pda = ak.array(["hello","","there"])
+    >>> ak.count_nonzero(pda)
+    2
 
     """
 
+    from arkouda.util import is_numeric
+
     #  Handle different data types.
 
-    if (pda.dtype == np.int64) or (pda.dtype == np.float64):
+    if is_numeric(pda):
         return sum((pda != 0).astype(np.int64))
     elif pda.dtype == bool:
         return sum((pda).astype(np.int64))

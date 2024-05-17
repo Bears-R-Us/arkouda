@@ -1438,6 +1438,16 @@ class NumericTest(ArkoudaTest):
         pda_o = ak.array(sample_o)
         assert isclose(np.median(sample_o), ak.median(pda_o))
 
+        # bools
+
+        sample_e = np.random.permutation(120).astype(bool)
+        pda_e = ak.array(sample_e)
+        assert isclose(np.median(sample_e), ak.median(pda_e))
+
+        sample_o = np.random.permutation(121).astype(bool)
+        pda_o = ak.array(sample_o)
+        assert isclose(np.median(sample_o), ak.median(pda_o))
+
         # floats
 
         sample_e = np.random.permutation(120).astype(np.float64)

@@ -625,7 +625,7 @@ class TestNumeric:
     #  median can be done on ints or floats
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
-    @pytest.mark.parametrize("data_type", INT_FLOAT)
+    @pytest.mark.parametrize("data_type", NUMERIC_TYPES)
     def test_median(self, prob_size, data_type):
 
         sample_e = np.random.permutation(prob_size).astype(data_type)
