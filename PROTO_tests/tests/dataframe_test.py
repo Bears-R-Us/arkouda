@@ -1739,7 +1739,7 @@ class TestDataFrame:
         weighted_sample = g.sample(n=num_samples, replace=True, weights=weights, random_state=rng)
 
         # count how many of each category we saw
-        uk, f_obs = ak.GroupBy(weighted_sample["vals"]).size()
+        uk, f_obs = ak.GroupBy(weighted_sample["vals"].values).size()
 
         # I think the keys should always be sorted but just in case
         if not ak.is_sorted(uk):
