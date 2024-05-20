@@ -3418,6 +3418,12 @@ Module Contents
 
 
 
+   .. py:method:: equals(other) -> bool
+
+      Whether pdarrays are the same size and all entries are equal.
+
+
+
    .. py:method:: fill(value: arkouda.dtypes.numeric_scalars) -> None
 
       Fill the array (in place) with a constant value.

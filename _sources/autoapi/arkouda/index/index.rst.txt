@@ -1073,6 +1073,9 @@ Module Contents
    .. py:method:: concat(other)
 
 
+   .. py:method:: equals(other: Union[Index, arkouda.pdarrayclass.pdarray, arkouda.Strings, arkouda.Categorical, list]) -> bool
+
+
    .. py:method:: factory(index)
       :staticmethod:
 
@@ -2234,6 +2237,12 @@ Module Contents
    .. py:method:: ctz() -> pdarray
 
       Count the number of trailing zeros in each element. See `ak.ctz`.
+
+
+
+   .. py:method:: equals(other) -> bool
+
+      Whether pdarrays are the same size and all entries are equal.
 
 
 

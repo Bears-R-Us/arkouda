@@ -350,7 +350,7 @@
 <span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>  <span class="c1"># type: ignore</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">array</span> <span class="k">as</span> <span class="n">ndarray</span>
@@ -480,10 +480,32 @@
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Index</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">==</span> <span class="n">v</span><span class="o">.</span><span class="n">index</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">==</span> <span class="n">v</span>
+    <span class="k">def</span> <span class="nf">_get_arrays_for_comparison</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">other</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">],</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]]:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Index</span><span class="p">):</span>
+            <span class="n">other_values</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">values</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">other_values</span> <span class="o">=</span> <span class="n">other</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other_values</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">other_values</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">other_values</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">values</span><span class="p">,</span> <span class="n">other_values</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="n">values</span><span class="p">,</span> <span class="n">other_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_arrays_for_comparison</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">values</span> <span class="o">==</span> <span class="n">other_values</span>
+
+    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="n">values</span><span class="p">,</span> <span class="n">other_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_arrays_for_comparison</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">values</span> <span class="o">!=</span> <span class="n">other_values</span>
 
     <span class="k">def</span> <span class="nf">_dtype_of_list_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">dtype</span>
@@ -583,6 +605,22 @@
                 <span class="n">idx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Categorical</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">i_comps</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
 
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">factory</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="bp">cls</span><span class="o">.</span><span class="n">factory</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="Index.equals">
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.Index.equals">[docs]</a>
+    <span class="k">def</span> <span class="nf">equals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Index</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">,</span> <span class="nb">list</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="p">(</span><span class="n">Index</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;other must be of type Index, pdarray, Strings, Categorical, list&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="nb">all</span> <span class="k">as</span> <span class="n">akall</span>
+
+        <span class="k">return</span> <span class="n">akall</span><span class="p">(</span><span class="bp">self</span> <span class="o">==</span> <span class="n">other</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Index.memory_usage">

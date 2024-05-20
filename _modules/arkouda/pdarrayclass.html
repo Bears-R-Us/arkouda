@@ -746,6 +746,21 @@
             <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;set_max_bits&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="n">max_bits</span><span class="p">})</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_max_bits</span> <span class="o">=</span> <span class="n">max_bits</span>
 
+<div class="viewcode-block" id="pdarray.equals">
+<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.equals">[docs]</a>
+    <span class="k">def</span> <span class="nf">equals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Whether pdarrays are the same size and all entries are equal.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="bp">self</span> <span class="o">==</span> <span class="n">other</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+
 <div class="viewcode-block" id="pdarray.format_other">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.format_other">[docs]</a>
     <span class="k">def</span> <span class="nf">format_other</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>

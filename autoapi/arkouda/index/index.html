@@ -1743,6 +1743,11 @@ normally distributed variables.</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.index.Index.equals">
+<span class="sig-name descname"><span class="pre">equals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.index.Index" title="arkouda.index.Index"><span class="pre">Index</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../index.html#id674" title="arkouda.Strings"><span class="pre">arkouda.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><span class="pre">arkouda.Categorical</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../../_modules/arkouda/index.html#Index.equals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.index.Index.equals" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.index.Index.factory">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">factory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/index.html#Index.factory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.index.Index.factory" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -3206,6 +3211,12 @@ bigint pdarray and the last item will be the lowest 64 bits.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.index.pdarray.equals">
+<span class="sig-name descname"><span class="pre">equals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#pdarray.equals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.index.pdarray.equals" title="Link to this definition">¶</a></dt>
+<dd><p>Whether pdarrays are the same size and all entries are equal.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.index.pdarray.fill">
 <span class="sig-name descname"><span class="pre">fill</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.dtypes.numeric_scalars</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#pdarray.fill"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.index.pdarray.fill" title="Link to this definition">¶</a></dt>
 <dd><p>Fill the array (in place) with a constant value.</p>
@@ -4245,6 +4256,7 @@ computation. Otherwise, this function will sort <cite>pda</cite>.</p>
 <li><a class="reference internal" href="#arkouda.index.Index"><code class="docutils literal notranslate"><span class="pre">Index</span></code></a><ul>
 <li><a class="reference internal" href="#arkouda.index.Index.argsort"><code class="docutils literal notranslate"><span class="pre">Index.argsort()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.concat"><code class="docutils literal notranslate"><span class="pre">Index.concat()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.index.Index.equals"><code class="docutils literal notranslate"><span class="pre">Index.equals()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.factory"><code class="docutils literal notranslate"><span class="pre">Index.factory()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.from_return_msg"><code class="docutils literal notranslate"><span class="pre">Index.from_return_msg()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.index"><code class="docutils literal notranslate"><span class="pre">Index.index</span></code></a></li>
@@ -4328,6 +4340,7 @@ computation. Otherwise, this function will sort <cite>pda</cite>.</p>
 <li><a class="reference internal" href="#arkouda.index.pdarray.corr"><code class="docutils literal notranslate"><span class="pre">pdarray.corr()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.pdarray.cov"><code class="docutils literal notranslate"><span class="pre">pdarray.cov()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.pdarray.ctz"><code class="docutils literal notranslate"><span class="pre">pdarray.ctz()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.index.pdarray.equals"><code class="docutils literal notranslate"><span class="pre">pdarray.equals()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.pdarray.fill"><code class="docutils literal notranslate"><span class="pre">pdarray.fill()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.pdarray.format_other"><code class="docutils literal notranslate"><span class="pre">pdarray.format_other()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.pdarray.inferred_type"><code class="docutils literal notranslate"><span class="pre">pdarray.inferred_type</span></code></a></li>
