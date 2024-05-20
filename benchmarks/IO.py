@@ -174,9 +174,9 @@ def check_correctness(dtype, path, seed, fileFormat, multifile=False):
         raise ValueError(f"Invalid dtype: {dtype}")
 
     file_format_actions = {
-        FileFormat.HDF5: (a.to_hdf, b.to_hdf if b else None, ak.read_hdf),
-        FileFormat.PARQUET: (a.to_parquet, b.to_parquet if b else None, ak.read_parquet),
-        FileFormat.CSV: (a.to_csv, b.to_csv if b else None, ak.read_csv)
+        FileFormat.HDF5: (a.to_hdf, b.to_hdf if b is not None else None, ak.read_hdf),
+        FileFormat.PARQUET: (a.to_parquet, b.to_parquet if b is not None else None, ak.read_parquet),
+        FileFormat.CSV: (a.to_csv, b.to_csv if b is not None else None, ak.read_csv)
     }
 
     if fileFormat in file_format_actions:
