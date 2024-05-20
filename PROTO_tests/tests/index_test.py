@@ -35,13 +35,13 @@ class TestIndex:
         # test list generation
         idx = ak.MultiIndex([ak.arange(size), ak.arange(size)])
         assert isinstance(idx, ak.MultiIndex)
-        assert idx.levels == 2
+        assert idx.nlevels == 2
         assert idx.size == size
 
         # test tuple generation
         idx = ak.MultiIndex((ak.arange(size), ak.arange(size)))
         assert isinstance(idx, ak.MultiIndex)
-        assert idx.levels == 2
+        assert idx.nlevels == 2
         assert idx.size == size
 
         with pytest.raises(TypeError):
@@ -49,6 +49,14 @@ class TestIndex:
 
         with pytest.raises(ValueError):
             idx = ak.MultiIndex([ak.arange(size), ak.arange(size - 1)])
+
+    def test_nlevels(self):
+        i = ak.Index([1, 2, 3], name="test")
+        assert i.nlevels == 1
+
+        size = 10
+        m = ak.MultiIndex([ak.arange(size), ak.arange(size) * -1])
+        assert m.nlevels == 2
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_memory_usage(self, size):
