@@ -1,5 +1,3 @@
-import unittest
-
 from base_test import ArkoudaTest
 from context import arkouda as ak
 import arkouda.array_api as Array
@@ -16,6 +14,25 @@ def randArr(shape):
 
 
 class IndexingTests(ArkoudaTest):
+    def test_rank_changing_assignment(self):
+        a = randArr((5, 6, 7))
+        b = randArr((5, 6))
+        c = randArr((6, 7))
+        d = randArr((6,))
+        e = randArr((5, 6, 7))
+
+        a[:, :, 0] = b
+        self.assertEqual((a[:, :, 0]).tolist(), b.tolist())
+
+        a[1, :, :] = c
+        self.assertEqual((a[1, :, :]).tolist(), c.tolist())
+
+        a[2, :, 3] = d
+        self.assertEqual((a[2, :, 3]).tolist(), d.tolist())
+
+        a[:, :, :] = e
+        self.assertEqual(a.tolist(), e.tolist())
+
     def test_pdarray_index(self):
         a = randArr((5, 6, 7))
         anp = np.asarray(a.tolist())
