@@ -670,7 +670,7 @@ class SegArrayTest(ArkoudaTest):
         with tempfile.TemporaryDirectory(dir=SegArrayTest.seg_test_base_tmp) as tmp_dirname:
             segarr.to_hdf(f"{tmp_dirname}/seg_test.h5")
 
-            seg_load = ak.SegArray.read_hdf(f"{tmp_dirname}/seg_test*")
+            seg_load = ak.SegArray.read_hdf(f"{tmp_dirname}/seg_test*").popitem()[1]
             self.assertTrue(ak.all(segarr == seg_load))
 
     def test_bigint(self):
