@@ -388,6 +388,14 @@
 </dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="arkouda.index.Index.nlevels">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nlevels</span></span><a class="headerlink" href="#arkouda.index.Index.nlevels" title="Link to this definition">¶</a></dt>
+<dd><p>Integer number of levels in this Index.
+An Index will always have 1 level.
+.. seealso:: <a class="reference internal" href="#arkouda.index.MultiIndex.nlevels" title="arkouda.index.MultiIndex.nlevels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MultiIndex.nlevels</span></code></a></p>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="arkouda.index.Index.shape">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#arkouda.index.Index.shape" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -871,12 +879,19 @@ file with the new data</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.index.MultiIndex">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.index.</span></span><span class="sig-name descname"><span class="pre">MultiIndex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../index.html#id669" title="arkouda.Strings"><span class="pre">arkouda.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><span class="pre">arkouda.Categorical</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/index.html#MultiIndex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.index.MultiIndex" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.index.</span></span><span class="sig-name descname"><span class="pre">MultiIndex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">levels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../index.html#id669" title="arkouda.Strings"><span class="pre">arkouda.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><span class="pre">arkouda.Categorical</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/index.html#MultiIndex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.index.MultiIndex" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#arkouda.index.Index" title="arkouda.index.Index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Index</span></code></a></p>
 <dl class="py property">
 <dt class="sig sig-object py" id="arkouda.index.MultiIndex.index">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">index</span></span><a class="headerlink" href="#arkouda.index.MultiIndex.index" title="Link to this definition">¶</a></dt>
 <dd><p>This is maintained to support older code</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.index.MultiIndex.nlevels">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nlevels</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#arkouda.index.MultiIndex.nlevels" title="Link to this definition">¶</a></dt>
+<dd><p>Integer number of levels in this MultiIndex.
+.. seealso:: <a class="reference internal" href="#arkouda.index.Index.nlevels" title="arkouda.index.Index.nlevels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Index.nlevels</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -929,7 +944,7 @@ they are unregistered.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.index.MultiIndex.memory_usage">
 <span class="sig-name descname"><span class="pre">memory_usage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'B'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/index.html#MultiIndex.memory_usage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.index.MultiIndex.memory_usage" title="Link to this definition">¶</a></dt>
-<dd><p>Return the memory usage of the MultiIndex values.</p>
+<dd><p>Return the memory usage of the MultiIndex levels.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>unit</strong> (<em>str</em><em>, </em><em>default = &quot;B&quot;</em>) – Unit to return. One of {‘B’, ‘KB’, ‘MB’, ‘GB’}.</p>
@@ -1102,7 +1117,7 @@ file sizes to expand.</p></li>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown saving the index</p></li>
-<li><p><strong>TypeError</strong> – Raised if the Index values are a list.</p></li>
+<li><p><strong>TypeError</strong> – Raised if the Index levels are a list.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1183,6 +1198,7 @@ file with the new data</p></li>
 <li><a class="reference internal" href="#arkouda.index.Index"><code class="docutils literal notranslate"><span class="pre">Index</span></code></a><ul>
 <li><a class="reference internal" href="#arkouda.index.Index.index"><code class="docutils literal notranslate"><span class="pre">Index.index</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.is_unique"><code class="docutils literal notranslate"><span class="pre">Index.is_unique</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.index.Index.nlevels"><code class="docutils literal notranslate"><span class="pre">Index.nlevels</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.shape"><code class="docutils literal notranslate"><span class="pre">Index.shape</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.objType"><code class="docutils literal notranslate"><span class="pre">Index.objType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.argsort"><code class="docutils literal notranslate"><span class="pre">Index.argsort()</span></code></a></li>
@@ -1209,6 +1225,7 @@ file with the new data</p></li>
 </li>
 <li><a class="reference internal" href="#arkouda.index.MultiIndex"><code class="docutils literal notranslate"><span class="pre">MultiIndex</span></code></a><ul>
 <li><a class="reference internal" href="#arkouda.index.MultiIndex.index"><code class="docutils literal notranslate"><span class="pre">MultiIndex.index</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.index.MultiIndex.nlevels"><code class="docutils literal notranslate"><span class="pre">MultiIndex.nlevels</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.MultiIndex.objType"><code class="docutils literal notranslate"><span class="pre">MultiIndex.objType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.MultiIndex.argsort"><code class="docutils literal notranslate"><span class="pre">MultiIndex.argsort()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.MultiIndex.concat"><code class="docutils literal notranslate"><span class="pre">MultiIndex.concat()</span></code></a></li>

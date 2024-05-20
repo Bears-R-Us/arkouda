@@ -15887,6 +15887,12 @@ Attributes
       Property indicating if all values in the index are unique
       :rtype: bool - True if all values are unique, False otherwise.
 
+   .. py:property:: nlevels
+
+      Integer number of levels in this Index.
+      An Index will always have 1 level.
+      .. seealso:: :obj:`MultiIndex.nlevels`
+
    .. py:property:: shape
 
 
@@ -16311,7 +16317,7 @@ Attributes
       
 
 
-.. py:class:: MultiIndex(values: Union[list, arkouda.pdarrayclass.pdarray, arkouda.Strings, arkouda.Categorical], name: Optional[str] = None, names: Optional[list[str]] = None)
+.. py:class:: MultiIndex(levels: Union[list, arkouda.pdarrayclass.pdarray, arkouda.Strings, arkouda.Categorical], name: Optional[str] = None, names: Optional[list[str]] = None)
 
 
    Bases: :py:obj:`Index`
@@ -16319,6 +16325,12 @@ Attributes
    .. py:property:: index
 
       This is maintained to support older code
+
+   .. py:property:: nlevels
+      :type: int
+
+      Integer number of levels in this MultiIndex.
+      .. seealso:: :obj:`Index.nlevels`
 
    .. py:attribute:: objType
       :value: 'MultiIndex'
@@ -16354,7 +16366,7 @@ Attributes
 
    .. py:method:: memory_usage(unit='B')
 
-      Return the memory usage of the MultiIndex values.
+      Return the memory usage of the MultiIndex levels.
 
       :param unit: Unit to return. One of {'B', 'KB', 'MB', 'GB'}.
       :type unit: str, default = "B"
@@ -16488,7 +16500,7 @@ Attributes
       :rtype: str - success message if successful
 
       :raises RuntimeError: Raised if a server-side error is thrown saving the index
-      :raises TypeError: Raised if the Index values are a list.
+      :raises TypeError: Raised if the Index levels are a list.
 
       .. rubric:: Notes
 
