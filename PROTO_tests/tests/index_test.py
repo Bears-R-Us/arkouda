@@ -77,6 +77,52 @@ class TestIndex:
         m = ak.MultiIndex([ak.arange(size), ak.arange(size) * -1], names=["test", "test2"])
         assert m.inferred_type == "mixed"
 
+    def assert_equal(self, pda1, pda2):
+        from arkouda import sum as aksum
+
+        assert pda1.size == pda2.size
+        assert aksum(pda1 != pda2) == 0
+
+    def test_eq(self):
+        i = ak.Index([1, 2, 3])
+        i_cpy = ak.Index([1, 2, 3])
+        self.assert_equal(i == i_cpy, ak.array([True, True, True]))
+        self.assert_equal(i != i_cpy, ak.array([False, False, False]))
+        assert i.equals(i_cpy)
+
+        i2 = ak.Index([1, 2, 3], allow_list=True)
+        i2_cpy = ak.Index([1, 2, 3], allow_list=True)
+        self.assert_equal(i2 == i2_cpy, ak.array([True, True, True]))
+        self.assert_equal(i2 != i2_cpy, ak.array([False, False, False]))
+        assert i2.equals(i2_cpy)
+
+        self.assert_equal(i == i2, ak.array([True, True, True]))
+        self.assert_equal(i != i2, ak.array([False, False, False]))
+        assert i.equals(i2)
+
+        i3 = ak.Index(["a", "b", "c"], allow_list=True)
+        i3_cpy = ak.Index(["a", "b", "c"], allow_list=True)
+        self.assert_equal(i3 == i3_cpy, ak.array([True, True, True]))
+        self.assert_equal(i3 != i3_cpy, ak.array([False, False, False]))
+        assert i3.equals(i3_cpy)
+
+        i4 = ak.Index(["a", "x", "c"], allow_list=True)
+        self.assert_equal(i3 == i4, ak.array([True, False, True]))
+        self.assert_equal(i3 != i4, ak.array([False, True, False]))
+        assert not i3.equals(i4)
+
+        i5 = ak.Index(["a", "b", "c", "d"], allow_list=True)
+        with pytest.raises(ValueError):
+            i4 == i5
+
+        with pytest.raises(ValueError):
+            i4 != i5
+
+        assert not i4.equals(i5)
+
+        with pytest.raises(TypeError):
+            i.equals("string")
+
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_memory_usage(self, size):
         from arkouda.dtypes import BigInt

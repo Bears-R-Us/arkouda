@@ -239,13 +239,13 @@ class TestOperator:
         ak_x = ak.array(np_x)
         ak_y = ak.array(np_y)
         # Vector-Vector Case
-        assert (np_x+np_y).tolist() == (ak_x+ak_y).to_list()
+        assert (np_x + np_y).tolist() == (ak_x + ak_y).to_list()
         # Scalar-Vector Case
-        assert (np_x[0]+np_y).tolist() == (ak_x[0]+ak_y).to_list()
-        assert (np_x[-1]+np_y).tolist() == (ak_x[-1]+ak_y).to_list()
+        assert (np_x[0] + np_y).tolist() == (ak_x[0] + ak_y).to_list()
+        assert (np_x[-1] + np_y).tolist() == (ak_x[-1] + ak_y).to_list()
         # Vector-Scalar Case
-        assert (np_x+np_y[0]).tolist() == (ak_x+ak_y[0]).to_list()
-        assert (np_x+np_y[-1]).tolist() == (ak_x+ak_y[-1]).to_list()
+        assert (np_x + np_y[0]).tolist() == (ak_x + ak_y[0]).to_list()
+        assert (np_x + np_y[-1]).tolist() == (ak_x + ak_y[-1]).to_list()
 
     def test_bool_bool_addition_opeq(self):
         np_x = np.array([True, True, False, False])
@@ -849,3 +849,14 @@ class TestOperator:
         npf_copy %= 2.14
         akf_copy %= 2.14
         assert np.allclose(akf_copy.to_ndarray(), npf_copy, equal_nan=True)
+
+    def test_equals(self):
+        size = 10
+        a1 = ak.arange(size)
+        a1_cpy = ak.arange(size)
+        a2 = 2 * ak.arange(size)
+        a3 = ak.arange(size + 1)
+
+        assert a1.equals(a1_cpy)
+        assert not a1.equals(a2)
+        assert not a1.equals(a3)

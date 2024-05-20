@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING, List, Optional, Union
+from typing import TYPE_CHECKING, List, Optional, Union, Tuple
 
 import pandas as pd  # type: ignore
 from numpy import array as ndarray
@@ -129,10 +129,32 @@ class Index:
     def __len__(self):
         return len(self.index)
 
-    def __eq__(self, v):
-        if isinstance(v, Index):
-            return self.index == v.index
-        return self.index == v
+    def _get_arrays_for_comparison(
+        self, other
+    ) -> Tuple[Union[pdarray, Strings, Categorical], Union[pdarray, Strings, Categorical]]:
+        if isinstance(self.values, list):
+            values = array(self.values)
+        else:
+            values = self.values
+
+        if isinstance(other, Index):
+            other_values = other.values
+        else:
+            other_values = other
+
+        if isinstance(other_values, list):
+            other_values = array(other_values)
+        return values, other_values
+
+    def __eq__(self, other):
+        values, other_values = self._get_arrays_for_comparison(other)
+
+        return values == other_values
+
+    def __ne__(self, other):
+        values, other_values = self._get_arrays_for_comparison(other)
+
+        return values != other_values
 
     def _dtype_of_list_values(self, lst):
         from arkouda.dtypes import dtype
@@ -227,6 +249,19 @@ class Index:
                 idx.append(Categorical.from_return_msg(i_comps[1]))
 
         return cls.factory(idx) if len(idx) > 1 else cls.factory(idx[0])
+
+    def equals(self, other: Union[Index, pdarray, Strings, Categorical, list]) -> bool:
+        if not isinstance(other, (Index, pdarray, Strings, Categorical, list)):
+            raise TypeError("other must be of type Index, pdarray, Strings, Categorical, list")
+
+        if isinstance(other, list) and self.size != len(other):
+            return False
+        elif not isinstance(other, list) and self.size != other.size:
+            return False
+
+        from arkouda.pdarrayclass import all as akall
+
+        return akall(self == other)
 
     def memory_usage(self, unit="B"):
         """
