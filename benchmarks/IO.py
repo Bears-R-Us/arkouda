@@ -7,6 +7,7 @@ import time
 from glob import glob
 
 import arkouda as ak
+import numpy as np
 
 TYPES = (
     "int64",
@@ -152,6 +153,7 @@ def remove_files(path):
 
 def check_correctness(dtype, path, seed, fileFormat, multifile=False):
     N = 10**4
+    b = None
     if dtype == "int64":
         a = ak.randint(0, 2**32, N, seed=seed)
         if multifile:
@@ -168,14 +170,20 @@ def check_correctness(dtype, path, seed, fileFormat, multifile=False):
         a = ak.random_strings_uniform(1, 16, N, seed=seed)
         if multifile:
             b = ak.random_strings_uniform(1, 16, N, seed=seed)
+    else:
+        raise ValueError(f"Invalid dtype: {dtype}")
 
     file_format_actions = {
-        FileFormat.HDF5: (a.to_hdf, b.to_hdf, ak.read_hdf),
-        FileFormat.PARQUET: (a.to_parquet, b.to_parquet, ak.read_parquet),
-        FileFormat.CSV: (a.to_csv, b.to_csv, ak.read_csv)
+        FileFormat.HDF5: (a.to_hdf, b.to_hdf if b else None, ak.read_hdf),
+        FileFormat.PARQUET: (a.to_parquet, b.to_parquet if b else None, ak.read_parquet),
+        FileFormat.CSV: (a.to_csv, b.to_csv if b else None, ak.read_csv)
     }
 
-    write_a, write_b, read_c = file_format_actions.get(fileFormat)
+    if fileFormat in file_format_actions:
+        write_a, write_b, read_c = file_format_actions.get(fileFormat)
+    else:
+        raise ValueError(f"Invalid file format: {fileFormat}")
+
 
     write_a(f"{path}{1}")
     if multifile:
@@ -183,11 +191,15 @@ def check_correctness(dtype, path, seed, fileFormat, multifile=False):
 
     c = read_c(path + "*").popitem()[1]
     remove_files(path)
-    if not multifile:
-        assert (a == c).all()
+
+    if dtype == "float64":
+        assert np.allclose(a.to_ndarray(), c[0 : a.size].to_ndarray()) # Slice is full array when single file
+        if multifile:
+            assert np.allclose(b.to_ndarray(), c[a.size :].to_ndarray())
     else:
-        assert (a == c[0 : a.size]).all()
-        assert (b == c[a.size :]).all()
+        assert (a == c[0 : a.size]).all() # Slice is full array when single file
+        if multifile:
+            assert (b == c[a.size :]).all()
 
 
 def create_parser():

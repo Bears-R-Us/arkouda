@@ -89,7 +89,7 @@ if __name__ == "__main__":
 
     if args.correctness_only:
         for dtype in TYPES:
-            check_correctness(dtype, args.path, args.seed, True)
+            check_correctness(dtype, args.path, args.seed, FileFormat.CSV)
         sys.exit(0)
 
     print("array size = {:,}".format(args.size))
