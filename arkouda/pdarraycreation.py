@@ -128,7 +128,7 @@ def from_series(series: pd.Series, dtype: Optional[Union[type, str]] = None) -> 
         if dt == "object":
             dt = "string"
 
-        n_array = series.to_numpy(dtype=SeriesDTypes[dt])
+        n_array = series.to_numpy(dtype=SeriesDTypes[dt])  # type: ignore
     except KeyError:
         raise ValueError(
             f"dtype {dt} is unsupported. Supported dtypes are bool, float64, int64, string, "
