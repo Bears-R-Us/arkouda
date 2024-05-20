@@ -98,9 +98,9 @@ def time_ak_read(N_per_locale, numfiles, trials, dtype, path, fileFormat, comps=
         comps = COMPRESSIONS
 
     file_format_actions = {
-        FileFormat.HDF5: ">>> arkouda {} HDF5 write with compression={}".format(dtype, comps),
-        FileFormat.PARQUET: ">>> arkouda {} Parquet write with compression={}".format(dtype, comps),
-        FileFormat.CSV: ">>> arkouda {} CSV write".format(dtype)
+        FileFormat.HDF5: ">>> arkouda {} HDF5 read with compression={}".format(dtype, comps),
+        FileFormat.PARQUET: ">>> arkouda {} Parquet read with compression={}".format(dtype, comps),
+        FileFormat.CSV: ">>> arkouda {} CSV read".format(dtype)
     }
     print(file_format_actions.get(fileFormat, "Invalid file format"))
 
