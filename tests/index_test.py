@@ -67,6 +67,25 @@ class IndexTest(ArkoudaTest):
         m = ak.MultiIndex([ak.arange(size), ak.arange(size) * -1])
         assert m.nlevels == 2
 
+    def test_inferred_type(self):
+        i = ak.Index([1, 2, 3])
+        self.assertEqual(i.inferred_type, "integer")
+
+        i2 = ak.Index([1.0, 2, 3])
+        self.assertEqual(i2.inferred_type, "floating")
+
+        i3 = ak.Index(["a", "b", "c"], allow_list=True)
+        self.assertEqual(i3.inferred_type, "string")
+
+        from arkouda.categorical import Categorical
+
+        i4 = ak.Index(Categorical(ak.array(["a", "b", "c"])))
+        self.assertEqual(i4.inferred_type, "categorical")
+
+        size = 10
+        m = ak.MultiIndex([ak.arange(size), ak.arange(size) * -1], names=["test", "test2"])
+        self.assertEqual(m.inferred_type, "mixed")
+
     def test_memory_usage(self):
         from arkouda.dtypes import BigInt
         from arkouda.index import Index, MultiIndex

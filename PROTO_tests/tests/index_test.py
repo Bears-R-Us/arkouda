@@ -58,6 +58,25 @@ class TestIndex:
         m = ak.MultiIndex([ak.arange(size), ak.arange(size) * -1])
         assert m.nlevels == 2
 
+    def test_inferred_type(self):
+        i = ak.Index([1, 2, 3])
+        assert i.inferred_type == "integer"
+
+        i2 = ak.Index([1.0, 2, 3])
+        assert i2.inferred_type == "floating"
+
+        i3 = ak.Index(["a", "b", "c"], allow_list=True)
+        assert i3.inferred_type == "string"
+
+        from arkouda.categorical import Categorical
+
+        i4 = ak.Index(Categorical(ak.array(["a", "b", "c"])))
+        assert i4.inferred_type == "categorical"
+
+        size = 10
+        m = ak.MultiIndex([ak.arange(size), ak.arange(size) * -1], names=["test", "test2"])
+        assert m.inferred_type == "mixed"
+
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_memory_usage(self, size):
         from arkouda.dtypes import BigInt
