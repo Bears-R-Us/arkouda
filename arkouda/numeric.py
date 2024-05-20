@@ -21,8 +21,9 @@ from arkouda.dtypes import (
 from arkouda.groupbyclass import GroupBy
 from arkouda.pdarrayclass import all as ak_all
 from arkouda.pdarrayclass import any as ak_any
-from arkouda.pdarrayclass import argmax, create_pdarray, pdarray
+from arkouda.pdarrayclass import argmax, create_pdarray, pdarray, sum
 from arkouda.pdarraycreation import array, linspace, scalar_array
+from arkouda.sorting import sort
 from arkouda.strings import Strings
 
 Categorical = ForwardRef("Categorical")
@@ -33,6 +34,7 @@ __all__ = [
     "abs",
     "ceil",
     "clip",
+    "count_nonzero",
     "floor",
     "trunc",
     "round",
@@ -69,6 +71,7 @@ __all__ = [
     "histogram",
     "histogram2d",
     "histogramdd",
+    "median",
     "value_counts",
     "ErrorMode",
 ]
@@ -1013,9 +1016,7 @@ def arctan2(
     TypeError
         Raised if the parameter is not a pdarray
     """
-    if not all(
-        isSupportedNumber(arg) or isinstance(arg, pdarray) for arg in [num, denom]
-    ):
+    if not all(isSupportedNumber(arg) or isinstance(arg, pdarray) for arg in [num, denom]):
         raise TypeError(
             f"Unsupported types {type(num)} and/or {type(denom)}. Supported "
             "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
@@ -1242,9 +1243,7 @@ def arctanh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     return _trig_helper(pda, "arctanh", where)
 
 
-def _trig_helper(
-    pda: pdarray, func: str, where: Union[bool, pdarray] = True
-) -> pdarray:
+def _trig_helper(pda: pdarray, func: str, where: Union[bool, pdarray] = True) -> pdarray:
     """
     Returns the result of the input trig function acting element-wise on the array.
 
@@ -1460,10 +1459,7 @@ def hash(
         return _hash_single(pda, full) if isinstance(pda, pdarray) else pda.hash()
     elif isinstance(pda, List):
         if any(
-            wrong_type := [
-                not isinstance(a, (pdarray, Strings, SegArray_, Categorical_))
-                for a in pda
-            ]
+            wrong_type := [not isinstance(a, (pdarray, Strings, SegArray_, Categorical_)) for a in pda]
         ):
             raise TypeError(
                 f"Unsupported type {type(pda[np.argmin(wrong_type)])}. Supported types are pdarray,"
@@ -1545,22 +1541,16 @@ def _str_cat_where(
             new_categories = concatenate([A.categories, array([B])])
             b_code = A.codes.size + 1
         new_codes = where(condition, A.codes, b_code)
-        return Categorical.from_codes(
-            new_codes, new_categories, NAvalue=A.NAvalue
-        ).reset_categories()
+        return Categorical.from_codes(new_codes, new_categories, NAvalue=A.NAvalue).reset_categories()
 
     # both cat
     if isinstance(A, Categorical) and isinstance(B, Categorical):
         if A.codes.size != B.codes.size:
             raise TypeError("Categoricals must be same length")
-        if A.categories.size != B.categories.size or not ak_all(
-            A.categories == B.categories
-        ):
+        if A.categories.size != B.categories.size or not ak_all(A.categories == B.categories):
             A, B = A.standardize_categories([A, B])
         new_codes = where(condition, A.codes, B.codes)
-        return Categorical.from_codes(
-            new_codes, A.categories, NAvalue=A.NAvalue
-        ).reset_categories()
+        return Categorical.from_codes(new_codes, A.categories, NAvalue=A.NAvalue).reset_categories()
 
     # one strings and one str
     if isinstance(A, Strings) and isinstance(B, str):
@@ -1742,9 +1732,7 @@ def where(
             dt = dtA
         # Cannot safely cast
         else:
-            raise TypeError(
-                f"Cannot cast between scalars {str(A)} and {str(B)} to supported dtype"
-            )
+            raise TypeError(f"Cannot cast between scalars {str(A)} and {str(B)} to supported dtype")
         repMsg = generic_msg(
             cmd=f"efunc3ss{condition.ndim}D",
             args={
@@ -1888,17 +1876,13 @@ def histogram2d(
         x_bins, y_bins = bins, bins
     else:
         if len(bins) != 2:
-            raise ValueError(
-                "Sequences of bins must contain two elements (num_x_bins, num_y_bins)"
-            )
+            raise ValueError("Sequences of bins must contain two elements (num_x_bins, num_y_bins)")
         x_bins, y_bins = bins
     if x_bins < 1 or y_bins < 1:
         raise ValueError("bins must be 1 or greater")
     x_bin_boundaries = linspace(x.min(), x.max(), x_bins + 1)
     y_bin_boundaries = linspace(y.min(), y.max(), y_bins + 1)
-    repMsg = generic_msg(
-        cmd="histogram2D", args={"x": x, "y": y, "xBins": x_bins, "yBins": y_bins}
-    )
+    repMsg = generic_msg(cmd="histogram2D", args={"x": x, "y": y, "xBins": x_bins, "yBins": y_bins})
     return (
         create_pdarray(type_cast(str, repMsg)).reshape(x_bins, y_bins),
         x_bin_boundaries,
@@ -1976,9 +1960,7 @@ def histogramdd(
         bins = [bins] * num_dims
     else:
         if len(bins) != num_dims:
-            raise ValueError(
-                "Sequences of bins must contain same number of elements as the sample"
-            )
+            raise ValueError("Sequences of bins must contain same number of elements as the sample")
     if any(b < 1 for b in bins):
         raise ValueError("bins must be 1 or greater")
 
@@ -2141,3 +2123,86 @@ def clip(
     if hi is not None:
         pda1 = where(pda1 > hi, hi, pda1)
     return pda1
+
+
+def median(pda):
+    """
+    Compute the median of a given array.  1d case only, for now.
+
+    Parameters
+    ----------
+    pda: pdarray
+        The input data, in pdarray form, numeric type or boolean
+
+    Returns
+    -------
+    np.float64
+        The median of the entire pdarray
+        The array is sorted, and then if the number of elements is odd,
+            the return value is the middle element.  If even, then the
+            mean of the two middle elements.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> arkouda.connect()
+    >>> pda = ak.array ([0,4,7,8,1,3,5,2,-1])
+    >>> ak.median(pda)
+    3
+    >>> pda = ak.array([0,1,3,3,1,2,3,4,2,3])
+    2.5
+
+    """
+
+    #  Now do the computation
+
+    if pda.dtype == bool:
+        pda_srtd = sort(cast(pda, dt=np.int64))
+    else:
+        pda_srtd = sort(pda)
+    if len(pda_srtd) % 2 == 1:
+        return pda_srtd[len(pda_srtd) // 2].astype(np.float64)
+    else:
+        return ((pda_srtd[len(pda_srtd) // 2] + pda_srtd[len(pda_srtd) // 2 - 1]) / 2.0).astype(
+            np.float64
+        )
+
+
+def count_nonzero(pda):
+    """
+    Compute the nonzero count of a given array. 1D case only, for now.
+
+    Parameters
+    ----------
+    pda: pdarray
+        The input data, in pdarray form, numeric, bool, or str
+
+    Returns
+    -------
+    np.int64
+        The nonzero count of the entire pdarray
+
+    Examples
+    --------
+    >>> pda = ak.array([0,4,7,8,1,3,5,2,-1])
+    >>> ak.count_nonzero(pda)
+    9
+    >>> pda = ak.array([False,True,False,True,False])
+    >>> ak.count_nonzero(pda)
+    3
+    >>> pda = ak.array(["hello","","there"])
+    >>> ak.count_nonzero(pda)
+    2
+
+    """
+
+    from arkouda.util import is_numeric
+
+    #  Handle different data types.
+
+    if is_numeric(pda):
+        return sum((pda != 0).astype(np.int64))
+    elif pda.dtype == bool:
+        return sum((pda).astype(np.int64))
+    elif pda.dtype == str:
+        return sum((pda != "").astype(np.int64))
