@@ -210,8 +210,8 @@ class Generator:
         return create_pdarray(rep_msg)
 
     def normal(self, loc=0.0, scale=1.0, size=None):
-        """
-        Draw samples from a normal distribution
+        r"""
+        Draw samples from a normal (Gaussian) distribution
 
         Parameters
         ----------
@@ -223,6 +223,16 @@ class Generator:
 
         size: numeric_scalars, optional
             Output shape. Default is None, in which case a single value is returned.
+
+        Notes
+        -----
+        The probability density for the Gaussian distribution is:
+
+        .. math::
+           p(x) = \frac{1}{\sqrt{2\pi \sigma^2}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}
+
+        where :math:`\mu` is the mean and :math:`\sigma` the standard deviation.
+        The square of the standard deviation, :math:`\sigma^2`, is called the variance.
 
         Returns
         -------
@@ -300,7 +310,7 @@ class Generator:
         return create_pdarray(rep_msg)
 
     def standard_normal(self, size=None):
-        """
+        r"""
         Draw samples from a standard Normal distribution (mean=0, stdev=1).
 
         Parameters
@@ -315,10 +325,14 @@ class Generator:
 
         Notes
         -----
-        For random samples from :math:`N(\\mu, \\sigma^2)`, use:
+        For random samples from :math:`N(\mu, \sigma^2)`, either call `normal` or do:
 
-        ``(sigma * standard_normal(size)) + mu``
+        .. math::
+            (\sigma \cdot \texttt{standard_normal}(size)) + \mu
 
+        See Also
+        --------
+        normal
 
         Examples
         --------
