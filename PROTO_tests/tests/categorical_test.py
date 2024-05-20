@@ -244,3 +244,10 @@ class TestCategorical:
         args = ak.array([3, 2, 1, 0])
         ret = ak.lookup(keys, values, args)
         assert ret.to_list() == ["C", "B", "A", "N/A"]
+
+    def test_sort(self):
+        rand_cats = ak.random_strings_uniform(1, 16, 10)
+        rand_codes = ak.randint(0, rand_cats.size, 100)
+        cat = ak.Categorical.from_codes(codes=rand_codes, categories=rand_cats)
+
+        assert sorted(cat.to_list()) == cat.sort_values().to_list()

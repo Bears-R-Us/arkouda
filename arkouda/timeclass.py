@@ -3,8 +3,8 @@ import json
 from warnings import warn
 
 import numpy as np  # type: ignore
-from pandas import Series  # type: ignore
-from pandas import Timestamp  # type: ignore
+from pandas import Series as pdSeries  # type: ignore
+from pandas import Timestamp as pdTimestamp  # type: ignore
 from pandas import Timedelta as pdTimedelta  # type: ignore
 from pandas import date_range as pd_date_range  # type: ignore
 from pandas import timedelta_range as pd_timedelta_range  # type: ignore
@@ -106,10 +106,10 @@ class _AbstractBaseTime(pdarray):
             if pda.dtype.kind not in ("M", "m"):
                 # M = datetime64, m = timedelta64
                 raise TypeError(f"Invalid dtype: {pda.dtype.name}")
-            if isinstance(pda, Series):
+            if isinstance(pda, pdSeries):
                 # Pandas Datetime and Timedelta
                 # Get units of underlying numpy datetime64 array
-                self.unit = np.datetime_data(pda.values.dtype)[0]
+                self.unit = np.datetime_data(pda.values.dtype)[0]  # type: ignore [arg-type]
                 self._factor = _get_factor(self.unit)
                 # Create pdarray
                 self.values = from_series(pda)
@@ -380,7 +380,7 @@ class _AbstractBaseTime(pdarray):
     @staticmethod
     def _is_datetime_scalar(scalar):
         return (
-            isinstance(scalar, Timestamp)
+            isinstance(scalar, pdTimestamp)
             or (isinstance(scalar, np.datetime64) and np.isscalar(scalar))
             or isinstance(scalar, datetime.datetime)
         )
@@ -617,7 +617,7 @@ class Datetime(_AbstractBaseTime):
 
     def _scalar_callback(self, scalar):
         # Formats a scalar return value as pandas Timestamp
-        return Timestamp(int(scalar), unit=_BASE_UNIT)
+        return pdTimestamp(int(scalar), unit=_BASE_UNIT)
 
     @staticmethod
     def _is_supported_scalar(self, scalar):

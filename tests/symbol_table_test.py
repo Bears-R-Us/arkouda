@@ -630,7 +630,7 @@ class RegistrationTest(ArkoudaTest):
 
         # verify that components seen as registered after original unregistered
         s.unregister()
-        self.assertTrue(df["SegArray"].is_registered())
+        self.assertTrue(df["SegArray"].values.is_registered())
 
         cleanup()
 

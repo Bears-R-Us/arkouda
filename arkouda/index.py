@@ -899,7 +899,12 @@ class Index:
 class MultiIndex(Index):
     objType = "MultiIndex"
 
-    def __init__(self, values, name=None, names=None):
+    def __init__(
+        self,
+        values: Union[list, pdarray, Strings, Categorical],
+        name: Optional[str] = None,
+        names: Optional[list[str]] = None,
+    ):
         self.registered_name: Optional[str] = None
         if not (isinstance(values, list) or isinstance(values, tuple)):
             raise TypeError("MultiIndex should be an iterable")
