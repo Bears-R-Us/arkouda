@@ -141,6 +141,7 @@ def find(query, space, all_occurrences=False, remove_missing=False):
 
     Examples
     --------
+    >>> select_from = ak.arange(10)
     >>> arr1 = select_from[ak.randint(0, select_from.size, 20, seed=10)]
     >>> arr2 = select_from[ak.randint(0, select_from.size, 20, seed=11)]
     # remove some values to ensure we have some values

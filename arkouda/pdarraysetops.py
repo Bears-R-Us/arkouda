@@ -254,6 +254,19 @@ def indexof1d(query: groupable, space: groupable) -> pdarray:
     This is an alias of
     `ak.find(query, space, all_occurrences=True, remove_missing=True).values`
 
+    Examples
+    --------
+    >>> select_from = ak.arange(10)
+    >>> arr1 = select_from[ak.randint(0, select_from.size, 20, seed=10)]
+    >>> arr2 = select_from[ak.randint(0, select_from.size, 20, seed=11)]
+    # remove some values to ensure we have some values
+    # which don't appear in the search space
+    >>> arr2 = arr2[arr2 != 9]
+    >>> arr2 = arr2[arr2 != 3]
+
+    >>> ak.indexof1d(arr1, arr2)
+    array([0 4 1 3 10 2 6 12 13 5 7 8 9 14 5 7 11 15 5 7 0 4])
+
     Raises
     ------
     TypeError
