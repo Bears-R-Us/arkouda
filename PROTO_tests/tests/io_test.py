@@ -482,7 +482,7 @@ class TestParquet:
             assert "idx" in data
             assert "seg" in data
             assert df["idx"].to_list() == data["idx"].to_list()
-            assert df["seg"].to_list() == data["seg"].to_list()
+            assert df["seg"].values.to_list() == data["seg"].to_list()
 
             # test read with read_nested=false and no supplied datasets
             data = ak.read_parquet(f"{file_name}*", read_nested=False)["idx"]
@@ -494,7 +494,7 @@ class TestParquet:
             assert "idx" in data
             assert "seg" in data
             assert df["idx"].to_list() == data["idx"].to_list()
-            assert df["seg"].to_list() == data["seg"].to_list()
+            assert df["seg"].values.to_list() == data["seg"].to_list()
 
     @pytest.mark.parametrize("comp", COMPRESSIONS)
     def test_ipv4_columns(self, comp):
@@ -523,7 +523,7 @@ class TestParquet:
 
         # test replacement of IPv4 with uint representation
         df = ak.DataFrame({"a": ak.IPv4(ak.arange(10))})
-        df["a"] = df["a"].export_uint()
+        df["a"] = df["a"].values.export_uint()
         assert ak.arange(10).to_list() == df["a"].to_list()
 
 
@@ -657,7 +657,7 @@ class TestHDF5:
             for col_name in akdf.columns.values:
                 gen_arr = ak.read_hdf(f"{file_name}*", datasets=[col_name])[col_name]
                 if akdf[col_name].dtype != ak.float64:
-                    assert akdf[col_name].to_list() == gen_arr.to_list()
+                    assert akdf[col_name].values.to_list() == gen_arr.to_list()
                 else:
                     a = akdf[col_name].to_ndarray()
                     b = gen_arr.to_ndarray()
@@ -697,7 +697,7 @@ class TestHDF5:
                 # verify generic load works
                 gen_arr = ak.load(path_prefix=file_name, dataset=col_name)[col_name]
                 if akdf[col_name].dtype != ak.float64:
-                    assert akdf[col_name].to_list() == gen_arr.to_list()
+                    assert akdf[col_name].values.to_list() == gen_arr.to_list()
                 else:
                     a = akdf[col_name].to_ndarray()
                     b = gen_arr.to_ndarray()
@@ -709,7 +709,7 @@ class TestHDF5:
                 # verify generic load works with file_format parameter
                 gen_arr = ak.load(path_prefix=file_name, dataset=col_name, file_format="HDF5")[col_name]
                 if akdf[col_name].dtype != ak.float64:
-                    assert akdf[col_name].to_list() == gen_arr.to_list()
+                    assert akdf[col_name].values.to_list() == gen_arr.to_list()
                 else:
                     a = akdf[col_name].to_ndarray()
                     b = gen_arr.to_ndarray()
@@ -1184,7 +1184,7 @@ class TestHDF5:
                 data = ak.read_hdf(f"{file_name}*")
                 odf_keys = list(odf.keys())
                 for key in df.keys():
-                    assert (data[key] == (odf[key] if key in odf_keys else df[key])).all()
+                    assert (data[key] == (odf[key].values if key in odf_keys else df[key].values)).all()
 
     def test_overwrite_segarray(self):
         sa1 = ak.SegArray(ak.arange(0, 1000, 5), ak.arange(1000))
@@ -1384,9 +1384,9 @@ class TestHDF5:
             assert isinstance(rd_df["ip"], ak.IPv4)
             assert isinstance(rd_df["datetime"], ak.Datetime)
             assert isinstance(rd_df["timedelta"], ak.Timedelta)
-            assert df["ip"].to_list() == rd_df["ip"].to_list()
-            assert df["datetime"].to_list() == rd_df["datetime"].to_list()
-            assert df["timedelta"].to_list() == rd_df["timedelta"].to_list()
+            assert df["ip"].values.to_list() == rd_df["ip"].to_list()
+            assert df["datetime"].values.to_list() == rd_df["datetime"].to_list()
+            assert df["timedelta"].values.to_list() == rd_df["timedelta"].to_list()
 
 
 class TestCSV:
