@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ._array_object import Array
-from ._dtypes import _real_numeric_dtypes
+from ._dtypes import _real_numeric_dtypes, _real_floating_dtypes
 
 from typing import Optional, Tuple, Literal, cast
 
@@ -109,4 +109,24 @@ def where(condition: Array, x1: Array, x2: Array, /) -> Array:
 def searchsorted(
     x1: Array, x2: Array, /, *, side: Literal['left', 'right'] = 'left', sorter: Optional[Array] = None
 ) -> Array:
-    raise NotImplementedError("searchsorted is not yet implemented")
+    if x1.dtype not in _real_floating_dtypes or x2.dtype not in _real_floating_dtypes:
+        raise TypeError("Only real dtypes are allowed in searchsorted")
+
+    if x1.ndim > 1:
+        raise ValueError("searchsorted only supports 1D arrays for x1")
+
+    if sorter is not None:
+        _x1 = x1[sorter]
+    else:
+        _x1 = x1
+
+    resp = generic_msg(
+        cmd=f"searchSorted{x2.ndim}D",
+        args={
+            "x1": _x1._array,
+            "x2": x2._array,
+            "side": side,
+        },
+    )
+
+    return Array._new(create_pdarray(resp))

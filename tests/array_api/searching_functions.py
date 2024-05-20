@@ -1,6 +1,7 @@
 from base_test import ArkoudaTest
 from context import arkouda as ak
 import arkouda.array_api as Array
+import numpy as np
 
 SEED = 314159
 
@@ -69,3 +70,18 @@ class SearchingFunctions(ArkoudaTest):
         self.assertEqual(d[2, 2, 2], b[2, 2, 2])
         self.assertEqual(d[0, 0, 0], c[0, 0, 0])
         self.assertEqual(d[3, 3, 3], c[3, 3, 3])
+
+    def test_search_sorted(self):
+        a = Array.asarray(ak.randint(0, 100, 1000, dtype=ak.float64))
+        b = Array.asarray(ak.randint(0, 100, (10, 10), dtype=ak.float64))
+
+        anp = a.to_ndarray()
+        bnp = b.to_ndarray()
+
+        sorter = Array.argsort(a)
+
+        for side in ["left", "right"]:
+            indices = Array.searchsorted(a, b, side=side, sorter=sorter)
+            indicesnp = np.searchsorted(anp, bnp, side=side, sorter=sorter.to_ndarray())
+
+            self.assertEqual(indices.tolist(), indicesnp.tolist())
