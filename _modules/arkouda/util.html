@@ -377,6 +377,7 @@
 <span class="kn">from</span> <span class="nn">arkouda.timeclass</span> <span class="kn">import</span> <span class="n">Datetime</span><span class="p">,</span> <span class="n">Timedelta</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">arkouda.index</span> <span class="kn">import</span> <span class="n">Index</span>
     <span class="kn">from</span> <span class="nn">arkouda.series</span> <span class="kn">import</span> <span class="n">Series</span>
 
 
@@ -834,7 +835,9 @@
 
 <div class="viewcode-block" id="is_numeric">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.is_numeric">[docs]</a>
-<span class="k">def</span> <span class="nf">is_numeric</span><span class="p">(</span><span class="n">arry</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">builtins</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>  <span class="c1"># noqa: F821</span>
+<span class="k">def</span> <span class="nf">is_numeric</span><span class="p">(</span>
+    <span class="n">arry</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">,</span> <span class="s2">&quot;Series&quot;</span><span class="p">,</span> <span class="s2">&quot;Index&quot;</span><span class="p">]</span>  <span class="c1"># noqa: F821</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">builtins</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if the dtype of the given array is numeric.</span>
 
@@ -859,7 +862,10 @@
 <span class="sd">        False</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arry</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">arkouda.index</span> <span class="kn">import</span> <span class="n">Index</span>
+    <span class="kn">from</span> <span class="nn">arkouda.series</span> <span class="kn">import</span> <span class="n">Series</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arry</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Series</span><span class="p">,</span> <span class="n">Index</span><span class="p">)):</span>
         <span class="k">return</span> <span class="n">_is_dtype_in_union</span><span class="p">(</span><span class="n">dtype</span><span class="p">(</span><span class="n">arry</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span> <span class="n">numeric_scalars</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span></div>
@@ -868,7 +874,7 @@
 
 <div class="viewcode-block" id="is_float">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.is_float">[docs]</a>
-<span class="k">def</span> <span class="nf">is_float</span><span class="p">(</span><span class="n">arry</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]):</span>  <span class="c1"># noqa: F821</span>
+<span class="k">def</span> <span class="nf">is_float</span><span class="p">(</span><span class="n">arry</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">,</span> <span class="s2">&quot;Series&quot;</span><span class="p">,</span> <span class="s2">&quot;Index&quot;</span><span class="p">]):</span>  <span class="c1"># noqa: F821</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if the dtype of the given array is float.</span>
 
@@ -893,7 +899,10 @@
 <span class="sd">        False</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arry</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">arkouda.index</span> <span class="kn">import</span> <span class="n">Index</span>
+    <span class="kn">from</span> <span class="nn">arkouda.series</span> <span class="kn">import</span> <span class="n">Series</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arry</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Series</span><span class="p">,</span> <span class="n">Index</span><span class="p">)):</span>
         <span class="k">return</span> <span class="n">_is_dtype_in_union</span><span class="p">(</span><span class="n">dtype</span><span class="p">(</span><span class="n">arry</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span> <span class="n">float_scalars</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span></div>
@@ -902,7 +911,7 @@
 
 <div class="viewcode-block" id="is_int">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.is_int">[docs]</a>
-<span class="k">def</span> <span class="nf">is_int</span><span class="p">(</span><span class="n">arry</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]):</span>  <span class="c1"># noqa: F821</span>
+<span class="k">def</span> <span class="nf">is_int</span><span class="p">(</span><span class="n">arry</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">,</span> <span class="s2">&quot;Series&quot;</span><span class="p">,</span> <span class="s2">&quot;Index&quot;</span><span class="p">]):</span>  <span class="c1"># noqa: F821</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if the dtype of the given array is int.</span>
 
@@ -928,7 +937,10 @@
 <span class="sd">    True</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arry</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">arkouda.index</span> <span class="kn">import</span> <span class="n">Index</span>
+    <span class="kn">from</span> <span class="nn">arkouda.series</span> <span class="kn">import</span> <span class="n">Series</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arry</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Series</span><span class="p">,</span> <span class="n">Index</span><span class="p">)):</span>
         <span class="k">return</span> <span class="n">_is_dtype_in_union</span><span class="p">(</span><span class="n">dtype</span><span class="p">(</span><span class="n">arry</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span> <span class="n">int_scalars</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span></div>
@@ -947,7 +959,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    values :  pdarray, Strings, or Categorical</span>
 <span class="sd">        The values to be mapped.</span>
-<span class="sd">    mapping : dict or Series</span>
+<span class="sd">    mapping : dict or arkouda.Series</span>
 <span class="sd">        The mapping correspondence.</span>
 
 <span class="sd">    Returns</span>
@@ -989,8 +1001,8 @@
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="n">mapping</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span>
-            <span class="p">[</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">())),</span> <span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">values</span><span class="p">()))]</span>  <span class="c1"># type: ignore [assignment]</span>
-        <span class="p">)</span>
+            <span class="p">[</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">())),</span> <span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">values</span><span class="p">()))]</span>
+        <span class="p">)</span>  <span class="c1"># type: ignore [assignment]</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="n">Series</span><span class="p">):</span>
         <span class="n">xtra_keys</span> <span class="o">=</span> <span class="n">gb_keys</span><span class="p">[</span><span class="n">in1d</span><span class="p">(</span><span class="n">gb_keys</span><span class="p">,</span> <span class="n">mapping</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>

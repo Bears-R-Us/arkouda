@@ -121,7 +121,7 @@ Functions
    :rtype: ak.array
 
 
-.. py:function:: is_float(arry: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical])
+.. py:function:: is_float(arry: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical, arkouda.series.Series, arkouda.index.Index])
 
    Check if the dtype of the given array is float.
 
@@ -140,7 +140,7 @@ Functions
                False
 
 
-.. py:function:: is_int(arry: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical])
+.. py:function:: is_int(arry: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical, arkouda.series.Series, arkouda.index.Index])
 
    Check if the dtype of the given array is int.
 
@@ -160,7 +160,7 @@ Functions
              * *True*
 
 
-.. py:function:: is_numeric(arry: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]) -> bool
+.. py:function:: is_numeric(arry: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical, arkouda.series.Series, arkouda.index.Index]) -> bool
 
    Check if the dtype of the given array is numeric.
 
@@ -200,7 +200,7 @@ Functions
    :param values: The values to be mapped.
    :type values: pdarray, Strings, or Categorical
    :param mapping: The mapping correspondence.
-   :type mapping: dict or Series
+   :type mapping: dict or arkouda.Series
 
    :returns: A new array with the values mapped by the mapping correspondence.
              When the input Series has Categorical values,
