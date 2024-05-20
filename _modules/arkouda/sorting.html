@@ -543,7 +543,11 @@
 <div class="viewcode-block" id="sort">
 <a class="viewcode-back" href="../../autoapi/arkouda/sorting/index.html#arkouda.alignment.sort">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">algorithm</span><span class="p">:</span> <span class="n">SortingAlgorithm</span> <span class="o">=</span> <span class="n">SortingAlgorithm</span><span class="o">.</span><span class="n">RadixSortLSD</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">sort</span><span class="p">(</span>
+    <span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
+    <span class="n">algorithm</span><span class="p">:</span> <span class="n">SortingAlgorithm</span> <span class="o">=</span> <span class="n">SortingAlgorithm</span><span class="o">.</span><span class="n">RadixSortLSD</span><span class="p">,</span>
+    <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a sorted copy of the array. Only sorts numeric arrays;</span>
 <span class="sd">    for Strings, use argsort.</span>
@@ -588,7 +592,10 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ak.sort supports int64, uint64, or float64, not </span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;sort&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;alg&quot;</span><span class="p">:</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">})</span>
+    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;sort</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;alg&quot;</span><span class="p">:</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="n">axis</span><span class="p">}</span>
+    <span class="p">)</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span></div>
 
 </pre></div>

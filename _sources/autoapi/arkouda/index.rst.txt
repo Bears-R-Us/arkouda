@@ -38267,7 +38267,7 @@ Package Contents
    .. seealso:: :obj:`ak.restore`
 
 
-.. py:function:: sort(pda: arkouda.pdarrayclass.pdarray, algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD) -> arkouda.pdarrayclass.pdarray
+.. py:function:: sort(pda: arkouda.pdarrayclass.pdarray, algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, axis=-1) -> arkouda.pdarrayclass.pdarray
 
    Return a sorted copy of the array. Only sorts numeric arrays;
    for Strings, use argsort.
