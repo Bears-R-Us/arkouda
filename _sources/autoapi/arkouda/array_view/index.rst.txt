@@ -1,24 +1,21 @@
-:py:mod:`arkouda.array_view`
-============================
+arkouda.array_view
+==================
 
 .. py:module:: arkouda.array_view
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    arkouda.array_view.ArrayView
 
 
-
+Module Contents
+---------------
 
 .. py:class:: ArrayView(base: arkouda.pdarrayclass.pdarray, shape, order='row_major')
-
 
    A multi-dimensional view of a pdarray. Arkouda ``ArraryView`` behaves similarly to numpy's ndarray.
    The base pdarray is stored in 1-dimension but can be indexed and treated logically
@@ -68,10 +65,11 @@ Classes
 
       :type: str {'C'/'row_major' | 'F'/'column_major'}
 
+
    .. py:attribute:: objType
       :value: 'ArrayView'
 
-      
+
 
    .. py:method:: to_hdf(prefix_path: str, dataset: str = 'ArrayView', mode: str = 'truncate', file_type: str = 'distribute')
 
@@ -89,6 +87,7 @@ Classes
                         Indicates the format to save the file. Single will store in a single file.
                         Distribute will store the date in a file per locale.
       :type file_type: str (single|distribute)
+
 
 
    .. py:method:: to_list() -> list
@@ -125,6 +124,7 @@ Classes
       list
 
 
+
    .. py:method:: to_ndarray() -> numpy.ndarray
 
       Convert the ArrayView to a np.ndarray, transferring array data from the
@@ -158,6 +158,7 @@ Classes
              [3, 4, 5]])
       >>> type(a.to_ndarray())
       numpy.ndarray
+
 
 
    .. py:method:: update_hdf(prefix_path: str, dataset: str = 'ArrayView', repack: bool = True)

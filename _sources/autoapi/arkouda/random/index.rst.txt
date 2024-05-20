@@ -1,23 +1,19 @@
-:py:mod:`arkouda.random`
-========================
+arkouda.random
+==============
 
 .. py:module:: arkouda.random
 
 
-Package Contents
-----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    arkouda.random.Generator
 
 
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -26,9 +22,10 @@ Functions
    arkouda.random.uniform
 
 
+Package Contents
+----------------
 
 .. py:class:: Generator(name_dict=None, seed=None, state=1)
-
 
    ``Generator`` exposes a number of methods for generating random
    numbers drawn from a variety of probability distributions. In addition to
@@ -53,6 +50,7 @@ Functions
       :obj:`default_rng`
           Recommended constructor for `Generator`.
 
+
    .. py:method:: choice(a, size=None, replace=True, p=None)
 
       Generates a randomly sample from a.
@@ -70,6 +68,7 @@ Functions
 
       :returns: A pdarray containing the sampled values or a single random value if size not provided.
       :rtype: pdarray, numeric_scalar
+
 
 
    .. py:method:: integers(low, high=None, size=None, dtype=akint64, endpoint=False)
@@ -107,6 +106,7 @@ Functions
       array([2, 4, 0, 0, 0, 3, 1, 5, 5, 3])  # random
 
 
+
    .. py:method:: permutation(x)
 
       Randomly permute a sequence, or return a permuted range.
@@ -117,6 +117,7 @@ Functions
 
       :returns: pdarray of permuted elements
       :rtype: pdarray
+
 
 
    .. py:method:: random(size=None)
@@ -148,6 +149,7 @@ Functions
       array([0.055256829926011691, 0.62511314008006458, 0.16400145561571539]) # random
 
 
+
    .. py:method:: shuffle(x)
 
       Randomly shuffle a pdarray in place.
@@ -156,6 +158,7 @@ Functions
       :type x: pdarray
 
       :rtype: None
+
 
 
    .. py:method:: standard_normal(size=None)
@@ -181,6 +184,7 @@ Functions
       2.1923875335537315 # random
       >>> rng.standard_normal(3)
       array([0.8797352989638163, -0.7085325853376141, 0.021728052940979934])  # random
+
 
 
    .. py:method:: uniform(low=0.0, high=1.0, size=None)

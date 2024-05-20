@@ -1,24 +1,21 @@
-:py:mod:`arkouda.strings`
-=========================
+arkouda.strings
+===============
 
 .. py:module:: arkouda.strings
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    arkouda.strings.Strings
 
 
-
+Module Contents
+---------------
 
 .. py:class:: Strings(strings_pdarray: arkouda.pdarrayclass.pdarray, bytes_size: arkouda.dtypes.int_scalars)
-
 
    Represents an array of strings whose data resides on the
    arkouda server. The user should not call this class directly;
@@ -75,14 +72,9 @@ Classes
    starting indices for each string and (2) bytes, which contains the
    raw bytes of all strings, delimited by nulls.
 
+
    .. py:attribute:: BinOps
 
-      
-
-   .. py:attribute:: objType
-      :value: 'Strings'
-
-      
 
    .. py:method:: astype(dtype) -> arkouda.pdarrayclass.pdarray
 
@@ -99,8 +91,10 @@ Classes
       This is essentially shorthand for ak.cast(x, '<dtype>') where x is a pdarray.
 
 
+
    .. py:method:: attach(user_defined_name: str) -> Strings
       :staticmethod:
+
 
       class method to return a Strings object attached to the registered name in the arkouda
       server which was registered using register()
@@ -121,9 +115,11 @@ Classes
       until they are unregistered.
 
 
+
    .. py:method:: cached_regex_patterns() -> List
 
       Returns the regex patterns for which Match objects have been cached
+
 
 
    .. py:method:: capitalize() -> Strings
@@ -147,6 +143,7 @@ Classes
       >>> strings.title()
       array(['Strings are here 0', 'Strings are here 1', 'Strings are here 2', 'Strings are here 3',
       ... 'Strings are here 4'])
+
 
 
    .. py:method:: contains(substr: Union[bytes, arkouda.dtypes.str_scalars], regex: bool = False) -> arkouda.pdarrayclass.pdarray
@@ -180,6 +177,7 @@ Classes
       array([True, True, True, True, True])
 
 
+
    .. py:method:: decode(fromEncoding, toEncoding='UTF-8')
 
       Return a new strings object in `fromEncoding`, expecting that the
@@ -197,6 +195,7 @@ Classes
       :raises RuntimeError: Raised if there is a server-side error thrown
 
 
+
    .. py:method:: encode(toEncoding: str, fromEncoding: str = 'UTF-8')
 
       Return a new strings object in `toEncoding`, expecting that the
@@ -212,6 +211,7 @@ Classes
       :rtype: Strings
 
       :raises RuntimeError: Raised if there is a server-side error thrown
+
 
 
    .. py:method:: endswith(substr: Union[bytes, arkouda.dtypes.str_scalars], regex: bool = False) -> arkouda.pdarrayclass.pdarray
@@ -248,6 +248,7 @@ Classes
       array([True, True, True, True, True])
 
 
+
    .. py:method:: find_locations(pattern: Union[bytes, arkouda.dtypes.str_scalars]) -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
 
       Finds pattern matches and returns pdarrays containing the number, start postitions,
@@ -278,6 +279,7 @@ Classes
       array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1]))
 
 
+
    .. py:method:: findall(pattern: Union[bytes, arkouda.dtypes.str_scalars], return_match_origins: bool = False) -> Union[Strings, Tuple]
 
       Return a new Strings containg all non-overlapping matches of pattern
@@ -302,6 +304,7 @@ Classes
       >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
       >>> strings.findall('_+', return_match_origins=True)
       (array(['_', '___', '____', '__', '___', '____', '___']), array([0 0 1 3 3 3 3]))
+
 
 
    .. py:method:: flatten(delimiter: str, return_segments: bool = False, regex: bool = False) -> Union[Strings, Tuple]
@@ -340,8 +343,10 @@ Classes
       array([0, 2, 5])
 
 
+
    .. py:method:: from_parts(offset_attrib: Union[arkouda.pdarrayclass.pdarray, str], bytes_attrib: Union[arkouda.pdarrayclass.pdarray, str]) -> Strings
       :staticmethod:
+
 
       Factory method for creating a Strings object from an Arkouda server
       response where the arrays are separate components.
@@ -364,8 +369,10 @@ Classes
       need to instruct the server to assemble the into a composite entity.
 
 
+
    .. py:method:: from_return_msg(rep_msg: str) -> Strings
       :staticmethod:
+
 
       Factory method for creating a Strings object from an Arkouda server
       response message
@@ -383,6 +390,7 @@ Classes
 
       We really don't have an itemsize because these are variable length strings.
       In the future we could probably use this position to store the total bytes.
+
 
 
    .. py:method:: fullmatch(pattern: Union[bytes, arkouda.dtypes.str_scalars]) -> arkouda.match.Match
@@ -405,6 +413,7 @@ Classes
       matched=False; matched=False>
 
 
+
    .. py:method:: get_bytes()
 
       Getter for the bytes component (uint8 pdarray) of this Strings.
@@ -419,6 +428,7 @@ Classes
       [111 110 101 0 116 119 111 0 116 104 114 101 101 0]
 
 
+
    .. py:method:: get_lengths() -> arkouda.pdarrayclass.pdarray
 
       Return the length of each string in the array.
@@ -427,6 +437,7 @@ Classes
       :rtype: pdarray, int
 
       :raises RuntimeError: Raised if there is a server-side error thrown
+
 
 
    .. py:method:: get_offsets()
@@ -441,6 +452,7 @@ Classes
       >>> x = ak.array(['one', 'two', 'three'])
       >>> x.get_offsets()
       [0 4 8]
+
 
 
    .. py:method:: get_prefixes(n: arkouda.dtypes.int_scalars, return_origins: bool = True, proper: bool = True) -> Union[Strings, Tuple[Strings, arkouda.pdarrayclass.pdarray]]
@@ -463,6 +475,7 @@ Classes
                   an n-character prefix, False otherwise.
 
 
+
    .. py:method:: get_suffixes(n: arkouda.dtypes.int_scalars, return_origins: bool = True, proper: bool = True) -> Union[Strings, Tuple[Strings, arkouda.pdarrayclass.pdarray]]
 
       Return the n-long suffix of each string, where possible
@@ -481,6 +494,7 @@ Classes
                   True values in the returned mask.
                 * **origin_indices** (*pdarray, bool*) -- Boolean array that is True where the string was long enough to return
                   an n-character suffix, False otherwise.
+
 
 
    .. py:method:: group() -> arkouda.pdarrayclass.pdarray
@@ -507,6 +521,7 @@ Classes
           creating the pdarray encapsulating the return message
 
 
+
    .. py:method:: hash() -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
 
       Compute a 128-bit hash of each string.
@@ -523,6 +538,7 @@ Classes
       values is negligible.
 
 
+
    .. py:method:: info() -> str
 
       Returns a JSON formatted string containing information about all components of self
@@ -531,6 +547,7 @@ Classes
 
       :returns: JSON string containing information about all components of self
       :rtype: str
+
 
 
    .. py:method:: is_registered() -> numpy.bool_
@@ -543,6 +560,7 @@ Classes
       :rtype: bool
 
       :raises RuntimeError: Raised if there's a server-side error thrown
+
 
 
    .. py:method:: isalnum() -> arkouda.pdarrayclass.pdarray
@@ -568,6 +586,7 @@ Classes
       array([False False False True True True])
 
 
+
    .. py:method:: isalpha() -> arkouda.pdarrayclass.pdarray
 
       Returns a boolean pdarray where index i indicates whether string i of the
@@ -590,6 +609,7 @@ Classes
       array(['%Strings 0', '%Strings 1', '%Strings 2', 'StringA','StringB','StringC'])
       >>> strings.isalpha()
       array([False False False True True True])
+
 
 
    .. py:method:: isdecimal() -> arkouda.pdarrayclass.pdarray
@@ -621,6 +641,7 @@ Classes
       array([False True False False False])
 
 
+
    .. py:method:: isdigit() -> arkouda.pdarrayclass.pdarray
 
       Returns a boolean pdarray where index i indicates whether string i of the
@@ -650,6 +671,7 @@ Classes
       array([False True True True False])
 
 
+
    .. py:method:: isempty() -> arkouda.pdarrayclass.pdarray
 
       Returns a boolean pdarray where index i indicates whether string i of the
@@ -675,6 +697,7 @@ Classes
       >>> strings.isempty()
 
 
+
    .. py:method:: islower() -> arkouda.pdarrayclass.pdarray
 
       Returns a boolean pdarray where index i indicates whether string i of the
@@ -696,6 +719,7 @@ Classes
       array(['strings 0', 'strings 1', 'strings 2', 'STRINGS 0', 'STRINGS 1', 'STRINGS 2'])
       >>> strings.islower()
       array([True True True False False False])
+
 
 
    .. py:method:: isspace() -> arkouda.pdarrayclass.pdarray
@@ -744,6 +768,7 @@ Classes
 
 
 
+
    .. py:method:: istitle() -> arkouda.pdarrayclass.pdarray
 
       Returns a boolean pdarray where index i indicates whether string i of the
@@ -765,6 +790,7 @@ Classes
       array(['sTrINgs 0', 'sTrINgs 1', 'sTrINgs 2', 'Strings 0', 'Strings 1', 'Strings 2'])
       >>> strings.istitle()
       array([False False False True True True])
+
 
 
    .. py:method:: isupper() -> arkouda.pdarrayclass.pdarray
@@ -790,6 +816,7 @@ Classes
       array([False False False True True True])
 
 
+
    .. py:method:: lower() -> Strings
 
       Returns a new Strings with all uppercase characters from the original replaced with
@@ -810,6 +837,7 @@ Classes
       array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
       >>> strings.lower()
       array(['strings 0', 'strings 1', 'strings 2', 'strings 3', 'strings 4'])
+
 
 
    .. py:method:: lstick(other: Strings, delimiter: Union[bytes, arkouda.dtypes.str_scalars] = '') -> Strings
@@ -840,6 +868,7 @@ Classes
       array(['b.a', 'd.c', 'f.e'])
 
 
+
    .. py:method:: match(pattern: Union[bytes, arkouda.dtypes.str_scalars]) -> arkouda.match.Match
 
       Returns a match object where elements match only if the beginning of the string matches the
@@ -858,6 +887,12 @@ Classes
       >>> strings.match('_+')
       <ak.Match object: matched=False; matched=True, span=(0, 4); matched=False;
       matched=True, span=(0, 2); matched=False>
+
+
+
+   .. py:attribute:: objType
+      :value: 'Strings'
+
 
 
    .. py:method:: peel(delimiter: Union[bytes, arkouda.dtypes.str_scalars], times: arkouda.dtypes.int_scalars = 1, includeDelimiter: bool = False, keepPartial: bool = False, fromRight: bool = False, regex: bool = False) -> Tuple
@@ -917,6 +952,7 @@ Classes
       (array(['a.b', 'c.d', 'e.f']), array(['', '', 'g']))
 
 
+
    .. py:method:: pretty_print_info() -> None
 
       Prints information about all components of self in a human readable format
@@ -926,9 +962,11 @@ Classes
       :rtype: None
 
 
+
    .. py:method:: purge_cached_regex_patterns() -> None
 
       purges cached regex patterns
+
 
 
    .. py:method:: register(user_defined_name: str) -> Strings
@@ -960,6 +998,7 @@ Classes
 
       Registered names/Strings objects in the server are immune to deletion
       until they are unregistered.
+
 
 
    .. py:method:: rpeel(delimiter: Union[bytes, arkouda.dtypes.str_scalars], times: arkouda.dtypes.int_scalars = 1, includeDelimiter: bool = False, keepPartial: bool = False, regex: bool = False)
@@ -1011,6 +1050,7 @@ Classes
       (array(['a', 'c', 'e']), array(['b', 'd', 'f.g']))
 
 
+
    .. py:method:: save(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
 
       DEPRECATED
@@ -1053,6 +1093,7 @@ Classes
       only the values.
 
 
+
    .. py:method:: search(pattern: Union[bytes, arkouda.dtypes.str_scalars]) -> arkouda.match.Match
 
       Returns a match object with the first location in each element where pattern produces a match.
@@ -1071,6 +1112,7 @@ Classes
       >>> strings.search('_+')
       <ak.Match object: matched=True, span=(1, 2); matched=True, span=(0, 4);
       matched=False; matched=True, span=(0, 2); matched=False>
+
 
 
    .. py:method:: split(pattern: Union[bytes, arkouda.dtypes.str_scalars], maxsplit: int = 0, return_segments: bool = False) -> Union[Strings, Tuple]
@@ -1096,6 +1138,7 @@ Classes
       >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
       >>> strings.split('_+', maxsplit=2, return_segments=True)
       (array(['1', '2', '', '', '', '3', '', '4', '5____6___7', '']), array([0 3 5 6 9]))
+
 
 
    .. py:method:: startswith(substr: Union[bytes, arkouda.dtypes.str_scalars], regex: bool = False) -> arkouda.pdarrayclass.pdarray
@@ -1132,6 +1175,7 @@ Classes
       array([True, True, True, True, True])
 
 
+
    .. py:method:: stick(other: Strings, delimiter: Union[bytes, arkouda.dtypes.str_scalars] = '', toLeft: bool = False) -> Strings
 
       Join the strings from another array onto one end of the strings
@@ -1164,6 +1208,7 @@ Classes
       array(['a.b', 'c.d', 'e.f'])
 
 
+
    .. py:method:: strip(chars: Optional[Union[bytes, arkouda.dtypes.str_scalars]] = '') -> Strings
 
       Returns a new Strings object with all leading and trailing occurrences of characters contained
@@ -1190,6 +1235,7 @@ Classes
       >>> s = strings.strip(' 12')
       >>> s
       array(['Strings', 'StringS', 'StringS'])
+
 
 
    .. py:method:: sub(pattern: Union[bytes, arkouda.dtypes.str_scalars], repl: Union[bytes, arkouda.dtypes.str_scalars], count: int = 0) -> Strings
@@ -1222,6 +1268,7 @@ Classes
       array(['1-2-', '-', '3', '-4-5____6___7', ''])
 
 
+
    .. py:method:: subn(pattern: Union[bytes, arkouda.dtypes.str_scalars], repl: Union[bytes, arkouda.dtypes.str_scalars], count: int = 0) -> Tuple
 
       Perform the same operation as sub(), but return a tuple (new_Strings, number_of_substitions)
@@ -1250,6 +1297,7 @@ Classes
       (array(['1-2-', '-', '3', '-4-5____6___7', '']), array([2 1 0 2 0]))
 
 
+
    .. py:method:: title() -> Strings
 
       Returns a new Strings from the original replaced with their titlecase equivalent.
@@ -1268,6 +1316,7 @@ Classes
       array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
       >>> strings.title()
       array(['Strings 0', 'Strings 1', 'Strings 2', 'Strings 3', 'Strings 4'])
+
 
 
    .. py:method:: to_csv(prefix_path: str, dataset: str = 'strings_array', col_delim: str = ',', overwrite: bool = False)
@@ -1304,6 +1353,7 @@ Classes
       - The column delimiter is expected to be the same for column names and data
       - Be sure that column delimiters are not found within your data.
       - All CSV files must delimit rows using newline (``\n``) at this time.
+
 
 
    .. py:method:: to_hdf(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, file_type: str = 'distribute') -> str
@@ -1353,6 +1403,7 @@ Classes
       .. seealso:: :obj:`to_hdf`
 
 
+
    .. py:method:: to_list() -> list
 
       Convert the SegString to a list, transferring data from the
@@ -1383,6 +1434,7 @@ Classes
       list
 
 
+
    .. py:method:: to_ndarray() -> numpy.ndarray
 
       Convert the array to a np.ndarray, transferring array data from the
@@ -1411,6 +1463,7 @@ Classes
       array(['hello', 'my', 'world'], dtype='<U5')
       >>> type(a.to_ndarray())
       numpy.ndarray
+
 
 
    .. py:method:: to_parquet(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', compression: Optional[str] = None) -> str
@@ -1449,6 +1502,7 @@ Classes
       determine the file format.
 
 
+
    .. py:method:: transfer(hostname: str, port: arkouda.dtypes.int_scalars)
 
       Sends a Strings object to a different Arkouda server
@@ -1475,6 +1529,7 @@ Classes
           a supported dtype
 
 
+
    .. py:method:: unregister() -> None
 
       Unregister a Strings object in the arkouda server which was previously
@@ -1493,8 +1548,10 @@ Classes
       they are unregistered.
 
 
+
    .. py:method:: unregister_strings_by_name(user_defined_name: str) -> None
       :staticmethod:
+
 
       Unregister a Strings object in the arkouda server previously registered via register()
 
@@ -1502,6 +1559,7 @@ Classes
       :type user_defined_name: str
 
       .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
+
 
 
    .. py:method:: update_hdf(prefix_path: str, dataset: str = 'strings_array', save_offsets: bool = True, repack: bool = True)
@@ -1533,6 +1591,7 @@ Classes
       - If file does not contain File_Format attribute to indicate how it was saved,
         the file name is checked for _LOCALE#### to determine if it is distributed.
       - If the dataset provided does not exist, it will be added
+
 
 
    .. py:method:: upper() -> Strings

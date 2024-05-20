@@ -1,30 +1,11 @@
-:py:mod:`arkouda.dtypes`
-========================
+arkouda.dtypes
+==============
 
 .. py:module:: arkouda.dtypes
 
 
-Module Contents
----------------
-
-
-Functions
-~~~~~~~~~
-
-.. autoapisummary::
-
-   arkouda.dtypes.check_np_dtype
-   arkouda.dtypes.dtype
-   arkouda.dtypes.get_byteorder
-   arkouda.dtypes.get_server_byteorder
-   arkouda.dtypes.isSupportedNumber
-   arkouda.dtypes.resolve_scalar_dtype
-   arkouda.dtypes.translate_np_dtype
-
-
-
 Attributes
-~~~~~~~~~~
+----------
 
 .. autoapisummary::
 
@@ -58,21 +39,30 @@ Attributes
    arkouda.dtypes.uint8
 
 
-.. py:data:: ARKOUDA_SUPPORTED_DTYPES
+Functions
+---------
 
-   
+.. autoapisummary::
+
+   arkouda.dtypes.check_np_dtype
+   arkouda.dtypes.dtype
+   arkouda.dtypes.get_byteorder
+   arkouda.dtypes.get_server_byteorder
+   arkouda.dtypes.isSupportedNumber
+   arkouda.dtypes.resolve_scalar_dtype
+   arkouda.dtypes.translate_np_dtype
+
+
+Module Contents
+---------------
+
+.. py:data:: ARKOUDA_SUPPORTED_DTYPES
 
 .. py:data:: DTypeObjects
 
-   
-
 .. py:data:: DTypes
 
-   
-
 .. py:data:: ScalarDTypes
-
-   
 
 .. py:data:: all_scalars
 
@@ -80,19 +70,11 @@ Attributes
 
 .. py:data:: bigint
 
-   
-
 .. py:data:: bitType
-
-   
 
 .. py:data:: bool
 
-   
-
 .. py:data:: bool_scalars
-
-   
 
 .. py:function:: check_np_dtype(dt: Union[numpy.dtype, BigInt]) -> None
 
@@ -105,26 +87,15 @@ Attributes
 
 .. py:data:: complex128
 
-   
-
 .. py:data:: complex64
-
-   
 
 .. py:function:: dtype(x)
 
-
 .. py:data:: float32
-
-   
 
 .. py:data:: float64
 
-   
-
 .. py:data:: float_scalars
-
-   
 
 .. py:function:: get_byteorder(dt: numpy.dtype) -> str
 
@@ -138,38 +109,21 @@ Attributes
 
 .. py:data:: int16
 
-   
-
 .. py:data:: int32
-
-   
 
 .. py:data:: int64
 
-   
-
 .. py:data:: int8
-
-   
 
 .. py:data:: intTypes
 
-   
-
 .. py:data:: int_scalars
-
-   
 
 .. py:function:: isSupportedNumber(num)
 
-
 .. py:data:: numeric_scalars
 
-   
-
 .. py:data:: numpy_scalars
-
-   
 
 .. py:function:: resolve_scalar_dtype(val: object) -> str
 
@@ -178,11 +132,7 @@ Attributes
 
 .. py:data:: str_
 
-   
-
 .. py:data:: str_scalars
-
-   
 
 .. py:function:: translate_np_dtype(dt) -> Tuple[str, int]
 
@@ -195,17 +145,9 @@ Attributes
 
 .. py:data:: uint16
 
-   
-
 .. py:data:: uint32
-
-   
 
 .. py:data:: uint64
 
-   
-
 .. py:data:: uint8
-
-   
 

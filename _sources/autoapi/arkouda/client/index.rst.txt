@@ -1,15 +1,11 @@
-:py:mod:`arkouda.client`
-========================
+arkouda.client
+==============
 
 .. py:module:: arkouda.client
 
 
-Module Contents
----------------
-
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -26,6 +22,8 @@ Functions
    arkouda.client.shutdown
 
 
+Module Contents
+---------------
 
 .. py:function:: connect(server: str = 'localhost', port: int = 5555, timeout: int = 0, access_token: Optional[str] = None, connect_url: Optional[str] = None, access_channel: Optional[Channel] = None) -> None
 

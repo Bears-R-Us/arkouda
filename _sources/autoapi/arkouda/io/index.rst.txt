@@ -1,15 +1,11 @@
-:py:mod:`arkouda.io`
-====================
+arkouda.io
+==========
 
 .. py:module:: arkouda.io
 
 
-Module Contents
----------------
-
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -39,6 +35,8 @@ Functions
    arkouda.io.update_hdf
 
 
+Module Contents
+---------------
 
 .. py:function:: export(read_path: str, dataset_name: str = 'ak_data', write_file: Optional[str] = None, return_obj: bool = True, index: bool = False)
 

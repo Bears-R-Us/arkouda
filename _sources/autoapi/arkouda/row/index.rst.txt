@@ -1,26 +1,24 @@
-:py:mod:`arkouda.row`
-=====================
+arkouda.row
+===========
 
 .. py:module:: arkouda.row
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    arkouda.row.Row
 
 
-
+Module Contents
+---------------
 
 .. py:class:: Row(dict=None, /, **kwargs)
 
-
    Bases: :py:obj:`collections.UserDict`
+
 
    This class is useful for printing and working with individual rows of a
    of an aku.DataFrame.

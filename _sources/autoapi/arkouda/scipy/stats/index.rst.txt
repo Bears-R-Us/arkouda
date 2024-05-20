@@ -1,26 +1,24 @@
-:py:mod:`arkouda.scipy.stats`
-=============================
+arkouda.scipy.stats
+===================
 
 .. py:module:: arkouda.scipy.stats
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    arkouda.scipy.stats.chi2
 
 
-
+Module Contents
+---------------
 
 .. py:class:: chi2(momtype=1, a=None, b=None, xtol=1e-14, badvalue=None, name=None, longname=None, shapes=None, seed=None)
 
-
    Bases: :py:obj:`scipy.stats._distn_infrastructure.rv_continuous`
+
 
    A chi-squared continuous random variable.
 
@@ -152,9 +150,11 @@ Classes
 
 
 
+
    .. py:method:: a(*args, **kwargs)
 
       Convert a string or number to a floating point number, if possible.
+
 
 
 
@@ -164,9 +164,11 @@ Classes
 
 
 
+
    .. py:method:: badvalue(*args, **kwargs)
 
       Convert a string or number to a floating point number, if possible.
+
 
 
 
@@ -192,6 +194,7 @@ Classes
 
 
 
+
    .. py:method:: name(*args, **kwargs)
 
       str(object='') -> str
@@ -204,6 +207,7 @@ Classes
       or repr(object).
       encoding defaults to sys.getdefaultencoding().
       errors defaults to 'strict'.
+
 
 
 
@@ -226,6 +230,7 @@ Classes
 
 
 
+
    .. py:method:: shapes(*args, **kwargs)
 
       str(object='') -> str
@@ -238,6 +243,7 @@ Classes
       or repr(object).
       encoding defaults to sys.getdefaultencoding().
       errors defaults to 'strict'.
+
 
 
 

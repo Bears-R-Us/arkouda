@@ -1,15 +1,11 @@
-:py:mod:`arkouda.pdarraysetops`
-===============================
+arkouda.pdarraysetops
+=====================
 
 .. py:module:: arkouda.pdarraysetops
 
 
-Module Contents
----------------
-
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -22,6 +18,8 @@ Functions
    arkouda.pdarraysetops.union1d
 
 
+Module Contents
+---------------
 
 .. py:function:: concatenate(arrays: Sequence[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical]], ordered: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical]
 

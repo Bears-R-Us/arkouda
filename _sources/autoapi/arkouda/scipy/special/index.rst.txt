@@ -1,21 +1,19 @@
-:py:mod:`arkouda.scipy.special`
-===============================
+arkouda.scipy.special
+=====================
 
 .. py:module:: arkouda.scipy.special
 
 
-Module Contents
----------------
-
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
    arkouda.scipy.special.xlogy
 
 
+Module Contents
+---------------
 
 .. py:function:: xlogy(x: Union[arkouda.pdarrayclass.pdarray, numpy.float64], y: arkouda.pdarrayclass.pdarray)
 

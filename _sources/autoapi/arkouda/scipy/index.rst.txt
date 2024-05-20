@@ -1,33 +1,29 @@
-:py:mod:`arkouda.scipy`
-=======================
+arkouda.scipy
+=============
 
 .. py:module:: arkouda.scipy
 
 
 Submodules
 ----------
+
 .. toctree::
-   :titlesonly:
    :maxdepth: 1
 
-   special/index.rst
-   stats/index.rst
+   /autoapi/arkouda/scipy/special/index
+   /autoapi/arkouda/scipy/stats/index
 
-
-Module Contents
----------------
 
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    arkouda.scipy.Power_divergenceResult
 
 
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -35,11 +31,13 @@ Functions
    arkouda.scipy.power_divergence
 
 
+Module Contents
+---------------
 
 .. py:class:: Power_divergenceResult
 
-
    Bases: :py:obj:`Power_divergenceResult`
+
 
    The results of a power divergence statistical test.
 

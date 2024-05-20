@@ -1,15 +1,11 @@
-:py:mod:`arkouda.sorting`
-=========================
+arkouda.sorting
+===============
 
 .. py:module:: arkouda.sorting
 
 
-Module Contents
----------------
-
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -18,6 +14,8 @@ Functions
    arkouda.sorting.sort
 
 
+Module Contents
+---------------
 
 .. py:function:: argsort(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, axis: arkouda.dtypes.int_scalars = 0) -> arkouda.pdarrayclass.pdarray
 

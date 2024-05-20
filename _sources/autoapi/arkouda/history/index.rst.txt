@@ -1,14 +1,11 @@
-:py:mod:`arkouda.history`
-=========================
+arkouda.history
+===============
 
 .. py:module:: arkouda.history
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
@@ -17,16 +14,18 @@ Classes
    arkouda.history.ShellHistoryRetriever
 
 
-
+Module Contents
+---------------
 
 .. py:class:: HistoryRetriever
-
 
    HistoryRetriever is an abstract base class that defines the retrieve method signature
    and implements _filter_arkouda_command
 
+
    .. py:method:: retrieve(command_filter: Optional[str] = None, num_commands: Optional[int] = None) -> List[str]
       :abstractmethod:
+
 
       Generates list of commands executed within a Python REPL shell, Jupyter notebook,
       or IPython notebook, with an optional command filter and number of commands to return.
@@ -43,11 +42,12 @@ Classes
 
 .. py:class:: NotebookHistoryRetriever
 
-
    Bases: :py:obj:`IPython.core.history.HistoryAccessor`, :py:obj:`HistoryRetriever`
+
 
    NotebookHistoryRetriever implements the retrieve method to get command history
    from a Jupyter notebook or IPython shell.
+
 
    .. py:method:: retrieve(command_filter: Optional[str] = None, num_commands: Optional[int] = None) -> List[str]
 
@@ -66,11 +66,12 @@ Classes
 
 .. py:class:: ShellHistoryRetriever
 
-
    Bases: :py:obj:`HistoryRetriever`
+
 
    ShellHistoryRetriever implements the retrieve method to get command history from the
    Python REPL shell.
+
 
    .. py:method:: retrieve(command_filter: Optional[str] = None, num_commands: Optional[int] = None) -> List[str]
 

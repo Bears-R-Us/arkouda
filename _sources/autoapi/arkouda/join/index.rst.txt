@@ -1,15 +1,11 @@
-:py:mod:`arkouda.join`
-======================
+arkouda.join
+============
 
 .. py:module:: arkouda.join
 
 
-Module Contents
----------------
-
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -18,6 +14,8 @@ Functions
    arkouda.join.join_on_eq_with_dt
 
 
+Module Contents
+---------------
 
 .. py:function:: compute_join_size(a: arkouda.pdarrayclass.pdarray, b: arkouda.pdarrayclass.pdarray) -> Tuple[int, int]
 

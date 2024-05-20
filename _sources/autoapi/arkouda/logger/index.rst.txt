@@ -1,23 +1,19 @@
-:py:mod:`arkouda.logger`
-========================
+arkouda.logger
+==============
 
 .. py:module:: arkouda.logger
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    arkouda.logger.LogLevel
 
 
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -26,40 +22,42 @@ Functions
    arkouda.logger.write_log
 
 
+Module Contents
+---------------
 
 .. py:class:: LogLevel
 
-
    Bases: :py:obj:`enum.Enum`
+
 
    Generic enumeration.
 
    Derive from this class to define new enumerations.
 
+
    .. py:attribute:: CRITICAL
       :value: 'CRITICAL'
 
-      
+
 
    .. py:attribute:: DEBUG
       :value: 'DEBUG'
 
-      
+
 
    .. py:attribute:: ERROR
       :value: 'ERROR'
 
-      
+
 
    .. py:attribute:: INFO
       :value: 'INFO'
 
-      
+
 
    .. py:attribute:: WARN
       :value: 'WARN'
 
-      
 
 
 .. py:function:: disableVerbose(logLevel: LogLevel = LogLevel.INFO) -> None

@@ -1,15 +1,20 @@
-:py:mod:`arkouda.infoclass`
-===========================
+arkouda.infoclass
+=================
 
 .. py:module:: arkouda.infoclass
 
 
-Module Contents
----------------
+Attributes
+----------
+
+.. autoapisummary::
+
+   arkouda.infoclass.AllSymbols
+   arkouda.infoclass.RegisteredSymbols
 
 
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -19,25 +24,16 @@ Functions
    arkouda.infoclass.pretty_print_information
 
 
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   arkouda.infoclass.AllSymbols
-   arkouda.infoclass.RegisteredSymbols
-
+Module Contents
+---------------
 
 .. py:data:: AllSymbols
    :value: '__AllSymbols__'
 
-   
 
 .. py:data:: RegisteredSymbols
    :value: '__RegisteredSymbols__'
 
-   
 
 .. py:function:: information(names: Union[List[str], str] = RegisteredSymbols) -> str
 

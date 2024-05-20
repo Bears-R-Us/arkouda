@@ -1,24 +1,21 @@
-:py:mod:`arkouda.series`
-========================
+arkouda.series
+==============
 
 .. py:module:: arkouda.series
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    arkouda.series.Series
 
 
-
+Module Contents
+---------------
 
 .. py:class:: Series
-
 
    One-dimensional arkouda array with axis labels.
 
@@ -48,45 +45,6 @@ Classes
        'data' (see Parameters)
        'index' (optional) must match size of 'data'
 
-   .. py:property:: at
-
-      Accesses entries of a Series by label
-
-      :param key: The key or container of keys to access entries for
-      :type key: pdarray, Strings, Series, list, supported_scalars
-
-   .. py:property:: dtype
-
-
-   .. py:property:: iat
-      :type: Series
-
-      Accesses entries of a Series by position
-
-      :param key: The positions or container of positions to access entries for
-      :type key: int
-
-   .. py:property:: iloc
-      :type: Series
-
-      Accesses entries of a Series by position
-
-      :param key: The positions or container of positions to access entries for
-      :type key: int
-
-   .. py:property:: loc
-      :type: Series
-
-      Accesses entries of a Series by label
-
-      :param key: The key or container of keys to access entries for
-      :type key: pdarray, Strings, Series, list, supported_scalars
-
-   .. py:property:: ndim
-
-
-   .. py:property:: shape
-
 
    .. py:method:: add(b: Series) -> Series
 
@@ -95,6 +53,13 @@ Classes
 
 
    .. py:method:: argmin()
+
+
+   .. py:property:: at
+      Accesses entries of a Series by label
+
+      :param key: The key or container of keys to access entries for
+      :type key: pdarray, Strings, Series, list, supported_scalars
 
 
    .. py:method:: attach(label: str, nkeys: int = 1) -> Series
@@ -106,6 +71,7 @@ Classes
       :type label: name used to register the series
       :param nkeys:
       :type nkeys: number of keys, if a multi-index was registerd
+
 
 
    .. py:method:: concat(arrays: List, axis: int = 0, index_labels: Union[List[str], None] = None, value_labels: Union[List[str], None] = None, ordered=False) -> Union[arkouda.dataframe.DataFrame, Series]
@@ -135,6 +101,7 @@ Classes
 
 
 
+
    .. py:method:: diff() -> Series
 
       Diffs consecutive values of the series.
@@ -144,7 +111,11 @@ Classes
 
 
 
+
    .. py:method:: dt(series)
+
+
+   .. py:property:: dtype
 
 
    .. py:method:: fillna(value) -> Series
@@ -235,6 +206,7 @@ Classes
       +----+-----+
 
 
+
    .. py:method:: from_return_msg(repMsg: str) -> Series
 
       Return a Series instance pointing to components created by the arkouda server.
@@ -251,9 +223,11 @@ Classes
           the Series instance
 
 
+
    .. py:method:: has_repeat_labels() -> bool
 
       Returns whether the Series has any labels that appear more than once
+
 
 
 
@@ -277,10 +251,30 @@ Classes
       True
 
 
+
    .. py:method:: head(n: int = 10) -> Series
 
       Return the first n values of the series
 
+
+
+
+   .. py:property:: iat
+      :type: Series
+
+      Accesses entries of a Series by position
+
+      :param key: The positions or container of positions to access entries for
+      :type key: int
+
+
+   .. py:property:: iloc
+      :type: Series
+
+      Accesses entries of a Series by position
+
+      :param key: The positions or container of positions to access entries for
+      :type key: int
 
 
    .. py:method:: is_registered() -> bool
@@ -301,6 +295,7 @@ Classes
       they are unregistered.
 
 
+
    .. py:method:: isin(lst: Union[pdarray, Strings, List]) -> Series
 
       Find series elements whose values are in the specified list
@@ -312,6 +307,7 @@ Classes
               Returns
               -------
               Arkouda boolean which is true for elements that are in the list and false otherwise.
+
 
 
 
@@ -350,6 +346,7 @@ Classes
       +----+---------+
 
 
+
    .. py:method:: isnull() -> Series
 
       Series.isnull is an alias for Series.isna.
@@ -386,6 +383,16 @@ Classes
       +----+---------+
 
 
+
+   .. py:property:: loc
+      :type: Series
+
+      Accesses entries of a Series by label
+
+      :param key: The key or container of keys to access entries for
+      :type key: pdarray, Strings, Series, list, supported_scalars
+
+
    .. py:method:: locate(key: Union[int, pdarray, Index, Series, List, Tuple]) -> Series
 
       Lookup values by index label
@@ -399,6 +406,7 @@ Classes
               Returns
               -------
               A Series containing the values corresponding to the key.
+
 
 
 
@@ -474,6 +482,7 @@ Classes
       +----+-----+
 
 
+
    .. py:method:: max()
 
 
@@ -517,7 +526,11 @@ Classes
       46.875
 
 
+
    .. py:method:: min()
+
+
+   .. py:property:: ndim
 
 
    .. py:method:: notna() -> Series
@@ -552,6 +565,7 @@ Classes
       +----+---------+
       |  4 |   False |
       +----+---------+
+
 
 
    .. py:method:: notnull() -> Series
@@ -590,6 +604,7 @@ Classes
       +----+---------+
 
 
+
    .. py:method:: objType(*args, **kwargs)
 
       str(object='') -> str
@@ -602,6 +617,7 @@ Classes
       or repr(object).
       encoding defaults to sys.getdefaultencoding().
       errors defaults to 'strict'.
+
 
 
 
@@ -626,6 +642,7 @@ Classes
               -------
               axis=0: a local PANDAS series
               axis=1: a local PANDAS dataframe
+
 
 
 
@@ -658,6 +675,10 @@ Classes
       they are unregistered.
 
 
+
+   .. py:property:: shape
+
+
    .. py:method:: sort_index(ascending: bool = True) -> Series
 
       Sort the series by its index
@@ -670,6 +691,7 @@ Classes
               Returns
               -------
               A new Series sorted.
+
 
 
 
@@ -690,6 +712,7 @@ Classes
 
 
 
+
    .. py:method:: std()
 
 
@@ -705,6 +728,7 @@ Classes
 
 
 
+
    .. py:method:: to_dataframe(index_labels: Union[List[str], None] = None, value_label: Union[str, None] = None) -> arkouda.dataframe.DataFrame
 
       Converts series to an arkouda data frame
@@ -717,6 +741,7 @@ Classes
               Returns
               -------
               An arkouda dataframe.
+
 
 
 
@@ -778,12 +803,14 @@ Classes
       +----+----------+
 
 
+
    .. py:method:: to_ndarray()
 
 
    .. py:method:: to_pandas() -> pd.Series
 
       Convert the series to a local PANDAS series
+
 
 
 
@@ -798,6 +825,7 @@ Classes
               Returns
               -------
               A new Series with the top values
+
 
 
 
@@ -818,6 +846,7 @@ Classes
       they are unregistered.
 
 
+
    .. py:method:: validate_key(key: Union[Series, pdarray, Strings, Categorical, List, supported_scalars, SegArray]) -> Union[pdarray, Strings, Categorical, supported_scalars, SegArray]
 
       Validates type requirements for keys when reading or writing the Series.
@@ -833,6 +862,7 @@ Classes
       :raises KeyError: Raised if container of keys has keys not present in the Series
       :raises IndexError: Raised if the length of a boolean key array is different
           from the Series
+
 
 
    .. py:method:: validate_val(val: Union[pdarray, Strings, supported_scalars, List]) -> Union[pdarray, Strings, supported_scalars]
@@ -851,6 +881,7 @@ Classes
           Raised if val is not one of the supported types
 
 
+
    .. py:method:: value_counts(sort: bool = True) -> Series
 
       Return a Series containing counts of unique values.
@@ -865,7 +896,7 @@ Classes
 
 
 
-   .. py:method:: var()
 
+   .. py:method:: var()
 
 

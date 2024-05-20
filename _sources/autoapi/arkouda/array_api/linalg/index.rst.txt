@@ -1,23 +1,162 @@
-:py:mod:`arkouda.array_api.linalg`
-==================================
+arkouda.array_api.linalg
+========================
 
 .. py:module:: arkouda.array_api.linalg
 
 
-Module Contents
----------------
-
-
-Functions
-~~~~~~~~~
+Classes
+-------
 
 .. autoapisummary::
 
+   arkouda.array_api.linalg.Array
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   arkouda.array_api.linalg.broadcast_if_needed
+   arkouda.array_api.linalg.create_pdarray
+   arkouda.array_api.linalg.generic_msg
    arkouda.array_api.linalg.matmul
    arkouda.array_api.linalg.matrix_transpose
    arkouda.array_api.linalg.tensordot
    arkouda.array_api.linalg.vecdot
 
+
+Module Contents
+---------------
+
+.. py:class:: Array
+
+   n-d array object for the array API namespace.
+
+   See the docstring of :py:obj:`np.ndarray <numpy.ndarray>` for more
+   information.
+
+   This is a wrapper around numpy.ndarray that restricts the usage to only
+   those things that are required by the array API namespace. Note,
+   attributes on this object that start with a single underscore are not part
+   of the API specification and should only be used internally. This object
+   should not be constructed directly. Rather, use one of the creation
+   functions, such as asarray().
+
+
+
+   .. py:property:: T
+      :type: Array
+
+
+
+   .. py:property:: device
+      :type: arkouda.array_api._typing.Device
+
+
+
+   .. py:property:: dtype
+      :type: arkouda.array_api._typing.Dtype
+
+
+
+   .. py:method:: item()
+
+      Convert the array to a Python scalar
+
+
+
+   .. py:property:: mT
+      :type: Array
+
+
+
+   .. py:property:: ndim
+      :type: int
+
+
+
+   .. py:property:: shape
+      :type: Tuple[int, Ellipsis]
+
+
+
+   .. py:property:: size
+      :type: int
+
+
+
+   .. py:method:: to_device(device: arkouda.array_api._typing.Device, /, stream: None = None) -> Array
+
+
+   .. py:method:: to_ndarray()
+
+      Convert the array to a numpy ndarray
+
+
+
+   .. py:method:: tolist()
+
+      Convert the array to a Python list or nested lists
+
+
+
+   .. py:method:: transpose(axes: Optional[Tuple[int, Ellipsis]] = None)
+
+      Return a view of the array with the specified axes transposed.
+
+      For axes=None, reverse all the dimensions of the array.
+
+
+
+.. py:function:: broadcast_if_needed(x1: pdarray, x2: pdarray) -> Tuple[pdarray, pdarray, bool, bool]
+
+.. py:function:: create_pdarray(repMsg: str, max_bits=None) -> pdarray
+
+   Return a pdarray instance pointing to an array created by the arkouda server.
+   The user should not call this function directly.
+
+   :param repMsg: space-delimited string containing the pdarray name, datatype, size
+                  dimension, shape,and itemsize
+   :type repMsg: str
+
+   :returns: A pdarray with the same attributes and data as the pdarray; on GPU
+   :rtype: pdarray
+
+   :raises ValueError: If there's an error in parsing the repMsg parameter into the six
+       values needed to create the pdarray instance
+   :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
+       the pdarray instance
+
+
+.. py:function:: generic_msg(cmd: str, args: Optional[Dict] = None, payload: Optional[memoryview] = None, send_binary: bool = False, recv_binary: bool = False) -> Union[str, memoryview]
+
+   Sends a binary or string message composed of a command and corresponding
+   arguments to the arkouda_server, returning the response sent by the server.
+
+   :param cmd: The server-side command to be executed
+   :type cmd: str
+   :param args: A space-delimited list of command arguments
+   :type args: str
+   :param payload: The payload when sending binary data
+   :type payload: memoryview
+   :param send_binary: Indicates if the message to be sent is a string or binary
+   :type send_binary: bool
+   :param recv_binary: Indicates if the return message will be a string or binary
+   :type recv_binary: bool
+
+   :returns: The string or binary return message
+   :rtype: Union[str, memoryview]
+
+   :raises KeyboardInterrupt: Raised if the user interrupts during command execution
+   :raises RuntimeError: Raised if the client is not connected to the server or if
+       there is a server-side error thrown
+
+   .. rubric:: Notes
+
+   If the server response is a string, the string corresponds to a success
+   confirmation, warn message, or error message. A memoryview response
+   corresponds to an Arkouda array output as a numpy array.
 
 
 .. py:function:: matmul(x1: arkouda.array_api._array_object.Array, x2: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
@@ -32,7 +171,5 @@ Functions
 
 .. py:function:: tensordot()
 
-
 .. py:function:: vecdot(x1: arkouda.array_api._array_object.Array, x2: arkouda.array_api._array_object.Array, /, *, axis: int = -1) -> arkouda.array_api._array_object.Array
-
 

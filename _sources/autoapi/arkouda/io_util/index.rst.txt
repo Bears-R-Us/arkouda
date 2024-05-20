@@ -1,15 +1,11 @@
-:py:mod:`arkouda.io_util`
-=========================
+arkouda.io_util
+===============
 
 .. py:module:: arkouda.io_util
 
 
-Module Contents
----------------
-
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -19,6 +15,8 @@ Functions
    arkouda.io_util.write_line_to_file
 
 
+Module Contents
+---------------
 
 .. py:function:: delimited_file_to_dict(path: str, delimiter: str = ',') -> Dict[str, str]
 

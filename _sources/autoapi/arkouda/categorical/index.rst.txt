@@ -1,24 +1,21 @@
-:py:mod:`arkouda.categorical`
-=============================
+arkouda.categorical
+===================
 
 .. py:module:: arkouda.categorical
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    arkouda.categorical.Categorical
 
 
-
+Module Contents
+---------------
 
 .. py:class:: Categorical(values, **kwargs)
-
 
    Represents an array of values belonging to named categories. Converting a
    Strings object to Categorical often saves memory and speeds up operations,
@@ -78,47 +75,22 @@ Classes
 
       :type: tuple
 
-   .. py:property:: nbytes
-
-      The size of the Categorical in bytes.
-
-      :returns: The size of the Categorical in bytes.
-      :rtype: int
 
    .. py:attribute:: BinOps
 
-      
 
    .. py:attribute:: RegisterablePieces
 
-      
 
    .. py:attribute:: RequiredPieces
 
-      
-
-   .. py:attribute:: dtype
-
-      
-
-   .. py:attribute:: objType
-      :value: 'Categorical'
-
-      
-
-   .. py:attribute:: permutation
-
-      
-
-   .. py:attribute:: segments
-
-      
 
    .. py:method:: argsort()
 
 
    .. py:method:: attach(user_defined_name: str) -> Categorical
       :staticmethod:
+
 
       DEPRECATED
       Function to return a Categorical object attached to the registered name in the
@@ -133,6 +105,7 @@ Classes
       :raises TypeError: if user_defined_name is not a string
 
       .. seealso:: :obj:`register`, :obj:`is_registered`, :obj:`unregister`, :obj:`unregister_categorical_by_name`
+
 
 
    .. py:method:: concatenate(others: Sequence[Categorical], ordered: bool = True) -> Categorical
@@ -156,6 +129,7 @@ Classes
       .. rubric:: Notes
 
       This operation can be expensive -- slower than concatenating Strings.
+
 
 
    .. py:method:: contains(substr: Union[bytes, arkouda.dtypes.str_scalars], regex: bool = False) -> arkouda.pdarrayclass.pdarray
@@ -185,6 +159,10 @@ Classes
       instead of the full array.
 
 
+
+   .. py:attribute:: dtype
+
+
    .. py:method:: endswith(substr: Union[bytes, arkouda.dtypes.str_scalars], regex: bool = False) -> arkouda.pdarrayclass.pdarray
 
       Check whether each element ends with the given substring.
@@ -212,8 +190,10 @@ Classes
       instead of the full array.
 
 
+
    .. py:method:: from_codes(codes: arkouda.pdarrayclass.pdarray, categories: arkouda.strings.Strings, permutation=None, segments=None, **kwargs) -> Categorical
       :classmethod:
+
 
       Make a Categorical from codes and categories arrays. If codes and
       categories have already been pre-computed, this constructor saves
@@ -236,14 +216,17 @@ Classes
           categories is not a Strings object
 
 
+
    .. py:method:: from_return_msg(rep_msg) -> Categorical
       :classmethod:
+
 
       Create categorical from return message from server
 
       .. rubric:: Notes
 
       This is currently only used when reading a Categorical from HDF5 files.
+
 
 
    .. py:method:: group() -> arkouda.pdarrayclass.pdarray
@@ -268,6 +251,7 @@ Classes
       128-bit hash values.
 
 
+
    .. py:method:: hash() -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
 
       Compute a 128-bit hash of each element of the Categorical.
@@ -282,6 +266,7 @@ Classes
       by Python for dictionaries and sets). For realistic numbers of strings (up
       to about 10**15), the probability of a collision between two 128-bit hash
       values is negligible.
+
 
 
    .. py:method:: in1d(test: Union[arkouda.strings.Strings, Categorical]) -> arkouda.pdarrayclass.pdarray
@@ -321,6 +306,7 @@ Classes
       array([False, False, False, False, False])
 
 
+
    .. py:method:: info() -> str
 
       Returns a JSON formatted string containing information about all components of self
@@ -329,6 +315,7 @@ Classes
 
       :returns: JSON string containing information about all components of self
       :rtype: str
+
 
 
    .. py:method:: is_registered() -> numpy.bool_
@@ -349,13 +336,28 @@ Classes
       they are unregistered.
 
 
+
    .. py:method:: isna()
 
       Find where values are missing or null (as defined by self.NAvalue)
 
 
+
+   .. py:property:: nbytes
+      The size of the Categorical in bytes.
+
+      :returns: The size of the Categorical in bytes.
+      :rtype: int
+
+
+   .. py:attribute:: objType
+      :value: 'Categorical'
+
+
+
    .. py:method:: parse_hdf_categoricals(d: Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]) -> Tuple[List[str], Dict[str, Categorical]]
       :staticmethod:
+
 
       This function should be used in conjunction with the load_all function which reads hdf5 files
       and reconstitutes Categorical objects.
@@ -373,6 +375,12 @@ Classes
       .. seealso:: :obj:`Categorical.save`, :obj:`load_all`
 
 
+
+   .. py:attribute:: permutation
+      :value: None
+
+
+
    .. py:method:: pretty_print_info() -> None
 
       Prints information about all components of self in a human readable format
@@ -380,6 +388,7 @@ Classes
       :param None:
 
       :rtype: None
+
 
 
    .. py:method:: register(user_defined_name: str) -> Categorical
@@ -407,6 +416,7 @@ Classes
       they are unregistered.
 
 
+
    .. py:method:: reset_categories() -> Categorical
 
       Recompute the category labels, discarding any unused labels. This
@@ -417,6 +427,7 @@ Classes
 
       :returns: A Categorical object generated from the current instance
       :rtype: Categorical
+
 
 
    .. py:method:: save(prefix_path: str, dataset: str = 'categorical_array', file_format: str = 'HDF5', mode: str = 'truncate', file_type: str = 'distribute', compression: Optional[str] = None) -> str
@@ -461,6 +472,12 @@ Classes
       .. seealso:: :obj:`-`, :obj:`-`
 
 
+
+   .. py:attribute:: segments
+      :value: None
+
+
+
    .. py:method:: set_categories(new_categories, NAvalue=None)
 
       Set categories to user-defined values.
@@ -476,11 +493,13 @@ Classes
       :rtype: Categorical
 
 
+
    .. py:method:: sort_values()
 
 
    .. py:method:: standardize_categories(arrays, NAvalue='N/A')
       :classmethod:
+
 
       Standardize an array of Categoricals so that they share the same categories.
 
@@ -491,6 +510,7 @@ Classes
 
       :returns: A list of the original Categoricals remapped to the shared categories.
       :rtype: List of Categoricals
+
 
 
    .. py:method:: startswith(substr: Union[bytes, arkouda.dtypes.str_scalars], regex: bool = False) -> arkouda.pdarrayclass.pdarray
@@ -520,6 +540,7 @@ Classes
       labels instead of the full array.
 
 
+
    .. py:method:: to_hdf(prefix_path, dataset='categorical_array', mode='truncate', file_type='distribute')
 
       Save the Categorical to HDF5. The result is a collection of HDF5 files, one file
@@ -540,6 +561,7 @@ Classes
       :rtype: None
 
       .. seealso:: :obj:`load`
+
 
 
    .. py:method:: to_list() -> List
@@ -564,6 +586,7 @@ Classes
       value, but proceed with caution.
 
 
+
    .. py:method:: to_ndarray() -> numpy.ndarray
 
       Convert the array to a np.ndarray, transferring array data from
@@ -584,6 +607,7 @@ Classes
       distributed system with much more memory than the client. The user
       may override this limit by setting ak.client.maxTransferBytes to a larger
       value, but proceed with caution.
+
 
 
    .. py:method:: to_parquet(prefix_path: str, dataset: str = 'categorical_array', mode: str = 'truncate', compression: Optional[str] = None) -> str
@@ -628,6 +652,7 @@ Classes
       .. seealso:: :obj:`to_hdf`
 
 
+
    .. py:method:: to_strings() -> List
 
       Convert the Categorical to Strings.
@@ -648,6 +673,7 @@ Classes
 
       >>> isinstance(c.to_strings(), ak.Strings)
       True
+
 
 
    .. py:method:: transfer(hostname: str, port: arkouda.dtypes.int_scalars)
@@ -676,6 +702,7 @@ Classes
           a supported dtype
 
 
+
    .. py:method:: unique() -> Categorical
 
 
@@ -695,8 +722,10 @@ Classes
       they are unregistered.
 
 
+
    .. py:method:: unregister_categorical_by_name(user_defined_name: str) -> None
       :staticmethod:
+
 
       Function to unregister Categorical object by name which was registered
       with the arkouda server via register()
@@ -708,6 +737,7 @@ Classes
       :raises RegistrationError: if there is an issue attempting to unregister any underlying components
 
       .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
+
 
 
    .. py:method:: update_hdf(prefix_path, dataset='categorical_array', repack=True)

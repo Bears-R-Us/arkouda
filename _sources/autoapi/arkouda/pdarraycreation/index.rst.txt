@@ -1,15 +1,11 @@
-:py:mod:`arkouda.pdarraycreation`
-=================================
+arkouda.pdarraycreation
+=======================
 
 .. py:module:: arkouda.pdarraycreation
 
 
-Module Contents
----------------
-
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -31,6 +27,8 @@ Functions
    arkouda.pdarraycreation.zeros_like
 
 
+Module Contents
+---------------
 
 .. py:function:: arange(*args, **kwargs) -> arkouda.pdarrayclass.pdarray
 

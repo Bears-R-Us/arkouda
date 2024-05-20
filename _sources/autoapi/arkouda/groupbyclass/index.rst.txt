@@ -1,14 +1,11 @@
-:py:mod:`arkouda.groupbyclass`
-==============================
+arkouda.groupbyclass
+====================
 
 .. py:module:: arkouda.groupbyclass
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
@@ -16,9 +13,8 @@ Classes
    arkouda.groupbyclass.GroupBy
 
 
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -26,9 +22,10 @@ Functions
    arkouda.groupbyclass.unique
 
 
+Module Contents
+---------------
 
 .. py:class:: GROUPBY_REDUCTION_TYPES
-
 
    frozenset() -> empty frozenset object
    frozenset(iterable) -> frozenset object
@@ -36,9 +33,11 @@ Functions
    Build an immutable unordered collection of unique elements.
 
 
+
    .. py:method:: copy(*args, **kwargs)
 
       Return a shallow copy of a set.
+
 
 
 
@@ -50,11 +49,13 @@ Functions
 
 
 
+
    .. py:method:: intersection(*args, **kwargs)
 
       Return the intersection of two sets as a new set.
 
       (i.e. all elements that are in both sets.)
+
 
 
 
@@ -64,9 +65,11 @@ Functions
 
 
 
+
    .. py:method:: issubset(*args, **kwargs)
 
       Report whether another set contains this set.
+
 
 
 
@@ -76,11 +79,13 @@ Functions
 
 
 
+
    .. py:method:: symmetric_difference(*args, **kwargs)
 
       Return the symmetric difference of two sets as a new set.
 
       (i.e. all elements that are in exactly one of the sets.)
+
 
 
 
@@ -94,7 +99,6 @@ Functions
 
 
 .. py:class:: GroupBy
-
 
    Group an array or list of arrays by value, usually in preparation
    for aggregating the within-group values of another array.
@@ -170,6 +174,7 @@ Functions
    If the input is a single array with a .group() method defined, method 2
    will be used; otherwise, method 1 will be used.
 
+
    .. py:method:: AND(values: pdarray) -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]
 
       Bitwise AND of values in each segment.
@@ -189,6 +194,7 @@ Functions
       :raises ValueError: Raised if the key array size does not match the values size or
           if the operator is not in the GroupBy.Reductions array
       :raises RuntimeError: Raised if all is not supported for the values dtype
+
 
 
    .. py:method:: OR(values: pdarray) -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]
@@ -212,12 +218,14 @@ Functions
       :raises RuntimeError: Raised if all is not supported for the values dtype
 
 
+
    .. py:method:: Reductions(*args, **kwargs)
 
       frozenset() -> empty frozenset object
       frozenset(iterable) -> frozenset object
 
       Build an immutable unordered collection of unique elements.
+
 
 
 
@@ -240,6 +248,7 @@ Functions
       :raises ValueError: Raised if the key array size does not match the values size or
           if the operator is not in the GroupBy.Reductions array
       :raises RuntimeError: Raised if all is not supported for the values dtype
+
 
 
    .. py:method:: aggregate(values: groupable, operator: str, skipna: bool = True, ddof: int_scalars = 1) -> Tuple[groupable, groupable]
@@ -281,6 +290,7 @@ Functions
       0.33333333333333326, 0.55555555555555536, 0.77777777777777768, 1]))
 
 
+
    .. py:method:: all(values: pdarray) -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]
 
       Using the permutation stored in the GroupBy instance, group
@@ -300,6 +310,7 @@ Functions
       :raises RuntimeError: Raised if all is not supported for the values dtype
 
 
+
    .. py:method:: any(values: pdarray) -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]
 
       Using the permutation stored in the GroupBy instance, group another
@@ -315,6 +326,7 @@ Functions
           dtype is not bool
       :raises ValueError: Raised if the key array size does not match the values size or
           if the operator is not in the GroupBy.Reductions array
+
 
 
    .. py:method:: argmax(values: pdarray) -> Tuple[groupable, pdarray]
@@ -352,6 +364,7 @@ Functions
       array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
       >>> g.argmax(b)
       (array([2, 3, 4]), array([9, 3, 2]))
+
 
 
    .. py:method:: argmin(values: pdarray) -> Tuple[groupable, pdarray]
@@ -392,6 +405,7 @@ Functions
       (array([2, 3, 4]), array([5, 4, 2]))
 
 
+
    .. py:method:: attach(user_defined_name: str) -> GroupBy
 
       Function to return a GroupBy object attached to the registered name in the
@@ -406,6 +420,7 @@ Functions
       :raises RegistrationError: if user_defined_name is not registered
 
       .. seealso:: :obj:`register`, :obj:`is_registered`, :obj:`unregister`, :obj:`unregister_groupby_by_name`
+
 
 
    .. py:method:: broadcast(values: Union[pdarray, Strings], permute: bool = True) -> Union[pdarray, Strings]
@@ -457,6 +472,7 @@ Functions
       array([True True True True True True True True True True])
 
 
+
    .. py:method:: build_from_components(user_defined_name: Optional[str] = None, **kwargs) -> GroupBy
 
       function to build a new GroupBy object from component keys and permutation.
@@ -468,6 +484,7 @@ Functions
 
       :returns: The GroupBy object created by using the given components
       :rtype: GroupBy
+
 
 
    .. py:method:: count(values: pdarray) -> Tuple[groupable, pdarray]
@@ -496,6 +513,7 @@ Functions
       array([2 0 1])
 
 
+
    .. py:method:: first(values: groupable_element_type) -> Tuple[groupable, groupable_element_type]
 
       First value in each group.
@@ -505,6 +523,7 @@ Functions
 
       :returns: * **unique_keys** (*(list of) pdarray-like*) -- The unique keys, in grouped order
                 * **result** (*pdarray-like*) -- The first value of each group
+
 
 
    .. py:method:: from_return_msg(rep_msg)
@@ -525,6 +544,7 @@ Functions
 
       Objects registered with the server are immune to deletion until
       they are unregistered.
+
 
 
    .. py:method:: max(values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]
@@ -560,6 +580,7 @@ Functions
       array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
       >>> g.max(b)
       (array([2, 3, 4]), array([4, 4, 3]))
+
 
 
    .. py:method:: mean(values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]
@@ -599,6 +620,7 @@ Functions
       (array([2, 3, 4]), array([2.6666666666666665, 2.7999999999999998, 3]))
 
 
+
    .. py:method:: median(values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]
 
       Using the permutation stored in the GroupBy instance, group
@@ -636,6 +658,7 @@ Functions
       (array([1 2 3 4]), array([-3.75 1.25 3.75 -3.75]))
 
 
+
    .. py:method:: min(values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]
 
       Using the permutation stored in the GroupBy instance, group
@@ -671,6 +694,7 @@ Functions
       (array([2, 3, 4]), array([1, 1, 3]))
 
 
+
    .. py:method:: mode(values: groupable) -> Tuple[groupable, groupable]
 
       Most common value in each group. If a group is multi-modal, return the
@@ -683,9 +707,11 @@ Functions
                 * **result** (*(list of) pdarray-like*) -- The most common value of each group
 
 
+
    .. py:method:: most_common(values)
 
       (Deprecated) See `GroupBy.mode()`.
+
 
 
 
@@ -725,6 +751,7 @@ Functions
       #    Group (4) has values [4] -> 1 unique value
 
 
+
    .. py:method:: objType(*args, **kwargs)
 
       str(object='') -> str
@@ -737,6 +764,7 @@ Functions
       or repr(object).
       encoding defaults to sys.getdefaultencoding().
       errors defaults to 'strict'.
+
 
 
 
@@ -778,6 +806,7 @@ Functions
       (array([2, 3, 4]), array([12, 108.00000000000003, 8.9999999999999982]))
 
 
+
    .. py:method:: register(user_defined_name: str) -> GroupBy
 
       Register this GroupBy object and underlying components with the Arkouda server
@@ -801,6 +830,7 @@ Functions
 
       Objects registered with the server are immune to deletion until
       they are unregistered.
+
 
 
    .. py:method:: sample(values: groupable, n=None, frac=None, replace=False, weights=None, random_state=None, return_indices=False, permute_samples=False)
@@ -839,6 +869,7 @@ Functions
       :rtype: pdarray
 
 
+
    .. py:method:: size() -> Tuple[groupable, pdarray]
 
       Count the number of elements in each group, i.e. the number of times
@@ -862,6 +893,7 @@ Functions
       array([1, 2, 3, 4])
       >>> counts
       array([1, 2, 4, 3])
+
 
 
    .. py:method:: std(values: pdarray, skipna: bool = True, ddof: int_scalars = 1) -> Tuple[groupable, pdarray]
@@ -916,6 +948,7 @@ Functions
       (array([2 3 4]), array([1.5275252316519465 1.0954451150103321 0]))
 
 
+
    .. py:method:: sum(values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]
 
       Using the permutation stored in the GroupBy instance, group
@@ -952,6 +985,7 @@ Functions
       (array([2, 3, 4]), array([8, 14, 6]))
 
 
+
    .. py:method:: to_hdf(prefix_path, dataset='groupby', mode='truncate', file_type='distribute')
 
       Save the GroupBy to HDF5. The result is a collection of HDF5 files, one file
@@ -974,6 +1008,7 @@ Functions
                 * *GroupBy is not currently supported by Parquet*
 
 
+
    .. py:method:: unique(values: groupable)
 
       Return the set of unique values in each group, as a SegArray.
@@ -985,6 +1020,7 @@ Functions
                 * **result** (*(list of) SegArray*) -- The unique values of each group
 
       :raises TypeError: Raised if values is or contains Strings or Categorical
+
 
 
    .. py:method:: unregister()
@@ -1003,6 +1039,7 @@ Functions
       they are unregistered.
 
 
+
    .. py:method:: unregister_groupby_by_name(user_defined_name: str) -> None
 
       Function to unregister GroupBy object by name which was registered
@@ -1015,6 +1052,7 @@ Functions
       :raises RegistrationError: if there is an issue attempting to unregister any underlying components
 
       .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
+
 
 
    .. py:method:: update_hdf(prefix_path: str, dataset: str = 'groupby', repack: bool = True)

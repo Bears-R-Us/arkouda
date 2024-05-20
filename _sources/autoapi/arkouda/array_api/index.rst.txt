@@ -1,19 +1,15 @@
-:py:mod:`arkouda.array_api`
-===========================
+arkouda.array_api
+=================
 
 .. py:module:: arkouda.array_api
 
 
 Submodules
 ----------
+
 .. toctree::
-   :titlesonly:
    :maxdepth: 1
 
-   linalg/index.rst
-
-
-Package Contents
-----------------
+   /autoapi/arkouda/array_api/linalg/index
 
 

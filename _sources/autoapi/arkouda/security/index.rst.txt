@@ -1,15 +1,19 @@
-:py:mod:`arkouda.security`
-==========================
+arkouda.security
+================
 
 .. py:module:: arkouda.security
 
 
-Module Contents
----------------
+Attributes
+----------
+
+.. autoapisummary::
+
+   arkouda.security.username_tokenizer
 
 
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -20,14 +24,8 @@ Functions
    arkouda.security.get_username
 
 
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   arkouda.security.username_tokenizer
-
+Module Contents
+---------------
 
 .. py:function:: generate_token(length: int = 32) -> str
 
@@ -107,6 +105,4 @@ Attributes
 
 
 .. py:data:: username_tokenizer
-
-   
 

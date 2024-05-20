@@ -1,14 +1,11 @@
-:py:mod:`arkouda.dataframe`
-===========================
+arkouda.dataframe
+=================
 
 .. py:module:: arkouda.dataframe
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
@@ -17,9 +14,8 @@ Classes
    arkouda.dataframe.DiffAggregate
 
 
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -29,11 +25,13 @@ Functions
    arkouda.dataframe.merge
 
 
+Module Contents
+---------------
 
 .. py:class:: DataFrame(dict=None, /, **kwargs)
 
-
    Bases: :py:obj:`collections.UserDict`
+
 
    A DataFrame structure based on arkouda arrays.
 
@@ -176,228 +174,6 @@ Functions
    |  5 |      111 |     6 |
    +----+----------+-------+
 
-   .. py:property:: at
-
-      Access a single value for a row/column by label. Similar to `.loc`.
-      Use only if you need to get or set a single value.
-
-      :raises KeyError: Raised if a label is not present in the DataFrame.
-      :raises TypeError: Raised if the key or value types are not supported.
-
-   .. py:property:: columns
-
-      An Index where the values are the column names of the dataframe.
-
-      :returns: The values of the index are the column names of the dataframe.
-      :rtype: arkouda.index.Index
-
-      .. rubric:: Examples
-
-      >>> import arkouda as ak
-      >>> ak.connect()
-      >>> df = ak.DataFrame({'col1': [1, 2], 'col2': [3, 4]})
-      >>> df
-
-      +----+--------+--------+
-      |    |   col1 |   col2 |
-      +====+========+========+
-      |  0 |      1 |      3 |
-      +----+--------+--------+
-      |  1 |      2 |      4 |
-      +----+--------+--------+
-
-      >>> df.columns
-      Index(array(['col1', 'col2']), dtype='<U0')
-
-   .. py:property:: dtypes
-      :type: DataFrame
-
-      The dtypes of the dataframe.
-
-      :returns: **dtypes** -- The dtypes of the dataframe.
-      :rtype: arkouda.row.Row
-
-      .. rubric:: Examples
-
-      >>> import arkouda as ak
-      >>> ak.connect()
-      >>> df = ak.DataFrame({'col1': [1, 2], 'col2': ["a", "b"]})
-      >>> df
-
-      +----+--------+--------+
-      |    |   col1 | col2   |
-      +====+========+========+
-      |  0 |      1 | a      |
-      +----+--------+--------+
-      |  1 |      2 | b      |
-      +----+--------+--------+
-
-      >>> df.dtypes
-
-      +----+--------+
-      |keys| values |
-      +====+========+
-      |col1|  int64 |
-      +----+--------+
-      |col2|    str |
-      +----+--------+
-
-   .. py:property:: empty
-      :type: DataFrame
-
-      Whether the dataframe is empty.
-
-      :returns: True if the dataframe is empty, otherwise False.
-      :rtype: bool
-
-      .. rubric:: Examples
-
-      >>> import arkouda as ak
-      >>> ak.connect()
-      >>> df = ak.DataFrame({})
-      >>> df
-       0 rows x 0 columns
-      >>> df.empty
-      True
-
-   .. py:property:: iat
-
-      Access a single value for a row/column pair by integer position.
-      Similar to `.iloc`. Use only if you need to get or set a single value.
-
-      :raises IndexError: Raised if an index is out of range.
-      :raises TypeError: Raised if the key or value types are not supported.
-
-   .. py:property:: iloc
-
-      Position-based row indexing. Supports getting and setting. If there
-      is a single indexing argument, it is interpreted as a row selector.
-      If there are two, the first is interpreted as a row selector and the
-      second as a column selector. Selectors can be scalar integer values;
-      lists, pdarrays, or slices of integer values; boolean masks as pdarrays;
-      or integer Series. Setting values with .iloc requires both the row and
-      column selectors to be present.
-
-      :raises TypeError: Raised if the keys or value types are not supported.
-      :raises IndexError: Raised if an index is out of range.
-      :raises ValueError: Raised if a boolean mask is of the wrong length.
-
-   .. py:property:: index
-
-      The index of the dataframe.
-
-      :returns: The index of the dataframe.
-      :rtype: arkouda.index.Index or arkouda.index.MultiIndex
-
-      .. rubric:: Examples
-
-      >>> import arkouda as ak
-      >>> ak.connect()
-      >>> df = ak.DataFrame({'col1': [1, 2], 'col2': [3, 4]})
-      >>> df
-
-      +----+--------+--------+
-      |    |   col1 |   col2 |
-      +====+========+========+
-      |  0 |      1 |      3 |
-      +----+--------+--------+
-      |  1 |      2 |      4 |
-      +----+--------+--------+
-
-      >>> df.index
-      Index(array([0 1]), dtype='int64')
-
-   .. py:property:: info
-
-      Returns a summary string of this dataframe.
-
-      :returns: A summary string of this dataframe.
-      :rtype: str
-
-      .. rubric:: Examples
-
-      >>> import arkouda as ak
-      >>> ak.connect()
-      >>> df = ak.DataFrame({'col1': [1, 2], 'col2': ["a", "b"]})
-      >>> df
-
-      +----+--------+--------+
-      |    |   col1 | col2   |
-      +====+========+========+
-      |  0 |      1 | a      |
-      +----+--------+--------+
-      |  1 |      2 | b      |
-      +----+--------+--------+
-
-      >>> df.info
-      "DataFrame(['col1', 'col2'], 2 rows, 20 B)"
-
-   .. py:property:: loc
-
-      Label-based row indexing. Supports getting and setting. If there is
-      a single indexing argument, it is interpreted as a row selector. If
-      there are two, the first is interpreted as a row selector and the
-      second as a column selector. Selectors can be scalar label values;
-      lists, pdarrays, or slices of label values; boolean masks as pdarrays;
-      or Series. Setting values with .loc requires both the row and column
-      selectors to be present.
-
-      :raises KeyError: Raised if a label is not present in the DataFrame.
-      :raises TypeError: Raised if the key or value types are not supported.
-
-   .. py:property:: shape
-
-      The shape of the dataframe.
-
-      :returns: Tuple of array dimensions.
-      :rtype: tuple of int
-
-      .. rubric:: Examples
-
-      >>> import arkouda as ak
-      >>> ak.connect()
-      >>> df = ak.DataFrame({'col1': [1, 2, 3], 'col2': [4, 5, 6]})
-      >>> df
-
-      +----+--------+--------+
-      |    |   col1 |   col2 |
-      +====+========+========+
-      |  0 |      1 |      4 |
-      +----+--------+--------+
-      |  1 |      2 |      5 |
-      +----+--------+--------+
-      |  2 |      3 |      6 |
-      +----+--------+--------+
-
-      >>> df.shape
-      (3, 2)
-
-   .. py:property:: size
-
-      Returns the number of bytes on the arkouda server.
-
-      :returns: The number of bytes on the arkouda server.
-      :rtype: int
-
-      .. rubric:: Examples
-
-      >>> import arkouda as ak
-      >>> ak.connect()
-      >>> df = ak.DataFrame({'col1': [1, 2, 3], 'col2': [4, 5, 6]})
-      >>> df
-
-      +----+--------+--------+
-      |    |   col1 |   col2 |
-      +====+========+========+
-      |  0 |      1 |      4 |
-      +----+--------+--------+
-      |  1 |      2 |      5 |
-      +----+--------+--------+
-      |  2 |      3 |      6 |
-      +----+--------+--------+
-
-      >>> df.size
-      6
 
    .. py:method:: GroupBy(keys, use_series=False, as_index=True, dropna=True)
 
@@ -462,6 +238,7 @@ Functions
       +----+--------+--------+
 
 
+
    .. py:method:: all(axis=0) -> Union[Series, bool]
 
       Return whether all elements are True, potentially over an axis.
@@ -517,6 +294,7 @@ Functions
       dtype: bool
       >>> df.all(axis=None)
       False
+
 
 
    .. py:method:: any(axis=0) -> Union[Series, bool]
@@ -576,6 +354,7 @@ Functions
       True
 
 
+
    .. py:method:: append(other, ordered=True)
 
       Concatenate data from 'other' onto the end of this DataFrame, in place.
@@ -632,6 +411,7 @@ Functions
       +----+--------+--------+
 
 
+
    .. py:method:: apply_permutation(perm)
 
       Apply a permutation to an entire DataFrame.  The operation is done in
@@ -680,6 +460,7 @@ Functions
       +----+--------+--------+
       |  2 |      2 |      5 |
       +----+--------+--------+
+
 
 
    .. py:method:: argsort(key, ascending=True)
@@ -745,6 +526,15 @@ Functions
       +----+--------+--------+
 
 
+
+   .. py:property:: at
+      Access a single value for a row/column by label. Similar to `.loc`.
+      Use only if you need to get or set a single value.
+
+      :raises KeyError: Raised if a label is not present in the DataFrame.
+      :raises TypeError: Raised if the key or value types are not supported.
+
+
    .. py:method:: attach(user_defined_name: str) -> DataFrame
 
       Function to return a DataFrame object attached to the registered name in the
@@ -770,6 +560,7 @@ Functions
       >>> df.unregister()
       >>> df.is_registered()
       False
+
 
 
    .. py:method:: coargsort(keys, ascending=True)
@@ -804,6 +595,7 @@ Functions
       >>>
 
 
+
    .. py:method:: column_label_type()
 
 
@@ -813,9 +605,36 @@ Functions
 
 
 
+
+   .. py:property:: columns
+      An Index where the values are the column names of the dataframe.
+
+      :returns: The values of the index are the column names of the dataframe.
+      :rtype: arkouda.index.Index
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> df = ak.DataFrame({'col1': [1, 2], 'col2': [3, 4]})
+      >>> df
+
+      +----+--------+--------+
+      |    |   col1 |   col2 |
+      +====+========+========+
+      |  0 |      1 |      3 |
+      +----+--------+--------+
+      |  1 |      2 |      4 |
+      +----+--------+--------+
+
+      >>> df.columns
+      Index(array(['col1', 'col2']), dtype='<U0')
+
+
    .. py:method:: concat(items, ordered=True)
 
       Essentially an append, but different formatting.
+
 
 
 
@@ -859,6 +678,7 @@ Functions
       +------+--------+--------+
       | col2 |     -1 |      1 |
       +------+--------+--------+
+
 
 
    .. py:method:: count(axis: Union[int, str] = 0, numeric_only=False) -> Series
@@ -930,6 +750,7 @@ Functions
       dtype: int64
 
 
+
    .. py:method:: drop(keys: Union[str, int, List[Union[str, int]]], axis: Union[str, int] = 0, inplace: bool = False) -> Union[None, DataFrame]
 
       Drop column/s or row/s from the dataframe.
@@ -984,6 +805,7 @@ Functions
       +----+--------+--------+
 
 
+
    .. py:method:: drop_duplicates(subset=None, keep='first')
 
       Drops duplcated rows and returns resulting DataFrame.
@@ -1027,6 +849,7 @@ Functions
       +----+--------+--------+
       |  2 |      3 |      6 |
       +----+--------+--------+
+
 
 
    .. py:method:: dropna(axis: Union[int, str] = 0, how: Optional[str] = None, thresh: Optional[int] = None, ignore_index: bool = False) -> DataFrame
@@ -1139,6 +962,60 @@ Functions
       +----+------+-----+-----+-------+-----+-----+-----+
 
 
+
+   .. py:property:: dtypes
+      :type: DataFrame
+
+      The dtypes of the dataframe.
+
+      :returns: **dtypes** -- The dtypes of the dataframe.
+      :rtype: arkouda.row.Row
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> df = ak.DataFrame({'col1': [1, 2], 'col2': ["a", "b"]})
+      >>> df
+
+      +----+--------+--------+
+      |    |   col1 | col2   |
+      +====+========+========+
+      |  0 |      1 | a      |
+      +----+--------+--------+
+      |  1 |      2 | b      |
+      +----+--------+--------+
+
+      >>> df.dtypes
+
+      +----+--------+
+      |keys| values |
+      +====+========+
+      |col1|  int64 |
+      +----+--------+
+      |col2|    str |
+      +----+--------+
+
+
+   .. py:property:: empty
+      :type: DataFrame
+
+      Whether the dataframe is empty.
+
+      :returns: True if the dataframe is empty, otherwise False.
+      :rtype: bool
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> df = ak.DataFrame({})
+      >>> df
+       0 rows x 0 columns
+      >>> df.empty
+      True
+
+
    .. py:method:: filter_by_range(keys, low=1, high=None)
 
       Find all rows where the value count of the items in a given set of
@@ -1194,6 +1071,7 @@ Functions
       +----+--------+--------+
 
 
+
    .. py:method:: from_pandas(pd_df)
 
       Copy the data from a pandas DataFrame into a new arkouda.dataframe.DataFrame.
@@ -1235,6 +1113,7 @@ Functions
       +----+-----+-----+
 
 
+
    .. py:method:: from_return_msg(rep_msg)
 
       Creates a DataFrame object from an arkouda server response message.
@@ -1243,6 +1122,7 @@ Functions
       :type rep_msg: string
 
       :rtype: arkouda.dataframe.DataFrame
+
 
 
    .. py:method:: groupby(keys, use_series=True, as_index=True, dropna=True)
@@ -1306,6 +1186,7 @@ Functions
       +----+--------+--------+
       |  1 |      2 |      1 |
       +----+--------+--------+
+
 
 
    .. py:method:: head(n=5)
@@ -1382,6 +1263,79 @@ Functions
       +----+--------+--------+
 
 
+
+   .. py:property:: iat
+      Access a single value for a row/column pair by integer position.
+      Similar to `.iloc`. Use only if you need to get or set a single value.
+
+      :raises IndexError: Raised if an index is out of range.
+      :raises TypeError: Raised if the key or value types are not supported.
+
+
+   .. py:property:: iloc
+      Position-based row indexing. Supports getting and setting. If there
+      is a single indexing argument, it is interpreted as a row selector.
+      If there are two, the first is interpreted as a row selector and the
+      second as a column selector. Selectors can be scalar integer values;
+      lists, pdarrays, or slices of integer values; boolean masks as pdarrays;
+      or integer Series. Setting values with .iloc requires both the row and
+      column selectors to be present.
+
+      :raises TypeError: Raised if the keys or value types are not supported.
+      :raises IndexError: Raised if an index is out of range.
+      :raises ValueError: Raised if a boolean mask is of the wrong length.
+
+
+   .. py:property:: index
+      The index of the dataframe.
+
+      :returns: The index of the dataframe.
+      :rtype: arkouda.index.Index or arkouda.index.MultiIndex
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> df = ak.DataFrame({'col1': [1, 2], 'col2': [3, 4]})
+      >>> df
+
+      +----+--------+--------+
+      |    |   col1 |   col2 |
+      +====+========+========+
+      |  0 |      1 |      3 |
+      +----+--------+--------+
+      |  1 |      2 |      4 |
+      +----+--------+--------+
+
+      >>> df.index
+      Index(array([0 1]), dtype='int64')
+
+
+   .. py:property:: info
+      Returns a summary string of this dataframe.
+
+      :returns: A summary string of this dataframe.
+      :rtype: str
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> df = ak.DataFrame({'col1': [1, 2], 'col2': ["a", "b"]})
+      >>> df
+
+      +----+--------+--------+
+      |    |   col1 | col2   |
+      +====+========+========+
+      |  0 |      1 | a      |
+      +----+--------+--------+
+      |  1 |      2 | b      |
+      +----+--------+--------+
+
+      >>> df.info
+      "DataFrame(['col1', 'col2'], 2 rows, 20 B)"
+
+
    .. py:method:: is_registered() -> bool
 
       Return True if the object is contained in the registry.
@@ -1408,6 +1362,7 @@ Functions
       >>> df.unregister()
       >>> df.is_registered()
       False
+
 
 
    .. py:method:: isin(values: Union[pdarray, Dict, Series, DataFrame]) -> DataFrame
@@ -1499,6 +1454,7 @@ Functions
       +----+---------+---------+
 
 
+
    .. py:method:: isna() -> DataFrame
 
       Detect missing values.
@@ -1538,6 +1494,7 @@ Functions
       1  False   True   True  False
       2  False  False  False  False
       3  False  False   True  False (4 rows x 4 columns)
+
 
 
    .. py:method:: load(prefix_path, file_format='INFER')
@@ -1581,6 +1538,20 @@ Functions
       +----+-----+-----+
       |  4 |   4 |  -4 |
       +----+-----+-----+
+
+
+
+   .. py:property:: loc
+      Label-based row indexing. Supports getting and setting. If there is
+      a single indexing argument, it is interpreted as a row selector. If
+      there are two, the first is interpreted as a row selector and the
+      second as a column selector. Selectors can be scalar label values;
+      lists, pdarrays, or slices of label values; boolean masks as pdarrays;
+      or Series. Setting values with .loc requires both the row and column
+      selectors to be present.
+
+      :raises KeyError: Raised if a label is not present in the DataFrame.
+      :raises TypeError: Raised if the key or value types are not supported.
 
 
    .. py:method:: memory_usage(index=True, unit='B') -> Series
@@ -1671,6 +1642,7 @@ Functions
       >>>  df.memory_usage(index=True).sum()
 
 
+
    .. py:method:: memory_usage_info(unit='GB')
 
       A formatted string representation of the size of this DataFrame.
@@ -1691,6 +1663,7 @@ Functions
 
       >>> df.memory_usage_info(unit="KB")
       '15 KB'
+
 
 
    .. py:method:: merge(right: DataFrame, on: Optional[Union[str, List[str]]] = None, how: str = 'inner', left_suffix: str = '_x', right_suffix: str = '_y', convert_ints: bool = True, sort: bool = True) -> DataFrame
@@ -1833,6 +1806,7 @@ Functions
       +----+--------+----------+----------+
 
 
+
    .. py:method:: notna() -> DataFrame
 
       Detect existing (non-missing) values.
@@ -1873,6 +1847,7 @@ Functions
       3   True   True  False  True (4 rows x 4 columns)
 
 
+
    .. py:method:: objType(*args, **kwargs)
 
       str(object='') -> str
@@ -1885,6 +1860,7 @@ Functions
       or repr(object).
       encoding defaults to sys.getdefaultencoding().
       errors defaults to 'strict'.
+
 
 
 
@@ -1943,6 +1919,7 @@ Functions
       +----+-----+-----+
 
 
+
    .. py:method:: register(user_defined_name: str) -> DataFrame
 
       Register this DataFrame object and underlying components with the Arkouda server.
@@ -1980,6 +1957,7 @@ Functions
       >>> df.unregister()
       >>> df.is_registered()
       False
+
 
 
    .. py:method:: rename(mapper: Optional[Union[Callable, Dict]] = None, index: Optional[Union[Callable, Dict]] = None, column: Optional[Union[Callable, Dict]] = None, axis: Union[str, int] = 0, inplace: bool = False) -> Optional[DataFrame]
@@ -2072,6 +2050,7 @@ Functions
       +----+-----+-----+
 
 
+
    .. py:method:: reset_index(size: Optional[int] = None, inplace: bool = False) -> Union[None, DataFrame]
 
       Set the index to an integer range.
@@ -2137,6 +2116,7 @@ Functions
       +----+-----+-----+
 
 
+
    .. py:method:: sample(n=5)
 
       Return a random sample of `n` rows.
@@ -2179,6 +2159,7 @@ Functions
       +----+-----+-----+
       |  2 |   4 |  -4 |
       +----+-----+-----+
+
 
 
    .. py:method:: save(path, index=False, columns=None, file_format='HDF5', file_type='distribute', compression: Optional[str] = None)
@@ -2237,7 +2218,62 @@ Functions
       +----+-----+-----+
 
 
+
    .. py:method:: set_row(key, value)
+
+
+   .. py:property:: shape
+      The shape of the dataframe.
+
+      :returns: Tuple of array dimensions.
+      :rtype: tuple of int
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> df = ak.DataFrame({'col1': [1, 2, 3], 'col2': [4, 5, 6]})
+      >>> df
+
+      +----+--------+--------+
+      |    |   col1 |   col2 |
+      +====+========+========+
+      |  0 |      1 |      4 |
+      +----+--------+--------+
+      |  1 |      2 |      5 |
+      +----+--------+--------+
+      |  2 |      3 |      6 |
+      +----+--------+--------+
+
+      >>> df.shape
+      (3, 2)
+
+
+   .. py:property:: size
+      Returns the number of bytes on the arkouda server.
+
+      :returns: The number of bytes on the arkouda server.
+      :rtype: int
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> df = ak.DataFrame({'col1': [1, 2, 3], 'col2': [4, 5, 6]})
+      >>> df
+
+      +----+--------+--------+
+      |    |   col1 |   col2 |
+      +====+========+========+
+      |  0 |      1 |      4 |
+      +----+--------+--------+
+      |  1 |      2 |      5 |
+      +----+--------+--------+
+      |  2 |      3 |      6 |
+      +----+--------+--------+
+
+      >>> df.size
+      6
 
 
    .. py:method:: sort_index(ascending=True)
@@ -2277,6 +2313,7 @@ Functions
       +----+--------+--------+
       |  2 |    1.1 |      6 |
       +----+--------+--------+
+
 
 
    .. py:method:: sort_values(by=None, ascending=True)
@@ -2334,6 +2371,7 @@ Functions
       +----+--------+--------+--------+
       |  2 |      2 |      4 |      6 |
       +----+--------+--------+--------+
+
 
 
    .. py:method:: tail(n=5)
@@ -2410,6 +2448,7 @@ Functions
       +----+--------+--------+
 
 
+
    .. py:method:: to_csv(path: str, index: bool = False, columns: Optional[List[str]] = None, col_delim: str = ',', overwrite: bool = False)
 
       Writes DataFrame to CSV file(s). File will contain a column for each column in the DataFrame.
@@ -2471,6 +2510,7 @@ Functions
       +----+-----+-----+
 
 
+
    .. py:method:: to_hdf(path, index=False, columns=None, file_type='distribute')
 
       Save DataFrame to disk as hdf5, preserving column names.
@@ -2516,6 +2556,7 @@ Functions
       +----+-----+-----+
       |  1 |   2 |   4 |
       +----+-----+-----+
+
 
 
    .. py:method:: to_markdown(mode='wt', index=True, tablefmt='grid', storage_options=None, **kwargs)
@@ -2571,6 +2612,7 @@ Functions
 
 
 
+
    .. py:method:: to_pandas(datalimit=1073741824, retain_index=False)
 
       Send this DataFrame to a pandas DataFrame.
@@ -2616,6 +2658,7 @@ Functions
       +----+-----+-----+
       |  1 |   1 |  -1 |
       +----+-----+-----+
+
 
 
    .. py:method:: to_parquet(path, index=False, columns=None, compression: Optional[str] = None, convert_categoricals: bool = False)
@@ -2670,6 +2713,7 @@ Functions
       +----+-----+-----+
 
 
+
    .. py:method:: transfer(hostname, port)
 
       Sends a DataFrame to a different Arkouda server.
@@ -2695,6 +2739,7 @@ Functions
       :raises ValueError: Raised if the op is not within the pdarray.BinOps set
       :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
           a supported dtype
+
 
 
    .. py:method:: unregister()
@@ -2724,6 +2769,7 @@ Functions
       False
 
 
+
    .. py:method:: unregister_dataframe_by_name(user_defined_name: str) -> str
 
       Function to unregister DataFrame object by name which was registered
@@ -2747,6 +2793,7 @@ Functions
       >>> df.unregister_dataframe_by_name("my_table_name")
       >>> df.is_registered()
       False
+
 
 
    .. py:method:: update_hdf(prefix_path: str, index=False, columns=None, repack: bool = True)
@@ -2811,9 +2858,11 @@ Functions
       +----+-----+-----+
 
 
+
    .. py:method:: update_nrows()
 
       Computes the number of rows on the arkouda server and updates the size parameter.
+
 
 
 
@@ -2823,9 +2872,7 @@ Functions
    .. py:method:: validate_value(value)
 
 
-
 .. py:class:: DataFrameGroupBy
-
 
    A DataFrame that has been grouped by a subset of columns.
 
@@ -2861,6 +2908,7 @@ Functions
 
       :type: bool, default=True
 
+
    .. py:method:: all(colnames=None)
 
       Aggregate the operation, with the grouped column(s) values as keys.
@@ -2869,6 +2917,7 @@ Functions
       :type colnames: (list of) str, default=None
 
       :rtype: arkouda.dataframe.DataFrame
+
 
 
    .. py:method:: any(colnames=None)
@@ -2881,6 +2930,7 @@ Functions
       :rtype: arkouda.dataframe.DataFrame
 
 
+
    .. py:method:: argmax(colnames=None)
 
       Aggregate the operation, with the grouped column(s) values as keys.
@@ -2891,6 +2941,7 @@ Functions
       :rtype: arkouda.dataframe.DataFrame
 
 
+
    .. py:method:: argmin(colnames=None)
 
       Aggregate the operation, with the grouped column(s) values as keys.
@@ -2899,6 +2950,7 @@ Functions
       :type colnames: (list of) str, default=None
 
       :rtype: arkouda.dataframe.DataFrame
+
 
 
    .. py:method:: broadcast(x, permute=True)
@@ -2953,6 +3005,7 @@ Functions
       +----+-----+-----+-----+
 
 
+
    .. py:method:: count(colnames=None)
 
       Aggregate the operation, with the grouped column(s) values as keys.
@@ -2961,6 +3014,7 @@ Functions
       :type colnames: (list of) str, default=None
 
       :rtype: arkouda.dataframe.DataFrame
+
 
 
    .. py:method:: diff(colname)
@@ -3004,6 +3058,7 @@ Functions
       array([nan nan 2.00000000000000000 16.00000000000000000 nan 14.00000000000000000])
 
 
+
    .. py:method:: first(colnames=None)
 
       Aggregate the operation, with the grouped column(s) values as keys.
@@ -3012,6 +3067,7 @@ Functions
       :type colnames: (list of) str, default=None
 
       :rtype: arkouda.dataframe.DataFrame
+
 
 
    .. py:method:: max(colnames=None)
@@ -3024,6 +3080,7 @@ Functions
       :rtype: arkouda.dataframe.DataFrame
 
 
+
    .. py:method:: mean(colnames=None)
 
       Aggregate the operation, with the grouped column(s) values as keys.
@@ -3032,6 +3089,7 @@ Functions
       :type colnames: (list of) str, default=None
 
       :rtype: arkouda.dataframe.DataFrame
+
 
 
    .. py:method:: median(colnames=None)
@@ -3044,6 +3102,7 @@ Functions
       :rtype: arkouda.dataframe.DataFrame
 
 
+
    .. py:method:: min(colnames=None)
 
       Aggregate the operation, with the grouped column(s) values as keys.
@@ -3052,6 +3111,7 @@ Functions
       :type colnames: (list of) str, default=None
 
       :rtype: arkouda.dataframe.DataFrame
+
 
 
    .. py:method:: mode(colnames=None)
@@ -3064,6 +3124,7 @@ Functions
       :rtype: arkouda.dataframe.DataFrame
 
 
+
    .. py:method:: nunique(colnames=None)
 
       Aggregate the operation, with the grouped column(s) values as keys.
@@ -3074,6 +3135,7 @@ Functions
       :rtype: arkouda.dataframe.DataFrame
 
 
+
    .. py:method:: prod(colnames=None)
 
       Aggregate the operation, with the grouped column(s) values as keys.
@@ -3082,6 +3144,7 @@ Functions
       :type colnames: (list of) str, default=None
 
       :rtype: arkouda.dataframe.DataFrame
+
 
 
    .. py:method:: sample(n=None, frac=None, replace=False, weights=None, random_state=None)
@@ -3181,6 +3244,7 @@ Functions
       +----+-----+-----+
 
 
+
    .. py:method:: size(as_series=None, sort_index=True)
 
       Compute the size of each value as the total number of rows, including NaN values.
@@ -3225,6 +3289,7 @@ Functions
       +----+---------+
 
 
+
    .. py:method:: std(colnames=None)
 
       Aggregate the operation, with the grouped column(s) values as keys.
@@ -3233,6 +3298,7 @@ Functions
       :type colnames: (list of) str, default=None
 
       :rtype: arkouda.dataframe.DataFrame
+
 
 
    .. py:method:: sum(colnames=None)
@@ -3245,6 +3311,7 @@ Functions
       :rtype: arkouda.dataframe.DataFrame
 
 
+
    .. py:method:: unique(colnames=None)
 
       Aggregate the operation, with the grouped column(s) values as keys.
@@ -3255,6 +3322,7 @@ Functions
       :rtype: arkouda.dataframe.DataFrame
 
 
+
    .. py:method:: var(colnames=None)
 
       Aggregate the operation, with the grouped column(s) values as keys.
@@ -3263,6 +3331,7 @@ Functions
       :type colnames: (list of) str, default=None
 
       :rtype: arkouda.dataframe.DataFrame
+
 
 
    .. py:method:: xor(colnames=None)
@@ -3278,7 +3347,6 @@ Functions
 
 .. py:class:: DiffAggregate
 
-
    A column in a GroupBy that has been differenced.
    Aggregation operations can be done on the result.
 
@@ -3293,6 +3361,7 @@ Functions
       A column to compute the difference on.
 
       :type: arkouda.series.Series.
+
 
    .. py:method:: all()
 
@@ -3346,7 +3415,6 @@ Functions
 
 
    .. py:method:: xor()
-
 
 
 .. py:function:: intersect(a, b, positions=True, unique=False)
