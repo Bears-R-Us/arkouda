@@ -1,4 +1,7 @@
+import glob
 import itertools
+import os
+import tempfile
 
 import numpy as np
 import pandas as pd
@@ -7,6 +10,12 @@ from pandas.testing import assert_frame_equal, assert_series_equal
 
 import arkouda as ak
 from arkouda.scipy import chisquare as akchisquare
+
+
+def alternating_1_0(n):
+    a = np.full(n, 0)
+    a[::2] = 1
+    return ak.array(a)
 
 
 class TestDataFrame:
@@ -192,10 +201,15 @@ class TestDataFrame:
         assert_frame_equal(pddf, akdf.to_pandas())
 
         # validation of creation from list
+
+        # The line ****'d  below fails in the arkouda INDEX class if size > 1000,
+        #  so it is hardcoded to that limit.
+
+        size1000 = 1000
         x = [
-            np.arange(size),
-            np.random.randint(0, 5, size),
-            np.random.randint(5, 10, size),
+            np.arange(size1000),
+            np.random.randint(0, 5, size1000),
+            np.random.randint(5, 10, size1000),
         ]
         pddf = pd.DataFrame(x)
         pddf.columns = pddf.columns.astype(str)
@@ -209,6 +223,28 @@ class TestDataFrame:
         ak_to_pd = akdf.to_pandas()
         assert_frame_equal(pddf, ak_to_pd)
 
+    def test_convenience_init(self):
+        dict1 = {"0": [1, 2], "1": [True, False], "2": ["foo", "bar"], "3": [2.3, -1.8]}
+        dict2 = {"0": (1, 2), "1": (True, False), "2": ("foo", "bar"), "3": (2.3, -1.8)}
+        dict3 = {"0": (1, 2), "1": [True, False], "2": ["foo", "bar"], "3": (2.3, -1.8)}
+        dict_dfs = [ak.DataFrame(d) for d in [dict1, dict2, dict3]]
+
+        lists1 = [[1, 2], [True, False], ["foo", "bar"], [2.3, -1.8]]
+        lists2 = [(1, 2), (True, False), ("foo", "bar"), (2.3, -1.8)]
+        lists3 = [(1, 2), [True, False], ["foo", "bar"], (2.3, -1.8)]
+        lists_dfs = [ak.DataFrame(lst) for lst in [lists1, lists2, lists3]]
+
+        for df in dict_dfs + lists_dfs:
+            assert isinstance(df, ak.DataFrame)
+            assert isinstance(df["0"], ak.pdarray)
+            assert df["0"].dtype == int
+            assert isinstance(df["1"], ak.pdarray)
+            assert df["1"].dtype == bool
+            assert isinstance(df["2"], ak.Strings)
+            assert df["2"].dtype == str
+            assert isinstance(df["3"], ak.pdarray)
+            assert df["3"].dtype == float
+
     def test_client_type_creation(self):
         f = ak.Fields(ak.arange(10), ["A", "B", "c"])
         ip = ak.ip_address(ak.arange(10))
@@ -219,7 +255,12 @@ class TestDataFrame:
         df = ak.DataFrame(df_dict)
         pd_d = [pd.to_datetime(x, unit="ns") for x in d.to_list()]
         pddf = pd.DataFrame(
-            {"fields": f.to_list(), "ip": ip.to_list(), "date": pd_d, "bitvector": bv.to_list()}
+            {
+                "fields": f.to_list(),
+                "ip": ip.to_list(),
+                "date": pd_d,
+                "bitvector": bv.to_list(),
+            }
         )
         assert_frame_equal(pddf, df.to_pandas())
 
@@ -286,7 +327,8 @@ class TestDataFrame:
         # dtypes returns objType for categorical, segarray. We should probably fix
         # this and add a df.objTypes property. pdarrays return actual dtype
         for ref_type, c in zip(
-            ["int64", "int64", "int64", "str", "Categorical", "SegArray", "bigint"], akdf.columns.values
+            ["int64", "int64", "int64", "str", "Categorical", "SegArray", "bigint"],
+            akdf.columns.values,
         ):
             assert ref_type == str(akdf.dtypes[c])
 
@@ -460,6 +502,44 @@ class TestDataFrame:
         tdf_ref = ref_df.tail(2).reset_index(drop=True)
         assert_frame_equal(tdf_ref, tdf.to_pandas())
 
+    def test_groupby_standard(self):
+        df = self.build_ak_df()
+        gb = df.GroupBy("userName")
+        keys, count = gb.count()
+        assert keys.to_list() == ["Bob", "Alice", "Carol"]
+        assert count.to_list() == [2, 3, 1]
+        assert gb.permutation.to_list() == [1, 4, 0, 2, 5, 3]
+
+        gb = df.GroupBy(["userName", "userID"])
+        keys, count = gb.count()
+        assert len(keys) == 2
+        assert keys[0].to_list() == ["Bob", "Alice", "Carol"]
+        assert keys[1].to_list() == [222, 111, 333]
+        assert count.to_list() == [2, 3, 1]
+
+        # testing counts with IPv4 column
+        s = ak.DataFrame({"a": ak.IPv4(ak.arange(1, 5))}).groupby("a").count(as_series=True)
+        pds = pd.Series(
+            data=np.ones(4, dtype=np.int64),
+            index=pd.Index(
+                data=np.array(["0.0.0.1", "0.0.0.2", "0.0.0.3", "0.0.0.4"], dtype="<U7"),
+                name="a",
+            ),
+        )
+        assert_series_equal(pds, s.to_pandas())
+
+        # testing counts with Categorical column
+        s = (
+            ak.DataFrame({"a": ak.Categorical(ak.array(["a", "a", "a", "b"]))})
+            .groupby("a")
+            .count(as_series=True)
+        )
+        pds = pd.Series(
+            data=np.array([3, 1]),
+            index=pd.Index(data=np.array(["a", "b"], dtype="<U7"), name="a"),
+        )
+        assert_series_equal(pds, s.to_pandas())
+
     def test_gb_series(self):
         df = self.build_ak_df()
 
@@ -537,14 +617,16 @@ class TestDataFrame:
         pd_df = ak_df.to_pandas(retain_index=True)
 
         assert_frame_equal(
-            ak_df.groupby("gb_id").sum().to_pandas(retain_index=True), pd_df.groupby("gb_id").sum()
+            ak_df.groupby("gb_id").sum().to_pandas(retain_index=True),
+            pd_df.groupby("gb_id").sum(),
         )
         assert set(ak_df.groupby("gb_id").sum().columns.values) == set(
             pd_df.groupby("gb_id").sum().columns.values
         )
 
         assert_frame_equal(
-            ak_df.groupby(["gb_id"]).sum().to_pandas(retain_index=True), pd_df.groupby(["gb_id"]).sum()
+            ak_df.groupby(["gb_id"]).sum().to_pandas(retain_index=True),
+            pd_df.groupby(["gb_id"]).sum(),
         )
         assert set(ak_df.groupby(["gb_id"]).sum().columns.values) == set(
             pd_df.groupby(["gb_id"]).sum().columns.values
@@ -594,7 +676,8 @@ class TestDataFrame:
         )
 
         assert_series_equal(
-            ak_df.groupby("key1").size(as_series=True).to_pandas(), pd_df.groupby("key1").size()
+            ak_df.groupby("key1").size(as_series=True).to_pandas(),
+            pd_df.groupby("key1").size(),
         )
 
     def test_gb_size_match_pandas(self):
@@ -735,7 +818,8 @@ class TestDataFrame:
             pd_result = ak_result.to_pandas()
             if isinstance(ak_result, ak.dataframe.DataFrame):
                 assert_frame_equal(
-                    ak_result.sort_index().to_pandas(retain_index=True), pd_result.sort_index()
+                    ak_result.sort_index().to_pandas(retain_index=True),
+                    pd_result.sort_index(),
                 )
             else:
                 assert_series_equal(ak_result.sort_index().to_pandas(), pd_result.sort_index())
@@ -910,7 +994,7 @@ class TestDataFrame:
         c = ak.randint(-size // 10, size // 10, size, seed=seed + 2)
         d = ak.randint(-size // 10, size // 10, size, seed=seed + 3)
         ones = ak.ones(size, int)
-        altr = ak.cast(ak.arange(size) % 2 == 0, int)
+        altr = alternating_1_0(size)
         for truth in itertools.product([True, False], repeat=3):
             left_arrs = [pda if t else pda_to_str_helper(pda) for pda, t in zip([a, b, ones], truth)]
             right_arrs = [pda if t else pda_to_str_helper(pda) for pda, t in zip([c, d, altr], truth)]
@@ -919,7 +1003,14 @@ class TestDataFrame:
             l_pd, r_pd = left_df.to_pandas(), right_df.to_pandas()
 
             for how in "inner", "left", "right":
-                for on in "first", "second", "third", ["first", "third"], ["second", "third"], None:
+                for on in (
+                    "first",
+                    "second",
+                    "third",
+                    ["first", "third"],
+                    ["second", "third"],
+                    None,
+                ):
                     ak_merge = ak.merge(left_df, right_df, on=on, how=how)
                     pd_merge = pd.merge(l_pd, r_pd, on=on, how=how)
 
@@ -990,13 +1081,15 @@ class TestDataFrame:
                     assert df.any(axis=axis).to_pandas().empty is True
                 else:
                     assert_series_equal(
-                        df.any(axis=axis).to_pandas(), df.to_pandas().any(axis=axis, bool_only=True)
+                        df.any(axis=axis).to_pandas(),
+                        df.to_pandas().any(axis=axis, bool_only=True),
                     )
                 if df.to_pandas().all(axis=axis, bool_only=True).empty:
                     assert df.all(axis=axis).to_pandas().empty is True
                 else:
                     assert_series_equal(
-                        df.all(axis=axis).to_pandas(), df.to_pandas().all(axis=axis, bool_only=True)
+                        df.all(axis=axis).to_pandas(),
+                        df.to_pandas().all(axis=axis, bool_only=True),
                     )
             # Test is axis=None
             assert df.any(axis=None) == df.to_pandas().any(axis=None, bool_only=True)
@@ -1080,7 +1173,8 @@ class TestDataFrame:
 
         ak_memory_usage = df.memory_usage(unit="KB")
         pd_memory_usage = pd.Series(
-            [39.0625, 39.0625, 39.0625, 4.88281], index=["Index", "int64", "float64", "bool"]
+            [39.0625, 39.0625, 39.0625, 4.88281],
+            index=["Index", "int64", "float64", "bool"],
         )
         assert_series_equal(ak_memory_usage.to_pandas(), pd_memory_usage)
 
@@ -1111,6 +1205,318 @@ class TestDataFrame:
             tablefmt="grid", index=False
         )
         assert df.to_markdown(tablefmt="jira") == df.to_pandas().to_markdown(tablefmt="jira")
+
+    def test_column_init(self):
+        unlabeled_data = [[1, 2], [True, False], ["foo", "bar"], [2.3, -1.8]]
+        good_labels = ["one1", "two2", "three3", "four4"]
+        bad_labels1 = ["one", "two"]
+        bad_labels2 = good_labels + ["five"]
+
+        df = ak.DataFrame(unlabeled_data, columns=good_labels)
+        assert df.columns.values == good_labels
+        assert df["one1"][0] == 1
+        assert df["three3"][0] == "foo"
+        assert df["four4"][1] == -1.8
+
+        with pytest.raises(ValueError):
+            df = ak.DataFrame(unlabeled_data, columns=bad_labels1)
+        with pytest.raises(ValueError):
+            df = ak.DataFrame(unlabeled_data, columns=bad_labels2)
+        with pytest.raises(TypeError):
+            df = ak.DataFrame(unlabeled_data, columns=["one", "two", 3, "four"])
+
+    def test_from_pandas(self):
+        username = ["Alice", "Bob", "Alice", "Carol", "Bob", "Alice", "John", "Carol"]
+        userid = [111, 222, 111, 333, 222, 111, 444, 333]
+        item = [0, 0, 1, 1, 2, 0, 0, 2]
+        day = [5, 5, 6, 5, 6, 6, 1, 2]
+        amount = [0.5, 0.6, 1.1, 1.2, 4.3, 0.6, 0.5, 5.1]
+        bi = 2**200
+        bi_arr = [bi, bi + 1, bi + 2, bi + 3, bi + 4, bi + 5, bi + 6, bi + 7]
+        ref_df = pd.DataFrame(
+            {
+                "userName": username,
+                "userID": userid,
+                "item": item,
+                "day": day,
+                "amount": amount,
+                "bi": bi_arr,
+            }
+        )
+
+        df = ak.DataFrame(ref_df)
+        assert ((ref_df == df.to_pandas()).all()).all()
+
+        df = ak.DataFrame.from_pandas(ref_df)
+        assert ((ref_df == df.to_pandas()).all()).all()
+
+    def test_to_pandas(self):
+        df = self.build_ak_df()
+        pd_df = self.build_pd_df()
+
+        assert_frame_equal(pd_df, df.to_pandas())
+
+        slice_df = df[ak.array([1, 3, 5])]
+        pd_df = slice_df.to_pandas(retain_index=True)
+        assert pd_df.index.tolist() == [1, 3, 5]
+
+        pd_df = slice_df.to_pandas()
+        assert pd_df.index.tolist() == [0, 1, 2]
+
+    def test_merge(self):
+        df1 = ak.DataFrame(
+            {
+                "key": ak.arange(4),
+                "value1": ak.array(["A", "B", "C", "D"]),
+                "value3": ak.arange(4, dtype=ak.int64),
+            }
+        )
+
+        df2 = ak.DataFrame(
+            {
+                "key": ak.arange(2, 6, 1),
+                "value1": ak.array(["A", "B", "D", "F"]),
+                "value2": ak.array(["apple", "banana", "cherry", "date"]),
+                "value3": ak.ones(4, dtype=ak.int64),
+            }
+        )
+
+        ij_expected_df = ak.DataFrame(
+            {
+                "key": ak.array([2, 3]),
+                "value1_x": ak.array(["C", "D"]),
+                "value3_x": ak.array([2, 3]),
+                "value1_y": ak.array(["A", "B"]),
+                "value2": ak.array(["apple", "banana"]),
+                "value3_y": ak.array([1, 1]),
+            }
+        )
+
+        ij_merged_df = ak.merge(df1, df2, how="inner", on="key")
+
+        assert_frame_equal(
+            ij_expected_df.to_pandas(retain_index=True), ij_merged_df.to_pandas(retain_index=True)
+        )
+
+        rj_expected_df = ak.DataFrame(
+            {
+                "key": ak.array([2, 3, 4, 5]),
+                "value1_x": ak.array(["C", "D", "nan", "nan"]),
+                "value3_x": ak.array([2.0, 3.0, np.nan, np.nan]),
+                "value1_y": ak.array(["A", "B", "D", "F"]),
+                "value2": ak.array(["apple", "banana", "cherry", "date"]),
+                "value3_y": ak.array([1, 1, 1, 1]),
+            }
+        )
+
+        rj_merged_df = ak.merge(df1, df2, how="right", on="key")
+
+        assert_frame_equal(
+            rj_expected_df.to_pandas(retain_index=True), rj_merged_df.to_pandas(retain_index=True)
+        )
+
+        rj_merged_df2 = ak.merge(df1, df2, how="right", on="key", convert_ints=False)
+
+        assert rj_merged_df2.dtypes == {
+            "key": "int64",
+            "value1_x": "str",
+            "value3_x": "int64",
+            "value1_y": "str",
+            "value2": "str",
+            "value3_y": "int64",
+        }
+
+        lj_expected_df = ak.DataFrame(
+            {
+                "key": ak.array(
+                    [
+                        0,
+                        1,
+                        2,
+                        3,
+                    ]
+                ),
+                "value1_y": ak.array(
+                    [
+                        "nan",
+                        "nan",
+                        "A",
+                        "B",
+                    ]
+                ),
+                "value2": ak.array(
+                    [
+                        "nan",
+                        "nan",
+                        "apple",
+                        "banana",
+                    ]
+                ),
+                "value3_y": ak.array(
+                    [
+                        np.nan,
+                        np.nan,
+                        1.0,
+                        1.0,
+                    ]
+                ),
+                "value1_x": ak.array(
+                    [
+                        "A",
+                        "B",
+                        "C",
+                        "D",
+                    ]
+                ),
+                "value3_x": ak.array(
+                    [
+                        0,
+                        1,
+                        2,
+                        3,
+                    ]
+                ),
+            }
+        )
+
+        lj_merged_df = ak.merge(df1, df2, how="left", on="key")
+
+        assert_frame_equal(
+            lj_expected_df.to_pandas(retain_index=True), lj_merged_df.to_pandas(retain_index=True)
+        )
+
+        lj_merged_df2 = ak.merge(df1, df2, how="left", on="key", convert_ints=False)
+
+        assert lj_merged_df2.dtypes == {
+            "key": "int64",
+            "value1_y": "str",
+            "value2": "str",
+            "value3_y": "int64",
+            "value1_x": "str",
+            "value3_x": "int64",
+        }
+
+        oj_expected_df = ak.DataFrame(
+            {
+                "key": ak.array([0, 1, 2, 3, 4, 5]),
+                "value1_y": ak.array(["nan", "nan", "A", "B", "D", "F"]),
+                "value2": ak.array(["nan", "nan", "apple", "banana", "cherry", "date"]),
+                "value3_y": ak.array([np.nan, np.nan, 1.0, 1.0, 1.0, 1.0]),
+                "value1_x": ak.array(
+                    [
+                        "A",
+                        "B",
+                        "C",
+                        "D",
+                        "nan",
+                        "nan",
+                    ]
+                ),
+                "value3_x": ak.array([0.0, 1.0, 2.0, 3.0, np.nan, np.nan]),
+            }
+        )
+
+        oj_merged_df = ak.merge(df1, df2, how="outer", on="key")
+
+        assert_frame_equal(
+            oj_expected_df.to_pandas(retain_index=True), oj_merged_df.to_pandas(retain_index=True)
+        )
+
+        oj_merged_df2 = ak.merge(df1, df2, how="outer", on="key", convert_ints=False)
+
+        assert oj_merged_df2.dtypes == {
+            "key": "int64",
+            "value1_y": "str",
+            "value2": "str",
+            "value3_y": "int64",
+            "value1_x": "str",
+            "value3_x": "int64",
+        }
+
+    def test_ipv4_columns(self):
+        df_test_base_tmp = "{}/df_test".format(os.getcwd())
+        # test with single IPv4 column
+        df = ak.DataFrame({"a": ak.arange(10), "b": ak.IPv4(ak.arange(10))})
+        with tempfile.TemporaryDirectory(dir=df_test_base_tmp) as tmp_dirname:
+            fname = tmp_dirname + "/ipv4_df"
+            df.to_parquet(fname)
+
+            data = ak.read(fname + "*")
+            rddf = ak.DataFrame({"a": data["a"], "b": ak.IPv4(data["b"])})
+
+            assert df["a"].to_list() == rddf["a"].to_list()
+            assert df["b"].to_list() == rddf["b"].to_list()
+
+        # test with multiple
+        df = ak.DataFrame({"a": ak.IPv4(ak.arange(10)), "b": ak.IPv4(ak.arange(10))})
+        with tempfile.TemporaryDirectory(dir=df_test_base_tmp) as tmp_dirname:
+            fname = tmp_dirname + "/ipv4_df"
+            df.to_parquet(fname)
+
+            data = ak.read(fname + "*")
+            rddf = ak.DataFrame({"a": ak.IPv4(data["a"]), "b": ak.IPv4(data["b"])})
+
+            assert df["a"].to_list() == rddf["a"].to_list()
+            assert df["b"].to_list() == rddf["b"].to_list()
+
+        # test replacement of IPv4 with uint representation
+        df = ak.DataFrame({"a": ak.IPv4(ak.arange(10))})
+        df["a"] = df["a"].export_uint()
+        assert ak.arange(10).to_list() == df["a"].to_list()
+
+    def test_save(self):
+        df_test_base_tmp = "{}/df_test".format(os.getcwd())
+        i = list(range(3))
+        c1 = [9, 7, 17]
+        c2 = [2, 4, 6]
+        df_dict = {"i": ak.array(i), "c_1": ak.array(c1), "c_2": ak.array(c2)}
+
+        akdf = ak.DataFrame(df_dict)
+
+        validation_df = pd.DataFrame(
+            {
+                "i": i,
+                "c_1": c1,
+                "c_2": c2,
+            }
+        )
+        with tempfile.TemporaryDirectory(dir=df_test_base_tmp) as tmp_dirname:
+            akdf.to_parquet(f"{tmp_dirname}/testName")
+
+            ak_loaded = ak.DataFrame.load(f"{tmp_dirname}/testName")
+            assert_frame_equal(validation_df, ak_loaded[akdf.columns.values].to_pandas())
+
+            # test save with index true
+            akdf.to_parquet(f"{tmp_dirname}/testName_with_index.pq", index=True)
+            assert (
+                len(glob.glob(f"{tmp_dirname}/testName_with_index*.pq")) == ak.get_config()["numLocales"]
+            )
+
+            # Test for df having seg array col
+            df = ak.DataFrame({"a": ak.arange(10), "b": ak.SegArray(ak.arange(10), ak.arange(10))})
+            df.to_hdf(f"{tmp_dirname}/seg_test.h5")
+            assert len(glob.glob(f"{tmp_dirname}/seg_test*.h5")) == ak.get_config()["numLocales"]
+            ak_loaded = ak.DataFrame.load(f"{tmp_dirname}/seg_test.h5")
+            assert_frame_equal(df.to_pandas(), ak_loaded.to_pandas())
+
+            # test with segarray with _ in column name
+            df_dict = {
+                "c_1": ak.arange(3, 6),
+                "c_2": ak.arange(6, 9),
+                "c_3": ak.SegArray(ak.array([0, 9, 14]), ak.arange(20)),
+            }
+            akdf = ak.DataFrame(df_dict)
+            akdf.to_hdf(f"{tmp_dirname}/seg_test.h5")
+            assert len(glob.glob(f"{tmp_dirname}/seg_test*.h5")) == ak.get_config()["numLocales"]
+            ak_loaded = ak.DataFrame.load(f"{tmp_dirname}/seg_test.h5")
+            assert_frame_equal(akdf.to_pandas(), ak_loaded.to_pandas())
+
+            # test load_all and read workflows
+            ak_load_all = ak.DataFrame(ak.load_all(f"{tmp_dirname}/seg_test.h5"))
+            assert_frame_equal(akdf.to_pandas(), ak_load_all.to_pandas())
+
+            ak_read = ak.DataFrame(ak.read(f"{tmp_dirname}/seg_test*"))
+            assert_frame_equal(akdf.to_pandas(), ak_read.to_pandas())
 
     def make_dfs_and_refs(self):
         ints = [0,2,3,7,3]
