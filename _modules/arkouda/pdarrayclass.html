@@ -564,9 +564,7 @@
                 <span class="c1"># Interpret negative key as offset from end of array</span>
                 <span class="n">k</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="n">dim</span><span class="p">])</span>
             <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">k</span> <span class="o">&gt;=</span> <span class="nb">int</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="n">dim</span><span class="p">]):</span>
-                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;index </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> is out of bounds in dimension </span><span class="si">{</span><span class="n">dim</span><span class="si">}</span><span class="s2"> with size </span><span class="si">{</span><span class="n">shape</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;index </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> is out of bounds in dimension </span><span class="si">{</span><span class="n">dim</span><span class="si">}</span><span class="s2"> with size </span><span class="si">{</span><span class="n">shape</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># treat this as a single-element slice</span>
                 <span class="n">slices</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
@@ -610,10 +608,10 @@
 
     <span class="k">if</span> <span class="n">elipsis_axis_idx</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
         <span class="n">ret_key</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
-                <span class="n">ret_key</span><span class="p">[:</span><span class="n">elipsis_axis_idx</span><span class="p">]</span> <span class="o">+</span>
-                <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">),)</span> <span class="o">*</span> <span class="p">(</span><span class="n">ndim</span> <span class="o">-</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ret_key</span><span class="p">)</span> <span class="o">-</span> <span class="n">num_none</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span>
-                <span class="n">ret_key</span><span class="p">[(</span><span class="n">elipsis_axis_idx</span><span class="o">+</span><span class="mi">1</span><span class="p">):]</span>
-            <span class="p">)</span>
+            <span class="n">ret_key</span><span class="p">[:</span><span class="n">elipsis_axis_idx</span><span class="p">]</span>
+            <span class="o">+</span> <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">),)</span> <span class="o">*</span> <span class="p">(</span><span class="n">ndim</span> <span class="o">-</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ret_key</span><span class="p">)</span> <span class="o">-</span> <span class="n">num_none</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="o">+</span> <span class="n">ret_key</span><span class="p">[(</span><span class="n">elipsis_axis_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="p">:]</span>
+        <span class="p">)</span>
 
     <span class="n">key_with_none</span> <span class="o">=</span> <span class="n">ret_key</span>
 
@@ -622,9 +620,7 @@
         <span class="n">ret_key</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">ret_key</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">])</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ret_key</span><span class="p">)</span> <span class="o">!=</span> <span class="n">ndim</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;cannot index </span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D array with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ret_key</span><span class="p">)</span><span class="si">}</span><span class="s2"> indices&quot;</span>
-        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cannot index </span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D array with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ret_key</span><span class="p">)</span><span class="si">}</span><span class="s2"> indices&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="p">(</span><span class="n">ret_key</span><span class="p">,</span> <span class="n">num_none</span><span class="p">,</span> <span class="n">key_with_none</span><span class="p">)</span>
 
@@ -1058,6 +1054,22 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;^&quot;</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unhandled dtype: </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">inferred_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a string of the type inferred from the values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">float_scalars</span><span class="p">,</span> <span class="n">int_scalars</span>
+        <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">_is_dtype_in_union</span>
+
+        <span class="k">if</span> <span class="n">_is_dtype_in_union</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">int_scalars</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s2">&quot;integer&quot;</span>
+        <span class="k">elif</span> <span class="n">_is_dtype_in_union</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">float_scalars</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s2">&quot;floating&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;&lt;U&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;string&quot;</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
     <span class="c1"># op= operators</span>
 <div class="viewcode-block" id="pdarray.opeq">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.opeq">[docs]</a>
@@ -1176,8 +1188,9 @@
             <span class="p">(</span><span class="n">clean_key</span><span class="p">,</span> <span class="n">num_none</span><span class="p">,</span> <span class="n">key_with_none</span><span class="p">)</span> <span class="o">=</span> <span class="n">_parse_none_and_ellipsis_keys</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
 
             <span class="c1"># parse the tuple key into slices, scalars, and pdarrays</span>
-            <span class="p">((</span><span class="n">starts</span><span class="p">,</span> <span class="n">stops</span><span class="p">,</span> <span class="n">strides</span><span class="p">),</span> <span class="n">scalar_axes</span><span class="p">,</span> <span class="n">pdarray_axes</span><span class="p">)</span> <span class="o">=</span> \
-                <span class="n">_parse_index_tuple</span><span class="p">(</span><span class="n">clean_key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+            <span class="p">((</span><span class="n">starts</span><span class="p">,</span> <span class="n">stops</span><span class="p">,</span> <span class="n">strides</span><span class="p">),</span> <span class="n">scalar_axes</span><span class="p">,</span> <span class="n">pdarray_axes</span><span class="p">)</span> <span class="o">=</span> <span class="n">_parse_index_tuple</span><span class="p">(</span>
+                <span class="n">clean_key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span>
+            <span class="p">)</span>
 
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">scalar_axes</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">clean_key</span><span class="p">):</span>
                 <span class="c1"># all scalars: use simpler indexing (and return a scalar)</span>
@@ -1210,16 +1223,16 @@
                 <span class="c1"># apply pdarray indexing (returning an ndim array with degenerate dimensions</span>
                 <span class="c1"># along all the indexed axes except the first one)</span>
                 <span class="n">temp2</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span>
-                        <span class="n">generic_msg</span><span class="p">(</span>
-                            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[pdarray]x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
-                            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                                <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">temp1</span><span class="p">,</span>
-                                <span class="s2">&quot;nIdxArrays&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">pdarray_axes</span><span class="p">),</span>
-                                <span class="s2">&quot;idx&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">clean_key</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span> <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="n">pdarray_axes</span><span class="p">],</span>
-                                <span class="s2">&quot;idxDims&quot;</span><span class="p">:</span> <span class="n">pdarray_axes</span><span class="p">,</span>
-                            <span class="p">},</span>
-                        <span class="p">)</span>
+                    <span class="n">generic_msg</span><span class="p">(</span>
+                        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[pdarray]x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+                        <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                            <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">temp1</span><span class="p">,</span>
+                            <span class="s2">&quot;nIdxArrays&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">pdarray_axes</span><span class="p">),</span>
+                            <span class="s2">&quot;idx&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">clean_key</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span> <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="n">pdarray_axes</span><span class="p">],</span>
+                            <span class="s2">&quot;idxDims&quot;</span><span class="p">:</span> <span class="n">pdarray_axes</span><span class="p">,</span>
+                        <span class="p">},</span>
                     <span class="p">)</span>
+                <span class="p">)</span>
 
                 <span class="c1"># remove any degenerate dimensions</span>
                 <span class="n">ret_array</span> <span class="o">=</span> <span class="n">_squeeze</span><span class="p">(</span><span class="n">temp2</span><span class="p">,</span> <span class="n">degen_axes</span><span class="p">)</span>
@@ -3063,8 +3076,7 @@
 <span class="sd">        Raised if there&#39;s a server-side error thrown</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;reduce</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
-        <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;sum&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;nAxes&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;skipNan&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;reduce</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;sum&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;nAxes&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;skipNan&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">parse_single_value</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span></div>
 
@@ -3150,8 +3162,7 @@
 <span class="sd">        Raised if there&#39;s a server-side error thrown</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;reduce</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
-        <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;prod&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;nAxes&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;skipNan&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;reduce</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;prod&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;nAxes&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;skipNan&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">parse_single_value</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span></div>
 
@@ -3181,8 +3192,7 @@
 <span class="sd">        Raised if there&#39;s a server-side error thrown</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;reduce</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
-        <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;min&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;nAxes&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;skipNan&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;reduce</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;min&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;nAxes&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;skipNan&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">parse_single_value</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span></div>
 
@@ -3213,8 +3223,7 @@
 <span class="sd">        Raised if there&#39;s a server-side error thrown</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;reduce</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
-        <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;nAxes&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;skipNan&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;reduce</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;nAxes&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;skipNan&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">parse_single_value</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span></div>
 
@@ -3311,7 +3320,7 @@
     <span class="k">return</span> <span class="n">parse_single_value</span><span class="p">(</span>
         <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;stats</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
-            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;comp&quot;</span><span class="p">:</span> <span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;nAxes&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;ddof&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;skipNan&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;comp&quot;</span><span class="p">:</span> <span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;nAxes&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;ddof&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;skipNan&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
         <span class="p">)</span>
     <span class="p">)</span></div>
 
@@ -3366,7 +3375,7 @@
     <span class="k">return</span> <span class="n">parse_single_value</span><span class="p">(</span>
         <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;stats</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
-            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;comp&quot;</span><span class="p">:</span> <span class="s2">&quot;var&quot;</span><span class="p">,</span> <span class="s2">&quot;ddof&quot;</span><span class="p">:</span> <span class="n">ddof</span><span class="p">,</span> <span class="s2">&quot;nAxes&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;skipNan&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;comp&quot;</span><span class="p">:</span> <span class="s2">&quot;var&quot;</span><span class="p">,</span> <span class="s2">&quot;ddof&quot;</span><span class="p">:</span> <span class="n">ddof</span><span class="p">,</span> <span class="s2">&quot;nAxes&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;skipNan&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
         <span class="p">)</span>
     <span class="p">)</span></div>
 
@@ -3425,7 +3434,7 @@
     <span class="k">return</span> <span class="n">parse_single_value</span><span class="p">(</span>
         <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;stats</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
-            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;comp&quot;</span><span class="p">:</span> <span class="s2">&quot;std&quot;</span><span class="p">,</span> <span class="s2">&quot;ddof&quot;</span><span class="p">:</span> <span class="n">ddof</span><span class="p">,</span> <span class="s2">&quot;nAxes&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;skipNan&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;comp&quot;</span><span class="p">:</span> <span class="s2">&quot;std&quot;</span><span class="p">,</span> <span class="s2">&quot;ddof&quot;</span><span class="p">:</span> <span class="n">ddof</span><span class="p">,</span> <span class="s2">&quot;nAxes&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;skipNan&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
         <span class="p">)</span>
     <span class="p">)</span></div>
 
@@ -4327,8 +4336,9 @@
         <span class="p">)</span>
     <span class="c1"># TODO: handle shape broadcasting for multidimensional arrays</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dividend</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">divisor</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-        <span class="n">ndim</span> <span class="o">=</span> \
+        <span class="n">ndim</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">dividend</span><span class="o">.</span><span class="n">ndim</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dividend</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">divisor</span><span class="o">.</span><span class="n">ndim</span>  <span class="c1"># type: ignore[union-attr]</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
             <span class="n">cast</span><span class="p">(</span>
                 <span class="nb">str</span><span class="p">,</span>

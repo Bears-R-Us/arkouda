@@ -338,6 +338,12 @@ Module Contents
 
 
 
+   .. py:property:: inferred_type
+      :type: str
+
+      Return a string of the type inferred from the values.
+
+
    .. py:method:: info() -> str
 
       Returns a JSON formatted string containing information about all components of self
@@ -1530,6 +1536,12 @@ Module Contents
       to about 10**15), the probability of a collision between two 128-bit hash
       values is negligible.
 
+
+
+   .. py:property:: inferred_type
+      :type: str
+
+      Return a string of the type inferred from the values.
 
 
    .. py:method:: info() -> str

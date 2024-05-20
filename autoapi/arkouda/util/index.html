@@ -1024,6 +1024,12 @@ faster and scales to arbitrarily large <code class="docutils literal notranslate
 </div>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.util.Categorical.inferred_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inferred_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#arkouda.util.Categorical.inferred_type" title="Link to this definition">¶</a></dt>
+<dd><p>Return a string of the type inferred from the values.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.util.Categorical.info">
 <span class="sig-name descname"><span class="pre">info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../../_modules/arkouda/categorical.html#Categorical.info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.Categorical.info" title="Link to this definition">¶</a></dt>
@@ -4923,6 +4929,12 @@ to about 10**15), the probability of a collision between two 128-bit hash
 values is negligible.</p>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.util.Strings.inferred_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inferred_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#arkouda.util.Strings.inferred_type" title="Link to this definition">¶</a></dt>
+<dd><p>Return a string of the type inferred from the values.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.util.Strings.info">
 <span class="sig-name descname"><span class="pre">info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../../_modules/arkouda/strings.html#Strings.info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.Strings.info" title="Link to this definition">¶</a></dt>
@@ -7286,6 +7298,12 @@ Numpy dtype</p>
 </dl>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.util.pdarray.inferred_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inferred_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#arkouda.util.pdarray.inferred_type" title="Link to this definition">¶</a></dt>
+<dd><p>Return a string of the type inferred from the values.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.util.pdarray.info">
 <span class="sig-name descname"><span class="pre">info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#pdarray.info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.pdarray.info" title="Link to this definition">¶</a></dt>
@@ -8357,6 +8375,7 @@ computation. Otherwise, this function will sort <cite>pda</cite>.</p>
 <li><a class="reference internal" href="#arkouda.util.Categorical.group"><code class="docutils literal notranslate"><span class="pre">Categorical.group()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.Categorical.hash"><code class="docutils literal notranslate"><span class="pre">Categorical.hash()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.Categorical.in1d"><code class="docutils literal notranslate"><span class="pre">Categorical.in1d()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.util.Categorical.inferred_type"><code class="docutils literal notranslate"><span class="pre">Categorical.inferred_type</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.Categorical.info"><code class="docutils literal notranslate"><span class="pre">Categorical.info()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.Categorical.is_registered"><code class="docutils literal notranslate"><span class="pre">Categorical.is_registered()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.Categorical.isna"><code class="docutils literal notranslate"><span class="pre">Categorical.isna()</span></code></a></li>
@@ -8567,6 +8586,7 @@ computation. Otherwise, this function will sort <cite>pda</cite>.</p>
 <li><a class="reference internal" href="#arkouda.util.Strings.get_suffixes"><code class="docutils literal notranslate"><span class="pre">Strings.get_suffixes()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.Strings.group"><code class="docutils literal notranslate"><span class="pre">Strings.group()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.Strings.hash"><code class="docutils literal notranslate"><span class="pre">Strings.hash()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.util.Strings.inferred_type"><code class="docutils literal notranslate"><span class="pre">Strings.inferred_type</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.Strings.info"><code class="docutils literal notranslate"><span class="pre">Strings.info()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.Strings.is_registered"><code class="docutils literal notranslate"><span class="pre">Strings.is_registered()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.Strings.isalnum"><code class="docutils literal notranslate"><span class="pre">Strings.isalnum()</span></code></a></li>
@@ -8683,6 +8703,7 @@ computation. Otherwise, this function will sort <cite>pda</cite>.</p>
 <li><a class="reference internal" href="#arkouda.util.pdarray.ctz"><code class="docutils literal notranslate"><span class="pre">pdarray.ctz()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.pdarray.fill"><code class="docutils literal notranslate"><span class="pre">pdarray.fill()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.pdarray.format_other"><code class="docutils literal notranslate"><span class="pre">pdarray.format_other()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.util.pdarray.inferred_type"><code class="docutils literal notranslate"><span class="pre">pdarray.inferred_type</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.pdarray.info"><code class="docutils literal notranslate"><span class="pre">pdarray.info()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.pdarray.is_registered"><code class="docutils literal notranslate"><span class="pre">pdarray.is_registered()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.pdarray.is_sorted"><code class="docutils literal notranslate"><span class="pre">pdarray.is_sorted()</span></code></a></li>

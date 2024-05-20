@@ -307,6 +307,12 @@ Module Contents
 
 
 
+   .. py:property:: inferred_type
+      :type: str
+
+      Return a string of the type inferred from the values.
+
+
    .. py:method:: info() -> str
 
       Returns a JSON formatted string containing information about all components of self

@@ -511,6 +511,23 @@
         <span class="k">return</span> <span class="mi">1</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">inferred_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a string of the type inferred from the values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">float_scalars</span><span class="p">,</span> <span class="n">int_scalars</span>
+            <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">_is_dtype_in_union</span>
+
+            <span class="k">if</span> <span class="n">_is_dtype_in_union</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">int_scalars</span><span class="p">):</span>
+                <span class="k">return</span> <span class="s2">&quot;integer&quot;</span>
+            <span class="k">elif</span> <span class="n">_is_dtype_in_union</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">float_scalars</span><span class="p">):</span>
+                <span class="k">return</span> <span class="s2">&quot;floating&quot;</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;&lt;U&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;string&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">inferred_type</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is maintained to support older code</span>
@@ -1387,6 +1404,10 @@
 <span class="sd">        Index.nlevels</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">inferred_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;mixed&quot;</span>
 
 <div class="viewcode-block" id="MultiIndex.memory_usage">
 <a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.MultiIndex.memory_usage">[docs]</a>

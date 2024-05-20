@@ -826,6 +826,12 @@ Module Contents
 
 
 
+   .. py:property:: inferred_type
+      :type: Union[str, None]
+
+      Return a string of the type inferred from the values.
+
+
    .. py:method:: info() -> str
 
       Returns a JSON formatted string containing information about all components of self

@@ -466,6 +466,12 @@ Module Contents
 
 
 
+   .. py:property:: inferred_type
+      :type: str
+
+      Return a string of the type inferred from the values.
+
+
    .. py:method:: info() -> str
 
       Returns a JSON formatted string containing information about all components of self
@@ -3510,6 +3516,12 @@ Module Contents
 
 
 
+   .. py:property:: inferred_type
+      :type: str
+
+      Return a string of the type inferred from the values.
+
+
    .. py:method:: info() -> str
 
       Returns a JSON formatted string containing information about all components of self
@@ -5361,6 +5373,12 @@ Module Contents
       :raises TypeError: Raised if the other parameter cannot be converted to
           Numpy dtype
 
+
+
+   .. py:property:: inferred_type
+      :type: Union[str, None]
+
+      Return a string of the type inferred from the values.
 
 
    .. py:method:: info() -> str

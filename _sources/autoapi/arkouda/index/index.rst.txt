@@ -1087,6 +1087,12 @@ Module Contents
       This is maintained to support older code
 
 
+   .. py:property:: inferred_type
+      :type: str
+
+      Return a string of the type inferred from the values.
+
+
    .. py:method:: is_registered()
 
        Return True iff the object is contained in the registry or is a component of a
@@ -1493,6 +1499,12 @@ Module Contents
 
    .. py:property:: index
       This is maintained to support older code
+
+
+   .. py:property:: inferred_type
+      :type: str
+
+      Return a string of the type inferred from the values.
 
 
    .. py:method:: is_registered()
@@ -2250,6 +2262,12 @@ Module Contents
       :raises TypeError: Raised if the other parameter cannot be converted to
           Numpy dtype
 
+
+
+   .. py:property:: inferred_type
+      :type: Union[str, None]
+
+      Return a string of the type inferred from the values.
 
 
    .. py:method:: info() -> str
