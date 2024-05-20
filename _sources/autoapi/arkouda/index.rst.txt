@@ -179,6 +179,7 @@ Functions
    arkouda.corr
    arkouda.cos
    arkouda.cosh
+   arkouda.count_nonzero
    arkouda.cov
    arkouda.create_pdarray
    arkouda.create_pdarray
@@ -269,6 +270,7 @@ Functions
    arkouda.max
    arkouda.maxk
    arkouda.mean
+   arkouda.median
    arkouda.merge
    arkouda.min
    arkouda.mink
@@ -28088,6 +28090,29 @@ Attributes
    :raises TypeError: Raised if the parameter is not a pdarray
 
 
+.. py:function:: count_nonzero(pda)
+
+   Compute the nonzero count of a given array. 1D case only, for now.
+
+   :param pda: The input data, in pdarray form, numeric, bool, or str
+   :type pda: pdarray
+
+   :returns: The nonzero count of the entire pdarray
+   :rtype: np.int64
+
+   .. rubric:: Examples
+
+   >>> pda = ak.array([0,4,7,8,1,3,5,2,-1])
+   >>> ak.count_nonzero(pda)
+   9
+   >>> pda = ak.array([False,True,False,True,False])
+   >>> ak.count_nonzero(pda)
+   3
+   >>> pda = ak.array(["hello","","there"])
+   >>> ak.count_nonzero(pda)
+   2
+
+
 .. py:function:: cov(x: pdarray, y: pdarray) -> numpy.float64
 
    Return the covariance of x and y
@@ -30268,6 +30293,30 @@ Attributes
 
    :raises TypeError: Raised if pda is not a pdarray instance
    :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+.. py:function:: median(pda)
+
+   Compute the median of a given array.  1d case only, for now.
+
+   :param pda: The input data, in pdarray form, numeric type or boolean
+   :type pda: pdarray
+
+   :returns: The median of the entire pdarray
+             The array is sorted, and then if the number of elements is odd,
+                 the return value is the middle element.  If even, then the
+                 mean of the two middle elements.
+   :rtype: np.float64
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> arkouda.connect()
+   >>> pda = ak.array ([0,4,7,8,1,3,5,2,-1])
+   >>> ak.median(pda)
+   3
+   >>> pda = ak.array([0,1,3,3,1,2,3,4,2,3])
+   2.5
 
 
 .. py:function:: merge(left: DataFrame, right: DataFrame, on: Optional[Union[str, List[str]]] = None, how: str = 'inner', left_suffix: str = '_x', right_suffix: str = '_y', convert_ints: bool = True, sort: bool = True) -> DataFrame

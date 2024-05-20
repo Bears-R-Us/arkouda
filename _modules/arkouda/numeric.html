@@ -370,8 +370,9 @@
 <span class="kn">from</span> <span class="nn">arkouda.groupbyclass</span> <span class="kn">import</span> <span class="n">GroupBy</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="nb">all</span> <span class="k">as</span> <span class="n">ak_all</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="nb">any</span> <span class="k">as</span> <span class="n">ak_any</span>
-<span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">argmax</span><span class="p">,</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span>
+<span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">argmax</span><span class="p">,</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">,</span> <span class="nb">sum</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarraycreation</span> <span class="kn">import</span> <span class="n">array</span><span class="p">,</span> <span class="n">linspace</span><span class="p">,</span> <span class="n">scalar_array</span>
+<span class="kn">from</span> <span class="nn">arkouda.sorting</span> <span class="kn">import</span> <span class="n">sort</span>
 <span class="kn">from</span> <span class="nn">arkouda.strings</span> <span class="kn">import</span> <span class="n">Strings</span>
 
 <span class="n">Categorical</span> <span class="o">=</span> <span class="n">ForwardRef</span><span class="p">(</span><span class="s2">&quot;Categorical&quot;</span><span class="p">)</span>
@@ -382,6 +383,7 @@
     <span class="s2">&quot;abs&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ceil&quot;</span><span class="p">,</span>
     <span class="s2">&quot;clip&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;count_nonzero&quot;</span><span class="p">,</span>
     <span class="s2">&quot;floor&quot;</span><span class="p">,</span>
     <span class="s2">&quot;trunc&quot;</span><span class="p">,</span>
     <span class="s2">&quot;round&quot;</span><span class="p">,</span>
@@ -418,6 +420,7 @@
     <span class="s2">&quot;histogram&quot;</span><span class="p">,</span>
     <span class="s2">&quot;histogram2d&quot;</span><span class="p">,</span>
     <span class="s2">&quot;histogramdd&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;median&quot;</span><span class="p">,</span>
     <span class="s2">&quot;value_counts&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ErrorMode&quot;</span><span class="p">,</span>
 <span class="p">]</span>
@@ -1442,9 +1445,7 @@
 <span class="sd">    TypeError</span>
 <span class="sd">        Raised if the parameter is not a pdarray</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span>
-        <span class="n">isSupportedNumber</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="p">[</span><span class="n">num</span><span class="p">,</span> <span class="n">denom</span><span class="p">]</span>
-    <span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">isSupportedNumber</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="p">[</span><span class="n">num</span><span class="p">,</span> <span class="n">denom</span><span class="p">]):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Unsupported types </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">num</span><span class="p">)</span><span class="si">}</span><span class="s2"> and/or </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">denom</span><span class="p">)</span><span class="si">}</span><span class="s2">. Supported &quot;</span>
             <span class="s2">&quot;types are numeric scalars and pdarrays. At least one argument must be a pdarray.&quot;</span>
@@ -1690,9 +1691,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_trig_helper</span><span class="p">(</span>
-    <span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_trig_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the result of the input trig function acting element-wise on the array.</span>
 
@@ -1916,10 +1915,7 @@
         <span class="k">return</span> <span class="n">_hash_single</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">full</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">pda</span><span class="o">.</span><span class="n">hash</span><span class="p">()</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">List</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
-            <span class="n">wrong_type</span> <span class="o">:=</span> <span class="p">[</span>
-                <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">SegArray_</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">))</span>
-                <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">pda</span>
-            <span class="p">]</span>
+            <span class="n">wrong_type</span> <span class="o">:=</span> <span class="p">[</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">SegArray_</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">))</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">pda</span><span class="p">]</span>
         <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Unsupported type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">pda</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">wrong_type</span><span class="p">)])</span><span class="si">}</span><span class="s2">. Supported types are pdarray,&quot;</span>
@@ -2002,22 +1998,16 @@
             <span class="n">new_categories</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">([</span><span class="n">A</span><span class="o">.</span><span class="n">categories</span><span class="p">,</span> <span class="n">array</span><span class="p">([</span><span class="n">B</span><span class="p">])])</span>
             <span class="n">b_code</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="n">new_codes</span> <span class="o">=</span> <span class="n">where</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">codes</span><span class="p">,</span> <span class="n">b_code</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">from_codes</span><span class="p">(</span>
-            <span class="n">new_codes</span><span class="p">,</span> <span class="n">new_categories</span><span class="p">,</span> <span class="n">NAvalue</span><span class="o">=</span><span class="n">A</span><span class="o">.</span><span class="n">NAvalue</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">reset_categories</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">from_codes</span><span class="p">(</span><span class="n">new_codes</span><span class="p">,</span> <span class="n">new_categories</span><span class="p">,</span> <span class="n">NAvalue</span><span class="o">=</span><span class="n">A</span><span class="o">.</span><span class="n">NAvalue</span><span class="p">)</span><span class="o">.</span><span class="n">reset_categories</span><span class="p">()</span>
 
     <span class="c1"># both cat</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">A</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">B</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Categoricals must be same length&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">A</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">B</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">size</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">ak_all</span><span class="p">(</span>
-            <span class="n">A</span><span class="o">.</span><span class="n">categories</span> <span class="o">==</span> <span class="n">B</span><span class="o">.</span><span class="n">categories</span>
-        <span class="p">):</span>
+        <span class="k">if</span> <span class="n">A</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">B</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">size</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">ak_all</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">categories</span> <span class="o">==</span> <span class="n">B</span><span class="o">.</span><span class="n">categories</span><span class="p">):</span>
             <span class="n">A</span><span class="p">,</span> <span class="n">B</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">standardize_categories</span><span class="p">([</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">])</span>
         <span class="n">new_codes</span> <span class="o">=</span> <span class="n">where</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">codes</span><span class="p">,</span> <span class="n">B</span><span class="o">.</span><span class="n">codes</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">from_codes</span><span class="p">(</span>
-            <span class="n">new_codes</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">categories</span><span class="p">,</span> <span class="n">NAvalue</span><span class="o">=</span><span class="n">A</span><span class="o">.</span><span class="n">NAvalue</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">reset_categories</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">from_codes</span><span class="p">(</span><span class="n">new_codes</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">categories</span><span class="p">,</span> <span class="n">NAvalue</span><span class="o">=</span><span class="n">A</span><span class="o">.</span><span class="n">NAvalue</span><span class="p">)</span><span class="o">.</span><span class="n">reset_categories</span><span class="p">()</span>
 
     <span class="c1"># one strings and one str</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">Strings</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -2201,9 +2191,7 @@
             <span class="n">dt</span> <span class="o">=</span> <span class="n">dtA</span>
         <span class="c1"># Cannot safely cast</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Cannot cast between scalars </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">A</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">B</span><span class="p">)</span><span class="si">}</span><span class="s2"> to supported dtype&quot;</span>
-            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot cast between scalars </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">A</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">B</span><span class="p">)</span><span class="si">}</span><span class="s2"> to supported dtype&quot;</span><span class="p">)</span>
         <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;efunc3ss</span><span class="si">{</span><span class="n">condition</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
@@ -2353,17 +2341,13 @@
         <span class="n">x_bins</span><span class="p">,</span> <span class="n">y_bins</span> <span class="o">=</span> <span class="n">bins</span><span class="p">,</span> <span class="n">bins</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Sequences of bins must contain two elements (num_x_bins, num_y_bins)&quot;</span>
-            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Sequences of bins must contain two elements (num_x_bins, num_y_bins)&quot;</span><span class="p">)</span>
         <span class="n">x_bins</span><span class="p">,</span> <span class="n">y_bins</span> <span class="o">=</span> <span class="n">bins</span>
     <span class="k">if</span> <span class="n">x_bins</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">y_bins</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;bins must be 1 or greater&quot;</span><span class="p">)</span>
     <span class="n">x_bin_boundaries</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">x</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">x_bins</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">y_bin_boundaries</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">y</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">y_bins</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;histogram2D&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">y</span><span class="p">,</span> <span class="s2">&quot;xBins&quot;</span><span class="p">:</span> <span class="n">x_bins</span><span class="p">,</span> <span class="s2">&quot;yBins&quot;</span><span class="p">:</span> <span class="n">y_bins</span><span class="p">}</span>
-    <span class="p">)</span>
+    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;histogram2D&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">y</span><span class="p">,</span> <span class="s2">&quot;xBins&quot;</span><span class="p">:</span> <span class="n">x_bins</span><span class="p">,</span> <span class="s2">&quot;yBins&quot;</span><span class="p">:</span> <span class="n">y_bins</span><span class="p">})</span>
     <span class="k">return</span> <span class="p">(</span>
         <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">x_bins</span><span class="p">,</span> <span class="n">y_bins</span><span class="p">),</span>
         <span class="n">x_bin_boundaries</span><span class="p">,</span>
@@ -2444,9 +2428,7 @@
         <span class="n">bins</span> <span class="o">=</span> <span class="p">[</span><span class="n">bins</span><span class="p">]</span> <span class="o">*</span> <span class="n">num_dims</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span> <span class="o">!=</span> <span class="n">num_dims</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Sequences of bins must contain same number of elements as the sample&quot;</span>
-            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Sequences of bins must contain same number of elements as the sample&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">b</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">bins</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;bins must be 1 or greater&quot;</span><span class="p">)</span>
 
@@ -2615,6 +2597,95 @@
     <span class="k">if</span> <span class="n">hi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">pda1</span> <span class="o">=</span> <span class="n">where</span><span class="p">(</span><span class="n">pda1</span> <span class="o">&gt;</span> <span class="n">hi</span><span class="p">,</span> <span class="n">hi</span><span class="p">,</span> <span class="n">pda1</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">pda1</span></div>
+
+
+
+<div class="viewcode-block" id="median">
+<a class="viewcode-back" href="../../autoapi/arkouda/numeric/index.html#arkouda.median">[docs]</a>
+<span class="k">def</span> <span class="nf">median</span><span class="p">(</span><span class="n">pda</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the median of a given array.  1d case only, for now.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pda: pdarray</span>
+<span class="sd">        The input data, in pdarray form, numeric type or boolean</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.float64</span>
+<span class="sd">        The median of the entire pdarray</span>
+<span class="sd">        The array is sorted, and then if the number of elements is odd,</span>
+<span class="sd">            the return value is the middle element.  If even, then the</span>
+<span class="sd">            mean of the two middle elements.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">    &gt;&gt;&gt; arkouda.connect()</span>
+<span class="sd">    &gt;&gt;&gt; pda = ak.array ([0,4,7,8,1,3,5,2,-1])</span>
+<span class="sd">    &gt;&gt;&gt; ak.median(pda)</span>
+<span class="sd">    3</span>
+<span class="sd">    &gt;&gt;&gt; pda = ak.array([0,1,3,3,1,2,3,4,2,3])</span>
+<span class="sd">    2.5</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#  Now do the computation</span>
+
+    <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">pda_srtd</span> <span class="o">=</span> <span class="n">sort</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pda_srtd</span> <span class="o">=</span> <span class="n">sort</span><span class="p">(</span><span class="n">pda</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pda_srtd</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">pda_srtd</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">pda_srtd</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">((</span><span class="n">pda_srtd</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">pda_srtd</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">pda_srtd</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">pda_srtd</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">float64</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="count_nonzero">
+<a class="viewcode-back" href="../../autoapi/arkouda/numeric/index.html#arkouda.count_nonzero">[docs]</a>
+<span class="k">def</span> <span class="nf">count_nonzero</span><span class="p">(</span><span class="n">pda</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the nonzero count of a given array. 1D case only, for now.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pda: pdarray</span>
+<span class="sd">        The input data, in pdarray form, numeric, bool, or str</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.int64</span>
+<span class="sd">        The nonzero count of the entire pdarray</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; pda = ak.array([0,4,7,8,1,3,5,2,-1])</span>
+<span class="sd">    &gt;&gt;&gt; ak.count_nonzero(pda)</span>
+<span class="sd">    9</span>
+<span class="sd">    &gt;&gt;&gt; pda = ak.array([False,True,False,True,False])</span>
+<span class="sd">    &gt;&gt;&gt; ak.count_nonzero(pda)</span>
+<span class="sd">    3</span>
+<span class="sd">    &gt;&gt;&gt; pda = ak.array([&quot;hello&quot;,&quot;&quot;,&quot;there&quot;])</span>
+<span class="sd">    &gt;&gt;&gt; ak.count_nonzero(pda)</span>
+<span class="sd">    2</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">is_numeric</span>
+
+    <span class="c1">#  Handle different data types.</span>
+
+    <span class="k">if</span> <span class="n">is_numeric</span><span class="p">(</span><span class="n">pda</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">((</span><span class="n">pda</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">((</span><span class="n">pda</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">((</span><span class="n">pda</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span></div>
 
 </pre></div>
         </article>
