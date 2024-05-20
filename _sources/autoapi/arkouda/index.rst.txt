@@ -28982,8 +28982,8 @@ Attributes
                     read must be specified.
    :type datasets: list or str or None
 
-   :returns: * *For a single dataset returns an Arkouda pdarray and for multiple datasets*
-             * *returns a dictionary of Arkouda pdarrays* -- Dictionary of {datasetName: pdarray}
+   :returns: Dictionary of {datasetName: pdarray}
+   :rtype: returns a dictionary of Arkouda pdarrays
 
    :raises RuntimeError: Raised if one or more of the specified files cannot be opened.
    :raises TypeError: Raised if we receive an unknown arkouda_type returned from the server
@@ -29960,7 +29960,7 @@ Attributes
    :raises RuntimeError: Raised if there's a server-side error thrown
 
 
-.. py:function:: load(path_prefix: str, file_format: str = 'INFER', dataset: str = 'array', calc_string_offsets: bool = False, column_delim: str = ',') -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index]]]
+.. py:function:: load(path_prefix: str, file_format: str = 'INFER', dataset: str = 'array', calc_string_offsets: bool = False, column_delim: str = ',') -> Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index]]]
 
    Load a pdarray previously saved with ``pdarray.save()``.
 
@@ -29977,8 +29977,9 @@ Attributes
    :param column_delim: Column delimiter to be used if dataset is CSV. Otherwise, unused.
    :type column_delim: str
 
-   :returns: The pdarray or Strings that was previously saved
-   :rtype: Union[pdarray, Strings]
+   :returns: Dictionary of {datsetName: Union[pdarray, Strings, SegArray, Categorical]}
+             with the previously saved pdarrays, Strings, SegArrays, or Categoricals
+   :rtype: Mapping[str, Union[pdarray, Strings, SegArray, Categorical]]
 
    :raises TypeError: Raised if either path_prefix or dataset is not a str
    :raises ValueError: Raised if invalid file_format or if the dataset is not present in all hdf5 files or if the
@@ -36438,7 +36439,7 @@ Attributes
    array(['+5"f', '-P]3', '4k', '~HFF', 'F'])
 
 
-.. py:function:: read(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False, column_delim: str = ',', read_nested: bool = True, has_non_float_nulls: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index]]]
+.. py:function:: read(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False, column_delim: str = ',', read_nested: bool = True, has_non_float_nulls: bool = False) -> Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index]]]
 
    Read datasets from files.
    File Type is determined automatically.
@@ -36475,9 +36476,11 @@ Attributes
                                that contain null values.
    :type has_non_float_nulls: bool
 
-   :returns: * *For a single dataset returns an Arkouda pdarray, Arkouda Strings, Arkouda Segarrays,*
-             * *or Arkouda ArrayViews. For multiple datasets returns a dictionary of Arkouda pdarrays,*
-             * *Arkouda Strings, Arkouda Segarrays, or Arkouda ArrayViews.* -- Dictionary of {datasetName: pdarray, String, SegArray, or ArrayView}
+   :returns:
+
+             or Arkouda ArrayViews.
+                Dictionary of {datasetName: pdarray, String, SegArray, or ArrayView}
+   :rtype: Returns a dictionary of Arkouda pdarrays, Arkouda Strings, Arkouda Segarrays,
 
    :raises RuntimeError: If invalid filetype is detected
 
@@ -36510,7 +36513,7 @@ Attributes
    >>> x = ak.read('path/name_prefix*') # Reads HDF5
 
 
-.. py:function:: read_csv(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, column_delim: str = ',', allow_errors: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index]]]
+.. py:function:: read_csv(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, column_delim: str = ',', allow_errors: bool = False) -> Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index]]]
 
    Read CSV file(s) into Arkouda objects. If more than one dataset is found, the objects
    will be returned in a dictionary mapping the dataset name to the Arkouda object
@@ -36528,8 +36531,11 @@ Attributes
                         the total number of files skipped due to failure and up to 10 filenames.
    :type allow_errors: bool
 
-   :returns: **pdarray, Strings or Mapping {dset_name**
-   :rtype: obj} where obj is a pdarray or Strings.
+   :returns:
+
+             or Arkouda ArrayViews.
+                Dictionary of {datasetName: pdarray, String, SegArray, or ArrayView}
+   :rtype: Returns a dictionary of Arkouda pdarrays, Arkouda Strings, Arkouda Segarrays,
 
    :raises ValueError: Raised if all datasets are not present in all parquet files or if one or
        more of the specified files do not exist
@@ -36550,7 +36556,7 @@ Attributes
      bytes as uint(8).
 
 
-.. py:function:: read_hdf(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False, calc_string_offsets: bool = False, tag_data=False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index]]]
+.. py:function:: read_hdf(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False, calc_string_offsets: bool = False, tag_data=False) -> Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index]]]
 
    Read Arkouda objects from HDF5 file/s
 
@@ -36579,9 +36585,11 @@ Attributes
                    that the data was pulled from.
    :type tagData: bool
 
-   :returns: * *For a single dataset returns an Arkouda pdarray, Arkouda Strings, Arkouda Segarrays,*
-             * *or Arkouda ArrayViews. For multiple datasets returns a dictionary of Arkouda pdarrays,*
-             * *Arkouda Strings, Arkouda Segarrays, or Arkouda ArrayViews.* -- Dictionary of {datasetName: pdarray, String, SegArray, or ArrayView}
+   :returns:
+
+             or Arkouda ArrayViews.
+                Dictionary of {datasetName: pdarray, String, SegArray, or ArrayView}
+   :rtype: Returns a dictionary of Arkouda pdarrays, Arkouda Strings, Arkouda Segarrays,
 
    :raises ValueError: Raised if all datasets are not present in all hdf5 files or if one or
        more of the specified files do not exist
@@ -36616,7 +36624,7 @@ Attributes
    >>> x = ak.read_hdf('path/name_prefix*') # Reads HDF5
 
 
-.. py:function:: read_parquet(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False, tag_data: bool = False, read_nested: bool = True, has_non_float_nulls: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index]]]
+.. py:function:: read_parquet(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False, tag_data: bool = False, read_nested: bool = True, has_non_float_nulls: bool = False) -> Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index]]]
 
    Read Arkouda objects from Parquet file/s
 
@@ -36648,9 +36656,11 @@ Attributes
                                that contain null values.
    :type has_non_float_nulls: bool
 
-   :returns: * *For a single dataset returns an Arkouda pdarray, Arkouda Strings, or Arkouda ArrayView object*
-             * *and for multiple datasets returns a dictionary of Arkouda pdarrays,*
-             * *Arkouda Strings or Arkouda ArrayView.* -- Dictionary of {datasetName: pdarray or String}
+   :returns:
+
+             or Arkouda ArrayViews.
+                Dictionary of {datasetName: pdarray, String, SegArray, or ArrayView}
+   :rtype: Returns a dictionary of Arkouda pdarrays, Arkouda Strings, Arkouda Segarrays,
 
    :raises ValueError: Raised if all datasets are not present in all parquet files or if one or
        more of the specified files do not exist

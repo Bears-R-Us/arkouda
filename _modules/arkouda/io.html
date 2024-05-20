@@ -517,7 +517,6 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    For a single dataset returns an Arkouda pdarray and for multiple datasets</span>
 <span class="sd">    returns a dictionary of Arkouda pdarrays</span>
 <span class="sd">        Dictionary of {datasetName: pdarray}</span>
 
@@ -914,16 +913,6 @@
 <span class="k">def</span> <span class="nf">_build_objects</span><span class="p">(</span>
     <span class="n">rep_msg</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span>
-    <span class="n">Strings</span><span class="p">,</span>
-    <span class="n">pdarray</span><span class="p">,</span>
-    <span class="n">SegArray</span><span class="p">,</span>
-    <span class="n">ArrayView</span><span class="p">,</span>
-    <span class="n">Categorical</span><span class="p">,</span>
-    <span class="n">DataFrame</span><span class="p">,</span>
-    <span class="n">IPv4</span><span class="p">,</span>
-    <span class="n">Datetime</span><span class="p">,</span>
-    <span class="n">Timedelta</span><span class="p">,</span>
-    <span class="n">Index</span><span class="p">,</span>
     <span class="n">Mapping</span><span class="p">[</span>
         <span class="nb">str</span><span class="p">,</span>
         <span class="n">Union</span><span class="p">[</span>
@@ -958,18 +947,10 @@
 <span class="sd">        - If no objects were returned</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">items</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">[</span><span class="s2">&quot;items&quot;</span><span class="p">])</span> <span class="k">if</span> <span class="s2">&quot;items&quot;</span> <span class="ow">in</span> <span class="n">rep_msg</span> <span class="k">else</span> <span class="p">[]</span>
-    <span class="c1"># We have a couple possible return conditions</span>
-    <span class="c1"># 1. We have multiple items returned i.e. multi pdarrays, multi strings, multi pdarrays &amp; strings</span>
-    <span class="c1"># 2. We have a single pdarray</span>
-    <span class="c1"># 3. We have a single strings object</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># DataSets condition</span>
-        <span class="n">ds_dict</span> <span class="o">=</span> <span class="n">_dict_recombine_segarrays_categoricals</span><span class="p">(</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_dict_recombine_segarrays_categoricals</span><span class="p">(</span>
             <span class="p">{</span><span class="n">item</span><span class="p">[</span><span class="s2">&quot;dataset_name&quot;</span><span class="p">]:</span> <span class="n">_parse_obj</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">}</span>
         <span class="p">)</span>
-        <span class="c1"># if dict only has 1 element when it had &gt;1 before, the element must be a segarray</span>
-        <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">ds_dict</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ds_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">ds_dict</span>
-    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">_parse_obj</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No items were returned&quot;</span><span class="p">)</span>
 
@@ -985,16 +966,6 @@
     <span class="n">calc_string_offsets</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">tag_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span>
-    <span class="n">pdarray</span><span class="p">,</span>
-    <span class="n">Strings</span><span class="p">,</span>
-    <span class="n">SegArray</span><span class="p">,</span>
-    <span class="n">ArrayView</span><span class="p">,</span>
-    <span class="n">Categorical</span><span class="p">,</span>
-    <span class="n">DataFrame</span><span class="p">,</span>
-    <span class="n">IPv4</span><span class="p">,</span>
-    <span class="n">Datetime</span><span class="p">,</span>
-    <span class="n">Timedelta</span><span class="p">,</span>
-    <span class="n">Index</span><span class="p">,</span>
     <span class="n">Mapping</span><span class="p">[</span>
         <span class="nb">str</span><span class="p">,</span>
         <span class="n">Union</span><span class="p">[</span>
@@ -1043,9 +1014,8 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    For a single dataset returns an Arkouda pdarray, Arkouda Strings, Arkouda Segarrays,</span>
-<span class="sd">    or Arkouda ArrayViews. For multiple datasets returns a dictionary of Arkouda pdarrays,</span>
-<span class="sd">    Arkouda Strings, Arkouda Segarrays, or Arkouda ArrayViews.</span>
+<span class="sd">    Returns a dictionary of Arkouda pdarrays, Arkouda Strings, Arkouda Segarrays,</span>
+<span class="sd">     or Arkouda ArrayViews.</span>
 <span class="sd">        Dictionary of {datasetName: pdarray, String, SegArray, or ArrayView}</span>
 
 <span class="sd">    Raises</span>
@@ -1137,16 +1107,6 @@
     <span class="n">read_nested</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">has_non_float_nulls</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span>
-    <span class="n">pdarray</span><span class="p">,</span>
-    <span class="n">Strings</span><span class="p">,</span>
-    <span class="n">SegArray</span><span class="p">,</span>
-    <span class="n">ArrayView</span><span class="p">,</span>
-    <span class="n">Categorical</span><span class="p">,</span>
-    <span class="n">DataFrame</span><span class="p">,</span>
-    <span class="n">IPv4</span><span class="p">,</span>
-    <span class="n">Datetime</span><span class="p">,</span>
-    <span class="n">Timedelta</span><span class="p">,</span>
-    <span class="n">Index</span><span class="p">,</span>
     <span class="n">Mapping</span><span class="p">[</span>
         <span class="nb">str</span><span class="p">,</span>
         <span class="n">Union</span><span class="p">[</span>
@@ -1198,10 +1158,9 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    For a single dataset returns an Arkouda pdarray, Arkouda Strings, or Arkouda ArrayView object</span>
-<span class="sd">    and for multiple datasets returns a dictionary of Arkouda pdarrays,</span>
-<span class="sd">    Arkouda Strings or Arkouda ArrayView.</span>
-<span class="sd">        Dictionary of {datasetName: pdarray or String}</span>
+<span class="sd">    Returns a dictionary of Arkouda pdarrays, Arkouda Strings, Arkouda Segarrays,</span>
+<span class="sd">     or Arkouda ArrayViews.</span>
+<span class="sd">        Dictionary of {datasetName: pdarray, String, SegArray, or ArrayView}</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
@@ -1291,16 +1250,6 @@
     <span class="n">column_delim</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span>
     <span class="n">allow_errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span>
-    <span class="n">pdarray</span><span class="p">,</span>
-    <span class="n">Strings</span><span class="p">,</span>
-    <span class="n">SegArray</span><span class="p">,</span>
-    <span class="n">ArrayView</span><span class="p">,</span>
-    <span class="n">Categorical</span><span class="p">,</span>
-    <span class="n">DataFrame</span><span class="p">,</span>
-    <span class="n">IPv4</span><span class="p">,</span>
-    <span class="n">Datetime</span><span class="p">,</span>
-    <span class="n">Timedelta</span><span class="p">,</span>
-    <span class="n">Index</span><span class="p">,</span>
     <span class="n">Mapping</span><span class="p">[</span>
         <span class="nb">str</span><span class="p">,</span>
         <span class="n">Union</span><span class="p">[</span>
@@ -1338,7 +1287,9 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    --------</span>
-<span class="sd">    pdarray, Strings or Mapping {dset_name: obj} where obj is a pdarray or Strings.</span>
+<span class="sd">    Returns a dictionary of Arkouda pdarrays, Arkouda Strings, Arkouda Segarrays,</span>
+<span class="sd">     or Arkouda ArrayViews.</span>
+<span class="sd">        Dictionary of {datasetName: pdarray, String, SegArray, or ArrayView}</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
@@ -2037,16 +1988,6 @@
     <span class="n">calc_string_offsets</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">column_delim</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span>
-    <span class="n">pdarray</span><span class="p">,</span>
-    <span class="n">Strings</span><span class="p">,</span>
-    <span class="n">SegArray</span><span class="p">,</span>
-    <span class="n">ArrayView</span><span class="p">,</span>
-    <span class="n">Categorical</span><span class="p">,</span>
-    <span class="n">DataFrame</span><span class="p">,</span>
-    <span class="n">IPv4</span><span class="p">,</span>
-    <span class="n">Datetime</span><span class="p">,</span>
-    <span class="n">Timedelta</span><span class="p">,</span>
-    <span class="n">Index</span><span class="p">,</span>
     <span class="n">Mapping</span><span class="p">[</span>
         <span class="nb">str</span><span class="p">,</span>
         <span class="n">Union</span><span class="p">[</span>
@@ -2083,8 +2024,9 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    Union[pdarray, Strings]</span>
-<span class="sd">        The pdarray or Strings that was previously saved</span>
+<span class="sd">    Mapping[str, Union[pdarray, Strings, SegArray, Categorical]]</span>
+<span class="sd">        Dictionary of {datsetName: Union[pdarray, Strings, SegArray, Categorical]}</span>
+<span class="sd">        with the previously saved pdarrays, Strings, SegArrays, or Categoricals</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
@@ -2210,10 +2152,9 @@
     <span class="n">prefix</span><span class="p">,</span> <span class="n">extension</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">path_prefix</span><span class="p">)</span>
     <span class="n">firstname</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">_LOCALE0000</span><span class="si">{</span><span class="n">extension</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">dataset</span><span class="p">:</span> <span class="n">load</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="n">file_format</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="n">get_datasets</span><span class="p">(</span><span class="n">firstname</span><span class="p">,</span> <span class="n">column_delim</span><span class="o">=</span><span class="n">column_delim</span><span class="p">,</span> <span class="n">read_nested</span><span class="o">=</span><span class="n">read_nested</span><span class="p">)</span>
-        <span class="p">}</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="n">get_datasets</span><span class="p">(</span><span class="n">firstname</span><span class="p">,</span> <span class="n">column_delim</span><span class="o">=</span><span class="n">column_delim</span><span class="p">,</span> <span class="n">read_nested</span><span class="o">=</span><span class="n">read_nested</span><span class="p">):</span>
+            <span class="n">result</span><span class="p">[</span><span class="n">dataset</span><span class="p">]</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="n">file_format</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">)[</span><span class="n">dataset</span><span class="p">]</span>
 
         <span class="n">result</span> <span class="o">=</span> <span class="n">_dict_recombine_segarrays_categoricals</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
         <span class="c1"># Check for Categoricals and remove if necessary</span>
@@ -2260,16 +2201,6 @@
     <span class="n">read_nested</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">has_non_float_nulls</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span>
-    <span class="n">pdarray</span><span class="p">,</span>
-    <span class="n">Strings</span><span class="p">,</span>
-    <span class="n">SegArray</span><span class="p">,</span>
-    <span class="n">ArrayView</span><span class="p">,</span>
-    <span class="n">Categorical</span><span class="p">,</span>
-    <span class="n">DataFrame</span><span class="p">,</span>
-    <span class="n">IPv4</span><span class="p">,</span>
-    <span class="n">Datetime</span><span class="p">,</span>
-    <span class="n">Timedelta</span><span class="p">,</span>
-    <span class="n">Index</span><span class="p">,</span>
     <span class="n">Mapping</span><span class="p">[</span>
         <span class="nb">str</span><span class="p">,</span>
         <span class="n">Union</span><span class="p">[</span>
@@ -2326,9 +2257,8 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    For a single dataset returns an Arkouda pdarray, Arkouda Strings, Arkouda Segarrays,</span>
-<span class="sd">    or Arkouda ArrayViews. For multiple datasets returns a dictionary of Arkouda pdarrays,</span>
-<span class="sd">    Arkouda Strings, Arkouda Segarrays, or Arkouda ArrayViews.</span>
+<span class="sd">    Returns a dictionary of Arkouda pdarrays, Arkouda Strings, Arkouda Segarrays,</span>
+<span class="sd">     or Arkouda ArrayViews.</span>
 <span class="sd">        Dictionary of {datasetName: pdarray, String, SegArray, or ArrayView}</span>
 
 <span class="sd">    Raises</span>
