@@ -1792,6 +1792,10 @@ class GroupBy:
         """
         if values.size != self.segments.size:
             raise ValueError("Must have one value per segment")
+        is_str = isinstance(values, Strings)
+        if is_str:
+            str_vals = values
+            values = arange(str_vals.size)
         cmd = "broadcast"
         repMsg = cast(
             str,
@@ -1801,16 +1805,13 @@ class GroupBy:
                     "permName": self.permutation.name,
                     "segName": self.segments.name,
                     "valName": values.name,
-                    "objType": values.objType,
                     "permute": permute,
                     "size": self.length,
                 },
             ),
         )
-        if values.objType == Strings.objType:
-            return Strings.from_return_msg(repMsg)
-        else:
-            return create_pdarray(repMsg)
+        broadcasted = create_pdarray(repMsg)
+        return str_vals[broadcasted] if is_str else broadcasted
 
     @staticmethod
     def build_from_components(user_defined_name: Optional[str] = None, **kwargs) -> GroupBy:
@@ -2167,6 +2168,12 @@ def broadcast(
         size = cast(Union[int, np.int64, np.uint64], permutation.size)
     if size < 1:
         raise ValueError("result size must be greater than zero")
+
+    is_str = isinstance(values, Strings)
+    if is_str:
+        str_vals = values
+        values = arange(str_vals.size)
+
     cmd = "broadcast"
     repMsg = cast(
         str,
@@ -2176,13 +2183,10 @@ def broadcast(
                 "permName": pname,
                 "segName": segments.name,
                 "valName": values.name,
-                "objType": values.objType,
                 "permute": permute,
                 "size": size,
             },
         ),
     )
-    if values.objType == Strings.objType:
-        return Strings.from_return_msg(repMsg)
-    else:
-        return create_pdarray(repMsg)
+    broadcasted = create_pdarray(repMsg)
+    return str_vals[broadcasted] if is_str else broadcasted
