@@ -160,7 +160,6 @@ def get_null_indices(
 
     Returns
     -------
-    For a single dataset returns an Arkouda pdarray and for multiple datasets
     returns a dictionary of Arkouda pdarrays
         Dictionary of {datasetName: pdarray}
 
@@ -547,16 +546,6 @@ def _dict_recombine_segarrays_categoricals(df_dict):
 def _build_objects(
     rep_msg: Dict,
 ) -> Union[
-    Strings,
-    pdarray,
-    SegArray,
-    ArrayView,
-    Categorical,
-    DataFrame,
-    IPv4,
-    Datetime,
-    Timedelta,
-    Index,
     Mapping[
         str,
         Union[
@@ -591,18 +580,10 @@ def _build_objects(
         - If no objects were returned
     """
     items = json.loads(rep_msg["items"]) if "items" in rep_msg else []
-    # We have a couple possible return conditions
-    # 1. We have multiple items returned i.e. multi pdarrays, multi strings, multi pdarrays & strings
-    # 2. We have a single pdarray
-    # 3. We have a single strings object
-    if len(items) > 1:  # DataSets condition
-        ds_dict = _dict_recombine_segarrays_categoricals(
+    if len(items) >= 1:
+        return _dict_recombine_segarrays_categoricals(
             {item["dataset_name"]: _parse_obj(item) for item in items}
         )
-        # if dict only has 1 element when it had >1 before, the element must be a segarray
-        return next(iter(ds_dict.values())) if len(ds_dict.keys()) == 1 else ds_dict
-    elif len(items) == 1:
-        return _parse_obj(items[0])
     else:
         raise RuntimeError("No items were returned")
 
@@ -616,16 +597,6 @@ def read_hdf(
     calc_string_offsets: bool = False,
     tag_data=False,
 ) -> Union[
-    pdarray,
-    Strings,
-    SegArray,
-    ArrayView,
-    Categorical,
-    DataFrame,
-    IPv4,
-    Datetime,
-    Timedelta,
-    Index,
     Mapping[
         str,
         Union[
@@ -674,9 +645,8 @@ def read_hdf(
 
     Returns
     -------
-    For a single dataset returns an Arkouda pdarray, Arkouda Strings, Arkouda Segarrays,
-    or Arkouda ArrayViews. For multiple datasets returns a dictionary of Arkouda pdarrays,
-    Arkouda Strings, Arkouda Segarrays, or Arkouda ArrayViews.
+    Returns a dictionary of Arkouda pdarrays, Arkouda Strings, Arkouda Segarrays,
+     or Arkouda ArrayViews.
         Dictionary of {datasetName: pdarray, String, SegArray, or ArrayView}
 
     Raises
@@ -765,16 +735,6 @@ def read_parquet(
     read_nested: bool = True,
     has_non_float_nulls: bool = False,
 ) -> Union[
-    pdarray,
-    Strings,
-    SegArray,
-    ArrayView,
-    Categorical,
-    DataFrame,
-    IPv4,
-    Datetime,
-    Timedelta,
-    Index,
     Mapping[
         str,
         Union[
@@ -826,10 +786,9 @@ def read_parquet(
 
     Returns
     -------
-    For a single dataset returns an Arkouda pdarray, Arkouda Strings, or Arkouda ArrayView object
-    and for multiple datasets returns a dictionary of Arkouda pdarrays,
-    Arkouda Strings or Arkouda ArrayView.
-        Dictionary of {datasetName: pdarray or String}
+    Returns a dictionary of Arkouda pdarrays, Arkouda Strings, Arkouda Segarrays,
+     or Arkouda ArrayViews.
+        Dictionary of {datasetName: pdarray, String, SegArray, or ArrayView}
 
     Raises
     ------
@@ -916,16 +875,6 @@ def read_csv(
     column_delim: str = ",",
     allow_errors: bool = False,
 ) -> Union[
-    pdarray,
-    Strings,
-    SegArray,
-    ArrayView,
-    Categorical,
-    DataFrame,
-    IPv4,
-    Datetime,
-    Timedelta,
-    Index,
     Mapping[
         str,
         Union[
@@ -963,7 +912,9 @@ def read_csv(
 
     Returns
     --------
-    pdarray, Strings or Mapping {dset_name: obj} where obj is a pdarray or Strings.
+    Returns a dictionary of Arkouda pdarrays, Arkouda Strings, Arkouda Segarrays,
+     or Arkouda ArrayViews.
+        Dictionary of {datasetName: pdarray, String, SegArray, or ArrayView}
 
     Raises
     ------
@@ -1638,16 +1589,6 @@ def load(
     calc_string_offsets: bool = False,
     column_delim: str = ",",
 ) -> Union[
-    pdarray,
-    Strings,
-    SegArray,
-    ArrayView,
-    Categorical,
-    DataFrame,
-    IPv4,
-    Datetime,
-    Timedelta,
-    Index,
     Mapping[
         str,
         Union[
@@ -1684,8 +1625,9 @@ def load(
 
     Returns
     -------
-    Union[pdarray, Strings]
-        The pdarray or Strings that was previously saved
+    Mapping[str, Union[pdarray, Strings, SegArray, Categorical]]
+        Dictionary of {datsetName: Union[pdarray, Strings, SegArray, Categorical]}
+        with the previously saved pdarrays, Strings, SegArrays, or Categoricals
 
     Raises
     ------
@@ -1808,10 +1750,9 @@ def load_all(
     prefix, extension = os.path.splitext(path_prefix)
     firstname = f"{prefix}_LOCALE0000{extension}"
     try:
-        result = {
-            dataset: load(prefix, file_format=file_format, dataset=dataset)
-            for dataset in get_datasets(firstname, column_delim=column_delim, read_nested=read_nested)
-        }
+        result = dict()
+        for dataset in get_datasets(firstname, column_delim=column_delim, read_nested=read_nested):
+            result[dataset] = load(prefix, file_format=file_format, dataset=dataset)[dataset]
 
         result = _dict_recombine_segarrays_categoricals(result)
         # Check for Categoricals and remove if necessary
@@ -1855,16 +1796,6 @@ def read(
     read_nested: bool = True,
     has_non_float_nulls: bool = False,
 ) -> Union[
-    pdarray,
-    Strings,
-    SegArray,
-    ArrayView,
-    Categorical,
-    DataFrame,
-    IPv4,
-    Datetime,
-    Timedelta,
-    Index,
     Mapping[
         str,
         Union[
@@ -1921,9 +1852,8 @@ def read(
 
     Returns
     -------
-    For a single dataset returns an Arkouda pdarray, Arkouda Strings, Arkouda Segarrays,
-    or Arkouda ArrayViews. For multiple datasets returns a dictionary of Arkouda pdarrays,
-    Arkouda Strings, Arkouda Segarrays, or Arkouda ArrayViews.
+    Returns a dictionary of Arkouda pdarrays, Arkouda Strings, Arkouda Segarrays,
+     or Arkouda ArrayViews.
         Dictionary of {datasetName: pdarray, String, SegArray, or ArrayView}
 
     Raises

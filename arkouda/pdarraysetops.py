@@ -197,7 +197,7 @@ def in1d(
     isa = concatenate((ones(ua[0].size, dtype=akbool), zeros(ub[0].size, dtype=akbool)), ordered=False)
     c = [concatenate(x, ordered=False) for x in zip(ua, ub)]
     g = GroupBy(c)
-    k, ct = g.count()
+    k, ct = g.size()
     if assume_unique:
         # need to verify uniqueness, otherwise answer will be wrong
         if (g.sum(isa)[1] > 1).any():
@@ -504,7 +504,7 @@ def union1d(
 
         c = [concatenate(x, ordered=False) for x in zip(ua, ub)]
         g = GroupBy(c)
-        k, ct = g.count()
+        k, ct = g.size()
         return k
     else:
         raise TypeError(
@@ -621,7 +621,7 @@ def intersect1d(
                 raise ValueError("Called with assume_unique=True, but first argument is not unique")
             if (g.sum(~isa)[1] > 1).any():
                 raise ValueError("Called with assume_unique=True, but second argument is not unique")
-        k, ct = g.count()
+        k, ct = g.size()
         in_union = ct == 2
         return [x[in_union] for x in k]
     else:
@@ -735,7 +735,7 @@ def setdiff1d(
                 raise ValueError("Called with assume_unique=True, but first argument is not unique")
             if (g.sum(~isa)[1] > 1).any():
                 raise ValueError("Called with assume_unique=True, but second argument is not unique")
-        k, ct = g.count()
+        k, ct = g.size()
         truth = g.broadcast(ct == 1, permute=True)
         atruth = truth[isa]
         return [x[atruth] for x in ua]
@@ -849,7 +849,7 @@ def setxor1d(pda1: groupable, pda2: groupable, assume_unique: bool = False) -> U
                 raise ValueError("Called with assume_unique=True, but first argument is not unique")
             if (g.sum(~isa)[1] > 1).any():
                 raise ValueError("Called with assume_unique=True, but second argument is not unique")
-        k, ct = g.count()
+        k, ct = g.size()
         single = ct == 1
         return [x[single] for x in k]
     else:

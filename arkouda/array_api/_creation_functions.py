@@ -43,6 +43,7 @@ def asarray(
         float,
         NestedSequence[bool | int | float],
         SupportsBufferProtocol,
+        ak.pdarray,
     ],
     /,
     *,
@@ -55,7 +56,9 @@ def asarray(
     if device not in ["cpu", None]:
         raise ValueError(f"Unsupported device {device!r}")
 
-    if (
+    if isinstance(obj, ak.pdarray):
+        return Array._new(obj)
+    elif (
         isinstance(obj, bool)
         or isinstance(obj, int)
         or isinstance(obj, float)

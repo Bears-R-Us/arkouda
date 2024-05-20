@@ -164,7 +164,9 @@ def result_type(*arrays_and_dtypes: Union[Array, Dtype]) -> Dtype:
     for a in arrays_and_dtypes:
         if isinstance(a, Array):
             a = a.dtype
-        elif isinstance(a, np.ndarray) or a not in _all_dtypes:
+        elif isinstance(a, np.ndarray):
+            a = a.dtype
+        elif a not in _all_dtypes:
             raise TypeError("result_type() inputs must be array_api arrays or dtypes")
         A.append(a)
 

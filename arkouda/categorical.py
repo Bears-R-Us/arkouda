@@ -31,6 +31,7 @@ from arkouda.pdarrayclass import RegistrationError, create_pdarray, pdarray
 from arkouda.pdarraycreation import arange, array, ones, zeros, zeros_like
 from arkouda.pdarraysetops import concatenate, in1d
 from arkouda.sorting import argsort
+from arkouda.sorting import sort as pda_sort
 from arkouda.strings import Strings
 
 __all__ = ["Categorical"]
@@ -304,7 +305,7 @@ class Categorical:
         )
         # Group combined categories to find matches
         g = GroupBy(bothcats)
-        ct = g.count()[1]
+        ct = g.size()[1]
         if (ct > 2).any():
             raise ValueError("User-specified categories must be unique")
         # Matches have two hits in concatenated array
@@ -392,7 +393,7 @@ class Categorical:
 
         Examples
         --------
-        >>> from arkouda import ak
+        >>> import arkouda as ak
         >>> ak.connect()
         >>> a = ak.array(["a","b","c"])
         >>> a
@@ -807,13 +808,13 @@ class Categorical:
         newvals = inverse[self.codes]
         return argsort(newvals)
 
-    def sort(self):
+    def sort_values(self):
         # __doc__ = sort.__doc__
         idxperm = argsort(self.categories)
         inverse = zeros_like(idxperm)
         inverse[idxperm] = arange(idxperm.size)
         newvals = inverse[self.codes]
-        return Categorical.from_codes(newvals, self.categories[idxperm])
+        return Categorical.from_codes(pda_sort(newvals), self.categories[idxperm])
 
     @typechecked
     def concatenate(self, others: Sequence[Categorical], ordered: bool = True) -> Categorical:

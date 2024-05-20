@@ -20,12 +20,19 @@ class ManipulationTests(ArkoudaTest):
         a = Array.ones((1, 6, 1))
         b = Array.ones((5, 1, 10))
         c = Array.ones((5, 6, 1))
+        d = Array.ones((6, 10))
 
-        abc = Array.broadcast_arrays(a, b, c)
-        self.assertEqual(len(abc), 3)
-        self.assertEqual(abc[0].shape, (5, 6, 10))
-        self.assertEqual(abc[1].shape, (5, 6, 10))
-        self.assertEqual(abc[2].shape, (5, 6, 10))
+        abcd = Array.broadcast_arrays(a, b, c, d)
+        self.assertEqual(len(abcd), 4)
+        self.assertEqual(abcd[0].shape, (5, 6, 10))
+        self.assertEqual(abcd[1].shape, (5, 6, 10))
+        self.assertEqual(abcd[2].shape, (5, 6, 10))
+        self.assertEqual(abcd[3].shape, (5, 6, 10))
+
+        self.assertTrue((abcd[0] == 1).all())
+        self.assertTrue((abcd[1] == 1).all())
+        self.assertTrue((abcd[2] == 1).all())
+        self.assertTrue((abcd[3] == 1).all())
 
     def test_concat(self):
         a = randArr((5, 3, 10))

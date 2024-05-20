@@ -431,7 +431,7 @@ $(DOC_DIR):
 	mkdir -p $@
 
 .PHONY: doc
-doc: gen-stubs doc-python doc-server
+doc: stub-gen doc-python stub-clean doc-server
 
 CHPLDOC := chpldoc
 CHPLDOC_FLAGS := --process-used-modules
@@ -501,12 +501,15 @@ $(eval $(call create_help_target,test-help,TEST_HELP_TEXT))
 .PHONY: test
 test: test-python
 
+.PHONY: test-proto
+test-proto: test-python-proto
+
 .PHONY: test-chapel
 test-chapel:
 	start_test $(TEST_SOURCE_DIR)
 
 .PHONY: test-all
-test-all: test-python test-chapel
+test-all: test-python test-python-proto test-chapel
 
 mypy:
 	python3 -m mypy arkouda
@@ -523,6 +526,10 @@ print-%:
 
 test-python:
 	python3 -m pytest $(ARKOUDA_PYTEST_OPTIONS) -c pytest.ini
+
+size=100
+test-python-proto:
+	python3 -m pytest --size=$(size) $(ARKOUDA_PYTEST_OPTIONS) -c pytest_PROTO.ini
 
 CLEAN_TARGETS += test-clean
 .PHONY: test-clean
@@ -554,5 +561,8 @@ cleanall: clean $(CLEANALL_TARGETS)
 .PHONY: help
 help: $(HELP_TARGETS)
 
-gen-stubs:
+stub-gen:
 	python3 pydoc/preprocess/generate_import_stubs.py
+
+stub-clean:
+	find . -name "*.pyi" -type f -delete

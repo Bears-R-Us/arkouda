@@ -537,7 +537,7 @@ def search_intervals(vals, intervals, tiebreak=None, hierarchical=True):
             )
             by_val_interval = GroupBy([all_uval_idx, all_match_interval_idx])
             # a true hit happens when a value is contained in all of an interval's 1-d projections
-            is_a_hit = by_val_interval.count()[1] == len(low)
+            is_a_hit = by_val_interval.size()[1] == len(low)
             # indices of the true hits and their containing intervals
             val_hits, interval_hits = [x[is_a_hit] for x in by_val_interval.unique_keys]
             # a value might be found in more than one interval, so we need to break ties

@@ -175,12 +175,12 @@ module RandArray {
 
     // compute the normalized cumulative weights
     var cw = + scan weights;
-    cw /= cw[dw.size-1];
+    cw /= cw[dw.last];
 
     if !Sort.isSorted(cw) then
       throw new IllegalArgumentError("'weights' cannot contain negative values");
 
-    if cw[dw.size-1] <= 1e-15 then
+    if cw[dw.last] <= 1e-15 then
       throw new IllegalArgumentError("'weights' must contain at least one non-zero value");
 
     const dOut = {0..<n};
@@ -207,12 +207,12 @@ module RandArray {
         // add the sampled index to the list of indices and the list of samples
         weightsCopy[ii] = 0;
         indices += ii;
-        i += 1;
         samples[i] = ii;
+        i += 1;
 
         // recompute the normalized cumulative weights
         cw = + scan weightsCopy;
-        cw /= cw[dw.size-1];
+        cw /= cw[dw.last];
       }
     }
 
