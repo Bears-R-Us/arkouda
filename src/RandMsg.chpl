@@ -3,7 +3,7 @@ module RandMsg
     use ServerConfig;
     
     use ArkoudaTimeCompat as Time;
-    use Math only;
+    use Math;
     use Reflection;
     use ServerErrors;
     use ServerConfig;
@@ -297,6 +297,41 @@ module RandMsg
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
+    proc standardNormalGeneratorMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        const pn = Reflection.getRoutineName(),
+              name = msgArgs.getValueOf("name"),                // generator name
+              size = msgArgs.get("size").getIntValue(),         // population size
+              state = msgArgs.get("state").getIntValue(),       // rng state
+              rname = st.nextName();
+
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "name: %? size %i state %i".doFormat(name, size, state));
+
+        st.checkTable(name);
+
+        var generatorEntry: borrowed GeneratorSymEntry(real) = toGeneratorSymEntry(st.lookup(name), real);
+        ref rng = generatorEntry.generator;
+        if state != 1 {
+            // you have to skip to one before where you want to be
+            rng.skipTo(state-1);
+        }
+
+        // uses Box–Muller transform
+        // generates values drawn from the standard normal distribution using
+        // 2 uniformly distributed random numbers
+        var u1 = makeDistArray(size, real);
+        var u2 = makeDistArray(size, real);
+        rng.fill(u1);
+        rng.fill(u2);
+
+        var standNorm = sqrt(-2*log(u1))*cos(2*pi*u2);
+        st.addEntry(rname, createSymEntry(standNorm));
+
+        var repMsg = "created " + st.attrib(rname);
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
     proc segmentedSampleMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         const pn = Reflection.getRoutineName(),
               genName = msgArgs.getValueOf("genName"),                          // generator name
@@ -567,6 +602,7 @@ module RandMsg
     registerFunction("randomNormal", randomNormalMsg, getModuleName());
     registerFunction("createGenerator", createGeneratorMsg, getModuleName());
     registerFunction("uniformGenerator", uniformGeneratorMsg, getModuleName());
+    registerFunction("standardNormalGenerator", standardNormalGeneratorMsg, getModuleName());
     registerFunction("segmentedSample", segmentedSampleMsg, getModuleName());
     registerFunction("choice", choiceMsg, getModuleName());
     registerFunction("permutation", permutationMsg, getModuleName());

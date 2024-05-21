@@ -69,6 +69,9 @@ module RandArray {
   }
 
   proc fillNormal(ref a:[?D] real, const seedStr:string="None") throws {
+    // uses Box–Muller transform
+    // generates values drawn from the standard normal distribution using
+    // 2 uniformly distributed random numbers
     var u1 = makeDistArray(D, real);
     var u2 = makeDistArray(D, real);
     if (seedStr.toLower() == "none") {
