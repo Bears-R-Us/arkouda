@@ -44,13 +44,13 @@ class IndexTest(ArkoudaTest):
         # test list generation
         idx = ak.MultiIndex([ak.arange(5), ak.arange(5)])
         self.assertIsInstance(idx, ak.MultiIndex)
-        self.assertEqual(idx.levels, 2)
+        self.assertEqual(idx.nlevels, 2)
         self.assertEqual(idx.size, 5)
 
         # test tuple generation
         idx = ak.MultiIndex((ak.arange(5), ak.arange(5)))
         self.assertIsInstance(idx, ak.MultiIndex)
-        self.assertEqual(idx.levels, 2)
+        self.assertEqual(idx.nlevels, 2)
         self.assertEqual(idx.size, 5)
 
         with self.assertRaises(TypeError):
@@ -58,6 +58,70 @@ class IndexTest(ArkoudaTest):
 
         with self.assertRaises(ValueError):
             idx = ak.MultiIndex([ak.arange(5), ak.arange(3)])
+
+    def test_nlevels(self):
+        i = ak.Index([1, 2, 3], name="test")
+        assert i.nlevels == 1
+
+        size = 10
+        m = ak.MultiIndex([ak.arange(size), ak.arange(size) * -1])
+        assert m.nlevels == 2
+
+    def test_inferred_type(self):
+        i = ak.Index([1, 2, 3])
+        self.assertEqual(i.inferred_type, "integer")
+
+        i2 = ak.Index([1.0, 2, 3])
+        self.assertEqual(i2.inferred_type, "floating")
+
+        i3 = ak.Index(["a", "b", "c"], allow_list=True)
+        self.assertEqual(i3.inferred_type, "string")
+
+        from arkouda.categorical import Categorical
+
+        i4 = ak.Index(Categorical(ak.array(["a", "b", "c"])))
+        self.assertEqual(i4.inferred_type, "categorical")
+
+        size = 10
+        m = ak.MultiIndex([ak.arange(size), ak.arange(size) * -1], names=["test", "test2"])
+        self.assertEqual(m.inferred_type, "mixed")
+
+    def assert_equal(self, pda1, pda2):
+        from arkouda import sum as aksum
+
+        assert pda1.size == pda2.size
+        assert aksum(pda1 != pda2) == 0
+
+    def test_eq(self):
+        i = ak.Index([1, 2, 3])
+        i_cpy = ak.Index([1, 2, 3])
+        self.assert_equal(i == i_cpy, ak.array([True, True, True]))
+        self.assert_equal(i != i_cpy, ak.array([False, False, False]))
+        assert i.equals(i_cpy)
+
+        i2 = ak.Index([1, 2, 3], allow_list=True)
+        i2_cpy = ak.Index([1, 2, 3], allow_list=True)
+        self.assert_equal(i2 == i2_cpy, ak.array([True, True, True]))
+        self.assert_equal(i2 != i2_cpy, ak.array([False, False, False]))
+        assert i2.equals(i2_cpy)
+
+        self.assert_equal(i == i2, ak.array([True, True, True]))
+        self.assert_equal(i != i2, ak.array([False, False, False]))
+        assert i.equals(i2)
+
+        i3 = ak.Index(["a", "b", "c"], allow_list=True)
+        i3_cpy = ak.Index(["a", "b", "c"], allow_list=True)
+        self.assert_equal(i3 == i3_cpy, ak.array([True, True, True]))
+        self.assert_equal(i3 != i3_cpy, ak.array([False, False, False]))
+        assert i3.equals(i3_cpy)
+
+        i4 = ak.Index(["a", "x", "c"], allow_list=True)
+        self.assert_equal(i3 == i4, ak.array([True, False, True]))
+        self.assert_equal(i3 != i4, ak.array([False, True, False]))
+        assert not i3.equals(i4)
+
+        i5 = ak.Index(["a", "b", "c", "d"], allow_list=True)
+        assert not i4.equals(i5)
 
     def test_memory_usage(self):
         from arkouda.dtypes import BigInt

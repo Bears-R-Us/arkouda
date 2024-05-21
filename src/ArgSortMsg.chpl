@@ -372,6 +372,8 @@ module ArgSortMsg
           }
         }
         when SortingAlgorithm.RadixSortLSD {
+          // TODO: make a version of radixSortLSD_ranks that does the sort on
+          // slices of `A` directly instead of creating a copy for each slice
           for idx in DD {
             const sliceDom = domOnAxis(D, idx, axis),
                   aSliced1D = removeDegenRanks(A[sliceDom], 1),

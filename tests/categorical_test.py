@@ -96,6 +96,10 @@ class CategoricalTest(ArkoudaTest):
         self.assertListEqual(codes.to_list(), cat.codes.to_list())
         self.assertListEqual(categories.to_list(), cat.categories.to_list())
 
+    def test_inferred_type(self):
+        cat = self._getCategorical()
+        self.assertEqual(cat.inferred_type, "categorical")
+
     def test_substring_search(self):
         cat = ak.Categorical(ak.array([f"{i} string {i}" for i in range(10)]))
         self.assertTrue(cat.contains("tri").all())
@@ -478,6 +482,13 @@ class CategoricalTest(ArkoudaTest):
         # set to none and validate no entries in symbol table
         cat = None
         self.assertEqual(len(ak.list_symbol_table()), 0)
+
+    def test_sort(self):
+        rand_cats = ak.random_strings_uniform(1, 16, 10)
+        rand_codes = ak.randint(0, rand_cats.size, 100)
+        cat = ak.Categorical.from_codes(codes=rand_codes, categories=rand_cats)
+
+        self.assertEqual(sorted(cat.to_list()), cat.sort_values().to_list())
 
     def tearDown(self):
         super(CategoricalTest, self).tearDown()

@@ -492,7 +492,7 @@ class RegistrationTest(ArkoudaTest):
         # assert that the object is registered
         self.assertTrue(reg_name in reg["Objects"])
         # assert that the sym entry name is recorded
-        for x in i.values:
+        for x in i.levels:
             if x.objType == ak.Categorical.objType:
                 self.assertTrue(x.codes.name in reg["Components"])
                 self.assertTrue(x.categories.name in reg["Components"])

@@ -328,3 +328,21 @@ def prod_sum_dtype(dtype: Dtype) -> Dtype:
         return int64
     else:
         return uint64
+
+
+def cumulative_sum(
+    x: Array, /, *,
+    axis: Optional[int] = None,
+    dtype: Optional[Dtype] = None,
+    include_initial: bool = False
+) -> Array:
+    resp = generic_msg(
+        cmd=f"cumSum{x.ndim}D",
+        args={
+            "x": x._array,
+            "axis": axis if axis is not None else 0,
+            "include_initial": include_initial,
+        },
+    )
+
+    return Array._new(create_pdarray(resp))

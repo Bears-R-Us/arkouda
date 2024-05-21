@@ -28,6 +28,7 @@ from arkouda.strings import Strings
 from arkouda.timeclass import Datetime, Timedelta
 
 if TYPE_CHECKING:
+    from arkouda.index import Index
     from arkouda.series import Series
 
 
@@ -423,7 +424,9 @@ def convert_bytes(nbytes, unit="B"):
         return nbytes / gb
 
 
-def is_numeric(arry: Union[pdarray, Strings, Categorical]) -> builtins.bool:  # noqa: F821
+def is_numeric(
+    arry: Union[pdarray, Strings, Categorical, "Series", "Index"]  # noqa: F821
+) -> builtins.bool:
     """
     Check if the dtype of the given array is numeric.
 
@@ -448,13 +451,16 @@ def is_numeric(arry: Union[pdarray, Strings, Categorical]) -> builtins.bool:  # 
         False
 
     """
-    if isinstance(arry, pdarray):
+    from arkouda.index import Index
+    from arkouda.series import Series
+
+    if isinstance(arry, (pdarray, Series, Index)):
         return _is_dtype_in_union(dtype(arry.dtype), numeric_scalars)
     else:
         return False
 
 
-def is_float(arry: Union[pdarray, Strings, Categorical]):  # noqa: F821
+def is_float(arry: Union[pdarray, Strings, Categorical, "Series", "Index"]):  # noqa: F821
     """
     Check if the dtype of the given array is float.
 
@@ -479,13 +485,16 @@ def is_float(arry: Union[pdarray, Strings, Categorical]):  # noqa: F821
         False
 
     """
-    if isinstance(arry, pdarray):
+    from arkouda.index import Index
+    from arkouda.series import Series
+
+    if isinstance(arry, (pdarray, Series, Index)):
         return _is_dtype_in_union(dtype(arry.dtype), float_scalars)
     else:
         return False
 
 
-def is_int(arry: Union[pdarray, Strings, Categorical]):  # noqa: F821
+def is_int(arry: Union[pdarray, Strings, Categorical, "Series", "Index"]):  # noqa: F821
     """
     Check if the dtype of the given array is int.
 
@@ -511,7 +520,10 @@ def is_int(arry: Union[pdarray, Strings, Categorical]):  # noqa: F821
     True
 
     """
-    if isinstance(arry, pdarray):
+    from arkouda.index import Index
+    from arkouda.series import Series
+
+    if isinstance(arry, (pdarray, Series, Index)):
         return _is_dtype_in_union(dtype(arry.dtype), int_scalars)
     else:
         return False
@@ -527,7 +539,7 @@ def map(
     ----------
     values :  pdarray, Strings, or Categorical
         The values to be mapped.
-    mapping : dict or Series
+    mapping : dict or arkouda.Series
         The mapping correspondence.
 
     Returns
@@ -569,8 +581,8 @@ def map(
 
     if isinstance(mapping, dict):
         mapping = Series(
-            [array(list(mapping.keys())), array(list(mapping.values()))]  # type: ignore [assignment]
-        )
+            [array(list(mapping.keys())), array(list(mapping.values()))]
+        )  # type: ignore [assignment]
 
     if isinstance(mapping, Series):
         xtra_keys = gb_keys[in1d(gb_keys, mapping.index.values, invert=True)]

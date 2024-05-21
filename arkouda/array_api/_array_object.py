@@ -541,9 +541,21 @@ class Array:
         /,
     ) -> None:
         if isinstance(key, Array):
-            self._array[key._array] = value
+            if isinstance(value, Array):
+                if value.size == 1 or value.shape == ():
+                    self._array[key._array] = value._array[0]
+                else:
+                    self._array[key._array] = value._array
+            else:
+                self._array[key._array] = value
         else:
-            self._array[key] = value
+            if isinstance(value, Array):
+                if value.size == 1 or value.shape == ():
+                    self._array[key] = value._array[0]
+                else:
+                    self._array[key] = value._array
+            else:
+                self._array[key] = value
 
     def __sub__(self: Array, other: Union[int, float, Array], /) -> Array:
         if isinstance(other, (int, float)):

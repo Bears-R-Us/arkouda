@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
 import argparse
+from enum import Enum
 import os
 import time
 from glob import glob
 
 import arkouda as ak
+import numpy as np
 
 TYPES = (
     "int64",
@@ -22,15 +24,22 @@ COMPRESSIONS = (
     "lz4"
 )
 
+class FileFormat(Enum):
+    HDF5 = 1
+    PARQUET = 2
+    CSV = 3
 
-def time_ak_write(N_per_locale, numfiles, trials, dtype, path, seed, parquet, comps=None):
+def time_ak_write(N_per_locale, numfiles, trials, dtype, path, seed, fileFormat, comps=None):
     if comps is None or comps == [""]:
         comps = COMPRESSIONS
 
-    if not parquet:
-        print(">>> arkouda {} HDF5 write with compression={}".format(dtype, comps))
-    else:
-        print(">>> arkouda {} Parquet write with compression={}".format(dtype, comps))
+    file_format_actions = {
+        FileFormat.HDF5: ">>> arkouda {} HDF5 write with compression={}".format(dtype, comps),
+        FileFormat.PARQUET: ">>> arkouda {} Parquet write with compression={}".format(dtype, comps),
+        FileFormat.CSV: ">>> arkouda {} CSV write".format(dtype)
+    }
+    print(file_format_actions.get(fileFormat, "Invalid file format"))
+
     cfg = ak.get_config()
     N = N_per_locale * cfg["numLocales"]
     print("numLocales = {}, N = {:,}, filesPerLoc = {}".format(cfg["numLocales"], N, numfiles))
@@ -44,7 +53,7 @@ def time_ak_write(N_per_locale, numfiles, trials, dtype, path, seed, parquet, co
         a = ak.random_strings_uniform(1, 16, N, seed=seed)
 
     times = {}
-    if parquet:
+    if fileFormat == FileFormat.PARQUET:
         for comp in comps:
             if comp in COMPRESSIONS:
                 writetimes = []
@@ -57,7 +66,7 @@ def time_ak_write(N_per_locale, numfiles, trials, dtype, path, seed, parquet, co
                         end = time.time()
                         writetimes.append(end - start)
                 times[comp] = sum(writetimes) / trials
-    else:
+    elif fileFormat == FileFormat.HDF5:
         writetimes = []
         for i in range(trials):
             for j in range(numfiles):
@@ -66,51 +75,75 @@ def time_ak_write(N_per_locale, numfiles, trials, dtype, path, seed, parquet, co
                 end = time.time()
                 writetimes.append(end - start)
         times["HDF5"] = sum(writetimes) / trials
+    elif fileFormat == FileFormat.CSV:
+        writetimes = []
+        for i in range(trials):
+            for j in range(numfiles):
+                start = time.time()
+                a.to_csv(f"{path}{j:04}")
+                end = time.time()
+                writetimes.append(end - start)
+        times["CSV"] = sum(writetimes) / trials
+    else:
+        raise ValueError("Invalid file format")
 
     nb = a.size * a.itemsize * numfiles
     for key in times.keys():
         print("write Average time {} = {:.4f} sec".format(key, times[key]))
-        print("write Average rate {} = {:.2f} GiB/sec".format(key, nb / 2**30 / times[key]))
+        print("write Average rate {} = {:.4f} GiB/sec".format(key, nb / 2**30 / times[key]))
 
 
-def time_ak_read(N_per_locale, numfiles, trials, dtype, path, seed, parquet, comps=None):
+def time_ak_read(N_per_locale, numfiles, trials, dtype, path, fileFormat, comps=None):
     if comps is None or comps == [""]:
         comps = COMPRESSIONS
 
-    if not parquet:
-        print(">>> arkouda HDF5 {} read".format(dtype))
-    else:
-        print(">>> arkouda Parquet {} read".format(dtype))
+    file_format_actions = {
+        FileFormat.HDF5: ">>> arkouda {} HDF5 read with compression={}".format(dtype, comps),
+        FileFormat.PARQUET: ">>> arkouda {} Parquet read with compression={}".format(dtype, comps),
+        FileFormat.CSV: ">>> arkouda {} CSV read".format(dtype)
+    }
+    print(file_format_actions.get(fileFormat, "Invalid file format"))
+
     cfg = ak.get_config()
     N = N_per_locale * cfg["numLocales"]
     print("numLocales = {}, N = {:,}, filesPerLoc = {}".format(cfg["numLocales"], N, numfiles))
     a = ak.array([])
 
     times = {}
-    if parquet:
+    if fileFormat == FileFormat.PARQUET:
         for comp in COMPRESSIONS:
             if comp in comps:
                 readtimes = []
                 for i in range(trials):
                     start = time.time()
-                    a = ak.read_parquet(path + comp + "*")
+                    a = ak.read_parquet(path + comp + "*").popitem()[1]
                     end = time.time()
                     readtimes.append(end - start)
                 times[comp] = sum(readtimes) / trials
 
-    else:
+    elif fileFormat == FileFormat.HDF5:
         readtimes = []
         for i in range(trials):
             start = time.time()
-            a = ak.read_hdf(path + "*")
+            a = ak.read_hdf(path + "*").popitem()[1]
             end = time.time()
             readtimes.append(end - start)
         times["HDF5"] = sum(readtimes) / trials
+    elif fileFormat == FileFormat.CSV:
+        readtimes = []
+        for i in range(trials):
+            start = time.time()
+            a = ak.read_csv(path + "*").popitem()[1]
+            end = time.time()
+            readtimes.append(end - start)
+        times["CSV"] = sum(readtimes) / trials
+    else:
+        raise ValueError("Invalid file format")
 
     nb = a.size * a.itemsize
     for key in times.keys():
         print("read Average time {} = {:.4f} sec".format(key, times[key]))
-        print("read Average rate {} = {:.2f} GiB/sec".format(key, nb / 2**30 / times[key]))
+        print("read Average rate {} = {:.4f} GiB/sec".format(key, nb / 2**30 / times[key]))
 
 
 def remove_files(path):
@@ -118,8 +151,9 @@ def remove_files(path):
         os.remove(f)
 
 
-def check_correctness(dtype, path, seed, parquet, multifile=False):
+def check_correctness(dtype, path, seed, fileFormat, multifile=False):
     N = 10**4
+    b = None
     if dtype == "int64":
         a = ak.randint(0, 2**32, N, seed=seed)
         if multifile:
@@ -136,19 +170,36 @@ def check_correctness(dtype, path, seed, parquet, multifile=False):
         a = ak.random_strings_uniform(1, 16, N, seed=seed)
         if multifile:
             b = ak.random_strings_uniform(1, 16, N, seed=seed)
-
-    a.to_hdf(f"{path}{1}") if not parquet else a.to_parquet(f"{path}{1}")
-    if multifile:
-        b.to_hdf(f"{path}{2}") if not parquet else b.to_parquet(f"{path}{2}")
-
-    c = ak.read_hdf(path + "*") if not parquet else ak.read_parquet(path + "*")
-
-    remove_files(path)
-    if not multifile:
-        assert (a == c).all()
     else:
-        assert (a == c[0 : a.size]).all()
-        assert (b == c[a.size :]).all()
+        raise ValueError(f"Invalid dtype: {dtype}")
+
+    file_format_actions = {
+        FileFormat.HDF5: (a.to_hdf, b.to_hdf if b is not None else None, ak.read_hdf),
+        FileFormat.PARQUET: (a.to_parquet, b.to_parquet if b is not None else None, ak.read_parquet),
+        FileFormat.CSV: (a.to_csv, b.to_csv if b is not None else None, ak.read_csv)
+    }
+
+    if fileFormat in file_format_actions:
+        write_a, write_b, read_c = file_format_actions.get(fileFormat)
+    else:
+        raise ValueError(f"Invalid file format: {fileFormat}")
+
+
+    write_a(f"{path}{1}")
+    if multifile:
+        write_b(f"{path}{2}")
+
+    c = read_c(path + "*").popitem()[1]
+    remove_files(path)
+
+    if dtype == "float64":
+        assert np.allclose(a.to_ndarray(), c[0 : a.size].to_ndarray()) # Slice is full array when single file
+        if multifile:
+            assert np.allclose(b.to_ndarray(), c[a.size :].to_ndarray())
+    else:
+        assert (a == c[0 : a.size]).all() # Slice is full array when single file
+        if multifile:
+            assert (b == c[a.size :]).all()
 
 
 def create_parser():
@@ -181,8 +232,12 @@ def create_parser():
     parser.add_argument(
         "-s", "--seed", default=None, type=int, help="Value to initialize random number generator"
     )
-    parser.add_argument(
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument(
         "-q", "--parquet", default=False, action="store_true", help="Perform Parquet operations"
+    )
+    group.add_argument(
+        "-v", "--csv", default=False, action="store_true", help="Perform CSV operations"
     )
     parser.add_argument(
         "-w",
@@ -231,9 +286,11 @@ if __name__ == "__main__":
     comp_str = args.compression
     comp_types = COMPRESSIONS if comp_str == "" else comp_str.lower().split(",")
 
+    fileFormat = FileFormat.CSV if args.csv else FileFormat.PARQUET if args.parquet else FileFormat.HDF5
+
     if args.correctness_only:
         for dtype in TYPES:
-            check_correctness(dtype, args.path, args.seed, args.parquet)
+            check_correctness(dtype, args.path, args.seed, fileFormat)
         sys.exit(0)
 
     print("array size = {:,}".format(args.size))
@@ -247,12 +304,12 @@ if __name__ == "__main__":
             args.dtype,
             args.path,
             args.seed,
-            args.parquet,
+            fileFormat,
             comp_types,
         )
     elif args.only_read:
         time_ak_read(
-            args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, args.parquet, comp_types
+            args.size, args.files_per_loc, args.trials, args.dtype, args.path, fileFormat, comp_types
         )
     else:
         time_ak_write(
@@ -262,11 +319,11 @@ if __name__ == "__main__":
             args.dtype,
             args.path,
             args.seed,
-            args.parquet,
+            fileFormat,
             comp_types,
         )
         time_ak_read(
-            args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, args.parquet, comp_types
+            args.size, args.files_per_loc, args.trials, args.dtype, args.path, fileFormat, comp_types
         )
         remove_files(args.path)
 

@@ -849,3 +849,7 @@ class TestString:
         s1 = ak.array(v1)
         nd1 = s1.to_ndarray()
         assert nd1.tolist() == v1
+
+    def test_inferred_type(self):
+        a = ak.array(["a", "b", "c"])
+        assert a.inferred_type == "string"

@@ -475,7 +475,7 @@ class TestRegistration:
         # assert that the object is registered
         assert reg_name in reg["Objects"]
         # assert that the sym entry name is recorded
-        for x in i.values:
+        for x in i.levels:
             if x.objType == ak.Categorical.objType:
                 assert x.codes.name in reg["Components"]
                 assert x.categories.name in reg["Components"]
@@ -612,7 +612,7 @@ class TestRegistration:
 
         # verify that components seen as registered after original unregistered
         s.unregister()
-        assert df["SegArray"].is_registered()
+        assert df["SegArray"].values.is_registered()
 
     @pytest.mark.parametrize("dtype", DTYPES)
     def test_error_handling(self, dtype):
