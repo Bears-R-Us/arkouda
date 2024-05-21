@@ -87,7 +87,8 @@ def time_ak_write(N_per_locale, numfiles, trials, dtype, path, seed, fileFormat,
     else:
         raise ValueError("Invalid file format")
 
-    nb = a.size * a.itemsize * numfiles
+    itemsize = 4 if dtype == 'str' else a.itemsize
+    nb = a.size * itemsize * numfiles
     for key in times.keys():
         print("write Average time {} = {:.4f} sec".format(key, times[key]))
         print("write Average rate {} = {:.4f} GiB/sec".format(key, nb / 2**30 / times[key]))
@@ -139,8 +140,9 @@ def time_ak_read(N_per_locale, numfiles, trials, dtype, path, fileFormat, comps=
         times["CSV"] = sum(readtimes) / trials
     else:
         raise ValueError("Invalid file format")
-
-    nb = a.size * a.itemsize
+        
+    itemsize = 4 if dtype == 'str' else a.itemsize
+    nb = a.size * itemsize
     for key in times.keys():
         print("read Average time {} = {:.4f} sec".format(key, times[key]))
         print("read Average rate {} = {:.4f} GiB/sec".format(key, nb / 2**30 / times[key]))
