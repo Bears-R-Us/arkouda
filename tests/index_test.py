@@ -9,6 +9,7 @@ from context import arkouda as ak
 from arkouda import io_util
 from arkouda.dtypes import dtype
 from arkouda.pdarrayclass import pdarray
+from arkouda.index import Index
 
 
 class IndexTest(ArkoudaTest):
@@ -91,6 +92,19 @@ class IndexTest(ArkoudaTest):
 
         assert pda1.size == pda2.size
         assert aksum(pda1 != pda2) == 0
+
+    def test_get_item(self):
+        i = ak.Index([1, 2, 3])
+        self.assertEqual(i[2], 3)
+        self.assertTrue(i[[0, 1]].equals(Index([1, 2])))
+
+        i2 = ak.Index([1, 2, 3], allow_list=True)
+        self.assertEqual(i2[2], 3)
+        self.assertTrue(i2[[0, 1]].equals(Index([1, 2], allow_list=True)))
+
+        i3 = ak.Index(["a", "b", "c"], allow_list=True)
+        self.assertEqual(i3[2], "c")
+        self.assertTrue(i3[[0, 1]].equals(Index(["a", "b"], allow_list=True)))
 
     def test_eq(self):
         i = ak.Index([1, 2, 3])

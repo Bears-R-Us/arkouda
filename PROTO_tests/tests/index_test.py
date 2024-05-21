@@ -4,6 +4,7 @@ import pytest
 import arkouda as ak
 from arkouda.dtypes import dtype
 from arkouda.pdarrayclass import pdarray
+from arkouda.index import Index
 
 
 class TestIndex:
@@ -77,11 +78,26 @@ class TestIndex:
         m = ak.MultiIndex([ak.arange(size), ak.arange(size) * -1], names=["test", "test2"])
         assert m.inferred_type == "mixed"
 
-    def assert_equal(self, pda1, pda2):
+    @staticmethod
+    def assert_equal(pda1, pda2):
         from arkouda import sum as aksum
 
         assert pda1.size == pda2.size
         assert aksum(pda1 != pda2) == 0
+
+    def test_get_item(self):
+        i = ak.Index([1, 2, 3])
+        assert i[2] == 3
+        assert isinstance(i[[0, 1]], Index)
+        assert i[[0, 1]].equals(Index([1, 2]))
+
+        i2 = ak.Index([1, 2, 3], allow_list=True)
+        assert i2[2] == 3
+        assert i2[[0, 1]].equals(Index([1, 2], allow_list=True))
+
+        i3 = ak.Index(["a", "b", "c"], allow_list=True)
+        assert i3[2] == "c"
+        assert i3[[0, 1]].equals(Index(["a", "b"], allow_list=True).values)
 
     def test_eq(self):
         i = ak.Index([1, 2, 3])

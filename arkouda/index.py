@@ -114,13 +114,26 @@ class Index:
     def __getitem__(self, key):
         from arkouda.series import Series
 
+        allow_list = False
+        if isinstance(self.values, list):
+            allow_list = True
+
         if isinstance(key, Series):
             key = key.values
 
         if isinstance(key, int):
             return self.values[key]
 
-        return Index(self.values[key])
+        if isinstance(key, list):
+            if len(key) < self.max_list_size:
+                return Index([self.values[k] for k in key], allow_list=allow_list)
+            else:
+                raise ValueError(
+                    f"Unable to get list of size greater than "
+                    f"Index.max_list_size ({self.max_list_size})."
+                )
+
+        return Index(self.values[key], allow_list=allow_list)
 
     def __repr__(self):
         # Configured to match pandas
