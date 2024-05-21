@@ -360,16 +360,19 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io_util.delimited_file_to_dict" title="arkouda.io_util.delimited_file_to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delimited_file_to_dict</span></code></a>(→ Dict[str, str])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io_util.delete_directory" title="arkouda.io_util.delete_directory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delete_directory</span></code></a>(→ None)</p></td>
+<td><p>Deletes the directory if it exists.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io_util.delimited_file_to_dict" title="arkouda.io_util.delimited_file_to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delimited_file_to_dict</span></code></a>(→ Dict[str, str])</p></td>
 <td><p>Returns a dictionary populated by lines from a file where</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io_util.dict_to_delimited_file" title="arkouda.io_util.dict_to_delimited_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict_to_delimited_file</span></code></a>(→ None)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io_util.dict_to_delimited_file" title="arkouda.io_util.dict_to_delimited_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict_to_delimited_file</span></code></a>(→ None)</p></td>
 <td><p>Writes a dictionary to delimited lines in a file where</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io_util.get_directory" title="arkouda.io_util.get_directory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_directory</span></code></a>(→ pathlib.Path)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io_util.get_directory" title="arkouda.io_util.get_directory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_directory</span></code></a>(→ pathlib.Path)</p></td>
 <td><p>Creates the directory if it does not exist and then</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io_util.write_line_to_file" title="arkouda.io_util.write_line_to_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_line_to_file</span></code></a>(→ None)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io_util.write_line_to_file" title="arkouda.io_util.write_line_to_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_line_to_file</span></code></a>(→ None)</p></td>
 <td><p>Writes a line to the requested file. Note: if the file</p></td>
 </tr>
 </tbody>
@@ -378,6 +381,20 @@
 </section>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.io_util.delete_directory">
+<span class="sig-prename descclassname"><span class="pre">arkouda.io_util.</span></span><span class="sig-name descname"><span class="pre">delete_directory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/arkouda/io_util.html#delete_directory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.io_util.delete_directory" title="Link to this definition">¶</a></dt>
+<dd><p>Deletes the directory if it exists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dir</strong> (<em>str</em>) – The path to the directory</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>OSError</strong> – Raised if there’s an error in deleting the directory.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.io_util.delimited_file_to_dict">
 <span class="sig-prename descclassname"><span class="pre">arkouda.io_util.</span></span><span class="sig-name descname"><span class="pre">delimited_file_to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">','</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/arkouda/io_util.html#delimited_file_to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.io_util.delimited_file_to_dict" title="Link to this definition">¶</a></dt>
@@ -537,6 +554,7 @@ writing to the file</p>
 <li><a class="reference internal" href="#">arkouda.io_util</a><ul>
 <li><a class="reference internal" href="#functions">Functions</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
+<li><a class="reference internal" href="#arkouda.io_util.delete_directory"><code class="docutils literal notranslate"><span class="pre">delete_directory()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.io_util.delimited_file_to_dict"><code class="docutils literal notranslate"><span class="pre">delimited_file_to_dict()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.io_util.dict_to_delimited_file"><code class="docutils literal notranslate"><span class="pre">dict_to_delimited_file()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.io_util.get_directory"><code class="docutils literal notranslate"><span class="pre">get_directory()</span></code></a></li>

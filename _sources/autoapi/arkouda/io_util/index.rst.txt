@@ -9,6 +9,7 @@ Functions
 
 .. autoapisummary::
 
+   arkouda.io_util.delete_directory
    arkouda.io_util.delimited_file_to_dict
    arkouda.io_util.dict_to_delimited_file
    arkouda.io_util.get_directory
@@ -17,6 +18,16 @@ Functions
 
 Module Contents
 ---------------
+
+.. py:function:: delete_directory(dir: str) -> None
+
+   Deletes the directory if it exists.
+
+   :param dir: The path to the directory
+   :type dir: str
+
+   :raises OSError: Raised if there's an error in deleting the directory.
+
 
 .. py:function:: delimited_file_to_dict(path: str, delimiter: str = ',') -> Dict[str, str]
 
