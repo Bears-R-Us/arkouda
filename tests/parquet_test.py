@@ -1,15 +1,16 @@
 import glob
 import os
-import pandas as pd
 import tempfile
 
 import numpy as np
+import pandas as pd
+import pyarrow as pa
+import pyarrow.parquet as pq
 import pytest
 from base_test import ArkoudaTest
 from context import arkouda as ak
+
 from arkouda import io_util
-import pyarrow as pa
-import pyarrow.parquet as pq
 
 TYPES = ("int64", "uint64", "bool", "float64", "str")
 COMPRESSIONS = ["snappy", "gzip", "brotli", "zstd", "lz4"]
@@ -40,13 +41,13 @@ class ParquetTest(ArkoudaTest):
 
             with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
                 ak_arr.to_parquet(f"{tmp_dirname}/pq_testcorrect", "my-dset")
-                pq_arr = ak.read_parquet(f"{tmp_dirname}/pq_testcorrect*", "my-dset")
+                pq_arr = ak.read_parquet(f"{tmp_dirname}/pq_testcorrect*", "my-dset")["my-dset"]
                 self.assertListEqual(ak_arr.to_list(), pq_arr.to_list())
 
             # verify generic read
             with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
                 ak_arr.to_parquet(f"{tmp_dirname}/pq_testcorrect", "my-dset")
-                pq_arr = ak.read(f"{tmp_dirname}/pq_testcorrect*", "my-dset")
+                pq_arr = ak.read(f"{tmp_dirname}/pq_testcorrect*", "my-dset")["my-dset"]
                 self.assertListEqual(ak_arr.to_list(), pq_arr.to_list())
 
     def test_multi_file(self):
@@ -70,7 +71,7 @@ class ParquetTest(ArkoudaTest):
                     test_arrs.append(elems[(i * per_arr) : (i * per_arr) + per_arr])
                     test_arrs[i].to_parquet(f"{tmp_dirname}/pq_test{i:04d}", "test-dset")
 
-                pq_arr = ak.read_parquet(f"{tmp_dirname}/pq_test*", "test-dset")
+                pq_arr = ak.read_parquet(f"{tmp_dirname}/pq_test*", "test-dset")["test-dset"]
                 self.assertListEqual(elems.to_list(), pq_arr.to_list())
 
     def test_wrong_dset_name(self):
@@ -99,7 +100,7 @@ class ParquetTest(ArkoudaTest):
             a = ak.array([val])
             with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
                 a.to_parquet(f"{tmp_dirname}/pq_test", "test-dset")
-                ak_res = ak.read_parquet(f"{tmp_dirname}/pq_test*", "test-dset")
+                ak_res = ak.read_parquet(f"{tmp_dirname}/pq_test*", "test-dset")["test-dset"]
                 self.assertEqual(ak_res[0], val)
 
     def test_get_datasets(self):
@@ -149,7 +150,7 @@ class ParquetTest(ArkoudaTest):
         expected = ["first-string", "", "string2", "", "third", "", ""]
 
         filename = os.path.join(datadir, basename)
-        res = ak.read_parquet(filename)
+        res = ak.read_parquet(filename).popitem()[1]
 
         self.assertListEqual(expected, res.to_list())
 
@@ -158,7 +159,7 @@ class ParquetTest(ArkoudaTest):
         basename = "null-strings.parquet"
 
         filename = os.path.join(datadir, basename)
-        res = ak.get_null_indices(filename, datasets="col1")
+        res = ak.get_null_indices(filename, datasets="col1")["col1"]
 
         self.assertListEqual([0, 1, 0, 1, 0, 1, 1], res.to_list())
 
@@ -176,7 +177,7 @@ class ParquetTest(ArkoudaTest):
                 ak_arr = ak.random_strings_uniform(1, 10, SIZE)
             with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
                 ak_arr.to_parquet(f"{tmp_dirname}/pq_testcorrect", "my-dset", mode="append")
-                pq_arr = ak.read_parquet(f"{tmp_dirname}/pq_testcorrect*", "my-dset")
+                pq_arr = ak.read_parquet(f"{tmp_dirname}/pq_testcorrect*", "my-dset")["my-dset"]
 
                 self.assertListEqual(ak_arr.to_list(), pq_arr.to_list())
 
@@ -189,7 +190,7 @@ class ParquetTest(ArkoudaTest):
                 a.to_parquet(f"{tmp_dirname}/compress_test", compression=comp)
 
                 # ensure read functions
-                rd_arr = ak.read_parquet(f"{tmp_dirname}/compress_test*", "array")
+                rd_arr = ak.read_parquet(f"{tmp_dirname}/compress_test*", "array")["array"]
 
                 # validate the list read out matches the array used to write
                 self.assertListEqual(rd_arr.to_list(), a.to_list())
@@ -201,7 +202,7 @@ class ParquetTest(ArkoudaTest):
                 b.to_parquet(f"{tmp_dirname}/compress_test", compression=comp)
 
                 # ensure read functions
-                rd_arr = ak.read_parquet(f"{tmp_dirname}/compress_test*", "array")
+                rd_arr = ak.read_parquet(f"{tmp_dirname}/compress_test*", "array")["array"]
 
                 # validate the list read out matches the array used to write
                 self.assertListEqual(rd_arr.to_list(), b.to_list())
@@ -250,7 +251,9 @@ class ParquetTest(ArkoudaTest):
                     self.assertListEqual(x, y)
 
             # verify individual column selection
-            ak_data = ak.read_parquet(f"{tmp_dirname}/segarray_parquet*", datasets="FloatList")
+            ak_data = ak.read_parquet(f"{tmp_dirname}/segarray_parquet*", datasets="FloatList")[
+                "FloatList"
+            ]
             self.assertIsInstance(ak_data, ak.SegArray)
             for x, y in zip(df["FloatList"].tolist(), ak_data.to_list()):
                 self.assertListEqual(x, y)
@@ -268,10 +271,14 @@ class ParquetTest(ArkoudaTest):
                 self.assertListEqual(df[k].tolist(), v.to_list())
 
             # read individual datasets
-            ak_data = ak.read_parquet(f"{tmp_dirname}/segarray_varied_parquet*", datasets="IntCol")
+            ak_data = ak.read_parquet(f"{tmp_dirname}/segarray_varied_parquet*", datasets="IntCol")[
+                "IntCol"
+            ]
             self.assertIsInstance(ak_data, ak.pdarray)
             self.assertListEqual(df["IntCol"].to_list(), ak_data.to_list())
-            ak_data = ak.read_parquet(f"{tmp_dirname}/segarray_varied_parquet*", datasets="ListCol")
+            ak_data = ak.read_parquet(f"{tmp_dirname}/segarray_varied_parquet*", datasets="ListCol")[
+                "ListCol"
+            ]
             self.assertIsInstance(ak_data, ak.SegArray)
             self.assertListEqual(df["ListCol"].to_list(), ak_data.to_list())
 
@@ -284,7 +291,7 @@ class ParquetTest(ArkoudaTest):
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             pq.write_table(table, f"{tmp_dirname}/segarray_varied_parquet_LOCALE0000")
             pq.write_table(table2, f"{tmp_dirname}/segarray_varied_parquet_LOCALE0001")
-            ak_data = ak.read_parquet(f"{tmp_dirname}/segarray_varied_parquet*")
+            ak_data = ak.read_parquet(f"{tmp_dirname}/segarray_varied_parquet*")["ListCol"]
             self.assertIsInstance(ak_data, ak.SegArray)
             self.assertEqual(ak_data.size, 8)
             for i in range(8):
@@ -296,7 +303,7 @@ class ParquetTest(ArkoudaTest):
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             pq.write_table(table, f"{tmp_dirname}/empty_segments")
 
-            ak_data = ak.read_parquet(f"{tmp_dirname}/empty_segments*")
+            ak_data = ak.read_parquet(f"{tmp_dirname}/empty_segments*")["ListCol"]
             self.assertIsInstance(ak_data, ak.SegArray)
             self.assertEqual(ak_data.size, 5)
             for i in range(5):
@@ -308,7 +315,7 @@ class ParquetTest(ArkoudaTest):
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             pq.write_table(table, f"{tmp_dirname}/empty_segments")
 
-            ak_data = ak.read_parquet(f"{tmp_dirname}/empty_segments*")
+            ak_data = ak.read_parquet(f"{tmp_dirname}/empty_segments*")["ListCol"]
             self.assertIsInstance(ak_data, ak.SegArray)
             self.assertEqual(ak_data.size, 5)
             for i in range(5):
@@ -324,7 +331,7 @@ class ParquetTest(ArkoudaTest):
             pq.write_table(table, f"{tmp_dirname}/empty_segments_LOCALE0000")
             pq.write_table(table2, f"{tmp_dirname}/empty_segments_LOCALE0001")
 
-            ak_data = ak.read_parquet(f"{tmp_dirname}/empty_segments*")
+            ak_data = ak.read_parquet(f"{tmp_dirname}/empty_segments*")["ListCol"]
             self.assertIsInstance(ak_data, ak.SegArray)
             self.assertEqual(ak_data.size, 9)
             for i in range(9):
@@ -340,7 +347,7 @@ class ParquetTest(ArkoudaTest):
             pq.write_table(table, f"{tmp_dirname}/empty_segments_LOCALE0000")
             pq.write_table(table2, f"{tmp_dirname}/empty_segments_LOCALE0001")
 
-            ak_data = ak.read_parquet(f"{tmp_dirname}/empty_segments*")
+            ak_data = ak.read_parquet(f"{tmp_dirname}/empty_segments*")["ListCol"]
             self.assertIsInstance(ak_data, ak.SegArray)
             self.assertEqual(ak_data.size, 9)
             for i in range(9):
@@ -355,7 +362,7 @@ class ParquetTest(ArkoudaTest):
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             s.to_parquet(f"{tmp_dirname}/int_test")
 
-            rd_data = ak.read_parquet(f"{tmp_dirname}/int_test*")
+            rd_data = ak.read_parquet(f"{tmp_dirname}/int_test*").popitem()[1]
             for i in range(3):
                 self.assertListEqual(s[i].to_list(), rd_data[i].to_list())
 
@@ -366,7 +373,7 @@ class ParquetTest(ArkoudaTest):
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             s.to_parquet(f"{tmp_dirname}/int_test_empty")
 
-            rd_data = ak.read_parquet(f"{tmp_dirname}/int_test_empty*")
+            rd_data = ak.read_parquet(f"{tmp_dirname}/int_test_empty*").popitem()[1]
             for i in range(6):
                 self.assertListEqual(s[i].to_list(), rd_data[i].to_list())
 
@@ -378,7 +385,7 @@ class ParquetTest(ArkoudaTest):
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             s.to_parquet(f"{tmp_dirname}/uint_test")
 
-            rd_data = ak.read_parquet(f"{tmp_dirname}/uint_test*")
+            rd_data = ak.read_parquet(f"{tmp_dirname}/uint_test*").popitem()[1]
             for i in range(3):
                 self.assertListEqual(s[i].to_list(), rd_data[i].to_list())
 
@@ -391,7 +398,7 @@ class ParquetTest(ArkoudaTest):
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             s.to_parquet(f"{tmp_dirname}/uint_test_empty")
 
-            rd_data = ak.read_parquet(f"{tmp_dirname}/uint_test_empty*")
+            rd_data = ak.read_parquet(f"{tmp_dirname}/uint_test_empty*").popitem()[1]
             for i in range(6):
                 self.assertListEqual(s[i].to_list(), rd_data[i].to_list())
 
@@ -403,7 +410,7 @@ class ParquetTest(ArkoudaTest):
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             s.to_parquet(f"{tmp_dirname}/bool_test")
 
-            rd_data = ak.read_parquet(f"{tmp_dirname}/bool_test*")
+            rd_data = ak.read_parquet(f"{tmp_dirname}/bool_test*").popitem()[1]
             for i in range(3):
                 self.assertListEqual(s[i].to_list(), rd_data[i].to_list())
 
@@ -416,7 +423,7 @@ class ParquetTest(ArkoudaTest):
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             s.to_parquet(f"{tmp_dirname}/bool_test_empty")
 
-            rd_data = ak.read_parquet(f"{tmp_dirname}/bool_test_empty*")
+            rd_data = ak.read_parquet(f"{tmp_dirname}/bool_test_empty*").popitem()[1]
             for i in range(6):
                 self.assertListEqual(s[i].to_list(), rd_data[i].to_list())
 
@@ -428,7 +435,7 @@ class ParquetTest(ArkoudaTest):
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             s.to_parquet(f"{tmp_dirname}/float_test")
 
-            rd_data = ak.read_parquet(f"{tmp_dirname}/float_test*")
+            rd_data = ak.read_parquet(f"{tmp_dirname}/float_test*").popitem()[1]
             for i in range(3):
                 self.assertListEqual(s[i].to_list(), rd_data[i].to_list())
 
@@ -439,7 +446,7 @@ class ParquetTest(ArkoudaTest):
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             s.to_parquet(f"{tmp_dirname}/float_test_empty")
 
-            rd_data = ak.read_parquet(f"{tmp_dirname}/float_test_empty*")
+            rd_data = ak.read_parquet(f"{tmp_dirname}/float_test_empty*").popitem()[1]
             for i in range(6):
                 self.assertListEqual(s[i].to_list(), rd_data[i].to_list())
 
@@ -513,7 +520,7 @@ class ParquetTest(ArkoudaTest):
             self.assertListEqual(df["seg"].values.to_list(), data["seg"].to_list())
 
             # test read with read_nested=false and no supplied datasets
-            data = ak.read_parquet(fname + "_*", read_nested=False)
+            data = ak.read_parquet(fname + "_*", read_nested=False).popitem()[1]
             self.assertIsInstance(data, ak.pdarray)
             self.assertListEqual(df["idx"].values.to_list(), data.to_list())
 
@@ -532,7 +539,7 @@ class ParquetTest(ArkoudaTest):
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             x.to_parquet(f"{tmp_dirname}/segarr_str")
 
-            rd = ak.read_parquet(f"{tmp_dirname}/segarr_str_*")
+            rd = ak.read_parquet(f"{tmp_dirname}/segarr_str_*").popitem()[1]
             self.assertIsInstance(rd, ak.SegArray)
             self.assertListEqual(x.segments.to_list(), rd.segments.to_list())
             self.assertListEqual(x.values.to_list(), rd.values.to_list())
@@ -543,36 +550,38 @@ class ParquetTest(ArkoudaTest):
         s = ak.SegArray(ak.array([0, 0, len(a), len(a), len(a), len(a) + len(c)]), ak.array(a + c))
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             s.to_parquet(f"{tmp_dirname}/segarray_test_empty")
-            rd_data = ak.read_parquet(f"{tmp_dirname}/segarray_test_empty_*")
+            rd_data = ak.read_parquet(f"{tmp_dirname}/segarray_test_empty_*").popitem()[1]
             self.assertListEqual(s.to_list(), rd_data.to_list())
 
     def test_float_edge(self):
-        df = pd.DataFrame({"FloatList": [[3.14, np.nan, 2.23], [], [3.08], [np.inf, 6.8], [-0.0, np.nan, np.nan]]})
+        df = pd.DataFrame(
+            {"FloatList": [[3.14, np.nan, 2.23], [], [3.08], [np.inf, 6.8], [-0.0, np.nan, np.nan]]}
+        )
 
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             table = pa.Table.from_pandas(df)
             pq.write_table(table, f"{tmp_dirname}/segarray_float_edge")
             ak_data = ak.read_parquet(f"{tmp_dirname}/segarray_float_edge")
             pd_l = df["FloatList"].tolist()
-            ak_l = ak_data.to_list()
+            ak_l = ak_data["FloatList"].to_list()
             for i in range(len(pd_l)):
                 self.assertTrue(np.allclose(pd_l[i], ak_l[i], equal_nan=True))
 
     def test_decimal_reads(self):
         cols = []
         data = []
-        for i in range(1,39):
+        for i in range(1, 39):
             cols.append(("decCol" + str(i), pa.decimal128(i, 0)))
             data.append([i])
-            
+
         schema = pa.schema(cols)
 
         table = pa.Table.from_arrays(data, schema=schema)
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             pq.write_table(table, f"{tmp_dirname}/decimal")
             ak_data = ak.read(f"{tmp_dirname}/decimal")
-            for i in range(1,39):
-                self.assertTrue(np.allclose(ak_data['decCol'+str(i)].to_ndarray(), data[i-1]))
+            for i in range(1, 39):
+                self.assertTrue(np.allclose(ak_data["decCol" + str(i)].to_ndarray(), data[i - 1]))
 
     @pytest.mark.optional_parquet
     def test_against_standard_files(self):

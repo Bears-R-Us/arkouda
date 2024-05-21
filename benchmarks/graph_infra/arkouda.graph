@@ -112,6 +112,12 @@ repeat-files: parquetMultiIO.dat
 graphtitle: Parquet 10 Files/Loc IO Performance
 ylabel: Performance (GiB/s)
 
+perfkeys: write Average rate CSV =, read Average rate CSV =
+graphkeys: Write GiB/s, Read GiB/s
+repeat-files: csvIO.dat
+graphtitle: CSV IO Performance
+ylabel: Performance (GiB/s)
+
 perfkeys: non-regex with literal substring Average rate =, regex with literal substring Average rate =, regex with pattern Average rate =
 graphkeys: non-regex with literal substring GiB/s, regex with literal substring GiB/s, regex with pattern GiB/s
 files: substring_search.dat, substring_search.dat, substring_search.dat

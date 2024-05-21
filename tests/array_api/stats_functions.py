@@ -4,6 +4,7 @@ from base_test import ArkoudaTest
 from context import arkouda as ak
 import arkouda.array_api as Array
 import math
+import numpy as np
 
 SEED = 314159
 
@@ -128,8 +129,6 @@ class StatsFunctionTests(ArkoudaTest):
     def test_sum(self):
         a = Array.ones((2, 3, 4))
 
-        print(a.tolist())
-
         self.assertEqual(Array.sum(a), 24)
 
         aSum0 = Array.sum(a, axis=0)
@@ -143,3 +142,40 @@ class StatsFunctionTests(ArkoudaTest):
         aSum02Keepdims = Array.sum(a, axis=(1, 2), keepdims=True)
         self.assertEqual(aSum02Keepdims.shape, (2, 1, 1))
         self.assertEqual(aSum02Keepdims[0, 0, 0], 12)
+
+    def test_cumsum(self):
+        a = Array.asarray(ak.randint(0, 100, (5, 6, 7), seed=SEED))
+
+        a_sum_0 = Array.cumulative_sum(a, axis=0)
+        a_sum_0_np = np.cumsum(a.to_ndarray(), axis=0)
+        self.assertEqual(a_sum_0.shape, (5, 6, 7))
+        self.assertEqual(a_sum_0.tolist(), a_sum_0_np.tolist())
+
+        a_sum_1 = Array.cumulative_sum(a, axis=1)
+        a_sum_1_np = np.cumsum(a.to_ndarray(), axis=1)
+        self.assertEqual(a_sum_1.shape, (5, 6, 7))
+        self.assertEqual(a_sum_1.tolist(), a_sum_1_np.tolist())
+
+        b = Array.ones((5, 6, 7))
+
+        b_sum_0 = Array.cumulative_sum(b, axis=0, include_initial=True)
+        self.assertEqual(b_sum_0.shape, (6, 6, 7))
+        self.assertEqual(b_sum_0[0, 0, 0], 0)
+        self.assertEqual(b_sum_0[1, 0, 0], 1)
+        self.assertEqual(b_sum_0[5, 0, 0], 5)
+
+        b_sum_1 = Array.cumulative_sum(b, axis=1, include_initial=True)
+        self.assertEqual(b_sum_1.shape, (5, 7, 7))
+        self.assertEqual(b_sum_1[0, 0, 0], 0)
+        self.assertEqual(b_sum_1[0, 1, 0], 1)
+        self.assertEqual(b_sum_1[0, 6, 0], 6)
+
+        c = Array.asarray(ak.randint(0, 100, 50, dtype=ak.float64, seed=SEED))
+        c_sum = Array.cumulative_sum(c)
+        c_sum_np = np.cumsum(c.to_ndarray())
+
+        self.assertEqual(c_sum.shape, (50,))
+        c_list = c_sum.tolist()
+        c_sum_np = c_sum_np.tolist()
+        for i in range(50):
+            self.assertAlmostEqual(c_list[i], c_sum_np[i])

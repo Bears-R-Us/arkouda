@@ -864,14 +864,14 @@ class PdarrayCreationTest(ArkoudaTest):
         arrs = [np.random.randint(1, N, N) for _ in range(narrs)]
         akarrs = [ak.array(arr) for arr in arrs]
         nparrs = [arr.to_ndarray() for arr in akarrs]
-        for (a, npa) in zip(arrs, nparrs):
+        for a, npa in zip(arrs, nparrs):
             self.assertTrue(np.allclose(a, npa))
 
         arrs = [np.full(N, i) for i in range(narrs)]
         akarrs = [ak.array(arr) for arr in arrs]
         nparrs = [arr.to_ndarray() for arr in akarrs]
 
-        for (a, npa, i) in zip(arrs, nparrs, range(narrs)):
+        for a, npa, i in zip(arrs, nparrs, range(narrs)):
             self.assertTrue(np.all(a == i))
             self.assertTrue(np.all(npa == i))
 
@@ -928,3 +928,10 @@ class PdarrayCreationTest(ArkoudaTest):
                 passed += 1
 
         self.assertGreaterEqual(passed, trials * 0.8)
+
+    def test_inferred_type(self):
+        a = ak.array([1, 2, 3])
+        self.assertTrue(a.inferred_type, "integer")
+
+        a2 = ak.array([1.0, 2, 3])
+        self.assertTrue(a2.inferred_type, "floating")
