@@ -2226,6 +2226,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Must have one value per segment&quot;</span><span class="p">)</span>
+        <span class="n">is_str</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">Strings</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">is_str</span><span class="p">:</span>
+            <span class="n">str_vals</span> <span class="o">=</span> <span class="n">values</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="n">str_vals</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
         <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;broadcast&quot;</span>
         <span class="n">repMsg</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
             <span class="nb">str</span><span class="p">,</span>
@@ -2235,16 +2239,13 @@
                     <span class="s2">&quot;permName&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="s2">&quot;segName&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="s2">&quot;valName&quot;</span><span class="p">:</span> <span class="n">values</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                    <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="n">values</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span>
                     <span class="s2">&quot;permute&quot;</span><span class="p">:</span> <span class="n">permute</span><span class="p">,</span>
                     <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="p">,</span>
                 <span class="p">},</span>
             <span class="p">),</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">objType</span> <span class="o">==</span> <span class="n">Strings</span><span class="o">.</span><span class="n">objType</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+        <span class="n">broadcasted</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">str_vals</span><span class="p">[</span><span class="n">broadcasted</span><span class="p">]</span> <span class="k">if</span> <span class="n">is_str</span> <span class="k">else</span> <span class="n">broadcasted</span></div>
 
 
 <div class="viewcode-block" id="GroupBy.build_from_components">
@@ -2626,6 +2627,12 @@
         <span class="n">size</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">],</span> <span class="n">permutation</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">size</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;result size must be greater than zero&quot;</span><span class="p">)</span>
+
+    <span class="n">is_str</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">Strings</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">is_str</span><span class="p">:</span>
+        <span class="n">str_vals</span> <span class="o">=</span> <span class="n">values</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="n">str_vals</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+
     <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;broadcast&quot;</span>
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
         <span class="nb">str</span><span class="p">,</span>
@@ -2635,16 +2642,13 @@
                 <span class="s2">&quot;permName&quot;</span><span class="p">:</span> <span class="n">pname</span><span class="p">,</span>
                 <span class="s2">&quot;segName&quot;</span><span class="p">:</span> <span class="n">segments</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                 <span class="s2">&quot;valName&quot;</span><span class="p">:</span> <span class="n">values</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="n">values</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span>
                 <span class="s2">&quot;permute&quot;</span><span class="p">:</span> <span class="n">permute</span><span class="p">,</span>
                 <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">size</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">),</span>
     <span class="p">)</span>
-    <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">objType</span> <span class="o">==</span> <span class="n">Strings</span><span class="o">.</span><span class="n">objType</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+    <span class="n">broadcasted</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">str_vals</span><span class="p">[</span><span class="n">broadcasted</span><span class="p">]</span> <span class="k">if</span> <span class="n">is_str</span> <span class="k">else</span> <span class="n">broadcasted</span></div>
 
 </pre></div>
         </article>
