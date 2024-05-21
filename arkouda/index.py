@@ -1030,6 +1030,28 @@ class MultiIndex(Index):
     def inferred_type(self) -> str:
         return "mixed"
 
+    def get_level_values(self, level: Union[str, int]):
+        if isinstance(level, str):
+            if self.names is None:
+                raise RuntimeError("Cannot get level values because Index.names is None.")
+            elif level not in self.names:
+                raise ValueError(
+                    f'Cannot get level values because level "{level}" is not in Index.names.'
+                )
+            elif isinstance(self.names, list) and level in self.names:
+                level = self.names.index(level)
+
+        if isinstance(level, int) and abs(level) < self.nlevels:
+            name = None
+            if isinstance(self.names, list) and level in self.names:
+                name = self.names[level]
+            return Index(self.levels[level], name=name)
+        else:
+            raise ValueError(
+                "Cannot get level values because level must be a string in names or "
+                "an integer with absolute value less than the number of levels."
+            )
+
     def memory_usage(self, unit="B"):
         """
         Return the memory usage of the MultiIndex levels.

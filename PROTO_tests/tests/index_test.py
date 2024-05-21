@@ -3,6 +3,7 @@ import pytest
 
 import arkouda as ak
 from arkouda.dtypes import dtype
+from arkouda.index import Index
 from arkouda.pdarrayclass import pdarray
 
 
@@ -122,6 +123,43 @@ class TestIndex:
 
         with pytest.raises(TypeError):
             i.equals("string")
+
+    def test_get_level_values(self):
+        m = ak.MultiIndex(
+            [ak.arange(3), ak.arange(3) * -1, ak.array(["a", 'b","c', "d"])],
+            names=["col1", "col2", "col3"],
+        )
+
+        i1 = Index(ak.arange(3), name="col1")
+        self.assert_equal(m.get_level_values(0), i1)
+        self.assert_equal(m.get_level_values("col1"), i1)
+
+        i2 = Index(ak.arange(3) * -1, name="col2")
+        self.assert_equal(m.get_level_values(1), i2)
+        self.assert_equal(m.get_level_values("col2"), i2)
+
+        i3 = Index(ak.array(["a", 'b","c', "d"]), name="col3")
+        self.assert_equal(m.get_level_values(2), i3)
+        self.assert_equal(m.get_level_values("col3"), i3)
+
+        with pytest.raises(ValueError):
+            m.get_level_values("col4")
+
+        #   Test when names=None
+        m2 = ak.MultiIndex(
+            [ak.arange(3), ak.arange(3) * -1, ak.array(["a", 'b","c', "d"])],
+        )
+        i4 = Index(ak.arange(3))
+        self.assert_equal(m2.get_level_values(0), i4)
+
+        with pytest.raises(RuntimeError):
+            m2.get_level_values("col")
+
+        with pytest.raises(ValueError):
+            m2.get_level_values(m2.nlevels)
+
+        with pytest.raises(ValueError):
+            m2.get_level_values(-1 * m2.nlevels)
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_memory_usage(self, size):
