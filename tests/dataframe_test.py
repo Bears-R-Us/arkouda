@@ -4,7 +4,6 @@ import os
 import random
 import string
 import tempfile
-import math
 
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
@@ -14,7 +13,6 @@ from pandas.testing import assert_frame_equal, assert_series_equal
 
 from arkouda import io_util
 from arkouda.index import Index
-from arkouda.dtypes import float64 as akfloat64
 from arkouda.scipy import chisquare as akchisquare
 
 
