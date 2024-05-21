@@ -832,12 +832,11 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_
           static_cast<parquet::ByteArrayReader*>(column_reader.get());
 
         int totalProcessed = 0;
-
+        std::vector<parquet::ByteArray> values(batchSize);
+        std::vector<int16_t> definition_levels(batchSize);
         while (reader->HasNext()) {
           if((numElems - totalProcessed) < batchSize) // adjust batchSize if needed
               batchSize = numElems - totalProcessed;
-          std::vector<parquet::ByteArray> values(batchSize);
-          std::vector<int16_t> definition_levels(batchSize);
           
           (void)reader->ReadBatch(batchSize, definition_levels.data(), nullptr, values.data(), &values_read);
           totalProcessed += values_read;
