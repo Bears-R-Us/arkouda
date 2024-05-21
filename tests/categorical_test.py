@@ -9,6 +9,7 @@ from base_test import ArkoudaTest
 from context import arkouda as ak
 
 from arkouda import Strings, io, io_util
+from arkouda.categorical import Categorical
 
 
 class CategoricalTest(ArkoudaTest):
@@ -99,6 +100,21 @@ class CategoricalTest(ArkoudaTest):
     def test_inferred_type(self):
         cat = self._getCategorical()
         self.assertEqual(cat.inferred_type, "categorical")
+
+    def test_equals(self):
+        c = Categorical(ak.array(["a", "b", "c"]))
+        c_cpy = Categorical(ak.array(["a", "b", "c"]))
+        self.assertTrue(ak.sum((c == c_cpy) != ak.array([True, True, True])) == 0)
+        self.assertTrue(ak.sum((c != c_cpy) != ak.array([False, False, False])) == 0)
+        assert c.equals(c_cpy)
+
+        c2 = Categorical(ak.array(["a", "x", "c"]))
+        self.assertTrue(ak.sum((c == c2) != ak.array([True, False, True])) == 0)
+        self.assertTrue(ak.sum((c != c2) != ak.array([False, True, False])) == 0)
+        assert not c.equals(c2)
+
+        c3 = ak.array(["a", "b", "c", "d"])
+        assert not c.equals(c3)
 
     def test_substring_search(self):
         cat = ak.Categorical(ak.array([f"{i} string {i}" for i in range(10)]))

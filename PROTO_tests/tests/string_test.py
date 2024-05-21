@@ -53,6 +53,21 @@ class TestString:
     def compare_strings(s1, s2):
         return all(x == y for x, y in zip(s1, s2))
 
+    def test_equals(self):
+        s = ak.array(["a", "b", "c"])
+        s_cpy = ak.array(["a", "b", "c"])
+        assert ak.sum((s == s_cpy) != ak.array([True, True, True])) == 0
+        assert ak.sum((s != s_cpy) != ak.array([False, False, False])) == 0
+        assert s.equals(s_cpy)
+
+        s2 = ak.array(["a", "x", "c"])
+        assert ak.sum((s == s2) != ak.array([True, False, True])) == 0
+        assert ak.sum((s != s2) != ak.array([False, True, False])) == 0
+        assert not s.equals(s2)
+
+        s3 = ak.array(["a", "b", "c", "d"])
+        assert not s.equals(s3)
+
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_compare_strings(self, size):
         base_words, np_base_words = self.base_words(size)

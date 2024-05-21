@@ -442,6 +442,28 @@ class pdarray:
     def equals(self, other) -> bool:
         """
         Whether pdarrays are the same size and all entries are equal.
+
+        Parameters
+        ----------
+        other : object
+            object to compare.
+
+        Returns
+        -------
+        bool
+            True if the pdarrays are the same, o.w. False.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> a = ak.array([1, 2, 3])
+        >>> a_cpy = ak.array([1, 2, 3])
+        >>> a.equals(a_cpy)
+        True
+        >>> a2 = ak.array([1, 2, 5)
+        >>> a.equals(a2)
+        False
         """
         if isinstance(other, pdarray):
             if other.size != self.size:

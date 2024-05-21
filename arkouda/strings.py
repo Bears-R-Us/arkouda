@@ -21,12 +21,9 @@ from arkouda.dtypes import (
 from arkouda.infoclass import information, list_symbol_table
 from arkouda.logger import getArkoudaLogger
 from arkouda.match import Match, MatchType
-from arkouda.pdarrayclass import (
-    RegistrationError,
-    create_pdarray,
-    parse_single_value,
-    pdarray,
-)
+from arkouda.pdarrayclass import RegistrationError
+from arkouda.pdarrayclass import all as akall
+from arkouda.pdarrayclass import create_pdarray, parse_single_value, pdarray
 
 __all__ = ["Strings"]
 
@@ -347,6 +344,40 @@ class Strings:
         Return a string of the type inferred from the values.
         """
         return "string"
+
+    def equals(self, other) -> bool:
+        """
+        Whether Strings are the same size and all entries are equal.
+
+        Parameters
+        ----------
+        other : object
+            object to compare.
+
+        Returns
+        -------
+        bool
+            True if the Strings are the same, o.w. False.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> s = ak.array(["a", "b", "c"])
+        >>> s_cpy = ak.array(["a", "b", "c"])
+        >>> s.equals(s_cpy)
+        True
+        >>> s2 = ak.array(["a", "x", "c"])
+        >>> s.equals(s2)
+        False
+        """
+        if isinstance(other, Strings):
+            if other.size != self.size:
+                return False
+            else:
+                return akall(self == other)
+        else:
+            return False
 
     def get_lengths(self) -> pdarray:
         """

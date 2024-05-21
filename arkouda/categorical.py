@@ -27,7 +27,9 @@ from arkouda.infoclass import information
 from arkouda.logger import getArkoudaLogger
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import where
-from arkouda.pdarrayclass import RegistrationError, create_pdarray, pdarray
+from arkouda.pdarrayclass import RegistrationError
+from arkouda.pdarrayclass import all as akall
+from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import arange, array, ones, zeros, zeros_like
 from arkouda.pdarraysetops import concatenate, in1d
 from arkouda.sorting import argsort
@@ -271,6 +273,40 @@ class Categorical:
             # Append NA value
             new_categories = concatenate((new_categories, array([NAvalue])))
         return [arr.set_categories(new_categories, NAvalue=NAvalue) for arr in arrays]
+
+    def equals(self, other) -> bool:
+        """
+        Whether Categoricals are the same size and all entries are equal.
+
+        Parameters
+        ----------
+        other : object
+            object to compare.
+
+        Returns
+        -------
+        bool
+            True if the Categoricals are the same, o.w. False.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> c = Categorical(ak.array(["a", "b", "c"]))
+        >>> c_cpy = Categorical(ak.array(["a", "b", "c"]))
+        >>> c.equals(c_cpy)
+        True
+        >>> c2 = Categorical(ak.array(["a", "x", "c"]))
+        >>> c.equals(c2)
+        False
+        """
+        if isinstance(other, Categorical):
+            if other.size != self.size:
+                return False
+            else:
+                return akall(self == other)
+        else:
+            return False
 
     def set_categories(self, new_categories, NAvalue=None):
         """
