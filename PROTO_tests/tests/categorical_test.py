@@ -36,6 +36,11 @@ class TestCategorical:
         with pytest.raises(ValueError):
             ak.Categorical(ak.arange(0, 5, 10))
 
+    def test_inferred_type(self):
+        prefix, size = "string", 10
+        cat = self.create_basic_categorical(prefix, size)
+        assert cat.inferred_type == "categorical"
+
     def test_from_codes(self):
         codes = ak.array([7, 5, 9, 8, 2, 1, 4, 0, 3, 6])
         categories = ak.array([f"string {i}" for i in range(10)] + ["N/A"])

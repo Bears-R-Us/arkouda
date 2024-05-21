@@ -1418,14 +1418,114 @@ module IndexingMsg
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL); 
     }
-    
+
+    @arkouda.registerND(cmd_prefix="[slice]=pdarray-")
+    proc setSliceIndexToPdarrayMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
+        // take simplified path for 1D case
+        if nd == 1 then return setSliceIndexToPdarrayMsg1D(cmd, msgArgs, st);
+
+        param pn = Reflection.getRoutineName();
+        const starts = msgArgs.get("starts").getTuple(nd),
+              stops = msgArgs.get("stops").getTuple(nd),
+              strides = msgArgs.get("strides").getTuple(nd),
+              name = msgArgs.getValueOf("array"),
+              yname = msgArgs.getValueOf("value");
+
+        var sliceRanges: nd * stridableRange;
+        for param dim in 0..<nd do
+            sliceRanges[dim] = convertSlice(starts[dim], stops[dim], strides[dim]);
+        const sliceDom = {(...sliceRanges)};
+
+        imLogger.debug(getModuleName(),pn,getLineNumber(),
+                       "%s into: '%s' over domain: '%?' from: %s''"
+                       .doFormat(cmd, name, sliceDom, yname));
+
+        var gX: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st),
+            gY: borrowed GenSymEntry = getGenericTypedArrayEntry(yname, st);
+
+        proc sliceAssignHelper(type xt, type yt, param adjustMaxSize=false): MsgTuple throws {
+            // note 'value'/'y' needs to be expanded to match 'array'/'x's rank before
+            // calling this command
+            var ex = toSymEntry(gX,xt,nd);
+            const ey = toSymEntry(gY,yt,nd);
+
+            // ensure the slice assignment is valid
+            for dim in 0..<nd {
+                if ey.tupShape[dim] != sliceDom.dim[dim].size {
+                    const errMsg = "shape of slice does not match array in dimension %i".doFormat(dim) +
+                                    " (%i != %i)".doFormat(ey.tupShape[dim], sliceDom.dim[dim].size);
+                    imLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
+                    return new MsgTuple(errMsg, MsgType.ERROR);
+                }
+                if sliceDom.dim[dim].low < 0 || sliceDom.dim[dim].high > ex.tupShape[dim] {
+                    const errMsg = "slice indices out of bounds in dimension %i".doFormat(dim) +
+                                   " (%i..%i not in 0..<%i)".doFormat(sliceDom.dim[dim].low,
+                                                                sliceDom.dim[dim].high, ex.tupShape[dim]);
+                    imLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
+                    return new MsgTuple(errMsg, MsgType.ERROR);
+                }
+            }
+
+            // adjust y's max size for bigint arrays
+            if adjustMaxSize {
+                var ya = ey.a:bigint;
+                if ex.max_bits != -1 {
+                    var max_size = 1:bigint;
+                    max_size <<= ex.max_bits;
+                    max_size -= 1;
+                    forall y in ya with (const local_max_size = max_size) {
+                        y &= local_max_size;
+                    }
+                }
+
+                ex.a[sliceDom] = ya;
+            } else {
+                // otherwise, just assign the values
+                ex.a[sliceDom] = ey.a:xt;
+            }
+
+            const repMsg = "%s success".doFormat(pn);
+            imLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
+            return new MsgTuple(repMsg, MsgType.NORMAL);
+        }
+
+        select (gX.dtype, gY.dtype) {
+            when (DType.Int64, DType.Int64) do return sliceAssignHelper(int, int);
+            when (DType.Int64, DType.UInt64) do return sliceAssignHelper(int, uint);
+            when (DType.Int64, DType.Float64) do return sliceAssignHelper(int, real);
+            when (DType.Int64, DType.Bool) do return sliceAssignHelper(int, bool);
+            when (DType.UInt64, DType.Int64) do return sliceAssignHelper(uint, int);
+            when (DType.UInt64, DType.UInt64) do return sliceAssignHelper(uint, uint);
+            when (DType.UInt64, DType.Float64) do return sliceAssignHelper(uint, real);
+            when (DType.UInt64, DType.Bool) do return sliceAssignHelper(uint, bool);
+            when (DType.Float64, DType.Int64) do return sliceAssignHelper(real, int);
+            when (DType.Float64, DType.UInt64) do return sliceAssignHelper(real, uint);
+            when (DType.Float64, DType.Float64) do return sliceAssignHelper(real, real);
+            when (DType.Float64, DType.Bool) do return sliceAssignHelper(real, bool);
+            when (DType.Bool, DType.Int64) do return sliceAssignHelper(bool, int);
+            when (DType.Bool, DType.UInt64) do return sliceAssignHelper(bool, uint);
+            when (DType.Bool, DType.Float64) do return sliceAssignHelper(bool, real);
+            when (DType.Bool, DType.Bool) do return sliceAssignHelper(bool, bool);
+            when (DType.BigInt, DType.BigInt) do return sliceAssignHelper(bigint, bigint, true);
+            when (DType.BigInt, DType.Int64) do return sliceAssignHelper(bigint, int, true);
+            when (DType.BigInt, DType.UInt64) do return sliceAssignHelper(bigint, uint, true);
+            when (DType.BigInt, DType.Bool) do return sliceAssignHelper(bigint, bool, true);
+            otherwise {
+                const errorMsg = notImplementedError(pn,
+                                        "("+dtype2str(gX.dtype)+","+dtype2str(gY.dtype)+")");
+                imLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+        }
+    }
+
     /* setSliceIndexToPdarray "a[slice] = pdarray" response to __setitem__(slice, pdarray) */
-    proc setSliceIndexToPdarrayMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    proc setSliceIndexToPdarrayMsg1D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        const start = msgArgs.get("start").getIntValue();
-        const stop = msgArgs.get("stop").getIntValue();
-        const stride = msgArgs.get("stride").getIntValue();
+        const start = msgArgs.get("starts").getIntValue();
+        const stop = msgArgs.get("stops").getIntValue();
+        const stride = msgArgs.get("strides").getIntValue();
         var slice: stridableRange;
 
         const name = msgArgs.getValueOf("array");
@@ -1691,5 +1791,4 @@ module IndexingMsg
     registerFunction("[pdarray]", pdarrayIndexMsg, getModuleName());
     registerFunction("[pdarray]=val", setPdarrayIndexToValueMsg, getModuleName());
     registerFunction("[pdarray]=pdarray", setPdarrayIndexToPdarrayMsg, getModuleName());
-    registerFunction("[slice]=pdarray", setSliceIndexToPdarrayMsg, getModuleName());
 }

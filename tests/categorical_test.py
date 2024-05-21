@@ -96,6 +96,10 @@ class CategoricalTest(ArkoudaTest):
         self.assertListEqual(codes.to_list(), cat.codes.to_list())
         self.assertListEqual(categories.to_list(), cat.categories.to_list())
 
+    def test_inferred_type(self):
+        cat = self._getCategorical()
+        self.assertEqual(cat.inferred_type, "categorical")
+
     def test_substring_search(self):
         cat = ak.Categorical(ak.array([f"{i} string {i}" for i in range(10)]))
         self.assertTrue(cat.contains("tri").all())

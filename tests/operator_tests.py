@@ -311,13 +311,13 @@ class OperatorsTest(ArkoudaTest):
         ak_x = ak.array(np_x)
         ak_y = ak.array(np_y)
         # Vector-Vector Case
-        self.assertListEqual((np_x+np_y).tolist(), (ak_x+ak_y).to_list())
+        self.assertListEqual((np_x + np_y).tolist(), (ak_x + ak_y).to_list())
         # Scalar-Vector Case
-        self.assertListEqual((np_x[0]+np_y).tolist(), (ak_x[0]+ak_y).to_list())
-        self.assertListEqual((np_x[-1]+np_y).tolist(), (ak_x[-1]+ak_y).to_list())
+        self.assertListEqual((np_x[0] + np_y).tolist(), (ak_x[0] + ak_y).to_list())
+        self.assertListEqual((np_x[-1] + np_y).tolist(), (ak_x[-1] + ak_y).to_list())
         # Vector-Scalar Case
-        self.assertListEqual((np_x+np_y[0]).tolist(), (ak_x+ak_y[0]).to_list())
-        self.assertListEqual((np_x+np_y[-1]).tolist(), (ak_x+ak_y[-1]).to_list())
+        self.assertListEqual((np_x + np_y[0]).tolist(), (ak_x + ak_y[0]).to_list())
+        self.assertListEqual((np_x + np_y[-1]).tolist(), (ak_x + ak_y[-1]).to_list())
 
     def test_bool_bool_addition_opeq(self):
         np_x = np.array([True, True, False, False])
@@ -341,7 +341,7 @@ class OperatorsTest(ArkoudaTest):
         np_false += np_y
         ak_false += ak_y
         self.assertListEqual(np_x.tolist(), ak_x.to_list())
-        
+
     def test_uint_bool_binops(self):
         # Test fix for issue #1932
         # Adding support to binopvv to correctly handle uint and bool types
@@ -1167,6 +1167,17 @@ class OperatorsTest(ArkoudaTest):
         npf_copy %= 2.14
         akf_copy %= 2.14
         self.assertTrue(np.allclose(akf_copy.to_ndarray(), npf_copy, equal_nan=True))
+
+    def test_equals(self):
+        size = 10
+        a1 = ak.arange(size)
+        a1_cpy = ak.arange(size)
+        a2 = 2 * ak.arange(size)
+        a3 = ak.arange(size + 1)
+
+        self.assertTrue(a1.equals(a1_cpy))
+        self.assertFalse(a1.equals(a2))
+        self.assertFalse(a1.equals(a3))
 
 
 if __name__ == "__main__":
