@@ -27,7 +27,7 @@ integers
 
 normal
 ---------
-.. autofunction:: latex arkouda.random.Generator.normal
+.. autofunction:: arkouda.random.Generator.normal
 
 permutation
 ---------
