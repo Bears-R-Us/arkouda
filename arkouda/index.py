@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING, List, Optional, Union, Tuple
+from typing import TYPE_CHECKING, List, Optional, Tuple, Union
 
 import pandas as pd  # type: ignore
 from numpy import array as ndarray
+from numpy import dtype as npdtype
 from typeguard import typechecked
 
 from arkouda import Categorical, Strings
@@ -195,6 +196,17 @@ class Index:
         return 1
 
     @property
+    def ndim(self):
+        """
+        Number of dimensions of the underlying data, by definition 1.
+
+        See Also
+        --------
+        MultiIndex.ndim
+        """
+        return 1
+
+    @property
     def inferred_type(self) -> str:
         """
         Return a string of the type inferred from the values.
@@ -210,6 +222,13 @@ class Index:
             elif self.dtype == "<U":
                 return "string"
         return self.values.inferred_type
+
+    @property
+    def names(self):
+        """
+        Return Index or MultiIndex names.
+        """
+        return [self.name]
 
     @property
     def index(self):
@@ -986,7 +1005,7 @@ class MultiIndex(Index):
             raise TypeError("MultiIndex should be an iterable")
         self.levels = levels
         first = True
-        self.names = names
+        self._names = names
         self.name = name
         for col in self.levels:
             # col can be a python int which doesn't have a size attribute
@@ -1026,6 +1045,13 @@ class MultiIndex(Index):
         return retval
 
     @property
+    def names(self):
+        """
+        Return Index or MultiIndex names.
+        """
+        return self._names
+
+    @property
     def index(self):
         return self.levels
 
@@ -1038,6 +1064,17 @@ class MultiIndex(Index):
         Index.nlevels
         """
         return len(self.levels)
+
+    @property
+    def ndim(self):
+        """
+        Number of dimensions of the underlying data, by definition 1.
+
+        See Also
+        --------
+        Index.ndim
+        """
+        return 1
 
     @property
     def inferred_type(self) -> str:
@@ -1064,6 +1101,13 @@ class MultiIndex(Index):
                 "Cannot get level values because level must be a string in names or "
                 "an integer with absolute value less than the number of levels."
             )
+
+    @property
+    def dtype(self) -> npdtype:
+        """
+        Return the dtype object of the underlying data.
+        """
+        return npdtype("O")
 
     def memory_usage(self, unit="B"):
         """
