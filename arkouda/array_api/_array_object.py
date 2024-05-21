@@ -29,7 +29,7 @@ from ._dtypes import (
 )
 from ._creation_functions import asarray
 
-from typing import TYPE_CHECKING, Optional, Tuple, Union, Any, Dict, Callable
+from typing import TYPE_CHECKING, Optional, Tuple, Union, Any, Dict, Callable, List
 import types
 
 if TYPE_CHECKING:
@@ -147,6 +147,12 @@ class Array:
         Performs the operation __repr__.
         """
         return self._array.__repr__()
+
+    def chunk_info(self: Array, /) -> List[List[int]]:
+        """
+        Get the chunk information for the array.
+        """
+        return self._array.chunk_info()
 
     def __array__(self, dtype: None | np.dtype[Any] = None):
         """
