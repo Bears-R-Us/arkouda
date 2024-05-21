@@ -566,6 +566,58 @@
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="Generator.normal">
+<a class="viewcode-back" href="../../../autoapi/arkouda/random/index.html#arkouda.Generator.normal">[docs]</a>
+    <span class="k">def</span> <span class="nf">normal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Draw samples from a normal (Gaussian) distribution</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        loc: float or pdarray of floats, optional</span>
+<span class="sd">            Mean of the distribution. Default of 0.</span>
+
+<span class="sd">        scale: float or pdarray of floats, optional</span>
+<span class="sd">            Standard deviation of the distribution. Must be non-negative. Default of 1.</span>
+
+<span class="sd">        size: numeric_scalars, optional</span>
+<span class="sd">            Output shape. Default is None, in which case a single value is returned.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The probability density for the Gaussian distribution is:</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           p(x) = \frac{1}{\sqrt{2\pi \sigma^2}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}</span>
+
+<span class="sd">        where :math:`\mu` is the mean and :math:`\sigma` the standard deviation.</span>
+<span class="sd">        The square of the standard deviation, :math:`\sigma^2`, is called the variance.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pdarray</span>
+<span class="sd">            Pdarray of floats (unless size=None, in which case a single float is returned).</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        standard_normal</span>
+<span class="sd">        uniform</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; ak.random.default_rng(17).normal(3, 2.5, 10)</span>
+<span class="sd">        array([2.3673425816523577 4.0532529435624589 2.0598322696795694])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># delegate to numpy when return size is 1</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_np_generator</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">scale</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">scale</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;scale must be non-negative.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">loc</span> <span class="o">+</span> <span class="n">scale</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="Generator.random">
 <a class="viewcode-back" href="../../../autoapi/arkouda/random/index.html#arkouda.Generator.random">[docs]</a>
     <span class="k">def</span> <span class="nf">random</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -623,7 +675,7 @@
 <div class="viewcode-block" id="Generator.standard_normal">
 <a class="viewcode-back" href="../../../autoapi/arkouda/random/index.html#arkouda.Generator.standard_normal">[docs]</a>
     <span class="k">def</span> <span class="nf">standard_normal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draw samples from a standard Normal distribution (mean=0, stdev=1).</span>
 
 <span class="sd">        Parameters</span>
@@ -638,10 +690,14 @@
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
-<span class="sd">        For random samples from :math:`N(\\mu, \\sigma^2)`, use:</span>
+<span class="sd">        For random samples from :math:`N(\mu, \sigma^2)`, either call `normal` or do:</span>
 
-<span class="sd">        ``(sigma * standard_normal(size)) + mu``</span>
+<span class="sd">        .. math::</span>
+<span class="sd">            (\sigma \cdot \texttt{standard_normal}(size)) + \mu</span>
 
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        normal</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -651,12 +707,20 @@
 <span class="sd">        &gt;&gt;&gt; rng.standard_normal(3)</span>
 <span class="sd">        array([0.8797352989638163, -0.7085325853376141, 0.021728052940979934])  # random</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda.random._legacy</span> <span class="kn">import</span> <span class="n">standard_normal</span>
-
         <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># delegate to numpy when return size is 1</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_np_generator</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">standard_normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_seed</span><span class="p">)</span></div>
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;standardNormalGenerator&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name_dict</span><span class="p">[</span><span class="n">akfloat64</span><span class="p">],</span>
+                <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">size</span><span class="p">,</span>
+                <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="c1"># since we generate 2*size uniform samples for box-muller transform</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">+=</span> <span class="p">(</span><span class="n">size</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Generator.shuffle">

@@ -10068,6 +10068,39 @@ Package Contents
 
 
 
+   .. py:method:: normal(loc=0.0, scale=1.0, size=None)
+
+      Draw samples from a normal (Gaussian) distribution
+
+      :param loc: Mean of the distribution. Default of 0.
+      :type loc: float or pdarray of floats, optional
+      :param scale: Standard deviation of the distribution. Must be non-negative. Default of 1.
+      :type scale: float or pdarray of floats, optional
+      :param size: Output shape. Default is None, in which case a single value is returned.
+      :type size: numeric_scalars, optional
+
+      .. rubric:: Notes
+
+      The probability density for the Gaussian distribution is:
+
+      .. math::
+         p(x) = \frac{1}{\sqrt{2\pi \sigma^2}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}
+
+      where :math:`\mu` is the mean and :math:`\sigma` the standard deviation.
+      The square of the standard deviation, :math:`\sigma^2`, is called the variance.
+
+      :returns: Pdarray of floats (unless size=None, in which case a single float is returned).
+      :rtype: pdarray
+
+      .. seealso:: :obj:`standard_normal`, :obj:`uniform`
+
+      .. rubric:: Examples
+
+      >>> ak.random.default_rng(17).normal(3, 2.5, 10)
+      array([2.3673425816523577 4.0532529435624589 2.0598322696795694])
+
+
+
    .. py:method:: permutation(x)
 
       Randomly permute a sequence, or return a permuted range.
@@ -10134,9 +10167,12 @@ Package Contents
 
       .. rubric:: Notes
 
-      For random samples from :math:`N(\mu, \sigma^2)`, use:
+      For random samples from :math:`N(\mu, \sigma^2)`, either call `normal` or do:
 
-      ``(sigma * standard_normal(size)) + mu``
+      .. math::
+          (\sigma \cdot \texttt{standard_normal}(size)) + \mu
+
+      .. seealso:: :obj:`normal`
 
       .. rubric:: Examples
 

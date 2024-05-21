@@ -17,9 +17,25 @@ To create a ``Generator`` use the ``default_rng`` constructor
 Features
 ==========
 
+choice
+---------
+.. autofunction:: arkouda.random.Generator.choice
+
 integers
 ---------
 .. autofunction:: arkouda.random.Generator.integers
+
+normal
+---------
+.. autofunction:: arkouda.random.Generator.normal
+
+permutation
+---------
+.. autofunction:: arkouda.random.Generator.permutation
+
+shuffle
+---------
+.. autofunction:: arkouda.random.Generator.shuffle
 
 random
 ---------
