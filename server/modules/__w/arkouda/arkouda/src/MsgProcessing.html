@@ -374,6 +374,15 @@ Repr convert array data to string</p>
 </dl>
 </dd></dl>
 
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="MsgProcessing.chunkInfoMsg">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">chunkInfoMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">nd:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#MsgProcessing.chunkInfoMsg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of lists indicating how an array is “chunked” across locales.</p>
+<p>For example, a 100x40 2D array on 4 locales could return: [[0, 50], [0, 20]]
+indicating that the chunks start at indices 0 and 50 in the first dimension,
+and 0 and 20 in the second dimension.</p>
+</dd></dl>
+
 </div>
 
 

@@ -11,7 +11,7 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=87e54e7c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -416,6 +416,24 @@ functions, such as asarray().</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">T</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.array_api.linalg.Array" title="arkouda.array_api.linalg.Array"><span class="pre">Array</span></a></em><a class="headerlink" href="#arkouda.array_api.linalg.Array.T" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.array_api.linalg.Array.chunk_info">
+<span class="sig-name descname"><span class="pre">chunk_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/array_api/_array_object.html#Array.chunk_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api.linalg.Array.chunk_info" title="Link to this definition">¶</a></dt>
+<dd><p>Get a list of indices indicating how the array is chunked across
+Locales (compute nodes). Although Arkouda arrays don’t have a notion
+of chunking, like Dask arrays for example, it can be useful to know
+how the array is distributed across locales in order to write/read
+data to/from a chunked format like Zarr.</p>
+<p>Returns a nested list of integers, where the outer list corresponds to
+dimensions, and the inner lists correspond to locales. The value at [d][l]
+is the global array index where locale l’s local subdomain along the
+d-th dimension begins.</p>
+<p>For example, calling this function on a 100x40 2D array stored across 4
+locales could return: [[0, 50], [0, 20]], indicating that the 4 “chunks”
+start at indices 0 and 50 in the first dimension, and 0 and 20 in the
+second dimension.</p>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="arkouda.array_api.linalg.Array.device">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">device</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">arkouda.array_api._typing.Device</span></em><a class="headerlink" href="#arkouda.array_api.linalg.Array.device" title="Link to this definition">¶</a></dt>
@@ -631,6 +649,7 @@ corresponds to an Arkouda array output as a numpy array.</p>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li><a class="reference internal" href="#arkouda.array_api.linalg.Array"><code class="docutils literal notranslate"><span class="pre">Array</span></code></a><ul>
 <li><a class="reference internal" href="#arkouda.array_api.linalg.Array.T"><code class="docutils literal notranslate"><span class="pre">Array.T</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.array_api.linalg.Array.chunk_info"><code class="docutils literal notranslate"><span class="pre">Array.chunk_info()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.array_api.linalg.Array.device"><code class="docutils literal notranslate"><span class="pre">Array.device</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.array_api.linalg.Array.dtype"><code class="docutils literal notranslate"><span class="pre">Array.dtype</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.array_api.linalg.Array.item"><code class="docutils literal notranslate"><span class="pre">Array.item()</span></code></a></li>
@@ -668,6 +687,6 @@ corresponds to an Arkouda array output as a numpy array.</p>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/scripts/furo.js?v=4e2eecee"></script>
-    <script src="../../../../_static/design-tabs.js?v=36754332"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
     </body>
 </html>

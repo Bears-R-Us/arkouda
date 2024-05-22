@@ -10,7 +10,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=87e54e7c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -378,7 +378,7 @@
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">._creation_functions</span> <span class="kn">import</span> <span class="n">asarray</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Callable</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span>
 <span class="kn">import</span> <span class="nn">types</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
@@ -394,7 +394,7 @@
 
 
 <div class="viewcode-block" id="Array">
-<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/linalg/index.html#arkouda.array_api.linalg.Array">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/linalg/index.html#arkouda.array_api.Array">[docs]</a>
 <span class="k">class</span> <span class="nc">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    n-d array object for the array API namespace.</span>
@@ -440,7 +440,7 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Array.tolist">
-<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/linalg/index.html#arkouda.array_api.linalg.Array.tolist">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/linalg/index.html#arkouda.array_api.Array.tolist">[docs]</a>
     <span class="k">def</span> <span class="nf">tolist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the array to a Python list or nested lists</span>
@@ -454,7 +454,7 @@
 
 
 <div class="viewcode-block" id="Array.to_ndarray">
-<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/linalg/index.html#arkouda.array_api.linalg.Array.to_ndarray">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/linalg/index.html#arkouda.array_api.Array.to_ndarray">[docs]</a>
     <span class="k">def</span> <span class="nf">to_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the array to a numpy ndarray</span>
@@ -463,7 +463,7 @@
 
 
 <div class="viewcode-block" id="Array.item">
-<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/linalg/index.html#arkouda.array_api.linalg.Array.item">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/linalg/index.html#arkouda.array_api.Array.item">[docs]</a>
     <span class="k">def</span> <span class="nf">item</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the array to a Python scalar</span>
@@ -472,7 +472,7 @@
 
 
 <div class="viewcode-block" id="Array.transpose">
-<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/linalg/index.html#arkouda.array_api.linalg.Array.transpose">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/linalg/index.html#arkouda.array_api.Array.transpose">[docs]</a>
     <span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a view of the array with the specified axes transposed.</span>
@@ -509,7 +509,35 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Performs the operation __repr__.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Arkouda Array (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_repr_inline_</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Arkouda Array (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+<div class="viewcode-block" id="Array.chunk_info">
+<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/linalg/index.html#arkouda.array_api.Array.chunk_info">[docs]</a>
+    <span class="k">def</span> <span class="nf">chunk_info</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a list of indices indicating how the array is chunked across</span>
+<span class="sd">        Locales (compute nodes). Although Arkouda arrays don&#39;t have a notion</span>
+<span class="sd">        of chunking, like Dask arrays for example, it can be useful to know</span>
+<span class="sd">        how the array is distributed across locales in order to write/read</span>
+<span class="sd">        data to/from a chunked format like Zarr.</span>
+
+<span class="sd">        Returns a nested list of integers, where the outer list corresponds to</span>
+<span class="sd">        dimensions, and the inner lists correspond to locales. The value at [d][l]</span>
+<span class="sd">        is the global array index where locale l&#39;s local subdomain along the</span>
+<span class="sd">        d-th dimension begins.</span>
+
+<span class="sd">        For example, calling this function on a 100x40 2D array stored across 4</span>
+<span class="sd">        locales could return: [[0, 50], [0, 20]], indicating that the 4 &quot;chunks&quot;</span>
+<span class="sd">        start at indices 0 and 50 in the first dimension, and 0 and 20 in the</span>
+<span class="sd">        second dimension.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">json</span>
+
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;chunkInfo</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array</span><span class="p">}))</span></div>
+
 
     <span class="k">def</span> <span class="nf">__array__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1113,7 +1141,7 @@
             <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_array</span> <span class="o">^</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Array.to_device">
-<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/linalg/index.html#arkouda.array_api.linalg.Array.to_device">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/linalg/index.html#arkouda.array_api.Array.to_device">[docs]</a>
     <span class="k">def</span> <span class="nf">to_device</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">Device</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">stream</span><span class="p">:</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Not implemented&quot;</span><span class="p">)</span></div>
 
@@ -1202,6 +1230,6 @@
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=4e2eecee"></script>
-    <script src="../../../_static/design-tabs.js?v=36754332"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     </body>
 </html>
