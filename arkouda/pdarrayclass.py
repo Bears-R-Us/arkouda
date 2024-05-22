@@ -13,7 +13,7 @@ from arkouda.client import generic_msg
 from arkouda.dtypes import NUMBER_FORMAT_STRINGS, DTypes, bigint
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import bool as npbool
-from arkouda.dtypes import dtype
+from arkouda.dtypes import dtype, get_byteorder
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import get_server_byteorder
 from arkouda.dtypes import int64 as akint64
@@ -69,6 +69,7 @@ __all__ = [
     "unregister_pdarray_by_name",
     "RegistrationError",
     "broadcast_to_shape",
+    "_to_pdarray",
 ]
 
 logger = getArkoudaLogger(name="pdarrayclass")
@@ -274,6 +275,48 @@ def _parse_none_and_ellipsis_keys(key, ndim):
         raise IndexError(f"cannot index {ndim}D array with {len(ret_key)} indices")
 
     return (ret_key, num_none, key_with_none)
+
+
+def _to_pdarray(value: np.ndarray, dt=None) -> pdarray:
+    from arkouda.client import maxTransferBytes
+    if dt is None:
+        _dtype = dtype(value.dtype)
+    else:
+        _dtype = dtype(dt)
+
+    if value.nbytes > maxTransferBytes:
+        raise RuntimeError(
+            f"Creating pdarray from ndarray would require transferring {value.nbytes} bytes from " +
+            f"the client to server, which exceeds the maximum size of {maxTransferBytes} bytes. " +
+            "Try increasing ak.maxTransferBytes"
+        )
+
+    if value.shape == ():
+        return create_pdarray(
+            generic_msg(
+                cmd="create0D",
+                args={"dtype": _dtype, "value": value.item()},
+            )
+        )
+    else:
+        value_flat = value.flatten()
+        return create_pdarray(
+            generic_msg(
+                cmd=f"array{value.ndim}D",
+                args={"dtype": _dtype, "shape": np.shape(value) , "seg_string": False},
+                payload=_array_memview(value_flat),
+                send_binary=True,
+            )
+        )
+
+
+def _array_memview(a) -> memoryview:
+    if (get_byteorder(a.dtype) == "<" and get_server_byteorder() == "big") or (
+        get_byteorder(a.dtype) == ">" and get_server_byteorder() == "little"
+    ):
+        return memoryview(a.byteswap())
+    else:
+        return memoryview(a)
 
 
 # class for the pdarray
@@ -944,10 +987,30 @@ class pdarray:
                 },
             )
             return create_pdarray(repMsg)
+
+        if isinstance(key, slice):
+            # handle the arr[:] case
+            if key == slice(None):
+                # TODO: implement a cloneMsg to make this more efficient
+                return _slice_index(
+                    self,
+                    [0 for _ in range(self.ndim)],
+                    self.shape,
+                    [1 for _ in range(self.ndim)]
+                )
+            else:
+                # TODO: mimic numpy's behavior of applying the slice to only the first dimension?
+                raise ValueError(f"Unhandled slice for multidimensional array: {key}")
         else:
             raise TypeError(f"Unhandled key type: {key} ({type(key)})")
 
     def __setitem__(self, key, value):
+        # convert numpy array value to pdarray value
+        if isinstance(value, np.ndarray):
+            _value = _to_pdarray(value)
+        else:
+            _value = value
+
         if self.ndim == 1:
             if np.isscalar(key) and (resolve_scalar_dtype(key) in ["int64", "uint64"]):
                 orig_key = key
@@ -961,15 +1024,15 @@ class pdarray:
                             "array": self,
                             "idx": key,
                             "dtype": self.dtype,
-                            "value": self.format_other(value),
+                            "value": self.format_other(_value),
                         },
                     )
                 else:
                     raise IndexError(f"index {orig_key} is out of bounds with size {self.size}")
             elif isinstance(key, pdarray):
-                if isinstance(value, pdarray):
+                if isinstance(_value, pdarray):
                     generic_msg(
-                        cmd="[pdarray]=pdarray", args={"array": self, "idx": key, "value": value}
+                        cmd="[pdarray]=pdarray", args={"array": self, "idx": key, "value": _value}
                     )
                 else:
                     generic_msg(
@@ -978,13 +1041,13 @@ class pdarray:
                             "array": self,
                             "idx": key,
                             "dtype": self.dtype,
-                            "value": self.format_other(value),
+                            "value": self.format_other(_value),
                         },
                     )
             elif isinstance(key, slice):
                 (start, stop, stride) = key.indices(self.size)
                 logger.debug(f"start: {start} stop: {stop} stride: {stride}")
-                if isinstance(value, pdarray):
+                if isinstance(_value, pdarray):
                     generic_msg(
                         cmd="[slice]=pdarray-1D",
                         args={
@@ -992,7 +1055,7 @@ class pdarray:
                             "starts": start,
                             "stops": stop,
                             "strides": stride,
-                            "value": value,
+                            "value": _value,
                         },
                     )
                 else:
@@ -1004,7 +1067,7 @@ class pdarray:
                             "stop": stop,
                             "stride": stride,
                             "dtype": self.dtype,
-                            "value": self.format_other(value),
+                            "value": self.format_other(_value),
                         },
                     )
             else:
@@ -1039,8 +1102,10 @@ class pdarray:
                             stops.append(k+1)
                             strides.append(1)
 
-                if isinstance(value, pdarray):
+                if isinstance(_value, pdarray):
                     if len(starts) == self.ndim:
+                        # TODO: correctly handle non-unit strides when determining whether the
+                        # value shape matches the slice shape
                         slice_shape = tuple([stops[i] - starts[i] for i in range(self.ndim)])
 
                         # check that the slice is within the bounds of the array
@@ -1051,34 +1116,34 @@ class pdarray:
                                     f"shape {self.shape}"
                                 )
 
-                        if value.ndim == len(slice_shape):
+                        if _value.ndim == len(slice_shape):
                             # check that the slice shape matches the value shape
                             for i in range(self.ndim):
-                                if slice_shape[i] != value.shape[i]:
+                                if slice_shape[i] != _value.shape[i]:
                                     raise ValueError(
                                         f"slice shape ({slice_shape}) must match shape of value " +
                                         f"array ({value.shape})"
                                     )
-                            value_ = value
-                        elif value.ndim < len(slice_shape):
+                            _value_r = _value
+                        elif _value.ndim < len(slice_shape):
                             # check that the value shape is compatible with the slice shape
                             iv = 0
                             for i in range(self.ndim):
                                 if slice_shape[i] == 1:
                                     continue
-                                elif slice_shape[i] == value.shape[iv]:
+                                elif slice_shape[i] == _value.shape[iv]:
                                     iv += 1
                                 else:
                                     raise ValueError(
                                         f"slice shape ({slice_shape}) must be compatible with shape " +
-                                        f"of value array ({value.shape})"
+                                        f"of value array ({_value.shape})"
                                     )
 
                             # reshape to add singleton dimensions as needed
-                            value_ = _reshape(value, slice_shape)
+                            _value_r = _reshape(_value, slice_shape)
                         else:
                             raise ValueError(
-                                f"value array must not have more dimensions ({value.ndim}) than the" +
+                                f"value array must not have more dimensions ({_value.ndim}) than the" +
                                 f"slice ({len(slice_shape)})"
                             )
                     else:
@@ -1093,7 +1158,7 @@ class pdarray:
                             "starts": tuple(starts),
                             "stops": tuple(stops),
                             "strides": tuple(strides),
-                            "value": value_,
+                            "value": _value_r,
                         },
                     )
                 elif all_scalar_keys:
@@ -1104,7 +1169,7 @@ class pdarray:
                             "array": self,
                             "idx": key,
                             "dtype": self.dtype,
-                            "value": self.format_other(value),
+                            "value": self.format_other(_value),
                         },
                     )
                 else:
@@ -1116,9 +1181,37 @@ class pdarray:
                             "stops": tuple(stops),
                             "strides": tuple(strides),
                             "dtype": self.dtype,
-                            "value": self.format_other(value),
+                            "value": self.format_other(_value),
                         },
                     )
+            elif isinstance(key, slice):
+                # handle the arr[:] = case
+                if key == slice(None):
+                    if isinstance(_value, pdarray):
+                        generic_msg(
+                            cmd=f"[slice]=pdarray-{self.ndim}D",
+                            args={
+                                "array": self,
+                                "starts": tuple([0 for _ in range(self.ndim)]),
+                                "stops": tuple(self.shape),
+                                "strides": tuple([1 for _ in range(self.ndim)]),
+                                "value": _value,
+                            },
+                        )
+                    else:
+                        generic_msg(
+                            cmd=f"[slice]=val-{self.ndim}D",
+                            args={
+                                "array": self,
+                                "starts": tuple([0 for _ in range(self.ndim)]),
+                                "stops": tuple(self.shape),
+                                "stridse": tuple([1 for _ in range(self.ndim)]),
+                                "dtype": self.dtype,
+                                "value": self.format_other(_value),
+                            },
+                        )
+                else:
+                    raise ValueError(f"Incompatable slice for multidimensional array: {key}")
             else:
                 raise TypeError(f"Unhandled key type for ND arrays: {key} ({type(key)})")
 

@@ -249,9 +249,6 @@ module GenSymIO {
         return m;
     }
 
-    var d = {1..10, 1..100} dmapped new matrixDom();
-    var mat: [d] real;
-
     /*
         Get a list of lists indicating how an array is "chunked" across locales.
 

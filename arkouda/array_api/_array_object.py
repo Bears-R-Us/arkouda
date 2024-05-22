@@ -146,7 +146,10 @@ class Array:
         """
         Performs the operation __repr__.
         """
-        return self._array.__repr__()
+        return f"Arkouda Array ({self.shape}, {self.dtype})" + self._array.__str__()
+
+    def _repr_inline_(self: Array, width: int) -> str:
+        return f"Arkouda Array ({self.shape}, {self.dtype})"
 
     def chunk_info(self: Array, /) -> List[List[int]]:
         """
