@@ -5,13 +5,14 @@ from warnings import warn
 import numpy as np  # type: ignore
 
 from arkouda.categorical import Categorical
+from arkouda.client import generic_msg
 from arkouda.dtypes import bigint
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import uint64 as akuint64
 from arkouda.groupbyclass import GroupBy, broadcast, unique
-from arkouda.numeric import where
-from arkouda.pdarrayclass import pdarray
+from arkouda.numeric import cumsum, where
+from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import arange, full, ones, zeros
 from arkouda.pdarraysetops import concatenate, in1d
 from arkouda.sorting import argsort, coargsort
@@ -109,9 +110,9 @@ class NonUniqueError(ValueError):
     pass
 
 
-def find(query, space):
+def find(query, space, all_occurrences=False, remove_missing=False):
     """
-    Return indices of query items in a search list of items (-1 if not found).
+    Return indices of query items in a search list of items.
 
     Parameters
     ----------
@@ -119,13 +120,92 @@ def find(query, space):
         The items to search for. If multiple arrays, each "row" is an item.
     space : (sequence of) array-like
         The set of items in which to search. Must have same shape/dtype as query.
+    all_occurrences: bool
+        When duplicate terms are present in search space, if all_occurrences is True,
+        return all occurrences found as a SegArray, otherwise return only the first
+        occurrences as a pdarray. Defaults to only finding the first occurrence.
+        Finding all occurrences is not yet supported on sequences of arrays
+    remove_missing: bool
+        If False, return -1 for any items in query not found in space. If True,
+        remove these and only return indices of items that are found.
 
     Returns
     -------
-    indices : pdarray, int64
-        For each item in query, its index in space or -1 if not found.
-    """
+    indices : pdarray or SegArray
+        For each item in query, its index in space. If remove_missing is True,
+        exclued missing values otherwise return -1. If all_occurrences is False,
+        the return will be a pdarray of the first index where each value in the
+        query appears in the space. if all_occurrences is True, the return will be
+        a SegArray containing every index where each value in the query appears in
+        the space.
 
+    Examples
+    --------
+    >>> select_from = ak.arange(10)
+    >>> arr1 = select_from[ak.randint(0, select_from.size, 20, seed=10)]
+    >>> arr2 = select_from[ak.randint(0, select_from.size, 20, seed=11)]
+    # remove some values to ensure we have some values
+    # which don't appear in the search space
+    >>> arr2 = arr2[arr2 != 9]
+    >>> arr2 = arr2[arr2 != 3]
+
+    # find with defaults (all_occurrences and remove_missing both False)
+    >>> ak.find(arr1, arr2)
+    array([-1 -1 -1 0 1 -1 -1 -1 2 -1 5 -1 8 -1 5 -1 -1 11 5 0])
+
+     # set remove_missing to True, only difference from default
+     # is missing values are excluded
+     >>> ak.find(arr1, arr2, remove_missing=True)
+    array([0 1 2 5 8 5 11 5 0])
+
+    # set all_occurrences to True, the first index of each list
+    # is the first occurence and should match the default
+    >>> ak.find(arr1, arr2, all_occurrences=True).to_list()
+    [[-1],
+     [-1],
+     [-1],
+     [0, 4],
+     [1, 3, 10],
+     [-1],
+     [-1],
+     [-1],
+     [2, 6, 12, 13],
+     [-1],
+     [5, 7],
+     [-1],
+     [8, 9, 14],
+     [-1],
+     [5, 7],
+     [-1],
+     [-1],
+     [11, 15],
+     [5, 7],
+     [0, 4]]
+
+    # set both remove_missing and all_occurrences to True, missing values
+    # will be empty segments
+    >>> ak.find(arr1, arr2, remove_missing=True, all_occurrences=True).to_list()
+    [[],
+     [],
+     [],
+     [0, 4],
+     [1, 3, 10],
+     [],
+     [],
+     [],
+     [2, 6, 12, 13],
+     [],
+     [5, 7],
+     [],
+     [8, 9, 14],
+     [],
+     [5, 7],
+     [],
+     [],
+     [11, 15],
+     [5, 7],
+     [0, 4]]
+    """
     # Concatenate the space and query in fast (block interleaved) mode
     if isinstance(query, (pdarray, Strings, Categorical)):
         if type(query) is not type(space):
@@ -151,15 +231,48 @@ def find(query, space):
     # All space indices are less than all query indices
     i = concatenate((arange(spacesize), arange(spacesize, spacesize + querysize)), ordered=False)
     # Group on terms
-    g = GroupBy(c)
+    g = GroupBy(c, dropna=False)
     # For each term, count how many times it appears in the search space
     space_multiplicity = g.sum(i < spacesize)[1]
-    # Warn of any duplicate terms in space
-    if (space_multiplicity > 1).any():
-        warn(
-            "Duplicate terms present in search space. Only first instance of each query term\
-            will be reported."
-        )
+    has_duplicates = (space_multiplicity > 1).any()
+    # handle duplicate terms in space
+    if has_duplicates:
+        if all_occurrences:
+            if isinstance(query, Sequence):
+                raise TypeError("finding all_occurrences is not yet supported on sequences of arrays")
+
+            from arkouda.segarray import SegArray
+
+            # use segmented mink to select space_multiplicity number of elements
+            # and create a segarray which contains all the indices
+            # in our query space, instead of just the min for each segment
+
+            # only calculate where to place the negatives if remove_missing is false
+            negative_at = "" if remove_missing else space_multiplicity == 0
+            repMsg = generic_msg(
+                cmd="segmentedExtremaK",
+                args={
+                    "vals": i[g.permutation],
+                    "segs": g.segments,
+                    "segLens": g.size()[1],
+                    "kArray": space_multiplicity,
+                    "isMin": True,
+                    "removeMissing": remove_missing,
+                    "negativeAt": negative_at,
+                },
+            )
+            min_k_vals = create_pdarray(repMsg)
+            seg_idx = g.broadcast(arange(g.segments.size))[i >= spacesize]
+            if not remove_missing:
+                space_multiplicity += negative_at
+            min_k_segs = cumsum(space_multiplicity) - space_multiplicity
+            sa = SegArray(min_k_segs, min_k_vals)
+            return sa[seg_idx]
+        else:
+            warn(
+                "Duplicate terms present in search space. Only first instance of each query term"
+                " will be reported. To return all occurrences, set all_occurrences=True."
+            )
     # For query terms in the space, the min combined index will be the first index of that
     # term in the space
     uspaceidx = g.min(i)[1]
@@ -169,7 +282,8 @@ def find(query, space):
     # Broadcast unique term indices to combined list of space and query terms
     spaceidx = g.broadcast(uspaceidx)
     # Return only the indices of the query terms (remove the search space)
-    return spaceidx[i >= spacesize]
+    pda = spaceidx[i >= spacesize]
+    return pda[pda != -1] if remove_missing else pda
 
 
 def lookup(keys, values, arguments, fillvalue=-1):
