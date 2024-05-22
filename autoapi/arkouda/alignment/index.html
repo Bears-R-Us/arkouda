@@ -432,8 +432,14 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.alignment.concatenate" title="arkouda.alignment.concatenate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">concatenate</span></code></a>(→ Union[arkouda.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Concatenate a list or tuple of <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> or <code class="docutils literal notranslate"><span class="pre">Strings</span></code> objects into</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.alignment.find" title="arkouda.alignment.find"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find</span></code></a>(query, space)</p></td>
-<td><p>Return indices of query items in a search list of items (-1 if not found).</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.alignment.create_pdarray" title="arkouda.alignment.create_pdarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_pdarray</span></code></a>(→ pdarray)</p></td>
+<td><p>Return a pdarray instance pointing to an array created by the arkouda server.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.alignment.cumsum" title="arkouda.alignment.cumsum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cumsum</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<td><p>Return the cumulative sum over the array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.alignment.find" title="arkouda.alignment.find"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find</span></code></a>(query, space[, all_occurrences, remove_missing])</p></td>
+<td><p>Return indices of query items in a search list of items.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.alignment.full" title="arkouda.alignment.full"><code class="xref py py-obj docutils literal notranslate"><span class="pre">full</span></code></a>(→ Union[arkouda.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Create a pdarray filled with fill_value.</p></td>
@@ -5044,23 +5050,167 @@ concatenate has not been implemented.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="arkouda.alignment.create_pdarray">
+<span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">create_pdarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repMsg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_bits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#create_pdarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.alignment.create_pdarray" title="Link to this definition">¶</a></dt>
+<dd><p>Return a pdarray instance pointing to an array created by the arkouda server.
+The user should not call this function directly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>repMsg</strong> (<em>str</em>) – space-delimited string containing the pdarray name, datatype, size
+dimension, shape,and itemsize</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A pdarray with the same attributes and data as the pdarray; on GPU</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray">pdarray</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If there’s an error in parsing the repMsg parameter into the six
+values needed to create the pdarray instance</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown in the process of creating
+the pdarray instance</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.alignment.cumsum">
+<span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">cumsum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/numeric.html#cumsum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.alignment.cumsum" title="Link to this definition">¶</a></dt>
+<dd><p>Return the cumulative sum over the array.</p>
+<p>The sum is inclusive, such that the <code class="docutils literal notranslate"><span class="pre">i</span></code> th element of the
+result is the sum of elements up to and including <code class="docutils literal notranslate"><span class="pre">i</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray"><em>pdarray</em></a>)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A pdarray containing cumulative sums for each element
+of the original pdarray</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray">pdarray</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">]))</span>
+<span class="go">array([1, 3, 6])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">5.0</span><span class="p">))</span>
+<span class="go">array([3.1598310770203937, 5.4110385860243131, 9.1622479306453748,</span>
+<span class="go">       12.710615785506533, 13.945880905466208])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">bool</span><span class="p">))</span>
+<span class="go">array([0, 1, 1, 2, 3])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="arkouda.alignment.find">
-<span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">find</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">space</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/alignment.html#find"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.alignment.find" title="Link to this definition">¶</a></dt>
-<dd><p>Return indices of query items in a search list of items (-1 if not found).</p>
+<span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">find</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">space</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_occurrences</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_missing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/alignment.html#find"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.alignment.find" title="Link to this definition">¶</a></dt>
+<dd><p>Return indices of query items in a search list of items.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>query</strong> (<em>(</em><em>sequence of</em><em>) </em><em>array-like</em>) – The items to search for. If multiple arrays, each “row” is an item.</p></li>
 <li><p><strong>space</strong> (<em>(</em><em>sequence of</em><em>) </em><em>array-like</em>) – The set of items in which to search. Must have same shape/dtype as query.</p></li>
+<li><p><strong>all_occurrences</strong> (<em>bool</em>) – When duplicate terms are present in search space, if all_occurrences is True,
+return all occurrences found as a SegArray, otherwise return only the first
+occurrences as a pdarray. Defaults to only finding the first occurrence.
+Finding all occurrences is not yet supported on sequences of arrays</p></li>
+<li><p><strong>remove_missing</strong> (<em>bool</em>) – If False, return -1 for any items in query not found in space. If True,
+remove these and only return indices of items that are found.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>indices</strong> – For each item in query, its index in space or -1 if not found.</p>
+<dd class="field-even"><p><strong>indices</strong> – For each item in query, its index in space. If remove_missing is True,
+exclued missing values otherwise return -1. If all_occurrences is False,
+the return will be a pdarray of the first index where each value in the
+query appears in the space. if all_occurrences is True, the return will be
+a SegArray containing every index where each value in the query appears in
+the space.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray">pdarray</a>, <a class="reference internal" href="../numpy/index.html#arkouda.numpy.int64" title="arkouda.numpy.int64">int64</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray">pdarray</a> or <a class="reference internal" href="../index.html#arkouda.SegArray" title="arkouda.SegArray">SegArray</a></p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">select_from</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr1</span> <span class="o">=</span> <span class="n">select_from</span><span class="p">[</span><span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">select_from</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">10</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr2</span> <span class="o">=</span> <span class="n">select_from</span><span class="p">[</span><span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">select_from</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">11</span><span class="p">)]</span>
+<span class="go"># remove some values to ensure we have some values</span>
+<span class="go"># which don&#39;t appear in the search space</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr2</span> <span class="o">=</span> <span class="n">arr2</span><span class="p">[</span><span class="n">arr2</span> <span class="o">!=</span> <span class="mi">9</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr2</span> <span class="o">=</span> <span class="n">arr2</span><span class="p">[</span><span class="n">arr2</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">]</span>
+</pre></div>
+</div>
+<p># find with defaults (all_occurrences and remove_missing both False)
+&gt;&gt;&gt; ak.find(arr1, arr2)
+array([-1 -1 -1 0 1 -1 -1 -1 2 -1 5 -1 8 -1 5 -1 -1 11 5 0])</p>
+<blockquote>
+<div><p># set remove_missing to True, only difference from default
+# is missing values are excluded
+&gt;&gt;&gt; ak.find(arr1, arr2, remove_missing=True)</p>
+</div></blockquote>
+<p>array([0 1 2 5 8 5 11 5 0])</p>
+<p># set all_occurrences to True, the first index of each list
+# is the first occurence and should match the default
+&gt;&gt;&gt; ak.find(arr1, arr2, all_occurrences=True).to_list()
+[[-1],</p>
+<blockquote>
+<div><p>[-1],
+[-1],
+[0, 4],
+[1, 3, 10],
+[-1],
+[-1],
+[-1],
+[2, 6, 12, 13],
+[-1],
+[5, 7],
+[-1],
+[8, 9, 14],
+[-1],
+[5, 7],
+[-1],
+[-1],
+[11, 15],
+[5, 7],
+[0, 4]]</p>
+</div></blockquote>
+<p># set both remove_missing and all_occurrences to True, missing values
+# will be empty segments
+&gt;&gt;&gt; ak.find(arr1, arr2, remove_missing=True, all_occurrences=True).to_list()
+[[],</p>
+<blockquote>
+<div><p>[],
+[],
+[0, 4],
+[1, 3, 10],
+[],
+[],
+[],
+[2, 6, 12, 13],
+[],
+[5, 7],
+[],
+[8, 9, 14],
+[],
+[5, 7],
+[],
+[],
+[11, 15],
+[5, 7],
+[0, 4]]</p>
+</div></blockquote>
 </dd></dl>
 
 <dl class="py function">
@@ -7028,6 +7178,8 @@ parameter is neither an int nor a str that is parseable to an int.</p>
 <li><a class="reference internal" href="#arkouda.alignment.broadcast"><code class="docutils literal notranslate"><span class="pre">broadcast()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.alignment.coargsort"><code class="docutils literal notranslate"><span class="pre">coargsort()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.alignment.concatenate"><code class="docutils literal notranslate"><span class="pre">concatenate()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.alignment.create_pdarray"><code class="docutils literal notranslate"><span class="pre">create_pdarray()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.alignment.cumsum"><code class="docutils literal notranslate"><span class="pre">cumsum()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.alignment.find"><code class="docutils literal notranslate"><span class="pre">find()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.alignment.full"><code class="docutils literal notranslate"><span class="pre">full()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.alignment.in1d"><code class="docutils literal notranslate"><span class="pre">in1d()</span></code></a></li>

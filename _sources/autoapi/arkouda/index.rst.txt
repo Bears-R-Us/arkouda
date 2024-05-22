@@ -252,8 +252,10 @@ Functions
    arkouda.create_pdarray
    arkouda.create_pdarray
    arkouda.create_pdarray
+   arkouda.create_pdarray
    arkouda.ctz
    arkouda.cumprod
+   arkouda.cumsum
    arkouda.cumsum
    arkouda.cumsum
    arkouda.date_operators
@@ -29108,6 +29110,24 @@ Package Contents
        the pdarray instance
 
 
+.. py:function:: create_pdarray(repMsg: str, max_bits=None) -> pdarray
+
+   Return a pdarray instance pointing to an array created by the arkouda server.
+   The user should not call this function directly.
+
+   :param repMsg: space-delimited string containing the pdarray name, datatype, size
+                  dimension, shape,and itemsize
+   :type repMsg: str
+
+   :returns: A pdarray with the same attributes and data as the pdarray; on GPU
+   :rtype: pdarray
+
+   :raises ValueError: If there's an error in parsing the repMsg parameter into the six
+       values needed to create the pdarray instance
+   :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
+       the pdarray instance
+
+
 .. py:function:: ctz(pda: pdarray) -> pdarray
 
    Count trailing zeros for each integer in an array.
@@ -29155,6 +29175,35 @@ Package Contents
    >>> ak.cumprod(ak.uniform(5,1.0,5.0))
    array([1.5728783400481925, 7.0472855509390593, 33.78523998586553,
           134.05309592737584, 450.21589865655358])
+
+
+.. py:function:: cumsum(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the cumulative sum over the array.
+
+   The sum is inclusive, such that the ``i`` th element of the
+   result is the sum of elements up to and including ``i``.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing cumulative sums for each element
+             of the original pdarray
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> ak.cumsum(ak.arange([1,5]))
+   array([1, 3, 6])
+
+   >>> ak.cumsum(ak.uniform(5,1.0,5.0))
+   array([3.1598310770203937, 5.4110385860243131, 9.1622479306453748,
+          12.710615785506533, 13.945880905466208])
+
+   >>> ak.cumsum(ak.randint(0, 1, 5, dtype=ak.bool))
+   array([0, 1, 1, 2, 3])
 
 
 .. py:function:: cumsum(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
@@ -29483,17 +29532,97 @@ Package Contents
      the same file type, but formatted to be read by Pandas.
 
 
-.. py:function:: find(query, space)
+.. py:function:: find(query, space, all_occurrences=False, remove_missing=False)
 
-   Return indices of query items in a search list of items (-1 if not found).
+   Return indices of query items in a search list of items.
 
    :param query: The items to search for. If multiple arrays, each "row" is an item.
    :type query: (sequence of) array-like
    :param space: The set of items in which to search. Must have same shape/dtype as query.
    :type space: (sequence of) array-like
+   :param all_occurrences: When duplicate terms are present in search space, if all_occurrences is True,
+                           return all occurrences found as a SegArray, otherwise return only the first
+                           occurrences as a pdarray. Defaults to only finding the first occurrence.
+                           Finding all occurrences is not yet supported on sequences of arrays
+   :type all_occurrences: bool
+   :param remove_missing: If False, return -1 for any items in query not found in space. If True,
+                          remove these and only return indices of items that are found.
+   :type remove_missing: bool
 
-   :returns: **indices** -- For each item in query, its index in space or -1 if not found.
-   :rtype: pdarray, int64
+   :returns: **indices** -- For each item in query, its index in space. If remove_missing is True,
+             exclued missing values otherwise return -1. If all_occurrences is False,
+             the return will be a pdarray of the first index where each value in the
+             query appears in the space. if all_occurrences is True, the return will be
+             a SegArray containing every index where each value in the query appears in
+             the space.
+   :rtype: pdarray or SegArray
+
+   .. rubric:: Examples
+
+   >>> select_from = ak.arange(10)
+   >>> arr1 = select_from[ak.randint(0, select_from.size, 20, seed=10)]
+   >>> arr2 = select_from[ak.randint(0, select_from.size, 20, seed=11)]
+   # remove some values to ensure we have some values
+   # which don't appear in the search space
+   >>> arr2 = arr2[arr2 != 9]
+   >>> arr2 = arr2[arr2 != 3]
+
+   # find with defaults (all_occurrences and remove_missing both False)
+   >>> ak.find(arr1, arr2)
+   array([-1 -1 -1 0 1 -1 -1 -1 2 -1 5 -1 8 -1 5 -1 -1 11 5 0])
+
+    # set remove_missing to True, only difference from default
+    # is missing values are excluded
+    >>> ak.find(arr1, arr2, remove_missing=True)
+   array([0 1 2 5 8 5 11 5 0])
+
+   # set all_occurrences to True, the first index of each list
+   # is the first occurence and should match the default
+   >>> ak.find(arr1, arr2, all_occurrences=True).to_list()
+   [[-1],
+    [-1],
+    [-1],
+    [0, 4],
+    [1, 3, 10],
+    [-1],
+    [-1],
+    [-1],
+    [2, 6, 12, 13],
+    [-1],
+    [5, 7],
+    [-1],
+    [8, 9, 14],
+    [-1],
+    [5, 7],
+    [-1],
+    [-1],
+    [11, 15],
+    [5, 7],
+    [0, 4]]
+
+   # set both remove_missing and all_occurrences to True, missing values
+   # will be empty segments
+   >>> ak.find(arr1, arr2, remove_missing=True, all_occurrences=True).to_list()
+   [[],
+    [],
+    [],
+    [0, 4],
+    [1, 3, 10],
+    [],
+    [],
+    [],
+    [2, 6, 12, 13],
+    [],
+    [5, 7],
+    [],
+    [8, 9, 14],
+    [],
+    [5, 7],
+    [],
+    [],
+    [11, 15],
+    [5, 7],
+    [0, 4]]
 
 
 .. py:data:: float32
@@ -30309,18 +30438,36 @@ Package Contents
    But much faster when vals is non-trivial size.
 
 
-.. py:function:: indexof1d(keys: arkouda.groupbyclass.groupable, arr: arkouda.groupbyclass.groupable) -> Union[arkouda.pdarrayclass.pdarray, arkouda.groupbyclass.groupable]
+.. py:function:: indexof1d(query: arkouda.groupbyclass.groupable, space: arkouda.groupbyclass.groupable) -> arkouda.pdarrayclass.pdarray
 
-   Returns an integer array of the index values where the values of the first
-   array appear in the second.
+   Return indices of query items in a search list of items. Items not found will be excluded.
+   When duplicate terms are present in search space return indices of all occurrences.
 
-   :param keys: Input array of values to find the indices of in `arr`.
-   :type keys: pdarray or Strings or Categorical
-   :param arr: The values to search.
-   :type arr: pdarray or Strings or Categorical
+   :param query: The items to search for. If multiple arrays, each "row" is an item.
+   :type query: (sequence of) pdarray or Strings or Categorical
+   :param space: The set of items in which to search. Must have same shape/dtype as query.
+   :type space: (sequence of) pdarray or Strings or Categorical
 
-   :returns: The indices of the values of `keys` in `arr`.
-   :rtype: pdarray, int
+   :returns: **indices** -- For each item in query, its index in space.
+   :rtype: pdarray, int64
+
+   .. rubric:: Notes
+
+   This is an alias of
+   `ak.find(query, space, all_occurrences=True, remove_missing=True).values`
+
+   .. rubric:: Examples
+
+   >>> select_from = ak.arange(10)
+   >>> arr1 = select_from[ak.randint(0, select_from.size, 20, seed=10)]
+   >>> arr2 = select_from[ak.randint(0, select_from.size, 20, seed=11)]
+   # remove some values to ensure we have some values
+   # which don't appear in the search space
+   >>> arr2 = arr2[arr2 != 9]
+   >>> arr2 = arr2[arr2 != 3]
+
+   >>> ak.indexof1d(arr1, arr2)
+   array([0 4 1 3 10 2 6 12 13 5 7 8 9 14 5 7 11 15 5 7 0 4])
 
    :raises TypeError: Raised if either `keys` or `arr` is not a pdarray, Strings, or
        Categorical object

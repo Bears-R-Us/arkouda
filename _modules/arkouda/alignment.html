@@ -354,13 +354,14 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>  <span class="c1"># type: ignore</span>
 
 <span class="kn">from</span> <span class="nn">arkouda.categorical</span> <span class="kn">import</span> <span class="n">Categorical</span>
+<span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
 <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">bigint</span>
 <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">float64</span> <span class="k">as</span> <span class="n">akfloat64</span>
 <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">int64</span> <span class="k">as</span> <span class="n">akint64</span>
 <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">uint64</span> <span class="k">as</span> <span class="n">akuint64</span>
 <span class="kn">from</span> <span class="nn">arkouda.groupbyclass</span> <span class="kn">import</span> <span class="n">GroupBy</span><span class="p">,</span> <span class="n">broadcast</span><span class="p">,</span> <span class="n">unique</span>
-<span class="kn">from</span> <span class="nn">arkouda.numeric</span> <span class="kn">import</span> <span class="n">where</span>
-<span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">pdarray</span>
+<span class="kn">from</span> <span class="nn">arkouda.numeric</span> <span class="kn">import</span> <span class="n">cumsum</span><span class="p">,</span> <span class="n">where</span>
+<span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarraycreation</span> <span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">full</span><span class="p">,</span> <span class="n">ones</span><span class="p">,</span> <span class="n">zeros</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarraysetops</span> <span class="kn">import</span> <span class="n">concatenate</span><span class="p">,</span> <span class="n">in1d</span>
 <span class="kn">from</span> <span class="nn">arkouda.sorting</span> <span class="kn">import</span> <span class="n">argsort</span><span class="p">,</span> <span class="n">coargsort</span>
@@ -478,9 +479,9 @@
 
 <div class="viewcode-block" id="find">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.alignment.find">[docs]</a>
-<span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">space</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">all_occurrences</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">remove_missing</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return indices of query items in a search list of items (-1 if not found).</span>
+<span class="sd">    Return indices of query items in a search list of items.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -488,13 +489,92 @@
 <span class="sd">        The items to search for. If multiple arrays, each &quot;row&quot; is an item.</span>
 <span class="sd">    space : (sequence of) array-like</span>
 <span class="sd">        The set of items in which to search. Must have same shape/dtype as query.</span>
+<span class="sd">    all_occurrences: bool</span>
+<span class="sd">        When duplicate terms are present in search space, if all_occurrences is True,</span>
+<span class="sd">        return all occurrences found as a SegArray, otherwise return only the first</span>
+<span class="sd">        occurrences as a pdarray. Defaults to only finding the first occurrence.</span>
+<span class="sd">        Finding all occurrences is not yet supported on sequences of arrays</span>
+<span class="sd">    remove_missing: bool</span>
+<span class="sd">        If False, return -1 for any items in query not found in space. If True,</span>
+<span class="sd">        remove these and only return indices of items that are found.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    indices : pdarray, int64</span>
-<span class="sd">        For each item in query, its index in space or -1 if not found.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    indices : pdarray or SegArray</span>
+<span class="sd">        For each item in query, its index in space. If remove_missing is True,</span>
+<span class="sd">        exclued missing values otherwise return -1. If all_occurrences is False,</span>
+<span class="sd">        the return will be a pdarray of the first index where each value in the</span>
+<span class="sd">        query appears in the space. if all_occurrences is True, the return will be</span>
+<span class="sd">        a SegArray containing every index where each value in the query appears in</span>
+<span class="sd">        the space.</span>
 
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; select_from = ak.arange(10)</span>
+<span class="sd">    &gt;&gt;&gt; arr1 = select_from[ak.randint(0, select_from.size, 20, seed=10)]</span>
+<span class="sd">    &gt;&gt;&gt; arr2 = select_from[ak.randint(0, select_from.size, 20, seed=11)]</span>
+<span class="sd">    # remove some values to ensure we have some values</span>
+<span class="sd">    # which don&#39;t appear in the search space</span>
+<span class="sd">    &gt;&gt;&gt; arr2 = arr2[arr2 != 9]</span>
+<span class="sd">    &gt;&gt;&gt; arr2 = arr2[arr2 != 3]</span>
+
+<span class="sd">    # find with defaults (all_occurrences and remove_missing both False)</span>
+<span class="sd">    &gt;&gt;&gt; ak.find(arr1, arr2)</span>
+<span class="sd">    array([-1 -1 -1 0 1 -1 -1 -1 2 -1 5 -1 8 -1 5 -1 -1 11 5 0])</span>
+
+<span class="sd">     # set remove_missing to True, only difference from default</span>
+<span class="sd">     # is missing values are excluded</span>
+<span class="sd">     &gt;&gt;&gt; ak.find(arr1, arr2, remove_missing=True)</span>
+<span class="sd">    array([0 1 2 5 8 5 11 5 0])</span>
+
+<span class="sd">    # set all_occurrences to True, the first index of each list</span>
+<span class="sd">    # is the first occurence and should match the default</span>
+<span class="sd">    &gt;&gt;&gt; ak.find(arr1, arr2, all_occurrences=True).to_list()</span>
+<span class="sd">    [[-1],</span>
+<span class="sd">     [-1],</span>
+<span class="sd">     [-1],</span>
+<span class="sd">     [0, 4],</span>
+<span class="sd">     [1, 3, 10],</span>
+<span class="sd">     [-1],</span>
+<span class="sd">     [-1],</span>
+<span class="sd">     [-1],</span>
+<span class="sd">     [2, 6, 12, 13],</span>
+<span class="sd">     [-1],</span>
+<span class="sd">     [5, 7],</span>
+<span class="sd">     [-1],</span>
+<span class="sd">     [8, 9, 14],</span>
+<span class="sd">     [-1],</span>
+<span class="sd">     [5, 7],</span>
+<span class="sd">     [-1],</span>
+<span class="sd">     [-1],</span>
+<span class="sd">     [11, 15],</span>
+<span class="sd">     [5, 7],</span>
+<span class="sd">     [0, 4]]</span>
+
+<span class="sd">    # set both remove_missing and all_occurrences to True, missing values</span>
+<span class="sd">    # will be empty segments</span>
+<span class="sd">    &gt;&gt;&gt; ak.find(arr1, arr2, remove_missing=True, all_occurrences=True).to_list()</span>
+<span class="sd">    [[],</span>
+<span class="sd">     [],</span>
+<span class="sd">     [],</span>
+<span class="sd">     [0, 4],</span>
+<span class="sd">     [1, 3, 10],</span>
+<span class="sd">     [],</span>
+<span class="sd">     [],</span>
+<span class="sd">     [],</span>
+<span class="sd">     [2, 6, 12, 13],</span>
+<span class="sd">     [],</span>
+<span class="sd">     [5, 7],</span>
+<span class="sd">     [],</span>
+<span class="sd">     [8, 9, 14],</span>
+<span class="sd">     [],</span>
+<span class="sd">     [5, 7],</span>
+<span class="sd">     [],</span>
+<span class="sd">     [],</span>
+<span class="sd">     [11, 15],</span>
+<span class="sd">     [5, 7],</span>
+<span class="sd">     [0, 4]]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Concatenate the space and query in fast (block interleaved) mode</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)):</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">query</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="n">space</span><span class="p">):</span>
@@ -520,15 +600,48 @@
     <span class="c1"># All space indices are less than all query indices</span>
     <span class="n">i</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">((</span><span class="n">arange</span><span class="p">(</span><span class="n">spacesize</span><span class="p">),</span> <span class="n">arange</span><span class="p">(</span><span class="n">spacesize</span><span class="p">,</span> <span class="n">spacesize</span> <span class="o">+</span> <span class="n">querysize</span><span class="p">)),</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="c1"># Group on terms</span>
-    <span class="n">g</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">dropna</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="c1"># For each term, count how many times it appears in the search space</span>
     <span class="n">space_multiplicity</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">spacesize</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="c1"># Warn of any duplicate terms in space</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">space_multiplicity</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-        <span class="n">warn</span><span class="p">(</span>
-            <span class="s2">&quot;Duplicate terms present in search space. Only first instance of each query term</span><span class="se">\</span>
-<span class="s2">            will be reported.&quot;</span>
-        <span class="p">)</span>
+    <span class="n">has_duplicates</span> <span class="o">=</span> <span class="p">(</span><span class="n">space_multiplicity</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span>
+    <span class="c1"># handle duplicate terms in space</span>
+    <span class="k">if</span> <span class="n">has_duplicates</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">all_occurrences</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;finding all_occurrences is not yet supported on sequences of arrays&quot;</span><span class="p">)</span>
+
+            <span class="kn">from</span> <span class="nn">arkouda.segarray</span> <span class="kn">import</span> <span class="n">SegArray</span>
+
+            <span class="c1"># use segmented mink to select space_multiplicity number of elements</span>
+            <span class="c1"># and create a segarray which contains all the indices</span>
+            <span class="c1"># in our query space, instead of just the min for each segment</span>
+
+            <span class="c1"># only calculate where to place the negatives if remove_missing is false</span>
+            <span class="n">negative_at</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">remove_missing</span> <span class="k">else</span> <span class="n">space_multiplicity</span> <span class="o">==</span> <span class="mi">0</span>
+            <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;segmentedExtremaK&quot;</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;vals&quot;</span><span class="p">:</span> <span class="n">i</span><span class="p">[</span><span class="n">g</span><span class="o">.</span><span class="n">permutation</span><span class="p">],</span>
+                    <span class="s2">&quot;segs&quot;</span><span class="p">:</span> <span class="n">g</span><span class="o">.</span><span class="n">segments</span><span class="p">,</span>
+                    <span class="s2">&quot;segLens&quot;</span><span class="p">:</span> <span class="n">g</span><span class="o">.</span><span class="n">size</span><span class="p">()[</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="s2">&quot;kArray&quot;</span><span class="p">:</span> <span class="n">space_multiplicity</span><span class="p">,</span>
+                    <span class="s2">&quot;isMin&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="s2">&quot;removeMissing&quot;</span><span class="p">:</span> <span class="n">remove_missing</span><span class="p">,</span>
+                    <span class="s2">&quot;negativeAt&quot;</span><span class="p">:</span> <span class="n">negative_at</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+            <span class="n">min_k_vals</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+            <span class="n">seg_idx</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">arange</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">size</span><span class="p">))[</span><span class="n">i</span> <span class="o">&gt;=</span> <span class="n">spacesize</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">remove_missing</span><span class="p">:</span>
+                <span class="n">space_multiplicity</span> <span class="o">+=</span> <span class="n">negative_at</span>
+            <span class="n">min_k_segs</span> <span class="o">=</span> <span class="n">cumsum</span><span class="p">(</span><span class="n">space_multiplicity</span><span class="p">)</span> <span class="o">-</span> <span class="n">space_multiplicity</span>
+            <span class="n">sa</span> <span class="o">=</span> <span class="n">SegArray</span><span class="p">(</span><span class="n">min_k_segs</span><span class="p">,</span> <span class="n">min_k_vals</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">sa</span><span class="p">[</span><span class="n">seg_idx</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;Duplicate terms present in search space. Only first instance of each query term&quot;</span>
+                <span class="s2">&quot; will be reported. To return all occurrences, set all_occurrences=True.&quot;</span>
+            <span class="p">)</span>
     <span class="c1"># For query terms in the space, the min combined index will be the first index of that</span>
     <span class="c1"># term in the space</span>
     <span class="n">uspaceidx</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">i</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
@@ -538,7 +651,8 @@
     <span class="c1"># Broadcast unique term indices to combined list of space and query terms</span>
     <span class="n">spaceidx</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">uspaceidx</span><span class="p">)</span>
     <span class="c1"># Return only the indices of the query terms (remove the search space)</span>
-    <span class="k">return</span> <span class="n">spaceidx</span><span class="p">[</span><span class="n">i</span> <span class="o">&gt;=</span> <span class="n">spacesize</span><span class="p">]</span></div>
+    <span class="n">pda</span> <span class="o">=</span> <span class="n">spaceidx</span><span class="p">[</span><span class="n">i</span> <span class="o">&gt;=</span> <span class="n">spacesize</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">pda</span><span class="p">[</span><span class="n">pda</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">remove_missing</span> <span class="k">else</span> <span class="n">pda</span></div>
 
 
 

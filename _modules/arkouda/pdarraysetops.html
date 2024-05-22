@@ -356,10 +356,10 @@
 
 <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
 <span class="kn">from</span> <span class="nn">arkouda.client_dtypes</span> <span class="kn">import</span> <span class="n">BitVector</span>
+<span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">bigint</span>
 <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="nb">bool</span> <span class="k">as</span> <span class="n">akbool</span>
 <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">int64</span> <span class="k">as</span> <span class="n">akint64</span>
 <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">uint64</span> <span class="k">as</span> <span class="n">akuint64</span>
-<span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">bigint</span>
 <span class="kn">from</span> <span class="nn">arkouda.groupbyclass</span> <span class="kn">import</span> <span class="n">GroupBy</span><span class="p">,</span> <span class="n">groupable</span><span class="p">,</span> <span class="n">groupable_element_type</span><span class="p">,</span> <span class="n">unique</span>
 <span class="kn">from</span> <span class="nn">arkouda.logger</span> <span class="kn">import</span> <span class="n">getArkoudaLogger</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span>
@@ -586,22 +586,40 @@
 
 <div class="viewcode-block" id="indexof1d">
 <a class="viewcode-back" href="../../autoapi/arkouda/pdarraysetops/index.html#arkouda.alignment.indexof1d">[docs]</a>
-<span class="k">def</span> <span class="nf">indexof1d</span><span class="p">(</span><span class="n">keys</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span> <span class="n">arr</span><span class="p">:</span> <span class="n">groupable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">groupable</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">indexof1d</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span> <span class="n">space</span><span class="p">:</span> <span class="n">groupable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns an integer array of the index values where the values of the first</span>
-<span class="sd">    array appear in the second.</span>
+<span class="sd">    Return indices of query items in a search list of items. Items not found will be excluded.</span>
+<span class="sd">    When duplicate terms are present in search space return indices of all occurrences.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    keys : pdarray or Strings or Categorical</span>
-<span class="sd">        Input array of values to find the indices of in `arr`.</span>
-<span class="sd">    arr : pdarray or Strings or Categorical</span>
-<span class="sd">        The values to search.</span>
+<span class="sd">    query : (sequence of) pdarray or Strings or Categorical</span>
+<span class="sd">        The items to search for. If multiple arrays, each &quot;row&quot; is an item.</span>
+<span class="sd">    space : (sequence of) pdarray or Strings or Categorical</span>
+<span class="sd">        The set of items in which to search. Must have same shape/dtype as query.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    pdarray, int</span>
-<span class="sd">        The indices of the values of `keys` in `arr`.</span>
+<span class="sd">    indices : pdarray, int64</span>
+<span class="sd">        For each item in query, its index in space.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This is an alias of</span>
+<span class="sd">    `ak.find(query, space, all_occurrences=True, remove_missing=True).values`</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; select_from = ak.arange(10)</span>
+<span class="sd">    &gt;&gt;&gt; arr1 = select_from[ak.randint(0, select_from.size, 20, seed=10)]</span>
+<span class="sd">    &gt;&gt;&gt; arr2 = select_from[ak.randint(0, select_from.size, 20, seed=11)]</span>
+<span class="sd">    # remove some values to ensure we have some values</span>
+<span class="sd">    # which don&#39;t appear in the search space</span>
+<span class="sd">    &gt;&gt;&gt; arr2 = arr2[arr2 != 9]</span>
+<span class="sd">    &gt;&gt;&gt; arr2 = arr2[arr2 != 3]</span>
+
+<span class="sd">    &gt;&gt;&gt; ak.indexof1d(arr1, arr2)</span>
+<span class="sd">    array([0 4 1 3 10 2 6 12 13 5 7 8 9 14 5 7 11 15 5 7 0 4])</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
@@ -611,19 +629,17 @@
 <span class="sd">    RuntimeError</span>
 <span class="sd">        Raised if the dtype of either array is not supported</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">arkouda.alignment</span> <span class="kn">import</span> <span class="n">find</span> <span class="k">as</span> <span class="n">akfind</span>
     <span class="kn">from</span> <span class="nn">arkouda.categorical</span> <span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
 
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">)):</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">))</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">))</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Arguments must have compatible types, Strings/Categorical&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;If keys is pdarray, arr must also be pdarray&quot;</span><span class="p">)</span>
 
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;indexof1d&quot;</span><span class="p">,</span>
-        <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;keys&quot;</span><span class="p">:</span> <span class="n">keys</span><span class="p">,</span> <span class="s2">&quot;arr&quot;</span><span class="p">:</span> <span class="n">arr</span><span class="p">},</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span></div>
+    <span class="n">found</span> <span class="o">=</span> <span class="n">akfind</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">all_occurrences</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">remove_missing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">found</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">found</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">found</span><span class="o">.</span><span class="n">values</span></div>
 
 
 
