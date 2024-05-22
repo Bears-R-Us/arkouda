@@ -6,10 +6,8 @@ from typing import TYPE_CHECKING, List, Optional, Tuple, Union, cast
 from arkouda.client import generic_msg
 import numpy as np
 from arkouda.pdarrayclass import create_pdarray, pdarray, _to_pdarray
-from arkouda.pdarraycreation import _array_memview
 from arkouda.dtypes import dtype as akdtype
 from arkouda.dtypes import resolve_scalar_dtype
-from arkouda.client import maxTransferBytes
 
 if TYPE_CHECKING:
     from ._typing import (

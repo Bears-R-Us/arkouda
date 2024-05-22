@@ -153,7 +153,21 @@ class Array:
 
     def chunk_info(self: Array, /) -> List[List[int]]:
         """
-        Get the chunk information for the array.
+        Get a list of indices indicating how the array is chunked across
+        Locales (compute nodes). Although Arkouda arrays don't have a notion
+        of chunking, like Dask arrays for example, it can be useful to know
+        how the array is distributed across locales in order to write/read
+        data to/from a chunked format like Zarr.
+
+        Returns a nested list of integers, where the outer list corresponds to
+        dimensions, and the inner lists correspond to locales. The value at [d][l]
+        is the global array index where locale l's local subdomain along the
+        d-th dimension begins.
+
+        For example, calling this function on a 100x40 2D array stored across 4
+        locales could return: [[0, 50], [0, 20]], indicating that the 4 "chunks"
+        start at indices 0 and 50 in the first dimension, and 0 and 20 in the
+        second dimension.
         """
         return self._array.chunk_info()
 
