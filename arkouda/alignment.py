@@ -2,7 +2,7 @@ import functools
 from typing import Sequence
 from warnings import warn
 
-import numpy as np  # type: ignore
+import numpy as np
 
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg

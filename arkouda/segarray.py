@@ -6,7 +6,7 @@ from typing import Optional, Sequence, Tuple
 from typing import cast as type_cast
 from warnings import warn
 
-import numpy as np  # type: ignore
+import numpy as np
 
 from arkouda.client import generic_msg
 from arkouda.dtypes import bool as akbool
@@ -67,8 +67,8 @@ class SegArray:
     objType = "SegArray"
 
     def __init__(self, segments, values, lengths=None, grouping=None):
-        self.logger = getArkoudaLogger(name=__class__.__name__)  # type: ignore
-        self.registered_name: Optional[str] = None  # type: ignore [annotation-unchecked]
+        self.logger = getArkoudaLogger(name=__class__.__name__)
+        self.registered_name: Optional[str] = None
 
         # validate inputs
         if not isinstance(segments, pdarray) or segments.dtype != akint64:

@@ -15,7 +15,7 @@ from typing import (
     cast,
 )
 
-import numpy as np  # type: ignore
+import numpy as np
 from typeguard import typechecked
 
 from arkouda.client import generic_msg

@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from enum import Enum
 
-import numpy as np  # type: ignore
+import numpy as np
 
 from arkouda.client import generic_msg
 from arkouda.dtypes import resolve_scalar_dtype, translate_np_dtype

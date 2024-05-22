@@ -8,7 +8,7 @@ from sphinx.application import Sphinx
 from sphinx.directives.code import CodeBlock
 
 
-class SubstitutionCodeBlock(CodeBlock):  # type: ignore
+class SubstitutionCodeBlock(CodeBlock):
     """
     Similar to CodeBlock but replaces placeholders with variables.
     """
