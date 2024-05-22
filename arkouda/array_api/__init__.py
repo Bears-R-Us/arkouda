@@ -1,5 +1,7 @@
 import warnings
 
+from ._array_object import Array
+
 from ._constants import e, inf, nan, pi
 
 from ._creation_functions import (
@@ -141,7 +143,9 @@ from ._utility_functions import all, any
 
 __array_api_version__ = "2022.12"
 
-__all__ = ["__array_api_version__"]
+__all__ = ["Array"]
+
+__all__ += ["__array_api_version__"]
 
 __all__ += ["e", "inf", "nan", "pi"]
 

@@ -29,7 +29,7 @@ from ._dtypes import (
 )
 from ._creation_functions import asarray
 
-from typing import TYPE_CHECKING, Optional, Tuple, Union, Any, Dict, Callable
+from typing import TYPE_CHECKING, Optional, Tuple, Union, Any, Dict, Callable, List
 import types
 
 if TYPE_CHECKING:
@@ -146,7 +146,32 @@ class Array:
         """
         Performs the operation __repr__.
         """
-        return self._array.__repr__()
+        return f"Arkouda Array ({self.shape}, {self.dtype})" + self._array.__str__()
+
+    def _repr_inline_(self: Array, width: int) -> str:
+        return f"Arkouda Array ({self.shape}, {self.dtype})"
+
+    def chunk_info(self: Array, /) -> List[List[int]]:
+        """
+        Get a list of indices indicating how the array is chunked across
+        Locales (compute nodes). Although Arkouda arrays don't have a notion
+        of chunking, like Dask arrays for example, it can be useful to know
+        how the array is distributed across locales in order to write/read
+        data to/from a chunked format like Zarr.
+
+        Returns a nested list of integers, where the outer list corresponds to
+        dimensions, and the inner lists correspond to locales. The value at [d][l]
+        is the global array index where locale l's local subdomain along the
+        d-th dimension begins.
+
+        For example, calling this function on a 100x40 2D array stored across 4
+        locales could return: [[0, 50], [0, 20]], indicating that the 4 "chunks"
+        start at indices 0 and 50 in the first dimension, and 0 and 20 in the
+        second dimension.
+        """
+        import json
+
+        return json.loads(ak.generic_msg(cmd=f"chunkInfo{self.ndim}D", args={"array": self._array}))
 
     def __array__(self, dtype: None | np.dtype[Any] = None):
         """
