@@ -423,17 +423,6 @@ class pdarray:
 
         return generic_msg(cmd="repr", args={"array": self, "printThresh": pdarrayIterThresh})
 
-    def chunk_info(self) -> List[List[int]]:
-        """
-        Get the chunk sizes for each dimension of the array
-
-        Returns
-        -------
-        List[List[int]]
-            A list of lists containing the "chunk sizes" for each dimension
-        """
-        return json.loads(generic_msg(cmd=f"chunkInfo{self.ndim}D", args={"array": self}))
-
     @property
     def max_bits(self):
         if self.dtype == bigint:
@@ -1205,7 +1194,7 @@ class pdarray:
                                 "array": self,
                                 "starts": tuple([0 for _ in range(self.ndim)]),
                                 "stops": tuple(self.shape),
-                                "stridse": tuple([1 for _ in range(self.ndim)]),
+                                "strides": tuple([1 for _ in range(self.ndim)]),
                                 "dtype": self.dtype,
                                 "value": self.format_other(_value),
                             },

@@ -169,7 +169,9 @@ class Array:
         start at indices 0 and 50 in the first dimension, and 0 and 20 in the
         second dimension.
         """
-        return self._array.chunk_info()
+        import json
+
+        return json.loads(ak.generic_msg(cmd=f"chunkInfo{self.ndim}D", args={"array": self._array}))
 
     def __array__(self, dtype: None | np.dtype[Any] = None):
         """
