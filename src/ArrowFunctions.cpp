@@ -572,6 +572,7 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
       }
 
       int64_t i = 0;
+      int64_t arrayIdx = 0;
       for (int r = 0; r < num_row_groups; r++) {
         std::shared_ptr<parquet::RowGroupReader> row_group_reader =
           parquet_reader->RowGroup(r);
@@ -581,32 +582,37 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
 
         std::shared_ptr<parquet::ColumnReader> column_reader = row_group_reader->Column(idx);
         if(lty == ARROWINT64 || lty == ARROWUINT64) {
+          int16_t definition_level; // nullable type and only reading single records in batch
           auto chpl_ptr = (int64_t*)chpl_arr;
           parquet::Int64Reader* reader =
             static_cast<parquet::Int64Reader*>(column_reader.get());
+          startIdx -= reader->Skip(startIdx);
 
-          while (reader->HasNext() && i < numElems) {
-            if((numElems - i) < batchSize)
-              batchSize = numElems - i;
-            (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
-            i+=values_read;
+          while (reader->HasNext() && arrayIdx < numElems) {
+            (void)reader->ReadBatch(1, &definition_level, nullptr, &chpl_ptr[arrayIdx], &values_read);
+            // if values_read is 0, that means that it was a null value
+            if (values_read != 0) {
+              arrayIdx++;
+            }
+            i++;
           }
         } else if(lty == ARROWINT32 || lty == ARROWUINT32) {
+          int16_t definition_level; // nullable type and only reading single records in batch
           auto chpl_ptr = (int64_t*)chpl_arr;
           parquet::Int32Reader* reader =
             static_cast<parquet::Int32Reader*>(column_reader.get());
+          startIdx -= reader->Skip(startIdx);
 
-          int32_t* tmpArr = (int32_t*)malloc(batchSize * sizeof(int32_t));
-          while (reader->HasNext() && i < numElems) {
-            if((numElems - i) < batchSize)
-              batchSize = numElems - i;
-            // Can't read directly into chpl_ptr because it is int64
-            (void)reader->ReadBatch(batchSize, nullptr, nullptr, tmpArr, &values_read);
-            for (int64_t j = 0; j < values_read; j++)
-              chpl_ptr[i+j] = (int64_t)tmpArr[j];
-            i+=values_read;
+          int32_t tmp;
+          while (reader->HasNext() && arrayIdx < numElems) {
+            (void)reader->ReadBatch(1, &definition_level, nullptr, &tmp, &values_read);
+            // if values_read is 0, that means that it was a null value
+            if (values_read != 0) {
+              chpl_ptr[arrayIdx] = (int64_t)tmp;
+              arrayIdx++;
+            }
+            i++;
           }
-          free(tmpArr);
         } else if (lty == ARROWSTRING) {
           int16_t definition_level; // nullable type and only reading single records in batch
           auto chpl_ptr = (unsigned char*)chpl_arr;
@@ -626,15 +632,19 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
             }
           }
         } else if(lty == ARROWBOOLEAN) {
-          auto chpl_ptr = (bool*)chpl_arr;
-          parquet::BoolReader* reader =
-            static_cast<parquet::BoolReader*>(column_reader.get());
+        int16_t definition_level; // nullable type and only reading single records in batch
+        auto chpl_ptr = (bool*)chpl_arr;
+        parquet::BoolReader* reader =
+          static_cast<parquet::BoolReader*>(column_reader.get());
+        startIdx -= reader->Skip(startIdx);
 
-          while (reader->HasNext() && i < numElems) {
-            if((numElems - i) < batchSize)
-              batchSize = numElems - i;
-            (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
-            i+=values_read;
+          while (reader->HasNext() && arrayIdx < numElems) {
+            (void)reader->ReadBatch(1, &definition_level, nullptr, &chpl_ptr[arrayIdx], &values_read);
+            // if values_read is 0, that means that it was a null value
+            if (values_read != 0) {
+              arrayIdx++;
+            }
+            i++;
           }
         } else if(lty == ARROWFLOAT) {
           auto chpl_ptr = (double*)chpl_arr;
