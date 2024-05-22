@@ -921,3 +921,14 @@ class StringTest(ArkoudaTest):
     def test_inferred_type(self):
         a = ak.array(["a", "b", "c"])
         self.assertTrue(a.inferred_type, "string")
+
+    def test_string_broadcast(self):
+        keys = ak.randint(0, 10, 100, int)
+        g = ak.GroupBy(keys)
+        str_vals = ak.random_strings_uniform(0, 3, 10, characters="printable")
+        str_broadcast_ans = str_vals[keys]
+
+        gb_broadcasted = g.broadcast(str_vals)
+        manual_broadcasted = ak.broadcast(g.segments, str_vals, permutation=g.permutation)
+        self.assertTrue((gb_broadcasted == str_broadcast_ans).all())
+        self.assertTrue((manual_broadcasted == str_broadcast_ans).all())

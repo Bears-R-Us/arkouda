@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from scipy import stats as sp_stats
 
 import arkouda as ak
 from arkouda.scipy import chisquare as akchisquare
@@ -204,6 +205,46 @@ class TestRandom:
                         previous = choice_arrays.pop(0)
                         current = rng.choice(a, size, replace, p)
                         assert np.allclose(previous.to_list(), current.to_list())
+
+    def test_normal(self):
+        rng = ak.random.default_rng(17)
+        both_scalar = rng.normal(loc=10, scale=2, size=10).to_list()
+        scale_scalar = rng.normal(loc=ak.array([0, 10, 20]), scale=1, size=3).to_list()
+        loc_scalar = rng.normal(loc=10, scale=ak.array([1, 2, 3]), size=3).to_list()
+        both_array = rng.normal(loc=ak.array([0, 10, 20]), scale=ak.array([1, 2, 3]), size=3).to_list()
+
+        # redeclare rng with same seed to test reproducibility
+        rng = ak.random.default_rng(17)
+        assert rng.normal(loc=10, scale=2, size=10).to_list() == both_scalar
+        assert rng.normal(loc=ak.array([0, 10, 20]), scale=1, size=3).to_list() == scale_scalar
+        assert rng.normal(loc=10, scale=ak.array([1, 2, 3]), size=3).to_list() == loc_scalar
+        assert (
+            rng.normal(loc=ak.array([0, 10, 20]), scale=ak.array([1, 2, 3]), size=3).to_list()
+            == both_array
+        )
+
+    def test_normal_hypothesis_testing(self):
+        # I tested this many times without a set seed, but with no seed
+        # it's expected to fail one out of every ~20 runs given a pval limit of 0.05.
+        rng = ak.random.default_rng(43)
+        num_samples = 10**4
+
+        mean = rng.uniform(-10, 10)
+        deviation = rng.uniform(0, 10)
+        sample = rng.normal(loc=mean, scale=deviation, size=num_samples)
+        sample_list = sample.to_list()
+
+        # first test if samples are normal at all
+        _, pval = sp_stats.normaltest(sample_list)
+
+        # if pval <= 0.05, the difference from the expected distribution is significant
+        assert pval > 0.05
+
+        # second goodness of fit test against the distribution with proper mean and std
+        good_fit_res = sp_stats.goodness_of_fit(
+            sp_stats.norm, sample_list, known_params={"loc": mean, "scale": deviation}
+        )
+        assert good_fit_res.pvalue > 0.05
 
     def test_legacy_randint(self):
         testArray = ak.random.randint(0, 10, 5)

@@ -41,9 +41,14 @@ def create_parser():
     parser.add_argument(
         "-s", "--seed", default=None, type=int, help="Value to initialize random number generator"
     )
-    parser.add_argument(
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument(
         "-q", "--parquet", default=False, action="store_true", help="Perform Parquet operations"
     )
+    group.add_argument(
+        "-v", "--csv", default=False, action="store_true", help="Perform CSV operations"
+    )
+
     parser.add_argument(
         "-w",
         "--only-write",
@@ -81,9 +86,11 @@ if __name__ == "__main__":
     ak.verbose = False
     ak.connect(args.hostname, args.port)
 
+    fileFormat = FileFormat.CSV if args.csv else FileFormat.PARQUET if args.parquet else FileFormat.HDF5
+
     if args.correctness_only:
         for dtype in TYPES:
-            check_correctness(dtype, args.path, args.seed, args.parquet, multifile=True)
+            check_correctness(dtype, args.path, args.seed, fileFormat, multifile=True)
         sys.exit(0)
 
     print("array size = {:,}".format(args.size))
@@ -91,20 +98,20 @@ if __name__ == "__main__":
 
     if args.only_write:
         time_ak_write(
-            args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, args.parquet
+            args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, fileFormat
         )
     elif args.only_read:
         time_ak_read(
-            args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, args.parquet
+            args.size, args.files_per_loc, args.trials, args.dtype, args.path, fileFormat
         )
     elif args.only_delete:
         remove_files(args.path)
     else:
         time_ak_write(
-            args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, args.parquet
+            args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, fileFormat
         )
         time_ak_read(
-            args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, args.parquet
+            args.size, args.files_per_loc, args.trials, args.dtype, args.path, fileFormat
         )
         remove_files(args.path)
 

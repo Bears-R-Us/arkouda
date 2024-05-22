@@ -29,6 +29,8 @@ dependencies:
   - Sphinx>=5.1.1
   - sphinx-argparse
   - sphinx-autoapi
+  - sphinx-design
+  - sphinx-autodoc-typehints
   - typed-ast
   - flake8
   - mypy>=0.931,<0.990
@@ -36,11 +38,13 @@ dependencies:
   - isort
   - pytest-json-report
   - pytest-benchmark
-  
+  - mathjax
+
   - pip:
     # Developer dependencies
     - typeguard==2.10.0
     - furo # sphinx theme
     - myst-parser
     - linkify-it-py
-  
+    - sphinx-autopackagesummary
+
