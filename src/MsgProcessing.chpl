@@ -434,7 +434,7 @@ module MsgProcessing
             }
             msg += "]";
 
-            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),msg);
+            mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),msg);
             return new MsgTuple(msg, MsgType.NORMAL);
         }
 
@@ -446,7 +446,7 @@ module MsgProcessing
             when DType.UInt8 do return getChunkInfo(uint(8));
             otherwise {
                 const errorMsg = notImplementedError(getRoutineName(),dtype2str(gEnt.dtype));
-                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                mpLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg,MsgType.ERROR);
             }
         }
