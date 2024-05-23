@@ -9,10 +9,12 @@ import pytest
 import arkouda as ak
 from arkouda.numpy import strings
 from arkouda.testing import assert_equal as ak_assert_equal
+from arkouda.testing import assert_equivalent
 
 ak.verbose = False
 N = 100
 UNIQUE = N // 4
+SEED = 12345
 
 
 class TestString:
@@ -973,3 +975,39 @@ class TestString:
         correct = set(list_1).union(set(list_2))
 
         assert set(output.to_ndarray()) == correct
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("ascending", [True, False])
+    def test_argsort_basic(self, size, ascending):
+        strings = ak.random_strings_uniform(
+            minlen=1, maxlen=8, size=size, seed=SEED if pytest.seed is None else pytest.seed
+        )
+        result = strings.argsort(ascending=ascending)
+        np_strings = strings.to_ndarray()
+        np_result = np_strings.argsort(stable=True)
+        if not ascending:
+            np_result = np.flip(np_result)
+        assert_equivalent(result, np_result)
+
+    def test_argsort_empty(self):
+        strings = ak.array([])
+        result = strings.argsort()
+        assert result.size == 0
+
+    def test_argsort_duplicates(self):
+        strings = ak.array(["apple", "banana", "apple", "banana"])
+        result = strings.argsort()
+        sorted_values = strings[result].tolist()
+        assert sorted_values == sorted(strings.tolist())
+
+    def test_argsort_case_sensitive(self):
+        strings = ak.array(["Apple", "apple", "Banana", "banana"])
+        result = strings.argsort()
+        sorted_values = strings[result].tolist()
+        assert sorted_values == sorted(strings.tolist())
+
+    def test_argsort_unicode(self):
+        strings = ak.array(["😀", "a", "🎉", "b", "👍"])
+        result = strings.argsort()
+        sorted_values = strings[result].tolist()
+        assert sorted_values == sorted(strings.tolist())
