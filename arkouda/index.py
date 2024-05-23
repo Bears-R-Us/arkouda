@@ -4,6 +4,7 @@ import builtins
 import json
 from typing import TYPE_CHECKING, List, Optional, Tuple, Union
 
+import numpy as np
 import pandas as pd
 from numpy import array as ndarray
 from numpy import dtype as npdtype
@@ -179,16 +180,9 @@ class Index:
         return values != other_values
 
     def _dtype_of_list_values(self, lst):
-        from arkouda.numpy.dtypes import dtype
 
         if isinstance(lst, list):
-            d = dtype(type(lst[0]))
-            for item in lst:
-                assert dtype(type(item)) == d, (
-                    f"Values of Index must all be same type.  "
-                    f"Types {d} and {dtype(type(item))} do not match."
-                )
-            return d
+            return np.array(lst).dtype
         else:
             raise TypeError("Index Types must match")
 
@@ -227,7 +221,7 @@ class Index:
                 return "integer"
             elif _is_dtype_in_union(self.dtype, float_scalars):
                 return "floating"
-            elif self.dtype == "<U":
+            elif str(self.dtype).startswith("<U"):
                 return "string"
         return self.values.inferred_type
 
@@ -352,6 +346,107 @@ class Index:
             return True
         else:
             return akall(self == other)
+
+    def _reindex(self, perm):
+        if isinstance(self, MultiIndex):
+            return MultiIndex(self[perm].levels, name=self.name, names=self.names)
+        elif isinstance(self.values, list):
+            if not isinstance(perm, list):
+                perm = perm.to_list()
+            return Index([self.values[i] for i in perm], name=self.name, allow_list=True)
+        else:
+            return Index(self.values[perm], name=self.name)
+
+    @typechecked
+    def sort_values(
+        self, ascending: bool = True, return_indexer: bool = False, na_position="last"
+    ) -> Union[Index, Tuple]:
+        """
+        Return a sorted copy of the index.
+
+        Return a sorted copy of the index, and optionally return the indices
+        that sorted the index itself.
+
+        Parameters
+        ----------
+        return_indexer : bool, default False
+            Should the indices that would sort the index be returned.
+        ascending : bool, default True
+            Should the index values be sorted in an ascending order.
+        na_position : {'first' or 'last'}, default 'last'
+            Argument 'first' puts NaNs at the beginning, 'last' puts NaNs at
+            the end.
+
+        Returns
+        -------
+        sorted_index : arkouda.Index
+            Sorted copy of the index.
+        indexer : arkouda.pdarray or list, optional
+            The indices that the index itself was sorted by.
+
+        Examples
+        --------
+        >>> idx = ak.Index([10, 100, 1, 1000])
+        >>> idx
+        Index([10, 100, 1, 1000], dtype='int64')
+
+        Sort values in ascending order (default behavior).
+
+        >>> idx.sort_values()
+        Index([1, 10, 100, 1000], dtype='int64')
+
+        Sort values in descending order, and also get the indices `idx` was
+        sorted by.
+
+        >>> idx.sort_values(ascending=False, return_indexer=True)
+        (Index([1000, 100, 10, 1], dtype='int64'), array([3, 1, 0, 2]))
+
+        """
+
+        if na_position not in ["first", "last"]:
+            raise ValueError('na_position must be "first" or "last".')
+
+        if isinstance(self, MultiIndex):
+            perm = coargsort(self.levels, ascending=ascending)
+        elif isinstance(self.values, list):
+            from numpy import argsort as np_argsort
+
+            if ascending is True:
+                perm = np_argsort(self.values).tolist()
+            else:
+                perm = np_argsort(self.values)[::-1].tolist()
+        else:
+            perm = argsort(self.values, ascending=ascending)
+
+        from arkouda.util import is_float
+
+        if isinstance(self.values, pdarray) and is_float(self.values):
+            from arkouda import concatenate
+
+            from arkouda import isnan as ak_isnan
+
+            is_nan = ak_isnan(self.values)
+            if na_position == "last":
+                perm = concatenate([perm[~is_nan], perm[is_nan]])
+            elif na_position == "first":
+                perm = concatenate([perm[is_nan], perm[~is_nan]])
+
+        elif isinstance(self.values, list):
+            from numpy import isnan as np_isnan
+
+            is_nan = np_isnan(self.values)
+            nan_vals = [i for (i, b) in zip(perm, is_nan) if b]
+            not_nan_vals = [i for (i, b) in zip(perm, is_nan) if not b]
+
+            if na_position == "last":
+                perm = [*not_nan_vals, *nan_vals]  # type: ignore
+            elif na_position == "first":
+                perm = [*nan_vals, *not_nan_vals]  # type: ignore
+
+        if return_indexer:
+            return self._reindex(perm), perm
+        else:
+            return self._reindex(perm)
 
     def memory_usage(self, unit="B"):
         """
@@ -1074,6 +1169,7 @@ class MultiIndex(Index):
         names: Optional[list[str]] = None,
     ):
         self.registered_name: Optional[str] = None
+
         if isinstance(data, MultiIndex):
             self.levels = data.levels
         elif isinstance(data, pd.MultiIndex):
@@ -1090,6 +1186,13 @@ class MultiIndex(Index):
         else:
             raise TypeError("MultiIndex should be an iterable, ak.MultiIndex, or pd.MutiIndex")
 
+        # =======
+        #         if not (isinstance(levels, list) or isinstance(levels, tuple)):
+        #             raise TypeError("MultiIndex should be an iterable")
+        #         elif isinstance(levels, tuple):
+        #             levels = list(levels)
+        #         self.levels = levels
+        # >>>>>>> cad665d0c (Closes #3177 Index.sort_values)
         first = True
         for col in self.levels:
             # col can be a python int which doesn't have a size attribute

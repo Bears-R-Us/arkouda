@@ -107,3 +107,67 @@ class TestCoargsort:
 
         with pytest.raises(TypeError):
             ak.coargsort([list(range(0, 10)), [0]], algo)
+
+    def test_coargsort_wstrings(self):
+        size = 100
+
+        ak_char_array = ak.random_strings_uniform(minlen=1, maxlen=2, seed=1, size=size)
+        ak_int_array = ak.randint(0, 10 * size, size, dtype=ak.int64)
+
+        perm = ak.coargsort([ak_char_array, ak_int_array])
+        arrays = [ak_char_array[perm], ak_int_array[perm]]
+
+        # code borrowed from arkouda.alignment.is_cosorted
+        # initialize the array to track boundary
+        boundary = arrays[0][:-1] != arrays[0][1:]
+        for array in arrays[1:]:
+            left = array[:-1]
+            right = array[1:]
+            _ = left <= right
+            if not (_ | boundary).all():
+                raise ValueError
+            boundary = boundary | (left != right)
+
+        #   Now check ascending=False
+        perm = ak.coargsort([ak_char_array, ak_int_array], ascending=False)
+        arrays = [ak_char_array[perm], ak_int_array[perm]]
+
+        # code borrowed from arkouda.alignment.is_cosorted
+        # initialize the array to track boundary
+        boundary = arrays[0][:-1] != arrays[0][1:]
+        for array in arrays[1:]:
+            left = array[:-1]
+            right = array[1:]
+            _ = left >= right
+            if not (_ | boundary).all():
+                raise ValueError
+            boundary = boundary | (left != right)
+
+    def test_coargsort_numeric(self):
+        from arkouda.alignment import is_cosorted
+
+        size = 100
+
+        ak_int_array = ak.randint(0, 10 * size, size, dtype=ak.int64)
+        ak_float_array = ak.randint(0, 10 * size, size, dtype=ak.float64)
+
+        perm = ak.coargsort([ak_int_array, ak_float_array])
+        arrays = [ak_int_array[perm], ak_float_array[perm]]
+
+        assert is_cosorted(arrays)
+
+        perm = ak.coargsort([ak_float_array, ak_int_array])
+        arrays = [ak_float_array[perm], ak_int_array[perm]]
+
+        assert is_cosorted(arrays)
+
+        # Now check when ascending=False
+        perm = ak.coargsort([ak_int_array, ak_float_array], ascending=False)
+        arrays = [-1 * ak_int_array[perm], -1 * ak_float_array[perm]]
+
+        assert is_cosorted(arrays)
+
+        perm = ak.coargsort([ak_float_array, ak_int_array], ascending=False)
+        arrays = [-1 * ak_float_array[perm], -1 * ak_int_array[perm]]
+
+        assert is_cosorted(arrays)
