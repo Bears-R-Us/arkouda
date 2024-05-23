@@ -159,12 +159,8 @@ class TestRandom:
 
         # I think the keys should always be sorted but just in case
 
-        # (1) Note the above comment
-        # (2) The test passes with this if block commented out
-        # (3) That makes this section here a candidate for deletion
-
-        #if not ak.is_sorted(uk):
-        #   f_obs = f_obs[ak.argsort(uk)]
+        if not ak.is_sorted(uk):
+           f_obs = f_obs[ak.argsort(uk)]
 
         f_exp = weights * num_samples
         _, pval = akchisquare(f_obs=f_obs, f_exp=f_exp)
