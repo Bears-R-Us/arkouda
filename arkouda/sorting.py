@@ -22,6 +22,7 @@ def argsort(
     pda: Union[pdarray, Strings, "Categorical"],  # type: ignore # noqa
     algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD,
     axis: int_scalars = 0,
+    ascending: bool = True,
 ) -> pdarray:
     """
     Return the permutation that sorts the array.
@@ -30,7 +31,10 @@ def argsort(
     ----------
     pda : pdarray or Strings or Categorical
         The array to sort (int64, uint64, or float64)
-
+    ascending: bool = True
+        Ignored when the number of dimensions is > 1.
+    algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD,
+    axis: int_scalars = 0
     Returns
     -------
     pdarray, int64
@@ -66,7 +70,7 @@ def argsort(
 
     check_type(argname="argsort", value=pda, expected_type=Union[pdarray, Strings, Categorical])
     if hasattr(pda, "argsort"):
-        return cast(Categorical, pda).argsort()
+        return cast(Categorical, pda).argsort(ascending=ascending)
     if pda.size == 0 and hasattr(pda, "dtype"):
         return zeros(0, dtype=pda.dtype)
     if isinstance(pda, pdarray) and pda.dtype == bigint:
@@ -80,12 +84,19 @@ def argsort(
             "axis": axis,
         },
     )
-    return create_pdarray(cast(str, repMsg))
+    sorted_array = create_pdarray(cast(str, repMsg))
+    if ascending is True or (hasattr(pda, "ndim") and pda.ndim != 1):
+        return sorted_array
+    else:
+        from arkouda import arange
+
+        return sorted_array[arange(sorted_array.size - 1, -1, -1)]
 
 
 def coargsort(
     arrays: Sequence[Union[Strings, pdarray, "Categorical"]],  # type: ignore # noqa
     algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD,
+    ascending=True,
 ) -> pdarray:
     """
     Return the permutation that groups the rows (left-to-right), if the
@@ -96,7 +107,9 @@ def coargsort(
     ----------
     arrays : Sequence[Union[Strings, pdarray, Categorical]]
         The columns (int64, uint64, float64, Strings, or Categorical) to sort by row
-
+    algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD
+    ascending: bool = True
+        Ignored when the number of dimensions is > 1.
     Returns
     -------
     pdarray, int64
@@ -144,7 +157,11 @@ def coargsort(
     anames = []
     atypes = []
     expanded_arrays = []
+    max_dim = 1
     for a in arrays:
+        if hasattr(a, "ndim"):
+            from numpy import maximum
+            max_dim = maximum(a.ndim, max_dim)
         if not isinstance(a, pdarray) or a.dtype not in [bigint, bool]:
             expanded_arrays.append(a)
         elif a.dtype == bigint:
@@ -182,7 +199,13 @@ def coargsort(
             "arr_types": atypes,
         },
     )
-    return create_pdarray(cast(str, repMsg))
+    sorted_array = create_pdarray(cast(str, repMsg))
+    if ascending is True or max_dim > 1:
+        return sorted_array
+    else:
+        from arkouda import arange
+
+        return sorted_array[arange(sorted_array.size - 1, -1, -1)]
 
 
 @typechecked

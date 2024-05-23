@@ -12,12 +12,11 @@ import arkouda.dataframe
 from arkouda.accessor import CachedAccessor, DatetimeAccessor, StringAccessor
 from arkouda.alignment import lookup
 from arkouda.categorical import Categorical
-from arkouda.dtypes import dtype, float64, int64
+from arkouda.dtypes import dtype, int64
 from arkouda.groupbyclass import GroupBy, groupable_element_type
 from arkouda.index import Index, MultiIndex
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import isnan, value_counts
-from arkouda.segarray import SegArray
 from arkouda.pdarrayclass import (
     RegistrationError,
     any,
@@ -27,6 +26,7 @@ from arkouda.pdarrayclass import (
 )
 from arkouda.pdarraycreation import arange, array, full, zeros
 from arkouda.pdarraysetops import argsort, concatenate, in1d, indexof1d
+from arkouda.segarray import SegArray
 from arkouda.strings import Strings
 from arkouda.util import convert_if_categorical, get_callback, is_float
 
@@ -685,8 +685,8 @@ class Series:
         A new Series sorted.
         """
 
-        idx = self.index.argsort(ascending=ascending)
-        return self._reindex(idx)
+        perm = self.index.argsort(ascending=ascending)
+        return self._reindex(perm)
 
     @typechecked
     def sort_values(self, ascending: bool = True) -> Series:
@@ -701,21 +701,19 @@ class Series:
         -------
         A new Series sorted smallest to largest
         """
+        from arkouda.util import is_numeric
 
         if not ascending:
-            if isinstance(self.values, pdarray) and self.values.dtype in (
-                int64,
-                float64,
-            ):
+            if isinstance(self.values, pdarray) and is_numeric(self.values):
                 # For numeric values, negation reverses sort order
-                idx = argsort(-self.values)
+                perm = argsort(-self.values)
             else:
                 # For non-numeric values, need the descending arange because reverse slicing
                 # is not supported
-                idx = argsort(self.values)[arange(self.values.size - 1, -1, -1)]
+                perm = argsort(self.values)[arange(self.values.size - 1, -1, -1)]
         else:
-            idx = argsort(self.values)
-        return self._reindex(idx)
+            perm = argsort(self.values)
+        return self._reindex(perm)
 
     @typechecked
     def tail(self, n: int = 10) -> Series:
