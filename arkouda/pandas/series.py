@@ -18,18 +18,12 @@ from arkouda.groupbyclass import GroupBy, groupable_element_type
 from arkouda.index import Index, MultiIndex
 from arkouda.numpy import cast as akcast
 from arkouda.numpy import isnan, value_counts
-from arkouda.numpy.dtypes import bool_scalars, dtype, float64, int64
-from arkouda.numpy.pdarrayclass import (
-    RegistrationError,
-    any,
-    argmaxk,
-    create_pdarray,
-    pdarray,
-)
-from arkouda.numpy.pdarraycreation import arange, array, full, zeros
-from arkouda.numpy.pdarraysetops import argsort, concatenate, in1d, indexof1d
+from arkouda.numpy.dtypes import bool_scalars, dtype, int64
+from arkouda.numpy.pdarraycreation import arange, array, create_pdarray, full, zeros
+from arkouda.numpy.pdarraysetops import concatenate, in1d, indexof1d
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.util import get_callback, is_float
+from arkouda.pdarrayclass import RegistrationError, any, argmaxk, pdarray
 
 if TYPE_CHECKING:
     from arkouda.numpy.segarray import SegArray
@@ -727,13 +721,45 @@ class Series:
         return Series(index=new_index, data=self.values[idx])
 
     @typechecked
+    def argsort(self, ascending: bool = True) -> pdarray:
+        """
+        Return the permutation that sorts the Series values.
+
+        Parameters
+        ----------
+        ascending : bool, default True
+            Whether to sort the Series values in ascending (default) or descending order.
+
+        Returns
+        -------
+        pdarray
+            The indices that would sort the Series values.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> s = ak.Series(ak.array([100, 5, 20]), index=ak.array([10, 11, 12]))
+        >>> s.argsort()
+        array([1 2 0])
+        >>> s.index[s.argsort()]
+        Index(array([11 12 10]), dtype='int64')
+        >>> s[s.index[s.argsort()].values]
+        11      5
+        12     20
+        10    100
+        dtype: int64
+
+        """
+        return self.values.argsort(ascending=ascending)
+
+    @typechecked
     def sort_index(self, ascending: bool = True) -> Series:
         """
         Sort the Series by its index.
 
         Parameters
         ----------
-        ascending : bool, default=True
+        ascending : bool, default True
             Whether to sort the index in ascending (default) or descending order.
 
         Returns
@@ -741,40 +767,93 @@ class Series:
         Series
             A new Series sorted by index.
 
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> s = ak.Series(ak.array([100, 200, 300]), index=ak.array([2, 1, 3]))
+        >>> s
+        2    100
+        1    200
+        3    300
+        dtype: int64
+
+        Sort in ascending order (default):
+        >>> s.sort_index()
+        1    200
+        2    100
+        3    300
+        dtype: int64
+
+        Sort in descending order:
+        >>> s.sort_index(ascending=False)
+        3    300
+        2    100
+        1    200
+        dtype: int64
+
         """
-        idx = self.index.argsort(ascending=ascending)
-        return self._reindex(idx)
+        perm = self.index.argsort(ascending=ascending)
+        return self._reindex(perm)
 
     @typechecked
-    def sort_values(self, ascending: bool = True) -> Series:
+    def sort_values(self, ascending: bool = True, na_position: str = "last") -> Series:
         """
         Sort the Series by its values.
 
         Parameters
         ----------
-        ascending : bool, default=True
+        ascending : bool, default True
             Whether to sort values in ascending (default) or descending order.
+        na_position : {'first', 'last'}, default 'last'
+            If 'first', NaNs are placed at the beginning. If 'last', NaNs are placed at the end.
 
         Returns
         -------
         Series
             A new Series sorted by its values.
 
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> s = ak.Series(ak.array([100, ak.nan, 300]), index=ak.array([2, 1, 3]))
+        >>> s
+        2    100.0
+        1      NaN
+        3    300.0
+        dtype: float64
+
+        Default ascending with NaNs last:
+        >>> s.sort_values()
+        2    100.0
+        3    300.0
+        1      NaN
+        dtype: float64
+
+        Descending with NaNs first:
+        >>> s.sort_values(ascending=False, na_position='first')
+        1      NaN
+        3    300.0
+        2    100.0
+        dtype: float64
+
         """
-        if not ascending:
-            if isinstance(self.values, pdarray) and self.values.dtype in (
-                int64,
-                float64,
-            ):
-                # For numeric values, negation reverses sort order
-                idx = argsort(-self.values)
-            else:
-                # For non-numeric values, need the descending arange because reverse slicing
-                # is not supported
-                idx = argsort(self.values)[arange(self.values.size - 1, -1, -1)]
-        else:
-            idx = argsort(self.values)
-        return self._reindex(idx)
+        from arkouda.numpy.sorting import argsort as ak_argsort
+
+        if na_position not in {"first", "last"}:
+            raise ValueError("na_position must be either 'first' or 'last'")
+
+        perm = ak_argsort(self.values, ascending=ascending, na_position=na_position)
+
+        # # Handle NaNs for float arrays
+        # if hasattr(self.values, "dtype") and self.values.dtype.name == "float64":
+        #     is_nan = isnan(self.values)[perm]
+        #     if na_position == "last":
+        #         perm = concatenate([perm[~is_nan], perm[is_nan]])
+        #     else:
+        #         perm = concatenate([perm[is_nan], perm[~is_nan]])
+
+        return self._reindex(perm)
 
     @typechecked
     def tail(self, n: int = 10) -> Series:
@@ -847,15 +926,19 @@ class Series:
         >>> ak.connect()
         >>> s = ak.Series(["elk", "pig", "dog", "quetzal"], name="animal")
         >>> print(s.to_markdown())
+        +----+----------+
         |    | animal   |
-        |---:|:---------|
+        +====+==========+
         |  0 | elk      |
+        +----+----------+
         |  1 | pig      |
+        +----+----------+
         |  2 | dog      |
+        +----+----------+
         |  3 | quetzal  |
+        +----+----------+
 
         Output markdown with a tabulate option.
-
         >>> print(s.to_markdown(tablefmt="grid"))
         +----+----------+
         |    | animal   |
@@ -1272,53 +1355,29 @@ class Series:
         >>> ak.connect()
         >>> s = ak.Series(ak.array([2, 3, 2, 3, 4]))
         >>> s
-
-        +----+-----+
-        |    | 0   |
-        +====+=====+
-        |  0 | 2   |
-        +----+-----+
-        |  1 | 3   |
-        +----+-----+
-        |  2 | 2   |
-        +----+-----+
-        |  3 | 3   |
-        +----+-----+
-        |  4 | 4   |
-        +----+-----+
+        0    2
+        1    3
+        2    2
+        3    3
+        4    4
+        dtype: int64
 
         >>> s.map({4: 25.0, 2: 30.0, 1: 7.0, 3: 5.0})
-
-        +----+-----+
-        |    | 0   |
-        +====+=====+
-        |  0 | 30.0|
-        +----+-----+
-        |  1 | 5.0 |
-        +----+-----+
-        |  2 | 30.0|
-        +----+-----+
-        |  3 | 5.0 |
-        +----+-----+
-        |  4 | 25.0|
-        +----+-----+
+        0    30.0
+        1     5.0
+        2    30.0
+        3     5.0
+        4    25.0
+        dtype: float64
 
         >>> s2 = ak.Series(ak.array(["a","b","c","d"]), index = ak.array([4,2,1,3]))
         >>> s.map(s2)
-
-        +----+-----+
-        |    | 0   |
-        +====+=====+
-        |  0 | b   |
-        +----+-----+
-        |  1 | d   |
-        +----+-----+
-        |  2 | b   |
-        +----+-----+
-        |  3 | d   |
-        +----+-----+
-        |  4 | a   |
-        +----+-----+
+        0    b
+        1    d
+        2    b
+        3    d
+        4    a
+        dtype: object
 
         """
         from arkouda import Series
@@ -1350,16 +1409,10 @@ class Series:
 
         >>> s = Series(ak.array([1, 2, np.nan]), index = ak.array([1, 2, 4]))
         >>> s.isna()
-
-        +----+---------+
-        |    |   0     |
-        +====+=========+
-        |  1 |   False |
-        +----+---------+
-        |  2 |   False |
-        +----+---------+
-        |  4 |   True  |
-        +----+---------+
+        1    False
+        2    False
+        4     True
+        dtype: bool
 
         """
         if not is_float(self.values):
@@ -1393,16 +1446,10 @@ class Series:
 
         >>> s = Series(ak.array([1, 2, np.nan]), index = ak.array([1, 2, 4]))
         >>> s.isnull()
-
-        +----+---------+
-        |    |   0     |
-        +====+=========+
-        |  1 |   False |
-        +----+---------+
-        |  2 |   False |
-        +----+---------+
-        |  4 |   True  |
-        +----+---------+
+        1    False
+        2    False
+        4     True
+        dtype: bool
 
         """
         return self.isna()
@@ -1431,16 +1478,10 @@ class Series:
 
         >>> s = Series(ak.array([1, 2, np.nan]), index = ak.array([1, 2, 4]))
         >>> s.notna()
-
-        +----+---------+
-        |    |   0     |
-        +====+=========+
-        |  1 |   True  |
-        +----+---------+
-        |  2 |   True  |
-        +----+---------+
-        |  4 |   False |
-        +----+---------+
+        1     True
+        2     True
+        4    False
+        dtype: bool
 
         """
         if not is_float(self.values):
@@ -1474,16 +1515,10 @@ class Series:
 
         >>> s = Series(ak.array([1, 2, np.nan]), index = ak.array([1, 2, 4]))
         >>> s.notnull()
-
-        +----+---------+
-        |    |   0     |
-        +====+=========+
-        |  1 |   True  |
-        +----+---------+
-        |  2 |   True  |
-        +----+---------+
-        |  4 |   False |
-        +----+---------+
+        1     True
+        2     True
+        4    False
+        dtype: bool
 
         """
         return self.notna()
@@ -1505,21 +1540,14 @@ class Series:
 
         >>> s = ak.Series(ak.array([1, 2, 3, np.nan]))
         >>> s
-
-        +----+-------+
-        |    |   0   |
-        +====+=======+
-        |  0 |   1.0 |
-        +----+-------+
-        |  1 |   2.0 |
-        +----+-------+
-        |  2 |   3.0 |
-        +----+-------+
-        |  3 |   nan |
-        +----+-------+
+        0    1.0
+        1    2.0
+        2    3.0
+        3    NaN
+        dtype: float64
 
         >>> s.hasnans()
-        True
+        np.True_
 
         """
         if is_float(self.values):
@@ -1554,71 +1582,39 @@ class Series:
 
         >>> data = ak.Series([1, np.nan, 3, np.nan, 5])
         >>> data
-
-        +----+-------+
-        |    |   0   |
-        +====+=======+
-        |  0 |   1.0 |
-        +----+-------+
-        |  1 |   nan |
-        +----+-------+
-        |  2 |   3.0 |
-        +----+-------+
-        |  3 |   nan |
-        +----+-------+
-        |  4 |   5.0 |
-        +----+-------+
+        0    1.0
+        1    NaN
+        2    3.0
+        3    NaN
+        4    5.0
+        dtype: float64
 
         >>> fill_values1 = ak.ones(5)
         >>> data.fillna(fill_values1)
-
-        +----+-------+
-        |    |   0   |
-        +====+=======+
-        |  0 |   1.0 |
-        +----+-------+
-        |  1 |   1.0 |
-        +----+-------+
-        |  2 |   3.0 |
-        +----+-------+
-        |  3 |   1.0 |
-        +----+-------+
-        |  4 |   5.0 |
-        +----+-------+
+        0    1.0
+        1    1.0
+        2    3.0
+        3    1.0
+        4    5.0
+        dtype: float64
 
         >>> fill_values2 = Series(ak.ones(5))
         >>> data.fillna(fill_values2)
-
-        +----+-------+
-        |    |   0   |
-        +====+=======+
-        |  0 |   1.0 |
-        +----+-------+
-        |  1 |   1.0 |
-        +----+-------+
-        |  2 |   3.0 |
-        +----+-------+
-        |  3 |   1.0 |
-        +----+-------+
-        |  4 |   5.0 |
-        +----+-------+
+        0    1.0
+        1    1.0
+        2    3.0
+        3    1.0
+        4    5.0
+        dtype: float64
 
         >>> fill_values3 = 100.0
         >>> data.fillna(fill_values3)
-
-        +----+---------+
-        |    |     0   |
-        +====+=========+
-        |  0 |     1.0 |
-        +----+---------+
-        |  1 |   100.0 |
-        +----+---------+
-        |  2 |     3.0 |
-        +----+---------+
-        |  3 |   100.0 |
-        +----+---------+
-        |  4 |     5.0 |
-        +----+---------+
+        0      1.0
+        1    100.0
+        2      3.0
+        3    100.0
+        4      5.0
+        dtype: float64
 
         """
         from arkouda.numpy import where

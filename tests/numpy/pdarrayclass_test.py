@@ -527,6 +527,7 @@ class TestPdarrayClass:
         a = ak.randint(0, 1_000_000, size, dtype=dtype if dtype != ak.bigint else ak.int64, seed=1)
         if dtype == ak.bigint:
             a = a + 2**70
+
         perm = a.argsort(ascending=ascending)
         sorted_vals = a[perm]
 

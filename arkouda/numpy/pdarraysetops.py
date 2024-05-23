@@ -24,7 +24,16 @@ if TYPE_CHECKING:
 else:
     Categorical = TypeVar("Categorical")
 
-__all__ = ["in1d", "concatenate", "union1d", "intersect1d", "setdiff1d", "setxor1d", "indexof1d"]
+__all__ = [
+    "argsort",
+    "in1d",
+    "concatenate",
+    "union1d",
+    "intersect1d",
+    "setdiff1d",
+    "setxor1d",
+    "indexof1d",
+]
 
 logger = getArkoudaLogger(name="pdarraysetops")
 
