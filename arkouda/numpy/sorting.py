@@ -3,7 +3,6 @@ from __future__ import annotations
 from enum import Enum
 from typing import TYPE_CHECKING, Literal, Sequence, TypeVar, Union, cast
 
-import numpy as np
 from typeguard import check_type, typechecked
 
 from arkouda.numpy.dtypes import bigint, dtype, float64, int64, int_scalars, uint64
@@ -18,6 +17,7 @@ else:
     generic_msg = TypeVar("generic_msg")
     Categorical = TypeVar("Categorical")
 
+
 numeric_dtypes = {dtype(int64), dtype(uint64), dtype(float64)}
 
 __all__ = ["argsort", "coargsort", "sort", "SortingAlgorithm", "searchsorted"]
@@ -29,79 +29,94 @@ def argsort(
     pda: Union[pdarray, Strings, Categorical],
     algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD,
     axis: int_scalars = 0,
+    ascending: bool = True,
+    na_position: str = "last",
 ) -> pdarray:
     """
-    Return the permutation that sorts the array.
+    Return the permutation (indices) that sorts the array.
 
     Parameters
     ----------
     pda : pdarray, Strings, or Categorical
-        The array to sort (int64, uint64, or float64)
-    algorithm : SortingAlgorithm, default=SortingAlgorithm.RadixSortLSD
-        The algorithm to be used for sorting the array.
-    axis : int_scalars, default=0
-        The axis to sort over.
+        The array to sort (supported: int64, uint64, float64 for pdarray).
+    algorithm : SortingAlgorithm, default SortingAlgorithm.RadixSortLSD
+        The algorithm to use for sorting.
+    axis : int, default 0
+        Axis to sort along. Negative values are normalized against the array rank.
+        For 1D types (Strings, Categorical), must be 0.
+    ascending : bool, default True
+        Sort order.
+    na_position : {'first', 'last'}, default 'last'
+        Only supported for **1D** float `pdarray`s. For multi-dimensional `pdarray`s,
+        any value other than 'last' raises ValueError; NaN placement is not applied.
 
     Returns
     -------
     pdarray
-        The indices such that ``pda[indices]`` is sorted
+        Indices such that ``pda[indices]`` is sorted.
 
     Raises
     ------
     TypeError
-        Raised if the parameter is other than a pdarray, Strings or Categorical
+        If `pda` is not a pdarray, Strings, or Categorical.
+    ValueError
+        If `axis` is out of bounds or `na_position` is invalid/unsupported.
 
     See Also
     --------
     coargsort
-
-    Notes
-    -----
-    Uses a least-significant-digit radix sort, which is stable and
-    resilient to non-uniformity in data but communication intensive.
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> a = ak.randint(0, 10, 10, seed=1)
-    >>> a
-    array([7 9 5 1 4 1 8 5 5 0])
-
-    >>> perm = ak.argsort(a)
-    >>> a[perm]
-    array([0 1 1 4 5 5 5 7 8 9])
-
-    >>> ak.argsort(a, ak.sorting.SortingAlgorithm["RadixSortLSD"])
-    array([9 3 5 4 2 7 8 0 6 1])
-
-    >>> ak.argsort(a, ak.sorting.SortingAlgorithm["TwoArrayRadixSort"])
-    array([9 3 5 4 2 7 8 0 6 1])
     """
+    from arkouda.numpy.dtypes import int64
+    from arkouda.numpy.numeric import isnan
+    from arkouda.numpy.pdarraysetops import concatenate
     from arkouda.pandas.categorical import Categorical
 
-    ndim = cast(Union[int, np.integer], getattr(pda, "ndim"))
+    check_type("argsort", pda, Union[pdarray, Strings, Categorical])
 
-    if axis < -1 or axis > int(ndim):
-        raise ValueError(f"Axis must be between -1 and the PD Array's rank ({int(ndim)})")
-    if axis == -1:
-        axis = int(ndim) - 1
+    ndim = pda.ndim
+    axis = int(axis)
+    if axis < 0:
+        axis += ndim
+    if axis < 0 or axis >= ndim:
+        raise ValueError(f"axis {axis} is out of bounds for array of rank {ndim}")
 
-    check_type(
-        argname="argsort",
-        value=pda,
-        expected_type=Union[pdarray, Strings, Categorical],
-    )
+    if na_position not in {"first", "last"}:
+        raise ValueError("na_position must be either 'first' or 'last'")
 
+    # Enforce: na_position is only supported for 1D
+    if ndim != 1 and na_position != "last":
+        raise ValueError("na_position is only supported for 1D arrays")
+
+    size = pda.size
+    if size == 0:
+        return zeros(0, dtype=int64)
+
+    # Categorical / Strings (always 1D; axis must be 0)
     if isinstance(pda, Categorical):
-        return cast(Categorical, pda).argsort()
-    elif isinstance(pda, Strings):
-        perm = pda.argsort(algorithm=algorithm)
+        if axis != 0:
+            raise ValueError("Categorical argsort only supports axis=0")
+        return cast(Categorical, pda).argsort(algorithm=algorithm, ascending=ascending)
+
+    if isinstance(pda, Strings):
+        if axis != 0:
+            raise ValueError("Strings argsort only supports axis=0")
+        return cast(Strings, pda).argsort(algorithm=algorithm, ascending=ascending)
+
+    # pdarray
+    if isinstance(pda, pdarray):
+        perm = cast(pdarray, pda).argsort(algorithm=algorithm, axis=axis, ascending=ascending)
+
+        # Apply NaN placement ONLY when 1D float64
+        if ndim == 1 and pda.dtype == "float64":
+            is_nan = isnan(pda)[perm]
+            if na_position == "last":
+                perm = concatenate([perm[~is_nan], perm[is_nan]])
+            else:  # 'first'
+                perm = concatenate([perm[is_nan], perm[~is_nan]])
+
         return perm
-    elif isinstance(pda, pdarray):
-        return pda.argsort(algorithm=algorithm, axis=axis)
-    else:
-        raise TypeError(f"ak.argsort only supports pdarray, Strings, and Categorical, not {type(pda)}")
+
+    raise TypeError(f"ak.argsort only supports pdarray, Strings, and Categorical, not {type(pda)}")
 
 
 def coargsort(
