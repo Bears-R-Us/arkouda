@@ -969,13 +969,44 @@ class Categorical:
         """
         return [self.codes]
 
-    def argsort(self):
-        # __doc__ = argsort.__doc__
+    def argsort(self, ascending: bool = True) -> pdarray:
+        """
+        Return the permutation that sorts the Categorical.
+
+        Parameters
+        ----------
+        ascending : bool, default True
+            Whether to return indices that would sort the Categorical in ascending order.
+            If False, returns indices for descending order.
+
+        Returns
+        -------
+        pdarray
+            The indices that sort the Categorical.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> cat = ak.Categorical(ak.array(['dog', 'cat', 'dog', 'bird']))
+        >>> cat.argsort()
+        array([3 1 0 2])
+
+        >>> cat.argsort(ascending=False)
+        array([2 0 1 3])
+
+        """
+        from arkouda import arange, zeros_like
+        from arkouda.numpy import argsort
+        from arkouda.numpy.manipulation_functions import flip
+
         idxperm = argsort(self.categories)
         inverse = zeros_like(idxperm)
         inverse[idxperm] = arange(idxperm.size)
         newvals = inverse[self.codes]
-        return argsort(newvals)
+        sorted_array = argsort(newvals)
+
+        return sorted_array if ascending else flip(sorted_array)
 
     def sort_values(self):
         # __doc__ = sort.__doc__

@@ -3,7 +3,6 @@ from __future__ import annotations
 from enum import Enum
 from typing import TYPE_CHECKING, Literal, Sequence, TypeVar, Union, cast
 
-import numpy as np
 from typeguard import check_type, typechecked
 
 from arkouda.numpy.dtypes import bigint, dtype, float64, int64, int_scalars, uint64
@@ -29,6 +28,8 @@ def argsort(
     pda: Union[pdarray, Strings, Categorical],
     algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD,
     axis: int_scalars = 0,
+    ascending: bool = True,
+    na_position: str = "last",
 ) -> pdarray:
     """
     Return the permutation that sorts the array.
@@ -36,21 +37,27 @@ def argsort(
     Parameters
     ----------
     pda : pdarray, Strings, or Categorical
-        The array to sort (int64, uint64, or float64)
-    algorithm : SortingAlgorithm, default=SortingAlgorithm.RadixSortLSD
-        The algorithm to be used for sorting the array.
-    axis : int_scalars, default=0
-        The axis to sort over.
+        The array to sort (int64, uint64, or float64).
+    algorithm : SortingAlgorithm, default SortingAlgorithm.RadixSortLSD
+        The algorithm to use for sorting.
+    axis : int_scalars, default 0
+        The axis to sort along. Must be between -1 and the array rank.
+    ascending : bool, default True
+        Whether to sort in ascending order. Ignored for multidimensional arrays.
+    na_position : {'first', 'last'}, default 'last'
+        Where to place NaNs in the result (only applicable for float arrays).
 
     Returns
     -------
     pdarray
-        The indices such that ``pda[indices]`` is sorted
+        The indices such that ``pda[indices]`` is sorted.
 
     Raises
     ------
     TypeError
-        Raised if the parameter is other than a pdarray, Strings or Categorical
+        If `pda` is not a pdarray, Strings, or Categorical.
+    ValueError
+        If `axis` is out of bounds for the input array or if `na_position` is invalid.
 
     See Also
     --------
@@ -64,20 +71,18 @@ def argsort(
     Examples
     --------
     >>> import arkouda as ak
-    >>> a = ak.randint(0, 10, 10, seed=1)
-    >>> a
-    array([7 9 5 1 4 1 8 5 5 0])
-
-    >>> perm = ak.argsort(a)
-    >>> a[perm]
-    array([0 1 1 4 5 5 5 7 8 9])
-
-    >>> ak.argsort(a, ak.sorting.SortingAlgorithm["RadixSortLSD"])
-    array([9 3 5 4 2 7 8 0 6 1])
-
-    >>> ak.argsort(a, ak.sorting.SortingAlgorithm["TwoArrayRadixSort"])
-    array([9 3 5 4 2 7 8 0 6 1])
+    >>> a = ak.array([7, ak.nan, 5, 1])
+    >>> a[ak.argsort(a)]
+    array([1.00000000000000000 5.00000000000000000 7.00000000000000000 nan])
+    >>> a[ak.argsort(a, ascending=False, na_position='first')]
+    array([nan 7.00000000000000000 5.00000000000000000 1.00000000000000000])
     """
+    import numpy as np
+
+    from arkouda import concatenate, isnan
+    from arkouda.numpy.pdarrayclass import pdarray
+    from arkouda.numpy.pdarraycreation import zeros
+    from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical
 
     ndim = cast(Union[int, np.integer], getattr(pda, "ndim"))
@@ -87,15 +92,35 @@ def argsort(
     if axis == -1:
         axis = int(ndim) - 1
 
-    check_type(argname="argsort", value=pda, expected_type=Union[pdarray, Strings, Categorical])
+    if na_position not in {"first", "last"}:
+        raise ValueError("na_position must be either 'first' or 'last'")
+
+    ndim = cast(Union[int, np.integer], getattr(pda, "ndim"))
+
+    if axis < -1 or axis > int(ndim):
+        raise ValueError(f"Axis must be between -1 and the array's rank ({int(ndim)})")
+    if axis == -1:
+        axis = int(ndim) - 1
+
+    check_type("argsort", pda, Union[pdarray, Strings, Categorical])
+
+    if pda.size == 0 and hasattr(pda, "dtype"):
+        return zeros(0, dtype=pda.dtype)
 
     if isinstance(pda, Categorical):
-        return cast(Categorical, pda).argsort()
+        return cast(Categorical, pda).argsort(algorithm=algorithm, ascending=ascending)
     elif isinstance(pda, Strings):
-        perm = pda.argsort(algorithm=algorithm)
+        perm = pda.argsort(algorithm=algorithm, ascending=ascending)
         return perm
     elif isinstance(pda, pdarray):
-        return pda.argsort(algorithm=algorithm, axis=axis)
+        perm = pda.argsort(algorithm=algorithm, axis=axis, ascending=ascending)
+        if pda.dtype.name == "float64":
+            is_nan = isnan(pda)[perm]
+            if na_position == "last":
+                perm = concatenate([perm[~is_nan], perm[is_nan]])
+            else:
+                perm = concatenate([perm[is_nan], perm[~is_nan]])
+        return perm
     else:
         raise TypeError(f"ak.argsort only supports pdarray, Strings, and Categorical, not {type(pda)}")
 

@@ -35,6 +35,7 @@ if TYPE_CHECKING:
 else:
     generic_msg = TypeVar("generic_msg")
 
+
 if TYPE_CHECKING:
     from arkouda.numpy.sorting import SortingAlgorithm
 else:
