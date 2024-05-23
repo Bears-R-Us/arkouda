@@ -1,5 +1,10 @@
 #include "ArrowFunctions.h"
 
+static std::map<int, std::shared_ptr<parquet::ParquetFileReader>> globalFiles;
+static std::map<int, std::shared_ptr<parquet::RowGroupReader>> globalRowGroupReaders;
+static std::map<int, std::shared_ptr<parquet::ColumnReader>> globalColumnReaders;
+
+
 /*
   Arrow Error Helpers
   -------------------
@@ -9,7 +14,6 @@
   these helpers are similar to the provided macros but matching our
   functionality. 
 */
-
 // The `ARROWRESULT_OK` macro should be used when trying to
 // assign the result of an Arrow/Parquet function to a value that can
 // potentially throw an error, so the argument `cmd` is the Arrow
