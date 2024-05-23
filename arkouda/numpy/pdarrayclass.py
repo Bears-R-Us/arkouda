@@ -37,6 +37,16 @@ from arkouda.numpy.dtypes import uint64 as akuint64
 
 module = modules[__name__]
 
+
+if TYPE_CHECKING:
+    from arkouda.numpy.sorting import SortingAlgorithm
+else:
+    from enum import Enum
+
+    class SortingAlgorithm(Enum):
+        RadixSortLSD = "RadixSortLSD"
+
+
 if TYPE_CHECKING:
     #   These are dummy functions that are used only for type checking.
     #   They communicate to mypy the expected input and output types,
@@ -1410,6 +1420,72 @@ class pdarray:
                 "val": self.format_other(value),
             },
         )
+
+    def argsort(
+        self,
+        algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD,
+        axis: int_scalars = 0,
+        ascending: bool = True,
+    ) -> pdarray:
+        """
+        Return the permutation that sorts the pdarray.
+
+        Parameters
+        ----------
+        algorithm : SortingAlgorithm, default SortingAlgorithm.RadixSortLSD
+            The algorithm to use for sorting.
+        axis : int_scalars, default 0
+            The axis to sort along. Must be between -1 and the array rank.
+        ascending : bool, default True
+            Whether to sort in ascending order. If False, returns a reversed permutation.
+            Ignored for multidimensional arrays.
+
+        Returns
+        -------
+        pdarray
+            The indices that would sort the array.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> a = ak.array([42, 7, 19])
+        >>> a.argsort()
+        array([1 2 0])
+        >>> a[a.argsort()]
+        array([7 19 42])
+        >>> a.argsort(ascending=False)
+        array([0 2 1])
+        """
+        from arkouda.numpy.manipulation_functions import flip
+        from arkouda.numpy.pdarraycreation import zeros
+        from arkouda.numpy.sorting import coargsort
+
+        ndim = cast(Union[int, np.integer], getattr(self, "ndim"))
+
+        if axis < -1 or axis > int(ndim):
+            raise ValueError(f"Axis must be between -1 and the array's rank ({int(ndim)})")
+        if axis == -1:
+            axis = int(ndim) - 1
+
+        if self.size == 0 and hasattr(self, "dtype"):
+            return zeros(0, dtype=akint64)
+
+        if self.dtype == bigint:
+            return coargsort(self.bigint_to_uint_arrays(), algorithm)
+
+        repMsg = generic_msg(
+            cmd=f"argsort<{self.dtype.name},{self.ndim}>",
+            args={
+                "name": self.name,
+                "algoName": algorithm.name,
+                "objType": self.objType,
+                "axis": axis,
+            },
+        )
+
+        sorted_array = create_pdarray(cast(str, repMsg))
+
+        return sorted_array if ascending or self.ndim != 1 else flip(sorted_array)
 
     def any(
         self, axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False

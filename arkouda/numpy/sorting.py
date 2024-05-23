@@ -7,15 +7,7 @@ import numpy as np
 from typeguard import check_type, typechecked
 
 from arkouda.client import generic_msg
-from arkouda.numpy.dtypes import (
-    bigint,
-    bool_,
-    dtype,
-    float64,
-    int64,
-    int_scalars,
-    uint64,
-)
+from arkouda.numpy.dtypes import bigint, dtype, float64, int64, int_scalars, uint64
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import array, zeros
 from arkouda.numpy.strings import Strings
@@ -36,6 +28,8 @@ def argsort(
     pda: Union[pdarray, Strings, Categorical],
     algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD,
     axis: int_scalars = 0,
+    ascending: bool = True,
+    na_position: str = "last",
 ) -> pdarray:
     """
     Return the permutation that sorts the array.
@@ -43,21 +37,27 @@ def argsort(
     Parameters
     ----------
     pda : pdarray, Strings, or Categorical
-        The array to sort (int64, uint64, or float64)
-    algorithm : SortingAlgorithm, default=SortingAlgorithm.RadixSortLSD
-        The algorithm to be used for sorting the array.
-    axis : int_scalars, default=0
-        The axis to sort over.
+        The array to sort (int64, uint64, or float64).
+    algorithm : SortingAlgorithm, default SortingAlgorithm.RadixSortLSD
+        The algorithm to use for sorting.
+    axis : int_scalars, default 0
+        The axis to sort along. Must be between -1 and the array rank.
+    ascending : bool, default True
+        Whether to sort in ascending order. Ignored for multidimensional arrays.
+    na_position : {'first', 'last'}, default 'last'
+        Where to place NaNs in the result (only applicable for float arrays).
 
     Returns
     -------
     pdarray
-        The indices such that ``pda[indices]`` is sorted
+        The indices such that ``pda[indices]`` is sorted.
 
     Raises
     ------
     TypeError
-        Raised if the parameter is other than a pdarray, Strings or Categorical
+        If `pda` is not a pdarray, Strings, or Categorical.
+    ValueError
+        If `axis` is out of bounds for the input array or if `na_position` is invalid.
 
     See Also
     --------
@@ -71,86 +71,82 @@ def argsort(
     Examples
     --------
     >>> import arkouda as ak
-    >>> a = ak.randint(0, 10, 10, seed=1)
-    >>> a
-    array([7 9 5 1 4 1 8 5 5 0])
-
-    >>> perm = ak.argsort(a)
-    >>> a[perm]
-    array([0 1 1 4 5 5 5 7 8 9])
-
-    >>> ak.argsort(a, ak.sorting.SortingAlgorithm["RadixSortLSD"])
-    array([9 3 5 4 2 7 8 0 6 1])
-
-    >>> ak.argsort(a, ak.sorting.SortingAlgorithm["TwoArrayRadixSort"])
-    array([9 3 5 4 2 7 8 0 6 1])
+    >>> a = ak.array([7, ak.nan, 5, 1])
+    >>> a[ak.argsort(a)]
+    array([1.00000000000000000 5.00000000000000000 7.00000000000000000 nan])
+    >>> a[ak.argsort(a, ascending=False, na_position='first')]
+    array([nan 7.00000000000000000 5.00000000000000000 1.00000000000000000])
     """
+    from arkouda import concatenate, isnan
     from arkouda.categorical import Categorical
+    from arkouda.numpy.pdarrayclass import pdarray
+    from arkouda.numpy.pdarraycreation import zeros
+    from arkouda.numpy.strings import Strings
+
+    if na_position not in {"first", "last"}:
+        raise ValueError("na_position must be either 'first' or 'last'")
 
     ndim = cast(Union[int, np.integer], getattr(pda, "ndim"))
 
     if axis < -1 or axis > int(ndim):
-        raise ValueError(f"Axis must be between -1 and the PD Array's rank ({int(ndim)})")
+        raise ValueError(f"Axis must be between -1 and the array's rank ({int(ndim)})")
     if axis == -1:
         axis = int(ndim) - 1
 
-    check_type(argname="argsort", value=pda, expected_type=Union[pdarray, Strings, Categorical])
+    check_type("argsort", pda, Union[pdarray, Strings, Categorical])
 
-    if hasattr(pda, "argsort"):
-        return cast(Categorical, pda).argsort()
     if pda.size == 0 and hasattr(pda, "dtype"):
         return zeros(0, dtype=pda.dtype)
-    if isinstance(pda, pdarray) and pda.dtype == bigint:
-        return coargsort(pda.bigint_to_uint_arrays(), algorithm)
+
+    if isinstance(pda, Categorical):
+        return pda.argsort(ascending=ascending)
+
+    if isinstance(pda, pdarray):
+        perm = pda.argsort(algorithm=algorithm, axis=axis, ascending=ascending)
+        if pda.dtype.name == "float64":
+            is_nan = isnan(pda)[perm]
+            if na_position == "last":
+                perm = concatenate([perm[~is_nan], perm[is_nan]])
+            else:
+                perm = concatenate([perm[is_nan], perm[~is_nan]])
+        return perm
 
     if isinstance(pda, Strings):
-        repMsg = generic_msg(
-            cmd="argsortStrings",
-            args={
-                "name": pda.entry.name,
-                "algoName": algorithm.name,
-            },
-        )
-    else:
-        repMsg = generic_msg(
-            cmd=f"argsort<{pda.dtype.name},{pda.ndim}>",
-            args={
-                "name": pda.name,
-                "algoName": algorithm.name,
-                "objType": pda.objType,
-                "axis": axis,
-            },
-        )
+        perm = pda.argsort(algorithm=algorithm, ascending=ascending)
+        # Strings currently don't support NaN detection in Arkouda
+        return perm
 
-    return create_pdarray(cast(str, repMsg))
+    raise TypeError(f"Unsupported type for argsort: {type(pda)}")
 
 
 def coargsort(
     arrays: Sequence[Union[Strings, pdarray, Categorical]],
     algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD,
+    ascending: bool = True,
 ) -> pdarray:
     """
     Return the permutation that groups the rows (left-to-right), if the
     input arrays are treated as columns. The permutation sorts numeric
-    columns, but not strings/Categoricals -- strings/Categoricals are grouped, but not ordered.
+    columns, but not Strings or Categoricals — those are grouped, not ordered.
 
     Parameters
     ----------
     arrays : Sequence of Strings, pdarray, or Categorical
-        The columns (int64, uint64, float64, Strings, or Categorical) to sort by row
+        The columns (int64, uint64, float64, Strings, or Categorical) to sort by row.
     algorithm : SortingAlgorithm, default=SortingAlgorithm.RadixSortLSD
         The algorithm to be used for sorting the arrays.
+    ascending : bool, default=True
+        Whether to sort in ascending order. Ignored when arrays have ndim > 1.
 
     Returns
     -------
     pdarray
-        The indices that permute the rows to grouped order
+        The indices that permute the rows into grouped order.
 
     Raises
     ------
     ValueError
-        Raised if the pdarrays are not of the same size or if the parameter
-        is not an Iterable containing pdarrays, Strings, or Categoricals
+        If the inputs are not all of the same size or not valid array types.
 
     See Also
     --------
@@ -160,11 +156,10 @@ def coargsort(
     -----
     Uses a least-significant-digit radix sort, which is stable and resilient
     to non-uniformity in data but communication intensive. Starts with the
-    last array and moves forward. This sort operates directly on numeric types,
-    but for Strings, it operates on a hash. Thus, while grouping of equivalent
-    strings is guaranteed, lexicographic ordering of the groups is not. For Categoricals,
-    coargsort sorts based on Categorical.codes which guarantees grouping of equivalent categories
-    but not lexicographic ordering of those groups.
+    last array and moves forward.
+
+    For Strings, sorting is based on a hash. This ensures grouping of identical strings,
+    but not lexicographic order. For Categoricals, sorting is based on the internal codes.
 
     Examples
     --------
@@ -182,21 +177,27 @@ def coargsort(
     from arkouda.categorical import Categorical
     from arkouda.numpy import cast as akcast
 
-    check_type(
-        argname="coargsort", value=arrays, expected_type=Sequence[Union[pdarray, Strings, Categorical]]
-    )
+    check_type("coargsort", arrays, Sequence[Union[pdarray, Strings, Categorical]])
+
     size: int_scalars = -1
-    anames = []
-    atypes = []
-    expanded_arrays = []
+    anames, atypes, expanded_arrays = [], [], []
+    max_dim = 1
+
     for a in arrays:
-        if not isinstance(a, pdarray) or a.dtype not in [bigint, bool_]:
-            expanded_arrays.append(a)
-        elif a.dtype == bigint:
-            expanded_arrays.extend(a.bigint_to_uint_arrays())
+        if hasattr(a, "ndim"):
+            from numpy import maximum
+
+            max_dim = maximum(a.ndim, max_dim)
+
+        if isinstance(a, pdarray):
+            if a.dtype == bigint:
+                expanded_arrays.extend(a.bigint_to_uint_arrays())
+            elif a.dtype == bool:
+                expanded_arrays.append(akcast(a, "int"))
+            else:
+                expanded_arrays.append(a)
         else:
-            # cast bool arrays to int
-            expanded_arrays.append(akcast(a, "int"))
+            expanded_arrays.append(a)
 
     for a in expanded_arrays:
         if isinstance(a, pdarray):
@@ -206,17 +207,19 @@ def coargsort(
             anames.append(a.codes.name)
             atypes.append(a.objType)
         elif isinstance(a, Strings):
-            atypes.append(a.objType)
             anames.append(a.entry.name)
+            atypes.append(a.objType)
         else:
-            raise ValueError("Argument must be an iterable of pdarrays, Strings, or Categoricals")
+            raise ValueError("Each array must be a pdarray, Strings, or Categorical")
+
         if size == -1:
             size = a.size
         elif size != a.size:
-            raise ValueError("All pdarrays, Strings, or Categoricals must be of the same size")
+            raise ValueError("All arrays must have the same size")
 
     if size == 0:
-        return zeros(0, dtype=int if isinstance(arrays[0], (Strings, Categorical)) else arrays[0].dtype)
+        dtype = int if isinstance(arrays[0], (Strings, Categorical)) else arrays[0].dtype
+        return zeros(0, dtype=dtype)
 
     repMsg = generic_msg(
         cmd="coargsort",
@@ -227,7 +230,15 @@ def coargsort(
             "arr_types": atypes,
         },
     )
-    return create_pdarray(cast(str, repMsg))
+
+    sorted_array = create_pdarray(cast(str, repMsg))
+
+    if ascending or max_dim > 1:
+        return sorted_array
+    else:
+        from arkouda.numpy.manipulation_functions import flip
+
+        return flip(sorted_array)
 
 
 @typechecked
