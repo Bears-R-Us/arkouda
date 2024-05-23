@@ -5,10 +5,13 @@ from scipy import stats as sp_stats
 import arkouda as ak
 from arkouda.scipy import chisquare as akchisquare
 
+INT_FLOAT = [ak.int64, ak.float64]
 
 class TestRandom:
     def test_integers(self):
+
         # verify same seed gives different but reproducible arrays
+
         rng = ak.random.default_rng(18)
         first = rng.integers(-(2**32), 2**32, 10)
         second = rng.integers(-(2**32), 2**32, 10)
@@ -21,6 +24,7 @@ class TestRandom:
         second.to_list() == same_seed_second.to_list()
 
         # test endpoint
+
         rng = ak.random.default_rng()
         all_zero = rng.integers(0, 1, 20)
         assert all(all_zero.to_ndarray() == 0)
@@ -29,6 +33,7 @@ class TestRandom:
         assert any(not_all_zero.to_ndarray() != 0)
 
         # verify that switching dtype and function from seed is still reproducible
+
         rng = ak.random.default_rng(74)
         uint_arr = rng.integers(0, 2**32, size=10, dtype="uint")
         float_arr = rng.uniform(-1.0, 1.0, size=5)
@@ -47,70 +52,75 @@ class TestRandom:
         assert int_arr.to_list() == same_seed_int_arr.to_list()
 
         # verify within bounds (lower inclusive and upper exclusive)
+
         rng = ak.random.default_rng()
         bounded_arr = rng.integers(-5, 5, 1000)
         assert all(bounded_arr.to_ndarray() >= -5)
         assert all(bounded_arr.to_ndarray() < 5)
 
-    def test_shuffle(self):
+    @pytest.mark.parametrize("data_type",INT_FLOAT)
+    def test_shuffle(self,data_type) :
+
+        # ints are checked for equality; floats are checked for closeness
+
+        check = lambda a,b,t : (ak.sort(a)==ak.sort(b)).all() if t is ak.int64 else \
+                np.allclose(a.to_list(),b.to_list())
+
         # verify same seed gives reproducible arrays
-        rng = ak.random.default_rng(18)
-
-        int_pda = rng.integers(-(2**32), 2**32, 10)
-        pda_copy = int_pda[:]
-        # shuffle int_pda in place
-        rng.shuffle(int_pda)
-        # verify all the same elements are in permutation as the original
-        assert (ak.sort(int_pda) == ak.sort(pda_copy)).all()
-
-        float_pda = rng.uniform(-(2**32), 2**32, 10)
-        pda_copy = float_pda[:]
-        rng.shuffle(float_pda)
-        # verify all the same elements are in permutation as the original
-        assert (ak.sort(float_pda) == ak.sort(pda_copy)).all()
 
         rng = ak.random.default_rng(18)
-
-        pda = rng.integers(-(2**32), 2**32, 10)
+        rnfunc = rng.integers if data_type is ak.int64 else rng.uniform
+        pda = rnfunc(-(2**32),2**32,10)
+        pda_copy = pda[:]
         rng.shuffle(pda)
-        assert (pda == int_pda).all()
 
-        pda = rng.uniform(-(2**32), 2**32, 10)
-        rng.shuffle(pda)
-        assert np.allclose(pda.to_list(), float_pda.to_list())
+        assert check (ak.sort(pda),ak.sort(pda_copy),data_type)
 
-    def test_permutation(self):
-        # verify same seed gives reproducible arrays
+        # verify all the same elements are in the permutation as in the original
+
         rng = ak.random.default_rng(18)
-        # providing just a number permutes the range(num)
+        rnfunc = rng.integers if data_type is ak.int64 else rng.uniform
+        pda_prime = rnfunc(-(2**32),2**32,10)
+        rng.shuffle(pda_prime)
+
+        assert check (pda,pda_prime,data_type)
+
+    @pytest.mark.parametrize("data_type",INT_FLOAT)
+    def test_permutation(self,data_type) :
+
+        # ints are checked for equality; floats are checked for closeness
+
+        check = lambda a,b,t : (ak.sort(a)==ak.sort(b)).all() if t is ak.int64 else \
+                np.allclose(a.to_list(),b.to_list())
+
+        rng = ak.random.default_rng(18)
         range_permute = rng.permutation(20)
-        assert (ak.arange(20) == ak.sort(range_permute)).all()
+        assert (ak.arange(20) == ak.sort(range_permute)).all() # range is always int
 
-        pda = rng.integers(-(2**32), 2**32, 10)
-        array_permute = rng.permutation(pda)
-        # verify all the same elements are in permutation as the original
-        assert (ak.sort(pda) == ak.sort(array_permute)).all()
+        # verify same seed gives reproducible arrays
 
-        pda = rng.uniform(-(2**32), 2**32, 10)
-        float_array_permute = rng.permutation(pda)
-        # verify all the same elements are in permutation as the original
-        assert np.allclose(ak.sort(pda).to_list(), ak.sort(float_array_permute).to_list())
+        rng = ak.random.default_rng(18)
+        rnfunc = rng.integers if data_type is ak.int64 else rng.uniform
+        pda = rnfunc(-(2**32),2**32,10)
+        permuted = rng.permutation(pda)
+        assert check(ak.sort(pda),ak.sort(permuted),data_type)
 
         rng = ak.random.default_rng(18)
         same_seed_range_permute = rng.permutation(20)
-        assert (range_permute == same_seed_range_permute).all()
+        assert check(range_permute,same_seed_range_permute,data_type)
 
-        pda = rng.integers(-(2**32), 2**32, 10)
-        same_seed_array_permute = rng.permutation(pda)
-        assert (array_permute == same_seed_array_permute).all()
+        # verify all the same elements are in permutation as in the original 
 
-        pda = rng.uniform(-(2**32), 2**32, 10)
-        same_seed_float_array_permute = rng.permutation(pda)
-        # verify all the same elements are in permutation as the original
-        assert np.allclose(float_array_permute.to_list(), same_seed_float_array_permute.to_list())
+        rng = ak.random.default_rng(18)
+        rnfunc = rng.integers if data_type is ak.int64 else rng.uniform
+        pda_p = rnfunc(-(2**32),2**32,10)
+        permuted_p = rng.permutation(pda_p)
+        assert check(ak.sort(pda),ak.sort(permuted),data_type)
 
     def test_uniform(self):
+        
         # verify same seed gives different but reproducible arrays
+
         rng = ak.random.default_rng(18)
         first = rng.uniform(-(2**32), 2**32, 10)
         second = rng.uniform(-(2**32), 2**32, 10)
@@ -123,17 +133,20 @@ class TestRandom:
         assert np.allclose(second.to_list(), same_seed_second.to_list())
 
         # verify within bounds (lower inclusive and upper exclusive)
+
         rng = ak.random.default_rng()
         bounded_arr = rng.uniform(-5, 5, 1000)
         assert all(bounded_arr.to_ndarray() >= -5)
         assert all(bounded_arr.to_ndarray() < 5)
 
     def test_choice_hypothesis_testing(self):
+
         # perform a weighted sample and use chisquare to test
         # if the observed frequency matches the expected frequency
 
         # I tested this many times without a set seed, but with no seed
         # it's expected to fail one out of every ~20 runs given a pval limit of 0.05.
+
         rng = ak.random.default_rng(43)
         num_samples = 10**4
 
@@ -141,42 +154,56 @@ class TestRandom:
         weighted_sample = rng.choice(ak.arange(5), size=num_samples, p=weights)
 
         # count how many of each category we saw
+
         uk, f_obs = ak.GroupBy(weighted_sample).size()
 
         # I think the keys should always be sorted but just in case
-        if not ak.is_sorted(uk):
-            f_obs = f_obs[ak.argsort(uk)]
+
+        # (1) Note the above comment
+        # (2) The test passes with this if block commented out
+        # (3) That makes this section here a candidate for deletion
+
+        #if not ak.is_sorted(uk):
+        #   f_obs = f_obs[ak.argsort(uk)]
 
         f_exp = weights * num_samples
         _, pval = akchisquare(f_obs=f_obs, f_exp=f_exp)
 
         # if pval <= 0.05, the difference from the expected distribution is significant
+
         assert pval > 0.05
 
     def test_choice(self):
-        # verify without replacement works
-        rng = ak.random.default_rng()
-        # test domains and selecting all
-        domain_choice = rng.choice(20, 20, replace=False)
-        # since our populations and sample size is the same without replacement,
+
+        # verify that without replacement works -- first test has domain_choice
+        # and range of same size.  Since they are the same, without replacement,
         # we should see all values
+
+        rng = ak.random.default_rng()
+        domain_choice = rng.choice(20, 20, replace=False)
         assert (ak.sort(domain_choice) == ak.arange(20)).all()
 
-        # test arrays and not selecting all
+        # second test has domain of smaller size than permutation
+        # since choice is done without replacement, all values should be unique
+
         perm = rng.permutation(100)
         array_choice = rng.choice(perm, 95, replace=False)
-        # verify all unique
         _, count = ak.GroupBy(array_choice).size()
         assert (count == 1).all()
 
         # test single value
+
         scalar = rng.choice(5)
         assert type(scalar) is np.int64
         assert scalar in [0, 1, 2, 3, 4]
 
     def test_choice_flags(self):
+
         # use numpy to randomly generate a set seed
+
         seed = np.random.default_rng().choice(2**63)
+
+        # generate a_vals, from which the following two blocks will select choices
 
         rng = ak.random.default_rng(seed)
         weights = rng.uniform(size=10)
@@ -188,6 +215,8 @@ class TestRandom:
             rng.integers(-(2**32), 2**32, size=10, dtype="int"),
         ]
 
+        # first set of choices
+
         rng = ak.random.default_rng(seed)
         choice_arrays = []
         for a in a_vals:
@@ -197,7 +226,11 @@ class TestRandom:
                         choice_arrays.append(rng.choice(a, size, replace, p))
 
         # reset generator to ensure we get the same arrays
+    
         rng = ak.random.default_rng(seed)
+
+        # second set of choices, which should be identical to the first
+
         for a in a_vals:
             for size in 5, 10:
                 for replace in True, False:
@@ -207,14 +240,26 @@ class TestRandom:
                         assert np.allclose(previous.to_list(), current.to_list())
 
     def test_normal(self):
+        
+        # tests that normal produces same results from same seed
+        
+        # intiialize rng
+
         rng = ak.random.default_rng(17)
+
+        # generate a set of results
+
         both_scalar = rng.normal(loc=10, scale=2, size=10).to_list()
         scale_scalar = rng.normal(loc=ak.array([0, 10, 20]), scale=1, size=3).to_list()
         loc_scalar = rng.normal(loc=10, scale=ak.array([1, 2, 3]), size=3).to_list()
         both_array = rng.normal(loc=ak.array([0, 10, 20]), scale=ak.array([1, 2, 3]), size=3).to_list()
 
         # redeclare rng with same seed to test reproducibility
+
         rng = ak.random.default_rng(17)
+
+        # generate another set of results, which should be identical to the first
+
         assert rng.normal(loc=10, scale=2, size=10).to_list() == both_scalar
         assert rng.normal(loc=ak.array([0, 10, 20]), scale=1, size=3).to_list() == scale_scalar
         assert rng.normal(loc=10, scale=ak.array([1, 2, 3]), size=3).to_list() == loc_scalar
@@ -224,8 +269,10 @@ class TestRandom:
         )
 
     def test_normal_hypothesis_testing(self):
+
         # I tested this many times without a set seed, but with no seed
         # it's expected to fail one out of every ~20 runs given a pval limit of 0.05.
+
         rng = ak.random.default_rng(43)
         num_samples = 10**4
 
@@ -247,6 +294,7 @@ class TestRandom:
         assert good_fit_res.pvalue > 0.05
 
     def test_legacy_randint(self):
+
         testArray = ak.random.randint(0, 10, 5)
         assert isinstance(testArray, ak.pdarray)
         assert 5 == len(testArray)
@@ -276,6 +324,7 @@ class TestRandom:
         test_ndarray = test_array.to_ndarray()
 
         # test resolution of modulus overflow - issue #1174
+
         test_array = ak.random.randint(-(2**63), 2**63 - 1, 10)
         to_validate = np.full(10, -(2**63))
         assert not (test_array.to_ndarray() == to_validate).all()
@@ -308,15 +357,17 @@ class TestRandom:
             ak.random.randint(0, "1", 1000)
 
         # Test that int_scalars covers uint8, uint16, uint32
+
         ak.random.randint(low=np.uint8(1), high=np.uint16(100), size=np.uint32(100))
 
     def test_legacy_randint_with_seed(self):
-        values = ak.random.randint(1, 5, 10, seed=2)
 
+        # test against known results for given seed
+
+        values = ak.random.randint(1, 5, 10, seed=2)
         assert [4, 3, 1, 3, 2, 4, 4, 2, 3, 4] == values.to_list()
 
         values = ak.random.randint(1, 5, 10, dtype=ak.float64, seed=2)
-
         assert [
             2.9160772326374946,
             4.353429832157099,
@@ -340,6 +391,7 @@ class TestRandom:
         ak.random.randint(np.uint8(1), np.uint32(5), np.uint16(10), seed=np.uint8(2))
 
     def test_legacy_uniform(self):
+
         testArray = ak.random.uniform(3)
         assert isinstance(testArray, ak.pdarray)
         assert 3 == len(testArray)
@@ -349,6 +401,8 @@ class TestRandom:
         assert isinstance(testArray, ak.pdarray)
         assert 3 == len(testArray)
         assert ak.float64 == testArray.dtype
+
+        # test against known results for given seed
 
         uArray = ak.random.uniform(size=3, low=0, high=5, seed=0)
         assert np.allclose(
@@ -373,6 +427,7 @@ class TestRandom:
         ak.random.uniform(low=np.uint8(0), high=5, size=np.uint32(100))
 
     def test_legacy_standard_normal(self):
+
         pda = ak.random.standard_normal(100)
         assert isinstance(pda, ak.pdarray)
         assert 100 == len(pda)
