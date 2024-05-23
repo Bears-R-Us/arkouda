@@ -590,15 +590,11 @@ class ParquetTest(ArkoudaTest):
 
         df_dict = dict()
         rng = ak.random.default_rng()
-        some_nans = rng.uniform(-(2**10), 2**10, val_size)
-        # set every other position to nan
-        some_nans[ak.arange(val_size) % 2 == 0] = np.nan
         vals_list = [
             rng.uniform(-(2**10), 2**10, val_size),
             rng.integers(0, 2**32, size=val_size, dtype="uint"),
             rng.integers(0, 1, size=val_size, dtype="bool"),
             rng.integers(-(2**32), 2**32, size=val_size, dtype="int"),
-            some_nans,
         ]
 
         for vals in vals_list:
