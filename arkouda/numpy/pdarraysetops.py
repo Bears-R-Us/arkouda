@@ -412,6 +412,7 @@ def concatenate(
         mode = "interleave"
     if len(arrays) < 1:
         raise ValueError("concatenate called on empty iterable")
+
     callback = get_callback(list(arrays)[0])
     if len(arrays) == 1:
         # return object as it's original type
@@ -450,6 +451,11 @@ def concatenate(
         else:
             raise NotImplementedError(f"concatenate not implemented for object type {objtype}")
         size += a.size
+    arrays = [a for a in arrays if a.size > 0]
+    if len(arrays) < 1:
+        return array([], dtype=dtype)
+    elif len(arrays) == 1:
+        return arrays[0]
     if size == 0:
         if objtype == "pdarray":
             return callback(zeros_like(cast(pdarray, arrays[0])))

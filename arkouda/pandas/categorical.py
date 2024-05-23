@@ -90,10 +90,15 @@ if TYPE_CHECKING:
     from arkouda.client import generic_msg
     from arkouda.numpy import cast as akcast
     from arkouda.numpy import where
+    from arkouda.numpy.sorting import SortingAlgorithm
 else:
     generic_msg = TypeVar("generic_msg")
     akcast = TypeVar("akcast")
     where = TypeVar("where")
+    from enum import Enum
+
+    class SortingAlgorithm(Enum):
+        RadixSortLSD = "RadixSortLSD"
 
 
 __all__ = ["Categorical"]
@@ -190,7 +195,7 @@ class Categorical:
                 self._categories_used = values._categories_used
                 self.permutation = values.permutation
                 self.segments = values.segments
-            elif isinstance(values, Strings):
+            elif isinstance(values, Strings) and len(values) > 0:
                 g = GroupBy(values)
                 if not isinstance(g.unique_keys, Strings):
                     raise TypeError(f"expected Strings, got {type(g.unique_keys).__name__!r}")
@@ -200,6 +205,12 @@ class Categorical:
                 self.segments = g.segments
                 # Make a copy because N/A value must be added below
                 self._categories_used = self.categories[:]
+            elif len(values) == 0:
+                self.categories = type_cast(Strings, array([], dtype="str_"))
+                self.codes = type_cast(pdarray, array([], dtype="int64"))
+                self.permutation = None
+                self.segments = None
+                self._categories_used = type_cast(Strings, array([], dtype="str_"))
             else:
                 raise ValueError(
                     ("Categorical: inputs other than " + "Strings or pd.Categorical not yet supported")
@@ -1056,21 +1067,63 @@ class Categorical:
         """
         return [self.codes]
 
-    def argsort(self):
+    def argsort(
+        self,
+        algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD,
+        ascending: bool = True,
+    ) -> pdarray:
         """
-        Return the indices that would sort the Categorical.
+        Return the permutation of indices that would sort the Categorical.
+
+        Sorting is based on the order of the Categorical's `categories`,
+        not on the underlying codes.
+
+        Parameters
+        ----------
+        algorithm : SortingAlgorithm, default SortingAlgorithm.RadixSortLSD
+            The sorting algorithm to use.
+        ascending : bool, default True
+            Whether to return indices that would sort the Categorical in ascending
+            category order. If False, returns indices for descending order.
 
         Returns
         -------
         pdarray
-            Permutation indices that would sort the values by category label.
+
+            An array of indices such that `self[index]` is sorted by category order.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> cat = ak.Categorical(ak.array(['dog', 'cat', 'dog', 'bird']))
+        >>> cat.argsort()
+        array([3, 1, 0, 2])  # 'bird' < 'cat' < 'dog'
+
+        >>> cat.argsort(ascending=False)
+        array([2, 0, 1, 3])
+
+        The result can be used to reorder the Categorical:
+        >>> sorted_cat = cat[cat.argsort()]
+        >>> sorted_cat
+        Categorical(['bird', 'cat', 'dog', 'dog'])
 
         """
-        idxperm = argsort(self.categories)
-        inverse = zeros_like(idxperm)
-        inverse[idxperm] = arange(idxperm.size)
-        newvals = inverse[self.codes]
-        return argsort(newvals)
+        from arkouda import arange, zeros_like
+        from arkouda.numpy import argsort
+
+        # Step 1: Sort categories themselves to get their permutation
+        category_perm = argsort(self.categories, algorithm=algorithm)
+
+        # Step 2: Build inverse permutation mapping each category to its sorted position
+        inverse_perm = zeros_like(category_perm)
+        inverse_perm[category_perm] = arange(category_perm.size)
+
+        # Step 3: Map codes to their sorted positions
+        mapped_codes = inverse_perm[self.codes]
+
+        # Step 4: Return indices that sort the mapped codes
+        return mapped_codes.argsort(algorithm=algorithm, ascending=ascending)
 
     def sort_values(self):
         """

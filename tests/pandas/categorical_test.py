@@ -6,9 +6,12 @@ import pytest
 from pandas import Categorical as pd_Categorical
 
 import arkouda as ak
+from arkouda.numpy.pdarraycreation import array
 from arkouda.pandas import io, io_util
 from arkouda.pandas.categorical import Categorical
-from arkouda.testing import assert_categorical_equal
+from arkouda.testing import assert_categorical_equal, assert_equivalent
+
+SEED = 12345
 
 
 @pytest.fixture
@@ -493,3 +496,44 @@ class TestCategorical:
         assert np.array_equal(pd_cat.to_numpy(), expected_cat.to_numpy())
         assert np.array_equal(pd_cat.codes.astype("int64"), expected_cat.codes.astype("int64"))
         assert np.array_equal(pd_cat.categories.values, expected_cat.categories.values)
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("ascending", [True, False])
+    def test_argsort_basic(self, size, ascending):
+        strings = ak.random_strings_uniform(
+            minlen=1, maxlen=8, size=size, seed=SEED if pytest.seed is None else pytest.seed
+        )
+        cat = Categorical(strings)
+        result = cat.argsort(ascending=ascending)
+        np_strings = cat.to_ndarray()
+        np_result = np_strings.argsort(stable=True)
+        if not ascending:
+            np_result = np.flip(np_result)
+        assert_equivalent(result, np_result)
+
+    def test_argsort_empty(self):
+        strings = ak.array([], dtype="str_")
+        cat = ak.Categorical(strings)
+        result = cat.argsort()
+        assert result.size == 0
+
+    def test_argsort_duplicates(self):
+        strings = array(["apple", "banana", "apple", "banana"])
+        cat = Categorical(strings)
+        result = cat.argsort()
+        sorted_values = cat[result].tolist()
+        assert sorted_values == sorted(strings.tolist())
+
+    def test_argsort_case_sensitive(self):
+        strings = array(["Apple", "apple", "Banana", "banana"])
+        cat = Categorical(strings)
+        result = cat.argsort()
+        sorted_values = cat[result].tolist()
+        assert sorted_values == sorted(strings.tolist())
+
+    def test_argsort_unicode(self):
+        strings = array(["😀", "a", "🎉", "b", "👍"])
+        cat = Categorical(strings)
+        result = cat.argsort()
+        sorted_values = strings[result].tolist()
+        assert sorted_values == sorted(strings.tolist())
