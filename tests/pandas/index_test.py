@@ -2,6 +2,7 @@ import glob
 import os
 import tempfile
 
+import numpy as np
 from numpy import dtype as npdtype
 import pandas as pd
 from pandas import Categorical as pd_Categorical
@@ -14,6 +15,7 @@ from arkouda.numpy.dtypes import dtype
 from arkouda.numpy.pdarrayclass import pdarray
 from arkouda.pandas import io_util
 from arkouda.pandas.index import Index
+from arkouda.testing import assert_equal, assert_equivalent
 from arkouda.testing import assert_index_equal
 from arkouda.testing import assert_index_equal as ak_assert_index_equal
 
@@ -228,13 +230,6 @@ class TestIndex:
         m = ak.MultiIndex([ak.arange(size), ak.arange(size) * -1], names=["test", "test2"])
         assert m.inferred_type == "mixed"
 
-    @staticmethod
-    def assert_equal(pda1, pda2):
-        from arkouda import sum as aksum
-
-        assert pda1.size == pda2.size
-        assert aksum(pda1 != pda2) == 0
-
     def test_get_item(self):
         i = ak.Index([1, 2, 3])
         assert i[2] == 3
@@ -252,35 +247,35 @@ class TestIndex:
     def test_eq(self):
         i = ak.Index([1, 2, 3])
         i_cpy = ak.Index([1, 2, 3])
-        self.assert_equal(i == i_cpy, ak.array([True, True, True]))
-        self.assert_equal(i != i_cpy, ak.array([False, False, False]))
+        assert_equal(i == i_cpy, ak.array([True, True, True]))
+        assert_equal(i != i_cpy, ak.array([False, False, False]))
         assert i.equals(i_cpy)
 
         i2 = ak.Index([1, 2, 3], allow_list=True)
         i2_cpy = ak.Index([1, 2, 3], allow_list=True)
-        self.assert_equal(i2 == i2_cpy, ak.array([True, True, True]))
-        self.assert_equal(i2 != i2_cpy, ak.array([False, False, False]))
+        assert_equal(i2 == i2_cpy, ak.array([True, True, True]))
+        assert_equal(i2 != i2_cpy, ak.array([False, False, False]))
         assert i2.equals(i2_cpy)
 
-        self.assert_equal(i == i2, ak.array([True, True, True]))
-        self.assert_equal(i != i2, ak.array([False, False, False]))
+        assert_equal(i == i2, ak.array([True, True, True]))
+        assert_equal(i != i2, ak.array([False, False, False]))
         assert i.equals(i2)
 
         i3 = ak.Index(["a", "b", "c"], allow_list=True)
         i3_cpy = ak.Index(["a", "b", "c"], allow_list=True)
-        self.assert_equal(i3 == i3_cpy, ak.array([True, True, True]))
-        self.assert_equal(i3 != i3_cpy, ak.array([False, False, False]))
+        assert_equal(i3 == i3_cpy, ak.array([True, True, True]))
+        assert_equal(i3 != i3_cpy, ak.array([False, False, False]))
         assert i3.equals(i3_cpy)
 
         i4 = ak.Index(["a", "b", "c"], allow_list=False)
         i4_cpy = ak.Index(["a", "b", "c"], allow_list=False)
-        self.assert_equal(i4 == i4_cpy, ak.array([True, True, True]))
-        self.assert_equal(i4 != i4_cpy, ak.array([False, False, False]))
+        assert_equal(i4 == i4_cpy, ak.array([True, True, True]))
+        assert_equal(i4 != i4_cpy, ak.array([False, False, False]))
         assert i4.equals(i4_cpy)
 
         i5 = ak.Index(["a", "x", "c"], allow_list=True)
-        self.assert_equal(i3 == i5, ak.array([True, False, True]))
-        self.assert_equal(i3 != i5, ak.array([False, True, False]))
+        assert_equal(i3 == i5, ak.array([True, False, True]))
+        assert_equal(i3 != i5, ak.array([False, True, False]))
         assert not i3.equals(i5)
 
         i6 = ak.Index(["a", "b", "c", "d"], allow_list=True)
@@ -361,16 +356,16 @@ class TestIndex:
         )
 
         i1 = Index(ak.arange(3), name="col1")
-        self.assert_equal(m.get_level_values(0), i1)
-        self.assert_equal(m.get_level_values("col1"), i1)
+        assert_equal(m.get_level_values(0), i1)
+        assert_equal(m.get_level_values("col1"), i1)
 
         i2 = Index(ak.arange(3) * -1, name="col2")
-        self.assert_equal(m.get_level_values(1), i2)
-        self.assert_equal(m.get_level_values("col2"), i2)
+        assert_equal(m.get_level_values(1), i2)
+        assert_equal(m.get_level_values("col2"), i2)
 
         i3 = Index(ak.array(["a", 'b","c', "d"]), name="col3")
-        self.assert_equal(m.get_level_values(2), i3)
-        self.assert_equal(m.get_level_values("col3"), i3)
+        assert_equal(m.get_level_values(2), i3)
+        assert_equal(m.get_level_values("col3"), i3)
 
         with pytest.raises(ValueError):
             m.get_level_values("col4")
@@ -380,7 +375,7 @@ class TestIndex:
             [ak.arange(3), ak.arange(3) * -1, ak.array(["a", 'b","c', "d"])],
         )
         i4 = Index(ak.arange(3))
-        self.assert_equal(m2.get_level_values(0), i4)
+        assert_equal(m2.get_level_values(0), i4)
 
         with pytest.raises(ValueError):
             m2.get_level_values("col")
@@ -390,6 +385,252 @@ class TestIndex:
 
         with pytest.raises(ValueError):
             m2.get_level_values(-1 * m2.nlevels)
+
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    @pytest.mark.parametrize("ascending", [True, False])
+    @pytest.mark.parametrize("dtype", ["float64", "int64", "bool"])
+    def test_sort_values(self, prob_size, ascending, dtype):
+        high = 2 if dtype == "bool" else 10 * prob_size
+        ak_array = ak.randint(0, high, prob_size, dtype=dtype, seed=1)
+        np_array = ak_array.to_ndarray()
+        idx = Index(ak_array)
+        pd_idx = pd_Index(np_array)
+        assert_equivalent(idx.sort_values(ascending=ascending), pd_idx.sort_values(ascending=ascending))
+
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    @pytest.mark.parametrize("ascending", [True, False])
+    def test_sort_values_strings(self, prob_size, ascending):
+        ak_array = ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=prob_size)
+        np_array = ak_array.to_ndarray()
+        idx = Index(ak_array)
+        pd_idx = pd_Index(np_array)
+        assert_equivalent(idx.sort_values(ascending=ascending), pd_idx.sort_values(ascending=ascending))
+
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    @pytest.mark.parametrize("ascending", [True, False])
+    def test_sort_values_categoricals(self, prob_size, ascending):
+        ak_array = ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=prob_size)
+        ak_cat = ak.Categorical(ak_array)
+        pd_cat = ak_cat.to_pandas()
+        idx = Index(ak_cat)
+        pd_idx = pd_Index(pd_cat)
+
+        # When you have a CategoricalIndex, pandas does not automatically sort values alphabetically.
+        # Instead, sorting respects the category order.
+        # If the Categorical is ordered (ordered=True),
+        # then sort_values() will follow the order of the categories as defined in categories.
+        pd_idx = pd_idx.set_categories(sorted(pd_idx.categories), ordered=True)
+        assert_equivalent(idx.sort_values(ascending=ascending), pd_idx.sort_values(ascending=ascending))
+
+    def test_sort_values_na_position_error(self):
+        ak_array = ak.arange(10)
+        idx = Index(ak_array)
+        with pytest.raises(ValueError):
+            idx.sort_values(na_position="test")
+
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    @pytest.mark.parametrize("ascending", [True, False])
+    def test_sort_values_lists(self, prob_size, ascending):
+        # ints as list
+        prob_size = 100  # cannot exceed Index.max_list_size
+        ak_array = ak.randint(0, 10 * prob_size, prob_size, dtype=ak.int64, seed=1).tolist()
+        np_array = np.array(ak_array)
+        idx = Index(ak_array, allow_list=True)
+        pd_idx = pd_Index(np_array)
+        assert_equivalent(idx.sort_values(ascending=ascending), pd_idx.sort_values(ascending=ascending))
+
+    def test_sort_values_na_position(self):
+        idx = ak.Index([10, 100, 1, 1000, np.nan])
+
+        idx_nans_first = idx.sort_values(na_position="first", return_indexer=False)
+        assert_equal(
+            idx_nans_first.values,
+            ak.array(
+                [
+                    np.nan,
+                    1.00000000000000000,
+                    10.00000000000000000,
+                    100.00000000000000000,
+                    1000.00000000000000000,
+                ]
+            ),
+        )
+
+        #   Test with return_indexer
+        idx_nans_first, indexer = idx.sort_values(na_position="first", return_indexer=True)
+        assert_equal(
+            idx_nans_first.values,
+            ak.array(
+                [
+                    np.nan,
+                    1.00000000000000000,
+                    10.00000000000000000,
+                    100.00000000000000000,
+                    1000.00000000000000000,
+                ]
+            ),
+        )
+
+        assert_equal(
+            indexer,
+            ak.array(
+                [
+                    4,
+                    2,
+                    0,
+                    1,
+                    3,
+                ]
+            ),
+        )
+
+        idx_nans_last = idx.sort_values(na_position="last", return_indexer=False)
+        assert_equal(
+            idx_nans_last.values,
+            ak.array(
+                [
+                    1.00000000000000000,
+                    10.00000000000000000,
+                    100.00000000000000000,
+                    1000.00000000000000000,
+                    np.nan,
+                ]
+            ),
+        )
+
+        #   Test with return_indexer
+        idx_nans_last, indexer = idx.sort_values(na_position="last", return_indexer=True)
+        assert_equal(
+            idx_nans_last.values,
+            ak.array(
+                [
+                    1.00000000000000000,
+                    10.00000000000000000,
+                    100.00000000000000000,
+                    1000.00000000000000000,
+                    np.nan,
+                ]
+            ),
+        )
+
+        assert_equal(
+            indexer,
+            ak.array(
+                [
+                    2,
+                    0,
+                    1,
+                    3,
+                    4,
+                ]
+            ),
+        )
+
+    def test_sort_values_na_position_list_case(self):
+        idx = ak.Index([10.0, 100.0, 1.0, 1000.0, np.nan], allow_list=True)
+
+        idx_nans_first = idx.sort_values(na_position="first", return_indexer=False)
+        assert idx_nans_first.values == [
+            np.nan,
+            1.00000000000000000,
+            10.00000000000000000,
+            100.00000000000000000,
+            1000.00000000000000000,
+        ]
+
+        #   Test with return_indexer
+        idx_nans_first, indexer = idx.sort_values(na_position="first", return_indexer=True)
+        assert idx_nans_first.values == [
+            np.nan,
+            1.00000000000000000,
+            10.00000000000000000,
+            100.00000000000000000,
+            1000.00000000000000000,
+        ]
+
+        assert indexer == [
+            4,
+            2,
+            0,
+            1,
+            3,
+        ]
+
+        idx_nans_last = idx.sort_values(na_position="last", return_indexer=False)
+        assert idx_nans_last.values == [
+            1.00000000000000000,
+            10.00000000000000000,
+            100.00000000000000000,
+            1000.00000000000000000,
+            np.nan,
+        ]
+
+        #   Test with return_indexer
+        idx_nans_last, indexer = idx.sort_values(na_position="last", return_indexer=True)
+        assert idx_nans_last.values == [
+            1.00000000000000000,
+            10.00000000000000000,
+            100.00000000000000000,
+            1000.00000000000000000,
+            np.nan,
+        ]
+
+        assert indexer == [
+            2,
+            0,
+            1,
+            3,
+            4,
+        ]
+
+    def test_index_sort_values_additional_example(self):
+        from numpy import nan
+
+        vals = [4.0, nan, 1.0, nan, 0.0, nan, 3.0, nan, 2.0]
+        idx = Index(vals)
+        idx_list = Index(vals, allow_list=True)
+
+        expected_first = np.array(
+            [
+                nan,
+                nan,
+                nan,
+                nan,
+                0.0,
+                1.0,
+                2.0,
+                3.0,
+                4.0,
+            ]
+        )
+
+        expected_last = np.array(
+            [
+                0.0,
+                1.0,
+                2.0,
+                3.0,
+                4.0,
+                nan,
+                nan,
+                nan,
+                nan,
+            ]
+        )
+
+        assert np.allclose(
+            idx.sort_values(na_position="first").values.to_ndarray(), expected_first, equal_nan=True
+        )
+        assert np.allclose(
+            idx.sort_values(na_position="last").values.to_ndarray(), expected_last, equal_nan=True
+        )
+
+        assert np.allclose(
+            np.array(idx_list.sort_values(na_position="first").values), expected_first, equal_nan=True
+        )
+        assert np.allclose(
+            np.array(idx_list.sort_values(na_position="last").values), expected_last, equal_nan=True
+        )
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_memory_usage(self, size):
