@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from ._array_object import Array
+from .array_object import Array
 from ._dtypes import _real_numeric_dtypes
-from ._manipulation_functions import flip
+from .manipulation_functions import flip
 
 import arkouda as ak
 

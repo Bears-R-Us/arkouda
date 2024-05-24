@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ._array_object import Array
+from .array_object import Array
 from typing import Optional
 
 from arkouda.client import generic_msg

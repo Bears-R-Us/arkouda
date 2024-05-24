@@ -1,4 +1,4 @@
-from ._array_object import Array
+from .array_object import Array
 
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import create_pdarray, broadcast_if_needed
@@ -8,7 +8,7 @@ def matmul(x1: Array, x2: Array, /) -> Array:
     """
     Matrix product of two arrays.
     """
-    from ._array_object import Array
+    from .array_object import Array
 
     if x1._array.ndim < 2 and x2._array.ndim < 2:
         raise ValueError(
@@ -41,7 +41,7 @@ def matrix_transpose(x: Array) -> Array:
     """
     Matrix product of two arrays.
     """
-    from ._array_object import Array
+    from .array_object import Array
 
     if x._array.ndim < 2:
         raise ValueError(
@@ -59,7 +59,7 @@ def matrix_transpose(x: Array) -> Array:
 
 
 def vecdot(x1: Array, x2: Array, /, *, axis: int = -1) -> Array:
-    from ._array_object import Array
+    from .array_object import Array
 
     x1b, x2b, tmp_x1, tmp_x2 = broadcast_if_needed(x1._array, x2._array)
 

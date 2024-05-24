@@ -27,7 +27,7 @@ from ._dtypes import (
     _result_type,
     _dtype_categories,
 )
-from ._creation_functions import asarray
+from .creation_functions import asarray
 
 from typing import TYPE_CHECKING, Optional, Tuple, Union, Any, Dict, Callable, List
 import types
@@ -117,7 +117,7 @@ class Array:
 
         For axes=None, reverse all the dimensions of the array.
         """
-        from ._manipulation_functions import permute_dims
+        from .manipulation_functions import permute_dims
         if axes is None:
             _axes = tuple(range(self.ndim - 1, -1, -1))
         else:
@@ -484,7 +484,7 @@ class Array:
 
     def __matmul__(self: Array, other: Array, /) -> Array:
         # from .linalg import matmul
-        # from ._manipulation_functions import (reshape, squeeze)
+        # from .manipulation_functions import (reshape, squeeze)
 
         # if self.ndim == 1:
         #     left = reshape(self, (1, self.size))

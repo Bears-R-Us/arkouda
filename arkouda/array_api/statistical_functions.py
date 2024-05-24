@@ -11,8 +11,8 @@ from ._dtypes import (
     float64,
     # complex128,
 )
-from ._array_object import Array, implements_numpy
-from ._manipulation_functions import squeeze
+from .array_object import Array, implements_numpy
+from .manipulation_functions import squeeze
 
 from typing import TYPE_CHECKING, Optional, Tuple, Union
 

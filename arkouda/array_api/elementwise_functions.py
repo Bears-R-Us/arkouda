@@ -11,7 +11,7 @@ from ._dtypes import (
     _numeric_dtypes,
     _result_type,
 )
-from ._array_object import Array
+from .array_object import Array
 import arkouda as ak
 
 

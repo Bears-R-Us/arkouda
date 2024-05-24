@@ -49,7 +49,7 @@ def asarray(
     device: Optional[Device] = None,
     copy: Optional[bool] = None,
 ) -> Array:
-    from ._array_object import Array
+    from .array_object import Array
 
     if device not in ["cpu", None]:
         raise ValueError(f"Unsupported device {device!r}")
@@ -87,7 +87,7 @@ def arange(
     dtype: Optional[Dtype] = None,
     device: Optional[Device] = None,
 ) -> Array:
-    from ._array_object import Array
+    from .array_object import Array
 
     if device not in ["cpu", None]:
         raise ValueError(f"Unsupported device {device!r}")
@@ -104,7 +104,7 @@ def empty(
     dtype: Optional[Dtype] = None,
     device: Optional[Device] = None,
 ) -> Array:
-    from ._array_object import Array
+    from .array_object import Array
 
     if device not in ["cpu", None]:
         raise ValueError(f"Unsupported device {device!r}")
@@ -129,7 +129,7 @@ def empty(
 def empty_like(
     x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None
 ) -> Array:
-    from ._array_object import Array
+    from .array_object import Array
 
     if device not in ["cpu", None]:
         raise ValueError(f"Unsupported device {device!r}")
@@ -159,7 +159,7 @@ def eye(
     dtype: Optional[Dtype] = None,
     device: Optional[Device] = None,
 ) -> Array:
-    from ._array_object import Array
+    from .array_object import Array
 
     if device not in ["cpu", None]:
         raise ValueError(f"Unsupported device {device!r}")
@@ -218,7 +218,7 @@ def linspace(
     device: Optional[Device] = None,
     endpoint: bool = True,
 ) -> Array:
-    from ._array_object import Array
+    from .array_object import Array
 
     if device not in ["cpu", None]:
         raise ValueError(f"Unsupported device {device!r}")
@@ -277,7 +277,7 @@ def ones_like(
 
 
 def tril(x: Array, /, *, k: int = 0) -> Array:
-    from ._array_object import Array
+    from .array_object import Array
 
     repMsg = generic_msg(
         cmd=f"tril{x._array.ndim}D",
@@ -291,7 +291,7 @@ def tril(x: Array, /, *, k: int = 0) -> Array:
 
 
 def triu(x: Array, /, *, k: int = 0) -> Array:
-    from ._array_object import Array
+    from .array_object import Array
 
     repMsg = generic_msg(
         cmd=f"triu{x._array.ndim}D",
@@ -311,7 +311,7 @@ def zeros(
     dtype: Optional[Dtype] = None,
     device: Optional[Device] = None,
 ) -> Array:
-    from ._array_object import Array
+    from .array_object import Array
 
     if device not in ["cpu", None]:
         raise ValueError(f"Unsupported device {device!r}")

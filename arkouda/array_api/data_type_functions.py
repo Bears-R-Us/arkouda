@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ._array_object import Array, implements_numpy
+from .array_object import Array, implements_numpy
 from ._dtypes import (
     _all_dtypes,
     _boolean_dtypes,

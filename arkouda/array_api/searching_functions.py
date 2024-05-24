@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from ._array_object import Array
+from .array_object import Array
 from ._dtypes import _real_numeric_dtypes, _real_floating_dtypes
 
 from typing import Optional, Tuple, Literal, cast
 
-from ._manipulation_functions import squeeze, reshape, broadcast_arrays
+from .manipulation_functions import squeeze, reshape, broadcast_arrays
 
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import parse_single_value, create_pdarray

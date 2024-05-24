@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ._array_object import Array, implements_numpy
+from .array_object import Array, implements_numpy
 
 from typing import List, Optional, Tuple, Union, cast
 from arkouda.client import generic_msg
