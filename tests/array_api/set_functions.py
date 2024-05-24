@@ -1,8 +1,6 @@
-import unittest
-
 from base_test import ArkoudaTest
 from context import arkouda as ak
-import arkouda.array_api as Array
+import arkouda.array_api as xp
 import numpy as np
 
 
@@ -13,7 +11,7 @@ s = SEED
 def randArr(shape):
     global s
     s += 2
-    return Array.asarray(ak.randint(0, 100, shape, dtype=ak.int64, seed=s))
+    return xp.asarray(ak.randint(0, 100, shape, dtype=ak.int64, seed=s))
 
 
 class SetFunctionTests(ArkoudaTest):
@@ -22,10 +20,10 @@ class SetFunctionTests(ArkoudaTest):
         for shape in [(1000), (20, 50), (2, 10, 50)]:
             r = randArr(shape)
 
-            ua = Array.unique_all(r)
-            uc = Array.unique_counts(r)
-            ui = Array.unique_inverse(r)
-            uv = Array.unique_values(r)
+            ua = xp.unique_all(r)
+            uc = xp.unique_counts(r)
+            ui = xp.unique_inverse(r)
+            uv = xp.unique_values(r)
 
             (nuv, nuidx, nuinv, nuc) = np.unique(
                 r.to_ndarray(),
