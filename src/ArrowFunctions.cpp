@@ -1,5 +1,9 @@
 #include "ArrowFunctions.h"
 
+static std::map<int, std::shared_ptr<parquet::ParquetFileReader>> globalFiles;
+static std::map<int, std::shared_ptr<parquet::RowGroupReader>> globalRowGroupReaders;
+static std::map<int, std::shared_ptr<parquet::ColumnReader>> globalColumnReaders;
+
 /*
   Arrow Error Helpers
   -------------------
