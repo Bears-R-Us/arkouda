@@ -350,10 +350,11 @@
 <span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">array</span> <span class="k">as</span> <span class="n">ndarray</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">npdtype</span>
 <span class="kn">from</span> <span class="nn">typeguard</span> <span class="kn">import</span> <span class="n">typechecked</span>
 
 <span class="kn">from</span> <span class="nn">arkouda</span> <span class="kn">import</span> <span class="n">Categorical</span><span class="p">,</span> <span class="n">Strings</span>
@@ -546,6 +547,17 @@
         <span class="k">return</span> <span class="mi">1</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ndim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Number of dimensions of the underlying data, by definition 1.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        MultiIndex.ndim</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">inferred_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a string of the type inferred from the values.</span>
@@ -561,6 +573,13 @@
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;&lt;U&quot;</span><span class="p">:</span>
                 <span class="k">return</span> <span class="s2">&quot;string&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">inferred_type</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return Index or MultiIndex names.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1403,7 +1422,7 @@
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;MultiIndex should be an iterable&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">levels</span> <span class="o">=</span> <span class="n">levels</span>
         <span class="n">first</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="n">names</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_names</span> <span class="o">=</span> <span class="n">names</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">:</span>
             <span class="c1"># col can be a python int which doesn&#39;t have a size attribute</span>
@@ -1443,6 +1462,13 @@
         <span class="k">return</span> <span class="n">retval</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return Index or MultiIndex names.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_names</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">levels</span>
 
@@ -1455,6 +1481,17 @@
 <span class="sd">        Index.nlevels</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ndim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Number of dimensions of the underlying data, by definition 1.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        Index.ndim</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">1</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">inferred_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -1484,6 +1521,13 @@
                 <span class="s2">&quot;an integer with absolute value less than the number of levels.&quot;</span>
             <span class="p">)</span></div>
 
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npdtype</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the dtype object of the underlying data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">npdtype</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MultiIndex.memory_usage">
 <a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.MultiIndex.memory_usage">[docs]</a>

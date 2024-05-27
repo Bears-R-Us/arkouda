@@ -1867,6 +1867,24 @@ Raised if index values not of type pdarray, Categorical, or Strings.</p>
 </dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="arkouda.index.Index.names">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">names</span></span><a class="headerlink" href="#arkouda.index.Index.names" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">Return</span> <span class="pre">Index</span> <span class="pre">or</span> <span class="pre">MultiIndex</span> <span class="pre">names.</span></span></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.index.Index.ndim">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ndim</span></span><a class="headerlink" href="#arkouda.index.Index.ndim" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">Number</span> <span class="pre">of</span> <span class="pre">dimensions</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">underlying</span> <span class="pre">data,</span> <span class="pre">by</span> <span class="pre">definition</span> <span class="pre">1.</span></span></dt>
+<dd><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.index.MultiIndex.ndim" title="arkouda.index.MultiIndex.ndim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MultiIndex.ndim</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="arkouda.index.Index.nlevels">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nlevels</span></span><a class="headerlink" href="#arkouda.index.Index.nlevels" title="Link to this definition">¶</a></dt>
 <dt class="sig sig-object py">
@@ -2257,6 +2275,12 @@ file with the new data</p></li>
 <span class="sig-name descname"><span class="pre">concat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/index.html#MultiIndex.concat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.index.MultiIndex.concat" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.index.MultiIndex.dtype">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.dtype</span></em><a class="headerlink" href="#arkouda.index.MultiIndex.dtype" title="Link to this definition">¶</a></dt>
+<dd><p>Return the dtype object of the underlying data.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.index.MultiIndex.get_level_values">
 <span class="sig-name descname"><span class="pre">get_level_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/index.html#MultiIndex.get_level_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.index.MultiIndex.get_level_values" title="Link to this definition">¶</a></dt>
@@ -2333,6 +2357,24 @@ they are unregistered.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">memory_usage</span><span class="p">()</span>
 <span class="go">48</span>
 </pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.index.MultiIndex.names">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">names</span></span><a class="headerlink" href="#arkouda.index.MultiIndex.names" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">Return</span> <span class="pre">Index</span> <span class="pre">or</span> <span class="pre">MultiIndex</span> <span class="pre">names.</span></span></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.index.MultiIndex.ndim">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ndim</span></span><a class="headerlink" href="#arkouda.index.MultiIndex.ndim" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">Number</span> <span class="pre">of</span> <span class="pre">dimensions</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">underlying</span> <span class="pre">data,</span> <span class="pre">by</span> <span class="pre">definition</span> <span class="pre">1.</span></span></dt>
+<dd><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.index.Index.ndim" title="arkouda.index.Index.ndim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Index.ndim</span></code></a></p>
 </div>
 </dd></dl>
 
@@ -4270,6 +4312,8 @@ computation. Otherwise, this function will sort <cite>pda</cite>.</p>
 <li><a class="reference internal" href="#arkouda.index.Index.lookup"><code class="docutils literal notranslate"><span class="pre">Index.lookup()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.map"><code class="docutils literal notranslate"><span class="pre">Index.map()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.memory_usage"><code class="docutils literal notranslate"><span class="pre">Index.memory_usage()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.index.Index.names"><code class="docutils literal notranslate"><span class="pre">Index.names</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.index.Index.ndim"><code class="docutils literal notranslate"><span class="pre">Index.ndim</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.nlevels"><code class="docutils literal notranslate"><span class="pre">Index.nlevels</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.objType"><code class="docutils literal notranslate"><span class="pre">Index.objType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.register"><code class="docutils literal notranslate"><span class="pre">Index.register()</span></code></a></li>
@@ -4290,12 +4334,15 @@ computation. Otherwise, this function will sort <cite>pda</cite>.</p>
 <li><a class="reference internal" href="#arkouda.index.MultiIndex"><code class="docutils literal notranslate"><span class="pre">MultiIndex</span></code></a><ul>
 <li><a class="reference internal" href="#arkouda.index.MultiIndex.argsort"><code class="docutils literal notranslate"><span class="pre">MultiIndex.argsort()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.MultiIndex.concat"><code class="docutils literal notranslate"><span class="pre">MultiIndex.concat()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.index.MultiIndex.dtype"><code class="docutils literal notranslate"><span class="pre">MultiIndex.dtype</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.MultiIndex.get_level_values"><code class="docutils literal notranslate"><span class="pre">MultiIndex.get_level_values()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.MultiIndex.index"><code class="docutils literal notranslate"><span class="pre">MultiIndex.index</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.MultiIndex.inferred_type"><code class="docutils literal notranslate"><span class="pre">MultiIndex.inferred_type</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.MultiIndex.is_registered"><code class="docutils literal notranslate"><span class="pre">MultiIndex.is_registered()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.MultiIndex.lookup"><code class="docutils literal notranslate"><span class="pre">MultiIndex.lookup()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.MultiIndex.memory_usage"><code class="docutils literal notranslate"><span class="pre">MultiIndex.memory_usage()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.index.MultiIndex.names"><code class="docutils literal notranslate"><span class="pre">MultiIndex.names</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.index.MultiIndex.ndim"><code class="docutils literal notranslate"><span class="pre">MultiIndex.ndim</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.MultiIndex.nlevels"><code class="docutils literal notranslate"><span class="pre">MultiIndex.nlevels</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.MultiIndex.objType"><code class="docutils literal notranslate"><span class="pre">MultiIndex.objType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.MultiIndex.register"><code class="docutils literal notranslate"><span class="pre">MultiIndex.register()</span></code></a></li>

@@ -1174,6 +1174,16 @@ Module Contents
 
 
 
+   .. py:property:: names
+      Return Index or MultiIndex names.
+
+
+   .. py:property:: ndim
+      Number of dimensions of the underlying data, by definition 1.
+
+      .. seealso:: :obj:`MultiIndex.ndim`
+
+
    .. py:property:: nlevels
       Integer number of levels in this Index.
       An Index will always have 1 level.
@@ -1500,6 +1510,12 @@ Module Contents
    .. py:method:: concat(other)
 
 
+   .. py:property:: dtype
+      :type: numpy.dtype
+
+      Return the dtype object of the underlying data.
+
+
    .. py:method:: get_level_values(level: Union[str, int])
 
 
@@ -1555,6 +1571,16 @@ Module Contents
       >>> m.memory_usage()
       48
 
+
+
+   .. py:property:: names
+      Return Index or MultiIndex names.
+
+
+   .. py:property:: ndim
+      Number of dimensions of the underlying data, by definition 1.
+
+      .. seealso:: :obj:`Index.ndim`
 
 
    .. py:property:: nlevels
