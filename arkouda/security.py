@@ -10,7 +10,7 @@ from typeguard import typechecked
 
 from arkouda import io_util
 
-username_tokenizer = defaultdict(lambda x: x.split("/"))  # type: ignore
+username_tokenizer = defaultdict(lambda x: x.split("/"))  # type:ignore
 username_tokenizer["Windows"] = lambda x: x.split("\\")
 username_tokenizer["Linux"] = lambda x: x.split("/")
 username_tokenizer["Darwin"] = lambda x: x.split("/")

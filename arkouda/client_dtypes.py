@@ -2,7 +2,7 @@ from functools import partial
 from ipaddress import ip_address as _ip_address
 from typing import Optional, Union
 
-import numpy as np  # type: ignore
+import numpy as np
 from typeguard import typechecked
 
 from arkouda.dtypes import bitType, intTypes, isSupportedInt

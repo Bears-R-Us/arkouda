@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import ForwardRef, Sequence, Union, cast
 
-import numpy as np  # type: ignore
+import numpy as np
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
@@ -516,7 +516,7 @@ def union1d(
             return cast(pdarray, create_pdarray(repMsg))
         x = cast(
             pdarray, unique(cast(pdarray, concatenate((unique(pda1), unique(pda2)), ordered=False)))
-        )  # type: ignore
+        )
         return x[argsort(x)]
     elif isinstance(pda1, Sequence) and isinstance(pda2, Sequence):
         multiarray_setop_validation(pda1, pda2)

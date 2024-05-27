@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING, List, Optional, Union, Tuple
 
-import pandas as pd  # type: ignore
+import pandas as pd
 from numpy import array as ndarray
 from typeguard import typechecked
 

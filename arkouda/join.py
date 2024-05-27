@@ -1,6 +1,6 @@
 from typing import Callable, Optional, Sequence, Tuple, Union, cast
 
-import numpy as np  # type: ignore
+import numpy as np
 from typeguard import typechecked
 
 from arkouda.alignment import right_align
@@ -100,8 +100,8 @@ def join_on_eq_with_dt(
         cmd="joinEqWithDT",
         args={
             "a1": a1,
-            "g2seg": cast(pdarray, g2.segments),  # type: ignore
-            "g2keys": cast(pdarray, g2.unique_keys),  # type: ignore
+            "g2seg": cast(pdarray, g2.segments),
+            "g2keys": cast(pdarray, g2.unique_keys),
             "g2perm": g2.permutation,
             "t1": t1,
             "t2": t2,
