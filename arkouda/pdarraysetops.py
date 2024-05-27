@@ -275,7 +275,7 @@ def indexof1d(query: groupable, space: groupable) -> pdarray:
     RuntimeError
         Raised if the dtype of either array is not supported
     """
-    from arkouda.alignment import find as akfind
+    # from arkouda.alignment import find as akfind
     from arkouda.categorical import Categorical as Categorical_
 
     if isinstance(query, (pdarray, Strings, Categorical_)):
@@ -284,8 +284,15 @@ def indexof1d(query: groupable, space: groupable) -> pdarray:
         elif isinstance(query, pdarray) and not isinstance(space, pdarray):
             raise TypeError("If keys is pdarray, arr must also be pdarray")
 
-    found = akfind(query, space, all_occurrences=True, remove_missing=True)
-    return found if isinstance(found, pdarray) else found.values
+    repMsg = generic_msg(
+        cmd="indexof1d",
+        args={"keys": query, "arr": space},
+    )
+    return create_pdarray(cast(str, repMsg))
+
+    # TODO see issue #3229 reverted back to old implementation until we can investigate
+    # found = akfind(query, space, all_occurrences=True, remove_missing=True)
+    # return found if isinstance(found, pdarray) else found.values
 
 
 # fmt: off
