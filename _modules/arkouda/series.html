@@ -352,9 +352,9 @@
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>  <span class="c1"># type: ignore</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>  <span class="c1"># type: ignore</span>
-<span class="kn">from</span> <span class="nn">pandas._config</span> <span class="kn">import</span> <span class="n">get_option</span>  <span class="c1"># type: ignore</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">pandas._config</span> <span class="kn">import</span> <span class="n">get_option</span>
 <span class="kn">from</span> <span class="nn">typeguard</span> <span class="kn">import</span> <span class="n">typechecked</span>
 
 <span class="kn">import</span> <span class="nn">arkouda.dataframe</span>
@@ -511,8 +511,8 @@
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Index size does not match data size: </span><span class="si">{}</span><span class="s2"> != </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
+                <span class="s2">&quot;Index size does not match data size: </span><span class="si">{}</span><span class="s2"> != </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+            <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span>
 
@@ -586,7 +586,7 @@
             <span class="c1"># @TODO align the series indexes</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate_key</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">is_supported_scalar</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
+        <span class="k">if</span> <span class="n">is_supported_scalar</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">dtype</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">))</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                     <span class="s2">&quot;Unexpected key type. Received </span><span class="si">{}</span><span class="s2"> but expected </span><span class="si">{}</span><span class="s2">. key: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -690,7 +690,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="n">val</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">is_supported_scalar</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
+        <span class="k">if</span> <span class="n">is_supported_scalar</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">dtype</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">))</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                     <span class="s2">&quot;Unexpected value type. Received </span><span class="si">{}</span><span class="s2"> but expected </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -739,10 +739,10 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot set with multiple keys for Series with repeated labels.&quot;</span><span class="p">)</span>
 
         <span class="n">indices</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">is_supported_scalar</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
+        <span class="k">if</span> <span class="n">is_supported_scalar</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
             <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">==</span> <span class="n">key</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">indices</span> <span class="o">=</span> <span class="n">in1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="n">in1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
         <span class="n">tf</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
         <span class="n">update_count</span> <span class="o">=</span> <span class="n">counts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">counts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="n">update_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -753,12 +753,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">Index</span><span class="o">.</span><span class="n">factory</span><span class="p">(</span><span class="n">new_index_values</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">array</span><span class="p">([</span><span class="n">val</span><span class="p">])])</span>
             <span class="k">return</span>
-        <span class="k">if</span> <span class="n">is_supported_scalar</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
+        <span class="k">if</span> <span class="n">is_supported_scalar</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
             <span class="k">return</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">val</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">is_supported_scalar</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+            <span class="k">if</span> <span class="n">val</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">is_supported_scalar</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="k">return</span>
             <span class="k">if</span> <span class="n">update_count</span> <span class="o">!=</span> <span class="n">val</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -1047,7 +1047,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">new_index</span> <span class="o">=</span> <span class="n">Index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
 
-        <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">new_index</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>  <span class="c1"># type: ignore [call-overload]</span>
+        <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">new_index</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
 
 <div class="viewcode-block" id="Series.sort_index">
 <a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.sort_index">[docs]</a>
@@ -1489,11 +1489,11 @@
         <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
         <span class="n">val_comps</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+|+&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">val_comps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">objType</span><span class="o">.</span><span class="n">upper</span><span class="p">():</span>
-            <span class="n">values</span> <span class="o">=</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">val_comps</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># type: ignore</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">val_comps</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="k">elif</span> <span class="n">val_comps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">Strings</span><span class="o">.</span><span class="n">objType</span><span class="o">.</span><span class="n">upper</span><span class="p">():</span>
             <span class="n">values</span> <span class="o">=</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">val_comps</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># type: ignore</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">values</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">val_comps</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># type: ignore</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">val_comps</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
         <span class="n">index</span> <span class="o">=</span> <span class="n">Index</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">])</span>
 
@@ -1521,7 +1521,7 @@
         <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">index_labels</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">value_labels</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span>
+        <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">arkouda</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">Series</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Concatenate in arkouda a list of arkouda Series or grouped arkouda arrays horizontally or</span>
 <span class="sd">        vertically. If a list of grouped arkouda arrays is passed they are converted to a series. Each</span>
@@ -1673,7 +1673,7 @@
         <span class="kn">from</span> <span class="nn">arkouda</span> <span class="kn">import</span> <span class="n">Series</span>
         <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="nb">map</span>
 
-        <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">arg</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>  <span class="c1"># type: ignore [call-overload]</span></div>
+        <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">arg</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Series.isna">
@@ -2104,7 +2104,7 @@
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">is_supported_scalar</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
+        <span class="k">if</span> <span class="n">is_supported_scalar</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
             <span class="n">key</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="n">key</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
 
@@ -2112,11 +2112,11 @@
         <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate_val</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">is_supported_scalar</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
+        <span class="k">if</span> <span class="n">is_supported_scalar</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
             <span class="k">return</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">is_supported_scalar</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
+            <span class="k">if</span> <span class="n">is_supported_scalar</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
                 <span class="k">return</span>
             <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">int64</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>

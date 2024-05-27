@@ -40,7 +40,7 @@ Module Contents
 
 
 
-.. py:class:: NotebookHistoryRetriever
+.. py:class:: NotebookHistoryRetriever(profile='default', hist_file='', **traits)
 
    Bases: :py:obj:`IPython.core.history.HistoryAccessor`, :py:obj:`HistoryRetriever`
 

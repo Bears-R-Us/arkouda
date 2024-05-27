@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
     <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
-        <title>arkouda.security - arkouda documentation</title>
+        <title>arkouda.history - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
@@ -346,150 +346,147 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <h1>Source code for arkouda.security</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">platform</span>
-<span class="kn">import</span> <span class="nn">secrets</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">expanduser</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-
-<span class="kn">from</span> <span class="nn">typeguard</span> <span class="kn">import</span> <span class="n">typechecked</span>
-
-<span class="kn">from</span> <span class="nn">arkouda</span> <span class="kn">import</span> <span class="n">io_util</span>
-
-<span class="n">username_tokenizer</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">))</span>  <span class="c1"># type:ignore</span>
-<span class="n">username_tokenizer</span><span class="p">[</span><span class="s2">&quot;Windows&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="n">username_tokenizer</span><span class="p">[</span><span class="s2">&quot;Linux&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="n">username_tokenizer</span><span class="p">[</span><span class="s2">&quot;Darwin&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+          <h1>Source code for arkouda.history</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">readline</span>
+<span class="kn">from</span> <span class="nn">IPython.core.history</span> <span class="kn">import</span> <span class="n">HistoryAccessor</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
 
-<div class="viewcode-block" id="generate_token">
-<a class="viewcode-back" href="../../autoapi/arkouda/security/index.html#arkouda.security.generate_token">[docs]</a>
-<span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">generate_token</span><span class="p">(</span><span class="n">length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="HistoryRetriever">
+<a class="viewcode-back" href="../../autoapi/arkouda/history/index.html#arkouda.history.HistoryRetriever">[docs]</a>
+<span class="k">class</span> <span class="nc">HistoryRetriever</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Uses the secrets.token_hex() method to generate a</span>
-<span class="sd">    a hexidecimal token</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    length : int</span>
-<span class="sd">        The desired length of token</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    str</span>
-<span class="sd">        The hexidecimal string generated by Python</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    This method uses the Python secrets.token_hex method</span>
+<span class="sd">    HistoryRetriever is an abstract base class that defines the retrieve method signature</span>
+<span class="sd">    and implements _filter_arkouda_command</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">secrets</span><span class="o">.</span><span class="n">token_hex</span><span class="p">(</span><span class="n">length</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_filter_arkouda_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">filter_string</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ak&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns command string if the filter string is in the command and the</span>
+<span class="sd">        command is not generate_history. Otherwise, returns None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">command</span> <span class="k">if</span> <span class="p">(</span><span class="n">filter_string</span> <span class="ow">in</span> <span class="n">command</span> <span class="ow">and</span> <span class="s2">&quot;generate_history&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">command</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="HistoryRetriever.retrieve">
+<a class="viewcode-back" href="../../autoapi/arkouda/history/index.html#arkouda.history.HistoryRetriever.retrieve">[docs]</a>
+    <span class="k">def</span> <span class="nf">retrieve</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">command_filter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">num_commands</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates list of commands executed within a Python REPL shell, Jupyter notebook,</span>
+<span class="sd">        or IPython notebook, with an optional command filter and number of commands to return.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        num_commands : int</span>
+<span class="sd">            The number of commands from history to retrieve</span>
+<span class="sd">        command_filter : str</span>
+<span class="sd">            String containing characters used to select a subset of command history.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        List[str]</span>
+<span class="sd">            A list of commands from the Python shell, Jupyter notebook, or IPython notebook</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Derived classes must implement retrieve&quot;</span><span class="p">)</span></div>
+</div>
 
 
 
-<div class="viewcode-block" id="get_home_directory">
-<a class="viewcode-back" href="../../autoapi/arkouda/security/index.html#arkouda.security.get_home_directory">[docs]</a>
-<span class="k">def</span> <span class="nf">get_home_directory</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="ShellHistoryRetriever">
+<a class="viewcode-back" href="../../autoapi/arkouda/history/index.html#arkouda.history.ShellHistoryRetriever">[docs]</a>
+<span class="k">class</span> <span class="nc">ShellHistoryRetriever</span><span class="p">(</span><span class="n">HistoryRetriever</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A platform-independent means of finding path to</span>
-<span class="sd">    the current user&#39;s home directory</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    str</span>
-<span class="sd">        The user&#39;s home directory path</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    This method uses the Python os.path.expanduser method</span>
-<span class="sd">    to retrieve the user&#39;s home directory</span>
+<span class="sd">    ShellHistoryRetriever implements the retrieve method to get command history from the</span>
+<span class="sd">    Python REPL shell.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ShellHistoryRetriever.retrieve">
+<a class="viewcode-back" href="../../autoapi/arkouda/history/index.html#arkouda.history.ShellHistoryRetriever.retrieve">[docs]</a>
+    <span class="k">def</span> <span class="nf">retrieve</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">command_filter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">num_commands</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates list of commands executed within the a Python REPL shell, with an</span>
+<span class="sd">        optional command filter and number of commands to return.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        num_commands : int</span>
+<span class="sd">            The number of commands from history to retrieve</span>
+<span class="sd">        command_filter : str</span>
+<span class="sd">            String containing characters used to select a subset of command history.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        List[str]</span>
+<span class="sd">            A list of commands from the Python shell, Jupyter notebook, or IPython notebook</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">length_of_history</span> <span class="o">=</span> <span class="n">readline</span><span class="o">.</span><span class="n">get_current_history_length</span><span class="p">()</span>
+        <span class="n">num_to_return</span> <span class="o">=</span> <span class="n">num_commands</span> <span class="k">if</span> <span class="n">num_commands</span> <span class="k">else</span> <span class="n">length_of_history</span>
+
+        <span class="k">if</span> <span class="n">command_filter</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="n">readline</span><span class="o">.</span><span class="n">get_history_item</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">length_of_history</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_arkouda_command</span><span class="p">(</span><span class="n">readline</span><span class="o">.</span><span class="n">get_history_item</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">command_filter</span><span class="p">)</span>
+            <span class="p">][</span><span class="o">-</span><span class="n">num_to_return</span><span class="p">:]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">readline</span><span class="o">.</span><span class="n">get_history_item</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">length_of_history</span><span class="p">)][</span>
+                <span class="o">-</span><span class="n">num_to_return</span><span class="p">:</span>
+            <span class="p">]</span></div>
+</div>
 
 
 
-<div class="viewcode-block" id="get_arkouda_client_directory">
-<a class="viewcode-back" href="../../autoapi/arkouda/security/index.html#arkouda.security.get_arkouda_client_directory">[docs]</a>
-<span class="k">def</span> <span class="nf">get_arkouda_client_directory</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<div class="viewcode-block" id="NotebookHistoryRetriever">
+<a class="viewcode-back" href="../../autoapi/arkouda/history/index.html#arkouda.history.NotebookHistoryRetriever">[docs]</a>
+<span class="k">class</span> <span class="nc">NotebookHistoryRetriever</span><span class="p">(</span><span class="n">HistoryAccessor</span><span class="p">,</span> <span class="n">HistoryRetriever</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A platform-independent means of finding path to</span>
-<span class="sd">    the current user&#39;s .arkouda directory where artifacts</span>
-<span class="sd">    such as server access tokens are stored.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    Path</span>
-<span class="sd">        Path corresponding to the user&#39;s .arkouda directory path</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    The default implementation is to place the .arkouda</span>
-<span class="sd">    directory in the current user&#39;s home directory. The</span>
-<span class="sd">    default can be overridden by setting the ARKOUDA_CLIENT_DIRECTORY</span>
-<span class="sd">    environment variable.  It is important this is not the same location</span>
-<span class="sd">    as the server&#39;s token directory as the file format is different.</span>
+<span class="sd">    NotebookHistoryRetriever implements the retrieve method to get command history</span>
+<span class="sd">    from a Jupyter notebook or IPython shell.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">arkouda_parent_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;ARKOUDA_CLIENT_DIRECTORY&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">arkouda_parent_dir</span><span class="p">:</span>
-        <span class="n">arkouda_parent_dir</span> <span class="o">=</span> <span class="n">get_home_directory</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">io_util</span><span class="o">.</span><span class="n">get_directory</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}{}</span><span class="s2">.arkouda&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">arkouda_parent_dir</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">))</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span></div>
 
+<div class="viewcode-block" id="NotebookHistoryRetriever.retrieve">
+<a class="viewcode-back" href="../../autoapi/arkouda/history/index.html#arkouda.history.NotebookHistoryRetriever.retrieve">[docs]</a>
+    <span class="k">def</span> <span class="nf">retrieve</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">command_filter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">num_commands</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates list of commands executed within a Jupyter notebook or IPython shell,</span>
+<span class="sd">        with an optional command filter and number of commands to return.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        num_commands : int</span>
+<span class="sd">            The number of commands from history to retrieve</span>
+<span class="sd">        command_filter : str</span>
+<span class="sd">            String containing characters used to select a subset of command history.</span>
 
-<div class="viewcode-block" id="get_username">
-<a class="viewcode-back" href="../../autoapi/arkouda/security/index.html#arkouda.security.get_username">[docs]</a>
-<span class="k">def</span> <span class="nf">get_username</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A platform-independent means of retrieving the current</span>
-<span class="sd">    user&#39;s username for the host system.</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        List[str]</span>
+<span class="sd">            A list of commands from the Python shell, Jupyter notebook, or IPython notebook</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># HistoryAccessor _run_sql method parameter</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># HistoryAccessor _run_sql method parameter</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># HistoryAccessor _run_sql method parameter</span>
+        <span class="n">num_to_return</span> <span class="o">=</span> <span class="n">num_commands</span> <span class="k">if</span> <span class="n">num_commands</span> <span class="k">else</span> <span class="mi">100</span>
 
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    str</span>
-<span class="sd">        The username in the form of string</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cur</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_sql</span><span class="p">(</span><span class="s2">&quot;ORDER BY session DESC, line DESC LIMIT ?&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">n</span><span class="p">,),</span> <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cur</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_sql</span><span class="p">(</span><span class="s2">&quot;ORDER BY session DESC, line DESC&quot;</span><span class="p">,</span> <span class="p">(),</span> <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
 
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    EnvironmentError</span>
-<span class="sd">        Raised if the host OS is unsupported</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    The currently supported operating systems are Windows, Linux,</span>
-<span class="sd">    and MacOS AKA Darwin</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">u_tokens</span> <span class="o">=</span> <span class="n">username_tokenizer</span><span class="p">[</span><span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()](</span><span class="n">get_home_directory</span><span class="p">())</span>
-    <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">ke</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">EnvironmentError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported OS: </span><span class="si">{</span><span class="n">ke</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">u_tokens</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
-
-
-
-<div class="viewcode-block" id="generate_username_token_json">
-<a class="viewcode-back" href="../../autoapi/arkouda/security/index.html#arkouda.security.generate_username_token_json">[docs]</a>
-<span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">generate_username_token_json</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generates a JSON object encapsulating the user&#39;s username</span>
-<span class="sd">    and token for connecting to an arkouda server with basic</span>
-<span class="sd">    authentication enabled</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    token : string</span>
-<span class="sd">        The token to be used to access arkouda server</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    str</span>
-<span class="sd">        The JSON-formatted string encapsulating username and token</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="n">get_username</span><span class="p">(),</span> <span class="s2">&quot;token&quot;</span><span class="p">:</span> <span class="n">token</span><span class="p">})</span></div>
+        <span class="k">if</span> <span class="n">command_filter</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="n">cmd</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">cur</span><span class="p">))</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_arkouda_command</span><span class="p">(</span><span class="n">cmd</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">command_filter</span><span class="p">)</span>
+            <span class="p">][</span><span class="o">-</span><span class="n">num_to_return</span><span class="p">:]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">cmd</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">cur</span><span class="p">))][</span><span class="o">-</span><span class="n">num_to_return</span><span class="p">:]</span></div>
+</div>
 
 </pre></div>
         </article>

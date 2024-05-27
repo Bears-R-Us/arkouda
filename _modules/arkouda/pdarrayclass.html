@@ -355,7 +355,7 @@
 <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">ceil</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>  <span class="c1"># type: ignore</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">typeguard</span> <span class="kn">import</span> <span class="n">typechecked</span>
 
 <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
@@ -628,6 +628,7 @@
 
 <span class="k">def</span> <span class="nf">_to_pdarray</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">maxTransferBytes</span>
+
     <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">_dtype</span> <span class="o">=</span> <span class="n">dtype</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -635,9 +636,9 @@
 
     <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">nbytes</span> <span class="o">&gt;</span> <span class="n">maxTransferBytes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Creating pdarray from ndarray would require transferring </span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">nbytes</span><span class="si">}</span><span class="s2"> bytes from &quot;</span> <span class="o">+</span>
-            <span class="sa">f</span><span class="s2">&quot;the client to server, which exceeds the maximum size of </span><span class="si">{</span><span class="n">maxTransferBytes</span><span class="si">}</span><span class="s2"> bytes. &quot;</span> <span class="o">+</span>
-            <span class="s2">&quot;Try increasing ak.maxTransferBytes&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Creating pdarray from ndarray would require transferring </span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">nbytes</span><span class="si">}</span><span class="s2"> bytes from &quot;</span>
+            <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;the client to server, which exceeds the maximum size of </span><span class="si">{</span><span class="n">maxTransferBytes</span><span class="si">}</span><span class="s2"> bytes. &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;Try increasing ak.maxTransferBytes&quot;</span>
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">():</span>
@@ -652,7 +653,7 @@
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
             <span class="n">generic_msg</span><span class="p">(</span>
                 <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;array</span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
-                <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">_dtype</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="p">,</span> <span class="s2">&quot;seg_string&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">_dtype</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="s2">&quot;seg_string&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
                 <span class="n">payload</span><span class="o">=</span><span class="n">_array_memview</span><span class="p">(</span><span class="n">value_flat</span><span class="p">),</span>
                 <span class="n">send_binary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="p">)</span>
@@ -1345,10 +1346,7 @@
             <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">):</span>
                 <span class="c1"># TODO: implement a cloneMsg to make this more efficient</span>
                 <span class="k">return</span> <span class="n">_slice_index</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="p">,</span>
-                    <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">)],</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
-                    <span class="p">[</span><span class="mi">1</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">)]</span>
+                    <span class="bp">self</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">)],</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">)]</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># TODO: mimic numpy&#39;s behavior of applying the slice to only the first dimension?</span>
@@ -1451,7 +1449,7 @@
                         <span class="k">else</span><span class="p">:</span>
                             <span class="c1"># treat this as a single element slice</span>
                             <span class="n">starts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-                            <span class="n">stops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+                            <span class="n">stops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
                             <span class="n">strides</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_value</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
@@ -1464,8 +1462,8 @@
                         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">):</span>
                             <span class="k">if</span> <span class="n">slice_shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
                                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                                    <span class="sa">f</span><span class="s2">&quot;slice indices (</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">) out of bounds for array of &quot;</span> <span class="o">+</span>
-                                    <span class="sa">f</span><span class="s2">&quot;shape </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+                                    <span class="sa">f</span><span class="s2">&quot;slice indices (</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">) out of bounds for array of &quot;</span>
+                                    <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;shape </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
                                 <span class="p">)</span>
 
                         <span class="k">if</span> <span class="n">_value</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">slice_shape</span><span class="p">):</span>
@@ -1473,8 +1471,8 @@
                             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">):</span>
                                 <span class="k">if</span> <span class="n">slice_shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="n">_value</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
                                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                                        <span class="sa">f</span><span class="s2">&quot;slice shape (</span><span class="si">{</span><span class="n">slice_shape</span><span class="si">}</span><span class="s2">) must match shape of value &quot;</span> <span class="o">+</span>
-                                        <span class="sa">f</span><span class="s2">&quot;array (</span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">)&quot;</span>
+                                        <span class="sa">f</span><span class="s2">&quot;slice shape (</span><span class="si">{</span><span class="n">slice_shape</span><span class="si">}</span><span class="s2">) must match shape of value &quot;</span>
+                                        <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;array (</span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">)&quot;</span>
                                     <span class="p">)</span>
                             <span class="n">_value_r</span> <span class="o">=</span> <span class="n">_value</span>
                         <span class="k">elif</span> <span class="n">_value</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">slice_shape</span><span class="p">):</span>
@@ -1487,16 +1485,16 @@
                                     <span class="n">iv</span> <span class="o">+=</span> <span class="mi">1</span>
                                 <span class="k">else</span><span class="p">:</span>
                                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                                        <span class="sa">f</span><span class="s2">&quot;slice shape (</span><span class="si">{</span><span class="n">slice_shape</span><span class="si">}</span><span class="s2">) must be compatible with shape &quot;</span> <span class="o">+</span>
-                                        <span class="sa">f</span><span class="s2">&quot;of value array (</span><span class="si">{</span><span class="n">_value</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">)&quot;</span>
+                                        <span class="sa">f</span><span class="s2">&quot;slice shape (</span><span class="si">{</span><span class="n">slice_shape</span><span class="si">}</span><span class="s2">) must be compatible with shape &quot;</span>
+                                        <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;of value array (</span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">)&quot;</span>
                                     <span class="p">)</span>
 
                             <span class="c1"># reshape to add singleton dimensions as needed</span>
                             <span class="n">_value_r</span> <span class="o">=</span> <span class="n">_reshape</span><span class="p">(</span><span class="n">_value</span><span class="p">,</span> <span class="n">slice_shape</span><span class="p">)</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                                <span class="sa">f</span><span class="s2">&quot;value array must not have more dimensions (</span><span class="si">{</span><span class="n">_value</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">) than the&quot;</span> <span class="o">+</span>
-                                <span class="sa">f</span><span class="s2">&quot;slice (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">slice_shape</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;value array must not have more dimensions (</span><span class="si">{</span><span class="n">_value</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">) than the&quot;</span>
+                                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;slice (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">slice_shape</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
                             <span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
