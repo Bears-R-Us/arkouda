@@ -2,9 +2,11 @@ import glob
 import os
 import tempfile
 
+
 import pandas as pd
 from base_test import ArkoudaTest
 from context import arkouda as ak
+from numpy import dtype as npdtype
 
 from arkouda import io_util
 from arkouda.dtypes import dtype
@@ -61,6 +63,15 @@ class IndexTest(ArkoudaTest):
         with self.assertRaises(ValueError):
             idx = ak.MultiIndex([ak.arange(5), ak.arange(3)])
 
+    def test_name_names(self):
+        i = ak.Index([1, 2, 3], name="test")
+        self.assertEqual(i.name, "test")
+        self.assertListEqual(i.names, ["test"])
+
+        size = 10
+        m = ak.MultiIndex([ak.arange(size), ak.arange(size) * -1], names=["test", "test2"])
+        self.assertListEqual(m.names, ["test", "test2"])
+
     def test_nlevels(self):
         i = ak.Index([1, 2, 3], name="test")
         assert i.nlevels == 1
@@ -68,6 +79,22 @@ class IndexTest(ArkoudaTest):
         size = 10
         m = ak.MultiIndex([ak.arange(size), ak.arange(size) * -1])
         assert m.nlevels == 2
+
+    def test_ndim(self):
+        i = ak.Index([1, 2, 3], name="test")
+        assert i.ndim == 1
+
+        size = 10
+        m = ak.MultiIndex([ak.arange(size), ak.arange(size) * -1])
+        assert m.ndim == 1
+
+    def test_dtypes(self):
+        size = 10
+        i = ak.Index(ak.arange(size, dtype="float64"))
+        assert i.dtype == dtype("float64")
+
+        m = ak.MultiIndex([ak.arange(size), ak.arange(size) * -1])
+        assert m.dtype == npdtype("O")
 
     def test_inferred_type(self):
         i = ak.Index([1, 2, 3])
