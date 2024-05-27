@@ -738,12 +738,15 @@ class Series:
 
         idx = self.index.to_pandas()
         val = convert_if_categorical(self.values)
+        # pandas errors when ndarray formatted like a segarray is
+        # passed into Series but works when it's just a list of lists
+        vals_on_client = val.to_list() if isinstance(val, SegArray) else val.to_ndarray()
 
         if isinstance(self.name, str):
             name = copy.copy(self.name)
-            return pd.Series(val.to_ndarray(), index=idx, name=name)
+            return pd.Series(vals_on_client, index=idx, name=name)
         else:
-            return pd.Series(val.to_ndarray(), index=idx)
+            return pd.Series(vals_on_client, index=idx)
 
     def to_markdown(self, mode="wt", index=True, tablefmt="grid", storage_options=None, **kwargs):
         r"""
