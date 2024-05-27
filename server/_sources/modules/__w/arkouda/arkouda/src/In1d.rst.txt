@@ -49,3 +49,5 @@ or
    * overhead so typically used when ar2 is "large".
    
 
+.. function:: proc indexof1d(keys: ?t, arr: t) throws
+
