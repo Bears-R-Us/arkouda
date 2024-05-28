@@ -28,6 +28,7 @@ def asarray(
         NestedSequence[bool | int | float],
         SupportsBufferProtocol,
         ak.pdarray,
+        np.ndarray,
     ],
     /,
     *,
@@ -35,6 +36,26 @@ def asarray(
     device: Optional[Device] = None,
     copy: Optional[bool] = None,
 ) -> Array:
+    """
+    Create a new Array from one of:
+    - another Array
+    - a scalar value (bool, int, float)
+    - a sequence of scalar values (not yet implemented)
+    - a buffer (not yet implemented)
+    - an arkouda :class:`~arkouda.pdarrayclass.pdarray`
+    - a numpy ndarray
+
+    Parameters
+    ----------
+    obj:
+        The object to convert to an Array
+    dtype: Optional[Dtype]
+        The dtype of the resulting Array. If None, the dtype is inferred from the input object
+    device: Optional[Device]
+        The device on which to create the Array (not yet implemented)
+    copy: Optional[bool]
+        Whether to copy the input object (not yet implemented)
+    """
     from .array_object import Array
 
     if device not in ["cpu", None]:
@@ -61,7 +82,7 @@ def asarray(
     elif isinstance(obj, np.ndarray):
         return Array._new(_to_pdarray(obj, dt=dtype))
     else:
-        raise ValueError("asarray not implemented for 'NestedSequence'")
+        raise ValueError("asarray not implemented for 'NestedSequence' or 'SupportsBufferProtocol'")
 
 
 def arange(
@@ -73,6 +94,21 @@ def arange(
     dtype: Optional[Dtype] = None,
     device: Optional[Device] = None,
 ) -> Array:
+    """
+    Return a 1D of array of evenly spaced values within the half-open interval [start, stop)
+
+    Parameters
+    ----------
+    start: Union[int, float]
+        If `stop` is None, this is the stop value and start is 0. Otherwise, this is the start value (inclusive).
+    stop: Optional[Union[int, float]]
+        The end value of the sequence (exclusive).
+    step: Union[int, float]
+        Spacing between values (default is 1).
+    dtype: Optional[Dtype]
+        The data type of the output array. If None, use float64.
+
+    """
     from .array_object import Array
 
     if device not in ["cpu", None]:
@@ -90,6 +126,9 @@ def empty(
     dtype: Optional[Dtype] = None,
     device: Optional[Device] = None,
 ) -> Array:
+    """
+    Return a new array of given shape and type, without initializing entries.
+    """
     from .array_object import Array
 
     if device not in ["cpu", None]:
@@ -115,6 +154,9 @@ def empty(
 def empty_like(
     x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None
 ) -> Array:
+    """
+    Return a new array whose shape and dtype match the input array, without initializing entries.
+    """
     from .array_object import Array
 
     if device not in ["cpu", None]:
@@ -145,6 +187,23 @@ def eye(
     dtype: Optional[Dtype] = None,
     device: Optional[Device] = None,
 ) -> Array:
+    """
+    Return a 2D array with ones on the diagonal and zeros elsewhere.
+
+    Parameters
+    ----------
+
+    n_rows: int
+        Number of rows in the output.
+    n_cols: Optional[int]
+        Number of columns in the output. If None, defaults to `n_rows`.
+    k: int
+        Index of the diagonal: 0 (the default) refers to the main diagonal, a
+        positive value refers to an upper diagonal, and a negative value to a
+        lower diagonal.
+    dtype: Optional[Dtype]
+        Data type of the returned array. If None, use float64.
+    """
     from .array_object import Array
 
     if device not in ["cpu", None]:
@@ -168,16 +227,24 @@ def eye(
 
 
 def from_dlpack(x: object, /) -> Array:
+    """
+    Construct an Array from a DLPack tensor.
+
+    WARNING: This function is not yet implemented.
+    """
     raise ValueError("Not implemented")
 
 
 def full(
     shape: Union[int, Tuple[int, ...]],
-    fill_value: Union[int, float],
+    fill_value: Union[int, bool, float],
     *,
     dtype: Optional[Dtype] = None,
     device: Optional[Device] = None,
 ) -> Array:
+    """
+    Return a new array of given shape and type, filled with `fill_value`.
+    """
     a = zeros(shape, dtype=dtype, device=device)
     a._array.fill(fill_value)
     return a
@@ -191,6 +258,9 @@ def full_like(
     dtype: Optional[Dtype] = None,
     device: Optional[Device] = None,
 ) -> Array:
+    """
+    Return a new array whose shape and dtype match the input array, filled with `fill_value`.
+    """
     return full(x.shape, fill_value, dtype=dtype, device=device)
 
 
@@ -204,6 +274,9 @@ def linspace(
     device: Optional[Device] = None,
     endpoint: bool = True,
 ) -> Array:
+    """
+    An Array API compliant wrapper for :func:`arkouda.linspace`.
+    """
     from .array_object import Array
 
     if device not in ["cpu", None]:
@@ -213,35 +286,11 @@ def linspace(
 
 
 def meshgrid(*arrays: Array, indexing: str = "xy") -> List[Array]:
-    # if indexing not in ['xy', 'ij']:
-    #     raise ValueError(
-    #         "Valid values for `indexing` are 'xy' and 'ij'.")
+    """
+    Return coordinate matrices from coordinate vectors.
 
-    # array_names = "["
-    # first = True
-    # dim = 1
-    # for a in arrays:
-    #     if first:
-    #         dim = a._array.ndim
-    #         first = False
-    #     else:
-    #         if a._array.dim != dim:
-    #             raise ValueError(f"all arrays must have the same dimensionality for 'meshgrid'")
-    #         array_names += ","
-    #     array_names += x._array.name
-    # array_names += "]"
-
-    # repMsg = generic_msg(
-    #     cmd=f"meshgrid{dim}D",
-    #     args={
-    #         "num": len(array_names),
-    #         "arrays": array_names,
-    #         "indexing": indexing,
-    #     },
-    # )
-
-    # arrayMsgs = repMsg.split(",")
-    # return [Array._new(create_pdarray(msg)) for msg in arrayMsgs]
+    WARNING: This function is not yet implemented.
+    """
     raise ValueError("Not implemented")
 
 
@@ -251,6 +300,9 @@ def ones(
     dtype: Optional[Dtype] = None,
     device: Optional[Device] = None,
 ) -> Array:
+    """
+    Return a new array with the specified shape and type, filled with ones.
+    """
     a = zeros(shape, dtype=dtype, device=device)
     a._array.fill(1)
     return a
@@ -259,10 +311,17 @@ def ones(
 def ones_like(
     x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None
 ) -> Array:
+    """
+    Return a new array whose shape and dtype match the input array, filled with ones.
+    """
     return ones(x.shape, dtype=dtype, device=device)
 
 
 def tril(x: Array, /, *, k: int = 0) -> Array:
+    """
+    Create a new array with the values from `x` below the `k`-th diagonal, and
+    all other elements zero.
+    """
     from .array_object import Array
 
     repMsg = generic_msg(
@@ -277,6 +336,10 @@ def tril(x: Array, /, *, k: int = 0) -> Array:
 
 
 def triu(x: Array, /, *, k: int = 0) -> Array:
+    """
+    Create a new array with the values from `x` above the `k`-th diagonal, and
+    all other elements zero.
+    """
     from .array_object import Array
 
     repMsg = generic_msg(
@@ -297,6 +360,9 @@ def zeros(
     dtype: Optional[Dtype] = None,
     device: Optional[Device] = None,
 ) -> Array:
+    """
+    Return a new array with the specified shape and type, filled with zeros.
+    """
     from .array_object import Array
 
     if device not in ["cpu", None]:
@@ -328,4 +394,7 @@ def zeros(
 def zeros_like(
     x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None
 ) -> Array:
+    """
+    Return a new array whose shape and dtype match the input array, filled with zeros.
+    """
     return zeros(x.shape, dtype=dtype, device=device)
