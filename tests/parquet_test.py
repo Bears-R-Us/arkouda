@@ -589,12 +589,16 @@ class ParquetTest(ArkoudaTest):
         val_size = 1000000
 
         df_dict = dict()
-        rng = ak.random.default_rng()
+        seed = np.random.default_rng().choice(2**63)
+        rng = ak.random.default_rng(seed)
+        some_nans = rng.uniform(-(2 ** 10), 2 ** 10, val_size)
+        some_nans[ak.arange(val_size) % 2 == 0] = np.nan
         vals_list = [
             rng.uniform(-(2**10), 2**10, val_size),
             rng.integers(0, 2**32, size=val_size, dtype="uint"),
             rng.integers(0, 1, size=val_size, dtype="bool"),
             rng.integers(-(2**32), 2**32, size=val_size, dtype="int"),
+            some_nans,
         ]
 
         for vals in vals_list:
@@ -616,6 +620,7 @@ class ParquetTest(ArkoudaTest):
                 # are lists of lists. assert_series_equal handles this and properly handles nans.
                 # we pass the same absolute and relative tolerances as the numpy default in allclose
                 # to ensure float point differences don't cause errors
+                print("\nseed: ", seed)
                 assert_series_equal(pddf['rand'], to_pd, check_names=False, rtol=1e-05, atol=1e-08)
 
     @pytest.mark.optional_parquet
