@@ -17,9 +17,7 @@ import arkouda as ak
 
 def abs(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`ak.abs`.
-
-    See its docstring for more information.
+    Compute the element-wise absolute value of an array.
     """
     if x.dtype not in _numeric_dtypes:
         raise TypeError("Only numeric dtypes are allowed in abs")
@@ -29,9 +27,7 @@ def abs(x: Array, /) -> Array:
 # Note: the function name is different here
 def acos(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.arccos`.
-
-    See its docstring for more information.
+    Compute the element-wise arccosine of an array.
     """
     if x.dtype not in _floating_dtypes:
         raise TypeError("Only floating-point dtypes are allowed in acos")
@@ -41,9 +37,7 @@ def acos(x: Array, /) -> Array:
 # Note: the function name is different here
 def acosh(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`ak.arccosh`.
-
-    See its docstring for more information.
+    Compute the element-wise hyperbolic arccosine of an array.
     """
     if x.dtype not in _floating_dtypes:
         raise TypeError("Only floating-point dtypes are allowed in acosh")
@@ -52,9 +46,7 @@ def acosh(x: Array, /) -> Array:
 
 def add(x1: Array, x2: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.add <numpy.add>`.
-
-    See its docstring for more information.
+    Compute the element-wise sum of two arrays.
     """
     if x1.dtype not in _numeric_dtypes or x2.dtype not in _numeric_dtypes:
         raise TypeError("Only numeric dtypes are allowed in add")
@@ -63,48 +55,36 @@ def add(x1: Array, x2: Array, /) -> Array:
     return Array._new(x1._array + x2._array)
 
 
-# Note: the function name is different here
 def asin(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`ak.arcsin`.
-
-    See its docstring for more information.
+    Compute the element-wise arcsine of an array.
     """
     if x.dtype not in _floating_dtypes:
         raise TypeError("Only floating-point dtypes are allowed in asin")
     return Array._new(ak.arcsin(x._array))
 
 
-# Note: the function name is different here
 def asinh(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`ak.arcsinh`.
-
-    See its docstring for more information.
+    Compute the element-wise hyperbolic arcsine of an array.
     """
     if x.dtype not in _floating_dtypes:
         raise TypeError("Only floating-point dtypes are allowed in asinh")
     return Array._new(ak.arcsinh(x._array))
 
 
-# Note: the function name is different here
 def atan(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.arctan`.
-
-    See its docstring for more information.
+    Compute the element-wise arctangent of an array.
     """
     if x.dtype not in _floating_dtypes:
         raise TypeError("Only floating-point dtypes are allowed in atan")
     return Array._new(ak.arctan(x._array))
 
 
-# Note: the function name is different here
 def atan2(x1: Array, x2: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`ak.arctan2`.
-
-    See its docstring for more information.
+    Compute the element-wise arctangent of x1/x2.
     """
     if x1.dtype not in _real_floating_dtypes or x2.dtype not in _real_floating_dtypes:
         raise TypeError("Only real floating-point dtypes are allowed in atan2")
@@ -113,12 +93,9 @@ def atan2(x1: Array, x2: Array, /) -> Array:
     return Array._new(ak.arctan2(x1._array, x2._array))
 
 
-# Note: the function name is different here
 def atanh(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`ak.arctanh`.
-
-    See its docstring for more information.
+    Compute the element-wise hyperbolic arctangent of an array.
     """
     if x.dtype not in _floating_dtypes:
         raise TypeError("Only floating-point dtypes are allowed in atanh")
@@ -127,9 +104,7 @@ def atanh(x: Array, /) -> Array:
 
 def bitwise_and(x1: Array, x2: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.bitwise_and`.
-
-    See its docstring for more information.
+    Compute the element-wise bitwise AND of two arrays.
     """
     if (
         x1.dtype not in _integer_or_boolean_dtypes
@@ -141,12 +116,9 @@ def bitwise_and(x1: Array, x2: Array, /) -> Array:
     return Array._new(x1._array & x2._array)
 
 
-# Note: the function name is different here
 def bitwise_left_shift(x1: Array, x2: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.left_shift <numpy.left_shift>`.
-
-    See its docstring for more information.
+    Compute the element-wise bitwise left shift of x1 by x2.
     """
     if x1.dtype not in _integer_dtypes or x2.dtype not in _integer_dtypes:
         raise TypeError("Only integer dtypes are allowed in bitwise_left_shift")
@@ -158,21 +130,16 @@ def bitwise_left_shift(x1: Array, x2: Array, /) -> Array:
     return Array._new(x1._array << x2._array)
 
 
-# Note: the function name is different here
 def bitwise_invert(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.invert <numpy.invert>`.
-
-    See its docstring for more information.
+    Compute the element-wise bitwise NOT of an array.
     """
     raise ValueError("bitwise invert not implemented")
 
 
 def bitwise_or(x1: Array, x2: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.bitwise_or <numpy.bitwise_or>`.
-
-    See its docstring for more information.
+    Compute the element-wise bitwise OR of two arrays.
     """
     if (
         x1.dtype not in _integer_or_boolean_dtypes
@@ -184,12 +151,9 @@ def bitwise_or(x1: Array, x2: Array, /) -> Array:
     return Array._new(x1._array | x2._array)
 
 
-# Note: the function name is different here
 def bitwise_right_shift(x1: Array, x2: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.right_shift <numpy.right_shift>`.
-
-    See its docstring for more information.
+    Compute the element-wise bitwise right shift of x1 by x2.
     """
     if x1.dtype not in _integer_dtypes or x2.dtype not in _integer_dtypes:
         raise TypeError("Only integer dtypes are allowed in bitwise_right_shift")
@@ -203,9 +167,7 @@ def bitwise_right_shift(x1: Array, x2: Array, /) -> Array:
 
 def bitwise_xor(x1: Array, x2: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.bitwise_xor <numpy.bitwise_xor>`.
-
-    See its docstring for more information.
+    Compute the element-wise bitwise XOR of two arrays.
     """
     if (
         x1.dtype not in _integer_or_boolean_dtypes
@@ -219,9 +181,7 @@ def bitwise_xor(x1: Array, x2: Array, /) -> Array:
 
 def ceil(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.ceil <numpy.ceil>`.
-
-    See its docstring for more information.
+    Compute the element-wise ceiling of a floating point array.
     """
     if x.dtype not in _floating_dtypes:
         raise TypeError("Only floating-point dtypes are allowed in ceil")
@@ -230,18 +190,16 @@ def ceil(x: Array, /) -> Array:
 
 def conj(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.conj <numpy.conj>`.
+    Compute the element-wise complex conjugate of an array.
 
-    See its docstring for more information.
+    WARNING: Not yet implemented.
     """
     raise ValueError("conj not implemented - Arkouda does not support complex types")
 
 
 def cos(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.cos <numpy.cos>`.
-
-    See its docstring for more information.
+    Compute the element-wise cosine of an array.
     """
     if x.dtype not in _floating_dtypes:
         raise TypeError("Only floating-point dtypes are allowed in cos")
@@ -250,9 +208,7 @@ def cos(x: Array, /) -> Array:
 
 def cosh(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.cosh <numpy.cosh>`.
-
-    See its docstring for more information.
+    Compute the element-wise hyperbolic cosine of an array.
     """
     if x.dtype not in _floating_dtypes:
         raise TypeError("Only floating-point dtypes are allowed in cosh")
@@ -261,9 +217,7 @@ def cosh(x: Array, /) -> Array:
 
 def divide(x1: Array, x2: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.divide <numpy.divide>`.
-
-    See its docstring for more information.
+    Compute the element-wise division of x1 by x2.
     """
     if x1.dtype not in _floating_dtypes or x2.dtype not in _floating_dtypes:
         raise TypeError("Only floating-point dtypes are allowed in divide")
@@ -274,9 +228,7 @@ def divide(x1: Array, x2: Array, /) -> Array:
 
 def equal(x1: Array, x2: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.equal <numpy.equal>`.
-
-    See its docstring for more information.
+    Compute the element-wise equality of two arrays.
     """
     # Call result type here just to raise on disallowed type combinations
     _result_type(x1.dtype, x2.dtype)
@@ -285,9 +237,7 @@ def equal(x1: Array, x2: Array, /) -> Array:
 
 def exp(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.exp <numpy.exp>`.
-
-    See its docstring for more information.
+    Compute the element-wise exponential of an array.
     """
     if x.dtype not in _floating_dtypes:
         raise TypeError("Only floating-point dtypes are allowed in exp")
@@ -296,9 +246,7 @@ def exp(x: Array, /) -> Array:
 
 def expm1(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.expm1 <numpy.expm1>`.
-
-    See its docstring for more information.
+    Compute the element-wise exponential of x-1.
     """
     if x.dtype not in _floating_dtypes:
         raise TypeError("Only floating-point dtypes are allowed in exp")
@@ -307,9 +255,7 @@ def expm1(x: Array, /) -> Array:
 
 def floor(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.floor <numpy.floor>`.
-
-    See its docstring for more information.
+    Compute the element-wise floor of a floating point array.
     """
     if x.dtype not in _floating_dtypes:
         raise TypeError("Only floating-point dtypes are allowed in floor")
@@ -318,18 +264,14 @@ def floor(x: Array, /) -> Array:
 
 def floor_divide(x1: Array, x2: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.floor_divide <numpy.floor_divide>`.
-
-    See its docstring for more information.
+    Compute the element-wise floor division of x1 by x2.
     """
     raise ValueError("exp not implemented")
 
 
 def greater(x1: Array, x2: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.greater <numpy.greater>`.
-
-    See its docstring for more information.
+    Apply `>` element-wise to two arrays.
     """
     if x1.dtype not in _real_numeric_dtypes or x2.dtype not in _real_numeric_dtypes:
         raise TypeError("Only real numeric dtypes are allowed in greater")
@@ -340,9 +282,7 @@ def greater(x1: Array, x2: Array, /) -> Array:
 
 def greater_equal(x1: Array, x2: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.greater_equal <numpy.greater_equal>`.
-
-    See its docstring for more information.
+    Apply `>=` element-wise to two arrays.
     """
     if x1.dtype not in _real_numeric_dtypes or x2.dtype not in _real_numeric_dtypes:
         raise TypeError("Only real numeric dtypes are allowed in greater_equal")
@@ -353,18 +293,16 @@ def greater_equal(x1: Array, x2: Array, /) -> Array:
 
 def imag(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.imag <numpy.imag>`.
+    Get the element-wise imaginary part of a Complex array.
 
-    See its docstring for more information.
+    WARNING: Not yet implemented.
     """
     raise ValueError("imag not implemented")
 
 
 def isfinite(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.isfinite <numpy.isfinite>`.
-
-    See its docstring for more information.
+    Determine if an array's elements are finite.
     """
     if x.dtype not in _floating_dtypes:
         raise TypeError("Only floating-point dtypes are allowed in isfinite")
@@ -373,9 +311,7 @@ def isfinite(x: Array, /) -> Array:
 
 def isinf(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.isinf <numpy.isinf>`.
-
-    See its docstring for more information.
+    Determine if an array's elements are infinite.
     """
     if x.dtype not in _floating_dtypes:
         raise TypeError("Only floating-point dtypes are allowed in isinf")
@@ -384,9 +320,7 @@ def isinf(x: Array, /) -> Array:
 
 def isnan(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.isnan <numpy.isnan>`.
-
-    See its docstring for more information.
+    Determine if an array's elements are NaN.
     """
     if x.dtype not in _floating_dtypes:
         raise TypeError("Only floating-point dtypes are allowed in isnan")
@@ -395,9 +329,7 @@ def isnan(x: Array, /) -> Array:
 
 def less(x1: Array, x2: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.less <numpy.less>`.
-
-    See its docstring for more information.
+    Apply `<` element-wise to two arrays.
     """
     if x1.dtype not in _real_numeric_dtypes or x2.dtype not in _real_numeric_dtypes:
         raise TypeError("Only real numeric dtypes are allowed in less")
@@ -408,9 +340,7 @@ def less(x1: Array, x2: Array, /) -> Array:
 
 def less_equal(x1: Array, x2: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.less_equal <numpy.less_equal>`.
-
-    See its docstring for more information.
+    Apply `<=` element-wise to two arrays.
     """
     if x1.dtype not in _real_numeric_dtypes or x2.dtype not in _real_numeric_dtypes:
         raise TypeError("Only real numeric dtypes are allowed in less_equal")
@@ -421,9 +351,7 @@ def less_equal(x1: Array, x2: Array, /) -> Array:
 
 def log(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.log <numpy.log>`.
-
-    See its docstring for more information.
+    Compute the element-wise natural logarithm of an array.
     """
     if x.dtype not in _floating_dtypes:
         raise TypeError("Only floating-point dtypes are allowed in log")
@@ -432,9 +360,7 @@ def log(x: Array, /) -> Array:
 
 def log1p(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.log1p <numpy.log1p>`.
-
-    See its docstring for more information.
+    Compute the element-wise natural logarithm of x+1.
     """
     if x.dtype not in _floating_dtypes:
         raise TypeError("Only floating-point dtypes are allowed in log")
@@ -443,9 +369,7 @@ def log1p(x: Array, /) -> Array:
 
 def log2(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.log2 <numpy.log2>`.
-
-    See its docstring for more information.
+    Compute the element-wise base-2 logarithm of an array.
     """
     if x.dtype not in _floating_dtypes:
         raise TypeError("Only floating-point dtypes are allowed in log")
@@ -454,9 +378,7 @@ def log2(x: Array, /) -> Array:
 
 def log10(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.log10 <numpy.log10>`.
-
-    See its docstring for more information.
+    Compute the element-wise base-10 logarithm of an array.
     """
     if x.dtype not in _floating_dtypes:
         raise TypeError("Only floating-point dtypes are allowed in log")
@@ -465,18 +387,17 @@ def log10(x: Array, /) -> Array:
 
 def logaddexp(x1: Array, x2: Array) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.logaddexp <numpy.logaddexp>`.
+    Compute the element-wise logarithm of the sum of exponentials of two arrays.
+    (i.e., log(exp(x1) + exp(x2)))
 
-    See its docstring for more information.
+    WARNING: Not yet implemented.
     """
     raise ValueError("logaddexp not implemented")
 
 
 def logical_and(x1: Array, x2: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.logical_and <numpy.logical_and>`.
-
-    See its docstring for more information.
+    Compute the element-wise logical AND of two boolean arrays.
     """
     if x1.dtype not in _boolean_dtypes or x2.dtype not in _boolean_dtypes:
         raise TypeError("Only boolean dtypes are allowed in logical_and")
@@ -487,9 +408,7 @@ def logical_and(x1: Array, x2: Array, /) -> Array:
 
 def logical_not(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.logical_not <numpy.logical_not>`.
-
-    See its docstring for more information.
+    Compute the element-wise logical NOT of a boolean array.
     """
     repMsg = ak.generic_msg(
         cmd=f"efunc{x._array.ndim}D",
@@ -503,9 +422,7 @@ def logical_not(x: Array, /) -> Array:
 
 def logical_or(x1: Array, x2: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.logical_or <numpy.logical_or>`.
-
-    See its docstring for more information.
+    Compute the element-wise logical OR of two boolean arrays.
     """
     if x1.dtype not in _boolean_dtypes or x2.dtype not in _boolean_dtypes:
         raise TypeError("Only boolean dtypes are allowed in logical_or")
@@ -516,9 +433,7 @@ def logical_or(x1: Array, x2: Array, /) -> Array:
 
 def logical_xor(x1: Array, x2: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.logical_xor <numpy.logical_xor>`.
-
-    See its docstring for more information.
+    Compute the element-wise logical XOR of two boolean arrays.
     """
     if x1.dtype not in _boolean_dtypes or x2.dtype not in _boolean_dtypes:
         raise TypeError("Only boolean dtypes are allowed in logical_xor")
@@ -529,9 +444,7 @@ def logical_xor(x1: Array, x2: Array, /) -> Array:
 
 def multiply(x1: Array, x2: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.multiply <numpy.multiply>`.
-
-    See its docstring for more information.
+    Compute the element-wise product of two arrays.
     """
     if x1.dtype not in _numeric_dtypes or x2.dtype not in _numeric_dtypes:
         raise TypeError("Only numeric dtypes are allowed in multiply")
@@ -542,9 +455,7 @@ def multiply(x1: Array, x2: Array, /) -> Array:
 
 def negative(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.negative <numpy.negative>`.
-
-    See its docstring for more information.
+    Compute the element-wise negation of an array.
     """
     if x.dtype not in _numeric_dtypes:
         raise TypeError("Only numeric dtypes are allowed in negative")
@@ -589,27 +500,23 @@ def pow(x1: Array, x2: Array, /) -> Array:
 
 def real(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.real <numpy.real>`.
+    Get the element-wise real part of a Complex array.
 
-    See its docstring for more information.
+    WARNING: Not yet implemented.
     """
     raise ValueError("real not implemented")
 
 
 def remainder(x1: Array, x2: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.remainder <numpy.remainder>`.
-
-    See its docstring for more information.
+    Compute the element-wise remainder of x1 divided by x2.
     """
     return Array._new(ak.mod(x1._array, x2._array))
 
 
 def round(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.round <numpy.round>`.
-
-    See its docstring for more information.
+    Compute the element-wise rounding of an array.
     """
     if x.dtype not in _numeric_dtypes:
         raise TypeError("Only numeric dtypes are allowed in round")
@@ -618,9 +525,7 @@ def round(x: Array, /) -> Array:
 
 def sign(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.sign <numpy.sign>`.
-
-    See its docstring for more information.
+    Compute the element-wise sign of an array.
     """
     if x.dtype not in _numeric_dtypes:
         raise TypeError("Only numeric dtypes are allowed in sign")
@@ -629,9 +534,7 @@ def sign(x: Array, /) -> Array:
 
 def sin(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.sin <numpy.sin>`.
-
-    See its docstring for more information.
+    Compute the element-wise sine of an array.
     """
     if x.dtype not in _floating_dtypes:
         raise TypeError("Only floating-point dtypes are allowed in sin")
@@ -640,9 +543,7 @@ def sin(x: Array, /) -> Array:
 
 def sinh(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.sinh <numpy.sinh>`.
-
-    See its docstring for more information.
+    Compute the element-wise hyperbolic sine of an array.
     """
     if x.dtype not in _floating_dtypes:
         raise TypeError("Only floating-point dtypes are allowed in sinh")
@@ -651,9 +552,7 @@ def sinh(x: Array, /) -> Array:
 
 def square(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.square <numpy.square>`.
-
-    See its docstring for more information.
+    Compute the element-wise square of an array.
     """
     if x.dtype not in _numeric_dtypes:
         raise TypeError("Only numeric dtypes are allowed in sign")
@@ -662,9 +561,7 @@ def square(x: Array, /) -> Array:
 
 def sqrt(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.sqrt <numpy.sqrt>`.
-
-    See its docstring for more information.
+    Compute the element-wise square root of an array.
     """
     if x.dtype not in _floating_dtypes:
         raise TypeError("Only floating-point dtypes are allowed in sqrt")
@@ -673,9 +570,7 @@ def sqrt(x: Array, /) -> Array:
 
 def subtract(x1: Array, x2: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.subtract <numpy.subtract>`.
-
-    See its docstring for more information.
+    Compute the element-wise difference of two arrays.
     """
     if x1.dtype not in _numeric_dtypes or x2.dtype not in _numeric_dtypes:
         raise TypeError("Only numeric dtypes are allowed in subtract")
@@ -686,9 +581,7 @@ def subtract(x1: Array, x2: Array, /) -> Array:
 
 def tan(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.tan <numpy.tan>`.
-
-    See its docstring for more information.
+    Compute the element-wise tangent of an array.
     """
     if x.dtype not in _floating_dtypes:
         raise TypeError("Only floating-point dtypes are allowed in tan")
@@ -697,9 +590,7 @@ def tan(x: Array, /) -> Array:
 
 def tanh(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.tanh <numpy.tanh>`.
-
-    See its docstring for more information.
+    Compute the element-wise hyperbolic tangent of an array.
     """
     if x.dtype not in _floating_dtypes:
         raise TypeError("Only floating-point dtypes are allowed in tanh")
@@ -708,9 +599,7 @@ def tanh(x: Array, /) -> Array:
 
 def trunc(x: Array, /) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.trunc <numpy.trunc>`.
-
-    See its docstring for more information.
+    Compute the element-wise truncation of a floating-point array.
     """
     if x.dtype not in _floating_dtypes:
         raise TypeError("Only floating-point dtypes are allowed in trunc")

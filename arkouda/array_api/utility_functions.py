@@ -19,9 +19,16 @@ def all(
     keepdims: bool = False,
 ) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.all <numpy.all>`.
+    Check whether all elements of an array evaluate to True along a given axis.
 
-    See its docstring for more information.
+    Parameters
+    ----------
+    x : Array
+        The array to check for all True values
+    axis : int or Tuple[int], optional
+        The axis or axes along which to check for all True values. If None, check all elements.
+    keepdims : bool, optional
+        Whether to keep the singleton dimensions along `axis` in the result.
     """
     return Array._new(scalar_array(ak.all(x._array)))
 
@@ -34,14 +41,33 @@ def any(
     keepdims: bool = False,
 ) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.any <numpy.any>`.
+    Check whether any elements of an array evaluate to True along a given axis.
 
-    See its docstring for more information.
+    Parameters
+    ----------
+    x : Array
+        The array to check for any True values
+    axis : int or Tuple[int], optional
+        The axis or axes along which to check for any True values. If None, check all elements.
+    keepdims : bool, optional
+        Whether to keep the singleton dimensions along `axis` in the result.
     """
     return Array._new(scalar_array(ak.any(x._array)))
 
 
 def clip(a: Array, a_min, a_max, /) -> Array:
+    """
+    Clip (limit) the values in an array to a given range.
+
+    Parameters
+    ----------
+    a : Array
+        The array to clip
+    a_min : scalar
+        The minimum value
+    a_max : scalar
+        The maximum value
+    """
     return Array._new(
         create_pdarray(
             generic_msg(
@@ -57,6 +83,22 @@ def clip(a: Array, a_min, a_max, /) -> Array:
 
 
 def diff(a: Array, /, n: int = 1, axis: int = -1, prepend=None, append=None) -> Array:
+    """
+    Calculate the n-th discrete difference along the given axis.
+
+    Parameters
+    ----------
+    a : Array
+        The array to calculate the difference
+    n : int, optional
+        The order of the finite difference. Default is 1.
+    axis : int, optional
+        The axis along which to calculate the difference. Default is the last axis.
+    prepend : Array, optional
+        Array to prepend to `a` along `axis` before calculating the difference.
+    append : Array, optional
+        Array to append to `a` along `axis` before calculating the difference.
+    """
     if prepend is not None and append is not None:
         a_ = concat((prepend, a, append), axis=axis)
     elif prepend is not None:
@@ -86,6 +128,21 @@ def pad(
     mode='constant',
     **kwargs
 ) -> Array:
+    """
+    Pad an array.
+
+    Parameters
+    ----------
+    array : Array
+        The array to pad
+    pad_width : int or Tuple[int, int] or Tuple[Tuple[int, int], ...]
+        Number of values padded to the edges of each axis. If a single int, the same value is used for
+        all axes. If a tuple of two ints, those values are used for all axes. If a tuple of tuples, each
+        inner tuple specifies the number of values padded to the beginning and end of each axis.
+    mode : str, optional
+        Padding mode. Only 'constant' is currently supported. Use the `constant_values` keyword argument
+        to specify the padding value or values (in the same format as `pad_width`).
+    """
     if mode != 'constant':
         raise NotImplementedError(f"pad mode '{mode}' is not supported")
 

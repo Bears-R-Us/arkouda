@@ -33,6 +33,19 @@ def max(
     axis: Optional[Union[int, Tuple[int, ...]]] = None,
     keepdims: bool = False,
 ) -> Array:
+    """
+    Compute the maximum values of an array along a given axis or axes.
+
+    Parameters
+    ----------
+    x : Array
+        The array to compute the maximum of
+    axis : int or Tuple[int, ...], optional
+        The axis or axes along which to compute the maximum values. If None, the maximum value of the
+        entire array is computed (returning a scalar-array).
+    keepdims : bool, optional
+        Whether to keep the singleton dimension(s) along `axis` in the result.
+    """
     if x.dtype not in _real_numeric_dtypes:
         raise TypeError("Only real numeric dtypes are allowed in max")
 
@@ -78,6 +91,19 @@ def mean(
     axis: Optional[Union[int, Tuple[int, ...]]] = None,
     keepdims: bool = False,
 ) -> Array:
+    """
+    Compute the minimum values of an array along a given axis or axes.
+
+    Parameters
+    ----------
+    x : Array
+        The array to compute the minimum of
+    axis : int or Tuple[int, ...], optional
+        The axis or axes along which to compute the mean. If None, the mean of the entire array is
+        computed (returning a scalar-array).
+    keepdims : bool, optional
+        Whether to keep the singleton dimension(s) along `axis` in the result.
+    """
     if x.dtype not in _real_floating_dtypes:
         raise TypeError("Only real floating-point dtypes are allowed in mean")
 
@@ -115,6 +141,19 @@ def min(
     axis: Optional[Union[int, Tuple[int, ...]]] = None,
     keepdims: bool = False,
 ) -> Array:
+    """
+    Compute the mean of an array along a given axis or axes.
+
+    Parameters
+    ----------
+    x : Array
+        The array to compute the mean of
+    axis : int or Tuple[int, ...], optional
+        The axis or axes along which to compute the minimum values. If None, the minimum of the entire
+        array is computed (returning a scalar-array).
+    keepdims : bool, optional
+        Whether to keep the singleton dimension(s) along `axis` in the result.
+    """
     if x.dtype not in _real_numeric_dtypes:
         raise TypeError("Only real numeric dtypes are allowed in min")
 
@@ -152,6 +191,21 @@ def prod(
     dtype: Optional[Dtype] = None,
     keepdims: bool = False,
 ) -> Array:
+    """
+    Compute the product of an array along a given axis or axes.
+
+    Parameters
+    ----------
+    x : Array
+        The array to compute the product of
+    axis : int or Tuple[int, ...], optional
+        The axis or axes along which to compute the product. If None, the product of the entire array
+        is computed (returning a scalar-array).
+    dtype : Dtype, optional
+        The dtype of the returned array. If None, the dtype of the input array is used.
+    keepdims : bool, optional
+        Whether to keep the singleton dimension(s) along `axis` in the result.
+    """
     if x.dtype not in _numeric_dtypes:
         raise TypeError("Only numeric dtypes are allowed in prod")
 
@@ -160,7 +214,7 @@ def prod(
         axis_list = list(axis) if isinstance(axis, tuple) else [axis]
 
     # cast to the appropriate dtype if necessary
-    cast_to = prod_sum_dtype(x.dtype) if dtype is None else dtype
+    cast_to = _prod_sum_dtype(x.dtype) if dtype is None else dtype
     if cast_to != x.dtype:
         x_op = akcast(x._array, cast_to)
     else:
@@ -198,6 +252,21 @@ def std(
     correction: Union[int, float] = 0.0,
     keepdims: bool = False,
 ) -> Array:
+    """
+    Compute the standard deviation of an array along a given axis or axes.
+
+    Parameters
+    ----------
+    x : Array
+        The array to compute the standard deviation of
+    axis : int or Tuple[int, ...], optional
+        The axis or axes along which to compute the standard deviation. If None, the standard deviation
+        of the entire array is computed (returning a scalar-array).
+    correction : int or float, optional
+        The degrees of freedom correction to apply. The default is 0.
+    keepdims : bool, optional
+        Whether to keep the singleton dimension(s) along `axis` in the result.
+    """
     if x.dtype not in _real_floating_dtypes:
         raise TypeError("Only real floating-point dtypes are allowed in std")
     if correction < 0:
@@ -238,6 +307,21 @@ def sum(
     dtype: Optional[Dtype] = None,
     keepdims: bool = False,
 ) -> Array:
+    """
+    Compute the sum of an array along a given axis or axes.
+
+    Parameters
+    ----------
+    x : Array
+        The array to compute the sum of
+    axis : int or Tuple[int, ...], optional
+        The axis or axes along which to compute the sum. If None, the sum of the entire array is
+        computed (returning a scalar-array).
+    dtype : Dtype, optional
+        The dtype of the returned array. If None, the dtype of the input array is used.
+    keepdims : bool, optional
+        Whether to keep the singleton dimension(s) along `axis` in the result.
+    """
     if x.dtype not in _numeric_dtypes:
         raise TypeError("Only numeric dtypes are allowed in sum")
 
@@ -246,7 +330,7 @@ def sum(
         axis_list = list(axis) if isinstance(axis, tuple) else [axis]
 
     # cast to the appropriate dtype if necessary
-    cast_to = prod_sum_dtype(x.dtype) if dtype is None else dtype
+    cast_to = _prod_sum_dtype(x.dtype) if dtype is None else dtype
     if cast_to != x.dtype:
         x_op = akcast(x._array, cast_to)
     else:
@@ -284,6 +368,21 @@ def var(
     correction: Union[int, float] = 0.0,
     keepdims: bool = False,
 ) -> Array:
+    """
+    Compute the variance of an array along a given axis or axes.
+
+    Parameters
+    ----------
+    x : Array
+        The array to compute the variance of
+    axis : int or Tuple[int, ...], optional
+        The axis or axes along which to compute the variance. If None, the variance of the entire array
+        is computed (returning a scalar-array).
+    correction : int or float, optional
+        The degrees of freedom correction to apply. The default is 0.
+    keepdims : bool, optional
+        Whether to keep the singleton dimension(s) along `axis` in the result.
+    """
     # Note: the keyword argument correction is different here
     if x.dtype not in _real_floating_dtypes:
         raise TypeError("Only real floating-point dtypes are allowed in var")
@@ -317,7 +416,7 @@ def var(
             return squeeze(arr, axis)
 
 
-def prod_sum_dtype(dtype: Dtype) -> Dtype:
+def _prod_sum_dtype(dtype: Dtype) -> Dtype:
     if dtype == uint64:
         return dtype
     elif dtype in _real_floating_dtypes:
@@ -336,6 +435,21 @@ def cumulative_sum(
     dtype: Optional[Dtype] = None,
     include_initial: bool = False
 ) -> Array:
+    """
+    Compute the cumulative sum of the elements of an array along a given axis.
+
+    Parameters
+    ----------
+    x : Array
+        The array to compute the cumulative sum of
+    axis : int, optional
+        The axis along which to compute the cumulative sum. If x is 1D, this argument is optional,
+        otherwise it is required.
+    dtype : Dtype, optional
+        The dtype of the returned array. If None, the dtype of the input array is used.
+    include_initial : bool, optional
+        Whether to include the initial value as the first element of the output.
+    """
     resp = generic_msg(
         cmd=f"cumSum{x.ndim}D",
         args={

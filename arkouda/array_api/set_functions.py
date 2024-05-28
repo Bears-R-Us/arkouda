@@ -26,6 +26,13 @@ class UniqueInverseResult(NamedTuple):
 
 
 def unique_all(x: Array, /) -> UniqueAllResult:
+    """
+    Return a tuple of arrays containing:
+    - the unique values in `x`
+    - the indices of the first occurrence of each unique value
+    - the inverse indices that reconstruct `x` from the unique values
+    - the counts of each unique value
+    """
     resp = cast(
                 str,
                 generic_msg(
@@ -45,6 +52,11 @@ def unique_all(x: Array, /) -> UniqueAllResult:
 
 
 def unique_counts(x: Array, /) -> UniqueCountsResult:
+    """
+    Return a tuple of arrays containing:
+    - the unique values in `x`
+    - the counts of each unique value
+    """
     resp = cast(
                 str,
                 generic_msg(
@@ -62,6 +74,11 @@ def unique_counts(x: Array, /) -> UniqueCountsResult:
 
 
 def unique_inverse(x: Array, /) -> UniqueInverseResult:
+    """
+    Return a tuple of arrays containing:
+    - the unique values in `x`
+    - the inverse indices that reconstruct `x` from the unique values
+    """
     resp = cast(
                 str,
                 generic_msg(
@@ -79,6 +96,9 @@ def unique_inverse(x: Array, /) -> UniqueInverseResult:
 
 
 def unique_values(x: Array, /) -> Array:
+    """
+    Return an array containing the unique values from `x`.
+    """
     return Array._new(
         create_pdarray(
             cast(

@@ -18,7 +18,6 @@ from typing import TYPE_CHECKING, Tuple, Union
 
 if TYPE_CHECKING:
     from ._typing import Dtype
-
 import arkouda as ak
 import numpy as np
 

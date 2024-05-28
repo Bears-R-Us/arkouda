@@ -34,6 +34,9 @@ def matmul(x1: Array, x2: Array, /) -> Array:
 
 
 def tensordot():
+    """
+    WARNING: not yet implemented
+    """
     raise ValueError("tensordot not implemented")
 
 
