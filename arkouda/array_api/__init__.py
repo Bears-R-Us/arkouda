@@ -26,8 +26,8 @@ from .creation_functions import (
 from .data_type_functions import (
     astype,
     can_cast,
-    # finfo,
-    # iinfo,
+    finfo,
+    iinfo,
     result_type,
 )
 
@@ -139,7 +139,7 @@ from .sorting_functions import argsort, sort
 
 from .statistical_functions import max, mean, min, prod, std, sum, var, cumulative_sum
 
-from ._utility_functions import all, any, clip, diff, pad
+from .utility_functions import all, any, clip, diff, pad
 
 __array_api_version__ = "2022.12"
 

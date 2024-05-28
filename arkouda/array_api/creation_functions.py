@@ -100,7 +100,8 @@ def arange(
     Parameters
     ----------
     start: Union[int, float]
-        If `stop` is None, this is the stop value and start is 0. Otherwise, this is the start value (inclusive).
+        If `stop` is None, this is the stop value and start is 0. Otherwise,
+        this is the start value (inclusive).
     stop: Optional[Union[int, float]]
         The end value of the sequence (exclusive).
     step: Union[int, float]
