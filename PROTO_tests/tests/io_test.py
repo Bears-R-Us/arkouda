@@ -551,7 +551,7 @@ class TestParquet:
             # segs must start with 0, all other segment lengths are random
             # by having val_size number of segments, except in the extremely unlikely case of
             # randomly getting exactly arange(val_size), we are guaranteed empty segs
-            segs = ak.concatenate([ak.array([0]), ak.sort(ak.randint(0, val_size, val_size - 1))])
+            segs = ak.concatenate([ak.array([0]), ak.sort(ak.randint(0, val_size, val_size - 1, seed=seed))])
             df_dict["rand"] = ak.SegArray(segs, vals).to_list()
 
             pddf = pd.DataFrame(df_dict)
