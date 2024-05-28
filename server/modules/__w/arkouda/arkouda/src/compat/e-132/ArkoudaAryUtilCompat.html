@@ -133,7 +133,7 @@
 </div>
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ArkoudaAryUtilCompat.domOnAxis">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domOnAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">idx:</span> <span class="pre">D.rank*int</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">int</span> <span class="pre">...?NA</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">domain</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">NA</span> <span class="pre">&lt;</span> <span class="pre">D.rank</span></em><a class="headerlink" href="#ArkoudaAryUtilCompat.domOnAxis" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domOnAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">idx:</span> <span class="pre">D.rank*int</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">int</span> <span class="pre">...?NA</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">domain</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">NA</span> <span class="pre">&lt;=</span> <span class="pre">D.rank</span></em><a class="headerlink" href="#ArkoudaAryUtilCompat.domOnAxis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a domain that selects out the idx’th set of indices along the specified axes</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
@@ -144,9 +144,12 @@
 </ul>
 </dd>
 </dl>
-<p>For example, if D represents a stack of 1000 10x10 matrices (ex: {1..10, 1..10, 1..1000})
+<p>Example 1: if D represents a stack of 1000 10x10 matrices (ex: {1..10, 1..10, 1..1000})
 Then, domOnAxis(D, (1, 1, 25), 0, 1) will return D sliced with {1..10, 1..10, 25..25}
 (i.e., the 25th matrix)</p>
+<p>Example 2: if D belongs to a 3D array {1..100, 1..100, 1..100}, then
+domOnAxis(D, (5, 1, 7), 1) will return D sliced with {5..5, 1..100, 7..7}, i.e.,
+the set of indices for the (5,7)-th 1D sub-array along axis 1</p>
 </dd></dl>
 
 <dl class="chpl function">
@@ -156,7 +159,7 @@ Then, domOnAxis(D, (1, 1, 25), 0, 1) will return D sliced with {1..10, 1..10, 25
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ArkoudaAryUtilCompat.domOffAxis">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domOffAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">int</span> <span class="pre">...?NA</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">domain(?)</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">NA</span> <span class="pre">&lt;</span> <span class="pre">D.rank</span></em><a class="headerlink" href="#ArkoudaAryUtilCompat.domOffAxis" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domOffAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">int</span> <span class="pre">...?NA</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">domain(?)</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">NA</span> <span class="pre">&lt;=</span> <span class="pre">D.rank</span></em><a class="headerlink" href="#ArkoudaAryUtilCompat.domOffAxis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a domain over the set of indices orthogonal to the specified axes</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
@@ -166,9 +169,12 @@ Then, domOnAxis(D, (1, 1, 25), 0, 1) will return D sliced with {1..10, 1..10, 25
 </ul>
 </dd>
 </dl>
-<p>For example, if D represents a stack of 1000 10x10 matrices (ex: {1..10, 1..10, 1..1000})
+<p>Example 1: if D represents a stack of 1000 10x10 matrices (ex: {1..10, 1..10, 1..1000})
 Then, domOffAxis(D, 0, 1) will return D sliced with {0..0, 0..0, 1..1000}
 (i.e., a set of indices for the 1000 matrices)</p>
+<p>Example 2: if D belongs to a 3D array {1..100, 1..100, 1..100}, then
+domOffAxis(D, 1) will return D sliced with {1..100, 0..0, 1..100}, i.e.,
+the set of indices for all the 1D sub-arrays along axis 1</p>
 </dd></dl>
 
 <dl class="chpl function">
