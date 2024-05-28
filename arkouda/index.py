@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import builtins
 import json
 from typing import TYPE_CHECKING, List, Optional, Tuple, Union
 
@@ -282,18 +283,68 @@ class Index:
 
         return cls.factory(idx) if len(idx) > 1 else cls.factory(idx[0])
 
-    def equals(self, other: Union[Index, pdarray, Strings, Categorical, list]) -> bool:
-        if not isinstance(other, (Index, pdarray, Strings, Categorical, list)):
-            raise TypeError("other must be of type Index, pdarray, Strings, Categorical, list")
+    def equals(self, other: Index) -> bool:
+        """
+        Whether Indexes are the same size, and all entries are equal.
 
-        if isinstance(other, list) and self.size != len(other):
+        Parameters
+        ----------
+        other : object
+            object to compare.
+
+        Returns
+        -------
+        bool
+            True if the Indexes are the same, o.w. False.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> i = ak.Index([1, 2, 3])
+        >>> i_cpy = ak.Index([1, 2, 3])
+        >>> i.equals(i_cpy)
+        True
+        >>> i2 = ak.Index([1, 2, 4])
+        >>> i.equals(i2)
+        False
+
+        MultiIndex case:
+
+        >>> arrays = [ak.array([1, 1, 2, 2]), ak.array(["red", "blue", "red", "blue"])]
+        >>> m = ak.MultiIndex(arrays, names=["numbers2", "colors2"])
+        >>> m.equals(m)
+        True
+        >>> arrays2 = [ak.array([1, 1, 2, 2]), ak.array(["red", "blue", "red", "green"])]
+        >>> m2 = ak.MultiIndex(arrays2, names=["numbers2", "colors2"])
+        >>> m.equals(m2)
+        False
+        """
+        if self is other:
+            return True
+
+        if not isinstance(other, Index):
+            raise TypeError("other must be of type Index.")
+
+        if type(self) is not type(other):
             return False
-        elif not isinstance(other, list) and self.size != other.size:
+
+        if len(self) != len(other):
             return False
 
         from arkouda.pdarrayclass import all as akall
 
-        return akall(self == other)
+        if isinstance(self, MultiIndex) and isinstance(other, MultiIndex):
+            if self.nlevels != other.nlevels:
+                return False
+
+            for i in range(self.nlevels):
+                if not self.levels[i].equals(other.levels[i]):
+                    return False
+
+            return True
+        else:
+            return akall(self == other)
 
     def memory_usage(self, unit="B"):
         """
@@ -1108,6 +1159,19 @@ class MultiIndex(Index):
         Return the dtype object of the underlying data.
         """
         return npdtype("O")
+
+    def equal_levels(self, other: MultiIndex) -> builtins.bool:
+        """
+        Return True if the levels of both MultiIndex objects are the same
+
+        """
+        if self.nlevels != other.nlevels:
+            return False
+
+        for i in range(self.nlevels):
+            if not self.levels[i].equals(other.levels[i]):
+                return False
+        return True
 
     def memory_usage(self, unit="B"):
         """

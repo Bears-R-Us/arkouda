@@ -139,31 +139,99 @@ class IndexTest(ArkoudaTest):
         i_cpy = ak.Index([1, 2, 3])
         self.assert_equal(i == i_cpy, ak.array([True, True, True]))
         self.assert_equal(i != i_cpy, ak.array([False, False, False]))
-        assert i.equals(i_cpy)
+        self.assertTrue(i.equals(i_cpy))
 
         i2 = ak.Index([1, 2, 3], allow_list=True)
         i2_cpy = ak.Index([1, 2, 3], allow_list=True)
         self.assert_equal(i2 == i2_cpy, ak.array([True, True, True]))
         self.assert_equal(i2 != i2_cpy, ak.array([False, False, False]))
-        assert i2.equals(i2_cpy)
+        self.assertTrue(i2.equals(i2_cpy))
 
         self.assert_equal(i == i2, ak.array([True, True, True]))
         self.assert_equal(i != i2, ak.array([False, False, False]))
-        assert i.equals(i2)
+        self.assertTrue(i.equals(i2))
 
         i3 = ak.Index(["a", "b", "c"], allow_list=True)
         i3_cpy = ak.Index(["a", "b", "c"], allow_list=True)
         self.assert_equal(i3 == i3_cpy, ak.array([True, True, True]))
         self.assert_equal(i3 != i3_cpy, ak.array([False, False, False]))
-        assert i3.equals(i3_cpy)
+        self.assertTrue(i3.equals(i3_cpy))
 
-        i4 = ak.Index(["a", "x", "c"], allow_list=True)
-        self.assert_equal(i3 == i4, ak.array([True, False, True]))
-        self.assert_equal(i3 != i4, ak.array([False, True, False]))
-        assert not i3.equals(i4)
+        i4 = ak.Index(["a", "b", "c"], allow_list=False)
+        i4_cpy = ak.Index(["a", "b", "c"], allow_list=False)
+        self.assert_equal(i4 == i4_cpy, ak.array([True, True, True]))
+        self.assert_equal(i4 != i4_cpy, ak.array([False, False, False]))
+        self.assertTrue(i3.equals(i3_cpy))
 
-        i5 = ak.Index(["a", "b", "c", "d"], allow_list=True)
-        assert not i4.equals(i5)
+        i5 = ak.Index(["a", "x", "c"], allow_list=True)
+        self.assert_equal(i3 == i5, ak.array([True, False, True]))
+        self.assert_equal(i3 != i5, ak.array([False, True, False]))
+        self.assertFalse(i3.equals(i5))
+
+        i6 = ak.Index(["a", "b", "c", "d"], allow_list=True)
+        self.assertFalse(i5.equals(i6))
+
+        with self.assertRaises(ValueError):
+            i5 == i6
+
+        with self.assertRaises(ValueError):
+            i5 != i6
+
+        with self.assertRaises(TypeError):
+            i.equals("string")
+
+    def test_multiindex_equals(self):
+        size = 10
+        arrays = [ak.array([1, 1, 2, 2]), ak.array(["red", "blue", "red", "blue"])]
+        m = ak.MultiIndex(arrays, names=["numbers", "colors"])
+        self.assertTrue(m.equals(m))
+
+        arrays2 = [ak.array([1, 1, 2, 2]), ak.array(["red", "blue", "red", "blue"])]
+        m2 = ak.MultiIndex(arrays2, names=["numbers2", "colors2"])
+        self.assertTrue(m.equals(m2))
+
+        arrays3 = [
+            ak.array([1, 1, 2, 2]),
+            ak.array(["red", "blue", "red", "blue"]),
+            ak.array([1, 1, 2, 2]),
+        ]
+        m3 = ak.MultiIndex(arrays3, names=["numbers", "colors2", "numbers3"])
+        self.assertFalse(m.equals(m3))
+
+        arrays4 = [ak.array([1, 1, 2, 2]), ak.array(["red", "blue", "red", "green"])]
+        m4 = ak.MultiIndex(arrays4, names=["numbers2", "colors2"])
+        self.assertFalse(m.equals(m4))
+
+        m5 = ak.MultiIndex([ak.arange(size)])
+        i = ak.Index(ak.arange(size))
+        self.assertFalse(m5.equals(i))
+        self.assertFalse(i.equals(m5))
+
+    def test_equal_levels(self):
+        m = ak.MultiIndex(
+            [ak.arange(3), ak.arange(3) * -1, ak.array(["a", 'b","c', "d"])],
+            names=["col1", "col2", "col3"],
+        )
+        m2 = ak.MultiIndex(
+            [ak.arange(3), ak.arange(3) * -1, ak.array(["a", 'b","c', "d"])],
+            names=["A", "B", "C"],
+        )
+
+        self.assertTrue(m.equal_levels(m2))
+
+        m3 = ak.MultiIndex(
+            [ak.arange(3), ak.arange(3) * -1, ak.array(["a", 'b","c', "d"]), 2 * ak.arange(3)],
+            names=["col1", "col2", "col3"],
+        )
+
+        self.assertFalse(m.equal_levels(m3))
+
+        m4 = ak.MultiIndex(
+            [ak.arange(3), ak.arange(3) * 2, ak.array(["a", 'b","c', "d"])],
+            names=["col1", "col2", "col3"],
+        )
+
+        self.assertFalse(m.equal_levels(m4))
 
     def test_get_level_values(self):
         m = ak.MultiIndex(
