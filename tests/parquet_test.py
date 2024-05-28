@@ -626,6 +626,7 @@ class ParquetTest(ArkoudaTest):
                 print("pd version: ", pd.__version__)
                 print()
                 print("pddf['rand'][263047]: ", pddf['rand'][263047])
+                print("akdf['rand'][263047]: ", akdf['rand'][263047])
                 print("to_pd[263047]: ", to_pd[263047])
                 assert_series_equal(pddf['rand'], to_pd, check_names=False, rtol=1e-05, atol=1e-08)
 
