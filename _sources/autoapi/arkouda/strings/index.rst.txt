@@ -249,6 +249,30 @@ Module Contents
 
 
 
+   .. py:method:: equals(other) -> bool
+
+      Whether Strings are the same size and all entries are equal.
+
+      :param other: object to compare.
+      :type other: object
+
+      :returns: True if the Strings are the same, o.w. False.
+      :rtype: bool
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> s = ak.array(["a", "b", "c"])
+      >>> s_cpy = ak.array(["a", "b", "c"])
+      >>> s.equals(s_cpy)
+      True
+      >>> s2 = ak.array(["a", "x", "c"])
+      >>> s.equals(s2)
+      False
+
+
+
    .. py:method:: find_locations(pattern: Union[bytes, arkouda.dtypes.str_scalars]) -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
 
       Finds pattern matches and returns pdarrays containing the number, start postitions,

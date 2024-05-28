@@ -1073,7 +1073,39 @@ Module Contents
    .. py:method:: concat(other)
 
 
-   .. py:method:: equals(other: Union[Index, arkouda.pdarrayclass.pdarray, arkouda.Strings, arkouda.Categorical, list]) -> bool
+   .. py:method:: equals(other: Index) -> bool
+
+      Whether Indexes are the same size, and all entries are equal.
+
+      :param other: object to compare.
+      :type other: object
+
+      :returns: True if the Indexes are the same, o.w. False.
+      :rtype: bool
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> i = ak.Index([1, 2, 3])
+      >>> i_cpy = ak.Index([1, 2, 3])
+      >>> i.equals(i_cpy)
+      True
+      >>> i2 = ak.Index([1, 2, 4])
+      >>> i.equals(i2)
+      False
+
+      MultiIndex case:
+
+      >>> arrays = [ak.array([1, 1, 2, 2]), ak.array(["red", "blue", "red", "blue"])]
+      >>> m = ak.MultiIndex(arrays, names=["numbers2", "colors2"])
+      >>> m.equals(m)
+      True
+      >>> arrays2 = [ak.array([1, 1, 2, 2]), ak.array(["red", "blue", "red", "green"])]
+      >>> m2 = ak.MultiIndex(arrays2, names=["numbers2", "colors2"])
+      >>> m.equals(m2)
+      False
+
 
 
    .. py:method:: factory(index)
@@ -1514,6 +1546,13 @@ Module Contents
       :type: numpy.dtype
 
       Return the dtype object of the underlying data.
+
+
+   .. py:method:: equal_levels(other: MultiIndex) -> bool
+
+      Return True if the levels of both MultiIndex objects are the same
+
+
 
 
    .. py:method:: get_level_values(level: Union[str, int])
@@ -2272,6 +2311,24 @@ Module Contents
    .. py:method:: equals(other) -> bool
 
       Whether pdarrays are the same size and all entries are equal.
+
+      :param other: object to compare.
+      :type other: object
+
+      :returns: True if the pdarrays are the same, o.w. False.
+      :rtype: bool
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> a = ak.array([1, 2, 3])
+      >>> a_cpy = ak.array([1, 2, 3])
+      >>> a.equals(a_cpy)
+      True
+      >>> a2 = ak.array([1, 2, 5)
+      >>> a.equals(a2)
+      False
 
 
 

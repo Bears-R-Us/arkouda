@@ -803,6 +803,24 @@ Module Contents
 
       Whether pdarrays are the same size and all entries are equal.
 
+      :param other: object to compare.
+      :type other: object
+
+      :returns: True if the pdarrays are the same, o.w. False.
+      :rtype: bool
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> a = ak.array([1, 2, 3])
+      >>> a_cpy = ak.array([1, 2, 3])
+      >>> a.equals(a_cpy)
+      True
+      >>> a2 = ak.array([1, 2, 5)
+      >>> a.equals(a2)
+      False
+
 
 
    .. py:method:: fill(value: arkouda.dtypes.numeric_scalars) -> None

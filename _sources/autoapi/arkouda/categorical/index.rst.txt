@@ -191,6 +191,30 @@ Module Contents
 
 
 
+   .. py:method:: equals(other) -> bool
+
+      Whether Categoricals are the same size and all entries are equal.
+
+      :param other: object to compare.
+      :type other: object
+
+      :returns: True if the Categoricals are the same, o.w. False.
+      :rtype: bool
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> c = Categorical(ak.array(["a", "b", "c"]))
+      >>> c_cpy = Categorical(ak.array(["a", "b", "c"]))
+      >>> c.equals(c_cpy)
+      True
+      >>> c2 = Categorical(ak.array(["a", "x", "c"]))
+      >>> c.equals(c2)
+      False
+
+
+
    .. py:method:: from_codes(codes: arkouda.pdarrayclass.pdarray, categories: arkouda.strings.Strings, permutation=None, segments=None, **kwargs) -> Categorical
       :classmethod:
 
