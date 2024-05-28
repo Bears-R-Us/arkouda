@@ -4,7 +4,7 @@ from typing import ForwardRef, List, Optional, Sequence, Tuple, Union
 from typing import cast as type_cast
 from typing import no_type_check
 
-import numpy as np  # type: ignore
+import numpy as np
 from typeguard import typechecked
 
 from arkouda.client import generic_msg

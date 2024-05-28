@@ -549,7 +549,7 @@ class ZmqChannel(Channel):
         message = RequestMessage(
             user=username, token=self.token, cmd=cmd, format=MessageFormat.BINARY, args=args, size=size
         )
-        import zmq  # type: ignore
+        import zmq
 
         self.logger.debug(f"sending message {message}")
 
@@ -581,7 +581,7 @@ class ZmqChannel(Channel):
 
     def connect(self, timeout: int = 0) -> None:
         # create and configure socket for connections to arkouda server
-        import zmq  # type: ignore
+        import zmq
 
         context = zmq.Context()
         self.socket = context.socket(zmq.REQ)
@@ -736,7 +736,7 @@ def connect(
             ).format(__version__, serverConfig["arkoudaVersion"]),
             RuntimeWarning,
         )
-    regexMaxCaptures = serverConfig["regexMaxCaptures"]  # type:ignore
+    regexMaxCaptures = serverConfig["regexMaxCaptures"]  # type: ignore
     clientLogger.info(return_message)
 
 

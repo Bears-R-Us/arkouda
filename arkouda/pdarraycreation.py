@@ -1,8 +1,8 @@
 import itertools
 from typing import Iterable, List, Optional, Tuple, Union, cast
 
-import numpy as np  # type: ignore
-import pandas as pd  # type: ignore
+import numpy as np
+import pandas as pd
 from typeguard import typechecked
 
 from arkouda.client import generic_msg

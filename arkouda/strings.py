@@ -5,7 +5,7 @@ import itertools
 import re
 from typing import Dict, List, Optional, Tuple, Union, cast
 
-import numpy as np  # type: ignore
+import numpy as np
 from typeguard import typechecked
 
 import arkouda.dtypes

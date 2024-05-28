@@ -580,9 +580,7 @@ def map(
     gb_keys = gb.unique_keys
 
     if isinstance(mapping, dict):
-        mapping = Series(
-            [array(list(mapping.keys())), array(list(mapping.values()))]
-        )  # type: ignore [assignment]
+        mapping = Series([array(list(mapping.keys())), array(list(mapping.values()))])
 
     if isinstance(mapping, Series):
         xtra_keys = gb_keys[in1d(gb_keys, mapping.index.values, invert=True)]

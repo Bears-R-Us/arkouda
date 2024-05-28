@@ -9,6 +9,7 @@ import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 import pytest
+from pandas.testing import assert_series_equal
 
 import arkouda as ak
 from arkouda import io_util
@@ -525,6 +526,43 @@ class TestParquet:
         df = ak.DataFrame({"a": ak.IPv4(ak.arange(10))})
         df["a"] = df["a"].values.export_uint()
         assert ak.arange(10).to_list() == df["a"].to_list()
+
+    def test_empty_segs_segarray(self):
+        # verify reproducer for #3074 is resolved
+
+        # bug seemed to consistently appear for val_sizes
+        # exceeding 700000, round up to ensure we'd hit it
+        val_size = 1000000
+
+        df_dict = dict()
+        rng = ak.random.default_rng()
+        vals_list = [
+            rng.uniform(-(2**10), 2**10, val_size),
+            rng.integers(0, 2**32, size=val_size, dtype="uint"),
+            rng.integers(0, 1, size=val_size, dtype="bool"),
+            rng.integers(-(2**32), 2**32, size=val_size, dtype="int"),
+        ]
+
+        for vals in vals_list:
+            # segs must start with 0, all other segment lengths are random
+            # by having val_size number of segments, except in the extremely unlikely case of
+            # randomly getting exactly arange(val_size), we are guaranteed empty segs
+            segs = ak.concatenate([ak.array([0]), ak.sort(ak.randint(0, val_size, val_size - 1))])
+            df_dict["rand"] = ak.SegArray(segs, vals).to_list()
+
+            pddf = pd.DataFrame(df_dict)
+            with tempfile.TemporaryDirectory(dir=TestParquet.par_test_base_tmp) as tmp_dirname:
+                file_path = f"{tmp_dirname}/empty_segs"
+                pddf.to_parquet(file_path)
+                akdf = ak.DataFrame(ak.read_parquet(file_path))
+
+                to_pd = pd.Series(akdf["rand"].values.to_list())
+                # raises an error if the two series aren't equal
+                # we can't use np.allclose(pddf['rand'].to_list, akdf['rand'].to_list) since these
+                # are lists of lists. assert_series_equal handles this and properly handles nans.
+                # we pass the same absolute and relative tolerances as the numpy default in allclose
+                # to ensure float point differences don't cause errors
+                assert_series_equal(pddf['rand'], to_pd, check_names=False, rtol=1e-05, atol=1e-08)
 
 
 class TestHDF5:

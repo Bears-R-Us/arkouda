@@ -199,22 +199,6 @@ module ParquetMsg {
     }
   }
 
-  proc computeIdx(offsets: [] int, val: int): int throws {
-    var (v, idx) = maxloc reduce zip(offsets > val, offsets.domain);
-    return if v then idx-1 else offsets.size-1;
-  }
-
-  proc computeEmptySegs(seg_sizes: [] int, offsets: [] int, s: int, intersection: domain(1), fileoffset: int): int throws {
-    // Compute the number of empty segments preceeding the current chunk
-    if (intersection.low-fileoffset == 0){ //starts the file, no shift needed
-      return 0;
-    }
-    var highidx = computeIdx(offsets, intersection.low);
-    var sub_segs = seg_sizes[s..highidx];
-    var empty_segs = sub_segs == 0;
-    return (+ reduce empty_segs);
-  }
-
   proc readListFilesByName(A: [] ?t, rows_per_file: [] int, seg_sizes: [] int, offsets: [] int, filenames: [] string, sizes: [] int, dsetname: string, ty) throws {
     extern proc c_readListColumnByName(filename, arr_chpl, colNum, numElems, startIdx, batchSize, errMsg): int;
     var (subdoms, length) = getSubdomains(sizes);

@@ -17,7 +17,7 @@ from typing import (
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
 
-import numpy as np  # type: ignore
+import numpy as np
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
@@ -67,9 +67,7 @@ def unique(
     return_groups: bool = False,
     assume_sorted: bool = False,
     return_indices: bool = False,
-) -> Union[
-    groupable, Tuple[groupable, pdarray, pdarray, int]  # type: ignore
-]:  # type: ignore
+) -> Union[groupable, Tuple[groupable, pdarray, pdarray, int]]:
     """
     Find the unique elements of an array.
 
@@ -1471,7 +1469,7 @@ class GroupBy:
         """
         # Index of first value in each segment, in input domain
         first_idx = self.permutation[self.segments]
-        return self.unique_keys, values[first_idx]  # type: ignore
+        return self.unique_keys, values[first_idx]
 
     def mode(self, values: groupable) -> Tuple[groupable, groupable]:
         """
@@ -1514,7 +1512,7 @@ class GroupBy:
             mode = unique_values[0][mode_idx]
         else:
             mode = [uv[mode_idx] for uv in unique_values]
-        return self.unique_keys, mode  # type: ignore
+        return self.unique_keys, mode
 
     def sample(
         self,
@@ -1674,7 +1672,7 @@ class GroupBy:
         else:
             return [val[sampled_idx] for val in values]
 
-    def unique(self, values: groupable):  # type: ignore
+    def unique(self, values: groupable):
         """
         Return the set of unique values in each group, as a SegArray.
 
@@ -1729,7 +1727,7 @@ class GroupBy:
             ret = [SegArray(g2.segments, uv) for uv in unique_values]  # type: ignore
             if reorder:
                 ret = [r[perm] for r in ret]  # type: ignore
-        return self.unique_keys, ret  # type: ignore
+        return self.unique_keys, ret
 
     @typechecked
     def broadcast(

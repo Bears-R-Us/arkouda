@@ -2,13 +2,13 @@ import datetime
 import json
 from warnings import warn
 
-import numpy as np  # type: ignore
-from pandas import Series as pdSeries  # type: ignore
-from pandas import Timestamp as pdTimestamp  # type: ignore
-from pandas import Timedelta as pdTimedelta  # type: ignore
-from pandas import date_range as pd_date_range  # type: ignore
-from pandas import timedelta_range as pd_timedelta_range  # type: ignore
-from pandas import to_datetime, to_timedelta  # type: ignore
+import numpy as np
+from pandas import Series as pdSeries
+from pandas import Timestamp as pdTimestamp
+from pandas import Timedelta as pdTimedelta
+from pandas import date_range as pd_date_range
+from pandas import timedelta_range as pd_timedelta_range
+from pandas import to_datetime, to_timedelta
 
 from arkouda.client import generic_msg
 from arkouda.dtypes import int64, int_scalars, intTypes, isSupportedInt
@@ -86,7 +86,7 @@ class _AbstractBaseTime(pdarray):
 
     special_objType = "Time"
 
-    def __init__(self, pda, unit: str = _BASE_UNIT):  # type: ignore
+    def __init__(self, pda, unit: str = _BASE_UNIT):
         if isinstance(pda, Datetime) or isinstance(pda, Timedelta):
             self.unit: str = pda.unit
             self._factor: int = pda._factor

@@ -6,7 +6,7 @@ from functools import reduce
 from math import ceil
 from typing import List, Optional, Sequence, Tuple, Union, cast
 
-import numpy as np  # type: ignore
+import numpy as np
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
@@ -279,6 +279,7 @@ def _parse_none_and_ellipsis_keys(key, ndim):
 
 def _to_pdarray(value: np.ndarray, dt=None) -> pdarray:
     from arkouda.client import maxTransferBytes
+
     if dt is None:
         _dtype = dtype(value.dtype)
     else:
@@ -286,9 +287,9 @@ def _to_pdarray(value: np.ndarray, dt=None) -> pdarray:
 
     if value.nbytes > maxTransferBytes:
         raise RuntimeError(
-            f"Creating pdarray from ndarray would require transferring {value.nbytes} bytes from " +
-            f"the client to server, which exceeds the maximum size of {maxTransferBytes} bytes. " +
-            "Try increasing ak.maxTransferBytes"
+            f"Creating pdarray from ndarray would require transferring {value.nbytes} bytes from "
+            + f"the client to server, which exceeds the maximum size of {maxTransferBytes} bytes. "
+            + "Try increasing ak.maxTransferBytes"
         )
 
     if value.shape == ():
@@ -303,7 +304,7 @@ def _to_pdarray(value: np.ndarray, dt=None) -> pdarray:
         return create_pdarray(
             generic_msg(
                 cmd=f"array{value.ndim}D",
-                args={"dtype": _dtype, "shape": np.shape(value) , "seg_string": False},
+                args={"dtype": _dtype, "shape": np.shape(value), "seg_string": False},
                 payload=_array_memview(value_flat),
                 send_binary=True,
             )
@@ -982,10 +983,7 @@ class pdarray:
             if key == slice(None):
                 # TODO: implement a cloneMsg to make this more efficient
                 return _slice_index(
-                    self,
-                    [0 for _ in range(self.ndim)],
-                    self.shape,
-                    [1 for _ in range(self.ndim)]
+                    self, [0 for _ in range(self.ndim)], self.shape, [1 for _ in range(self.ndim)]
                 )
             else:
                 # TODO: mimic numpy's behavior of applying the slice to only the first dimension?
@@ -1088,7 +1086,7 @@ class pdarray:
                         else:
                             # treat this as a single element slice
                             starts.append(k)
-                            stops.append(k+1)
+                            stops.append(k + 1)
                             strides.append(1)
 
                 if isinstance(_value, pdarray):
@@ -1101,8 +1099,8 @@ class pdarray:
                         for i in range(self.ndim):
                             if slice_shape[i] > self.shape[i]:
                                 raise ValueError(
-                                    f"slice indices ({key}) out of bounds for array of " +
-                                    f"shape {self.shape}"
+                                    f"slice indices ({key}) out of bounds for array of "
+                                    + f"shape {self.shape}"
                                 )
 
                         if _value.ndim == len(slice_shape):
@@ -1110,8 +1108,8 @@ class pdarray:
                             for i in range(self.ndim):
                                 if slice_shape[i] != _value.shape[i]:
                                     raise ValueError(
-                                        f"slice shape ({slice_shape}) must match shape of value " +
-                                        f"array ({value.shape})"
+                                        f"slice shape ({slice_shape}) must match shape of value "
+                                        + f"array ({value.shape})"
                                     )
                             _value_r = _value
                         elif _value.ndim < len(slice_shape):
@@ -1124,16 +1122,16 @@ class pdarray:
                                     iv += 1
                                 else:
                                     raise ValueError(
-                                        f"slice shape ({slice_shape}) must be compatible with shape " +
-                                        f"of value array ({_value.shape})"
+                                        f"slice shape ({slice_shape}) must be compatible with shape "
+                                        + f"of value array ({value.shape})"
                                     )
 
                             # reshape to add singleton dimensions as needed
                             _value_r = _reshape(_value, slice_shape)
                         else:
                             raise ValueError(
-                                f"value array must not have more dimensions ({_value.ndim}) than the" +
-                                f"slice ({len(slice_shape)})"
+                                f"value array must not have more dimensions ({_value.ndim}) than the"
+                                + f"slice ({len(slice_shape)})"
                             )
                     else:
                         raise ValueError(

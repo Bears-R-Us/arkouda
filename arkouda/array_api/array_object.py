@@ -374,7 +374,8 @@ class Array:
         """
         Get the truth value of a single element array.
         """
-        if s := self._single_elem():
+        s = self._single_elem()
+        if s is not None:
             return bool(s)
         else:
             raise ValueError(

@@ -36,3 +36,6 @@ mathjax
 sphinx-autopackagesummary
 sphinx-design
 sphinx-autodoc-typehints
+pandas-stubs
+types-python-dateutil
+ipython

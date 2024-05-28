@@ -4,7 +4,7 @@ import os
 from typing import Dict, List, Mapping, Optional, Union, cast
 from warnings import warn
 
-import pandas as pd  # type: ignore
+import pandas as pd
 from typeguard import typechecked
 
 from arkouda.array_view import ArrayView

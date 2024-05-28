@@ -1,6 +1,6 @@
 import math
-import numpy as np  # type: ignore
-from matplotlib import pyplot as plt  # type: ignore
+import numpy as np
+from matplotlib import pyplot as plt
 from arkouda.dataframe import DataFrame
 from arkouda.timeclass import Datetime, Timedelta, date_range, timedelta_range
 from arkouda.pdarrayclass import skew
