@@ -354,7 +354,8 @@ class Array:
         return array_api
 
     def __bool__(self: Array, /) -> bool:
-        if s := self._single_elem():
+        s = self._single_elem()
+        if s is not None:
             return bool(s)
         else:
             raise ValueError(
