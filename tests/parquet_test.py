@@ -614,8 +614,10 @@ class ParquetTest(ArkoudaTest):
                 file_path = f"{tmp_dirname}/empty_segs"
                 pddf.to_parquet(file_path)
                 akdf = ak.DataFrame(ak.read_parquet(file_path))
+                pddupe = pd.DataFrame(pd.read_parquet(file_path))
 
                 to_pd = pd.Series(akdf["rand"].values.to_list())
+                pddupe_series = pd.Series(pddupe["rand"].values)
                 # raises an error if the two series aren't equal
                 # we can't use np.allclose(pddf['rand'].to_list, akdf['rand'].to_list) since these
                 # are lists of lists. assert_series_equal handles this and properly handles nans.
@@ -628,6 +630,11 @@ class ParquetTest(ArkoudaTest):
                 print("pddf['rand'][263047]: ", pddf['rand'][263047])
                 print("akdf['rand'][263047]: ", akdf['rand'][263047])
                 print("to_pd[263047]: ", to_pd[263047])
+                print()
+                print("pddupe['rand'][263047]: ", pddupe['rand'][263047])
+                print("pddupe_series[263047]: ", pddupe_series[263047])
+                assert_series_equal(pddf['rand'], pddupe_series, check_names=False, rtol=1e-05, atol=1e-08)
+                assert_series_equal(pddf['rand'], pddupe['rand'], check_names=False, rtol=1e-05, atol=1e-08)
                 assert_series_equal(pddf['rand'], to_pd, check_names=False, rtol=1e-05, atol=1e-08)
 
     @pytest.mark.optional_parquet
