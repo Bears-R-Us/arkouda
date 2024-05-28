@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import pytest
-from pandas.testing import assert_frame_equal
+from pandas.testing import assert_frame_equal, assert_series_equal
 
 import arkouda as ak
 from arkouda.series import Series
@@ -341,3 +341,12 @@ class TestSeries:
 
         fill_values3 = 100.0
         assert data.fillna(fill_values3).to_list() == [1.0, 100.0, 3.0, 100.0, 5.0]
+
+    def test_series_segarray_to_pandas(self):
+        # reproducer for issue #3222
+        sa = ak.SegArray(ak.arange(0, 30, 3), ak.arange(30))
+        akdf = ak.DataFrame({"test": sa})
+        pddf = pd.DataFrame({"test": sa.to_list()})
+
+        assert_frame_equal(akdf.to_pandas(), pddf)
+        assert_series_equal(akdf['test'].to_pandas(), pddf['test'], check_names=False)
