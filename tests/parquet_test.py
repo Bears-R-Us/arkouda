@@ -622,6 +622,11 @@ class ParquetTest(ArkoudaTest):
                 # we pass the same absolute and relative tolerances as the numpy default in allclose
                 # to ensure float point differences don't cause errors
                 print("\nseed: ", seed)
+                print("np version: ", np.__version__)
+                print("pd version: ", pd.__version__)
+                print()
+                print("pddf['rand'][263047]: ", pddf['rand'][263047])
+                print("to_pd[263047]: ", to_pd[263047])
                 assert_series_equal(pddf['rand'], to_pd, check_names=False, rtol=1e-05, atol=1e-08)
 
     @pytest.mark.optional_parquet
