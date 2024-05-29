@@ -537,7 +537,7 @@ class TestParquet:
         df_dict = dict()
         seed = np.random.default_rng().choice(2**63)
         rng = ak.random.default_rng(seed)
-        some_nans = rng.uniform(-(2 ** 10), 2 ** 10, val_size)
+        some_nans = rng.uniform(-(2**10), 2**10, val_size)
         some_nans[ak.arange(val_size) % 2 == 0] = np.nan
         vals_list = [
             rng.uniform(-(2**10), 2**10, val_size),
@@ -551,7 +551,9 @@ class TestParquet:
             # segs must start with 0, all other segment lengths are random
             # by having val_size number of segments, except in the extremely unlikely case of
             # randomly getting exactly arange(val_size), we are guaranteed empty segs
-            segs = ak.concatenate([ak.array([0]), ak.sort(ak.randint(0, val_size, val_size - 1, seed=seed))])
+            segs = ak.concatenate(
+                [ak.array([0]), ak.sort(ak.randint(0, val_size, val_size - 1, seed=seed))]
+            )
             df_dict["rand"] = ak.SegArray(segs, vals).to_list()
 
             pddf = pd.DataFrame(df_dict)
@@ -567,7 +569,7 @@ class TestParquet:
                 # we pass the same absolute and relative tolerances as the numpy default in allclose
                 # to ensure float point differences don't cause errors
                 print("\nseed: ", seed)
-                assert_series_equal(pddf['rand'], to_pd, check_names=False, rtol=1e-05, atol=1e-08)
+                assert_series_equal(pddf["rand"], to_pd, check_names=False, rtol=1e-05, atol=1e-08)
 
 
 class TestHDF5:
