@@ -594,7 +594,7 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
 
           while (reader->HasNext() && arrayIdx < numElems) {
             (void)reader->ReadBatch(1, &definition_level, nullptr, &chpl_ptr[arrayIdx], &values_read);
-            // if values_read is 0, that means that it was a null value
+            // if values_read is 0, that means that it was an empty seg
             if (values_read != 0) {
               arrayIdx++;
             }
@@ -610,7 +610,7 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
           int32_t tmp;
           while (reader->HasNext() && arrayIdx < numElems) {
             (void)reader->ReadBatch(1, &definition_level, nullptr, &tmp, &values_read);
-            // if values_read is 0, that means that it was a null value
+            // if values_read is 0, that means that it was an empty seg
             if (values_read != 0) {
               chpl_ptr[arrayIdx] = (int64_t)tmp;
               arrayIdx++;
@@ -644,85 +644,57 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
 
           while (reader->HasNext() && arrayIdx < numElems) {
             (void)reader->ReadBatch(1, &definition_level, nullptr, &chpl_ptr[arrayIdx], &values_read);
-            // if values_read is 0, that means that it was a null value
+            // if values_read is 0, that means that it was an empty seg
             if (values_read != 0) {
               arrayIdx++;
             }
             i++;
           }
         } else if(lty == ARROWFLOAT) {
+          // convert to simpler single batch to sidestep this seemingly architecture dependent (see issue #3234)
+          int16_t definition_level; // nullable type and only reading single records in batch
           auto chpl_ptr = (double*)chpl_arr;
           parquet::FloatReader* reader =
             static_cast<parquet::FloatReader*>(column_reader.get());
-          
-          while (reader->HasNext() && i < numElems) {
-            if((numElems - i) < batchSize) // adjust batchSize if needed
-              batchSize = numElems - i;
-            float* tmpArr = new float[batchSize]; // this will not include NaN values
-            int16_t* def_lvl = new int16_t[batchSize];
-            int16_t* rep_lvl = new int16_t[batchSize];
-            (void)reader->ReadBatch(batchSize, def_lvl, rep_lvl, tmpArr, &values_read);
 
-            int64_t tmp_offset = 0; // used to properly access tmp after NaN encountered
-            int64_t val_idx = 0;
-            for (int64_t j = 0; j< batchSize; j++){
-              // skip any empty segments
-              if (def_lvl[j] == 1)
-                continue;
-              
-              // Null values treated as NaN
-              if (def_lvl[j] == 2) {
-                chpl_ptr[i+val_idx] = NAN;
-                tmp_offset++; // adjustment for values array since Nulls are not included
-              }
-              else if (def_lvl[j] == 3){ // defined value to write
-                chpl_ptr[i+val_idx] = (double)tmpArr[val_idx-tmp_offset];
-              }
-              val_idx++;
+          float tmp;
+          while (reader->HasNext() && arrayIdx < numElems) {
+            (void)reader->ReadBatch(1, &definition_level, nullptr, &tmp, &values_read);
+            // if values_read is 0, that means that it was a null value or empty seg
+            if (values_read != 0) {
+              chpl_ptr[arrayIdx] = (double) tmp;
+              arrayIdx++;
             }
-
-            i += values_read + tmp_offset; // account for values and NaNs, but not empty segments
-
-            delete[] tmpArr;
-            delete[] def_lvl;
-            delete[] rep_lvl;
+            else {
+              // check if nan otherwise it's an empty seg
+              if (definition_level == 2) {
+                chpl_ptr[arrayIdx] = NAN;
+                arrayIdx++;
+              }
+            }
+            i++;
           }
         } else if(lty == ARROWDOUBLE) {
+          // convert to simpler single batch to sidestep this seemingly architecture dependent (see issue #3234)
+          int16_t definition_level; // nullable type and only reading single records in batch
           auto chpl_ptr = (double*)chpl_arr;
           parquet::DoubleReader* reader =
             static_cast<parquet::DoubleReader*>(column_reader.get());
 
-          while (reader->HasNext() && i < numElems) {
-            if((numElems - i) < batchSize) // adjust batchSize if needed
-              batchSize = numElems - i;
-            double* tmpArr = new double[batchSize]; // NaNs not included here
-            int16_t* def_lvl = new int16_t[batchSize];
-            int16_t* rep_lvl = new int16_t[batchSize];
-            (void)reader->ReadBatch(batchSize, def_lvl, rep_lvl, tmpArr, &values_read);
-            
-            int64_t tmp_offset = 0; // used to properly access tmp after NaN encountered
-            int64_t val_idx = 0;
-            for (int64_t j = 0; j< batchSize; j++){
-              // skip any empty segments
-              if (def_lvl[j] == 1)
-                continue;
-              
-              // Null values treated as NaN
-              if (def_lvl[j] == 2) {
-                chpl_ptr[i+val_idx] = NAN;
-                tmp_offset++; // adjustment for values array since Nulls are not included
-              }
-              else if (def_lvl[j] == 3){ // defined value to write
-                chpl_ptr[i+val_idx] = (double)tmpArr[val_idx-tmp_offset];
-              }
-              val_idx++;
+          while (reader->HasNext() && arrayIdx < numElems) {
+            (void)reader->ReadBatch(1, &definition_level, nullptr, &chpl_ptr[arrayIdx], &values_read);
+            // if values_read is 0, that means that it was a null value or empty seg
+            if (values_read != 0) {
+              arrayIdx++;
             }
-
-            i += values_read + tmp_offset; // account for values and NaNs, but not empty segments
-
-            delete[] tmpArr;
-            delete[] def_lvl;
-            delete[] rep_lvl;
+            else {
+              // check if nan otherwise it's an empty seg
+              if (definition_level == 2) {
+                chpl_ptr[arrayIdx] = NAN;
+                arrayIdx++;
+              }
+            }
+            i++;
           }
         }
       }
