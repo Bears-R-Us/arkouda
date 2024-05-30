@@ -267,7 +267,7 @@ class TestRandom:
     def test_poisson_hypothesis_testing(self):
         # I tested this many times without a set seed, but with no seed
         # it's expected to fail one out of every ~20 runs given a pval limit of 0.05.
-        rng = ak.random.default_rng()
+        rng = ak.random.default_rng(43)
         num_samples = 10**4
         lam = rng.uniform(0, 10)
 
