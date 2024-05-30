@@ -27,7 +27,7 @@ from ._dtypes import (
     _result_type,
     _dtype_categories,
 )
-from ._creation_functions import asarray
+from .creation_functions import asarray
 
 from typing import TYPE_CHECKING, Optional, Tuple, Union, Any, Dict, Callable, List
 import types
@@ -91,9 +91,13 @@ class Array:
     def tolist(self):
         """
         Convert the array to a Python list or nested lists
+
+        This involves copying the data from the server to the client, and thus
+        will fail if the array is too large (see:
+        :func:`~arkouda.client.maxTransferBytes`)
         """
         x = self._array.to_list()
-        if self.shape == ():
+        if self._has_single_elem():
             # to match numpy, return a scalar for a 0-dimensional array
             return x[0]
         else:
@@ -102,14 +106,23 @@ class Array:
     def to_ndarray(self):
         """
         Convert the array to a numpy ndarray
+
+        This involves copying the data from the server to the client, and thus
+        will fail if the array is too large (see:
+        :func:`~arkouda.client.maxTransferBytes`)
         """
         return self._array.to_ndarray()
 
     def item(self):
         """
-        Convert the array to a Python scalar
+        Get the scalar value from a 0-dimensional array.
+
+        Raises a ValueError if the array has more than one element.
         """
-        return self._array[0]
+        if self._has_single_elem():
+            return self._array[0]
+        else:
+            raise ValueError("Can only convert an array with one element to a Python scalar")
 
     def transpose(self, axes: Optional[Tuple[int, ...]] = None):
         """
@@ -117,7 +130,7 @@ class Array:
 
         For axes=None, reverse all the dimensions of the array.
         """
-        from ._manipulation_functions import permute_dims
+        from .manipulation_functions import permute_dims
         if axes is None:
             _axes = tuple(range(self.ndim - 1, -1, -1))
         else:
@@ -133,9 +146,6 @@ class Array:
 
         return permute_dims(self, _axes)
 
-    # These functions are not required by the spec, but are implemented for
-    # the sake of usability.
-
     def __str__(self: Array, /) -> str:
         """
         Performs the operation __str__.
@@ -149,6 +159,10 @@ class Array:
         return f"Arkouda Array ({self.shape}, {self.dtype})" + self._array.__str__()
 
     def _repr_inline_(self: Array, width: int) -> str:
+        """
+        Get a single line representation of the array for display in a space
+        constrained context like a Jupyter notebook cell.
+        """
         return f"Arkouda Array ({self.shape}, {self.dtype})"
 
     def chunk_info(self: Array, /) -> List[List[int]]:
@@ -175,7 +189,7 @@ class Array:
 
     def __array__(self, dtype: None | np.dtype[Any] = None):
         """
-        convert to numpy array
+        Get a numpy ndarray
         """
         return np.asarray(self.to_ndarray(), dtype=dtype)
 
@@ -185,10 +199,6 @@ class Array:
         if func not in HANDLED_FUNCTIONS:
             return NotImplemented
         return HANDLED_FUNCTIONS[func](*args, **kwargs)
-
-    # These are various helper functions to make the array behavior match the
-    # spec in places where it either deviates from or is more strict than
-    # NumPy behavior
 
     def _check_allowed_dtypes(
         self, other: bool | int | float | Array, dtype_category: str, op: str
@@ -326,21 +336,25 @@ class Array:
     def _validate_index(self, key):
         raise IndexError("not implemented")
 
-    # Everything below this line is required by the spec.
-
     def __abs__(self: Array, /) -> Array:
         """
-        Performs the operation __abs__.
+        Take the element-wise absolute value of the array.
         """
         return self
 
     def __add__(self: Array, other: Union[int, float, Array], /) -> Array:
+        """
+        Compute the sum of this array and another array or scalar.
+        """
         if isinstance(other, (int, float)):
             return Array._new(self._array + other)
         else:
             return Array._new(self._array + other._array)
 
     def __and__(self: Array, other: Union[int, bool, Array], /) -> Array:
+        """
+        Compute the logical AND operation of this array and another array or scalar.
+        """
         if isinstance(other, (int, float)):
             return Array._new(self._array and other)
         else:
@@ -349,11 +363,17 @@ class Array:
     def __array_namespace__(
         self: Array, /, *, api_version: Optional[str] = None
     ) -> types.ModuleType:
+        """
+        Get the array API namespace from an `Array` instance.
+        """
         if api_version is not None:
             raise ValueError(f"Unrecognized array API version: {api_version!r}")
         return array_api
 
     def __bool__(self: Array, /) -> bool:
+        """
+        Get the truth value of a single element array.
+        """
         s = self._single_elem()
         if s is not None:
             return bool(s)
@@ -364,15 +384,26 @@ class Array:
             )
 
     def __complex__(self: Array, /) -> complex:
+        """
+        Get a complex value from a single element array.
+        """
         if s := self._single_elem():
             return complex(s)
         else:
             raise ValueError("cannot convert non-scalar array to complex")
 
     def __dlpack_device__(self: Array, /) -> Tuple[IntEnum, int]:
+        """
+        Returns device type and device ID in DLPack format.
+
+        Warning: Not implemented.
+        """
         raise ValueError("Not implemented")
 
     def __eq__(self: Array, other: object, /) -> bool:
+        """
+        Check if this array is equal to another array or scalar.
+        """
         if isinstance(other, (int, bool, float)):
             return self._array == scalar_array(other)
         elif isinstance(other, Array):
@@ -381,6 +412,9 @@ class Array:
             return False
 
     def __float__(self: Array, /) -> float:
+        """
+        Get a float value from a single element array.
+        """
         if s := self._single_elem():
             if isinstance(s, complex):
                 raise TypeError("can't convert complex to float")
@@ -390,12 +424,18 @@ class Array:
             raise ValueError("cannot convert non-scalar array to float")
 
     def __floordiv__(self: Array, other: Union[int, float, Array], /) -> Array:
+        """
+        Compute the floor division of this array by another array or scalar.
+        """
         if isinstance(other, (int, float)):
             return Array._new(self._array // other)
         else:
             return Array._new(self._array // other._array)
 
     def __ge__(self: Array, other: Union[int, float, Array], /) -> Array:
+        """
+        Check if this array is greater than or equal to another array or scalar.
+        """
         if isinstance(other, (int, float)):
             return Array._new(self._array >= other)
         else:
@@ -436,12 +476,18 @@ class Array:
             return Array._new(scalar_array(a))
 
     def __gt__(self: Array, other: Union[int, float, Array], /) -> Array:
+        """
+        Check if this array is greater than another array or scalar.
+        """
         if isinstance(other, (int, float)):
             return Array._new(self._array > other)
         else:
             return Array._new(self._array > other._array)
 
     def __int__(self: Array, /) -> int:
+        """
+        Get an integer value from a single element array.
+        """
         if s := self._single_elem():
             if isinstance(s, complex):
                 raise TypeError("can't convert complex to int")
@@ -451,6 +497,9 @@ class Array:
             raise ValueError("cannot convert non-scalar array to int")
 
     def __index__(self: Array, /) -> int:
+        """
+        Get an integer value from a single element array.
+        """
         if s := self._single_elem():
             if isinstance(s, int):
                 return s
@@ -460,75 +509,71 @@ class Array:
             raise ValueError("cannot convert non-scalar array to int")
 
     def __invert__(self: Array, /) -> Array:
+        """
+        Compute the logical NOT operation on this array.
+        """
         if self.dtype in _integer_dtypes or self.dtype in _boolean_dtypes:
             return Array._new(~self._array)
         else:
             raise TypeError("Only integer and boolean arrays can be inverted")
 
     def __le__(self: Array, other: Union[int, float, Array], /) -> Array:
+        """
+        Check if this array is less than or equal to another array or scalar.
+        """
         if isinstance(other, (int, float)):
             return Array._new(self._array <= other)
         else:
             return Array._new(self._array <= other._array)
 
     def __lshift__(self: Array, other: Union[int, Array], /) -> Array:
+        """
+        Compute the left shift of this array by another array or scalar.
+        """
         if isinstance(other, int):
             return Array._new(self._array << other)
         else:
             return Array._new(self._array << other._array)
 
     def __lt__(self: Array, other: Union[int, float, Array], /) -> Array:
+        """
+        Check if this array is less than another array or scalar.
+        """
         if isinstance(other, (int, float)):
             return Array._new(self._array < other)
         else:
             return Array._new(self._array < other._array)
 
     def __matmul__(self: Array, other: Array, /) -> Array:
-        # from .linalg import matmul
-        # from ._manipulation_functions import (reshape, squeeze)
+        """
+        Compute the matrix multiplication of this array with another array.
 
-        # if self.ndim == 1:
-        #     left = reshape(self, (1, self.size))
-        #     ld = True
-        # else:
-        #     left = self
-        #     ld = False
-
-        # if other.ndim == 1:
-        #     right = reshape(other, (other.size, 1))
-        #     rd = True
-        # else:
-        #     right = other
-        #     rd = False
-
-        # if left.shape[-1] != right.shape[-2]:
-        #     raise ValueError(
-        #         f"matmul: shapes {left.shape} and {right.shape} are not compatible"
-        #     )
-
-        # prod = matmul(left, right)
-
-        # if ld:
-        #     prod = squeeze(prod, 0)
-        # if rd:
-        #     prod = squeeze(prod, 1)
-
-        # return prod
+        Warning: Not implemented.
+        """
         raise ValueError("Not implemented")
 
     def __mod__(self: Array, other: Union[int, float, Array], /) -> Array:
+        """
+        Compute the modulo of this array by another array or scalar.
+        """
         if isinstance(other, (int, float)):
             return Array._new(self._array % other)
         else:
             return Array._new(self._array % other._array)
 
     def __mul__(self: Array, other: Union[int, float, Array], /) -> Array:
+        """
+        Compute the product of this array and another array or scalar.
+        """
         if isinstance(other, (int, float)):
             return Array._new(self._array * other)
         else:
             return Array._new(self._array * other._array)
 
     def __ne__(self: Array, other: object, /) -> bool:
+        """
+        Check if this array is not equal to another array or scalar.
+        """
         if isinstance(other, (int, bool, float)):
             return self._array != scalar_array(other)
         elif isinstance(other, Array):
@@ -537,24 +582,39 @@ class Array:
             return False
 
     def __neg__(self: Array, /) -> Array:
+        """
+        Compute the element-wise negation of this array.
+        """
         return Array._new(-self._array)
 
     def __or__(self: Array, other: Union[int, bool, Array], /) -> Array:
+        """
+        Compute the logical OR operation of this array and another array or scalar.
+        """
         if isinstance(other, (int, bool)):
             return Array._new(self._array or other)
         else:
             return Array._new(self._array or other._array)
 
     def __pos__(self: Array, /) -> Array:
+        """
+        Compute the element-wise positive of this array.
+        """
         return self
 
     def __pow__(self: Array, other: Union[int, float, Array], /) -> Array:
+        """
+        Compute the power of this array by another array or scalar.
+        """
         if isinstance(other, (int, float)):
             return Array._new(self._array ** other)
         else:
             return Array._new(self._array ** other._array)
 
     def __rshift__(self: Array, other: Union[int, Array], /) -> Array:
+        """
+        Compute the right shift of this array by another array or scalar.
+        """
         if isinstance(other, int):
             return Array._new(self._array >> other)
         else:
@@ -584,24 +644,36 @@ class Array:
                 self._array[key] = value
 
     def __sub__(self: Array, other: Union[int, float, Array], /) -> Array:
+        """
+        Compute the difference of this array and another array or scalar.
+        """
         if isinstance(other, (int, float)):
             return Array._new(self._array - other)
         else:
             return Array._new(self._array - other._array)
 
     def __truediv__(self: Array, other: Union[float, Array], /) -> Array:
+        """
+        Compute the true division of this array by another array or scalar.
+        """
         if isinstance(other, (int, float)):
             return Array._new(self._array / other)
         else:
             return Array._new(self._array / other._array)
 
     def __xor__(self: Array, other: Union[int, bool, Array], /) -> Array:
+        """
+        Compute the logical XOR operation of this array and another array or scalar.
+        """
         if isinstance(other, (int, bool)):
             return Array._new(self._array ^ other)
         else:
             return Array._new(self._array ^ other._array)
 
     def __iadd__(self: Array, other: Union[int, float, Array], /) -> Array:
+        """
+        Compute the sum of this array and another array or scalar in place.
+        """
         if isinstance(other, (int, float)):
             self._array += other
             return self
@@ -610,12 +682,18 @@ class Array:
             return self
 
     def __radd__(self: Array, other: Union[int, float, Array], /) -> Array:
+        """
+        Compute the sum of another array or scalar and this array.
+        """
         if isinstance(other, (int, float)):
             return Array._new(other + self._array)
         else:
             return Array._new(other._array + self._array)
 
     def __iand__(self: Array, other: Union[int, bool, Array], /) -> Array:
+        """
+        Compute the logical AND operation of this array and another array or scalar in place.
+        """
         if isinstance(other, (int, float)):
             self._array &= other
             return self
@@ -624,12 +702,18 @@ class Array:
             return self
 
     def __rand__(self: Array, other: Union[int, bool, Array], /) -> Array:
+        """
+        Compute the logical AND operation of another array or scalar and this array.
+        """
         if isinstance(other, (int, float)):
             return Array._new(other and self._array)
         else:
             return Array._new(other._array and self._array)
 
     def __ifloordiv__(self: Array, other: Union[int, float, Array], /) -> Array:
+        """
+        Compute the floor division of this array by another array or scalar in place.
+        """
         if isinstance(other, (int, float)):
             self._array //= other
             return self
@@ -638,12 +722,18 @@ class Array:
             return self
 
     def __rfloordiv__(self: Array, other: Union[int, float, Array], /) -> Array:
+        """
+        Compute the floor division of another array or scalar by this array.
+        """
         if isinstance(other, (int, float)):
             return Array._new(other // self._array)
         else:
             return Array._new(other._array // self._array)
 
     def __ilshift__(self: Array, other: Union[int, Array], /) -> Array:
+        """
+        Compute the left shift of this array by another array or scalar in place.
+        """
         if isinstance(other, int):
             self._array <<= other
             return self
@@ -652,18 +742,34 @@ class Array:
             return self
 
     def __rlshift__(self: Array, other: Union[int, Array], /) -> Array:
+        """
+        Compute the left shift of another array or scalar by this array.
+        """
         if isinstance(other, int):
             return Array._new(other << self._array)
         else:
             return Array._new(other._array << self._array)
 
     def __imatmul__(self: Array, other: Array, /) -> Array:
+        """
+        Compute the matrix multiplication of this array with another array in place.
+
+        Warning: Not implemented.
+        """
         raise ValueError("Not implemented")
 
     def __rmatmul__(self: Array, other: Array, /) -> Array:
+        """
+        Compute the matrix multiplication of another array with this array.
+
+        Warning: Not implemented.
+        """
         raise ValueError("Not implemented")
 
     def __imod__(self: Array, other: Union[int, float, Array], /) -> Array:
+        """
+        Compute the modulo of this array by another array or scalar in place.
+        """
         if isinstance(other, (int, float)):
             self._array %= other
             return self
@@ -672,12 +778,18 @@ class Array:
             return self
 
     def __rmod__(self: Array, other: Union[int, float, Array], /) -> Array:
+        """
+        Compute the modulo of another array or scalar by this array.
+        """
         if isinstance(other, (int, float)):
             return Array._new(other % self._array)
         else:
             return Array._new(other._array % self._array)
 
     def __imul__(self: Array, other: Union[int, float, Array], /) -> Array:
+        """
+        Compute the product of this array and another array or scalar in place.
+        """
         if isinstance(other, (int, float)):
             self._array *= other
             return self
@@ -686,12 +798,18 @@ class Array:
             return self
 
     def __rmul__(self: Array, other: Union[int, float, Array], /) -> Array:
+        """
+        Compute the product of another array or scalar and this array.
+        """
         if isinstance(other, (int, float)):
             return Array._new(other * self._array)
         else:
             return Array._new(other._array * self._array)
 
     def __ior__(self: Array, other: Union[int, bool, Array], /) -> Array:
+        """
+        Compute the logical OR operation of this array and another array or scalar in place.
+        """
         if isinstance(other, (int, float)):
             self._array |= other
             return self
@@ -700,12 +818,18 @@ class Array:
             return self
 
     def __ror__(self: Array, other: Union[int, bool, Array], /) -> Array:
+        """
+        Compute the logical OR operation of another array or scalar and this array.
+        """
         if isinstance(other, (int, float)):
             return Array._new(other or self._array)
         else:
             return Array._new(other._array or self._array)
 
     def __ipow__(self: Array, other: Union[int, float, Array], /) -> Array:
+        """
+        Compute the power of this array by another array or scalar in place.
+        """
         if isinstance(other, (int, float)):
             self._array **= other
             return self
@@ -714,12 +838,18 @@ class Array:
             return self
 
     def __rpow__(self: Array, other: Union[int, float, Array], /) -> Array:
+        """
+        Compute the power of another array or scalar by this array.
+        """
         if isinstance(other, (int, float)):
             return Array._new(other ** self._array)
         else:
             return Array._new(other._array ** self._array)
 
     def __irshift__(self: Array, other: Union[int, Array], /) -> Array:
+        """
+        Compute the right shift of this array by another array or scalar in place.
+        """
         if isinstance(other, int):
             self._array >>= other
             return self
@@ -728,12 +858,18 @@ class Array:
             return self
 
     def __rrshift__(self: Array, other: Union[int, Array], /) -> Array:
+        """
+        Compute the right shift of another array or scalar by this array.
+        """
         if isinstance(other, int):
             return Array._new(other >> self._array)
         else:
             return Array._new(other._array >> self._array)
 
     def __isub__(self: Array, other: Union[int, float, Array], /) -> Array:
+        """
+        Compute the difference of this array and another array or scalar in place.
+        """
         if isinstance(other, (int, float)):
             self._array -= other
             return self
@@ -742,12 +878,18 @@ class Array:
             return self
 
     def __rsub__(self: Array, other: Union[int, float, Array], /) -> Array:
+        """
+        Compute the difference of another array or scalar by this array.
+        """
         if isinstance(other, (int, float)):
             return Array._new(other - self._array)
         else:
             return Array._new(other._array - self._array)
 
     def __itruediv__(self: Array, other: Union[float, Array], /) -> Array:
+        """
+        Compute the true division of this array by another array or scalar in place.
+        """
         if isinstance(other, (int, float)):
             self._array /= other
             return self
@@ -756,12 +898,18 @@ class Array:
             return self
 
     def __rtruediv__(self: Array, other: Union[float, Array], /) -> Array:
+        """
+        Compute the true division of another array or scalar by this array.
+        """
         if isinstance(other, (int, float)):
             return Array._new(other / self._array)
         else:
             return Array._new(other._array / self._array)
 
     def __ixor__(self: Array, other: Union[int, bool, Array], /) -> Array:
+        """
+        Compute the logical XOR operation of this array and another array or scalar in place.
+        """
         if isinstance(other, (int, float)):
             self._array ^= other
             return self
@@ -770,6 +918,9 @@ class Array:
             return self
 
     def __rxor__(self: Array, other: Union[int, bool, Array], /) -> Array:
+        """
+        Compute the logical XOR operation of another array or scalar by this array.
+        """
         if isinstance(other, (int, float)):
             return Array._new(other ^ self._array)
         else:

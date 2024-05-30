@@ -1,10 +1,10 @@
 import warnings
 
-from ._array_object import Array
+from .array_object import Array
 
 from ._constants import e, inf, nan, pi
 
-from ._creation_functions import (
+from .creation_functions import (
     asarray,
     arange,
     empty,
@@ -23,11 +23,11 @@ from ._creation_functions import (
     zeros_like,
 )
 
-from ._data_type_functions import (
+from .data_type_functions import (
     astype,
     can_cast,
-    # finfo,
-    # iinfo,
+    finfo,
+    iinfo,
     result_type,
 )
 
@@ -47,7 +47,7 @@ from ._dtypes import (
     bool,
 )
 
-from ._elementwise_functions import (
+from .elementwise_functions import (
     abs,
     acos,
     acosh,
@@ -106,7 +106,7 @@ from ._elementwise_functions import (
     trunc,
 )
 
-from ._indexing_functions import take
+from .indexing_functions import take
 
 # linalg is an extension in the array API spec, which is a sub-namespace. Only
 # a subset of functions in it are imported into the top-level namespace.
@@ -114,7 +114,7 @@ from . import linalg
 
 from .linalg import matmul, tensordot, matrix_transpose, vecdot
 
-from ._manipulation_functions import (
+from .manipulation_functions import (
     broadcast_arrays,
     broadcast_to,
     concat,
@@ -131,15 +131,15 @@ from ._manipulation_functions import (
     unstack,
 )
 
-from ._searching_functions import argmax, argmin, nonzero, where, searchsorted
+from .searching_functions import argmax, argmin, nonzero, where, searchsorted
 
-from ._set_functions import unique_all, unique_counts, unique_inverse, unique_values
+from .set_functions import unique_all, unique_counts, unique_inverse, unique_values
 
-from ._sorting_functions import argsort, sort
+from .sorting_functions import argsort, sort
 
-from ._statistical_functions import max, mean, min, prod, std, sum, var, cumulative_sum
+from .statistical_functions import max, mean, min, prod, std, sum, var, cumulative_sum
 
-from ._utility_functions import all, any, clip, diff, pad
+from .utility_functions import all, any, clip, diff, pad
 
 __array_api_version__ = "2022.12"
 

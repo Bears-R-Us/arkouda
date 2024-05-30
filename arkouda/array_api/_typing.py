@@ -25,7 +25,7 @@ from typing import (
     Protocol,
 )
 
-from ._array_object import Array
+from .array_object import Array
 from numpy import (
     dtype,
     int8,

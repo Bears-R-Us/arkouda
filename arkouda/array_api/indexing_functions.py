@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ._array_object import Array
+from .array_object import Array
 from typing import Optional
 
 from arkouda.client import generic_msg
@@ -9,9 +9,17 @@ from arkouda.pdarrayclass import create_pdarray
 
 def take(x: Array, indices: Array, /, *, axis: Optional[int] = None) -> Array:
     """
-    Array API compatible wrapper for :py:func:`np.take <numpy.take>`.
+    Get the specified elements of an array along an axis.
 
-    See its docstring for more information.
+    Parameters
+    ----------
+
+    x : Array
+        The array from which to take elements
+    indices : Array
+        A 1D integer array of indices to take from `x`
+    axis : int, optional
+        The axis along which to take elements. If None, `x` must be 1D.
     """
 
     if axis is None and x.ndim != 1:
