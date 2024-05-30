@@ -10,7 +10,6 @@ module RandMsg
     use Logging;
     use Message;
     use RandArray;
-    use Unique;
     use CommAggregation;
     
     use MultiTypeSymbolTable;
