@@ -255,7 +255,18 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/arkouda/index.html">arkouda</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of arkouda</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/array_api/index.html">arkouda.array_api</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of arkouda.array_api</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/array_object/index.html">arkouda.array_api.array_object</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/creation_functions/index.html">arkouda.array_api.creation_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/data_type_functions/index.html">arkouda.array_api.data_type_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html">arkouda.array_api.elementwise_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/indexing_functions/index.html">arkouda.array_api.indexing_functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/linalg/index.html">arkouda.array_api.linalg</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/manipulation_functions/index.html">arkouda.array_api.manipulation_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/searching_functions/index.html">arkouda.array_api.searching_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/set_functions/index.html">arkouda.array_api.set_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/sorting_functions/index.html">arkouda.array_api.sorting_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/statistical_functions/index.html">arkouda.array_api.statistical_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/utility_functions/index.html">arkouda.array_api.utility_functions</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/random/index.html">arkouda.random</a></li>
@@ -347,7 +358,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.array_api.linalg</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">._array_object</span> <span class="kn">import</span> <span class="n">Array</span>
+<span></span><span class="kn">from</span> <span class="nn">.array_object</span> <span class="kn">import</span> <span class="n">Array</span>
 
 <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">broadcast_if_needed</span>
@@ -359,7 +370,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Matrix product of two arrays.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">._array_object</span> <span class="kn">import</span> <span class="n">Array</span>
+    <span class="kn">from</span> <span class="nn">.array_object</span> <span class="kn">import</span> <span class="n">Array</span>
 
     <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">_array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">x2</span><span class="o">.</span><span class="n">_array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -388,6 +399,9 @@
 <div class="viewcode-block" id="tensordot">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/linalg/index.html#arkouda.array_api.linalg.tensordot">[docs]</a>
 <span class="k">def</span> <span class="nf">tensordot</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    WARNING: not yet implemented</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;tensordot not implemented&quot;</span><span class="p">)</span></div>
 
 
@@ -398,7 +412,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Matrix product of two arrays.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">._array_object</span> <span class="kn">import</span> <span class="n">Array</span>
+    <span class="kn">from</span> <span class="nn">.array_object</span> <span class="kn">import</span> <span class="n">Array</span>
 
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -419,7 +433,7 @@
 <div class="viewcode-block" id="vecdot">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/linalg/index.html#arkouda.array_api.linalg.vecdot">[docs]</a>
 <span class="k">def</span> <span class="nf">vecdot</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">._array_object</span> <span class="kn">import</span> <span class="n">Array</span>
+    <span class="kn">from</span> <span class="nn">.array_object</span> <span class="kn">import</span> <span class="n">Array</span>
 
     <span class="n">x1b</span><span class="p">,</span> <span class="n">x2b</span><span class="p">,</span> <span class="n">tmp_x1</span><span class="p">,</span> <span class="n">tmp_x2</span> <span class="o">=</span> <span class="n">broadcast_if_needed</span><span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">_array</span><span class="p">)</span>
 

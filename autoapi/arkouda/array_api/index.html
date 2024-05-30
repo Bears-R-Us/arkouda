@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="arkouda.array_api.linalg" href="linalg/index.html" /><link rel="prev" title="arkouda" href="../index.html" />
+<link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="arkouda.array_api.array_object" href="array_object/index.html" /><link rel="prev" title="arkouda" href="../index.html" />
 
     <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
         <title>arkouda.array_api - arkouda documentation</title>
@@ -256,7 +256,18 @@
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../index.html">arkouda</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of arkouda</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3 current has-children current-page"><a class="current reference internal" href="#">arkouda.array_api</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of arkouda.array_api</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="array_object/index.html">arkouda.array_api.array_object</a></li>
+<li class="toctree-l4"><a class="reference internal" href="creation_functions/index.html">arkouda.array_api.creation_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="data_type_functions/index.html">arkouda.array_api.data_type_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="elementwise_functions/index.html">arkouda.array_api.elementwise_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="indexing_functions/index.html">arkouda.array_api.indexing_functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="linalg/index.html">arkouda.array_api.linalg</a></li>
+<li class="toctree-l4"><a class="reference internal" href="manipulation_functions/index.html">arkouda.array_api.manipulation_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="searching_functions/index.html">arkouda.array_api.searching_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="set_functions/index.html">arkouda.array_api.set_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sorting_functions/index.html">arkouda.array_api.sorting_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="statistical_functions/index.html">arkouda.array_api.statistical_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="utility_functions/index.html">arkouda.array_api.utility_functions</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../random/index.html">arkouda.random</a></li>
@@ -359,7 +370,18 @@
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="array_object/index.html">arkouda.array_api.array_object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="creation_functions/index.html">arkouda.array_api.creation_functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_type_functions/index.html">arkouda.array_api.data_type_functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="elementwise_functions/index.html">arkouda.array_api.elementwise_functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="indexing_functions/index.html">arkouda.array_api.indexing_functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="linalg/index.html">arkouda.array_api.linalg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manipulation_functions/index.html">arkouda.array_api.manipulation_functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="searching_functions/index.html">arkouda.array_api.searching_functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="set_functions/index.html">arkouda.array_api.set_functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sorting_functions/index.html">arkouda.array_api.sorting_functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="statistical_functions/index.html">arkouda.array_api.statistical_functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utility_functions/index.html">arkouda.array_api.utility_functions</a></li>
 </ul>
 </div>
 </section>
@@ -379,7 +401,7 @@
 <h2>Package Contents<a class="headerlink" href="#package-contents" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.array_api.Array">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.array_api.</span></span><span class="sig-name descname"><span class="pre">Array</span></span><a class="reference internal" href="../../../_modules/arkouda/array_api/_array_object.html#Array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api.Array" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.array_api.</span></span><span class="sig-name descname"><span class="pre">Array</span></span><a class="reference internal" href="../../../_modules/arkouda/array_api/array_object.html#Array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api.Array" title="Link to this definition">¶</a></dt>
 <dd><p>n-d array object for the array API namespace.</p>
 <p>See the docstring of <code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code> for more
 information.</p>
@@ -396,7 +418,7 @@ functions, such as asarray().</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.array_api.Array.chunk_info">
-<span class="sig-name descname"><span class="pre">chunk_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/arkouda/array_api/_array_object.html#Array.chunk_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api.Array.chunk_info" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">chunk_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/arkouda/array_api/array_object.html#Array.chunk_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api.Array.chunk_info" title="Link to this definition">¶</a></dt>
 <dd><p>Get a list of indices indicating how the array is chunked across
 Locales (compute nodes). Although Arkouda arrays don’t have a notion
 of chunking, like Dask arrays for example, it can be useful to know
@@ -424,8 +446,9 @@ second dimension.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.array_api.Array.item">
-<span class="sig-name descname"><span class="pre">item</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/array_api/_array_object.html#Array.item"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api.Array.item" title="Link to this definition">¶</a></dt>
-<dd><p>Convert the array to a Python scalar</p>
+<span class="sig-name descname"><span class="pre">item</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/array_api/array_object.html#Array.item"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api.Array.item" title="Link to this definition">¶</a></dt>
+<dd><p>Get the scalar value from a 0-dimensional array.</p>
+<p>Raises a ValueError if the array has more than one element.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -450,24 +473,30 @@ second dimension.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.array_api.Array.to_device">
-<span class="sig-name descname"><span class="pre">to_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.array_api._typing.Device</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.array_api.Array" title="arkouda.array_api.Array"><span class="pre">Array</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/array_api/_array_object.html#Array.to_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api.Array.to_device" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">to_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.array_api._typing.Device</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.array_api.Array" title="arkouda.array_api.Array"><span class="pre">Array</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/array_api/array_object.html#Array.to_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api.Array.to_device" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.array_api.Array.to_ndarray">
-<span class="sig-name descname"><span class="pre">to_ndarray</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/array_api/_array_object.html#Array.to_ndarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api.Array.to_ndarray" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">to_ndarray</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/array_api/array_object.html#Array.to_ndarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api.Array.to_ndarray" title="Link to this definition">¶</a></dt>
 <dd><p>Convert the array to a numpy ndarray</p>
+<p>This involves copying the data from the server to the client, and thus
+will fail if the array is too large (see:
+<code class="xref py py-func docutils literal notranslate"><span class="pre">maxTransferBytes()</span></code>)</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.array_api.Array.tolist">
-<span class="sig-name descname"><span class="pre">tolist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/array_api/_array_object.html#Array.tolist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api.Array.tolist" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">tolist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/array_api/array_object.html#Array.tolist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api.Array.tolist" title="Link to this definition">¶</a></dt>
 <dd><p>Convert the array to a Python list or nested lists</p>
+<p>This involves copying the data from the server to the client, and thus
+will fail if the array is too large (see:
+<code class="xref py py-func docutils literal notranslate"><span class="pre">maxTransferBytes()</span></code>)</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.array_api.Array.transpose">
-<span class="sig-name descname"><span class="pre">transpose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/array_api/_array_object.html#Array.transpose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api.Array.transpose" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">transpose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/array_api/array_object.html#Array.transpose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api.Array.transpose" title="Link to this definition">¶</a></dt>
 <dd><p>Return a view of the array with the specified axes transposed.</p>
 <p>For axes=None, reverse all the dimensions of the array.</p>
 </dd></dl>
@@ -482,12 +511,12 @@ second dimension.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="linalg/index.html">
+          <a class="next-page" href="array_object/index.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">arkouda.array_api.linalg</div>
+                <div class="title">arkouda.array_api.array_object</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>

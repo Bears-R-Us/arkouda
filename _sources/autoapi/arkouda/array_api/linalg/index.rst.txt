@@ -82,7 +82,9 @@ Module Contents
 
    .. py:method:: item()
 
-      Convert the array to a Python scalar
+      Get the scalar value from a 0-dimensional array.
+
+      Raises a ValueError if the array has more than one element.
 
 
 
@@ -113,11 +115,19 @@ Module Contents
 
       Convert the array to a numpy ndarray
 
+      This involves copying the data from the server to the client, and thus
+      will fail if the array is too large (see:
+      :func:`~arkouda.client.maxTransferBytes`)
+
 
 
    .. py:method:: tolist()
 
       Convert the array to a Python list or nested lists
+
+      This involves copying the data from the server to the client, and thus
+      will fail if the array is too large (see:
+      :func:`~arkouda.client.maxTransferBytes`)
 
 
 
@@ -179,17 +189,20 @@ Module Contents
    corresponds to an Arkouda array output as a numpy array.
 
 
-.. py:function:: matmul(x1: arkouda.array_api._array_object.Array, x2: arkouda.array_api._array_object.Array, /) -> arkouda.array_api._array_object.Array
+.. py:function:: matmul(x1: arkouda.array_api.array_object.Array, x2: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
 
    Matrix product of two arrays.
 
 
-.. py:function:: matrix_transpose(x: arkouda.array_api._array_object.Array) -> arkouda.array_api._array_object.Array
+.. py:function:: matrix_transpose(x: arkouda.array_api.array_object.Array) -> arkouda.array_api.array_object.Array
 
    Matrix product of two arrays.
 
 
 .. py:function:: tensordot()
 
-.. py:function:: vecdot(x1: arkouda.array_api._array_object.Array, x2: arkouda.array_api._array_object.Array, /, *, axis: int = -1) -> arkouda.array_api._array_object.Array
+   WARNING: not yet implemented
+
+
+.. py:function:: vecdot(x1: arkouda.array_api.array_object.Array, x2: arkouda.array_api.array_object.Array, /, *, axis: int = -1) -> arkouda.array_api.array_object.Array
 

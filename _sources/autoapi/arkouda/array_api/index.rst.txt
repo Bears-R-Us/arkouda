@@ -10,7 +10,18 @@ Submodules
 .. toctree::
    :maxdepth: 1
 
+   /autoapi/arkouda/array_api/array_object/index
+   /autoapi/arkouda/array_api/creation_functions/index
+   /autoapi/arkouda/array_api/data_type_functions/index
+   /autoapi/arkouda/array_api/elementwise_functions/index
+   /autoapi/arkouda/array_api/indexing_functions/index
    /autoapi/arkouda/array_api/linalg/index
+   /autoapi/arkouda/array_api/manipulation_functions/index
+   /autoapi/arkouda/array_api/searching_functions/index
+   /autoapi/arkouda/array_api/set_functions/index
+   /autoapi/arkouda/array_api/sorting_functions/index
+   /autoapi/arkouda/array_api/statistical_functions/index
+   /autoapi/arkouda/array_api/utility_functions/index
 
 
 Classes
@@ -77,7 +88,9 @@ Package Contents
 
    .. py:method:: item()
 
-      Convert the array to a Python scalar
+      Get the scalar value from a 0-dimensional array.
+
+      Raises a ValueError if the array has more than one element.
 
 
 
@@ -108,11 +121,19 @@ Package Contents
 
       Convert the array to a numpy ndarray
 
+      This involves copying the data from the server to the client, and thus
+      will fail if the array is too large (see:
+      :func:`~arkouda.client.maxTransferBytes`)
+
 
 
    .. py:method:: tolist()
 
       Convert the array to a Python list or nested lists
+
+      This involves copying the data from the server to the client, and thus
+      will fail if the array is too large (see:
+      :func:`~arkouda.client.maxTransferBytes`)
 
 
 

@@ -1,0 +1,503 @@
+arkouda.array_api.elementwise_functions
+=======================================
+
+.. py:module:: arkouda.array_api.elementwise_functions
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   arkouda.array_api.elementwise_functions.Array
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   arkouda.array_api.elementwise_functions.abs
+   arkouda.array_api.elementwise_functions.acos
+   arkouda.array_api.elementwise_functions.acosh
+   arkouda.array_api.elementwise_functions.add
+   arkouda.array_api.elementwise_functions.asin
+   arkouda.array_api.elementwise_functions.asinh
+   arkouda.array_api.elementwise_functions.atan
+   arkouda.array_api.elementwise_functions.atan2
+   arkouda.array_api.elementwise_functions.atanh
+   arkouda.array_api.elementwise_functions.bitwise_and
+   arkouda.array_api.elementwise_functions.bitwise_invert
+   arkouda.array_api.elementwise_functions.bitwise_left_shift
+   arkouda.array_api.elementwise_functions.bitwise_or
+   arkouda.array_api.elementwise_functions.bitwise_right_shift
+   arkouda.array_api.elementwise_functions.bitwise_xor
+   arkouda.array_api.elementwise_functions.ceil
+   arkouda.array_api.elementwise_functions.conj
+   arkouda.array_api.elementwise_functions.cos
+   arkouda.array_api.elementwise_functions.cosh
+   arkouda.array_api.elementwise_functions.divide
+   arkouda.array_api.elementwise_functions.equal
+   arkouda.array_api.elementwise_functions.exp
+   arkouda.array_api.elementwise_functions.expm1
+   arkouda.array_api.elementwise_functions.floor
+   arkouda.array_api.elementwise_functions.floor_divide
+   arkouda.array_api.elementwise_functions.greater
+   arkouda.array_api.elementwise_functions.greater_equal
+   arkouda.array_api.elementwise_functions.imag
+   arkouda.array_api.elementwise_functions.isfinite
+   arkouda.array_api.elementwise_functions.isinf
+   arkouda.array_api.elementwise_functions.isnan
+   arkouda.array_api.elementwise_functions.less
+   arkouda.array_api.elementwise_functions.less_equal
+   arkouda.array_api.elementwise_functions.log
+   arkouda.array_api.elementwise_functions.log10
+   arkouda.array_api.elementwise_functions.log1p
+   arkouda.array_api.elementwise_functions.log2
+   arkouda.array_api.elementwise_functions.logaddexp
+   arkouda.array_api.elementwise_functions.logical_and
+   arkouda.array_api.elementwise_functions.logical_not
+   arkouda.array_api.elementwise_functions.logical_or
+   arkouda.array_api.elementwise_functions.logical_xor
+   arkouda.array_api.elementwise_functions.multiply
+   arkouda.array_api.elementwise_functions.negative
+   arkouda.array_api.elementwise_functions.not_equal
+   arkouda.array_api.elementwise_functions.positive
+   arkouda.array_api.elementwise_functions.pow
+   arkouda.array_api.elementwise_functions.real
+   arkouda.array_api.elementwise_functions.remainder
+   arkouda.array_api.elementwise_functions.round
+   arkouda.array_api.elementwise_functions.sign
+   arkouda.array_api.elementwise_functions.sin
+   arkouda.array_api.elementwise_functions.sinh
+   arkouda.array_api.elementwise_functions.sqrt
+   arkouda.array_api.elementwise_functions.square
+   arkouda.array_api.elementwise_functions.subtract
+   arkouda.array_api.elementwise_functions.tan
+   arkouda.array_api.elementwise_functions.tanh
+   arkouda.array_api.elementwise_functions.trunc
+
+
+Module Contents
+---------------
+
+.. py:class:: Array
+
+   n-d array object for the array API namespace.
+
+   See the docstring of :py:obj:`np.ndarray <numpy.ndarray>` for more
+   information.
+
+   This is a wrapper around numpy.ndarray that restricts the usage to only
+   those things that are required by the array API namespace. Note,
+   attributes on this object that start with a single underscore are not part
+   of the API specification and should only be used internally. This object
+   should not be constructed directly. Rather, use one of the creation
+   functions, such as asarray().
+
+
+
+   .. py:property:: T
+      :type: Array
+
+
+
+   .. py:method:: chunk_info(/) -> List[List[int]]
+
+      Get a list of indices indicating how the array is chunked across
+      Locales (compute nodes). Although Arkouda arrays don't have a notion
+      of chunking, like Dask arrays for example, it can be useful to know
+      how the array is distributed across locales in order to write/read
+      data to/from a chunked format like Zarr.
+
+      Returns a nested list of integers, where the outer list corresponds to
+      dimensions, and the inner lists correspond to locales. The value at [d][l]
+      is the global array index where locale l's local subdomain along the
+      d-th dimension begins.
+
+      For example, calling this function on a 100x40 2D array stored across 4
+      locales could return: [[0, 50], [0, 20]], indicating that the 4 "chunks"
+      start at indices 0 and 50 in the first dimension, and 0 and 20 in the
+      second dimension.
+
+
+
+   .. py:property:: device
+      :type: arkouda.array_api._typing.Device
+
+
+
+   .. py:property:: dtype
+      :type: arkouda.array_api._typing.Dtype
+
+
+
+   .. py:method:: item()
+
+      Get the scalar value from a 0-dimensional array.
+
+      Raises a ValueError if the array has more than one element.
+
+
+
+   .. py:property:: mT
+      :type: Array
+
+
+
+   .. py:property:: ndim
+      :type: int
+
+
+
+   .. py:property:: shape
+      :type: Tuple[int, Ellipsis]
+
+
+
+   .. py:property:: size
+      :type: int
+
+
+
+   .. py:method:: to_device(device: arkouda.array_api._typing.Device, /, stream: None = None) -> Array
+
+
+   .. py:method:: to_ndarray()
+
+      Convert the array to a numpy ndarray
+
+      This involves copying the data from the server to the client, and thus
+      will fail if the array is too large (see:
+      :func:`~arkouda.client.maxTransferBytes`)
+
+
+
+   .. py:method:: tolist()
+
+      Convert the array to a Python list or nested lists
+
+      This involves copying the data from the server to the client, and thus
+      will fail if the array is too large (see:
+      :func:`~arkouda.client.maxTransferBytes`)
+
+
+
+   .. py:method:: transpose(axes: Optional[Tuple[int, Ellipsis]] = None)
+
+      Return a view of the array with the specified axes transposed.
+
+      For axes=None, reverse all the dimensions of the array.
+
+
+
+.. py:function:: abs(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise absolute value of an array.
+
+
+.. py:function:: acos(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise arccosine of an array.
+
+
+.. py:function:: acosh(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise hyperbolic arccosine of an array.
+
+
+.. py:function:: add(x1: arkouda.array_api.array_object.Array, x2: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise sum of two arrays.
+
+
+.. py:function:: asin(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise arcsine of an array.
+
+
+.. py:function:: asinh(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise hyperbolic arcsine of an array.
+
+
+.. py:function:: atan(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise arctangent of an array.
+
+
+.. py:function:: atan2(x1: arkouda.array_api.array_object.Array, x2: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise arctangent of x1/x2.
+
+
+.. py:function:: atanh(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise hyperbolic arctangent of an array.
+
+
+.. py:function:: bitwise_and(x1: arkouda.array_api.array_object.Array, x2: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise bitwise AND of two arrays.
+
+
+.. py:function:: bitwise_invert(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise bitwise NOT of an array.
+
+
+.. py:function:: bitwise_left_shift(x1: arkouda.array_api.array_object.Array, x2: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise bitwise left shift of x1 by x2.
+
+
+.. py:function:: bitwise_or(x1: arkouda.array_api.array_object.Array, x2: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise bitwise OR of two arrays.
+
+
+.. py:function:: bitwise_right_shift(x1: arkouda.array_api.array_object.Array, x2: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise bitwise right shift of x1 by x2.
+
+
+.. py:function:: bitwise_xor(x1: arkouda.array_api.array_object.Array, x2: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise bitwise XOR of two arrays.
+
+
+.. py:function:: ceil(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise ceiling of a floating point array.
+
+
+.. py:function:: conj(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise complex conjugate of an array.
+
+   WARNING: Not yet implemented.
+
+
+.. py:function:: cos(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise cosine of an array.
+
+
+.. py:function:: cosh(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise hyperbolic cosine of an array.
+
+
+.. py:function:: divide(x1: arkouda.array_api.array_object.Array, x2: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise division of x1 by x2.
+
+
+.. py:function:: equal(x1: arkouda.array_api.array_object.Array, x2: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise equality of two arrays.
+
+
+.. py:function:: exp(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise exponential of an array.
+
+
+.. py:function:: expm1(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise exponential of x-1.
+
+
+.. py:function:: floor(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise floor of a floating point array.
+
+
+.. py:function:: floor_divide(x1: arkouda.array_api.array_object.Array, x2: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise floor division of x1 by x2.
+
+
+.. py:function:: greater(x1: arkouda.array_api.array_object.Array, x2: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Apply `>` element-wise to two arrays.
+
+
+.. py:function:: greater_equal(x1: arkouda.array_api.array_object.Array, x2: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Apply `>=` element-wise to two arrays.
+
+
+.. py:function:: imag(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Get the element-wise imaginary part of a Complex array.
+
+   WARNING: Not yet implemented.
+
+
+.. py:function:: isfinite(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Determine if an array's elements are finite.
+
+
+.. py:function:: isinf(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Determine if an array's elements are infinite.
+
+
+.. py:function:: isnan(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Determine if an array's elements are NaN.
+
+
+.. py:function:: less(x1: arkouda.array_api.array_object.Array, x2: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Apply `<` element-wise to two arrays.
+
+
+.. py:function:: less_equal(x1: arkouda.array_api.array_object.Array, x2: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Apply `<=` element-wise to two arrays.
+
+
+.. py:function:: log(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise natural logarithm of an array.
+
+
+.. py:function:: log10(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise base-10 logarithm of an array.
+
+
+.. py:function:: log1p(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise natural logarithm of x+1.
+
+
+.. py:function:: log2(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise base-2 logarithm of an array.
+
+
+.. py:function:: logaddexp(x1: arkouda.array_api.array_object.Array, x2: arkouda.array_api.array_object.Array) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise logarithm of the sum of exponentials of two arrays.
+   (i.e., log(exp(x1) + exp(x2)))
+
+   WARNING: Not yet implemented.
+
+
+.. py:function:: logical_and(x1: arkouda.array_api.array_object.Array, x2: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise logical AND of two boolean arrays.
+
+
+.. py:function:: logical_not(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise logical NOT of a boolean array.
+
+
+.. py:function:: logical_or(x1: arkouda.array_api.array_object.Array, x2: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise logical OR of two boolean arrays.
+
+
+.. py:function:: logical_xor(x1: arkouda.array_api.array_object.Array, x2: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise logical XOR of two boolean arrays.
+
+
+.. py:function:: multiply(x1: arkouda.array_api.array_object.Array, x2: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise product of two arrays.
+
+
+.. py:function:: negative(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise negation of an array.
+
+
+.. py:function:: not_equal(x1: arkouda.array_api.array_object.Array, x2: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.not_equal <numpy.not_equal>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: positive(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.positive <numpy.positive>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: pow(x1: arkouda.array_api.array_object.Array, x2: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Array API compatible wrapper for :py:func:`np.power <numpy.power>`.
+
+   See its docstring for more information.
+
+
+.. py:function:: real(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Get the element-wise real part of a Complex array.
+
+   WARNING: Not yet implemented.
+
+
+.. py:function:: remainder(x1: arkouda.array_api.array_object.Array, x2: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise remainder of x1 divided by x2.
+
+
+.. py:function:: round(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise rounding of an array.
+
+
+.. py:function:: sign(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise sign of an array.
+
+
+.. py:function:: sin(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise sine of an array.
+
+
+.. py:function:: sinh(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise hyperbolic sine of an array.
+
+
+.. py:function:: sqrt(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise square root of an array.
+
+
+.. py:function:: square(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise square of an array.
+
+
+.. py:function:: subtract(x1: arkouda.array_api.array_object.Array, x2: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise difference of two arrays.
+
+
+.. py:function:: tan(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise tangent of an array.
+
+
+.. py:function:: tanh(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise hyperbolic tangent of an array.
+
+
+.. py:function:: trunc(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array
+
+   Compute the element-wise truncation of a floating-point array.
+
+
