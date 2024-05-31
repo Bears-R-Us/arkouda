@@ -43,6 +43,7 @@ from numpy import (  # noqa
     ulonglong,
     ushort,
 )
+from ._numeric import floor
 
 
 __all__ = [
@@ -89,4 +90,5 @@ __all__ = [
     "uintc",
     "ulonglong",
     "ushort",
+    "floor",
 ]
