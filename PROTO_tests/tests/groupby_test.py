@@ -725,9 +725,8 @@ class TestGroupBy:
 
         # Check for correct unique keys.
 
-        assert np.all(np_unique == np.sort(ak_TFF[0].to_ndarray())) and np.all(
-            np_unique == np.sort(ak_TTF[0].to_ndarray())
-        )
+        assert np.all(np_unique == np.sort(ak_TFF[0].to_ndarray()))
+        assert np.all(np_unique == np.sort(ak_TTF[0].to_ndarray()))
 
         # Check groups and indices.  If data was sorted, the group ndarray
         # should just be list(range(len(nda))), and the indices will be
