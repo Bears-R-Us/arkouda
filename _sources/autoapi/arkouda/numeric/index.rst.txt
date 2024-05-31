@@ -543,20 +543,7 @@ Module Contents
 
 .. py:function:: floor(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
 
-   Return the element-wise floor of the array.
-
-   :param pda:
-   :type pda: pdarray
-
-   :returns: A pdarray containing floor values of the input array elements
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the parameter is not a pdarray
-
-   .. rubric:: Examples
-
-   >>> ak.floor(ak.linspace(1.1,5.5,5))
-   array([1, 2, 3, 4, 5])
+   Alias of arkouda.numpy.floor
 
 
 .. py:function:: hash(pda: Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, SegArray, Categorical], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, SegArray, Categorical]]], full: bool = True) -> Union[Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray], arkouda.pdarrayclass.pdarray]

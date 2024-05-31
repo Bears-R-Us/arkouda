@@ -441,7 +441,7 @@
 <td><p>Return the element-wise exponential of the array minus one.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.floor" title="arkouda.numeric.floor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">floor</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
-<td><p>Return the element-wise floor of the array.</p></td>
+<td><p>Alias of arkouda.numpy.floor</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.hash" title="arkouda.numeric.hash"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hash</span></code></a>(→ Union[Tuple[arkouda.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Return an element-wise hash of the array or list of arrays.</p></td>
@@ -1147,26 +1147,7 @@ array elements minus one</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numeric.floor">
 <span class="sig-prename descclassname"><span class="pre">arkouda.numeric.</span></span><span class="sig-name descname"><span class="pre">floor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/numeric.html#floor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numeric.floor" title="Link to this definition">¶</a></dt>
-<dd><p>Return the element-wise floor of the array.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../alignment/index.html#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray"><em>pdarray</em></a>)</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A pdarray containing floor values of the input array elements</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../alignment/index.html#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray">pdarray</a></p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1.1</span><span class="p">,</span><span class="mf">5.5</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
-<span class="go">array([1, 2, 3, 4, 5])</span>
-</pre></div>
-</div>
+<dd><p>Alias of arkouda.numpy.floor</p>
 </dd></dl>
 
 <dl class="py function">

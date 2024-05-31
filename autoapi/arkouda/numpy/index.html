@@ -513,6 +513,18 @@
 </table>
 </div>
 </section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.floor" title="arkouda.numpy.floor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">floor</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<td><p>Return the element-wise floor of the array.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
 <dl class="py data">
@@ -925,6 +937,31 @@ value, and <code class="docutils literal notranslate"><span class="pre">False</s
 </div></blockquote>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numpy.floor">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">floor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/_numeric.html#floor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.floor" title="Link to this definition">¶</a></dt>
+<dd><p>Return the element-wise floor of the array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../alignment/index.html#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray"><em>pdarray</em></a>)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A pdarray containing floor values of the input array elements</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../alignment/index.html#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray">pdarray</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1.1</span><span class="p">,</span><span class="mf">5.5</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="go">array([1, 2, 3, 4, 5])</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py class">
@@ -1762,6 +1799,7 @@ Analogous to the builtin <cite>int.bit_count</cite> or <code class="docutils lit
 <li><a class="reference internal" href="#">arkouda.numpy</a><ul>
 <li><a class="reference internal" href="#attributes">Attributes</a></li>
 <li><a class="reference internal" href="#classes">Classes</a></li>
+<li><a class="reference internal" href="#functions">Functions</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li><a class="reference internal" href="#arkouda.numpy.Inf"><code class="docutils literal notranslate"><span class="pre">Inf</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.Infinity"><code class="docutils literal notranslate"><span class="pre">Infinity</span></code></a></li>
@@ -1800,6 +1838,7 @@ Analogous to the builtin <cite>int.bit_count</cite> or <code class="docutils lit
 <li><a class="reference internal" href="#arkouda.numpy.float64.is_integer"><code class="docutils literal notranslate"><span class="pre">float64.is_integer()</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#arkouda.numpy.floor"><code class="docutils literal notranslate"><span class="pre">floor()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.half"><code class="docutils literal notranslate"><span class="pre">half</span></code></a><ul>
 <li><a class="reference internal" href="#arkouda.numpy.half.as_integer_ratio"><code class="docutils literal notranslate"><span class="pre">half.as_integer_ratio()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.half.is_integer"><code class="docutils literal notranslate"><span class="pre">half.is_integer()</span></code></a></li>
