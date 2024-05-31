@@ -405,7 +405,7 @@ class TestParquet:
                             for li in lists
                         ]
                     )
-                    concat_segarr.to_parquet(file_name, "test-dset", compression=comp)
+                    concat_segarr.to_parquet(file_name, "ListCol", compression=comp)
                 else:
                     # when single locale artifically create multiple files
                     for i in range(NUM_FILES):
