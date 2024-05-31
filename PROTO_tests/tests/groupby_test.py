@@ -732,14 +732,12 @@ class TestGroupBy:
         # should just be list(range(len(nda))), and the indices will be
         # exactly what the list method returns as the first index
 
-        srange = np.array(list(range(len(nda))))
-        check1 = np.all(srange == ak_TTF[1].to_ndarray())
+        srange = np.arange(len(nda))
+        assert(np.all(srange == ak_TTF[1].to_ndarray()))
         indices = ak_TTF[2]
-        check2 = T
         nda_list = list(s_nda)
         for i in range(len(indices)):
-            check2 = check2 and indices[i] == nda_list.index(np_unique[i])
-        assert check1 and check2
+            assert(indices[i] == nda_list.index(np_unique[i]))
 
         # for unsorted data, a bit more work is required.  A reordered
         # copy of the pdarray is created based on the returned permutation,
