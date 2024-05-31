@@ -81,11 +81,11 @@ def unique(
         Input array.
     return_groups : bool, optional
         If True, also return grouping information for the array.
+    assume_sorted : bool, optional
+        If True, assume pda is sorted and skip sorting step
     return_indices: bool, optional
         Only applicable if return_groups is True.
         If True, return unique key indices along with other groups
-    assume_sorted : bool, optional
-        If True, assume pda is sorted and skip sorting step
 
     Returns
     -------

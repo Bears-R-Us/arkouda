@@ -5,7 +5,36 @@ import pytest
 import arkouda as ak
 from arkouda.groupbyclass import GroupByReductionType
 from arkouda.scipy import chisquare as akchisquare
+from arkouda.dtypes import npstr
 
+#  block of variables and functions used in test_unique
+
+UNIQUE_TYPES = [ak.categorical,ak.int64,ak.float64,npstr]
+VOWELS_AND_SUCH = ['a','e','i','o','u','AB',47,2,3.14159]
+PICKS = np.array([f"base {i}" for i in range(10)])
+
+isSorted = lambda x : np.all(x[:-1] <= x[1:])  # short for is x[i] <= x[i+1] for all i
+
+#  This function (almost) guarantees both a sorted and unsorted version of
+#  a 1d array.  The only exception is an array of all identical values.
+#  The first "if" block skips the whole function in that case.  Otherwise,
+#  if the sample is already sorted, a non-sorted permutation is generated,
+#  and the two are returned.  If it isn't, a sorted version is created,
+#  and those two are returned.
+
+def make_sorted_and_unsorted_data (sample) :
+    if np.all(sample == sample[0]) : return sample, sample
+    if isSorted(sample) :
+        s_a = sample[:]
+        us_a = np.random.permutation(sample)
+        while isSorted(us_a) :
+            us_a = np.random.permutation(us_a)
+    else :
+        s_a = np.sort(sample)
+        us_a = sample[:]
+    return s_a, us_a
+
+#  end of block
 
 def to_tuple_dict(labels, values):
     # transforms labels from list of arrays into a list of tuples by index and builds a dictionary
@@ -653,6 +682,76 @@ class TestGroupBy:
         _, means = ak.GroupBy(ak.arange(10) % 3).mean(a)
         for m in means.to_list():
             assert np.isclose(float(a[0]), m)
+
+#   ak.unique takes 1 pda argument and 3 booleans
+#      However, not all 8 combinations of the booleans are needed to
+#      cover the test space.
+#      Combinations TTF and TFF are supersets of all other possible
+#      combinations, so only those are tested below.
+
+    @pytest.mark.parametrize("data_type", UNIQUE_TYPES)
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_unique(self, data_type, prob_size) :
+        Jenny = pytest.seed if pytest.seed is not None else 8675309
+        T = True ; F = False
+        np.random.seed(Jenny)
+        arrays = {
+            npstr : np.random.choice(VOWELS_AND_SUCH,prob_size),
+            ak.int64 : np.random.randint(0,prob_size//3,prob_size),
+            ak.float64: np.random.uniform(0,prob_size//3,prob_size),
+            ak.categorical : np.random.choice(PICKS,prob_size),
+        }
+        nda = arrays[data_type]
+        np_unique = np.unique(nda)          # get unique keys from np for comparison
+        s_nda, us_nda = make_sorted_and_unsorted_data(nda)
+        s_pda = ak.array(s_nda)
+        us_pda = ak.array(us_nda)
+
+        # Categorical requires another step to make the pdarrays categorical
+
+        if data_type == "categorical" :
+            s_pda = ak.Categorical(s_pda)
+            us_pda = ak.Categorical(us_pda)
+        
+        # Call ak.unique with TTF and TFF
+
+        ak_TTF = ak.unique(s_pda,T,T,F)
+        ak_TFF = ak.unique(us_pda,T,F,F)
+
+        # Check for correct unique keys.
+
+        assert ( np.all(np_unique == np.sort(ak_TFF[0].to_ndarray())) and \
+            np.all(np_unique == np.sort(ak_TTF[0].to_ndarray())) )
+
+        # Check groups and indices.  If data was sorted, the group ndarray
+        # should just be list(range(len(nda))), and the indices will be
+        # exactly what the list method returns as the first index
+
+        srange = np.array(list(range(len(nda))))
+        check1 = np.all(srange == ak_TTF[1].to_ndarray())
+        indices = ak_TTF[2]
+        check2 = T ; nda_list = list(s_nda)
+        for i in range(len(indices)) :
+            check2 = check2 and indices[i] == nda_list.index(np_unique[i])
+        assert (check1 and check2)
+
+        # for unsorted data, a bit more work is required.  A reordered
+        # copy of the pdarray is created based on the returned permutation,
+        # and the indices are used to confirm that elements within a segment
+        # match.
+
+        aku = ak.unique(us_pda).to_ndarray()
+        reordering = ak_TFF[1].to_ndarray()
+        reordered = [nda[i] for i in reordering]
+        indices = ak_TFF[2]
+        checker = True
+        for j in range(len(aku)) :
+            if j < len(aku) - 1 :
+                checker = checker and np.all([reordered[i] == aku[j] for i in range(indices[j],indices[j+1])])
+            else :
+                checker = checker and np.all([reordered[i] == aku[j] for i in range(indices[j],len(aku))])
+        assert (checker)
+
 
     def test_unique_aggregation(self):
         keys = ak.array([0, 1, 0, 1, 0, 1, 0, 1])
