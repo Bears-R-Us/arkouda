@@ -294,7 +294,7 @@ class RandomTest(ArkoudaTest):
 
         # use the probability mass function to get the probability of seeing each value
         # and multiply by num_samples to get the expected counts
-        exp_counts = np.array([sp_stats.poisson.pmf(v, mu=lam) for v in range(num_elems)]) * num_samples
+        exp_counts = sp_stats.poisson.pmf(range(num_elems), mu=lam) * num_samples
         _, pval = sp_stats.chisquare(f_obs=obs_counts, f_exp=exp_counts)
         self.assertTrue(pval > 0.05)
 
