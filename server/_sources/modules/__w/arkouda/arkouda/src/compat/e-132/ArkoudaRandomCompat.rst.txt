@@ -39,6 +39,8 @@ or
 
    .. method:: proc ref next(): eltType
 
+   .. method:: proc ref next(min: eltType, max: eltType): eltType
+
    .. method:: proc skipTo(n: int)
 
 .. function:: proc sample(arr: [?d] ?t, n: int, withReplacement: bool): [] t throws

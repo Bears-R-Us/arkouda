@@ -365,8 +365,9 @@
 <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="nb">bool</span> <span class="k">as</span> <span class="n">akbool</span>
 <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">to_numpy_dtype</span>
 <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">float64</span> <span class="k">as</span> <span class="n">akfloat64</span>
+<span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">float_scalars</span>
 <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">int64</span> <span class="k">as</span> <span class="n">akint64</span>
-<span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">int_scalars</span>
+<span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">numeric_scalars</span>
 <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">uint64</span> <span class="k">as</span> <span class="n">akuint64</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span>
 
@@ -730,7 +731,7 @@
             <span class="p">},</span>
         <span class="p">)</span>
         <span class="c1"># since we generate 2*size uniform samples for box-muller transform</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">+=</span> <span class="p">(</span><span class="n">size</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">+=</span> <span class="n">size</span> <span class="o">*</span> <span class="mi">2</span>
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
@@ -809,6 +810,82 @@
             <span class="p">},</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">+=</span> <span class="n">size</span>
+        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Generator.poisson">
+<a class="viewcode-back" href="../../../autoapi/arkouda/random/index.html#arkouda.Generator.poisson">[docs]</a>
+    <span class="k">def</span> <span class="nf">poisson</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lam</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Draw samples from a Poisson distribution.</span>
+
+<span class="sd">        The Poisson distribution is the limit of the binomial distribution for large N.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        lam: float or pdarray</span>
+<span class="sd">            Expected number of events occurring in a fixed-time interval, must be &gt;= 0.</span>
+<span class="sd">            An array must have the same size as the size argument.</span>
+<span class="sd">        size: numeric_scalars, optional</span>
+<span class="sd">            Output shape. Default is None, in which case a single value is returned.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The probability mass function for the Poisson distribution is:</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           f(k; \lambda) = \frac{\lambda^k e^{-\lambda}}{k!}</span>
+
+<span class="sd">        For events with an expected separation :math:`\lambda`, the Poisson distribution</span>
+<span class="sd">        :math:`f(k; \lambda)` describes the probability of :math:`k` events occurring</span>
+<span class="sd">        within the observed interval :math:`\lambda`</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pdarray</span>
+<span class="sd">            Pdarray of ints (unless size=None, in which case a single int is returned).</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; rng = ak.random.default_rng()</span>
+<span class="sd">        &gt;&gt;&gt; rng.poisson(lam=3, size=5)</span>
+<span class="sd">        array([5 3 2 2 3])  # random</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># delegate to numpy when return size is 1</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_np_generator</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">lam</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">_val_isinstance_of_union</span><span class="p">(</span><span class="n">lam</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">):</span>
+            <span class="n">is_single_lambda</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">_val_isinstance_of_union</span><span class="p">(</span><span class="n">lam</span><span class="p">,</span> <span class="n">float_scalars</span><span class="p">):</span>
+                <span class="n">lam</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">lam</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">lam</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;lambda must be &gt;=0&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lam</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+            <span class="n">is_single_lambda</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">size</span> <span class="o">!=</span> <span class="n">lam</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;array of lambdas must have same size as return size&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">lam</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">akfloat64</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">arkouda.numeric</span> <span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
+
+                <span class="n">lam</span> <span class="o">=</span> <span class="n">akcast</span><span class="p">(</span><span class="n">lam</span><span class="p">,</span> <span class="n">akfloat64</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">lam</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;all lambdas must be &gt;=0&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;poisson only accepts a pdarray or float scalar for lam&quot;</span><span class="p">)</span>
+
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;poissonGenerator&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name_dict</span><span class="p">[</span><span class="n">akfloat64</span><span class="p">],</span>
+                <span class="s2">&quot;lam&quot;</span><span class="p">:</span> <span class="n">lam</span><span class="p">,</span>
+                <span class="s2">&quot;is_single_lambda&quot;</span><span class="p">:</span> <span class="n">is_single_lambda</span><span class="p">,</span>
+                <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">size</span><span class="p">,</span>
+                <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="c1"># we only generate one val using the generator in the symbol table</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 

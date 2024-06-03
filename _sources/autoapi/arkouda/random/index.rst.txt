@@ -153,6 +153,40 @@ Package Contents
 
 
 
+   .. py:method:: poisson(lam=1.0, size=None)
+
+      Draw samples from a Poisson distribution.
+
+      The Poisson distribution is the limit of the binomial distribution for large N.
+
+      :param lam: Expected number of events occurring in a fixed-time interval, must be >= 0.
+                  An array must have the same size as the size argument.
+      :type lam: float or pdarray
+      :param size: Output shape. Default is None, in which case a single value is returned.
+      :type size: numeric_scalars, optional
+
+      .. rubric:: Notes
+
+      The probability mass function for the Poisson distribution is:
+
+      .. math::
+         f(k; \lambda) = \frac{\lambda^k e^{-\lambda}}{k!}
+
+      For events with an expected separation :math:`\lambda`, the Poisson distribution
+      :math:`f(k; \lambda)` describes the probability of :math:`k` events occurring
+      within the observed interval :math:`\lambda`
+
+      :returns: Pdarray of ints (unless size=None, in which case a single int is returned).
+      :rtype: pdarray
+
+      .. rubric:: Examples
+
+      >>> rng = ak.random.default_rng()
+      >>> rng.poisson(lam=3, size=5)
+      array([5 3 2 2 3])  # random
+
+
+
    .. py:method:: random(size=None)
 
       Return random floats in the half-open interval [0.0, 1.0).

@@ -560,6 +560,48 @@ make a copy and shuffle the elements randomly.</p>
 </dd></dl>
 
 </section>
+<section id="poisson">
+<h3>poisson<a class="headerlink" href="#poisson" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.random.Generator.poisson">
+<span class="sig-prename descclassname"><span class="pre">arkouda.random.Generator.</span></span><span class="sig-name descname"><span class="pre">poisson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lam</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.random.Generator.poisson" title="Link to this definition">¶</a></dt>
+<dd><p>Draw samples from a Poisson distribution.</p>
+<p>The Poisson distribution is the limit of the binomial distribution for large N.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lam</strong> (<em>float</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/alignment/index.html#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray"><em>pdarray</em></a>) – Expected number of events occurring in a fixed-time interval, must be &gt;= 0.
+An array must have the same size as the size argument.</p></li>
+<li><p><strong>size</strong> (<em>numeric_scalars</em><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The probability mass function for the Poisson distribution is:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[f(k; \lambda) = \frac{\lambda^k e^{-\lambda}}{k!}\]</div>
+</div>
+<p>For events with an expected separation <span class="math notranslate nohighlight">\(\lambda\)</span>, the Poisson distribution
+<span class="math notranslate nohighlight">\(f(k; \lambda)\)</span> describes the probability of <span class="math notranslate nohighlight">\(k\)</span> events occurring
+within the observed interval <span class="math notranslate nohighlight">\(\lambda\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Pdarray of ints (unless size=None, in which case a single int is returned).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../autoapi/arkouda/alignment/index.html#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray">pdarray</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">rng</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rng</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">lam</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">array([5 3 2 2 3])  # random</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
 <section id="shuffle">
 <h3>shuffle<a class="headerlink" href="#shuffle" title="Link to this heading">¶</a></h3>
 <dl class="py function">
@@ -770,6 +812,10 @@ high must be greater than or equal to low. The default value is 1.0.</p></li>
 </li>
 <li><a class="reference internal" href="#permutation">permutation</a><ul>
 <li><a class="reference internal" href="#arkouda.random.Generator.permutation"><code class="docutils literal notranslate"><span class="pre">permutation()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#poisson">poisson</a><ul>
+<li><a class="reference internal" href="#arkouda.random.Generator.poisson"><code class="docutils literal notranslate"><span class="pre">poisson()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#shuffle">shuffle</a><ul>
