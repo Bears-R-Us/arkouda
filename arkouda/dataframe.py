@@ -1211,7 +1211,7 @@ class DataFrame(UserDict):
             if isinstance(self[col], Categorical):
                 newdf[col] = self[col].categories[self[col].codes[idx]]
             else:
-                newdf[col] = self[col][idx]
+                newdf[col] = self[col].iloc[idx]
         newdf._set_index(self.index.index[idx])
         return newdf.to_pandas(retain_index=True)
 
