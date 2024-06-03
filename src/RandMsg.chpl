@@ -547,6 +547,101 @@ module RandMsg
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
+    proc poissonGeneratorMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        const pn = Reflection.getRoutineName(),
+              name = msgArgs.getValueOf("name"),                                // generator name
+              isSingleLam = msgArgs.get("is_single_lambda").getBoolValue(),     // boolean indicated if lambda is a single value or array
+              lamStr = msgArgs.getValueOf("lam"),                               // lambda for poisson distribution
+              size = msgArgs.get("size").getIntValue(),                         // number of values to be generated
+              state = msgArgs.get("state").getIntValue(),                       // rng state
+              rname = st.nextName();
+
+
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "name: %? size %i isSingleLam %? lamStr %? state %i".doFormat(name, size, isSingleLam, lamStr, state));
+
+        st.checkTable(name);
+
+        var generatorEntry: borrowed GeneratorSymEntry(real) = toGeneratorSymEntry(st.lookup(name), real);
+        ref rng = generatorEntry.generator;
+        if state != 1 {
+            // you have to skip to one before where you want to be
+            rng.skipTo(state-1);
+        }
+
+        // uses the algorithm from knuth found here:
+        // https://en.wikipedia.org/wiki/Poisson_distribution#Random_variate_generation
+        // generates values drawn from poisson distribution using a stream of uniformly distributed random numbers
+
+        const nTasksPerLoc = here.maxTaskPar; // tasks per locale based on locale0
+        const Tasks = {0..#nTasksPerLoc}; // these need to be const for comms/performance reasons
+
+        const generatorSeed = (rng.next() * 2**62):int;
+        var poissonArr = makeDistArray(size, int);
+
+        // I hate the code duplication here but it's not immediately obvious to me how to avoid it
+        if isSingleLam {
+            const lam = lamStr:real;
+            // using nested coforall over locales and tasks so we know how to generate taskSeed
+            for loc in Locales do on loc {
+                const generatorIdxOffset = here.id * nTasksPerLoc,
+                    locSubDom = poissonArr.localSubdomain(),  // the chunk that this locale needs to handle
+                    indicesPerTask = locSubDom.size / nTasksPerLoc;  // the number of elements each task needs to handle
+
+                coforall tid in Tasks {
+                    const taskSeed = generatorSeed + generatorIdxOffset + tid,  // initial seed offset by other locales threads plus current thread id
+                        startIdx = tid * indicesPerTask,
+                        stopIdx = if tid == nTasksPerLoc - 1 then locSubDom.size else (tid + 1) * indicesPerTask;  // the last task picks up the remainder of indices
+                    var rs = new randomStream(real, taskSeed);
+                    for i in startIdx..<stopIdx {
+                        var L = exp(-lam);
+                        var k = 0;
+                        var p = 1.0;
+
+                        do {
+                            k += 1;
+                            p = p * rs.next(0, 1);
+                        } while p > L;
+                        poissonArr[locSubDom.low + i] = k - 1;
+                    }
+                }
+            }
+        }
+        else {
+            st.checkTable(lamStr);
+            const lamArr = toSymEntry(getGenericTypedArrayEntry(lamStr, st),real).a;
+            // using nested coforall over locales and task so we know exactly how many generators we need
+            for loc in Locales do on loc {
+                const generatorIdxOffset = here.id * nTasksPerLoc,
+                    locSubDom = poissonArr.localSubdomain(),  // the chunk that this locale needs to handle
+                    indicesPerTask = locSubDom.size / nTasksPerLoc;  // the number of elements each task needs to handle
+
+                coforall tid in Tasks {
+                    const taskSeed = generatorSeed + generatorIdxOffset + tid,
+                        startIdx = tid * indicesPerTask,
+                        stopIdx = if tid == nTasksPerLoc - 1 then locSubDom.size else (tid + 1) * indicesPerTask;  // the last task picks up the remainder of indices
+                    var rs = new randomStream(real, taskSeed);
+                    for i in startIdx..<stopIdx {
+                        const lam = lamArr[locSubDom.low + i];
+                        var L = exp(-lam);
+                        var k = 0;
+                        var p = 1.0;
+
+                        do {
+                            k += 1;
+                            p = p * rs.next(0, 1);
+                        } while p > L;
+                        poissonArr[locSubDom.low + i] = k - 1;
+                    }
+                }
+            }
+        }
+        st.addEntry(rname, createSymEntry(poissonArr));
+        const repMsg = "created " + st.attrib(rname);
+        randLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
     proc shuffleMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         const pn = Reflection.getRoutineName();
         const name = msgArgs.getValueOf("name");
@@ -606,5 +701,6 @@ module RandMsg
     registerFunction("segmentedSample", segmentedSampleMsg, getModuleName());
     registerFunction("choice", choiceMsg, getModuleName());
     registerFunction("permutation", permutationMsg, getModuleName());
+    registerFunction("poissonGenerator", poissonGeneratorMsg, getModuleName());
     registerFunction("shuffle", shuffleMsg, getModuleName());
 }

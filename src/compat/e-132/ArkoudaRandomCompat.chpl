@@ -38,6 +38,7 @@ module ArkoudaRandomCompat {
       return x[idx];
     }
     proc ref next(): eltType do return r.getNext();
+    proc ref next(min: eltType, max: eltType): eltType do return r.getNext(min, max);
     proc skipTo(n: int) do try! r.skipToNth(n);
   }
 
