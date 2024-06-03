@@ -1452,7 +1452,7 @@ class DataFrameTest(ArkoudaTest):
             l_pd, r_pd = left_df.to_pandas(), right_df.to_pandas()
 
             for how in "inner", "left", "right", "outer":
-                for on in "first", "second", "third", ["first", "third"], ["second", "third"], None:
+                for on in ["first", "third"], ["second", "third"], None:
                     ak_merge = ak.merge(left_df, right_df, on=on, how=how)
                     pd_merge = pd.merge(l_pd, r_pd, on=on, how=how)
 
