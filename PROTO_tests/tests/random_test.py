@@ -217,6 +217,22 @@ class TestRandom:
         assert rng.poisson(lam=scal_lam, size=num_samples).to_list() == scal_sample
         assert rng.poisson(lam=arr_lam, size=num_samples).to_list() == arr_sample
 
+    def test_exponential(self):
+        rng = ak.random.default_rng(17)
+        num_samples = 5
+        # scalar scale
+        scal_scale = 2
+        scal_sample = rng.exponential(scale=scal_scale, size=num_samples).to_list()
+
+        # array scale
+        arr_scale = ak.arange(5)
+        arr_sample = rng.exponential(scale=arr_scale, size=num_samples).to_list()
+
+        # reset rng with same seed and ensure we get same results
+        rng = ak.random.default_rng(17)
+        assert rng.exponential(scale=scal_scale, size=num_samples).to_list() == scal_sample
+        assert rng.exponential(scale=arr_scale, size=num_samples).to_list() == arr_sample
+
     def test_choice_hypothesis_testing(self):
         # perform a weighted sample and use chisquare to test
         # if the observed frequency matches the expected frequency
@@ -303,6 +319,25 @@ class TestRandom:
         exp_counts = sp_stats.poisson.pmf(range(num_elems), mu=lam) * num_samples
         _, pval = sp_stats.chisquare(f_obs=obs_counts, f_exp=exp_counts)
         assert pval > 0.05
+
+    def test_exponential_hypothesis_testing(self):
+        # I tested this many times without a set seed, but with no seed
+        # it's expected to fail one out of every ~20 runs given a pval limit of 0.05.
+        rng = ak.random.default_rng(43)
+        num_samples = 10**4
+
+        scale = rng.uniform(0, 10)
+        for method in "zig", "inv":
+            sample = rng.exponential(scale=scale, size=num_samples, method=method)
+            sample_list = sample.to_list()
+
+            # do the Kolmogorov-Smirnov test for goodness of fit
+            ks_res = sp_stats.kstest(
+                rvs=sample_list,
+                cdf=sp_stats.expon.cdf,
+                args=(0, scale),
+            )
+            assert ks_res.pvalue > 0.05
 
     def test_legacy_randint(self):
         testArray = ak.random.randint(0, 10, 5)
