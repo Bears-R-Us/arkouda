@@ -729,23 +729,26 @@ class TestGroupBy:
         assert np.all(np_unique == np.sort(ak_TTF[0].to_ndarray()))
 
         # Check groups and indices.  If data was sorted, the group ndarray
-        # should just be list(range(len(nda))), and the indices will be
-        # exactly what the list method returns as the first index
+        # should just be list(range(len(nda))).  
+        # For unsorted data, a reordered copy of the pdarray is created
+        # based on the returned permutation.
+        # In both cases, broadcasting the unique values using the returned
+        # indices should create the sorted/reordered array.
+
+        # sorted
 
         srange = np.arange(len(nda))
         assert np.all(srange == ak_TTF[1].to_ndarray())
         indices = ak_TTF[2]
         assert ak.all(s_pda == ak.broadcast(indices, ak_TTF[0], len(s_nda)))
 
-        # for unsorted data, a reordered copy of the pdarray is created
-        # based on the returned permutation, and the indices are used to
-        # confirm that elements within a segment match.
+        # unsorted
 
         aku = ak.unique(us_pda).to_ndarray()
         reordering = ak_TFF[1]
         reordered = us_pda[reordering]
         indices = ak_TFF[2]
-        assert ak.all(reordered == ak.broadcast(indices, ak_TFF[0], len(nda)))
+        assert ak.all(reordered == ak.broadcast(indices, ak_TFF[0], len(us_nda)))
 
     def test_unique_aggregation(self):
         keys = ak.array([0, 1, 0, 1, 0, 1, 0, 1])
