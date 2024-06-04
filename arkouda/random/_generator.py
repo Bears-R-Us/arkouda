@@ -5,8 +5,9 @@ from arkouda.dtypes import _val_isinstance_of_union
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import dtype as to_numpy_dtype
 from arkouda.dtypes import float64 as akfloat64
+from arkouda.dtypes import float_scalars
 from arkouda.dtypes import int64 as akint64
-from arkouda.dtypes import int_scalars
+from arkouda.dtypes import int_scalars, numeric_scalars
 from arkouda.dtypes import uint64 as akuint64
 from arkouda.pdarrayclass import create_pdarray, pdarray
 
@@ -354,7 +355,7 @@ class Generator:
             },
         )
         # since we generate 2*size uniform samples for box-muller transform
-        self._state += (size * 2)
+        self._state += size * 2
         return create_pdarray(rep_msg)
 
     def shuffle(self, x):
@@ -427,6 +428,79 @@ class Generator:
             },
         )
         self._state += size
+        return create_pdarray(rep_msg)
+
+    def poisson(self, lam=1.0, size=None):
+        r"""
+        Draw samples from a Poisson distribution.
+
+        The Poisson distribution is the limit of the binomial distribution for large N.
+
+        Parameters
+        ----------
+        lam: float or pdarray
+            Expected number of events occurring in a fixed-time interval, must be >= 0.
+            An array must have the same size as the size argument.
+        size: numeric_scalars, optional
+            Output shape. Default is None, in which case a single value is returned.
+
+        Notes
+        -----
+        The probability mass function for the Poisson distribution is:
+
+        .. math::
+           f(k; \lambda) = \frac{\lambda^k e^{-\lambda}}{k!}
+
+        For events with an expected separation :math:`\lambda`, the Poisson distribution
+        :math:`f(k; \lambda)` describes the probability of :math:`k` events occurring
+        within the observed interval :math:`\lambda`
+
+        Returns
+        -------
+        pdarray
+            Pdarray of ints (unless size=None, in which case a single int is returned).
+
+        Examples
+        --------
+        >>> rng = ak.random.default_rng()
+        >>> rng.poisson(lam=3, size=5)
+        array([5 3 2 2 3])  # random
+        """
+        if size is None:
+            # delegate to numpy when return size is 1
+            return self._np_generator.poisson(lam, size)
+
+        if _val_isinstance_of_union(lam, numeric_scalars):
+            is_single_lambda = True
+            if not _val_isinstance_of_union(lam, float_scalars):
+                lam = float(lam)
+            if lam < 0:
+                raise TypeError("lambda must be >=0")
+        elif isinstance(lam, pdarray):
+            is_single_lambda = False
+            if size != lam.size:
+                raise TypeError("array of lambdas must have same size as return size")
+            if lam.dtype != akfloat64:
+                from arkouda.numeric import cast as akcast
+
+                lam = akcast(lam, akfloat64)
+            if (lam < 0).any():
+                raise TypeError("all lambdas must be >=0")
+        else:
+            raise TypeError("poisson only accepts a pdarray or float scalar for lam")
+
+        rep_msg = generic_msg(
+            cmd="poissonGenerator",
+            args={
+                "name": self._name_dict[akfloat64],
+                "lam": lam,
+                "is_single_lambda": is_single_lambda,
+                "size": size,
+                "state": self._state,
+            },
+        )
+        # we only generate one val using the generator in the symbol table
+        self._state += 1
         return create_pdarray(rep_msg)
 
     def uniform(self, low=0.0, high=1.0, size=None):

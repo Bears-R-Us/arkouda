@@ -24,10 +24,18 @@ def alternatingTF(n):
     atf[::2] = True
     return atf
 
+
 #  The following tuples support a simplification of the trigonometric
 #  and hyperbolic testing.
 
-TRIGONOMETRICS = ((np.sin, ak.sin), (np.cos, ak.cos), (np.tan, ak.tan), (np.arcsin, ak.arcsin), (np.arccos, ak.arccos), (np.arctan, ak.arctan))
+TRIGONOMETRICS = (
+    (np.sin, ak.sin),
+    (np.cos, ak.cos),
+    (np.tan, ak.tan),
+    (np.arcsin, ak.arcsin),
+    (np.arccos, ak.arccos),
+    (np.arctan, ak.arctan),
+)
 
 HYPERBOLICS = (
     (np.sinh, ak.sinh),
@@ -38,7 +46,13 @@ HYPERBOLICS = (
     (np.arctanh, ak.arctanh),
 )
 
-INFINITY_EDGE_CASES = ((np.arctan, ak.arctan), (np.sinh, ak.sinh), (np.cosh, ak.cosh), (np.arcsinh, ak.arcsinh), (np.arccosh, ak.arccosh))
+INFINITY_EDGE_CASES = (
+    (np.arctan, ak.arctan),
+    (np.sinh, ak.sinh),
+    (np.cosh, ak.cosh),
+    (np.arcsinh, ak.arcsinh),
+    (np.arccosh, ak.arccosh),
+)
 
 # as noted in serverConfig.json, only these types are supported
 
@@ -143,16 +157,28 @@ class TestNumeric:
 
         # Standard Normal
         assert not (ak.standard_normal(prob_size) == ak.standard_normal(prob_size)).all()
-        assert (ak.standard_normal(prob_size, seed=seed) == ak.standard_normal(prob_size, seed=seed)).all()
+        assert (
+            ak.standard_normal(prob_size, seed=seed) == ak.standard_normal(prob_size, seed=seed)
+        ).all()
 
         # Strings (uniformly distributed length)
-        assert not (ak.random_strings_uniform(1, 10, prob_size) == ak.random_strings_uniform(1, 10, prob_size)).all()
+        assert not (
+            ak.random_strings_uniform(1, 10, prob_size) == ak.random_strings_uniform(1, 10, prob_size)
+        ).all()
 
-        assert (ak.random_strings_uniform(1, 10, prob_size, seed=seed) == ak.random_strings_uniform(1, 10, prob_size, seed=seed)).all()
+        assert (
+            ak.random_strings_uniform(1, 10, prob_size, seed=seed)
+            == ak.random_strings_uniform(1, 10, prob_size, seed=seed)
+        ).all()
 
         # Strings (log-normally distributed length)
-        assert not (ak.random_strings_lognormal(2, 1, prob_size) == ak.random_strings_lognormal(2, 1, prob_size)).all()
-        assert (ak.random_strings_lognormal(2, 1, prob_size, seed=seed) == ak.random_strings_lognormal(2, 1, prob_size, seed=seed)).all()
+        assert not (
+            ak.random_strings_lognormal(2, 1, prob_size) == ak.random_strings_lognormal(2, 1, prob_size)
+        ).all()
+        assert (
+            ak.random_strings_lognormal(2, 1, prob_size, seed=seed)
+            == ak.random_strings_lognormal(2, 1, prob_size, seed=seed)
+        ).all()
 
     @pytest.mark.parametrize("cast_to", SUPPORTED_TYPES)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
@@ -271,7 +297,10 @@ class TestNumeric:
 
         assert np.allclose(np.abs(na), ak.abs(pda).to_ndarray())
 
-        assert ak.arange(5, 0, -1, dtype=num_type).to_list() == ak.abs(ak.arange(-5, 0, dtype=num_type)).to_list()
+        assert (
+            ak.arange(5, 0, -1, dtype=num_type).to_list()
+            == ak.abs(ak.arange(-5, 0, dtype=num_type)).to_list()
+        )
 
         with pytest.raises(TypeError):
             ak.abs(np.array([range(0, 10)]).astype(num_type))
@@ -310,7 +339,6 @@ class TestNumeric:
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_trig_and_hyp(self, num_type):
-
         for npfunc, akfunc in set(TRIGONOMETRICS + HYPERBOLICS):
             na = NP_TRIG_ARRAYS[num_type]
             pda = ak.array(na, dtype=num_type)
@@ -367,17 +395,26 @@ class TestNumeric:
         )
 
         assert np.allclose(
-            [(np.arctan2(na_num[i], na_denom[i]) if truth_np[i] else na_num[i] / na_denom[i]) for i in range(len(na_num))],
+            [
+                (np.arctan2(na_num[i], na_denom[i]) if truth_np[i] else na_num[i] / na_denom[i])
+                for i in range(len(na_num))
+            ],
             ak.arctan2(pda_num, pda_denom, where=truth_ak).to_ndarray(),
             equal_nan=True,
         )
         assert np.allclose(
-            [(np.arctan2(na_num[0], na_denom[i]) if truth_np[i] else na_num[0] / na_denom[i]) for i in range(len(na_denom))],
+            [
+                (np.arctan2(na_num[0], na_denom[i]) if truth_np[i] else na_num[0] / na_denom[i])
+                for i in range(len(na_denom))
+            ],
             ak.arctan2(pda_num[0], pda_denom, where=truth_ak).to_ndarray(),
             equal_nan=True,
         )
         assert np.allclose(
-            [(np.arctan2(na_num[i], na_denom[0]) if truth_np[i] else na_num[i] / na_denom[0]) for i in range(len(na_num))],
+            [
+                (np.arctan2(na_num[i], na_denom[0]) if truth_np[i] else na_num[i] / na_denom[0])
+                for i in range(len(na_num))
+            ],
             ak.arctan2(pda_num, pda_denom[0], where=truth_ak).to_ndarray(),
             equal_nan=True,
         )
@@ -612,7 +649,6 @@ class TestNumeric:
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("data_type", NUMERIC_TYPES)
     def test_median(self, prob_size, data_type):
-
         sample_e = np.random.permutation(prob_size).astype(data_type)
         pda_e = ak.array(sample_e)
         assert isclose(np.median(sample_e), ak.median(pda_e))
@@ -627,11 +663,9 @@ class TestNumeric:
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_count_nonzero(self, prob_size):
-
         # ints, floats
 
         for data_type in INT_FLOAT:
-
             sample = np.random.randint(20, size=prob_size).astype(data_type)
             pda = ak.array(sample)
             assert np.count_nonzero(sample) == ak.count_nonzero(pda)
