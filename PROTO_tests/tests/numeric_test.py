@@ -4,9 +4,9 @@ import arkouda as ak
 from arkouda.dtypes import npstr
 from math import isclose
 
-NUMERIC_TYPES = [ak.int64, ak.float64, ak.bool, ak.uint64]
+NUMERIC_TYPES = [ak.int64, ak.float64, ak.bool_, ak.uint64]
 NO_BOOL = [ak.int64, ak.float64, ak.uint64]
-NO_FLOAT = [ak.int64, ak.bool, ak.uint64]
+NO_FLOAT = [ak.int64, ak.bool_, ak.uint64]
 INT_FLOAT = [ak.int64, ak.float64]
 
 # There are many ways to create a vector of alternating values.
@@ -56,7 +56,7 @@ INFINITY_EDGE_CASES = (
 
 # as noted in serverConfig.json, only these types are supported
 
-SUPPORTED_TYPES = [ak.bool, ak.uint64, ak.int64, ak.bigint, ak.uint8, ak.float64]
+SUPPORTED_TYPES = [ak.bool_, ak.uint64, ak.int64, ak.bigint, ak.uint8, ak.float64]
 
 
 NP_TRIG_ARRAYS = {
@@ -67,7 +67,7 @@ NP_TRIG_ARRAYS = {
             np.array([np.nan, -np.inf, -0.0, 0.0, np.inf]),
         ]
     ),
-    ak.bool: alternate(True, False, 10),
+    ak.bool_: alternate(True, False, 10),
     ak.uint64: np.arange(2**64 - 10, 2**64, dtype=np.uint64),
 }
 
@@ -83,7 +83,7 @@ DENOM_ARCTAN2_ARRAYS = {
 }
 
 ROUNDTRIP_CAST = [
-    (ak.bool, ak.bool),
+    (ak.bool_, ak.bool_),
     (ak.int64, ak.int64),
     (ak.int64, ak.float64),
     (ak.int64, npstr),
@@ -189,12 +189,12 @@ class TestNumeric:
             ak.int64: ak.randint(-(2**48), 2**48, prob_size),
             ak.uint64: ak.randint(0, 2**48, prob_size, dtype=ak.uint64),
             ak.float64: ak.randint(0, 1, prob_size, dtype=ak.float64),
-            ak.bool: ak.randint(0, 2, prob_size, dtype=ak.bool),
+            ak.bool_: ak.randint(0, 2, prob_size, dtype=ak.bool_),
             ak.str_: ak.cast(ak.randint(0, 2**48, prob_size), "str"),
         }
 
         for t1, orig in arrays.items():
-            if (t1 == ak.float64 and cast_to == ak.bigint) or (t1 == ak.str_ and cast_to == ak.bool):
+            if (t1 == ak.float64 and cast_to == ak.bigint) or (t1 == ak.str_ and cast_to == ak.bool_):
                 # we don't support casting a float to a bigint
                 # we do support str to bool, but it's expected to contain "true/false" not numerics
                 continue
@@ -231,7 +231,7 @@ class TestNumeric:
                 ]
             )
             ans = np.array([1.1, 2.2, np.nan, np.nan, 5.5, 6.6e-6, 78.91e4, 6.0, np.nan])
-        elif num_type == ak.bool:
+        elif num_type == ak.bool_:
             strarr = ak.array(
                 [
                     "True",

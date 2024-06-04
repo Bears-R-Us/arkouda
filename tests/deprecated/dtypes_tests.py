@@ -136,7 +136,7 @@ class DtypesTest(ArkoudaTest):
             ak.dtypes.uint64,
             ak.dtypes.int64,
             ak.dtypes.float64,
-            ak.dtypes.bool,
+            ak.dtypes.bool_,
         ]
 
         for dt in dtype_list:
@@ -226,14 +226,25 @@ class DtypesTest(ArkoudaTest):
         )
         self.assertEqual(
             frozenset(
-                {"bool", "float", "float64", "int", "int64", "uint", "uint64", "uint8", "bigint", "str"}
+                {
+                    "bool_",
+                    "float",
+                    "float64",
+                    "int",
+                    "int64",
+                    "uint",
+                    "uint64",
+                    "uint8",
+                    "bigint",
+                    "str",
+                }
             ),
             ak.ARKOUDA_SUPPORTED_DTYPES,
         )
 
     def test_NumericDTypes(self):
         self.assertEqual(
-            frozenset(["bool", "float", "float64", "int", "int64", "uint64", "bigint"]),
+            frozenset(["bool", "bool_", "float", "float64", "int", "int64", "uint64", "bigint"]),
             dtypes.NumericDTypes,
         )
 

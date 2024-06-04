@@ -6,7 +6,7 @@ from arkouda.pdarrayclass import RegistrationError
 N = 100
 UNIQUE = N // 4
 
-DTYPES = [ak.int64, ak.uint64, ak.bool, ak.float64, ak.bigint, ak.str_]
+DTYPES = [ak.int64, ak.uint64, ak.bool_, ak.float64, ak.bigint, ak.str_]
 
 
 def clean_registry():
@@ -30,8 +30,8 @@ class TestRegistration:
             return ak.arange(size)
         elif dtype == ak.bigint:
             return ak.arange(size) + 2**200
-        elif dtype == ak.bool:
-            return ak.randint(0, 2, size, dtype=ak.bool)
+        elif dtype == ak.bool_:
+            return ak.randint(0, 2, size, dtype=ak.bool_)
         elif dtype == ak.float64:
             return ak.linspace(-2.5, 2.5, size)
         elif dtype == ak.str_:

@@ -6,7 +6,7 @@ import arkouda as ak
 
 OPS = ["in1d", "intersect1d", "union1d", "setxor1d", "setdiff1d"]
 INTEGRAL_TYPES = [ak.int64, ak.uint64, ak.bigint]
-NUMERIC_TYPES = [ak.int64, ak.uint64, ak.bigint, ak.bool]
+NUMERIC_TYPES = [ak.int64, ak.uint64, ak.bigint, ak.bool_]
 
 
 class TestSetOps:
@@ -38,7 +38,7 @@ class TestSetOps:
         elif dtype == ak.bigint:
             a = np.array([-1, 0, 1, 3]).astype(ak.uint64) + 2**200
             b = np.array([-1, 2, 2, 3]).astype(ak.uint64) + 2**200
-        elif dtype == ak.bool:
+        elif dtype == ak.bool_:
             a = np.array([True, False, False, True]).astype(dtype)
             b = np.array([True, True, False, False]).astype(dtype)
         else:
@@ -53,7 +53,7 @@ class TestSetOps:
         elif dtype1 == ak.bigint:
             a = np.array([-1, -3, 0, 1, 2, 3]).astype(ak.uint64) + 2**200
             c = np.array([-1, 0, 0, 7, 8, 3]).astype(ak.uint64) + 2**200
-        elif dtype1 == ak.bool:
+        elif dtype1 == ak.bool_:
             a = np.array([True, False, False, True, True])
             c = np.array([True, True, False, False, True])
         else:
@@ -65,7 +65,7 @@ class TestSetOps:
         elif dtype2 == ak.bigint:
             b = np.array([-1, -11, 0, 4, 5, 3]).astype(ak.uint64) + 2**200
             d = np.array([-1, -4, 0, 7, 8, 3]).astype(ak.uint64) + 2**200
-        elif dtype2 == ak.bool:
+        elif dtype2 == ak.bool_:
             b = np.array([True, True, False, False, True])
             d = np.array([True, True, False, False, True])
         else:
@@ -99,10 +99,10 @@ class TestSetOps:
         func = getattr(ak, op)
 
         # # bool is not supported by argsortMsg (only impacts single array case)
-        a, b = self.make_np_arrays(size, ak.bool)
+        a, b = self.make_np_arrays(size, ak.bool_)
         if op in ["in1d", "setdiff1d"]:
             with pytest.raises(RuntimeError):
-                func(ak.array(a, dtype=ak.bool), ak.array(b, dtype=ak.bool))
+                func(ak.array(a, dtype=ak.bool_), ak.array(b, dtype=ak.bool_))
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("op", OPS)

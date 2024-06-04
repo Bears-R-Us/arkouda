@@ -95,7 +95,7 @@ def make_multi_dtype_dict():
         "c_3": ak.arange(2**63 + 3, 2**63 + 7, dtype=ak.uint64),
         "c_4": ak.SegArray(ak.array([0, 5, 10, 10]), ak.arange(2**63, 2**63 + 15, dtype=ak.uint64)),
         "c_5": ak.array([False, True, False, False]),
-        "c_6": ak.SegArray(ak.array([0, 0, 5, 10]), ak.randint(0, 1, 15, dtype=ak.bool)),
+        "c_6": ak.SegArray(ak.array([0, 0, 5, 10]), ak.randint(0, 1, 15, dtype=ak.bool_)),
         "c_7": ak.array([-0.0, np.finfo(np.float64).min, np.nan, np.inf]),
         "c_8": ak.SegArray(
             ak.array([0, 9, 14, 14]),
@@ -1145,7 +1145,7 @@ class TestHDF5:
         with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/pda_test"
             a.to_hdf(file_name)
-            for size, dtype in [(15, ak.uint64), (150, ak.float64), (1000, ak.bool)]:
+            for size, dtype in [(15, ak.uint64), (150, ak.float64), (1000, ak.bool_)]:
                 b = ak.arange(size, dtype=dtype)
                 b.update_hdf(file_name)
                 data = ak.read_hdf(f"{file_name}*").popitem()[1]

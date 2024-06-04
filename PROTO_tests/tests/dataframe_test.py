@@ -1168,7 +1168,7 @@ class TestDataFrame:
                         )
 
     def test_memory_usage(self):
-        dtypes = [ak.int64, ak.float64, ak.bool]
+        dtypes = [ak.int64, ak.float64, ak.bool_]
         data = dict([(str(t), ak.ones(5000, dtype=ak.int64).astype(t)) for t in dtypes])
         df = ak.DataFrame(data)
         ak_memory_usage = df.memory_usage()
@@ -1313,7 +1313,7 @@ class TestDataFrame:
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_head_tail(self, size):
 
-        bool_col = ak.full(size, False, dtype=ak.bool)
+        bool_col = ak.full(size, False, dtype=ak.bool_)
         bool_col[::2] = True
 
         df = ak.DataFrame(

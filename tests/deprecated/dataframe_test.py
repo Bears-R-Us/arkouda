@@ -670,7 +670,7 @@ class DataFrameTest(ArkoudaTest):
         assert_series_equal(pd6, ak6.to_pandas())
 
     def test_memory_usage(self):
-        dtypes = [ak.int64, ak.float64, ak.bool]
+        dtypes = [ak.int64, ak.float64, ak.bool_]
         data = dict([(str(t), ak.ones(5000, dtype=ak.int64).astype(t)) for t in dtypes])
         df = ak.DataFrame(data)
         ak_memory_usage = df.memory_usage()

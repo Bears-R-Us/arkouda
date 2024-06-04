@@ -6,11 +6,11 @@ import pytest
 
 import arkouda as ak
 
-DTYPES = [ak.int64, ak.uint64, ak.bigint, ak.float64, ak.bool, ak.str_]
+DTYPES = [ak.int64, ak.uint64, ak.bigint, ak.float64, ak.bool_, ak.str_]
 NO_BOOL = [ak.int64, ak.uint64, ak.bigint, ak.float64, ak.str_]
-NO_STR = [ak.int64, ak.uint64, ak.bigint, ak.float64, ak.bool]
-NO_FLOAT = [ak.int64, ak.uint64, ak.bigint, ak.str_, ak.bool]
-NO_FLOAT_STR = [ak.int64, ak.uint64, ak.bigint, ak.bool]
+NO_STR = [ak.int64, ak.uint64, ak.bigint, ak.float64, ak.bool_]
+NO_FLOAT = [ak.int64, ak.uint64, ak.bigint, ak.str_, ak.bool_]
+NO_FLOAT_STR = [ak.int64, ak.uint64, ak.bigint, ak.bool_]
 SETOPS = ["intersect", "union", "setdiff", "setxor"]
 
 
@@ -28,7 +28,7 @@ class TestSegArray:
             alpha_num = list(ascii_letters + digits)
             np_codes = np.random.choice(alpha_num, size=[size, 2])
             vals = np.array(["".join(code) for code in np_codes])
-        elif dtype == ak.bool:
+        elif dtype == ak.bool_:
             vals = np.random.randint(0, 2, size, dtype=dtype)
         else:
             vals = None
@@ -51,7 +51,7 @@ class TestSegArray:
             alpha_num = list(ascii_letters + digits)
             np_codes = np.random.choice(alpha_num, size=[10, 2])
             vals = np.array(["".join(code) for code in np_codes])
-        elif dtype == ak.bool:
+        elif dtype == ak.bool_:
             vals = np.random.randint(0, 2, 10, dtype=dtype)
         else:
             vals = None
@@ -71,7 +71,7 @@ class TestSegArray:
             alpha_num = list(ascii_letters + digits)
             np_codes = np.random.choice(alpha_num, size=[10, 2])
             vals = np.array(["".join(code) for code in np_codes])
-        elif dtype == ak.bool:
+        elif dtype == ak.bool_:
             vals = np.random.randint(0, 2, 10, dtype=dtype)
         else:
             vals = None
@@ -79,7 +79,7 @@ class TestSegArray:
         return segs, vals
 
     def make_append_error_checks(self, dtype):
-        if dtype in [ak.int64, ak.uint64, ak.bigint, ak.bool]:
+        if dtype in [ak.int64, ak.uint64, ak.bigint, ak.bool_]:
             return self.make_concat_segarray(ak.float64)
         else:
             return self.make_concat_segarray(ak.int64)
@@ -96,7 +96,7 @@ class TestSegArray:
             alpha_num = list(ascii_letters + digits)
             np_codes = np.random.choice(alpha_num, size=[size, 2])
             vals = np.array(["".join(code) for code in np_codes])
-        elif dtype == ak.bool:
+        elif dtype == ak.bool_:
             vals = np.random.randint(0, 2, size, dtype=dtype)
         else:
             vals = None
@@ -108,7 +108,7 @@ class TestSegArray:
             return 99
         elif dtype == ak.bigint:
             return 99 + 2**200
-        elif dtype == ak.bool:
+        elif dtype == ak.bool_:
             return False
         elif dtype == ak.float64:
             return -3.14
@@ -125,7 +125,7 @@ class TestSegArray:
         elif dtype == ak.bigint:
             a = [2**200 + i for i in [1, 2, 1, 1, 3, 3, 5, 4, 6, 2]]
             b = [2**200 + i for i in [10, 11, 11, 12, 13, 10, 4, 6, 1, 12]]
-        elif dtype == ak.bool:
+        elif dtype == ak.bool_:
             a = [True, False, True, False, False]
             b = [False, False, True, False, True]
         elif dtype == ak.float64:
@@ -149,7 +149,7 @@ class TestSegArray:
                 b = [2**200 + x for x in b]
                 c = [2**200 + x for x in c]
                 d = [2**200 + x for x in d]
-        elif dtype == ak.bool:
+        elif dtype == ak.bool_:
             a = [True, False, True, True]
             b = [False, False, False]
             c = [True, True]
@@ -615,7 +615,7 @@ class TestSegArray:
             return 3 + 2**200
         elif dtype == ak.float64:
             return 3.14
-        elif dtype == ak.bool:
+        elif dtype == ak.bool_:
             return False
         elif dtype == ak.str_:
             return "a"
@@ -628,7 +628,7 @@ class TestSegArray:
             return [1 + 2**200, 3 + 2**200]
         elif dtype == ak.float64:
             return [3.14, 1.01]
-        elif dtype == ak.bool:
+        elif dtype == ak.bool_:
             return [False]
         elif dtype == ak.str_:
             return ["a", "abc"]

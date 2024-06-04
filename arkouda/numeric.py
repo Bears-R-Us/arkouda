@@ -131,10 +131,10 @@ def cast(
     >>> ak.cast(ak.arange(0,5), dt=ak.float64).dtype
     dtype('float64')
 
-    >>> ak.cast(ak.arange(0,5), dt=ak.bool)
+    >>> ak.cast(ak.arange(0,5), dt=ak.bool_)
     array([False, True, True, True, True])
 
-    >>> ak.cast(ak.linspace(0,4,5), dt=ak.bool)
+    >>> ak.cast(ak.linspace(0,4,5), dt=ak.bool_)
     array([False, True, True, True, True])
     """
     from arkouda.categorical import Categorical  # type: ignore
@@ -740,7 +740,7 @@ def cumsum(pda: pdarray) -> pdarray:
     array([3.1598310770203937, 5.4110385860243131, 9.1622479306453748,
            12.710615785506533, 13.945880905466208])
 
-    >>> ak.cumsum(ak.randint(0, 1, 5, dtype=ak.bool))
+    >>> ak.cumsum(ak.randint(0, 1, 5, dtype=ak.bool_))
     array([0, 1, 1, 2, 3])
     """
     repMsg = generic_msg(

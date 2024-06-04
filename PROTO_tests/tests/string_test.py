@@ -168,7 +168,7 @@ class TestString:
         inds = ak.arange(0, strings.size, 10)
         assert self.compare_strings(strings[inds].to_ndarray(), test_strings[inds.to_ndarray()])
         assert self.compare_strings(cat[inds].to_ndarray(), test_strings[inds.to_ndarray()])
-        logical = ak.zeros(strings.size, dtype=ak.bool)
+        logical = ak.zeros(strings.size, dtype=ak.bool_)
         logical[inds] = True
         assert self.compare_strings(strings[logical].to_ndarray(), test_strings[logical.to_ndarray()])
         # Indexing with a one-element pdarray (int) should return Strings array, not string scalar
@@ -178,7 +178,7 @@ class TestString:
         assert isinstance(result, ak.Strings) and (result.size == 1)
         assert result[0] == strings[i]
         # Logical indexing with all-False array should return empty Strings array
-        logicalSingleton = ak.zeros(strings.size, dtype=ak.bool)
+        logicalSingleton = ak.zeros(strings.size, dtype=ak.bool_)
         result = strings[logicalSingleton]
         assert isinstance(result, ak.Strings) and (result.size == 0)
         # Logical indexing with a single True should return one-element Strings array, not string scalar

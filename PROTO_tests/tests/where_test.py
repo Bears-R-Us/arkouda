@@ -146,7 +146,7 @@ class TestWhere:
 
     def test_dtypes(self):
         cond = (ak.arange(10) % 2) == 0
-        for dt in (ak.int64, ak.uint64, ak.float64, ak.bool):
+        for dt in (ak.int64, ak.uint64, ak.float64, ak.bool_):
             a = ak.ones(10, dtype=dt)
             b = ak.ones(10, dtype=dt)
             assert ak.where(cond, a, b).to_list() == a.to_list()

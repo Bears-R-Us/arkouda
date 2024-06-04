@@ -2,7 +2,7 @@ import numpy.random as np_random
 
 from arkouda.client import generic_msg
 from arkouda.dtypes import _val_isinstance_of_union
-from arkouda.dtypes import bool as akbool
+from arkouda.dtypes import bool_ as akbool
 from arkouda.dtypes import dtype as to_numpy_dtype
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import float_scalars
