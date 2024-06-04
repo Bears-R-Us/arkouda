@@ -281,12 +281,10 @@ class RandomTest(ArkoudaTest):
         sample = rng.poisson(lam=lam, size=num_samples)
         count_dict = Counter(sample.to_list())
 
-        # the sum of exp freq must be within 1e-08, so use the cdf to find out how many
-        # elements we need to ensure we're within that tolerance
-        tol = 1e-09
-        num_elems = 5
-        while (1 - sp_stats.poisson.cdf(num_elems, mu=lam)) > tol:
-            num_elems += 5
+        # the sum of exp freq and obs freq must be within 1e-08, so we use
+        # the isf (inverse survival function where survival function is 1-cdf) to
+        # find out how many elements we need to ensure we're within that tolerance
+        num_elems = int(sp_stats.poisson.isf(1e-09, mu=lam))
 
         obs_counts = np.array([0] * num_elems)
         for k, v in count_dict.items():
