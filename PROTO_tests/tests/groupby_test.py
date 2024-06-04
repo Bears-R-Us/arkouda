@@ -735,8 +735,11 @@ class TestGroupBy:
         # In both cases, broadcasting the unique values using the returned
         # indices should create the sorted/reordered array.
 
+        # keys should always be returned sorted if data is int64
+
         # sorted
 
+        if data_type == ak.int64 : assert isSorted(ak_TFF[0].to_ndarray())
         srange = np.arange(len(nda))
         assert np.all(srange == ak_TTF[1].to_ndarray())
         indices = ak_TTF[2]
@@ -745,6 +748,7 @@ class TestGroupBy:
         # unsorted
 
         aku = ak.unique(us_pda).to_ndarray()
+        if data_type == ak.int64 : assert isSorted(aku)
         reordering = ak_TFF[1]
         reordered = us_pda[reordering]
         indices = ak_TFF[2]
