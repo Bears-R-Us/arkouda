@@ -610,8 +610,8 @@ module RandMsg
         else {
             st.checkTable(lamStr);
             const lamArr = toSymEntry(getGenericTypedArrayEntry(lamStr, st),real).a;
-            // using nested coforall over locales and task so we know exactly how many generators we need
-            for loc in Locales do on loc {
+            // using nested coforalls over locales and task so we know exactly how many generators we need
+            coforall loc in Locales do on loc {
                 const generatorIdxOffset = here.id * nTasksPerLoc,
                     locSubDom = poissonArr.localSubdomain(),  // the chunk that this locale needs to handle
                     indicesPerTask = locSubDom.size / nTasksPerLoc;  // the number of elements each task needs to handle
