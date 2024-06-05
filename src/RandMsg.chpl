@@ -548,6 +548,20 @@ module RandMsg
     }
 
     proc poissonGeneratorMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+
+	// this is an idea
+	proc ziggurat (lam : real, ref rs : ? ) : int {
+		var L = exp(-lam);
+		var k = 0;
+		var p = 1.0;
+		do {
+			k += 1;
+			p = p * rs.next(0,1);
+		} while p > L;
+		return k;
+	}
+	// end of idea
+
         const pn = Reflection.getRoutineName(),
               name = msgArgs.getValueOf("name"),                                // generator name
               isSingleLam = msgArgs.get("is_single_lambda").getBoolValue(),     // boolean indicated if lambda is a single value or array
@@ -594,14 +608,7 @@ module RandMsg
                         stopIdx = if tid == nTasksPerLoc - 1 then locSubDom.size else (tid + 1) * indicesPerTask;  // the last task picks up the remainder of indices
                     var rs = new randomStream(real, taskSeed);
                     for i in startIdx..<stopIdx {
-                        var L = exp(-lam);
-                        var k = 0;
-                        var p = 1.0;
-
-                        do {
-                            k += 1;
-                            p = p * rs.next(0, 1);
-                        } while p > L;
+			var k = ziggurat (lam, rs);
                         poissonArr[locSubDom.low + i] = k - 1;
                     }
                 }
@@ -623,14 +630,7 @@ module RandMsg
                     var rs = new randomStream(real, taskSeed);
                     for i in startIdx..<stopIdx {
                         const lam = lamArr[locSubDom.low + i];
-                        var L = exp(-lam);
-                        var k = 0;
-                        var p = 1.0;
-
-                        do {
-                            k += 1;
-                            p = p * rs.next(0, 1);
-                        } while p > L;
+			var k = ziggurat (lam, rs);
                         poissonArr[locSubDom.low + i] = k - 1;
                     }
                 }
