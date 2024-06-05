@@ -7,6 +7,7 @@ from arkouda.scipy import chisquare as akchisquare
 
 INT_FLOAT = [ak.int64, ak.float64]
 
+
 class TestRandom:
     def test_integers(self):
 
@@ -58,67 +59,73 @@ class TestRandom:
         assert all(bounded_arr.to_ndarray() >= -5)
         assert all(bounded_arr.to_ndarray() < 5)
 
-    @pytest.mark.parametrize("data_type",INT_FLOAT)
-    def test_shuffle(self,data_type) :
+    @pytest.mark.parametrize("data_type", INT_FLOAT)
+    def test_shuffle(self, data_type):
 
         # ints are checked for equality; floats are checked for closeness
 
-        check = lambda a,b,t : (ak.sort(a)==ak.sort(b)).all() if t is ak.int64 else \
-                np.allclose(a.to_list(),b.to_list())
+        check = lambda a, b, t: (
+            (a == b).all() if t is ak.int64 else np.allclose(a.to_list(), b.to_list())
+        )
+
+        # verify all the same elements are in the shuffle as in the original
+
+        rng = ak.random.default_rng(18)
+        rnfunc = rng.integers if data_type is ak.int64 else rng.uniform
+        pda = rnfunc(-(2**32), 2**32, 10)
+        pda_copy = pda[:]
+        rng.shuffle(pda)
+
+        assert check(ak.sort(pda), ak.sort(pda_copy), data_type)
 
         # verify same seed gives reproducible arrays
 
         rng = ak.random.default_rng(18)
         rnfunc = rng.integers if data_type is ak.int64 else rng.uniform
-        pda = rnfunc(-(2**32),2**32,10)
-        pda_copy = pda[:]
-        rng.shuffle(pda)
+        pda_prime = rnfunc(-(2**32), 2**32, 10)
+        rng.shuffle(pda_prime)
 
-        assert check (ak.sort(pda),ak.sort(pda_copy),data_type)
+        assert check(pda, pda_prime, data_type)
+
+    @pytest.mark.parametrize("data_type", INT_FLOAT)
+    def test_permutation(self, data_type):
+
+        # ints are checked for equality; floats are checked for closeness
+
+        check = lambda a, b, t: (
+            (a == b).all() if t is ak.int64 else np.allclose(a.to_list(), b.to_list())
+        )
 
         # verify all the same elements are in the permutation as in the original
 
         rng = ak.random.default_rng(18)
-        rnfunc = rng.integers if data_type is ak.int64 else rng.uniform
-        pda_prime = rnfunc(-(2**32),2**32,10)
-        rng.shuffle(pda_prime)
-
-        assert check (pda,pda_prime,data_type)
-
-    @pytest.mark.parametrize("data_type",INT_FLOAT)
-    def test_permutation(self,data_type) :
-
-        # ints are checked for equality; floats are checked for closeness
-
-        check = lambda a,b,t : (ak.sort(a)==ak.sort(b)).all() if t is ak.int64 else \
-                np.allclose(a.to_list(),b.to_list())
-
-        rng = ak.random.default_rng(18)
         range_permute = rng.permutation(20)
-        assert (ak.arange(20) == ak.sort(range_permute)).all() # range is always int
+        assert (ak.arange(20) == ak.sort(range_permute)).all()  # range is always int
 
         # verify same seed gives reproducible arrays
 
         rng = ak.random.default_rng(18)
         rnfunc = rng.integers if data_type is ak.int64 else rng.uniform
-        pda = rnfunc(-(2**32),2**32,10)
+        pda = rnfunc(-(2**32), 2**32, 10)
         permuted = rng.permutation(pda)
-        assert check(ak.sort(pda),ak.sort(permuted),data_type)
+        assert check(ak.sort(pda), ak.sort(permuted), data_type)
+
+        # verify same seed gives reproducible permutations
 
         rng = ak.random.default_rng(18)
         same_seed_range_permute = rng.permutation(20)
-        assert check(range_permute,same_seed_range_permute,data_type)
+        assert check(range_permute, same_seed_range_permute, data_type)
 
-        # verify all the same elements are in permutation as in the original 
+        # verify all the same elements are in permutation as in the original
 
         rng = ak.random.default_rng(18)
         rnfunc = rng.integers if data_type is ak.int64 else rng.uniform
-        pda_p = rnfunc(-(2**32),2**32,10)
+        pda_p = rnfunc(-(2**32), 2**32, 10)
         permuted_p = rng.permutation(pda_p)
-        assert check(ak.sort(pda),ak.sort(permuted),data_type)
+        assert check(ak.sort(pda), ak.sort(permuted), data_type)
 
     def test_uniform(self):
-        
+
         # verify same seed gives different but reproducible arrays
 
         rng = ak.random.default_rng(18)
@@ -160,7 +167,7 @@ class TestRandom:
         # I think the keys should always be sorted but just in case
 
         if not ak.is_sorted(uk):
-           f_obs = f_obs[ak.argsort(uk)]
+            f_obs = f_obs[ak.argsort(uk)]
 
         f_exp = weights * num_samples
         _, pval = akchisquare(f_obs=f_obs, f_exp=f_exp)
@@ -222,7 +229,7 @@ class TestRandom:
                         choice_arrays.append(rng.choice(a, size, replace, p))
 
         # reset generator to ensure we get the same arrays
-    
+
         rng = ak.random.default_rng(seed)
 
         # second set of choices, which should be identical to the first
@@ -236,9 +243,9 @@ class TestRandom:
                         assert np.allclose(previous.to_list(), current.to_list())
 
     def test_normal(self):
-        
+
         # tests that normal produces same results from same seed
-        
+
         # intiialize rng
 
         rng = ak.random.default_rng(17)

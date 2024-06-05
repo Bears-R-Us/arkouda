@@ -19,7 +19,7 @@ def pytest_addoption(parser):
              "Defaults to 2. If Arkouda is not configured for multi_locale, 1 locale is used"
     )
     parser.addoption(
-        "--size", action="store", default="10**8",
+        "--size", action="store", default="10**4",
         help="Problem size: length of array to use for tests/benchmarks. For some cases, this will "
              "be multiplied by the number of locales."
     )
