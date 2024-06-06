@@ -52,7 +52,7 @@ def vstack(
 
     # establish the dtype of the output array
     if dtype is None:
-        dtype_ = np.common_type([a.dtype for a in tup])
+        dtype_ = np.common_type(*tuple([a.dtype for a in tup]))
     else:
         dtype_ = dtype
 
