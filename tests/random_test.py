@@ -1,3 +1,5 @@
+from collections import Counter
+
 import numpy as np
 from base_test import ArkoudaTest
 from context import arkouda as ak
@@ -130,31 +132,6 @@ class RandomTest(ArkoudaTest):
         self.assertTrue(all(bounded_arr.to_ndarray() >= -5))
         self.assertTrue(all(bounded_arr.to_ndarray() < 5))
 
-    def test_choice_hypothesis_testing(self):
-        # perform a weighted sample and use chisquare to test
-        # if the observed frequency matches the expected frequency
-
-        # I tested this many times without a set seed, but with no seed
-        # it's expected to fail one out of every ~20 runs given a pval limit of 0.05
-        rng = ak.random.default_rng(43)
-        num_samples = 10**4
-
-        weights = ak.array([0.25, 0.15, 0.20, 0.10, 0.30])
-        weighted_sample = rng.choice(ak.arange(5), size=num_samples, p=weights)
-
-        # count how many of each category we saw
-        uk, f_obs = ak.GroupBy(weighted_sample).size()
-
-        # I think the keys should always be sorted but just in case
-        if not ak.is_sorted(uk):
-            f_obs = f_obs[ak.argsort(uk)]
-
-        f_exp = weights * num_samples
-        _, pval = akchisquare(f_obs=f_obs, f_exp=f_exp)
-
-        # if pval <= 0.05, the difference from the expected distribution is significant
-        self.assertTrue(pval > 0.05)
-
     def test_choice(self):
         # verify without replacement works
         rng = ak.random.default_rng()
@@ -230,6 +207,47 @@ class RandomTest(ArkoudaTest):
             both_array,
         )
 
+    def test_poissson(self):
+        rng = ak.random.default_rng(17)
+        num_samples = 5
+        # scalar lambda
+        scal_lam = 2
+        scal_sample = rng.poisson(lam=scal_lam, size=num_samples).to_list()
+
+        # array lambda
+        arr_lam = ak.arange(5)
+        arr_sample = rng.poisson(lam=arr_lam, size=num_samples).to_list()
+
+        # reset rng with same seed and ensure we get same results
+        rng = ak.random.default_rng(17)
+        self.assertEqual(rng.poisson(lam=scal_lam, size=num_samples).to_list(), scal_sample)
+        self.assertEqual(rng.poisson(lam=arr_lam, size=num_samples).to_list(), arr_sample)
+
+    def test_choice_hypothesis_testing(self):
+        # perform a weighted sample and use chisquare to test
+        # if the observed frequency matches the expected frequency
+
+        # I tested this many times without a set seed, but with no seed
+        # it's expected to fail one out of every ~20 runs given a pval limit of 0.05
+        rng = ak.random.default_rng(43)
+        num_samples = 10**4
+
+        weights = ak.array([0.25, 0.15, 0.20, 0.10, 0.30])
+        weighted_sample = rng.choice(ak.arange(5), size=num_samples, p=weights)
+
+        # count how many of each category we saw
+        uk, f_obs = ak.GroupBy(weighted_sample).size()
+
+        # I think the keys should always be sorted but just in case
+        if not ak.is_sorted(uk):
+            f_obs = f_obs[ak.argsort(uk)]
+
+        f_exp = weights * num_samples
+        _, pval = akchisquare(f_obs=f_obs, f_exp=f_exp)
+
+        # if pval <= 0.05, the difference from the expected distribution is significant
+        self.assertTrue(pval > 0.05)
+
     def test_normal_hypothesis_testing(self):
         # I tested this many times without a set seed, but with no seed
         # it's expected to fail one out of every ~20 runs given a pval limit of 0.05.
@@ -252,6 +270,31 @@ class RandomTest(ArkoudaTest):
             sp_stats.norm, sample_list, known_params={"loc": mean, "scale": deviation}
         )
         self.assertTrue(good_fit_res.pvalue > 0.05)
+
+    def test_poisson_hypothesis_testing(self):
+        # I tested this many times without a set seed, but with no seed
+        # it's expected to fail one out of every ~20 runs given a pval limit of 0.05.
+        rng = ak.random.default_rng(43)
+        num_samples = 10**4
+        lam = rng.uniform(0, 10)
+
+        sample = rng.poisson(lam=lam, size=num_samples)
+        count_dict = Counter(sample.to_list())
+
+        # the sum of exp freq and obs freq must be within 1e-08, so we use
+        # the isf (inverse survival function where survival function is 1-cdf) to
+        # find out how many elements we need to ensure we're within that tolerance
+        num_elems = int(sp_stats.poisson.isf(1e-09, mu=lam))
+
+        obs_counts = np.array([0] * num_elems)
+        for k, v in count_dict.items():
+            obs_counts[k] = v
+
+        # use the probability mass function to get the probability of seeing each value
+        # and multiply by num_samples to get the expected counts
+        exp_counts = sp_stats.poisson.pmf(range(num_elems), mu=lam) * num_samples
+        _, pval = sp_stats.chisquare(f_obs=obs_counts, f_exp=exp_counts)
+        self.assertTrue(pval > 0.05)
 
     def test_legacy_randint(self):
         testArray = ak.random.randint(0, 10, 5)

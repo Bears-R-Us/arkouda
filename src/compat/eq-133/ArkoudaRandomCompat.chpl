@@ -26,6 +26,7 @@ module ArkoudaRandomCompat {
       return x[idx];
     }
   proc ref randomStream.next() do return this.getNext();
+  proc ref randomStream.next(min: eltType, max: eltType): eltType do return this.getNext(min, max);
 
   proc choiceUniform(ref stream, X: domain(?), size: ?sizeType, replace: bool) throws
   {
