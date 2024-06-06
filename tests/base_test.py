@@ -1,7 +1,6 @@
 import importlib
 import os
 import unittest
-import json
 
 from context import arkouda as ak
 
@@ -11,13 +10,6 @@ from server_util.test.server_test_util import (
     start_arkouda_server,
     stop_arkouda_server,
 )
-
-
-def get_server_max_array_dims():
-    try:
-        return json.load(open('serverConfig.json', 'r'))['max_array_dims']
-    except (ValueError, FileNotFoundError, TypeError, KeyError):
-        return 1
 
 
 """
