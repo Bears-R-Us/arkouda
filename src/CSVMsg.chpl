@@ -428,7 +428,7 @@ module CSVMsg {
     }
 
     use Regex;
-    record csvLine /*: readDeserializable*/{ // Re-add this when dropping support for 1.31
+    record csvLine: readDeserializable {
 
         type itemType;
         var item: itemType;
