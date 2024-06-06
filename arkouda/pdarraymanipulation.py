@@ -28,7 +28,7 @@ def vstack(
         The arrays to be stacked
     dtype : Optional[Union[type, str]], optional
         The data-type of the output array. If not provided, the output
-        array will be determined using `np.find_common_type` on the
+        array will be determined using `np.common_type` on the
         input arrays Defaults to None
     casting : {"no", "equiv", "safe", "same_kind", "unsafe"], optional
         Controls what kind of data casting may occur - currently unused
@@ -52,7 +52,7 @@ def vstack(
 
     # establish the dtype of the output array
     if dtype is None:
-        dtype_ = np.find_common_type([a.dtype for a in tup], [])
+        dtype_ = np.common_type([a.dtype for a in tup])
     else:
         dtype_ = dtype
 
