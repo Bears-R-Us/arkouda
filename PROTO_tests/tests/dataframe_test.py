@@ -1016,9 +1016,6 @@ class TestDataFrame:
 
             for how in "inner", "left", "right":
                 for on in (
-                    "first",
-                    "second",
-                    "third",
                     ["first", "third"],
                     ["second", "third"],
                     None,

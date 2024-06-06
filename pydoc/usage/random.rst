@@ -33,6 +33,10 @@ permutation
 ---------
 .. autofunction:: arkouda.random.Generator.permutation
 
+poisson
+---------
+.. autofunction:: arkouda.random.Generator.poisson
+
 shuffle
 ---------
 .. autofunction:: arkouda.random.Generator.shuffle
