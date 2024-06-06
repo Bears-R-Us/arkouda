@@ -127,7 +127,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chpl-version: ['1.31.0', '1.32.0']
+        chpl-version: ['1.32.0']
     container:
       image: chapel/chapel:${{matrix.chpl-version}}
     steps:
@@ -155,7 +155,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chpl-version: ['1.31.0', '1.32.0']
+        chpl-version: ['1.32.0']
     container:
       image: chapel/chapel:${{matrix.chpl-version}}
     steps:
