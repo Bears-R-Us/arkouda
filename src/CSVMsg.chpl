@@ -434,18 +434,20 @@ module CSVMsg {
         var item: itemType;
         const colIdx: int;
         const colDelim: string;
-        const r: regex(string);
+        var r: regex(string);
 
-        proc init(type itemType, colIdx: int, colDelim: string) {
+        proc init(type itemType, colIdx: int, colDelim: string) throws {
             this.itemType = itemType;
             this.colIdx = colIdx;
             this.colDelim = colDelim;
-            this.r = try! new regex("[\n"+this.colDelim+"]");
+            init this;
+            if this.itemType == string then
+                this.r = new regex("[\n"+this.colDelim+"]");
         }
 
         proc ref deserialize(reader: fileReader(?), ref deserializer) throws {
             // read the comma delimited items in a single line
-            for i in 0..<colIdx {
+            for 0..<colIdx {
                 reader.advanceThrough(this.colDelim:bytes);  // Skip over the columns we don't care about
             }
             if itemType == string then
