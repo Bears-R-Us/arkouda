@@ -1,6 +1,7 @@
 import importlib
 import os
 import unittest
+import json
 
 from context import arkouda as ak
 
@@ -10,6 +11,14 @@ from server_util.test.server_test_util import (
     start_arkouda_server,
     stop_arkouda_server,
 )
+
+
+def get_server_max_array_dims():
+    try:
+        return json.load(open('serverConfig.json', 'r'))['max_array_dims']
+    except (ValueError, FileNotFoundError, TypeError, KeyError):
+        return 1
+
 
 """
 ArkoudaTest defines the base Arkouda test logic for starting up the arkouda_server at the
@@ -28,6 +37,7 @@ class ArkoudaTest(unittest.TestCase):
     server = os.getenv("ARKOUDA_SERVER_HOST", "localhost")
     test_running_mode = TestRunningMode(os.getenv("ARKOUDA_RUNNING_MODE", "GLOBAL_SERVER"))
     timeout = int(os.getenv("ARKOUDA_CLIENT_TIMEOUT", 5))
+    ndim = get_server_max_array_dims()
 
     @classmethod
     def setUpClass(cls):
