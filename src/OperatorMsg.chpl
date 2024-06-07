@@ -18,7 +18,6 @@ module OperatorMsg
     use Message;
 
     use ArkoudaTimeCompat as Time;
-    use ArkoudaBigIntCompat;
     
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;

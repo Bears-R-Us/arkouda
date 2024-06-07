@@ -18,10 +18,8 @@ module IndexingMsg
     use FileIO;
     use List;
 
-    use ArkoudaBigIntCompat;
     use Map;
     use ArkoudaFileCompat;
-    use ArkoudaBigIntCompat;
     use ArkoudaRangeCompat;
     use ArkoudaIOCompat;
 

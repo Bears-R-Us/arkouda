@@ -14,7 +14,6 @@ module MsgProcessing
 
     use AryUtil;
 
-    use ArkoudaBigIntCompat;
     use ArkoudaTimeCompat as Time;
     use ArkoudaMathCompat;
 

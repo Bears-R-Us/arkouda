@@ -9,7 +9,6 @@ module BinOp
   use Message;
   use BitOps;
 
-  use ArkoudaBigIntCompat;
   use ArkoudaMathCompat;
 
   private config const logLevel = ServerConfig.logLevel;

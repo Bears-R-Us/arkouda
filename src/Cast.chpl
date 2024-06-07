@@ -8,7 +8,6 @@ module Cast {
   use CommAggregation;
   use ServerConfig;
 
-  use ArkoudaBigIntCompat;
   use ArkoudaMathCompat;
 
   private config const logLevel = ServerConfig.logLevel;
