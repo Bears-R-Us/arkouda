@@ -404,6 +404,7 @@ module CommAggregation {
     use CommAggregation;
     use BigInteger, GMP;
     use Math;
+    use OS.POSIX;
 
     proc bigint.serializedSize() {
       extern proc chpl_gmp_mpz_struct_sign_size(from: __mpz_struct) : mp_size_t;
