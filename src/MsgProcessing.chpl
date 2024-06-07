@@ -9,14 +9,12 @@ module MsgProcessing
     use Message;
     use BigInteger;
     use Math;
+    use Time;
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
-
     use AryUtil;
-
-    use ArkoudaTimeCompat as Time;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;

@@ -3,8 +3,7 @@ module CommAggregation {
   use UnorderedCopy;
   use CommPrimitives;
   use ChplConfig;
-
-  use ArkoudaPOSIXCompat;
+  use OS.POSIX;
 
   // TODO should tune these values at startup
   private param defaultBuffSize =
@@ -404,7 +403,6 @@ module CommAggregation {
     use CommPrimitives;
     use CommAggregation;
     use BigInteger, GMP;
-    use ArkoudaPOSIXCompat;
     use Math;
 
     proc bigint.serializedSize() {

@@ -17,8 +17,8 @@ module OperatorMsg
     use Logging;
     use Message;
 
-    use ArkoudaTimeCompat as Time;
-    
+    use Time;
+
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const omLogger = new Logger(logLevel, logChannel);

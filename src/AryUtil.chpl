@@ -11,8 +11,8 @@ module AryUtil
     use GenSymIO;
     use PrivateDist;
     use Communication;
+    use OS.POSIX;
 
-    use ArkoudaPOSIXCompat;
     use ArkoudaRandomCompat;
 
     use CommAggregation;

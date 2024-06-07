@@ -11,7 +11,7 @@ module MetricsMsg {
     use MemDiagnostics;
     use NumPyDType;
     use Map;
-    use ArkoudaTimeCompat as Time;
+    use Time;
 
     use ArkoudaIOCompat;
 

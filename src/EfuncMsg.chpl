@@ -2,8 +2,8 @@
 module EfuncMsg
 {
     use ServerConfig;
-    
-    use ArkoudaTimeCompat as Time;
+
+    use Time;
     use Math;
     use BitOps;
     use Reflection;

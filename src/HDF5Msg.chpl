@@ -6,7 +6,7 @@ module HDF5Msg {
     use PrivateDist;
     use Reflection;
     use Set;
-    use ArkoudaTimeCompat as Time;
+    use Time;
     use AryUtil;
 
     use CommAggregation;
