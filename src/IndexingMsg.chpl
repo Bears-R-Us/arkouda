@@ -17,6 +17,7 @@ module IndexingMsg
 
     use FileIO;
     use List;
+    use BigInteger;
 
     use Map;
     use ArkoudaFileCompat;

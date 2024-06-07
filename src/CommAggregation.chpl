@@ -406,7 +406,6 @@ module CommAggregation {
     use CommAggregation;
     use BigInteger, GMP;
     use ArkoudaPOSIXCompat;
-    use ArkoudaAggCompat;
     use ArkoudaMathCompat;
     use Math;
 

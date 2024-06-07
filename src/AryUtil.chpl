@@ -14,7 +14,6 @@ module AryUtil
 
     use ArkoudaPOSIXCompat;
     use ArkoudaCTypesCompat;
-    use ArkoudaBlockCompat;
     use ArkoudaRandomCompat;
 
     use CommAggregation;

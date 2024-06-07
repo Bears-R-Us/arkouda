@@ -11,8 +11,6 @@ module SegStringSort {
   use ServerConfig;
   use BlockDist;
 
-  use ArkoudaBlockCompat;
-
   private config const SSS_v = false;
   private const vv = SSS_v;
   private config const SSS_numTasks = here.maxTaskPar;

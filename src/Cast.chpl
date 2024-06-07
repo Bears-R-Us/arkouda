@@ -7,6 +7,7 @@ module Cast {
   use Logging;
   use CommAggregation;
   use ServerConfig;
+  use BigInteger;
 
   use ArkoudaMathCompat;
 

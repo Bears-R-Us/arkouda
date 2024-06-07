@@ -8,6 +8,7 @@ module BinOp
   use Logging;
   use Message;
   use BitOps;
+  use BigInteger;
 
   use ArkoudaMathCompat;
 
@@ -1366,12 +1367,12 @@ module BinOp
                   t = 0;
                 }
                 else {
-                  rightShiftEq(t, ri);
+                  t >>= ri;
                   t &= local_max_size;
                 }
               }
               else {
-                rightShiftEq(t, ri);
+                t >>= ri;
               }
             }
             visted = true;
@@ -1385,7 +1386,7 @@ module BinOp
               var modded_shift = if r.etype == int then ri % max_bits else ri % max_bits:uint;
               t <<= modded_shift;
               var shift_amt = if r.etype == int then max_bits - modded_shift else max_bits:uint - modded_shift;
-              rightShiftEq(bot_bits, shift_amt);
+              bot_bits >>= shift_amt;
               t += bot_bits;
               t &= local_max_size;
             }
@@ -1398,7 +1399,7 @@ module BinOp
             var topBits = la;
             forall (t, ri, tB) in zip(tmp, ra, topBits) with (var local_max_size = max_size) {
               var modded_shift = if r.etype == int then ri % max_bits else ri % max_bits:uint;
-              rightShiftEq(t, modded_shift);
+              t >>= modded_shift;
               var shift_amt = if r.etype == int then max_bits - modded_shift else max_bits:uint - modded_shift;
               tB <<= shift_amt;
               t += tB;
@@ -1612,7 +1613,7 @@ module BinOp
             }
             else {
               forall t in tmp with (var local_max_size = max_size) {
-                rightShiftEq(t, val);
+                t >>= val;
                 if has_max_bits {
                   t &= local_max_size;
                 }
@@ -1629,7 +1630,7 @@ module BinOp
             var shift_amt = if val.type == int then max_bits - modded_shift else max_bits:uint - modded_shift;
             forall (t, bot_bits) in zip(tmp, botBits) with (var local_val = modded_shift, var local_shift_amt = shift_amt, var local_max_size = max_size) {
               t <<= local_val;
-              rightShiftEq(bot_bits, local_shift_amt);
+              bot_bits >>= local_shift_amt;
               t += bot_bits;
               t &= local_max_size;
             }
@@ -1643,7 +1644,7 @@ module BinOp
             var modded_shift = if val.type == int then val % max_bits else val % max_bits:uint;
             var shift_amt = if val.type == int then max_bits - modded_shift else max_bits:uint - modded_shift;
             forall (t, tB) in zip(tmp, topBits) with (var local_val = modded_shift, var local_shift_amt = shift_amt, var local_max_size = max_size) {
-              rightShiftEq(t, local_val);
+              t >>= local_val;
               tB <<= local_shift_amt;
               t += tB;
               t &= local_max_size;
@@ -1872,12 +1873,12 @@ module BinOp
                   t = 0;
                 }
                 else {
-                  rightShiftEq(t, ri);
+                  t >>= ri;
                   t &= local_max_size;
                 }
               }
               else {
-                rightShiftEq(t, ri);
+                t >>= ri;
               }
             }
             visted = true;
@@ -1892,7 +1893,7 @@ module BinOp
               var modded_shift = if r.etype == int then ri % max_bits else ri % max_bits:uint;
               t <<= modded_shift;
               var shift_amt = if r.etype == int then max_bits - modded_shift else max_bits:uint - modded_shift;
-              rightShiftEq(bot_bits, shift_amt);
+              bot_bits >>= shift_amt;
               t += bot_bits;
               t &= local_max_size;
             }
@@ -1906,7 +1907,7 @@ module BinOp
             topBits = val;
             forall (t, ri, tB) in zip(tmp, ra, topBits) with (var local_max_size = max_size) {
               var modded_shift = if r.etype == int then ri % max_bits else ri % max_bits:uint;
-              rightShiftEq(t, modded_shift);
+              t >>= modded_shift;
               var shift_amt = if r.etype == int then max_bits - modded_shift else max_bits:uint - modded_shift;
               tB <<= shift_amt;
               t += tB;

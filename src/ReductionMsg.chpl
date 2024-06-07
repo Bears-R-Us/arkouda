@@ -21,7 +21,6 @@ module ReductionMsg
     use PrivateDist;
     use RadixSortLSD;
     use ArkoudaMathCompat;
-    use ArkoudaBlockCompat;
     use ArkoudaAryUtilCompat;
 
     private config const lBins = 2**25 * numLocales;

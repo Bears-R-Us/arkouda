@@ -7,7 +7,8 @@ module MsgProcessing
     use ServerErrors;
     use Logging;
     use Message;
-    
+    use BigInteger;
+
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
