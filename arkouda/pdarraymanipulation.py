@@ -3,6 +3,7 @@ from typeguard import typechecked
 
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
+from arkouda.dtypes import dtype as akdtype
 
 import numpy as np
 
@@ -54,7 +55,7 @@ def vstack(
     if dtype is None:
         dtype_ = np.common_type(*[np.empty(0, dtype=a.dtype) for a in tup])
     else:
-        dtype_ = dtype
+        dtype_ = akdtype(dtype)
 
     # cast the input arrays to the output dtype if necessary
     arrays = [a.astype(dtype_) if a.dtype != dtype_ else a for a in tup]
