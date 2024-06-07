@@ -14,10 +14,10 @@ module SegmentedMsg {
   use BigInteger;
   use Math;
   use SegmentedArray;
-
   use Map;
+  use CTypes;
+
   use ArkoudaRangeCompat;
-  use ArkoudaCTypesCompat;
   use ArkoudaIOCompat;
 
   private config const logLevel = ServerConfig.logLevel;

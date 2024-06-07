@@ -18,10 +18,9 @@ module ServerConfig
     use Math;
 
     use ArkoudaMathCompat;
-    private use ArkoudaCTypesCompat;
 
     import BigInteger.bigint;
-    
+
     enum Deployment {STANDARD,KUBERNETES}
 
     enum ObjType {
@@ -223,8 +222,6 @@ module ServerConfig
     const scLogger = new Logger(lLevel,lChannel);
    
     proc createConfig() {
-        use ArkoudaCTypesCompat;
-
         class LocaleConfig {
             const id: int;
             const name: string;
@@ -302,7 +299,7 @@ module ServerConfig
     proc getEnv(name: string, default=""): string throws {
         use OS.POSIX;
         var envBytes = getenv(name.localize().c_str());
-        var val = string.createCopyingBuffer(envBytes:c_string_ptr);
+        var val = string.createCopyingBuffer(envBytes:c_ptrConst(c_char));
         if envBytes == nil || val.isEmpty() { val = default; }
         return val;
     }
@@ -312,9 +309,9 @@ module ServerConfig
     chpl_comm_regMemHeapInfo if using a fixed heap, otherwise physical memory
     */ 
     proc getPhysicalMemHere() {
-        use ArkoudaMemDiagnosticsCompat, ArkoudaCTypesCompat;
-        extern proc chpl_comm_regMemHeapInfo(start: c_ptr(c_ptr_void), size: c_ptr(c_size_t)): void;
-        var unused: c_ptr_void;
+        use ArkoudaMemDiagnosticsCompat;
+        extern proc chpl_comm_regMemHeapInfo(start: c_ptr(c_ptr(void)), size: c_ptr(c_size_t)): void;
+        var unused: c_ptr(void);
         var heap_size: c_size_t;
         chpl_comm_regMemHeapInfo(c_ptrTo(unused), c_ptrTo(heap_size));
         if heap_size != 0 then
@@ -502,7 +499,7 @@ module ServerConfig
     }
 
     proc getEnvInt(name: string, default: int): int {
-      extern proc getenv(name) : c_string_ptr;
+      extern proc getenv(name) : c_ptrConst(c_char);
       var strval:string;
       try! strval = string.createCopyingBuffer(getenv(name.localize().c_str()));
       if strval.isEmpty() { return default; }

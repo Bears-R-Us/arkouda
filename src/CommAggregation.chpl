@@ -4,7 +4,6 @@ module CommAggregation {
   use CommPrimitives;
   use ChplConfig;
 
-  use ArkoudaCTypesCompat;
   use ArkoudaPOSIXCompat;
 
   // TODO should tune these values at startup

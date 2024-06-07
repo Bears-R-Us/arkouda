@@ -13,7 +13,6 @@ module AryUtil
     use Communication;
 
     use ArkoudaPOSIXCompat;
-    use ArkoudaCTypesCompat;
     use ArkoudaRandomCompat;
 
     use CommAggregation;
