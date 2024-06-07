@@ -7,7 +7,7 @@ module MemoryMgmt {
 
     use Logging;
     use ServerErrors;
-    use ArkoudaMemDiagnosticsCompat;
+    use MemDiagnostics;
 
     private config const logLevel = LogLevel.DEBUG;
     private config const logChannel = LogChannel.CONSOLE;
