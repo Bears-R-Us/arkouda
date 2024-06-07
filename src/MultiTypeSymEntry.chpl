@@ -9,7 +9,7 @@ module MultiTypeSymEntry
     use AryUtil;
 
     public use NumPyDType;
-    public use SymArrayDmapCompat;
+    public use SymArrayDmap;
     use ArkoudaSymEntryCompat;
     use ArkoudaRandomCompat;
 
@@ -489,5 +489,4 @@ module MultiTypeSymEntry
     proc tupShapeString(val: int, ndim: int): string {
         return tupShapeString([i in 1..ndim] val);
     }
-
 }

@@ -3,7 +3,7 @@ module ServerConfig
 {
     use ZMQ only;
     use HDF5.C_HDF5 only H5get_libversion;
-    use SymArrayDmapCompat only makeDistDom;
+    use SymArrayDmap only makeDistDomType;
 
     public use IO;
     public use ArkoudaIOCompat;
@@ -281,7 +281,7 @@ module ServerConfig
             numPUs = here.numPUs(),
             maxTaskPar = here.maxTaskPar,
             physicalMemory = getPhysicalMemHere(),
-            distributionType = (makeDistDom(10).type):string,
+            distributionType = makeDistDomType(1):string,
             LocaleConfigs = [loc in LocaleSpace] new owned LocaleConfig(loc),
             authenticate = authenticate,
             logLevel = logLevel,

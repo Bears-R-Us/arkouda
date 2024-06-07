@@ -19,7 +19,7 @@ module Unique
     //use HashedDist;
     use BlockDist;
 
-    use SymArrayDmapCompat;
+    use SymArrayDmap;
 
     use CommAggregation;
     use RadixSortLSD;
