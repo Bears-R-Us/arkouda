@@ -8,7 +8,6 @@ module MemoryMgmt {
     use Logging;
     use ServerErrors;
     use ArkoudaMemDiagnosticsCompat;
-    use ArkoudaMathCompat;
 
     private config const logLevel = LogLevel.DEBUG;
     private config const logChannel = LogChannel.CONSOLE;
@@ -119,7 +118,7 @@ module MemoryMgmt {
             }
         }
 
-        return (mathRound(availableMemoryPct/100 * memAvail)*1000):uint(64);
+        return (Math.round(availableMemoryPct/100 * memAvail)*1000):uint(64);
     }
     
     proc getTotalMemory() : uint(64) throws {

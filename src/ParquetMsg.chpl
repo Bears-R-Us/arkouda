@@ -18,7 +18,6 @@ module ParquetMsg {
   use SegmentedString;
 
   use ArkoudaIOCompat;
-  use ArkoudaMathCompat;
 
   enum CompressionType {
     NONE=0,

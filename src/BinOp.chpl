@@ -2,7 +2,7 @@
 module BinOp
 {
   use ServerConfig;
-  
+
   use MultiTypeSymbolTable;
   use MultiTypeSymEntry;
   use Logging;
@@ -10,7 +10,6 @@ module BinOp
   use BitOps;
   use BigInteger;
 
-  use ArkoudaMathCompat;
 
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
