@@ -1,5 +1,5 @@
 use IO;
-use ArkoudaCTypesCompat;
+use CTypes;
 
 require "../src/ArrowFunctions.h";
 require "../src/ArrowFunctions.o";
