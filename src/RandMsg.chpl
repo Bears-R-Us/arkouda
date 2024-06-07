@@ -560,6 +560,22 @@ module RandMsg
 		} while p > L;
 		return k;
 	}
+
+	proc setLocaleParameters (ref par : ?) : (int, domain(?), int) {
+             var generatorIdxOffset = here.id * here.maxTaskPar;
+             var locSubDom = par.localSubdomain();  // the chunk that this locale needs to handle
+             var indicesPerTask = locSubDom.size / here.maxTaskPar;  // the number of elements each task needs to handle
+             return (generatorIdxOffset, locSubDom, indicesPerTask) ;
+	}
+
+	proc setTaskParameters (tid : int, locSubDom : ?, generatorSeed : int, generatorIdxOffset : int, 
+				indicesPerTask : int, nTasksPerLoc : int ) : (int, int, int) {
+             var taskSeed = generatorSeed + generatorIdxOffset + tid;  // initial seed offset by other locales threads plus current thread id
+             var startIdx = tid * indicesPerTask;
+             var stopIdx = if tid == nTasksPerLoc - 1 then locSubDom.size else (tid + 1) * indicesPerTask;  // the last task picks up the remainder of indices
+	     return (taskSeed, startIdx, stopIdx) ;
+	}
+
 	// end of idea
 
         const pn = Reflection.getRoutineName(),
@@ -598,14 +614,10 @@ module RandMsg
             const lam = lamStr:real;
             // using nested coforalls over locales and tasks so we know how to generate taskSeed
             coforall loc in Locales do on loc {
-                const generatorIdxOffset = here.id * nTasksPerLoc,
-                    locSubDom = poissonArr.localSubdomain(),  // the chunk that this locale needs to handle
-                    indicesPerTask = locSubDom.size / nTasksPerLoc;  // the number of elements each task needs to handle
-
+		const (generatorIdxOffset, locSubDom, indicesPerTask) = setLocaleParameters( poissonArr ) ;
                 coforall tid in Tasks {
-                    const taskSeed = generatorSeed + generatorIdxOffset + tid,  // initial seed offset by other locales threads plus current thread id
-                        startIdx = tid * indicesPerTask,
-                        stopIdx = if tid == nTasksPerLoc - 1 then locSubDom.size else (tid + 1) * indicesPerTask;  // the last task picks up the remainder of indices
+		    const (taskSeed, startIdx, stopIdx) = setTaskParameters( tid, locSubDom, generatorSeed,
+		       						generatorIdxOffset, indicesPerTask, nTasksPerLoc );
                     var rs = new randomStream(real, taskSeed);
                     for i in startIdx..<stopIdx {
 			var k = ziggurat (lam, rs);
@@ -619,14 +631,10 @@ module RandMsg
             const lamArr = toSymEntry(getGenericTypedArrayEntry(lamStr, st),real).a;
             // using nested coforalls over locales and task so we know exactly how many generators we need
             coforall loc in Locales do on loc {
-                const generatorIdxOffset = here.id * nTasksPerLoc,
-                    locSubDom = poissonArr.localSubdomain(),  // the chunk that this locale needs to handle
-                    indicesPerTask = locSubDom.size / nTasksPerLoc;  // the number of elements each task needs to handle
-
+		const (generatorIdxOffset, locSubDom, indicesPerTask) = setLocaleParameters( poissonArr ) ;
                 coforall tid in Tasks {
-                    const taskSeed = generatorSeed + generatorIdxOffset + tid,
-                        startIdx = tid * indicesPerTask,
-                        stopIdx = if tid == nTasksPerLoc - 1 then locSubDom.size else (tid + 1) * indicesPerTask;  // the last task picks up the remainder of indices
+		    const (taskSeed, startIdx, stopIdx) = setTaskParameters( tid, locSubDom, generatorSeed,
+		       						generatorIdxOffset, indicesPerTask, nTasksPerLoc );
                     var rs = new randomStream(real, taskSeed);
                     for i in startIdx..<stopIdx {
                         const lam = lamArr[locSubDom.low + i];
