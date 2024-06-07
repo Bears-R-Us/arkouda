@@ -12,7 +12,6 @@ module TimeClassMsg {
     use ArkoudaTimeCompat as Time;
 
     use Map;
-    use ArkoudaMapCompat;
     use ArkoudaIOCompat;
 
     private config const logLevel = ServerConfig.logLevel;

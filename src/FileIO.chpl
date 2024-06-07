@@ -12,7 +12,6 @@ module FileIO {
     use Sort;
     use Map;
 
-    use ArkoudaFileCompat;
     use ArkoudaRangeCompat;
     use ArkoudaIOCompat;
 
@@ -229,7 +228,7 @@ module FileIO {
         var reader = fileIOReaderCompat(f);
         var header:bytes;
         if (binaryCheckCompat(reader)) {
-          reader.bytesRead(header, 8);
+          reader.readBytes(header, 8);
         } else {
           throw getErrorWithContext(
                      msg="File reader was not in binary mode",

@@ -7,18 +7,16 @@ module MultiTypeSymbolTable
     use ServerErrors;
     use Logging;
     use BigInteger;
-    
+
     use MultiTypeSymEntry;
     use IO;
 
     use Map;
     use ArkoudaRegexCompat;
-    use ArkoudaFileCompat;
-    use ArkoudaMapCompat;
     use ArkoudaIOCompat;
     use ArkoudaSymEntryCompat;
     use Registry;
-    
+
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const mtLogger = new Logger(logLevel, logChannel);

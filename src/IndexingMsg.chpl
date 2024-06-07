@@ -20,7 +20,6 @@ module IndexingMsg
     use BigInteger;
 
     use Map;
-    use ArkoudaFileCompat;
     use ArkoudaRangeCompat;
     use ArkoudaIOCompat;
 

@@ -2,7 +2,7 @@ module MetricsMsg {
     use ServerConfig;
     use Reflection;
     use ServerErrors;
-    use Logging;    
+    use Logging;
     use List;
     use IO;
     use MultiTypeSymbolTable;
@@ -13,7 +13,6 @@ module MetricsMsg {
     use Map;
     use ArkoudaTimeCompat as Time;
 
-    use ArkoudaMapCompat;
     use ArkoudaIOCompat;
 
     enum MetricCategory{ALL,NUM_REQUESTS,RESPONSE_TIME,AVG_RESPONSE_TIME,TOTAL_RESPONSE_TIME,

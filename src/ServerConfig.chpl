@@ -17,7 +17,6 @@ module ServerConfig
     import NumPyDType.DType;
     use Math;
 
-    use ArkoudaFileCompat;
     use ArkoudaMathCompat;
     private use ArkoudaCTypesCompat;
 

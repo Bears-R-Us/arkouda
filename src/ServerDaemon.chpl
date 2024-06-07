@@ -27,7 +27,6 @@ module ServerDaemon {
     use NumPyDType;
     use StatusMsg;
 
-    use ArkoudaFileCompat;
     use ArkoudaIOCompat;
 
     enum ServerDaemonType {DEFAULT,INTEGRATION,METRICS,STATUS}

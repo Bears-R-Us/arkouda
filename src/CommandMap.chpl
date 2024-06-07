@@ -2,7 +2,6 @@ module CommandMap {
   use Message;
   use MultiTypeSymbolTable;
 
-  use ArkoudaFileCompat;
   use ArkoudaIOCompat;
   use Map;
 

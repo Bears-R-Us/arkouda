@@ -8,7 +8,6 @@ module MemoryMgmt {
     use Logging;
     use ServerErrors;
     use ArkoudaMemDiagnosticsCompat;
-    use ArkoudaFileCompat;
     use ArkoudaMathCompat;
 
     private config const logLevel = LogLevel.DEBUG;

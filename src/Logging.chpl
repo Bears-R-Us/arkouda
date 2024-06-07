@@ -5,8 +5,7 @@ module Logging {
     use ServerErrors;
     use ArkoudaTimeCompat as Time;
 
-    import IO.{format, stdout, file};
-    use ArkoudaFileCompat;
+    import IO.{format, stdout, file, open, ioMode};
     use ArkoudaIOCompat;
 
     /*
@@ -61,7 +60,6 @@ module Logging {
         proc writeToFile(filePath : string, line : string) throws {
             var writer;
             if exists(filePath) {
-                use ArkoudaFileCompat;
                 var aFile = open(filePath, ioMode.rw);
                 writer = aFile.writer(region=aFile.size.., locking=false);
             } else {
