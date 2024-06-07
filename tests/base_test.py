@@ -29,7 +29,6 @@ class ArkoudaTest(unittest.TestCase):
     server = os.getenv("ARKOUDA_SERVER_HOST", "localhost")
     test_running_mode = TestRunningMode(os.getenv("ARKOUDA_RUNNING_MODE", "GLOBAL_SERVER"))
     timeout = int(os.getenv("ARKOUDA_CLIENT_TIMEOUT", 5))
-    ndim = get_server_max_array_dims()
 
     @classmethod
     def setUpClass(cls):
