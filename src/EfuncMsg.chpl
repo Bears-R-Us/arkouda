@@ -15,10 +15,7 @@ module EfuncMsg
     use ServerErrorStrings;
     private use SipHash;
     use UniqueMsg;
-    
     use AryUtil;
-
-    use ArkoudaSymEntryCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;

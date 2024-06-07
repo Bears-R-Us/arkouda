@@ -10,7 +10,6 @@ module MultiTypeSymEntry
 
     public use NumPyDType;
     public use SymArrayDmap;
-    use ArkoudaSymEntryCompat;
     use ArkoudaRandomCompat;
 
     private config const logLevel = ServerConfig.logLevel;
@@ -140,6 +139,24 @@ module MultiTypeSymEntry
         var ndim: int = 1; // answer to numpy ndim == 1-axis for now
         var shape: string = "[0]"; // answer to numpy shape
 
+        /*
+          Create a 1D GenSymEntry from an array element type and length
+        */
+        proc init(type etype, len: int = 0, ndim: int = 1) {
+            this.entryType = SymbolEntryType.TypedArraySymEntry;
+            assignableTypes.add(this.entryType);
+            this.dtype = whichDtype(etype);
+            this.itemsize = dtypeSize(this.dtype);
+            this.size = len;
+            this.ndim = ndim;
+            init this;
+            if len == 0 then
+              this.shape = "[0]";
+            else
+              this.shape = tupShapeString(1, ndim);
+        }
+
+
         // not sure yet how to implement numpy data() function
 
         override proc getSizeEstimate(): int {
@@ -215,18 +232,64 @@ module MultiTypeSymEntry
         var max_bits:int = -1;
 
         /*
-        This init takes an array whose type is defaultRectangular (convenience
-        function for creating a distributed array from a non-distributed one)
+          Create a SymEntry from a defaultRectangular array (when the server is
+          configured to create distributed arrays)
 
-        :arg a: array
-        :type a: [] ?etype
+          :arg a: array
+          :type a: [] ?etype
         */
-        proc init(a: [?D] ?etype) where MyDmap != Dmap.defaultRectangular && a.isDefaultRectangular() {
+        proc init(a: [?D] ?etype, max_bits=-1) where MyDmap != Dmap.defaultRectangular && a.isDefaultRectangular() {
             this.init(D.size, etype, D.rank);
             this.tupShape = D.shape;
             this.a = a;
             this.shape = tupShapeString(this.tupShape);
             this.ndim = D.rank;
+            this.max_bits = max_bits;
+        }
+
+        /*
+          Create a SymEntry from an array
+        */
+        proc init(in a: [?D] ?etype, max_bits=-1) {
+            super.init(etype, D.size);
+            this.entryType = SymbolEntryType.PrimitiveTypedArraySymEntry;
+            assignableTypes.add(this.entryType);
+
+            this.etype = etype;
+            this.dimensions = D.rank;
+            this.tupShape = D.shape;
+            this.a = a;
+            this.max_bits=max_bits;
+            init this;
+            this.shape = tupShapeString(this.tupShape);
+            this.ndim = this.tupShape.size;
+        }
+
+        /*
+          Create a SymEntry from a shape and element type
+
+          :args len: size of each dimension
+          :type len: int
+
+          :arg etype: type to be instantiated
+          :type etype: type
+        */
+        proc init(args: int ...?N, type etype) {
+            var len = 1;
+            for param i in 0..#N {
+                len *= args[i];
+            }
+            super.init(etype, len, N);
+            this.entryType = SymbolEntryType.PrimitiveTypedArraySymEntry;
+            assignableTypes.add(this.entryType);
+
+            this.etype = etype;
+            this.dimensions = N;
+            this.tupShape = args;
+            this.a = try! makeDistArray((...args), etype);
+            init this;
+            this.shape = tupShapeString(this.tupShape);
+            this.ndim = this.tupShape.size;
         }
 
         /*
@@ -323,6 +386,31 @@ module MultiTypeSymEntry
       var A = makeDistArray(a);
       return new shared SymEntry(A, max_bits=max_bits);
     }
+
+
+    // override proc SymEntry.serialize(writer, ref serializer) throws {
+    //   use Reflection;
+    //   var f = writer;
+    //   proc writeField(f, param i) throws {
+    //     if !isArray(getField(this, i)) {
+    //       f.write(getFieldName(this.type, i), " = ", getField(this, i):string);
+    //     } else {
+    //       f.write(getFieldName(this.type, i), " = ", formatAry(getField(this, i)));
+    //     }
+    //   }
+
+    //   super.serialize(f);
+    //   f.write(" {");
+    //   param nFields = numFields(this.type);
+    //   for param i in 0..nFields-2 {
+    //     writeField(f, i);
+    //     f.write(", ");
+    //   }
+    //   writeField(f, nFields-1);
+    //   f.write("}");
+    // }
+
+    // implements writeSerializable(SymEntry);
 
     /*
         Base class for any entry that consists of multiple SymEntries that have varying types.
