@@ -5,12 +5,12 @@ require "../src/ArrowFunctions.h";
 require "../src/ArrowFunctions.o";
 
 proc getVersionInfo() {
-  extern proc c_getVersionInfo(): c_string_ptr;
+  extern proc c_getVersionInfo(): c_ptrConst(c_char);
   extern proc strlen(str): c_int;
   extern proc c_free_string(ptr);
   var cVersionString = c_getVersionInfo();
   defer {
-    c_free_string(cVersionString: c_ptr_void);
+    c_free_string(cVersionString: c_ptr(void));
   }
   var ret: string;
   try {
