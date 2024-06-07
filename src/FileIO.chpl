@@ -12,7 +12,6 @@ module FileIO {
     use Sort;
     use Map;
 
-    use ArkoudaRangeCompat;
     use ArkoudaIOCompat;
 
     use ServerConfig, Logging, CommandMap;
@@ -215,7 +214,7 @@ module FileIO {
             //TODO: change this to throw
             halt("At least one domain must have stride 1");
         }
-        if !stridable(d1) && !stridable(d2) {
+        if d1.strides==strideKind.one && d2.strides==strideKind.one {
             return {low..high};
         } else {
             var stride = max(d1.stride, d2.stride);
