@@ -3,9 +3,9 @@ from __future__ import annotations
 import json
 from typing import List, Optional, Tuple, Union
 
-import numpy as np  # type: ignore
-import pandas as pd  # type: ignore
-from pandas._config import get_option  # type: ignore
+import numpy as np
+import pandas as pd
+from pandas._config import get_option
 from typeguard import typechecked
 
 import arkouda.dataframe
@@ -17,6 +17,7 @@ from arkouda.groupbyclass import GroupBy, groupable_element_type
 from arkouda.index import Index, MultiIndex
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import isnan, value_counts
+from arkouda.segarray import SegArray
 from arkouda.pdarrayclass import (
     RegistrationError,
     any,
@@ -100,7 +101,7 @@ class Series:
         an array of indices associated with the data array.
         If empty, it will default to a range of ints whose size match the size of the data.
         optional
-    data : Tuple, List, groupable_element_type
+    data : Tuple, List, groupable_element_type, Series, SegArray
         a 1D array. Must not be None.
 
     Raises
@@ -132,26 +133,35 @@ class Series:
     @typechecked
     def __init__(
         self,
-        data: Union[Tuple, List, groupable_element_type],
+        data: Union[Tuple, List, groupable_element_type, Series, SegArray],
         name=None,
         index: Optional[Union[pdarray, Strings, Tuple, List, Index]] = None,
     ):
         self.registered_name: Optional[str] = None
-        if isinstance(data, (tuple, list)) and len(data) == 2:
+        if index is None and isinstance(data, (tuple, list)) and len(data) == 2:
             # handles the previous `ar_tuple` case
             if not isinstance(data[0], (pdarray, Index, Strings, Categorical, list, tuple)):
                 raise TypeError("indices must be a pdarray, Strings, Categorical, List, or Tuple")
-            if not isinstance(data[1], (pdarray, Strings, Categorical)):
-                raise TypeError("values must be a pdarray, Strings, or Categorical")
-            self.values = data[1]
+            if not isinstance(data[1], (pdarray, Strings, Categorical, Series, SegArray)):
+                raise TypeError("values must be a pdarray, Strings, SegArray, or Categorical")
+            self.values = data[1] if not isinstance(data[1], Series) else data[1].values
             self.index = Index.factory(index) if index else Index.factory(data[0])
+        elif isinstance(data, tuple) and len(data) != 2:
+            raise TypeError("Series initialization requries a tuple of (index, values)")
         else:
             # When only 1 positional argument it will be treated as data and not index
-            self.values = array(data) if not isinstance(data, (Strings, Categorical)) else data
+            if isinstance(data, Series):
+                self.values = data.values
+            elif isinstance(data, List):
+                self.values = array(data)
+            else:
+                self.values = data
             self.index = Index.factory(index) if index is not None else Index(arange(self.values.size))
 
         if self.index.size != self.values.size:
-            raise ValueError("Index size does not match data size")
+            raise ValueError(
+                "Index size does not match data size: {} != {}".format(self.index.size, self.values.size)
+            )
         self.name = name
         self.size = self.index.size
 
@@ -189,8 +199,8 @@ class Series:
         )
 
     def validate_key(
-        self, key: Union[Series, pdarray, Strings, Categorical, List, supported_scalars]
-    ) -> Union[pdarray, Strings, Categorical, supported_scalars]:
+        self, key: Union[Series, pdarray, Strings, Categorical, List, supported_scalars, SegArray]
+    ) -> Union[pdarray, Strings, Categorical, supported_scalars, SegArray]:
         """
         Validates type requirements for keys when reading or writing the Series.
         Also converts list and tuple arguments into pdarrays.
@@ -223,11 +233,11 @@ class Series:
             # @TODO align the series indexes
             return self.validate_key(key.values)
 
-        if is_supported_scalar(key):  # type: ignore
+        if is_supported_scalar(key):
             if dtype(type(key)) != self.index.dtype:
                 raise TypeError(
-                    "Unexpected key type. Received {} but expected {}".format(
-                        dtype(type(key)), self.index.dtype
+                    "Unexpected key type. Received {} but expected {}. key: {}".format(
+                        dtype(type(key)), self.index.dtype, key
                     )
                 )
         elif isinstance(key, Strings):
@@ -252,15 +262,26 @@ class Series:
                         dtype(type(key)), self.index.dtype
                     )
                 )
-
+        elif isinstance(key, slice):
+            start = key.start if key.start is not None else 0
+            stop = key.stop if key.stop is not None else self.size
+            stride = key.step if key.step is not None else 1
+            if start < 0:
+                raise IndexError("Slice start must be non-negative")
+            if stop > self.size:
+                raise IndexError("Slice stop must be less than or equal to the size of the Series")
+            if start > stop:
+                raise IndexError("Slice start must be less than or equal to the stop")
+            key = arange(start, stop, stride)
         else:
             raise TypeError(
-                "Series [] only supports indexing by scalars, lists of scalars, and arrays of scalars."
+                "Series [] only supports indexing by scalars, lists of scalars, "
+                "and arrays of scalars. Received {}".format(type(key))
             )
         return key
 
     @typechecked
-    def __getitem__(self, _key: Union[supported_scalars, pdarray, Strings, List]):
+    def __getitem__(self, _key: Union[supported_scalars, pdarray, Strings, List, Series]):
         """
         Gets values from Series.
 
@@ -313,7 +334,7 @@ class Series:
         """
         if isinstance(val, list):
             val = array(val)
-        if is_supported_scalar(val):  # type: ignore
+        if is_supported_scalar(val):
             if dtype(type(val)) != self.values.dtype:
                 raise TypeError(
                     "Unexpected value type. Received {} but expected {}".format(
@@ -361,11 +382,11 @@ class Series:
             raise ValueError("Cannot set with multiple keys for Series with repeated labels.")
 
         indices = None
-        if is_supported_scalar(key):  # type: ignore
+        if is_supported_scalar(key):
             indices = self.index == key
         else:
-            indices = in1d(self.index.values, key)  # type: ignore
-        tf, counts = GroupBy(indices).count()
+            indices = in1d(self.index.values, key)
+        tf, counts = GroupBy(indices).size()
         update_count = counts[1] if len(counts) == 2 else 0
         if update_count == 0:
             # adding a new entry
@@ -375,12 +396,12 @@ class Series:
             self.index = Index.factory(new_index_values)
             self.values = concatenate([self.values, array([val])])
             return
-        if is_supported_scalar(val):  # type: ignore
+        if is_supported_scalar(val):
             self.values[indices] = val
             return
         else:
-            if val.size == 1 and is_supported_scalar(key):  # type: ignore
-                self.values[indices] = val[0]  # type: ignore
+            if val.size == 1 and is_supported_scalar(key):
+                self.values[indices] = val[0]
                 return
             if update_count != val.size:
                 raise ValueError(
@@ -446,8 +467,15 @@ class Series:
         """
         Returns whether the Series has any labels that appear more than once
         """
-        tf, counts = GroupBy(self.index.values).count()
+        tf, counts = GroupBy(self.index.values).size()
         return counts.size != self.index.size
+
+    def to_ndarray(self):
+        return self.values.to_ndarray()
+
+    @property
+    def ndim(self):
+        return 1
 
     @property
     def loc(self) -> _LocIndexer:
@@ -504,6 +532,10 @@ class Series:
     def shape(self):
         # mimic the pandas return of series shape property
         return (self.values.size,)
+
+    @property
+    def dtype(self):
+        return self.values.dtype
 
     @typechecked
     def isin(self, lst: Union[pdarray, Strings, List]) -> Series:
@@ -631,7 +663,7 @@ class Series:
 
     def _reindex(self, idx):
         if isinstance(self.index, MultiIndex):
-            new_index = MultiIndex(self.index[idx].values, name=self.index.name, names=self.index.names)
+            new_index = MultiIndex(self.index[idx].levels, name=self.index.name, names=self.index.names)
         elif isinstance(self.index, Index):
             new_index = Index(self.index[idx], name=self.index.name)
         else:
@@ -706,12 +738,15 @@ class Series:
 
         idx = self.index.to_pandas()
         val = convert_if_categorical(self.values)
+        # pandas errors when ndarray formatted like a segarray is
+        # passed into Series but works when it's just a list of lists
+        vals_on_client = val.to_list() if isinstance(val, SegArray) else val.to_ndarray()
 
         if isinstance(self.name, str):
             name = copy.copy(self.name)
-            return pd.Series(val.to_ndarray(), index=idx, name=name)
+            return pd.Series(vals_on_client, index=idx, name=name)
         else:
-            return pd.Series(val.to_ndarray(), index=idx)
+            return pd.Series(vals_on_client, index=idx)
 
     def to_markdown(self, mode="wt", index=True, tablefmt="grid", storage_options=None, **kwargs):
         r"""
@@ -1035,11 +1070,11 @@ class Series:
         data = json.loads(repMsg)
         val_comps = data["value"].split("+|+")
         if val_comps[0] == Categorical.objType.upper():
-            values = Categorical.from_return_msg(val_comps[1])  # type: ignore
+            values = Categorical.from_return_msg(val_comps[1])
         elif val_comps[0] == Strings.objType.upper():
             values = Strings.from_return_msg(val_comps[1])  # type: ignore
         else:
-            values = create_pdarray(val_comps[1])  # type: ignore
+            values = create_pdarray(val_comps[1])
 
         index = Index.from_return_msg(data["index"])
 
@@ -1064,6 +1099,7 @@ class Series:
         axis: int = 0,
         index_labels: Union[List[str], None] = None,
         value_labels: Union[List[str], None] = None,
+        ordered=False,
     ) -> Union[arkouda.dataframe.DataFrame, Series]:
         """Concatenate in arkouda a list of arkouda Series or grouped arkouda arrays horizontally or
         vertically. If a list of grouped arkouda arrays is passed they are converted to a series. Each
@@ -1078,6 +1114,9 @@ class Series:
         axis  :  Whether or not to do a verticle (axis=0) or horizontal (axis=1) concatenation
         index_labels:  column names(s) to label the index.
         value_labels:  column names to label values of each series.
+        ordered:  If True (default), the arrays will be appended in the order given. If False, array
+                    data may be interleaved in blocks, which can greatly improve performance but
+                    results in non-deterministic ordering of elements.
 
         Returns
         -------
@@ -1552,7 +1591,7 @@ class Series:
                 cols.append(pd.Series(data=col.values.to_ndarray(), index=idx))
             retval = pd.concat(cols, axis=1)
             if labels is not None:
-                retval.columns = labels
+                retval.columns = pd.Index(labels)
         else:
             retval = pd.concat([s.to_pandas() for s in arrays])
 
@@ -1596,8 +1635,20 @@ class _iLocIndexer:
         elif isinstance(key, int):
             if key >= self.series.size:
                 raise IndexError("{} cannot enlarge its target object.".format(self.name))
+        elif isinstance(key, slice):
+            start = key.start if key.start is not None else 0
+            stop = key.stop if key.stop is not None else self.series.size
+            stride = key.step if key.step is not None else 1
+            if start < 0:
+                raise IndexError("Slice start must be non-negative")
+            if stop > self.series.size:
+                raise IndexError("Slice stop must be less than or equal to the size of the Series")
+            if start > stop:
+                raise IndexError("Slice start must be less than or equal to the stop")
+            key = arange(start, stop, stride)
         else:
             raise TypeError(".{} requires integer keys".format(self.name))
+
         return key
 
     def validate_val(self, val) -> Union[pdarray, supported_scalars]:
@@ -1605,7 +1656,7 @@ class _iLocIndexer:
 
     def __getitem__(self, key):
         key = self.validate_key(key)
-        if is_supported_scalar(key):  # type: ignore
+        if is_supported_scalar(key):
             key = array([key])
         return Series(index=self.series.index[key], data=self.series.values[key])
 
@@ -1613,11 +1664,11 @@ class _iLocIndexer:
         key = self.validate_key(key)
         val = self.validate_val(val)
 
-        if is_supported_scalar(val):  # type: ignore
+        if is_supported_scalar(val):
             self.series.values[key] = val
             return
         else:
-            if is_supported_scalar(key):  # type: ignore
+            if is_supported_scalar(key):
                 self.series.values[key] = val
                 return
             if key.dtype == int64 and len(val) != len(key):

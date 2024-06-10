@@ -1,7 +1,7 @@
 module SegStringSort {
   use SegmentedString;
   use Sort;
-  use ArkoudaTimeCompat as Time;
+  use Time;
   use IO;
   use CTypes;
   use CommAggregation;
@@ -10,8 +10,6 @@ module SegStringSort {
   use Logging;
   use ServerConfig;
   use BlockDist;
-
-  use ArkoudaBlockCompat;
 
   private config const SSS_v = false;
   private const vv = SSS_v;

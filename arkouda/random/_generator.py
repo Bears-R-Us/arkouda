@@ -5,8 +5,9 @@ from arkouda.dtypes import _val_isinstance_of_union
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import dtype as to_numpy_dtype
 from arkouda.dtypes import float64 as akfloat64
+from arkouda.dtypes import float_scalars
 from arkouda.dtypes import int64 as akint64
-from arkouda.dtypes import int_scalars
+from arkouda.dtypes import int_scalars, numeric_scalars
 from arkouda.dtypes import uint64 as akuint64
 from arkouda.pdarrayclass import create_pdarray, pdarray
 
@@ -54,6 +55,88 @@ class Generator:
         # be sure to update if we add support for non-pcg generators
         _str += "(PCG64)"
         return _str
+
+    def choice(self, a, size=None, replace=True, p=None):
+        """
+        Generates a randomly sample from a.
+
+        Parameters
+        ----------
+        a: int or pdarray
+            If a is an integer, randomly sample from ak.arange(a).
+            If a is a pdarray, randomly sample from a.
+
+        size: int, optional
+            Number of elements to be sampled
+
+        replace: bool, optional
+            If True, sample with replacement. Otherwise sample without replacement.
+            Defaults to True
+
+        p: pdarray, optional
+            p is the probabilities or weights associated with each element of a
+
+        Returns
+        -------
+        pdarray, numeric_scalar
+            A pdarray containing the sampled values or a single random value if size not provided.
+        """
+        if size is None:
+            ret_scalar = True
+            size = 1
+        else:
+            ret_scalar = False
+
+        from arkouda.numeric import cast as akcast
+
+        if _val_isinstance_of_union(a, int_scalars):
+            is_domain = True
+            dtype = to_numpy_dtype(akint64)
+            pop_size = a
+        elif isinstance(a, pdarray):
+            is_domain = False
+            dtype = to_numpy_dtype(a.dtype)
+            pop_size = a.size
+        else:
+            raise TypeError("choice only accepts a pdarray or int scalar.")
+
+        if not replace and size > pop_size:
+            raise ValueError("Cannot take a larger sample than population when replace is False")
+
+        has_weights = p is not None
+        if has_weights:
+            if not isinstance(p, pdarray):
+                raise TypeError("weights must be a pdarray")
+            if p.dtype != akfloat64:
+                p = akcast(p, akfloat64)
+        else:
+            p = ""
+
+        # weighted sample requires float and non-weighted uses int
+        name = self._name_dict[to_numpy_dtype(akfloat64 if has_weights else akint64)]
+
+        rep_msg = generic_msg(
+            cmd="choice",
+            args={
+                "gName": name,
+                "aName": a,
+                "wName": p,
+                "numSamples": size,
+                "replace": replace,
+                "hasWeights": has_weights,
+                "isDom": is_domain,
+                "popSize": pop_size,
+                "dtype": dtype,
+                "state": self._state,
+            },
+        )
+        # for the non-weighted domain case we pull pop_size numbers from the generator.
+        # for other cases we may be more than the numbers drawn, but that's okay. The important
+        # thing is not repeating any positions in the state.
+        self._state += pop_size
+
+        pda = create_pdarray(rep_msg)
+        return pda if not ret_scalar else pda[0]
 
     def integers(self, low, high=None, size=None, dtype=akint64, endpoint=False):
         """
@@ -127,6 +210,55 @@ class Generator:
         self._state += size
         return create_pdarray(rep_msg)
 
+    def normal(self, loc=0.0, scale=1.0, size=None):
+        r"""
+        Draw samples from a normal (Gaussian) distribution
+
+        Parameters
+        ----------
+        loc: float or pdarray of floats, optional
+            Mean of the distribution. Default of 0.
+
+        scale: float or pdarray of floats, optional
+            Standard deviation of the distribution. Must be non-negative. Default of 1.
+
+        size: numeric_scalars, optional
+            Output shape. Default is None, in which case a single value is returned.
+
+        Notes
+        -----
+        The probability density for the Gaussian distribution is:
+
+        .. math::
+           p(x) = \frac{1}{\sqrt{2\pi \sigma^2}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}
+
+        where :math:`\mu` is the mean and :math:`\sigma` the standard deviation.
+        The square of the standard deviation, :math:`\sigma^2`, is called the variance.
+
+        Returns
+        -------
+        pdarray
+            Pdarray of floats (unless size=None, in which case a single float is returned).
+
+        See Also
+        --------
+        standard_normal
+        uniform
+
+        Examples
+        --------
+        >>> ak.random.default_rng(17).normal(3, 2.5, 10)
+        array([2.3673425816523577 4.0532529435624589 2.0598322696795694])
+        """
+        if size is None:
+            # delegate to numpy when return size is 1
+            return self._np_generator.standard_normal(loc, scale)
+
+        if (scale < 0).any() if isinstance(scale, pdarray) else scale < 0:
+            raise TypeError("scale must be non-negative.")
+
+        return loc + scale * self.standard_normal(size=size)
+
     def random(self, size=None):
         """
         Return random floats in the half-open interval [0.0, 1.0).
@@ -179,7 +311,7 @@ class Generator:
         return create_pdarray(rep_msg)
 
     def standard_normal(self, size=None):
-        """
+        r"""
         Draw samples from a standard Normal distribution (mean=0, stdev=1).
 
         Parameters
@@ -194,10 +326,14 @@ class Generator:
 
         Notes
         -----
-        For random samples from :math:`N(\\mu, \\sigma^2)`, use:
+        For random samples from :math:`N(\mu, \sigma^2)`, either call `normal` or do:
 
-        ``(sigma * standard_normal(size)) + mu``
+        .. math::
+            (\sigma \cdot \texttt{standard_normal}(size)) + \mu
 
+        See Also
+        --------
+        normal
 
         Examples
         --------
@@ -207,12 +343,20 @@ class Generator:
         >>> rng.standard_normal(3)
         array([0.8797352989638163, -0.7085325853376141, 0.021728052940979934])  # random
         """
-        from arkouda.random._legacy import standard_normal
-
         if size is None:
             # delegate to numpy when return size is 1
             return self._np_generator.standard_normal()
-        return standard_normal(size=size, seed=self._seed)
+        rep_msg = generic_msg(
+            cmd="standardNormalGenerator",
+            args={
+                "name": self._name_dict[akfloat64],
+                "size": size,
+                "state": self._state,
+            },
+        )
+        # since we generate 2*size uniform samples for box-muller transform
+        self._state += size * 2
+        return create_pdarray(rep_msg)
 
     def shuffle(self, x):
         """
@@ -267,7 +411,7 @@ class Generator:
             dtype = to_numpy_dtype(x.dtype)
             size = x.size
         else:
-            raise TypeError("permtation only accepts a pdarray or int scalar.")
+            raise TypeError("permutation only accepts a pdarray or int scalar.")
 
         # we have to use the int version since we permute the domain
         name = self._name_dict[to_numpy_dtype(akint64)]
@@ -284,6 +428,79 @@ class Generator:
             },
         )
         self._state += size
+        return create_pdarray(rep_msg)
+
+    def poisson(self, lam=1.0, size=None):
+        r"""
+        Draw samples from a Poisson distribution.
+
+        The Poisson distribution is the limit of the binomial distribution for large N.
+
+        Parameters
+        ----------
+        lam: float or pdarray
+            Expected number of events occurring in a fixed-time interval, must be >= 0.
+            An array must have the same size as the size argument.
+        size: numeric_scalars, optional
+            Output shape. Default is None, in which case a single value is returned.
+
+        Notes
+        -----
+        The probability mass function for the Poisson distribution is:
+
+        .. math::
+           f(k; \lambda) = \frac{\lambda^k e^{-\lambda}}{k!}
+
+        For events with an expected separation :math:`\lambda`, the Poisson distribution
+        :math:`f(k; \lambda)` describes the probability of :math:`k` events occurring
+        within the observed interval :math:`\lambda`
+
+        Returns
+        -------
+        pdarray
+            Pdarray of ints (unless size=None, in which case a single int is returned).
+
+        Examples
+        --------
+        >>> rng = ak.random.default_rng()
+        >>> rng.poisson(lam=3, size=5)
+        array([5 3 2 2 3])  # random
+        """
+        if size is None:
+            # delegate to numpy when return size is 1
+            return self._np_generator.poisson(lam, size)
+
+        if _val_isinstance_of_union(lam, numeric_scalars):
+            is_single_lambda = True
+            if not _val_isinstance_of_union(lam, float_scalars):
+                lam = float(lam)
+            if lam < 0:
+                raise TypeError("lambda must be >=0")
+        elif isinstance(lam, pdarray):
+            is_single_lambda = False
+            if size != lam.size:
+                raise TypeError("array of lambdas must have same size as return size")
+            if lam.dtype != akfloat64:
+                from arkouda.numeric import cast as akcast
+
+                lam = akcast(lam, akfloat64)
+            if (lam < 0).any():
+                raise TypeError("all lambdas must be >=0")
+        else:
+            raise TypeError("poisson only accepts a pdarray or float scalar for lam")
+
+        rep_msg = generic_msg(
+            cmd="poissonGenerator",
+            args={
+                "name": self._name_dict[akfloat64],
+                "lam": lam,
+                "is_single_lambda": is_single_lambda,
+                "size": size,
+                "state": self._state,
+            },
+        )
+        # we only generate one val using the generator in the symbol table
+        self._state += 1
         return create_pdarray(rep_msg)
 
     def uniform(self, low=0.0, high=1.0, size=None):

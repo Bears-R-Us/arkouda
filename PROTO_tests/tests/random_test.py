@@ -1,7 +1,11 @@
+from collections import Counter
+
 import numpy as np
 import pytest
+from scipy import stats as sp_stats
 
 import arkouda as ak
+from arkouda.scipy import chisquare as akchisquare
 
 
 class TestRandom:
@@ -125,6 +129,165 @@ class TestRandom:
         bounded_arr = rng.uniform(-5, 5, 1000)
         assert all(bounded_arr.to_ndarray() >= -5)
         assert all(bounded_arr.to_ndarray() < 5)
+
+    def test_choice(self):
+        # verify without replacement works
+        rng = ak.random.default_rng()
+        # test domains and selecting all
+        domain_choice = rng.choice(20, 20, replace=False)
+        # since our populations and sample size is the same without replacement,
+        # we should see all values
+        assert (ak.sort(domain_choice) == ak.arange(20)).all()
+
+        # test arrays and not selecting all
+        perm = rng.permutation(100)
+        array_choice = rng.choice(perm, 95, replace=False)
+        # verify all unique
+        _, count = ak.GroupBy(array_choice).size()
+        assert (count == 1).all()
+
+        # test single value
+        scalar = rng.choice(5)
+        assert type(scalar) is np.int64
+        assert scalar in [0, 1, 2, 3, 4]
+
+    def test_choice_flags(self):
+        # use numpy to randomly generate a set seed
+        seed = np.random.default_rng().choice(2**63)
+
+        rng = ak.random.default_rng(seed)
+        weights = rng.uniform(size=10)
+        a_vals = [
+            10,
+            rng.integers(0, 2**32, size=10, dtype="uint"),
+            rng.uniform(-1.0, 1.0, size=10),
+            rng.integers(0, 1, size=10, dtype="bool"),
+            rng.integers(-(2**32), 2**32, size=10, dtype="int"),
+        ]
+
+        rng = ak.random.default_rng(seed)
+        choice_arrays = []
+        for a in a_vals:
+            for size in 5, 10:
+                for replace in True, False:
+                    for p in [None, weights]:
+                        choice_arrays.append(rng.choice(a, size, replace, p))
+
+        # reset generator to ensure we get the same arrays
+        rng = ak.random.default_rng(seed)
+        for a in a_vals:
+            for size in 5, 10:
+                for replace in True, False:
+                    for p in [None, weights]:
+                        previous = choice_arrays.pop(0)
+                        current = rng.choice(a, size, replace, p)
+                        assert np.allclose(previous.to_list(), current.to_list())
+
+    def test_normal(self):
+        rng = ak.random.default_rng(17)
+        both_scalar = rng.normal(loc=10, scale=2, size=10).to_list()
+        scale_scalar = rng.normal(loc=ak.array([0, 10, 20]), scale=1, size=3).to_list()
+        loc_scalar = rng.normal(loc=10, scale=ak.array([1, 2, 3]), size=3).to_list()
+        both_array = rng.normal(loc=ak.array([0, 10, 20]), scale=ak.array([1, 2, 3]), size=3).to_list()
+
+        # redeclare rng with same seed to test reproducibility
+        rng = ak.random.default_rng(17)
+        assert rng.normal(loc=10, scale=2, size=10).to_list() == both_scalar
+        assert rng.normal(loc=ak.array([0, 10, 20]), scale=1, size=3).to_list() == scale_scalar
+        assert rng.normal(loc=10, scale=ak.array([1, 2, 3]), size=3).to_list() == loc_scalar
+        assert (
+            rng.normal(loc=ak.array([0, 10, 20]), scale=ak.array([1, 2, 3]), size=3).to_list()
+            == both_array
+        )
+
+    def test_poissson(self):
+        rng = ak.random.default_rng(17)
+        num_samples = 5
+        # scalar lambda
+        scal_lam = 2
+        scal_sample = rng.poisson(lam=scal_lam, size=num_samples).to_list()
+
+        # array lambda
+        arr_lam = ak.arange(5)
+        arr_sample = rng.poisson(lam=arr_lam, size=num_samples).to_list()
+
+        # reset rng with same seed and ensure we get same results
+        rng = ak.random.default_rng(17)
+        assert rng.poisson(lam=scal_lam, size=num_samples).to_list() == scal_sample
+        assert rng.poisson(lam=arr_lam, size=num_samples).to_list() == arr_sample
+
+    def test_choice_hypothesis_testing(self):
+        # perform a weighted sample and use chisquare to test
+        # if the observed frequency matches the expected frequency
+
+        # I tested this many times without a set seed, but with no seed
+        # it's expected to fail one out of every ~20 runs given a pval limit of 0.05.
+        rng = ak.random.default_rng(43)
+        num_samples = 10**4
+
+        weights = ak.array([0.25, 0.15, 0.20, 0.10, 0.30])
+        weighted_sample = rng.choice(ak.arange(5), size=num_samples, p=weights)
+
+        # count how many of each category we saw
+        uk, f_obs = ak.GroupBy(weighted_sample).size()
+
+        # I think the keys should always be sorted but just in case
+        if not ak.is_sorted(uk):
+            f_obs = f_obs[ak.argsort(uk)]
+
+        f_exp = weights * num_samples
+        _, pval = akchisquare(f_obs=f_obs, f_exp=f_exp)
+
+        # if pval <= 0.05, the difference from the expected distribution is significant
+        assert pval > 0.05
+
+    def test_normal_hypothesis_testing(self):
+        # I tested this many times without a set seed, but with no seed
+        # it's expected to fail one out of every ~20 runs given a pval limit of 0.05.
+        rng = ak.random.default_rng(43)
+        num_samples = 10**4
+
+        mean = rng.uniform(-10, 10)
+        deviation = rng.uniform(0, 10)
+        sample = rng.normal(loc=mean, scale=deviation, size=num_samples)
+        sample_list = sample.to_list()
+
+        # first test if samples are normal at all
+        _, pval = sp_stats.normaltest(sample_list)
+
+        # if pval <= 0.05, the difference from the expected distribution is significant
+        assert pval > 0.05
+
+        # second goodness of fit test against the distribution with proper mean and std
+        good_fit_res = sp_stats.goodness_of_fit(
+            sp_stats.norm, sample_list, known_params={"loc": mean, "scale": deviation}
+        )
+        assert good_fit_res.pvalue > 0.05
+
+    def test_poisson_hypothesis_testing(self):
+        # I tested this many times without a set seed, but with no seed
+        # it's expected to fail one out of every ~20 runs given a pval limit of 0.05.
+        rng = ak.random.default_rng(43)
+        num_samples = 10**4
+        lam = rng.uniform(0, 10)
+
+        sample = rng.poisson(lam=lam, size=num_samples)
+        count_dict = Counter(sample.to_list())
+
+        # the sum of exp freq and obs freq must be within 1e-08, so we use
+        # the isf (inverse survival function where survival function is 1-cdf) to
+        # find out how many elements we need to ensure we're within that tolerance
+        num_elems = int(sp_stats.poisson.isf(1e-09, mu=lam))
+
+        obs_counts = np.array([0] * num_elems)
+        for k, v in count_dict.items():
+            obs_counts[k] = v
+
+        # use the probability mass function to get the probability of seeing each value
+        # and multiply by num_samples to get the expected counts
+        exp_counts = sp_stats.poisson.pmf(range(num_elems), mu=lam) * num_samples
+        _, pval = sp_stats.chisquare(f_obs=obs_counts, f_exp=exp_counts)
+        assert pval > 0.05
 
     def test_legacy_randint(self):
         testArray = ak.random.randint(0, 10, 5)

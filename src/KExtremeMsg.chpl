@@ -6,7 +6,7 @@ module KExtremeMsg
 {
     use ServerConfig;
 
-    use ArkoudaTimeCompat as Time;
+    use Time;
     use Math only;
     use Reflection;
     use ServerErrors;

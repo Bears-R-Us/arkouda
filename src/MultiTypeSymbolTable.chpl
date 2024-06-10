@@ -7,18 +7,14 @@ module MultiTypeSymbolTable
     use ServerErrors;
     use Logging;
     use BigInteger;
-    
+    use Regex;
     use MultiTypeSymEntry;
     use IO;
 
     use Map;
-    use ArkoudaRegexCompat;
-    use ArkoudaFileCompat;
-    use ArkoudaMapCompat;
     use ArkoudaIOCompat;
-    use ArkoudaSymEntryCompat;
     use Registry;
-    
+
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const mtLogger = new Logger(logLevel, logChannel);
@@ -498,7 +494,7 @@ module MultiTypeSymbolTable
         :returns: string array containing matching entry names
         */
         proc findAll(pattern: string): [] string throws {
-            var rg = compile(pattern);
+            var rg = new regex(pattern);
             var infoStr = "";
             forall name in tab.keysToArray() with (+ reduce infoStr) {
                 var match = rg.match(name);

@@ -3,10 +3,7 @@ module CommAggregation {
   use UnorderedCopy;
   use CommPrimitives;
   use ChplConfig;
-
-  use ArkoudaCTypesCompat;
-  use ArkoudaPOSIXCompat;
-  use ArkoudaAggCompat;
+  use OS.POSIX;
 
   // TODO should tune these values at startup
   private param defaultBuffSize =
@@ -104,7 +101,7 @@ module CommAggregation {
         flushBuffer(loc, bufferIdx, freeData=false);
         opsUntilYield = yieldFrequency;
       } else if opsUntilYield == 0 {
-        yieldTask();
+        currentTask.yieldExecution();
         opsUntilYield = yieldFrequency;
       } else {
         opsUntilYield -= 1;
@@ -226,7 +223,7 @@ module CommAggregation {
         flushBuffer(loc, bufferIdx, freeData=false);
         opsUntilYield = yieldFrequency;
       } else if opsUntilYield == 0 {
-        yieldTask();
+        currentTask.yieldExecution();
         opsUntilYield = yieldFrequency;
       } else {
         opsUntilYield -= 1;
@@ -406,10 +403,8 @@ module CommAggregation {
     use CommPrimitives;
     use CommAggregation;
     use BigInteger, GMP;
-    use ArkoudaPOSIXCompat;
-    use ArkoudaAggCompat;
-    use ArkoudaMathCompat;
     use Math;
+    use OS.POSIX;
 
     proc bigint.serializedSize() {
       extern proc chpl_gmp_mpz_struct_sign_size(from: __mpz_struct) : mp_size_t;
@@ -417,7 +412,7 @@ module CommAggregation {
       var sign_size = chpl_gmp_mpz_struct_sign_size(this.getImpl());
 
       var size_bytes = c_sizeof(mp_size_t):int;
-      var limb_bytes = mathAbs(sign_size:int) * c_sizeof(mp_limb_t):int;
+      var limb_bytes = Math.abs(sign_size:int) * c_sizeof(mp_limb_t):int;
 
       return size_bytes + limb_bytes;
     }
@@ -429,7 +424,7 @@ module CommAggregation {
       var sign_size = chpl_gmp_mpz_struct_sign_size(this.getImpl());
 
       var size_bytes = c_sizeof(mp_size_t):int;
-      var limb_bytes = mathAbs(sign_size:int) * c_sizeof(mp_limb_t):int;
+      var limb_bytes = Math.abs(sign_size:int) * c_sizeof(mp_limb_t):int;
 
       var limb_ptr = chpl_gmp_mpz_struct_limbs(this.getImpl());
 
@@ -448,7 +443,7 @@ module CommAggregation {
 
       memcpy(c_ptrTo(sign_size), x, size_bytes);
 
-      var nlimbs = mathAbs(sign_size:int);
+      var nlimbs = Math.abs(sign_size:int);
       var limb_bytes = nlimbs * c_sizeof(mp_limb_t):int;
 
       _mpz_realloc(this.mpz, nlimbs);
@@ -532,7 +527,7 @@ module CommAggregation {
         // If it's been a while since we've let other tasks run, yield so that
         // we're not blocking remote tasks from flushing their buffers.
         if opsUntilYield == 0 {
-          yieldTask();
+          currentTask.yieldExecution();
           opsUntilYield = yieldFrequency;
         } else {
           opsUntilYield -= 1;
@@ -641,7 +636,7 @@ module CommAggregation {
           flushBuffer(loc, bufferIdx, freeData=false);
           opsUntilYield = yieldFrequency;
         } else if opsUntilYield == 0 {
-          yieldTask();
+          currentTask.yieldExecution();
           opsUntilYield = yieldFrequency;
         } else {
           opsUntilYield -= 1;

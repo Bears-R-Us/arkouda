@@ -1,9 +1,6 @@
-import unittest
-
 from base_test import ArkoudaTest
 from context import arkouda as ak
-import arkouda.array_api as Array
-import numpy as np
+import arkouda.array_api as xp
 
 # requires the server to be built with 2D array support
 SHAPE_A = [(1,), (5,), (2, 2), (20, 10), (20, 10), (1, 10), (5, 10), (5, 10)]
@@ -12,17 +9,18 @@ SEED = 123
 
 ops = ['+', '-', '*', '/']
 
+
 class ArrayCreationTests(ArkoudaTest):
     def test_binops(self):
         for op in ops:
             for shape_a, shape_b in zip(SHAPE_A, SHAPE_B):
                 for dtype in ak.ScalarDTypes:
                     if dtype != ak.bool:
-                        x = Array.asarray(ak.randint(0, 100, shape_a, dtype=dtype, seed=SEED))
-                        y = Array.asarray(ak.randint(0, 100, shape_b, dtype=dtype, seed=SEED))
+                        x = xp.asarray(ak.randint(0, 100, shape_a, dtype=dtype, seed=SEED))
+                        y = xp.asarray(ak.randint(0, 100, shape_b, dtype=dtype, seed=SEED))
 
                         z = eval('x ' + op + ' y')
-                        ybc = Array.broadcast_to(y, z.shape)
+                        ybc = xp.broadcast_to(y, z.shape)
 
                         if z.ndim == 1:
                             for i in range(shape_a[0]):

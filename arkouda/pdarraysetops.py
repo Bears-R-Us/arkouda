@@ -2,15 +2,15 @@ from __future__ import annotations
 
 from typing import ForwardRef, Sequence, Union, cast
 
-import numpy as np  # type: ignore
+import numpy as np
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
 from arkouda.client_dtypes import BitVector
+from arkouda.dtypes import bigint
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import uint64 as akuint64
-from arkouda.dtypes import bigint
 from arkouda.groupbyclass import GroupBy, groupable, groupable_element_type, unique
 from arkouda.logger import getArkoudaLogger
 from arkouda.pdarrayclass import create_pdarray, pdarray
@@ -197,7 +197,7 @@ def in1d(
     isa = concatenate((ones(ua[0].size, dtype=akbool), zeros(ub[0].size, dtype=akbool)), ordered=False)
     c = [concatenate(x, ordered=False) for x in zip(ua, ub)]
     g = GroupBy(c)
-    k, ct = g.count()
+    k, ct = g.size()
     if assume_unique:
         # need to verify uniqueness, otherwise answer will be wrong
         if (g.sum(isa)[1] > 1).any():
@@ -232,22 +232,40 @@ def in1dmulti(a, b, assume_unique=False, symmetric=False):
     return in1d(a, b, assume_unique=assume_unique, symmetric=symmetric)
 
 
-def indexof1d(keys: groupable, arr: groupable) -> Union[pdarray, groupable]:
+def indexof1d(query: groupable, space: groupable) -> pdarray:
     """
-    Returns an integer array of the index values where the values of the first
-    array appear in the second.
+    Return indices of query items in a search list of items. Items not found will be excluded.
+    When duplicate terms are present in search space return indices of all occurrences.
 
     Parameters
     ----------
-    keys : pdarray or Strings or Categorical
-        Input array of values to find the indices of in `arr`.
-    arr : pdarray or Strings or Categorical
-        The values to search.
+    query : (sequence of) pdarray or Strings or Categorical
+        The items to search for. If multiple arrays, each "row" is an item.
+    space : (sequence of) pdarray or Strings or Categorical
+        The set of items in which to search. Must have same shape/dtype as query.
 
     Returns
     -------
-    pdarray, int
-        The indices of the values of `keys` in `arr`.
+    indices : pdarray, int64
+        For each item in query, its index in space.
+
+    Notes
+    -----
+    This is an alias of
+    `ak.find(query, space, all_occurrences=True, remove_missing=True).values`
+
+    Examples
+    --------
+    >>> select_from = ak.arange(10)
+    >>> arr1 = select_from[ak.randint(0, select_from.size, 20, seed=10)]
+    >>> arr2 = select_from[ak.randint(0, select_from.size, 20, seed=11)]
+    # remove some values to ensure we have some values
+    # which don't appear in the search space
+    >>> arr2 = arr2[arr2 != 9]
+    >>> arr2 = arr2[arr2 != 3]
+
+    >>> ak.indexof1d(arr1, arr2)
+    array([0 4 1 3 10 2 6 12 13 5 7 8 9 14 5 7 11 15 5 7 0 4])
 
     Raises
     ------
@@ -257,19 +275,24 @@ def indexof1d(keys: groupable, arr: groupable) -> Union[pdarray, groupable]:
     RuntimeError
         Raised if the dtype of either array is not supported
     """
+    # from arkouda.alignment import find as akfind
     from arkouda.categorical import Categorical as Categorical_
 
-    if isinstance(keys, (pdarray, Strings, Categorical_)):
-        if isinstance(keys, (Strings, Categorical_)) and not isinstance(arr, (Strings, Categorical_)):
+    if isinstance(query, (pdarray, Strings, Categorical_)):
+        if isinstance(query, (Strings, Categorical_)) and not isinstance(space, (Strings, Categorical_)):
             raise TypeError("Arguments must have compatible types, Strings/Categorical")
-        elif isinstance(keys, pdarray) and not isinstance(arr, pdarray):
+        elif isinstance(query, pdarray) and not isinstance(space, pdarray):
             raise TypeError("If keys is pdarray, arr must also be pdarray")
 
     repMsg = generic_msg(
         cmd="indexof1d",
-        args={"keys": keys, "arr": arr},
+        args={"keys": query, "arr": space},
     )
     return create_pdarray(cast(str, repMsg))
+
+    # TODO see issue #3229 reverted back to old implementation until we can investigate
+    # found = akfind(query, space, all_occurrences=True, remove_missing=True)
+    # return found if isinstance(found, pdarray) else found.values
 
 
 # fmt: off
@@ -493,7 +516,7 @@ def union1d(
             return cast(pdarray, create_pdarray(repMsg))
         x = cast(
             pdarray, unique(cast(pdarray, concatenate((unique(pda1), unique(pda2)), ordered=False)))
-        )  # type: ignore
+        )
         return x[argsort(x)]
     elif isinstance(pda1, Sequence) and isinstance(pda2, Sequence):
         multiarray_setop_validation(pda1, pda2)
@@ -504,7 +527,7 @@ def union1d(
 
         c = [concatenate(x, ordered=False) for x in zip(ua, ub)]
         g = GroupBy(c)
-        k, ct = g.count()
+        k, ct = g.size()
         return k
     else:
         raise TypeError(
@@ -621,7 +644,7 @@ def intersect1d(
                 raise ValueError("Called with assume_unique=True, but first argument is not unique")
             if (g.sum(~isa)[1] > 1).any():
                 raise ValueError("Called with assume_unique=True, but second argument is not unique")
-        k, ct = g.count()
+        k, ct = g.size()
         in_union = ct == 2
         return [x[in_union] for x in k]
     else:
@@ -735,7 +758,7 @@ def setdiff1d(
                 raise ValueError("Called with assume_unique=True, but first argument is not unique")
             if (g.sum(~isa)[1] > 1).any():
                 raise ValueError("Called with assume_unique=True, but second argument is not unique")
-        k, ct = g.count()
+        k, ct = g.size()
         truth = g.broadcast(ct == 1, permute=True)
         atruth = truth[isa]
         return [x[atruth] for x in ua]
@@ -849,7 +872,7 @@ def setxor1d(pda1: groupable, pda2: groupable, assume_unique: bool = False) -> U
                 raise ValueError("Called with assume_unique=True, but first argument is not unique")
             if (g.sum(~isa)[1] > 1).any():
                 raise ValueError("Called with assume_unique=True, but second argument is not unique")
-        k, ct = g.count()
+        k, ct = g.size()
         single = ct == 1
         return [x[single] for x in k]
     else:

@@ -1,5 +1,7 @@
+import shutil
 from pathlib import Path
 from typing import Any, Dict, Mapping
+from os.path import isdir
 
 
 def get_directory(path: str) -> Path:
@@ -124,3 +126,24 @@ def dict_to_delimited_file(path: str, values: Mapping[Any, Any], delimiter: str 
                 f.write(f"{key},{value}\n")
     else:
         raise ValueError(f"the delimiter {delimiter} is not supported")
+
+
+def delete_directory(dir: str) -> None:
+    """
+    Deletes the directory if it exists.
+
+    Parameters
+    ----------
+    dir : str
+        The path to the directory
+
+    Raises
+    ------
+    OSError
+        Raised if there's an error in deleting the directory.
+    """
+    if isdir(dir):
+        try:
+            shutil.rmtree(dir)
+        except OSError as e:
+            print("Error: %s - %s." % (e.filename, e.strerror))

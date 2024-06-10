@@ -5,8 +5,7 @@ module SipHash {
   use ServerErrors;
   use Reflection;
   use Logging;
-
-  use ArkoudaPOSIXCompat;
+  use OS.POSIX;
 
   param cROUNDS = 2;
   param dROUNDS = 4;

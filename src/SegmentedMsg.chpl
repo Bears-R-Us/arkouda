@@ -14,10 +14,9 @@ module SegmentedMsg {
   use BigInteger;
   use Math;
   use SegmentedArray;
-
   use Map;
-  use ArkoudaRangeCompat;
-  use ArkoudaCTypesCompat;
+  use CTypes;
+
   use ArkoudaIOCompat;
 
   private config const logLevel = ServerConfig.logLevel;
@@ -854,8 +853,8 @@ module SegmentedMsg {
   }
 
 
-  proc convertSliceToStridableRange(start: int, stop: int, stride: int): stridableRange {
-    var slice: stridableRange;
+  proc convertSliceToStridableRange(start: int, stop: int, stride: int): range(strides=strideKind.any) {
+    var slice: range(strides=strideKind.any);
     // backwards iteration with negative stride
     if  (start > stop) & (stride < 0) {slice = (stop+1)..start by stride;}
     // forward iteration with positive stride

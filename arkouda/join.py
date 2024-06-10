@@ -1,6 +1,6 @@
 from typing import Callable, Optional, Sequence, Tuple, Union, cast
 
-import numpy as np  # type: ignore
+import numpy as np
 from typeguard import typechecked
 
 from arkouda.alignment import right_align
@@ -100,8 +100,8 @@ def join_on_eq_with_dt(
         cmd="joinEqWithDT",
         args={
             "a1": a1,
-            "g2seg": cast(pdarray, g2.segments),  # type: ignore
-            "g2keys": cast(pdarray, g2.unique_keys),  # type: ignore
+            "g2seg": cast(pdarray, g2.segments),
+            "g2keys": cast(pdarray, g2.unique_keys),
             "g2perm": g2.permutation,
             "t1": t1,
             "t2": t2,
@@ -177,9 +177,9 @@ def compute_join_size(a: pdarray, b: pdarray) -> Tuple[int, int]:
     both the number of elements and number of bytes required for the join.
     """
     bya = GroupBy(a)
-    ua, asize = bya.count()
+    ua, asize = bya.size()
     byb = GroupBy(b)
-    ub, bsize = byb.count()
+    ub, bsize = byb.size()
     afact = asize[in1d(ua, ub)]
     bfact = bsize[in1d(ub, ua)]
     nelem = (afact * bfact).sum()

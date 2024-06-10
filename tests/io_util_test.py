@@ -47,3 +47,17 @@ class IOUtilTest(ArkoudaTest):
     def tearDownClass(cls):
         super(IOUtilTest, cls).tearDownClass()
         shutil.rmtree(Path(IOUtilTest.io_test_dir))
+
+    def test_delete_directory(self):
+        path = "{}/test_dir".format(os.getcwd())
+        io_util.get_directory(path)
+
+        from os.path import isdir
+
+        self.assertTrue(isdir(path))
+
+        io_util.delete_directory(path)
+        self.assertFalse(isdir(path))
+
+        # Check no error when run on non-existant directory:
+        io_util.delete_directory(path)

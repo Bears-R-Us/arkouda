@@ -5,7 +5,7 @@ require "idn2.h";
 
 // Note: Generated with fake std headers
 
-use ArkoudaCTypesCompat;
+use CTypes;
 extern proc idn2_lookup_u8(ref src : uint(8), ref lookupname : c_ptr(uint(8)), flags : c_int) : c_int;
 
 extern proc idn2_lookup_u8(src : c_ptr(uint(8)), lookupname : c_ptr(c_ptr(uint(8))), flags : c_int) : c_int;
@@ -14,37 +14,37 @@ extern proc idn2_register_u8(ref ulabel : uint(8), ref alabel : uint(8), ref ins
 
 extern proc idn2_register_u8(ulabel : c_ptr(uint(8)), alabel : c_ptr(uint(8)), insertname : c_ptr(c_ptr(uint(8))), flags : c_int) : c_int;
 
-extern proc idn2_lookup_ul(src : c_string_ptr, ref lookupname : c_string_ptr, flags : c_int) : c_int;
+extern proc idn2_lookup_ul(src : c_ptrConst(c_char), ref lookupname : c_ptrConst(c_char), flags : c_int) : c_int;
 
-extern proc idn2_lookup_ul(src : c_string_ptr, lookupname : c_ptr(c_string_ptr), flags : c_int) : c_int;
+extern proc idn2_lookup_ul(src : c_ptrConst(c_char), lookupname : c_ptr(c_ptrConst(c_char)), flags : c_int) : c_int;
 
-extern proc idn2_register_ul(ulabel : c_string_ptr, alabel : c_string_ptr, ref insertname : c_string_ptr, flags : c_int) : c_int;
+extern proc idn2_register_ul(ulabel : c_ptrConst(c_char), alabel : c_ptrConst(c_char), ref insertname : c_ptrConst(c_char), flags : c_int) : c_int;
 
-extern proc idn2_register_ul(ulabel : c_string_ptr, alabel : c_string_ptr, insertname : c_ptr(c_string_ptr), flags : c_int) : c_int;
+extern proc idn2_register_ul(ulabel : c_ptrConst(c_char), alabel : c_ptrConst(c_char), insertname : c_ptr(c_ptrConst(c_char)), flags : c_int) : c_int;
 
-extern proc idn2_to_ascii_4i(ref input : uint(32), inlen : c_size_t, output : c_string_ptr, flags : c_int) : c_int;
+extern proc idn2_to_ascii_4i(ref input : uint(32), inlen : c_size_t, output : c_ptrConst(c_char), flags : c_int) : c_int;
 
-extern proc idn2_to_ascii_4i(input : c_ptr(uint(32)), inlen : c_size_t, output : c_string_ptr, flags : c_int) : c_int;
+extern proc idn2_to_ascii_4i(input : c_ptr(uint(32)), inlen : c_size_t, output : c_ptrConst(c_char), flags : c_int) : c_int;
 
-extern proc idn2_to_ascii_4i2(ref input : uint(32), inlen : c_size_t, ref output : c_string_ptr, flags : c_int) : c_int;
+extern proc idn2_to_ascii_4i2(ref input : uint(32), inlen : c_size_t, ref output : c_ptrConst(c_char), flags : c_int) : c_int;
 
-extern proc idn2_to_ascii_4i2(input : c_ptr(uint(32)), inlen : c_size_t, output : c_ptr(c_string_ptr), flags : c_int) : c_int;
+extern proc idn2_to_ascii_4i2(input : c_ptr(uint(32)), inlen : c_size_t, output : c_ptr(c_ptrConst(c_char)), flags : c_int) : c_int;
 
-extern proc idn2_to_ascii_4z(ref input : uint(32), ref output : c_string_ptr, flags : c_int) : c_int;
+extern proc idn2_to_ascii_4z(ref input : uint(32), ref output : c_ptrConst(c_char), flags : c_int) : c_int;
 
-extern proc idn2_to_ascii_4z(input : c_ptr(uint(32)), output : c_ptr(c_string_ptr), flags : c_int) : c_int;
+extern proc idn2_to_ascii_4z(input : c_ptr(uint(32)), output : c_ptr(c_ptrConst(c_char)), flags : c_int) : c_int;
 
-extern proc idn2_to_ascii_8z(input : c_string_ptr, ref output : c_string_ptr, flags : c_int) : c_int;
+extern proc idn2_to_ascii_8z(input : c_ptrConst(c_char), ref output : c_ptrConst(c_char), flags : c_int) : c_int;
 
-extern proc idn2_to_ascii_8z(input : c_string_ptr, output : c_ptr(c_string_ptr), flags : c_int) : c_int;
+extern proc idn2_to_ascii_8z(input : c_ptrConst(c_char), output : c_ptr(c_ptrConst(c_char)), flags : c_int) : c_int;
 
-extern proc idn2_to_ascii_lz(input : c_string_ptr, ref output : c_string_ptr, flags : c_int) : c_int;
+extern proc idn2_to_ascii_lz(input : c_ptrConst(c_char), ref output : c_ptrConst(c_char), flags : c_int) : c_int;
 
-extern proc idn2_to_ascii_lz(input : c_string_ptr, output : c_ptr(c_string_ptr), flags : c_int) : c_int;
+extern proc idn2_to_ascii_lz(input : c_ptrConst(c_char), output : c_ptr(c_ptrConst(c_char)), flags : c_int) : c_int;
 
-extern proc idn2_to_unicode_8z4z(input : c_string_ptr, ref output : c_ptr(uint(32)), flags : c_int) : c_int;
+extern proc idn2_to_unicode_8z4z(input : c_ptrConst(c_char), ref output : c_ptr(uint(32)), flags : c_int) : c_int;
 
-extern proc idn2_to_unicode_8z4z(input : c_string_ptr, output : c_ptr(c_ptr(uint(32))), flags : c_int) : c_int;
+extern proc idn2_to_unicode_8z4z(input : c_ptrConst(c_char), output : c_ptr(c_ptr(uint(32))), flags : c_int) : c_int;
 
 extern proc idn2_to_unicode_4z4z(ref input : uint(32), ref output : c_ptr(uint(32)), flags : c_int) : c_int;
 
@@ -54,25 +54,25 @@ extern proc idn2_to_unicode_44i(ref in_arg : uint(32), inlen : c_size_t, ref out
 
 extern proc idn2_to_unicode_44i(in_arg : c_ptr(uint(32)), inlen : c_size_t, out_arg : c_ptr(uint(32)), outlen : c_ptr(c_size_t), flags : c_int) : c_int;
 
-extern proc idn2_to_unicode_8z8z(input : c_string_ptr, ref output : c_string_ptr, flags : c_int) : c_int;
+extern proc idn2_to_unicode_8z8z(input : c_ptrConst(c_char), ref output : c_ptrConst(c_char), flags : c_int) : c_int;
 
-extern proc idn2_to_unicode_8z8z(input : c_string_ptr, output : c_ptr(c_string_ptr), flags : c_int) : c_int;
+extern proc idn2_to_unicode_8z8z(input : c_ptrConst(c_char), output : c_ptr(c_ptrConst(c_char)), flags : c_int) : c_int;
 
-extern proc idn2_to_unicode_8zlz(input : c_string_ptr, ref output : c_string_ptr, flags : c_int) : c_int;
+extern proc idn2_to_unicode_8zlz(input : c_ptrConst(c_char), ref output : c_ptrConst(c_char), flags : c_int) : c_int;
 
-extern proc idn2_to_unicode_8zlz(input : c_string_ptr, output : c_ptr(c_string_ptr), flags : c_int) : c_int;
+extern proc idn2_to_unicode_8zlz(input : c_ptrConst(c_char), output : c_ptr(c_ptrConst(c_char)), flags : c_int) : c_int;
 
-extern proc idn2_to_unicode_lzlz(input : c_string_ptr, ref output : c_string_ptr, flags : c_int) : c_int;
+extern proc idn2_to_unicode_lzlz(input : c_ptrConst(c_char), ref output : c_ptrConst(c_char), flags : c_int) : c_int;
 
-extern proc idn2_to_unicode_lzlz(input : c_string_ptr, output : c_ptr(c_string_ptr), flags : c_int) : c_int;
+extern proc idn2_to_unicode_lzlz(input : c_ptrConst(c_char), output : c_ptr(c_ptrConst(c_char)), flags : c_int) : c_int;
 
-extern proc idn2_strerror(rc : c_int) : c_string_ptr;
+extern proc idn2_strerror(rc : c_int) : c_ptrConst(c_char);
 
-extern proc idn2_strerror_name(rc : c_int) : c_string_ptr;
+extern proc idn2_strerror_name(rc : c_int) : c_ptrConst(c_char);
 
-extern proc idn2_check_version(req_version : c_string_ptr) : c_string_ptr;
+extern proc idn2_check_version(req_version : c_ptrConst(c_char)) : c_ptrConst(c_char);
 
-extern proc idn2_free(ptr : c_ptr_void) : void;
+extern proc idn2_free(ptr : c_ptr(void)) : void;
 
 // ==== c2chapel typedefs ====
 

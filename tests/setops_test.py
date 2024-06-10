@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
@@ -331,3 +332,71 @@ class SetOpsTest(ArkoudaTest):
         x = [ak.arange(3, dtype=ak.uint64), ak.arange(3)]
         with self.assertRaises(TypeError):
             ak.pdarraysetops.multiarray_setop_validation(x, y)
+
+    def test_index_of(self):
+        # index of nan (reproducer from #3009)
+        s = ak.Series(ak.array([1, 2, 3]), index=ak.array([1, 2, np.nan]))
+        self.assertTrue(ak.indexof1d(ak.array([np.nan]), s.index.values).to_list() == [2])
+        rng = np.random.default_rng()
+        seeds = [rng.choice(2**63), rng.choice(2**63), rng.choice(2**63), rng.choice(2**63)]
+        print("seeds: \n", seeds)
+
+        def are_pdarrays_equal(pda1, pda2):
+            # we first check the sizes so that we won't hit shape mismatch
+            # before we can print the seed (due to short-circuiting)
+            return (pda1.size == pda2.size) and ((pda1 == pda2).all())
+
+        count = 0
+        select_from_list = [
+            ak.randint(-(2**32), 2**32, 10, seed=seeds[0]),
+            ak.linspace(-(2**32), 2**32, 10),
+            ak.random_strings_uniform(1, 16, 10, seed=seeds[1]),
+        ]
+        for select_from in select_from_list:
+            count += 1
+            arr1 = select_from[ak.randint(0, select_from.size, 20, seed=seeds[2]+count)]
+
+            # test unique search space, this should be identical to find
+            # be sure to test when all items are present and when there are items missing
+            for arr2 in select_from, select_from[:5], select_from[5:]:
+                found_in_second = ak.in1d(arr1, arr2)
+                idx_of_first_in_second = ak.indexof1d(arr1, arr2)
+
+                # search space not guaranteed to be unique since select_from could have duplicates
+                # we will only match find with remove_missing when there's only one occurrence in the search space
+                all_unique = ak.unique(arr2).size == arr2.size
+                if all_unique:
+                    # ensure we match find
+                    if not are_pdarrays_equal(idx_of_first_in_second, ak.find(arr1, arr2, remove_missing=True)):
+                        print("failed to match find")
+                        print("second array all unique: ", all_unique)
+                        print(seeds)
+                    self.assertTrue((idx_of_first_in_second == ak.find(arr1, arr2, remove_missing=True)).all())
+
+                    # if an element of arr1 is found in arr2, return the index of that item in arr2
+                    if not are_pdarrays_equal(arr2[idx_of_first_in_second], arr1[found_in_second]):
+                        print("arr1 at indices found_in_second doesn't match arr2[indexof1d]")
+                        print("second array all unique: ", all_unique)
+                        print(seeds)
+                    self.assertTrue(
+                        (arr2[idx_of_first_in_second] == arr1[found_in_second]).all()
+                    )
+
+            # test duplicate items in search space, the easiest way I can think
+            # of to do this is to compare against pandas series getitem
+            arr2 = select_from[ak.randint(0, select_from.size, 20, seed=seeds[3]+count)]
+            pd_s = pd.Series(index=arr1.to_ndarray(), data=arr2.to_ndarray())
+            ak_s = ak.Series(index=arr1, data=arr2)
+
+            arr1_keys = ak.GroupBy(arr1).unique_keys
+            arr2_keys = ak.GroupBy(arr2).unique_keys
+            in_both = ak.intersect1d(arr1_keys, arr2_keys)
+
+            for i in in_both.to_list():
+                pd_i = pd_s[i]
+                ak_i = ak_s[i]
+                if isinstance(pd_i, pd.Series):
+                    self.assertIsInstance(ak_i, ak.Series)
+                    self.assertEqual(pd_i.values.tolist(), ak_i.values.to_list())
+                else:
+                    self.assertEqual(pd_i, ak_i)

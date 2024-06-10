@@ -13,7 +13,7 @@ module UniqueMsg
     use ServerConfig;
     use AryUtil;
     
-    use ArkoudaTimeCompat as Time;
+    use Time;
     use Math only;
     use Reflection;
     use ServerErrors;

@@ -11,7 +11,7 @@ module ArkoudaAryUtilCompat {
     (i.e., the 25th matrix)
   */
   proc domOnAxis(D: domain(?), idx: D.rank*int, axes: int ...?NA): domain(?)
-    where NA < D.rank
+    where NA <= D.rank
   {
     var outDims: D.rank*range;
     label ranks for i in 0..<D.rank {
@@ -54,7 +54,7 @@ module ArkoudaAryUtilCompat {
     (i.e., a set of indices for the 1000 matrices)
   */
   proc domOffAxis(D: domain(?), axes: int ...?NA): domain(?)
-    where NA < D.rank
+    where NA <= D.rank
   {
     var outDims: D.rank*range;
     label ranks for i in 0..<D.rank {

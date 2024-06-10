@@ -100,7 +100,7 @@ module In1dMsg
           when (DType.Int64, DType.Int64) {
              var e = toSymEntry(gEnt,int);
              var f = toSymEntry(gEnt2,int);
-             
+
              var aV = indexof1d(e.a, f.a);
              st.addEntry(vname, createSymEntry(aV));
 
@@ -111,7 +111,7 @@ module In1dMsg
            when (DType.UInt64, DType.UInt64) {
              var e = toSymEntry(gEnt,uint);
              var f = toSymEntry(gEnt2,uint);
-             
+
              var aV = indexof1d(e.a, f.a);
              st.addEntry(vname, createSymEntry(aV));
 
@@ -122,8 +122,11 @@ module In1dMsg
            when (DType.Float64, DType.Float64) {
              var e = toSymEntry(gEnt,real);
              var f = toSymEntry(gEnt2,real);
-             
-             var aV = indexof1d(e.a, f.a);
+
+             const transmuted1 = [ei in e.a] ei.transmute(uint(64));
+             const transmuted2 = [fi in f.a] fi.transmute(uint(64));
+
+             var aV = indexof1d(transmuted1, transmuted2);
              st.addEntry(vname, createSymEntry(aV));
 
              repMsg = "created " + st.attrib(vname);
@@ -133,7 +136,7 @@ module In1dMsg
            when (DType.Strings, DType.Strings) {
              var e = getSegString(msgArgs.getValueOf("keys"), st);
              var f = getSegString(msgArgs.getValueOf("arr"), st);
-             
+
              var aV = indexof1d(e, f);
              st.addEntry(vname, createSymEntry(aV));
 
@@ -143,7 +146,7 @@ module In1dMsg
             }
            otherwise {
                var errorMsg = notImplementedError("indexof1d",gEnt.dtype);
-               iLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                  
+               iLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                return new MsgTuple(errorMsg, MsgType.ERROR);
            }
         }

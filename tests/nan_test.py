@@ -73,7 +73,7 @@ def run_test(verbose=True):
 
     tests += 1
     pdkeys, pdvals = groupby_to_arrays(df, keyname, "float64", "count")
-    akkeys, akvals = akg.count()
+    akkeys, akvals = akg.size()
     akvals = akvals.to_ndarray()
 
     for op in OPS:

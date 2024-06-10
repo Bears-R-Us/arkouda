@@ -53,6 +53,21 @@ class TestString:
     def compare_strings(s1, s2):
         return all(x == y for x, y in zip(s1, s2))
 
+    def test_equals(self):
+        s = ak.array(["a", "b", "c"])
+        s_cpy = ak.array(["a", "b", "c"])
+        assert ak.sum((s == s_cpy) != ak.array([True, True, True])) == 0
+        assert ak.sum((s != s_cpy) != ak.array([False, False, False])) == 0
+        assert s.equals(s_cpy)
+
+        s2 = ak.array(["a", "x", "c"])
+        assert ak.sum((s == s2) != ak.array([True, False, True])) == 0
+        assert ak.sum((s != s2) != ak.array([False, True, False])) == 0
+        assert not s.equals(s2)
+
+        s3 = ak.array(["a", "b", "c", "d"])
+        assert not s.equals(s3)
+
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_compare_strings(self, size):
         base_words, np_base_words = self.base_words(size)
@@ -849,3 +864,18 @@ class TestString:
         s1 = ak.array(v1)
         nd1 = s1.to_ndarray()
         assert nd1.tolist() == v1
+
+    def test_inferred_type(self):
+        a = ak.array(["a", "b", "c"])
+        assert a.inferred_type == "string"
+
+    def test_string_broadcast(self):
+        keys = ak.randint(0, 10, 100, int)
+        g = ak.GroupBy(keys)
+        str_vals = ak.random_strings_uniform(0, 3, 10, characters="printable")
+        str_broadcast_ans = str_vals[keys]
+
+        gb_broadcasted = g.broadcast(str_vals)
+        manual_broadcasted = ak.broadcast(g.segments, str_vals, permutation=g.permutation)
+        assert (gb_broadcasted == str_broadcast_ans).all()
+        assert (manual_broadcasted == str_broadcast_ans).all()

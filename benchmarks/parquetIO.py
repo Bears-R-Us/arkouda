@@ -89,7 +89,7 @@ if __name__ == "__main__":
 
     if args.correctness_only:
         for dtype in TYPES:
-            check_correctness(dtype, args.path, args.seed, True)
+            check_correctness(dtype, args.path, args.seed, FileFormat.PARQUET)
         sys.exit(0)
 
     print("array size = {:,}".format(args.size))
@@ -103,11 +103,11 @@ if __name__ == "__main__":
             args.dtype,
             args.path,
             args.seed,
-            True,
+            FileFormat.PARQUET,
             comp_types,
         )
     elif args.only_read:
-        time_ak_read(args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, True, comp_types)
+        time_ak_read(args.size, args.files_per_loc, args.trials, args.dtype, args.path, FileFormat.PARQUET, comp_types)
     else:
         time_ak_write(
             args.size,
@@ -116,10 +116,10 @@ if __name__ == "__main__":
             args.dtype,
             args.path,
             args.seed,
-            True,
+            FileFormat.PARQUET,
             comp_types,
         )
-        time_ak_read(args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, True, comp_types)
+        time_ak_read(args.size, args.files_per_loc, args.trials, args.dtype, args.path, FileFormat.PARQUET, comp_types)
         remove_files(args.path)
 
     sys.exit(0)

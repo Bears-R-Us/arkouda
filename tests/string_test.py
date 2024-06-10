@@ -362,6 +362,21 @@ class StringTest(ArkoudaTest):
     def test_compare_strings(self):
         assert compare_strings(self.base_words.to_ndarray(), self.np_base_words)
 
+    def test_equals(self):
+        s = ak.array(["a", "b", "c"])
+        s_cpy = ak.array(["a", "b", "c"])
+        self.assertTrue(ak.sum((s == s_cpy) != ak.array([True, True, True])) == 0)
+        self.assertTrue(ak.sum((s != s_cpy) != ak.array([False, False, False])) == 0)
+        assert s.equals(s_cpy)
+
+        s2 = ak.array(["a", "x", "c"])
+        self.assertTrue(ak.sum((s == s2) != ak.array([True, False, True])) == 0)
+        self.assertTrue(ak.sum((s != s2) != ak.array([False, True, False])) == 0)
+        assert not s.equals(s2)
+
+        s3 = ak.array(["a", "b", "c", "d"])
+        assert not s.equals(s3)
+
     def test_argsort(self):
         run_test_argsort(self.strings, self.test_strings, self._get_categorical())
 
@@ -917,3 +932,18 @@ class StringTest(ArkoudaTest):
         s1 = ak.array(v1)
         nd1 = s1.to_ndarray()
         self.assertListEqual(nd1.tolist(), v1)
+
+    def test_inferred_type(self):
+        a = ak.array(["a", "b", "c"])
+        self.assertTrue(a.inferred_type, "string")
+
+    def test_string_broadcast(self):
+        keys = ak.randint(0, 10, 100, int)
+        g = ak.GroupBy(keys)
+        str_vals = ak.random_strings_uniform(0, 3, 10, characters="printable")
+        str_broadcast_ans = str_vals[keys]
+
+        gb_broadcasted = g.broadcast(str_vals)
+        manual_broadcasted = ak.broadcast(g.segments, str_vals, permutation=g.permutation)
+        self.assertTrue((gb_broadcasted == str_broadcast_ans).all())
+        self.assertTrue((manual_broadcasted == str_broadcast_ans).all())

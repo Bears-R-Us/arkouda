@@ -14,7 +14,6 @@ module TransferMsg
     use ServerErrorStrings;
 
     use SegmentedString;
-    use ArkoudaCTypesCompat;
 
     proc sendDataFrameSetupInfo(port:string, numColumns: int, elements: string) throws {
       var context: Context;
@@ -818,7 +817,7 @@ module TransferMsg
       else
         socket.connect("tcp://"+hostname+":"+port:string);
       var locData = socket.recv(bytes);
-      var locArr = makeArrayFromPtr(locData.c_str():c_ptr_void:c_ptr(t), intersection.size:uint);
+      var locArr = makeArrayFromPtr(locData.c_str():c_ptr(void):c_ptr(t), intersection.size:uint);
       A[intersection] = locArr;
     }
 
@@ -898,7 +897,7 @@ module TransferMsg
     }
 
     proc bytesToLocArray(size:int, type t, ref data:bytes) throws {
-      var res = makeArrayFromPtr(data.c_str():c_ptr_void:c_ptr(t), size:uint);
+      var res = makeArrayFromPtr(data.c_str():c_ptr(void):c_ptr(t), size:uint);
       return res;
     }
     
