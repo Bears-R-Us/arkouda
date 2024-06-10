@@ -853,6 +853,7 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_
               numProcessed++;
             }
             j++;
+            i++;
           }
         }
       } else if(ty == ARROWFLOAT) {
