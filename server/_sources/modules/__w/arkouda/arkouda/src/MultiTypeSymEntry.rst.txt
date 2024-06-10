@@ -143,6 +143,12 @@ or
 
    .. attribute:: var shape: string = "[0]"
 
+   .. method:: proc init(type etype, len: int = 0, ndim: int = 1)
+
+      
+      Create a 1D GenSymEntry from an array element type and length
+      
+
    .. method:: override proc getSizeEstimate(): int
 
    .. method:: proc toSymEntry(type etype, param dimensions = 1)
@@ -217,14 +223,32 @@ or
 
       only used with bigint pdarrays 
 
-   .. method:: proc init(a: [?D] ?etype) where MyDmap != Dmap.defaultRectangular && a.isDefaultRectangular()
+   .. method:: proc init(a: [?D] ?etype, max_bits = -1) where MyDmap != Dmap.defaultRectangular && a.isDefaultRectangular()
 
       
-      This init takes an array whose type is defaultRectangular (convenience
-      function for creating a distributed array from a non-distributed one)
+      Create a SymEntry from a defaultRectangular array (when the server is
+      configured to create distributed arrays)
       
       :arg a: array
       :type a: [] ?etype
+      
+
+   .. method:: proc init(in a: [?D] ?etype, max_bits = -1)
+
+      
+      Create a SymEntry from an array
+      
+
+   .. method:: proc init(args: int ...?N, type etype)
+
+      
+      Create a SymEntry from a shape and element type
+      
+      :args len: size of each dimension
+      :type len: int
+      
+      :arg etype: type to be instantiated
+      :type etype: type
       
 
    .. method:: proc deinit()

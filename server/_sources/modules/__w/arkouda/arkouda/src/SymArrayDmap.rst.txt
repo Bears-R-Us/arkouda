@@ -1,21 +1,21 @@
 .. default-domain:: chpl
 
-.. module:: SymArrayDmapCompat
+.. module:: SymArrayDmap
 
-SymArrayDmapCompat
-==================
+SymArrayDmap
+============
 **Usage**
 
 .. code-block:: chapel
 
-   use SymArrayDmapCompat;
+   use SymArrayDmap;
 
 
 or
 
 .. code-block:: chapel
 
-   import SymArrayDmapCompat;
+   import SymArrayDmap;
 
 .. enum:: enum Dmap { defaultRectangular, blockDist }
 
@@ -29,14 +29,9 @@ or
 
 .. data:: config param MyDmap: Dmap = defaultDmap
 
-   
-   How domains/arrays are distributed. Defaults to :enum:`Dmap.defaultRectangular` if
-   :param:`CHPL_COMM=none`, otherwise defaults to :enum:`Dmap.blockDist`.
-   
-
 .. function:: proc makeDistDom(shape: int ...?N)
 
-    
+   
    Makes a domain distributed according to :param:`MyDmap`.
    
    :arg shape: size of domain in each dimension
@@ -45,7 +40,7 @@ or
 
 .. function:: proc makeDistArray(shape: int ...?N, type etype) throws where N == 1
 
-    
+   
    Makes an array of specified type over a distributed domain
    
    :arg shape: size of the domain in each dimension

@@ -105,7 +105,7 @@ or
       Chapel range, i.e. low..high by stride, not a Python slice.
       Returns arrays for the segment offsets and bytes of the slice.
 
-   .. method:: proc this(const slice: stridableRange) throws
+   .. method:: proc this(const slice: range(strides = strideKind.any)) throws
 
    .. method:: proc this(iv: [?D] ?t) throws where t == int || t == uint
 
