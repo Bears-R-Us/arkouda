@@ -42,6 +42,7 @@ Submodules
    /autoapi/arkouda/numpy/index
    /autoapi/arkouda/pdarrayclass/index
    /autoapi/arkouda/pdarraycreation/index
+   /autoapi/arkouda/pdarraymanipulation/index
    /autoapi/arkouda/pdarraysetops/index
    /autoapi/arkouda/plotting/index
    /autoapi/arkouda/row/index
@@ -415,6 +416,7 @@ Functions
    arkouda.update_hdf
    arkouda.value_counts
    arkouda.var
+   arkouda.vstack
    arkouda.where
    arkouda.where
    arkouda.where
@@ -39799,6 +39801,26 @@ Package Contents
    unbiased estimator of the variance of a hypothetical infinite population.
    ``ddof=0`` provides a maximum likelihood estimate of the variance for
    normally distributed variables.
+
+
+.. py:function:: vstack(tup: Union[Tuple[arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], *, dtype: Optional[Union[type, str]] = None, casting: Literal['no', 'equiv', 'safe', 'same_kind', 'unsafe'] = 'same_kind') -> arkouda.pdarrayclass.pdarray
+
+   Stack a sequence of arrays vertically (row-wise).
+
+   This is equivalent to concatenation along the first axis after 1-D arrays of
+   shape `(N,)` have been reshaped to `(1,N)`.
+
+   :param tup: The arrays to be stacked
+   :type tup: Tuple[pdarray]
+   :param dtype: The data-type of the output array. If not provided, the output
+                 array will be determined using `np.common_type` on the
+                 input arrays Defaults to None
+   :type dtype: Optional[Union[type, str]], optional
+   :param casting: Controls what kind of data casting may occur - currently unused
+   :type casting: {"no", "equiv", "safe", "same_kind", "unsafe"], optional
+
+   :returns: *
+             * *pdarray* -- The stacked array
 
 
 .. py:function:: where(condition: arkouda.pdarrayclass.pdarray, A: Union[str, arkouda.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], B: Union[str, arkouda.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]
