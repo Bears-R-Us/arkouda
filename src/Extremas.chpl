@@ -4,7 +4,7 @@
 //
 
 module Extremas {
-  use SymArrayDmapCompat;
+  use SymArrayDmap;
   use Sort;
 
 /*

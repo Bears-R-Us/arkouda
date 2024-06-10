@@ -1,7 +1,7 @@
 module RegistrationMsg {
     use ServerConfig;
 
-    use ArkoudaTimeCompat as Time;
+    use Time;
     use Math only;
     use Reflection;
     use ServerErrors;
@@ -23,7 +23,6 @@ module RegistrationMsg {
     use GenSymIO;
 
     use ArkoudaIOCompat;
-    use ArkoudaMapCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;

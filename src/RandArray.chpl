@@ -69,6 +69,9 @@ module RandArray {
   }
 
   proc fillNormal(ref a:[?D] real, const seedStr:string="None") throws {
+    // uses Box–Muller transform
+    // generates values drawn from the standard normal distribution using
+    // 2 uniformly distributed random numbers
     var u1 = makeDistArray(D, real);
     var u2 = makeDistArray(D, real);
     if (seedStr.toLower() == "none") {
@@ -175,12 +178,12 @@ module RandArray {
 
     // compute the normalized cumulative weights
     var cw = + scan weights;
-    cw /= cw[dw.size-1];
+    cw /= cw[dw.last];
 
     if !Sort.isSorted(cw) then
       throw new IllegalArgumentError("'weights' cannot contain negative values");
 
-    if cw[dw.size-1] <= 1e-15 then
+    if cw[dw.last] <= 1e-15 then
       throw new IllegalArgumentError("'weights' must contain at least one non-zero value");
 
     const dOut = {0..<n};
@@ -207,12 +210,12 @@ module RandArray {
         // add the sampled index to the list of indices and the list of samples
         weightsCopy[ii] = 0;
         indices += ii;
-        i += 1;
         samples[i] = ii;
+        i += 1;
 
         // recompute the normalized cumulative weights
         cw = + scan weightsCopy;
-        cw /= cw[dw.size-1];
+        cw /= cw[dw.last];
       }
     }
 

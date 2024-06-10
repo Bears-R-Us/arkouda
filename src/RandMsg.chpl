@@ -2,8 +2,8 @@ module RandMsg
 {
     use ServerConfig;
     
-    use ArkoudaTimeCompat as Time;
-    use Math only;
+    use Time;
+    use Math;
     use Reflection;
     use ServerErrors;
     use ServerConfig;
@@ -297,6 +297,185 @@ module RandMsg
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
+    proc standardNormalGeneratorMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        const pn = Reflection.getRoutineName(),
+              name = msgArgs.getValueOf("name"),                // generator name
+              size = msgArgs.get("size").getIntValue(),         // population size
+              state = msgArgs.get("state").getIntValue(),       // rng state
+              rname = st.nextName();
+
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "name: %? size %i state %i".doFormat(name, size, state));
+
+        st.checkTable(name);
+
+        var generatorEntry: borrowed GeneratorSymEntry(real) = toGeneratorSymEntry(st.lookup(name), real);
+        ref rng = generatorEntry.generator;
+        if state != 1 {
+            // you have to skip to one before where you want to be
+            rng.skipTo(state-1);
+        }
+
+        // uses Box–Muller transform
+        // generates values drawn from the standard normal distribution using
+        // 2 uniformly distributed random numbers
+        var u1 = makeDistArray(size, real);
+        var u2 = makeDistArray(size, real);
+        rng.fill(u1);
+        rng.fill(u2);
+
+        var standNorm = sqrt(-2*log(u1))*cos(2*pi*u2);
+        st.addEntry(rname, createSymEntry(standNorm));
+
+        var repMsg = "created " + st.attrib(rname);
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
+    proc segmentedSampleMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        const pn = Reflection.getRoutineName(),
+              genName = msgArgs.getValueOf("genName"),                          // generator name
+              permName = msgArgs.getValueOf("perm"),                            // values array name
+              segsName = msgArgs.getValueOf("segs"),                            // segments array name
+              segLensName = msgArgs.getValueOf("segLens"),                      // segment lengths array name
+              weightsName = msgArgs.getValueOf("weights"),                      // permuted weights array name
+              numSamplesName = msgArgs.getValueOf("numSamples"),                // number of samples per segment array name
+              replace = msgArgs.get("replace").getBoolValue(),                  // sample with replacement
+              hasWeights = msgArgs.get("hasWeights").getBoolValue(),            // flag indicating whether weighted sample
+              hasSeed = msgArgs.get("hasSeed").getBoolValue(),                  // flag indicating if generator is seeded
+              seed = if hasSeed then msgArgs.get("seed").getIntValue() else -1, // value of seed if present
+              state = msgArgs.get("state").getIntValue(),                       // rng state
+              rname = st.nextName();
+
+        randLogger.debug(getModuleName(),pn,getLineNumber(),
+                         "genName: %? permName %? segsName: %? weightsName: %? numSamplesName %? replace %i hasWeights %i state %i rname %?"
+                         .doFormat(genName, permName, segsName, weightsName, numSamplesName, replace, hasWeights, state, rname));
+
+        st.checkTable(permName);
+        st.checkTable(segsName);
+        st.checkTable(segLensName);
+        st.checkTable(numSamplesName);
+        const permutation = toSymEntry(getGenericTypedArrayEntry(permName, st),int).a;
+        const segments = toSymEntry(getGenericTypedArrayEntry(segsName, st),int).a;
+        const segLens = toSymEntry(getGenericTypedArrayEntry(segLensName, st),int).a;
+        const numSamples = toSymEntry(getGenericTypedArrayEntry(numSamplesName, st),int).a;
+
+        const sampleOffset = (+ scan numSamples) - numSamples;
+        var sampledPerm: [makeDistDom(+ reduce numSamples)] int;
+
+        if hasWeights {
+            st.checkTable(weightsName);
+            const weights = toSymEntry(getGenericTypedArrayEntry(weightsName, st),real).a;
+
+            forall (segOff, segLen, sampleOff, numSample) in zip(segments, segLens, sampleOffset, numSamples)
+                                                 with (var rs = if hasSeed then new randomStream(real, seed) else new randomStream(real)) {
+                if state != 1 then rs.skipTo((state+sampleOff) - 1); else rs.skipTo(sampleOff);
+                const ref segPerm = permutation[segOff..#segLen];
+                const ref segWeights = weights[segOff..#segLen];
+                sampledPerm[sampleOff..#numSample] = randSampleWeights(rs, segPerm, segWeights, numSample, replace);
+            }
+        }
+        else {
+            forall (segOff, segLen, sampleOff, numSample) in zip(segments, segLens, sampleOffset, numSamples)
+                                                 with (var rs = if hasSeed then new randomStream(int, seed) else new randomStream(int)) {
+                if state != 1 then rs.skipTo((state+sampleOff) - 1); else rs.skipTo(sampleOff);
+                const ref segPerm = permutation[segOff..#segLen];
+                sampledPerm[sampleOff..#numSample] = rs.sample(segPerm, numSample, replace);
+            }
+        }
+
+        st.addEntry(rname, createSymEntry(sampledPerm));
+        const repMsg = "created " + st.attrib(rname);
+        randLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
+    proc choiceMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        const pn = Reflection.getRoutineName(),
+              gName = msgArgs.getValueOf("gName"),                      // generator name
+              aName = msgArgs.getValueOf("aName"),                      // values array name
+              wName = msgArgs.getValueOf("wName"),                      // weights array name
+              numSamples = msgArgs.get("numSamples").getIntValue(),     // number of samples
+              replace = msgArgs.get("replace").getBoolValue(),          // sample with replacement
+              hasWeights = msgArgs.get("hasWeights").getBoolValue(),    // flag indicating whether weighted sample
+              isDom = msgArgs.get("isDom").getBoolValue(),              // flag indicating whether return is domain or array
+              popSize  = msgArgs.get("popSize").getIntValue(),          // population size
+              dtypeStr = msgArgs.getValueOf("dtype"),                   // string version of dtype
+              dtype = str2dtype(dtypeStr),                              // DType enum
+              state = msgArgs.get("state").getIntValue(),               // rng state
+              rname = st.nextName();
+
+        randLogger.debug(getModuleName(),pn,getLineNumber(),
+                         "gname: %? aname %? wname: %? numSamples %i replace %i hasWeights %i isDom %i dtype %? popSize %? state %i rname %?"
+                         .doFormat(gName, aName, wName, numSamples, replace, hasWeights, isDom, dtypeStr, popSize, state, rname));
+
+        proc weightedIdxHelper() throws {
+            var generatorEntry = toGeneratorSymEntry(st.lookup(gName), real);
+            ref rng = generatorEntry.generator;
+
+            if state != 1 then rng.skipTo(state-1);
+
+            st.checkTable(wName);
+            const weights = toSymEntry(getGenericTypedArrayEntry(wName, st),real).a;
+            return sampleDomWeighted(rng, numSamples, weights, replace);
+        }
+
+        proc idxHelper() throws {
+            var generatorEntry = toGeneratorSymEntry(st.lookup(gName), int);
+            ref rng = generatorEntry.generator;
+
+            if state != 1 then rng.skipTo(state-1);
+
+            const choiceDom = {0..<popSize};
+            return rng.sample(choiceDom, numSamples, replace);
+        }
+
+        proc choiceHelper(type t) throws {
+            // I had to break these 2 helpers out into seprate functions since they have different types for generatorEntry
+            const choiceIdx = if hasWeights then weightedIdxHelper() else idxHelper();
+
+            if isDom {
+                const choiceEntry = createSymEntry(choiceIdx);
+                st.addEntry(rname, choiceEntry);
+            }
+            else {
+                var choiceArr: [makeDistDom(numSamples)] t;
+                st.checkTable(aName);
+                const myArr = toSymEntry(getGenericTypedArrayEntry(aName, st),t).a;
+
+                forall (ca,idx) in zip(choiceArr, choiceIdx) with (var agg = newSrcAggregator(t)) {
+                    agg.copy(ca, myArr[idx]);
+                }
+
+                const choiceEntry = createSymEntry(choiceArr);
+                st.addEntry(rname, choiceEntry);
+            }
+            const repMsg = "created " + st.attrib(rname);
+            randLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
+            return new MsgTuple(repMsg, MsgType.NORMAL);
+        }
+
+        select dtype {
+            when DType.Int64 {
+                return choiceHelper(int);
+            }
+            when DType.UInt64 {
+                return choiceHelper(uint);
+            }
+            when DType.Float64 {
+                return choiceHelper(real);
+            }
+            when DType.Bool {
+                return choiceHelper(bool);
+            }
+            otherwise {
+                const errorMsg = "Unhandled data type %s".doFormat(dtypeStr);
+                randLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+                return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
+            }
+        }
+    }
+
     proc permutationMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         const pn = Reflection.getRoutineName();
         var rname = st.nextName();
@@ -368,6 +547,101 @@ module RandMsg
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
+    proc poissonGeneratorMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        const pn = Reflection.getRoutineName(),
+              name = msgArgs.getValueOf("name"),                                // generator name
+              isSingleLam = msgArgs.get("is_single_lambda").getBoolValue(),     // boolean indicated if lambda is a single value or array
+              lamStr = msgArgs.getValueOf("lam"),                               // lambda for poisson distribution
+              size = msgArgs.get("size").getIntValue(),                         // number of values to be generated
+              state = msgArgs.get("state").getIntValue(),                       // rng state
+              rname = st.nextName();
+
+
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "name: %? size %i isSingleLam %? lamStr %? state %i".doFormat(name, size, isSingleLam, lamStr, state));
+
+        st.checkTable(name);
+
+        var generatorEntry: borrowed GeneratorSymEntry(real) = toGeneratorSymEntry(st.lookup(name), real);
+        ref rng = generatorEntry.generator;
+        if state != 1 {
+            // you have to skip to one before where you want to be
+            rng.skipTo(state-1);
+        }
+
+        // uses the algorithm from knuth found here:
+        // https://en.wikipedia.org/wiki/Poisson_distribution#Random_variate_generation
+        // generates values drawn from poisson distribution using a stream of uniformly distributed random numbers
+
+        const nTasksPerLoc = here.maxTaskPar; // tasks per locale based on locale0
+        const Tasks = {0..#nTasksPerLoc}; // these need to be const for comms/performance reasons
+
+        const generatorSeed = (rng.next() * 2**62):int;
+        var poissonArr = makeDistArray(size, int);
+
+        // I hate the code duplication here but it's not immediately obvious to me how to avoid it
+        if isSingleLam {
+            const lam = lamStr:real;
+            // using nested coforalls over locales and tasks so we know how to generate taskSeed
+            coforall loc in Locales do on loc {
+                const generatorIdxOffset = here.id * nTasksPerLoc,
+                    locSubDom = poissonArr.localSubdomain(),  // the chunk that this locale needs to handle
+                    indicesPerTask = locSubDom.size / nTasksPerLoc;  // the number of elements each task needs to handle
+
+                coforall tid in Tasks {
+                    const taskSeed = generatorSeed + generatorIdxOffset + tid,  // initial seed offset by other locales threads plus current thread id
+                        startIdx = tid * indicesPerTask,
+                        stopIdx = if tid == nTasksPerLoc - 1 then locSubDom.size else (tid + 1) * indicesPerTask;  // the last task picks up the remainder of indices
+                    var rs = new randomStream(real, taskSeed);
+                    for i in startIdx..<stopIdx {
+                        var L = exp(-lam);
+                        var k = 0;
+                        var p = 1.0;
+
+                        do {
+                            k += 1;
+                            p = p * rs.next(0, 1);
+                        } while p > L;
+                        poissonArr[locSubDom.low + i] = k - 1;
+                    }
+                }
+            }
+        }
+        else {
+            st.checkTable(lamStr);
+            const lamArr = toSymEntry(getGenericTypedArrayEntry(lamStr, st),real).a;
+            // using nested coforalls over locales and task so we know exactly how many generators we need
+            coforall loc in Locales do on loc {
+                const generatorIdxOffset = here.id * nTasksPerLoc,
+                    locSubDom = poissonArr.localSubdomain(),  // the chunk that this locale needs to handle
+                    indicesPerTask = locSubDom.size / nTasksPerLoc;  // the number of elements each task needs to handle
+
+                coforall tid in Tasks {
+                    const taskSeed = generatorSeed + generatorIdxOffset + tid,
+                        startIdx = tid * indicesPerTask,
+                        stopIdx = if tid == nTasksPerLoc - 1 then locSubDom.size else (tid + 1) * indicesPerTask;  // the last task picks up the remainder of indices
+                    var rs = new randomStream(real, taskSeed);
+                    for i in startIdx..<stopIdx {
+                        const lam = lamArr[locSubDom.low + i];
+                        var L = exp(-lam);
+                        var k = 0;
+                        var p = 1.0;
+
+                        do {
+                            k += 1;
+                            p = p * rs.next(0, 1);
+                        } while p > L;
+                        poissonArr[locSubDom.low + i] = k - 1;
+                    }
+                }
+            }
+        }
+        st.addEntry(rname, createSymEntry(poissonArr));
+        const repMsg = "created " + st.attrib(rname);
+        randLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
     proc shuffleMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         const pn = Reflection.getRoutineName();
         const name = msgArgs.getValueOf("name");
@@ -419,58 +693,14 @@ module RandMsg
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    proc sampleWeightsMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
-        const pn = Reflection.getRoutineName(),
-              gName = msgArgs.getValueOf("gName"),              // generator name
-              aName = msgArgs.getValueOf("aName"),              // values array name
-              wName = msgArgs.getValueOf("wName"),              // weights array name
-              n = msgArgs.get("n").getIntValue(),               // number of samples
-              replace = msgArgs.get("replace").getBoolValue(),  // sample with replacement?
-              state = msgArgs.get("state").getIntValue(),       // rng state
-              rname = st.nextName();
-
-        randLogger.debug(getModuleName(),pn,getLineNumber(),
-                         "gname: %? aname %? wname: %? n %i replace %i state %i rname %?"
-                         .doFormat(gName, aName, wName, n, replace, state, rname));
-
-        var aGEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(aName, st),
-            wGEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(wName, st);
-
-        proc sampleHelper(type t): MsgTuple throws {
-            const aE = toSymEntry(aGEnt, t),
-                  wE = toSymEntry(wGEnt, real); // weights are always real
-
-            var generatorEntry: borrowed GeneratorSymEntry(real) = toGeneratorSymEntry(st.lookup(gName), real);
-            ref rng = generatorEntry.generator;
-            if state != 1 then rng.skipTo(state-1);
-
-            const s = randSampleWeights(rng, aE.a, wE.a, n, replace);
-            st.addEntry(rname, createSymEntry(s));
-
-            const repMsg = "created " + st.attrib(rname);
-            randLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
-            return new MsgTuple(repMsg, MsgType.NORMAL);
-        }
-
-        select aGEnt.dtype {
-            when DType.Int64 do return sampleHelper(int);
-            when DType.UInt64 do return sampleHelper(uint);
-            when DType.Float64 do return sampleHelper(real);
-            when DType.Bool do return sampleHelper(bool);
-            otherwise {
-                const errorMsg = "Unhandled data type %s".doFormat(dtype2str(aGEnt.dtype));
-                randLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
-                return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
-            }
-        }
-
-    }
-
     use CommandMap;
     registerFunction("randomNormal", randomNormalMsg, getModuleName());
     registerFunction("createGenerator", createGeneratorMsg, getModuleName());
     registerFunction("uniformGenerator", uniformGeneratorMsg, getModuleName());
+    registerFunction("standardNormalGenerator", standardNormalGeneratorMsg, getModuleName());
+    registerFunction("segmentedSample", segmentedSampleMsg, getModuleName());
+    registerFunction("choice", choiceMsg, getModuleName());
     registerFunction("permutation", permutationMsg, getModuleName());
+    registerFunction("poissonGenerator", poissonGeneratorMsg, getModuleName());
     registerFunction("shuffle", shuffleMsg, getModuleName());
-    registerFunction("sampleWeights", sampleWeightsMsg, getModuleName());
 }

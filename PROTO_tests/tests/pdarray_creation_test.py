@@ -744,3 +744,10 @@ class TestPdarrayCreation:
                 passed += 1
 
         assert passed >= trials * 0.8
+
+    def test_inferred_type(self):
+        a = ak.array([1, 2, 3])
+        assert a.inferred_type == "integer"
+
+        a2 = ak.array([1.0, 2, 3])
+        assert a2.inferred_type == "floating"

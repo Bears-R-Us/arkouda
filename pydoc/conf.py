@@ -81,7 +81,19 @@ autoapi_options = [
 autoapi_member_order = "alphabetical"
 
 # do not create api reference for
-autoapi_ignore = ["*migrations*", "*_version.py", "*decorators.py", "*message.py"]
+autoapi_ignore = [
+    "*migrations*",
+    "*_version.py",
+    "*decorators.py",
+    "*message.py",
+    "*arkouda/dataframe.py",
+    "*arkouda/groupbyclass.py",
+    "*arkouda/series.py",
+    "*arkouda/numpy/*py",
+    "*arkouda/scipy/*py",
+    "*arkouda/scipy/stats/*py",
+    "*arkouda/scipy/special/*py",
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]

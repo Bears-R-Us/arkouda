@@ -1,8 +1,10 @@
 import pandas as pd
 import pytest
+from numpy import dtype as npdtype
 
 import arkouda as ak
 from arkouda.dtypes import dtype
+from arkouda.index import Index
 from arkouda.pdarrayclass import pdarray
 
 
@@ -35,13 +37,13 @@ class TestIndex:
         # test list generation
         idx = ak.MultiIndex([ak.arange(size), ak.arange(size)])
         assert isinstance(idx, ak.MultiIndex)
-        assert idx.levels == 2
+        assert idx.nlevels == 2
         assert idx.size == size
 
         # test tuple generation
         idx = ak.MultiIndex((ak.arange(size), ak.arange(size)))
         assert isinstance(idx, ak.MultiIndex)
-        assert idx.levels == 2
+        assert idx.nlevels == 2
         assert idx.size == size
 
         with pytest.raises(TypeError):
@@ -49,6 +51,216 @@ class TestIndex:
 
         with pytest.raises(ValueError):
             idx = ak.MultiIndex([ak.arange(size), ak.arange(size - 1)])
+
+    def test_name_names(self):
+        i = ak.Index([1, 2, 3], name="test")
+        assert i.name == "test"
+        assert i.names == ["test"]
+
+        size = 10
+        m = ak.MultiIndex([ak.arange(size), ak.arange(size) * -1], names=["test", "test2"])
+        assert m.names == ["test", "test2"]
+
+    def test_nlevels(self):
+        i = ak.Index([1, 2, 3], name="test")
+        assert i.nlevels == 1
+
+        size = 10
+        m = ak.MultiIndex([ak.arange(size), ak.arange(size) * -1])
+        assert m.nlevels == 2
+
+    def test_ndim(self):
+        i = ak.Index([1, 2, 3], name="test")
+        assert i.ndim == 1
+
+        size = 10
+        m = ak.MultiIndex([ak.arange(size), ak.arange(size) * -1])
+        assert m.ndim == 1
+
+    def test_dtypes(self):
+        size = 10
+        i = ak.Index(ak.arange(size, dtype="float64"))
+        assert i.dtype == dtype("float64")
+
+        m = ak.MultiIndex([ak.arange(size), ak.arange(size) * -1])
+        assert m.dtype == npdtype("O")
+
+    def test_inferred_type(self):
+        i = ak.Index([1, 2, 3])
+        assert i.inferred_type == "integer"
+
+        i2 = ak.Index([1.0, 2, 3])
+        assert i2.inferred_type == "floating"
+
+        i3 = ak.Index(["a", "b", "c"], allow_list=True)
+        assert i3.inferred_type == "string"
+
+        from arkouda.categorical import Categorical
+
+        i4 = ak.Index(Categorical(ak.array(["a", "b", "c"])))
+        assert i4.inferred_type == "categorical"
+
+        size = 10
+        m = ak.MultiIndex([ak.arange(size), ak.arange(size) * -1], names=["test", "test2"])
+        assert m.inferred_type == "mixed"
+
+    @staticmethod
+    def assert_equal(pda1, pda2):
+        from arkouda import sum as aksum
+
+        assert pda1.size == pda2.size
+        assert aksum(pda1 != pda2) == 0
+
+    def test_get_item(self):
+        i = ak.Index([1, 2, 3])
+        assert i[2] == 3
+        assert isinstance(i[[0, 1]], Index)
+        assert i[[0, 1]].equals(Index([1, 2]))
+
+        i2 = ak.Index([1, 2, 3], allow_list=True)
+        assert i2[2] == 3
+        assert i2[[0, 1]].equals(Index([1, 2], allow_list=True))
+
+        i3 = ak.Index(["a", "b", "c"], allow_list=True)
+        assert i3[2] == "c"
+        assert i3[[0, 1]].equals(Index(["a", "b"], allow_list=True))
+
+    def test_eq(self):
+        i = ak.Index([1, 2, 3])
+        i_cpy = ak.Index([1, 2, 3])
+        self.assert_equal(i == i_cpy, ak.array([True, True, True]))
+        self.assert_equal(i != i_cpy, ak.array([False, False, False]))
+        assert i.equals(i_cpy)
+
+        i2 = ak.Index([1, 2, 3], allow_list=True)
+        i2_cpy = ak.Index([1, 2, 3], allow_list=True)
+        self.assert_equal(i2 == i2_cpy, ak.array([True, True, True]))
+        self.assert_equal(i2 != i2_cpy, ak.array([False, False, False]))
+        assert i2.equals(i2_cpy)
+
+        self.assert_equal(i == i2, ak.array([True, True, True]))
+        self.assert_equal(i != i2, ak.array([False, False, False]))
+        assert i.equals(i2)
+
+        i3 = ak.Index(["a", "b", "c"], allow_list=True)
+        i3_cpy = ak.Index(["a", "b", "c"], allow_list=True)
+        self.assert_equal(i3 == i3_cpy, ak.array([True, True, True]))
+        self.assert_equal(i3 != i3_cpy, ak.array([False, False, False]))
+        assert i3.equals(i3_cpy)
+
+        i4 = ak.Index(["a", "b", "c"], allow_list=False)
+        i4_cpy = ak.Index(["a", "b", "c"], allow_list=False)
+        self.assert_equal(i4 == i4_cpy, ak.array([True, True, True]))
+        self.assert_equal(i4 != i4_cpy, ak.array([False, False, False]))
+        assert i3.equals(i3_cpy)
+
+        i5 = ak.Index(["a", "x", "c"], allow_list=True)
+        self.assert_equal(i3 == i5, ak.array([True, False, True]))
+        self.assert_equal(i3 != i5, ak.array([False, True, False]))
+        assert not i3.equals(i5)
+
+        i6 = ak.Index(["a", "b", "c", "d"], allow_list=True)
+        assert not i5.equals(i6)
+
+        with pytest.raises(ValueError):
+            i5 == i6
+
+        with pytest.raises(ValueError):
+            i5 != i6
+
+        with pytest.raises(TypeError):
+            i.equals("string")
+
+    def test_multiindex_equals(self):
+        size = 10
+        arrays = [ak.array([1, 1, 2, 2]), ak.array(["red", "blue", "red", "blue"])]
+        m = ak.MultiIndex(arrays, names=["numbers", "colors"])
+        assert m.equals(m)
+
+        arrays2 = [ak.array([1, 1, 2, 2]), ak.array(["red", "blue", "red", "blue"])]
+        m2 = ak.MultiIndex(arrays2, names=["numbers2", "colors2"])
+        assert m.equals(m2)
+
+        arrays3 = [
+            ak.array([1, 1, 2, 2]),
+            ak.array(["red", "blue", "red", "blue"]),
+            ak.array([1, 1, 2, 2]),
+        ]
+        m3 = ak.MultiIndex(arrays3, names=["numbers", "colors2", "numbers3"])
+        assert not m.equals(m3)
+
+        arrays4 = [ak.array([1, 1, 2, 2]), ak.array(["red", "blue", "red", "green"])]
+        m4 = ak.MultiIndex(arrays4, names=["numbers2", "colors2"])
+        assert not m.equals(m4)
+
+        m5 = ak.MultiIndex([ak.arange(size)])
+        i = ak.Index(ak.arange(size))
+        assert not m5.equals(i)
+        assert not i.equals(m5)
+
+    def test_equal_levels(self):
+        m = ak.MultiIndex(
+            [ak.arange(3), ak.arange(3) * -1, ak.array(["a", 'b","c', "d"])],
+            names=["col1", "col2", "col3"],
+        )
+
+        m2 = ak.MultiIndex(
+            [ak.arange(3), ak.arange(3) * -1, ak.array(["a", 'b","c', "d"])],
+            names=["A", "B", "C"],
+        )
+
+        assert m.equal_levels(m2)
+
+        m3 = ak.MultiIndex(
+            [ak.arange(3), ak.arange(3) * -1, ak.array(["a", 'b","c', "d"]), 2 * ak.arange(3)],
+            names=["col1", "col2", "col3"],
+        )
+
+        assert not m.equal_levels(m3)
+
+        m4 = ak.MultiIndex(
+            [ak.arange(3), ak.arange(3) * 2, ak.array(["a", 'b","c', "d"])],
+            names=["col1", "col2", "col3"],
+        )
+
+        assert not m.equal_levels(m4)
+
+    def test_get_level_values(self):
+        m = ak.MultiIndex(
+            [ak.arange(3), ak.arange(3) * -1, ak.array(["a", 'b","c', "d"])],
+            names=["col1", "col2", "col3"],
+        )
+
+        i1 = Index(ak.arange(3), name="col1")
+        self.assert_equal(m.get_level_values(0), i1)
+        self.assert_equal(m.get_level_values("col1"), i1)
+
+        i2 = Index(ak.arange(3) * -1, name="col2")
+        self.assert_equal(m.get_level_values(1), i2)
+        self.assert_equal(m.get_level_values("col2"), i2)
+
+        i3 = Index(ak.array(["a", 'b","c', "d"]), name="col3")
+        self.assert_equal(m.get_level_values(2), i3)
+        self.assert_equal(m.get_level_values("col3"), i3)
+
+        with pytest.raises(ValueError):
+            m.get_level_values("col4")
+
+        #   Test when names=None
+        m2 = ak.MultiIndex(
+            [ak.arange(3), ak.arange(3) * -1, ak.array(["a", 'b","c', "d"])],
+        )
+        i4 = Index(ak.arange(3))
+        self.assert_equal(m2.get_level_values(0), i4)
+
+        with pytest.raises(RuntimeError):
+            m2.get_level_values("col")
+
+        with pytest.raises(ValueError):
+            m2.get_level_values(m2.nlevels)
+
+        with pytest.raises(ValueError):
+            m2.get_level_values(-1 * m2.nlevels)
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_memory_usage(self, size):

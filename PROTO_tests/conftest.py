@@ -56,10 +56,10 @@ def startup_teardown():
         raise EnvironmentError("pytest and pytest-env must be installed")
     if TestRunningMode.CLASS_SERVER == test_running_mode:
         try:
-            server, _, _ = start_arkouda_server(numlocales=pytest.nl, port=pytest.port)
+            pytest.server, _, _ = start_arkouda_server(numlocales=pytest.nl, port=pytest.port)
             print(
                 "Started arkouda_server in TEST_CLASS mode with "
-                "host: {} port: {} locales: {}".format(server, pytest.port, pytest.nl)
+                "host: {} port: {} locales: {}".format(pytest.server, pytest.port, pytest.nl)
             )
         except Exception as e:
             raise RuntimeError(

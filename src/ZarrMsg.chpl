@@ -23,9 +23,7 @@ module ZarrMsg {
   use SegmentedString;
 
   use Map;
-  use ArkoudaCTypesCompat;
-  use ArkoudaIOCompat;
-  use ArkoudaMathCompat;
+  use Math;
 
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;

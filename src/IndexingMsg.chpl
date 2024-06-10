@@ -17,12 +17,9 @@ module IndexingMsg
 
     use FileIO;
     use List;
+    use BigInteger;
 
-    use ArkoudaBigIntCompat;
     use Map;
-    use ArkoudaFileCompat;
-    use ArkoudaBigIntCompat;
-    use ArkoudaRangeCompat;
     use ArkoudaIOCompat;
 
     private config const logLevel = ServerConfig.logLevel;
@@ -63,7 +60,7 @@ module IndexingMsg
                 }
                 when "slice" {
                     var (start, stop, stride) = jsonToTuple(typeCoords[i+1], 3*int);
-                    var slice: stridableRange = convertSlice(start, stop, stride);
+                    var slice: range(strides=strideKind.any) = convertSlice(start, stop, stride);
                     var scaled: [0..#slice.size] int = slice * dimProdEntry.a[i/2];
                     for j in 0..#slice.size {
                         scaledCoords[offsets[i/2]+j] = scaled[j];
@@ -264,8 +261,8 @@ module IndexingMsg
     }
 
     /* convert python slice to chapel slice */
-    proc convertSlice(start: int, stop: int, stride: int): stridableRange {
-        var slice: stridableRange;
+    proc convertSlice(start: int, stop: int, stride: int): range(strides=strideKind.any) {
+        var slice: range(strides=strideKind.any);
         // backwards iteration with negative stride
         if  (start > stop) & (stride < 0) {slice = (stop+1)..start by stride;}
         // forward iteration with positive stride
@@ -286,8 +283,8 @@ module IndexingMsg
               array = msgArgs.getValueOf("array"),
               rname = st.nextName();
 
-        var sliceRanges: nd * stridableRange,
-            outDomRanges: nd * stridableRange;
+        var sliceRanges: nd * range(strides=strideKind.any),
+            outDomRanges: nd * range(strides=strideKind.any);
         for param dim in 0..<nd {
             sliceRanges[dim] = convertSlice(starts[dim], stops[dim], strides[dim]);
             outDomRanges[dim] = starts[dim]..#sliceRanges[dim].size;
@@ -336,7 +333,7 @@ module IndexingMsg
         const start = msgArgs.get("starts").getTuple(1);
         const stop = msgArgs.get("stops").getTuple(1);
         const stride = msgArgs.get("strides").getTuple(1);
-        var slice: stridableRange = convertSlice(start[0], stop[0], stride[0]);
+        var slice: range(strides=strideKind.any) = convertSlice(start[0], stop[0], stride[0]);
 
         // get next symbol name
         var rname = st.nextName();
@@ -1194,7 +1191,7 @@ module IndexingMsg
 
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
-        var sliceRanges: nd * stridableRange;
+        var sliceRanges: nd * range(strides=strideKind.any);
         for param dim in 0..<nd do
             sliceRanges[dim] = convertSlice(starts[dim], stops[dim], strides[dim]);
         const sliceDom = {(...sliceRanges)};
@@ -1270,7 +1267,7 @@ module IndexingMsg
         const stop = msgArgs.get("stop").getIntValue();
         const stride = msgArgs.get("stride").getIntValue();
         const dtype = str2dtype(msgArgs.getValueOf("dtype"));
-        var slice: stridableRange = convertSlice(start, stop, stride);
+        var slice: range(strides=strideKind.any) = convertSlice(start, stop, stride);
         var value = msgArgs.get("value");
 
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -1418,15 +1415,115 @@ module IndexingMsg
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL); 
     }
-    
+
+    @arkouda.registerND(cmd_prefix="[slice]=pdarray-")
+    proc setSliceIndexToPdarrayMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
+        // take simplified path for 1D case
+        if nd == 1 then return setSliceIndexToPdarrayMsg1D(cmd, msgArgs, st);
+
+        param pn = Reflection.getRoutineName();
+        const starts = msgArgs.get("starts").getTuple(nd),
+              stops = msgArgs.get("stops").getTuple(nd),
+              strides = msgArgs.get("strides").getTuple(nd),
+              name = msgArgs.getValueOf("array"),
+              yname = msgArgs.getValueOf("value");
+
+        var sliceRanges: nd * range(strides=strideKind.any);
+        for param dim in 0..<nd do
+            sliceRanges[dim] = convertSlice(starts[dim], stops[dim], strides[dim]);
+        const sliceDom = {(...sliceRanges)};
+
+        imLogger.debug(getModuleName(),pn,getLineNumber(),
+                       "%s into: '%s' over domain: '%?' from: %s''"
+                       .doFormat(cmd, name, sliceDom, yname));
+
+        var gX: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st),
+            gY: borrowed GenSymEntry = getGenericTypedArrayEntry(yname, st);
+
+        proc sliceAssignHelper(type xt, type yt, param adjustMaxSize=false): MsgTuple throws {
+            // note 'value'/'y' needs to be expanded to match 'array'/'x's rank before
+            // calling this command
+            var ex = toSymEntry(gX,xt,nd);
+            const ey = toSymEntry(gY,yt,nd);
+
+            // ensure the slice assignment is valid
+            for dim in 0..<nd {
+                if ey.tupShape[dim] != sliceDom.dim[dim].size {
+                    const errMsg = "shape of slice does not match array in dimension %i".doFormat(dim) +
+                                    " (%i != %i)".doFormat(ey.tupShape[dim], sliceDom.dim[dim].size);
+                    imLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
+                    return new MsgTuple(errMsg, MsgType.ERROR);
+                }
+                if sliceDom.dim[dim].low < 0 || sliceDom.dim[dim].high > ex.tupShape[dim] {
+                    const errMsg = "slice indices out of bounds in dimension %i".doFormat(dim) +
+                                   " (%i..%i not in 0..<%i)".doFormat(sliceDom.dim[dim].low,
+                                                                sliceDom.dim[dim].high, ex.tupShape[dim]);
+                    imLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
+                    return new MsgTuple(errMsg, MsgType.ERROR);
+                }
+            }
+
+            // adjust y's max size for bigint arrays
+            if adjustMaxSize {
+                var ya = ey.a:bigint;
+                if ex.max_bits != -1 {
+                    var max_size = 1:bigint;
+                    max_size <<= ex.max_bits;
+                    max_size -= 1;
+                    forall y in ya with (const local_max_size = max_size) {
+                        y &= local_max_size;
+                    }
+                }
+
+                ex.a[sliceDom] = ya;
+            } else {
+                // otherwise, just assign the values
+                ex.a[sliceDom] = ey.a:xt;
+            }
+
+            const repMsg = "%s success".doFormat(pn);
+            imLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
+            return new MsgTuple(repMsg, MsgType.NORMAL);
+        }
+
+        select (gX.dtype, gY.dtype) {
+            when (DType.Int64, DType.Int64) do return sliceAssignHelper(int, int);
+            when (DType.Int64, DType.UInt64) do return sliceAssignHelper(int, uint);
+            when (DType.Int64, DType.Float64) do return sliceAssignHelper(int, real);
+            when (DType.Int64, DType.Bool) do return sliceAssignHelper(int, bool);
+            when (DType.UInt64, DType.Int64) do return sliceAssignHelper(uint, int);
+            when (DType.UInt64, DType.UInt64) do return sliceAssignHelper(uint, uint);
+            when (DType.UInt64, DType.Float64) do return sliceAssignHelper(uint, real);
+            when (DType.UInt64, DType.Bool) do return sliceAssignHelper(uint, bool);
+            when (DType.Float64, DType.Int64) do return sliceAssignHelper(real, int);
+            when (DType.Float64, DType.UInt64) do return sliceAssignHelper(real, uint);
+            when (DType.Float64, DType.Float64) do return sliceAssignHelper(real, real);
+            when (DType.Float64, DType.Bool) do return sliceAssignHelper(real, bool);
+            when (DType.Bool, DType.Int64) do return sliceAssignHelper(bool, int);
+            when (DType.Bool, DType.UInt64) do return sliceAssignHelper(bool, uint);
+            when (DType.Bool, DType.Float64) do return sliceAssignHelper(bool, real);
+            when (DType.Bool, DType.Bool) do return sliceAssignHelper(bool, bool);
+            when (DType.BigInt, DType.BigInt) do return sliceAssignHelper(bigint, bigint, true);
+            when (DType.BigInt, DType.Int64) do return sliceAssignHelper(bigint, int, true);
+            when (DType.BigInt, DType.UInt64) do return sliceAssignHelper(bigint, uint, true);
+            when (DType.BigInt, DType.Bool) do return sliceAssignHelper(bigint, bool, true);
+            otherwise {
+                const errorMsg = notImplementedError(pn,
+                                        "("+dtype2str(gX.dtype)+","+dtype2str(gY.dtype)+")");
+                imLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+        }
+    }
+
     /* setSliceIndexToPdarray "a[slice] = pdarray" response to __setitem__(slice, pdarray) */
-    proc setSliceIndexToPdarrayMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    proc setSliceIndexToPdarrayMsg1D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        const start = msgArgs.get("start").getIntValue();
-        const stop = msgArgs.get("stop").getIntValue();
-        const stride = msgArgs.get("stride").getIntValue();
-        var slice: stridableRange;
+        const start = msgArgs.get("starts").getIntValue();
+        const stop = msgArgs.get("stops").getIntValue();
+        const stride = msgArgs.get("strides").getIntValue();
+        var slice: range(strides=strideKind.any);
 
         const name = msgArgs.getValueOf("array");
         const yname = msgArgs.getValueOf("value");
@@ -1691,5 +1788,4 @@ module IndexingMsg
     registerFunction("[pdarray]", pdarrayIndexMsg, getModuleName());
     registerFunction("[pdarray]=val", setPdarrayIndexToValueMsg, getModuleName());
     registerFunction("[pdarray]=pdarray", setPdarrayIndexToPdarrayMsg, getModuleName());
-    registerFunction("[slice]=pdarray", setSliceIndexToPdarrayMsg, getModuleName());
 }

@@ -1,5 +1,9 @@
 #include "ArrowFunctions.h"
 
+static std::map<int, std::shared_ptr<parquet::ParquetFileReader>> globalFiles;
+static std::map<int, std::shared_ptr<parquet::RowGroupReader>> globalRowGroupReaders;
+static std::map<int, std::shared_ptr<parquet::ColumnReader>> globalColumnReaders;
+
 /*
   Arrow Error Helpers
   -------------------
@@ -572,6 +576,7 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
       }
 
       int64_t i = 0;
+      int64_t arrayIdx = 0;
       for (int r = 0; r < num_row_groups; r++) {
         std::shared_ptr<parquet::RowGroupReader> row_group_reader =
           parquet_reader->RowGroup(r);
@@ -581,32 +586,37 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
 
         std::shared_ptr<parquet::ColumnReader> column_reader = row_group_reader->Column(idx);
         if(lty == ARROWINT64 || lty == ARROWUINT64) {
+          int16_t definition_level; // nullable type and only reading single records in batch
           auto chpl_ptr = (int64_t*)chpl_arr;
           parquet::Int64Reader* reader =
             static_cast<parquet::Int64Reader*>(column_reader.get());
+          startIdx -= reader->Skip(startIdx);
 
-          while (reader->HasNext() && i < numElems) {
-            if((numElems - i) < batchSize)
-              batchSize = numElems - i;
-            (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
-            i+=values_read;
+          while (reader->HasNext() && arrayIdx < numElems) {
+            (void)reader->ReadBatch(1, &definition_level, nullptr, &chpl_ptr[arrayIdx], &values_read);
+            // if values_read is 0, that means that it was an empty seg
+            if (values_read != 0) {
+              arrayIdx++;
+            }
+            i++;
           }
         } else if(lty == ARROWINT32 || lty == ARROWUINT32) {
+          int16_t definition_level; // nullable type and only reading single records in batch
           auto chpl_ptr = (int64_t*)chpl_arr;
           parquet::Int32Reader* reader =
             static_cast<parquet::Int32Reader*>(column_reader.get());
+          startIdx -= reader->Skip(startIdx);
 
-          int32_t* tmpArr = (int32_t*)malloc(batchSize * sizeof(int32_t));
-          while (reader->HasNext() && i < numElems) {
-            if((numElems - i) < batchSize)
-              batchSize = numElems - i;
-            // Can't read directly into chpl_ptr because it is int64
-            (void)reader->ReadBatch(batchSize, nullptr, nullptr, tmpArr, &values_read);
-            for (int64_t j = 0; j < values_read; j++)
-              chpl_ptr[i+j] = (int64_t)tmpArr[j];
-            i+=values_read;
+          int32_t tmp;
+          while (reader->HasNext() && arrayIdx < numElems) {
+            (void)reader->ReadBatch(1, &definition_level, nullptr, &tmp, &values_read);
+            // if values_read is 0, that means that it was an empty seg
+            if (values_read != 0) {
+              chpl_ptr[arrayIdx] = (int64_t)tmp;
+              arrayIdx++;
+            }
+            i++;
           }
-          free(tmpArr);
         } else if (lty == ARROWSTRING) {
           int16_t definition_level; // nullable type and only reading single records in batch
           auto chpl_ptr = (unsigned char*)chpl_arr;
@@ -626,89 +636,65 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
             }
           }
         } else if(lty == ARROWBOOLEAN) {
-          auto chpl_ptr = (bool*)chpl_arr;
-          parquet::BoolReader* reader =
-            static_cast<parquet::BoolReader*>(column_reader.get());
+        int16_t definition_level; // nullable type and only reading single records in batch
+        auto chpl_ptr = (bool*)chpl_arr;
+        parquet::BoolReader* reader =
+          static_cast<parquet::BoolReader*>(column_reader.get());
+        startIdx -= reader->Skip(startIdx);
 
-          while (reader->HasNext() && i < numElems) {
-            if((numElems - i) < batchSize)
-              batchSize = numElems - i;
-            (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
-            i+=values_read;
+          while (reader->HasNext() && arrayIdx < numElems) {
+            (void)reader->ReadBatch(1, &definition_level, nullptr, &chpl_ptr[arrayIdx], &values_read);
+            // if values_read is 0, that means that it was an empty seg
+            if (values_read != 0) {
+              arrayIdx++;
+            }
+            i++;
           }
         } else if(lty == ARROWFLOAT) {
+          // convert to simpler single batch to sidestep this seemingly architecture dependent (see issue #3234)
+          int16_t definition_level; // nullable type and only reading single records in batch
           auto chpl_ptr = (double*)chpl_arr;
           parquet::FloatReader* reader =
             static_cast<parquet::FloatReader*>(column_reader.get());
-          
-          while (reader->HasNext() && i < numElems) {
-            if((numElems - i) < batchSize) // adjust batchSize if needed
-              batchSize = numElems - i;
-            float* tmpArr = new float[batchSize]; // this will not include NaN values
-            int16_t* def_lvl = new int16_t[batchSize];
-            int16_t* rep_lvl = new int16_t[batchSize];
-            (void)reader->ReadBatch(batchSize, def_lvl, rep_lvl, tmpArr, &values_read);
 
-            int64_t tmp_offset = 0; // used to properly access tmp after NaN encountered
-            int64_t val_idx = 0;
-            for (int64_t j = 0; j< batchSize; j++){
-              // skip any empty segments
-              if (def_lvl[j] == 1)
-                continue;
-              
-              // Null values treated as NaN
-              if (def_lvl[j] == 2) {
-                chpl_ptr[i+val_idx] = NAN;
-                tmp_offset++; // adjustment for values array since Nulls are not included
-              }
-              else if (def_lvl[j] == 3){ // defined value to write
-                chpl_ptr[i+val_idx] = (double)tmpArr[val_idx-tmp_offset];
-              }
-              val_idx++;
+          float tmp;
+          while (reader->HasNext() && arrayIdx < numElems) {
+            (void)reader->ReadBatch(1, &definition_level, nullptr, &tmp, &values_read);
+            // if values_read is 0, that means that it was a null value or empty seg
+            if (values_read != 0) {
+              chpl_ptr[arrayIdx] = (double) tmp;
+              arrayIdx++;
             }
-
-            i += values_read + tmp_offset; // account for values and NaNs, but not empty segments
-
-            delete[] tmpArr;
-            delete[] def_lvl;
-            delete[] rep_lvl;
+            else {
+              // check if nan otherwise it's an empty seg
+              if (definition_level == 2) {
+                chpl_ptr[arrayIdx] = NAN;
+                arrayIdx++;
+              }
+            }
+            i++;
           }
         } else if(lty == ARROWDOUBLE) {
+          // convert to simpler single batch to sidestep this seemingly architecture dependent (see issue #3234)
+          int16_t definition_level; // nullable type and only reading single records in batch
           auto chpl_ptr = (double*)chpl_arr;
           parquet::DoubleReader* reader =
             static_cast<parquet::DoubleReader*>(column_reader.get());
 
-          while (reader->HasNext() && i < numElems) {
-            if((numElems - i) < batchSize) // adjust batchSize if needed
-              batchSize = numElems - i;
-            double* tmpArr = new double[batchSize]; // NaNs not included here
-            int16_t* def_lvl = new int16_t[batchSize];
-            int16_t* rep_lvl = new int16_t[batchSize];
-            (void)reader->ReadBatch(batchSize, def_lvl, rep_lvl, tmpArr, &values_read);
-            
-            int64_t tmp_offset = 0; // used to properly access tmp after NaN encountered
-            int64_t val_idx = 0;
-            for (int64_t j = 0; j< batchSize; j++){
-              // skip any empty segments
-              if (def_lvl[j] == 1)
-                continue;
-              
-              // Null values treated as NaN
-              if (def_lvl[j] == 2) {
-                chpl_ptr[i+val_idx] = NAN;
-                tmp_offset++; // adjustment for values array since Nulls are not included
-              }
-              else if (def_lvl[j] == 3){ // defined value to write
-                chpl_ptr[i+val_idx] = (double)tmpArr[val_idx-tmp_offset];
-              }
-              val_idx++;
+          while (reader->HasNext() && arrayIdx < numElems) {
+            (void)reader->ReadBatch(1, &definition_level, nullptr, &chpl_ptr[arrayIdx], &values_read);
+            // if values_read is 0, that means that it was a null value or empty seg
+            if (values_read != 0) {
+              arrayIdx++;
             }
-
-            i += values_read + tmp_offset; // account for values and NaNs, but not empty segments
-
-            delete[] tmpArr;
-            delete[] def_lvl;
-            delete[] rep_lvl;
+            else {
+              // check if nan otherwise it's an empty seg
+              if (definition_level == 2) {
+                chpl_ptr[arrayIdx] = NAN;
+                arrayIdx++;
+              }
+            }
+            i++;
           }
         }
       }

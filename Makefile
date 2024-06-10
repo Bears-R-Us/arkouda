@@ -223,12 +223,12 @@ $(ARROW_O): $(ARROW_CPP) $(ARROW_H)
 
 CHPL_MAJOR := $(shell $(CHPL) --version | sed -n "s/chpl version \([0-9]\)\.[0-9]*.*/\1/p")
 CHPL_MINOR := $(shell $(CHPL) --version | sed -n "s/chpl version [0-9]\.\([0-9]*\).*/\1/p")
-CHPL_VERSION_OK := $(shell test $(CHPL_MAJOR) -ge 2 -o $(CHPL_MINOR) -ge 31  && echo yes)
-CHPL_VERSION_WARN := $(shell test $(CHPL_MAJOR) -eq 1 -a $(CHPL_MINOR) -le 32 && echo yes)
+CHPL_VERSION_OK := $(shell test $(CHPL_MAJOR) -ge 2 -o $(CHPL_MINOR) -ge 32  && echo yes)
+CHPL_VERSION_WARN := $(shell test $(CHPL_MAJOR) -eq 1 -a $(CHPL_MINOR) -le 33 && echo yes)
 .PHONY: check-chpl
 check-chpl:
 ifneq ($(CHPL_VERSION_OK),yes)
-	$(error Chapel 1.31.0 or newer is required, found $(CHPL_MAJOR).$(CHPL_MINOR))
+	$(error Chapel 1.32.0 or newer is required, found $(CHPL_MAJOR).$(CHPL_MINOR))
 endif
 ifeq ($(CHPL_VERSION_WARN),yes)
 	$(warning Chapel 1.33.0 or newer is recommended, found $(CHPL_MAJOR).$(CHPL_MINOR))
@@ -353,11 +353,6 @@ ifeq ($(shell expr $(CHPL_MINOR) \= 32),1)
 	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/e-132
 endif
 
-ifeq ($(shell expr $(CHPL_MINOR) \= 31),1)
-	CHPL_COMPAT_FLAGS += -sbigintInitThrows=true
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/eq-131
-endif
-
 ifeq ($(shell expr $(CHPL_MINOR) \> 33),1)
 	ARKOUDA_RW_DEFAULT_FLAG := -sOpenReaderLockingDefault=false -sOpenWriterLockingDefault=false
 endif
@@ -445,7 +440,7 @@ $(DOC_DIR):
 	mkdir -p $@
 
 .PHONY: doc
-doc: gen-stubs doc-python doc-server
+doc: stub-gen doc-python stub-clean doc-server
 
 CHPLDOC := chpldoc
 CHPLDOC_FLAGS := --process-used-modules
@@ -515,12 +510,15 @@ $(eval $(call create_help_target,test-help,TEST_HELP_TEXT))
 .PHONY: test
 test: test-python
 
+.PHONY: test-proto
+test-proto: test-python-proto
+
 .PHONY: test-chapel
 test-chapel:
 	start_test $(TEST_SOURCE_DIR)
 
 .PHONY: test-all
-test-all: test-python test-chapel
+test-all: test-python test-python-proto test-chapel
 
 mypy:
 	python3 -m mypy arkouda
@@ -537,6 +535,10 @@ print-%:
 
 test-python:
 	python3 -m pytest $(ARKOUDA_PYTEST_OPTIONS) -c pytest.ini
+
+size=100
+test-python-proto:
+	python3 -m pytest -c pytest_PROTO.ini PROTO_tests/ --size=$(size) $(ARKOUDA_PYTEST_OPTIONS)
 
 CLEAN_TARGETS += test-clean
 .PHONY: test-clean
@@ -568,5 +570,8 @@ cleanall: clean $(CLEANALL_TARGETS)
 .PHONY: help
 help: $(HELP_TARGETS)
 
-gen-stubs:
+stub-gen:
 	python3 pydoc/preprocess/generate_import_stubs.py
+
+stub-clean:
+	find . -name "*.pyi" -type f -delete

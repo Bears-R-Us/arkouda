@@ -26,3 +26,17 @@ class TestIOUtil:
             assert values
             assert "9ty4h6olr4" == values["localhost:5555"]
             assert "6ky3i91l17" == values["127.0.0.1:5556"]
+
+    def test_delete_directory(self):
+        path = "{}/test_dir".format(os.getcwd())
+        io_util.get_directory(path)
+
+        from os.path import isdir
+
+        assert isdir(path) == True
+
+        io_util.delete_directory(path)
+        assert isdir(path) == False
+
+        # Check no error when run on non-existant directory:
+        io_util.delete_directory(path)

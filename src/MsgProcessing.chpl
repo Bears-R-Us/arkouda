@@ -7,16 +7,14 @@ module MsgProcessing
     use ServerErrors;
     use Logging;
     use Message;
-    
+    use BigInteger;
+    use Math;
+    use Time;
+
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
-
     use AryUtil;
-
-    use ArkoudaBigIntCompat;
-    use ArkoudaTimeCompat as Time;
-    use ArkoudaMathCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -219,10 +217,10 @@ module MsgProcessing
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %s".doFormat(cmd));
         var memUsed = if memTrack then getMemUsed():real * numLocales else st.memUsed():real;
         if asPercent {
-            repMsg = mathRound((memUsed / (getMemLimit():real * numLocales)) * 100):uint:string;
+            repMsg = Math.round((memUsed / (getMemLimit():real * numLocales)) * 100):uint:string;
         }
         else {
-            repMsg = mathRound(memUsed / factor):uint:string;
+            repMsg = Math.round(memUsed / factor):uint:string;
         }
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
@@ -246,10 +244,10 @@ module MsgProcessing
         var memUsed = if memTrack then getMemUsed():real * numLocales else st.memUsed():real;
         var totMem = getMemLimit():real * numLocales;
         if asPercent {
-            repMsg = (100 - mathRound((memUsed / totMem) * 100)):uint:string;
+            repMsg = (100 - Math.round((memUsed / totMem) * 100)):uint:string;
         }
         else {
-            repMsg = mathRound((totMem - memUsed) / factor):uint:string;
+            repMsg = Math.round((totMem - memUsed) / factor):uint:string;
         }
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
@@ -394,6 +392,60 @@ module MsgProcessing
                 mpLogger.error(getModuleName(),getRoutineName(),
                                                getLineNumber(),"dtype: %s".doFormat(msgArgs.getValueOf("dtype")));
                 return new MsgTuple(unrecognizedTypeError(pn,msgArgs.getValueOf("dtype")), MsgType.ERROR);
+            }
+        }
+    }
+
+     /*
+        Get a list of lists indicating how an array is "chunked" across locales.
+
+        For example, a 100x40 2D array on 4 locales could return: [[0, 50], [0, 20]]
+        indicating that the chunks start at indices 0 and 50 in the first dimension,
+        and 0 and 20 in the second dimension.
+    */
+    @arkouda.registerND
+    proc chunkInfoMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
+        const name = msgArgs.getValueOf("array");
+        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+
+        proc getChunkInfo(type t): MsgTuple throws {
+            var blockSizes: [0..<nd] [0..<numLocales] int;
+            const e = toSymEntry(gEnt, t, nd);
+
+            coforall loc in Locales do on loc {
+                const locDom = e.a.localSubdomain();
+                for i in 0..<nd do
+                    blockSizes[i][loc.id] = locDom.dim(i).low;
+            }
+
+            var msg = "[";
+            var first = true;
+            for dim in blockSizes {
+                if first then first = false; else msg += ", ";
+                msg += "[";
+                var firstInner = true;
+                for locSize in dim {
+                    if firstInner then firstInner = false; else msg += ", ";
+                    msg += locSize:string;
+                }
+                msg += "]";
+            }
+            msg += "]";
+
+            mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),msg);
+            return new MsgTuple(msg, MsgType.NORMAL);
+        }
+
+        select gEnt.dtype {
+            when DType.Int64 do return getChunkInfo(int);
+            when DType.UInt64 do return getChunkInfo(uint);
+            when DType.Float64 do return getChunkInfo(real);
+            when DType.Bool do return getChunkInfo(bool);
+            when DType.UInt8 do return getChunkInfo(uint(8));
+            otherwise {
+                const errorMsg = notImplementedError(getRoutineName(),dtype2str(gEnt.dtype));
+                mpLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg,MsgType.ERROR);
             }
         }
     }

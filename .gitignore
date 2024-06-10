@@ -14,6 +14,8 @@ __pycache__/
 .vscode/
 .local/
 .idea/
+.project
+.pydevproject
 doc/
 docs/
 test-bin/
@@ -40,6 +42,7 @@ UsedModules.cfg
 */.benchmarks
 */.pytest_cache
 .cls-commands.json
-arkouda/numpy/imports.pyi
-arkouda/scipy/stats/imports.pyi
-arkouda/scipy/imports.pyi
+arkouda/*.pyi
+arkouda/numpy/*.pyi
+arkouda/scipy/*.pyi
+arkouda/scipy/stats/*.pyi

@@ -22,7 +22,7 @@ def argsort(
     pda: Union[pdarray, Strings, "Categorical"],  # type: ignore # noqa
     algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD,
     axis: int_scalars = 0,
-) -> pdarray:  # type: ignore
+) -> pdarray:
     """
     Return the permutation that sorts the array.
 
@@ -86,7 +86,7 @@ def argsort(
 def coargsort(
     arrays: Sequence[Union[Strings, pdarray, "Categorical"]],  # type: ignore # noqa
     algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD,
-) -> pdarray:  # type: ignore
+) -> pdarray:
     """
     Return the permutation that groups the rows (left-to-right), if the
     input arrays are treated as columns. The permutation sorts numeric
@@ -186,7 +186,7 @@ def coargsort(
 
 
 @typechecked
-def sort(pda: pdarray, algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD) -> pdarray:
+def sort(pda: pdarray, algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, axis=-1) -> pdarray:
     """
     Return a sorted copy of the array. Only sorts numeric arrays;
     for Strings, use argsort.
@@ -231,5 +231,7 @@ def sort(pda: pdarray, algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortL
         raise ValueError(f"ak.sort supports int64, uint64, or float64, not {pda.dtype}")
     if pda.size == 0:
         return zeros(0, dtype=pda.dtype)
-    repMsg = generic_msg(cmd="sort", args={"alg": algorithm.name, "array": pda})
+    repMsg = generic_msg(
+        cmd=f"sort{pda.ndim}D", args={"alg": algorithm.name, "array": pda, "axis": axis}
+    )
     return create_pdarray(cast(str, repMsg))

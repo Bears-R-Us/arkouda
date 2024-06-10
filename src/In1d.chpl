@@ -91,11 +91,11 @@ module In1d
     }
 
     // For each value in the first array, find the indices of their appearances
-    // in the second. Results are ordered by the order of the keys. 
+    // in the second. Results are ordered by the order of the keys.
     proc indexof1d(keys: ?t, arr: t) throws {
         var l : list(int, false);
         var indexLists: [0..<keys.size] list(int, false);
-        
+
         forall keyIdx in 0..<keys.size {
             var keyVal = keys[keyIdx];
             var indexList: list(int, false);
@@ -107,7 +107,7 @@ module In1d
         var finalList : list(int);
         for l in indexLists do
             finalList.pushBack(l);
-        
+
         return finalList.toArray();
     }
 }

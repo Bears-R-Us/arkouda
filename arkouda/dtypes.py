@@ -5,7 +5,7 @@ import sys
 from enum import Enum
 from typing import Tuple, Union, cast
 
-import numpy as np  # type: ignore
+import numpy as np
 from typeguard import typechecked
 
 __all__ = [
@@ -57,7 +57,7 @@ NUMBER_FORMAT_STRINGS = {
 }
 
 
-def dtype(x):  # type: ignore
+def dtype(x):
     # we had to create our own bigint type since numpy
     # gives them dtype=object there's no np equivalent
     if (isinstance(x, str) and x == "bigint") or isinstance(x, BigInt):
@@ -66,7 +66,7 @@ def dtype(x):  # type: ignore
         return np.dtype(x)
 
 
-def _is_dtype_in_union(dtype, union_type) -> builtins.bool:  # type: ignore
+def _is_dtype_in_union(dtype, union_type) -> builtins.bool:
     """
     Check if a given type is in a typing.Union.
 
@@ -82,7 +82,7 @@ def _is_dtype_in_union(dtype, union_type) -> builtins.bool:  # type: ignore
     return hasattr(union_type, "__args__") and dtype in union_type.__args__
 
 
-def _val_isinstance_of_union(val, union_type) -> builtins.bool:  # type: ignore
+def _val_isinstance_of_union(val, union_type) -> builtins.bool:
     """
     Check if a given val is an instance of one of the types in the typing.Union
 
@@ -194,14 +194,14 @@ class DType(Enum):
     BIGINT = "bigint"
     STR = "str"
 
-    def __str__(self) -> str:  # type: ignore
+    def __str__(self) -> str:
         """
         Overridden method returns value, which is useful in outputting
         a DType as a request parameter
         """
         return self.value
 
-    def __repr__(self) -> str:  # type: ignore
+    def __repr__(self) -> str:
         """
         Overridden method returns value, which is useful in outputting
         a DType as a request parameter
@@ -319,7 +319,7 @@ def translate_np_dtype(dt) -> Tuple[builtins.str, int]:
     return kind, dt.itemsize
 
 
-def resolve_scalar_dtype(val: object) -> str:  # type: ignore
+def resolve_scalar_dtype(val: object) -> str:
     """
     Try to infer what dtype arkouda_server should treat val as.
     """

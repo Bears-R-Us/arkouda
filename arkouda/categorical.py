@@ -15,7 +15,7 @@ from typing import (
     cast,
 )
 
-import numpy as np  # type: ignore
+import numpy as np
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
@@ -27,10 +27,13 @@ from arkouda.infoclass import information
 from arkouda.logger import getArkoudaLogger
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import where
-from arkouda.pdarrayclass import RegistrationError, create_pdarray, pdarray
+from arkouda.pdarrayclass import RegistrationError
+from arkouda.pdarrayclass import all as akall
+from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import arange, array, ones, zeros, zeros_like
 from arkouda.pdarraysetops import concatenate, in1d
 from arkouda.sorting import argsort
+from arkouda.sorting import sort as pda_sort
 from arkouda.strings import Strings
 
 __all__ = ["Categorical"]
@@ -170,6 +173,13 @@ class Categorical:
 
         return nbytes
 
+    @property
+    def inferred_type(self) -> str:
+        """
+        Return a string of the type inferred from the values.
+        """
+        return "categorical"
+
     @classmethod
     @typechecked
     def from_codes(
@@ -264,6 +274,40 @@ class Categorical:
             new_categories = concatenate((new_categories, array([NAvalue])))
         return [arr.set_categories(new_categories, NAvalue=NAvalue) for arr in arrays]
 
+    def equals(self, other) -> bool:
+        """
+        Whether Categoricals are the same size and all entries are equal.
+
+        Parameters
+        ----------
+        other : object
+            object to compare.
+
+        Returns
+        -------
+        bool
+            True if the Categoricals are the same, o.w. False.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> ak.connect()
+        >>> c = Categorical(ak.array(["a", "b", "c"]))
+        >>> c_cpy = Categorical(ak.array(["a", "b", "c"]))
+        >>> c.equals(c_cpy)
+        True
+        >>> c2 = Categorical(ak.array(["a", "x", "c"]))
+        >>> c.equals(c2)
+        False
+        """
+        if isinstance(other, Categorical):
+            if other.size != self.size:
+                return False
+            else:
+                return akall(self == other)
+        else:
+            return False
+
     def set_categories(self, new_categories, NAvalue=None):
         """
         Set categories to user-defined values.
@@ -304,7 +348,7 @@ class Categorical:
         )
         # Group combined categories to find matches
         g = GroupBy(bothcats)
-        ct = g.count()[1]
+        ct = g.size()[1]
         if (ct > 2).any():
             raise ValueError("User-specified categories must be unique")
         # Matches have two hits in concatenated array
@@ -392,7 +436,7 @@ class Categorical:
 
         Examples
         --------
-        >>> from arkouda import ak
+        >>> import arkouda as ak
         >>> ak.connect()
         >>> a = ak.array(["a","b","c"])
         >>> a
@@ -807,13 +851,13 @@ class Categorical:
         newvals = inverse[self.codes]
         return argsort(newvals)
 
-    def sort(self):
+    def sort_values(self):
         # __doc__ = sort.__doc__
         idxperm = argsort(self.categories)
         inverse = zeros_like(idxperm)
         inverse[idxperm] = arange(idxperm.size)
         newvals = inverse[self.codes]
-        return Categorical.from_codes(newvals, self.categories[idxperm])
+        return Categorical.from_codes(pda_sort(newvals), self.categories[idxperm])
 
     @typechecked
     def concatenate(self, others: Sequence[Categorical], ordered: bool = True) -> Categorical:

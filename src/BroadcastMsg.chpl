@@ -31,10 +31,6 @@ module BroadcastMsg {
                                        "TypeError");
     }
 
-    if msgArgs.getValueOf("objType").toUpper(): ObjType == ObjType.STRINGS {
-      return broadcastStrings(cmd, msgArgs, st);
-    }
-
     const segs = toSymEntry(gs, int);
     // Check that values exists (can be any dtype)
     const gv = getGenericTypedArrayEntry(msgArgs.getValueOf("valName"), st);
@@ -75,8 +71,9 @@ module BroadcastMsg {
         }
         when DType.Float64 {
           const vals = toSymEntry(gv, real);
+          const transmuted = [ei in vals.a] ei.transmute(uint(64));
           var res = st.addEntry(rname, size, real);
-          res.a = broadcast(perm.a, segs.a, vals.a);
+          res.a = [bi in broadcast(perm.a, segs.a, transmuted)] bi.transmute(real(64));
         }
         when DType.BigInt {
           const vals = toSymEntry(gv, bigint);
@@ -138,45 +135,6 @@ module BroadcastMsg {
     var repMsg = "created " + st.attrib(rname); 
     bmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
     return new MsgTuple(repMsg, MsgType.NORMAL);    
-  }
-
-  proc broadcastStrings(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
-    const gs = getGenericTypedArrayEntry(msgArgs.getValueOf("segName"), st);
-    const segs = toSymEntry(gs, int);
-    const sE = getSegString(msgArgs.getValueOf("valName"), st);
-    const size = msgArgs.get("size").getIntValue();
-
-    const usePerm: bool = msgArgs.get("permute").getBoolValue();
-    var repMsg = "";
-    if usePerm {
-      const gp = getGenericTypedArrayEntry(msgArgs.getValueOf("permName"), st);
-      if gp.dtype != DType.Int64 {
-        throw new owned ErrorWithContext("Permutation array must have dtype int64",
-                                         getLineNumber(),
-                                         getRoutineName(),
-                                         getModuleName(),
-                                         "TypeError");
-      }
-      if gp.size != size {
-        throw new owned ErrorWithContext("Requested result size must match permutation array size",
-                                         getLineNumber(),
-                                         getRoutineName(),
-                                         getModuleName(),
-                                         "ValueError");
-      }
-      const perm = toSymEntry(gp, int);
-      var (vals, offs) = broadcast(perm.a, segs.a, sE);
-      var res = getSegString(offs, vals, st);
-      repMsg = "created %s".doFormat(st.attrib(res.name)) + "+created bytes.size %?".doFormat(res.nBytes);
-    }
-    else {
-      var (vals, offs) = broadcast(segs.a, sE, size);
-      var res = getSegString(offs, vals, st);
-      repMsg = "created %s".doFormat(st.attrib(res.name)) + "+created bytes.size %?".doFormat(res.nBytes);
-    }
-
-    bmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-    return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
   use CommandMap;

@@ -1,3 +1,3 @@
 module ArkoudaZarrCompat {
-  use Zarr;
+  public use Zarr;
 }

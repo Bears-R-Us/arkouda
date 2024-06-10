@@ -9,8 +9,7 @@ module ArraySetops
     use ServerConfig;
     use Logging;
 
-    use SymArrayDmapCompat;
-
+    use SymArrayDmap;
     use RadixSortLSD;
     use Unique;
     use Indexing;
@@ -148,8 +147,12 @@ module ArraySetops
 
       var aMin = -1, aMax = -1, bMin = -1, bMax = -1;
       // we iterate over locales serially because the logic relies on the mins and maxs referring to the previous locale
-      for loc in Locales {
-        on loc {  // perform loop body computation on locale #loc
+      // use an atomic counter to ensure the previous locale finishes before the next begins (on statements are non-blocking)
+      var count: atomic int;
+      for (loc, i) in zip(Locales, 0..) {
+        on loc {
+          count.waitFor(i);
+
           // domains of a and b that are live on this locale
           const aDom = a.localSubdomain();
           const bDom = b.localSubdomain();
@@ -175,7 +178,9 @@ module ArraySetops
               // the number of elements the previous locale will need to fetch from here
               pullLocalCount[here.id - 1] = (binSearchIdx-aDom.first);
             }
-            else if bMin < aMax {
+            // these fetch conditions are mutally exclusive, so an else if isn't
+            // strictly necessary. see logic above pullLocalCount for a pseudo proof
+            if bMin < aMax {
               pullLocalFlag[here.id - 1] = (false, true);
               // binary search local chunk of b to find where a_min_loc_(i-1) falls,
               //  so we know how many vals to send to loc_(i-1)
@@ -189,6 +194,8 @@ module ArraySetops
           }
           aMax = a[aDom.last];
           bMax = b[bDom.last];
+
+          count.add(1);
         }
         // break is not allowed in an on statement
         if toGiveUp {
@@ -267,8 +274,8 @@ module ArraySetops
             twoArrayRadixSort(tmp, new KeysRanksComparator());
 
             const writeToResultSlice = (segs[here.id]+numSendBack)..#tmp.size;
-            sortedIdx[writeToResultSlice] = [(key, val) in tmp] key;
-            permutedVals[writeToResultSlice] = [(key, val) in tmp] val;
+            sortedIdx[writeToResultSlice] = [(key, _) in tmp] key;
+            permutedVals[writeToResultSlice] = [(_, val) in tmp] val;
           }
         }
       }

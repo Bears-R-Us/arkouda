@@ -44,7 +44,7 @@ class Matcher:
         self.full_match_bool: pdarray
         self.full_match_ind: pdarray
         self.populated = False
-        self.logger = getArkoudaLogger(name=__class__.__name__)  # type: ignore
+        self.logger = getArkoudaLogger(name=__class__.__name__)  # type:ignore
 
     def find_locations(self) -> None:
         """

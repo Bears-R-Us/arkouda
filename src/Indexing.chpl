@@ -12,12 +12,12 @@ module Indexing {
     use MultiTypeSymbolTable;
 
     use CommAggregation;
-    use ArkoudaRangeCompat;
-    
+
+
     // Return a slice of array `a` from `start` to `stop` by `stride`
     proc sliceIndex(a: [?aD] ?t, start: int, stop: int, stride: int) throws {
-      var slice: stridableRange;
-      
+      var slice: range(strides=strideKind.any);
+
       slice = start..(stop-1) by stride;
 
       var b = makeDistArray(slice.size,t);

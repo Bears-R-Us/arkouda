@@ -18,10 +18,8 @@ module GenSymIO {
     use SegmentedString;
     use Map;
     use CTypes;
-    use ArkoudaMapCompat;
     use CommAggregation;
 
-    use ArkoudaCTypesCompat;
     use ArkoudaIOCompat;
 
     private config const logLevel = ServerConfig.logLevel;
@@ -49,7 +47,7 @@ module GenSymIO {
 
         proc bytesToSymEntry(type t) throws {
             var entry = createSymEntry((...shape), t);
-            var localA = makeArrayFromPtr(data.c_str():c_ptr_void:c_ptr(t), num_elts=size:uint);
+            var localA = makeArrayFromPtr(data.c_str():c_ptr(void):c_ptr(t), num_elts=size:uint);
             if nd == 1 {
                 entry.a = localA;
             } else {

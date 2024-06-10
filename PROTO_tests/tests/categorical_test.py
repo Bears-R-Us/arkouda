@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 import arkouda as ak
+from arkouda.categorical import Categorical
 
 
 class TestCategorical:
@@ -35,6 +36,26 @@ class TestCategorical:
 
         with pytest.raises(ValueError):
             ak.Categorical(ak.arange(0, 5, 10))
+
+    def test_inferred_type(self):
+        prefix, size = "string", 10
+        cat = self.create_basic_categorical(prefix, size)
+        assert cat.inferred_type == "categorical"
+
+    def test_equals(self):
+        c = Categorical(ak.array(["a", "b", "c"]))
+        c_cpy = Categorical(ak.array(["a", "b", "c"]))
+        assert ak.sum((c == c_cpy) != ak.array([True, True, True])) == 0
+        assert ak.sum((c != c_cpy) != ak.array([False, False, False])) == 0
+        assert c.equals(c_cpy)
+
+        c2 = Categorical(ak.array(["a", "x", "c"]))
+        assert ak.sum((c == c2) != ak.array([True, False, True])) == 0
+        assert ak.sum((c != c2) != ak.array([False, True, False])) == 0
+        assert not c.equals(c2)
+
+        c3 = Categorical(ak.array(["a", "b", "c", "d"]))
+        assert not c.equals(c3)
 
     def test_from_codes(self):
         codes = ak.array([7, 5, 9, 8, 2, 1, 4, 0, 3, 6])
@@ -244,3 +265,10 @@ class TestCategorical:
         args = ak.array([3, 2, 1, 0])
         ret = ak.lookup(keys, values, args)
         assert ret.to_list() == ["C", "B", "A", "N/A"]
+
+    def test_sort(self):
+        rand_cats = ak.random_strings_uniform(1, 16, 10)
+        rand_codes = ak.randint(0, rand_cats.size, 100)
+        cat = ak.Categorical.from_codes(codes=rand_codes, categories=rand_cats)
+
+        assert sorted(cat.to_list()) == cat.sort_values().to_list()

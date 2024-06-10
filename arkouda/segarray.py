@@ -6,7 +6,7 @@ from typing import Optional, Sequence, Tuple
 from typing import cast as type_cast
 from warnings import warn
 
-import numpy as np  # type: ignore
+import numpy as np
 
 from arkouda.client import generic_msg
 from arkouda.dtypes import bool as akbool
@@ -67,7 +67,7 @@ class SegArray:
     objType = "SegArray"
 
     def __init__(self, segments, values, lengths=None, grouping=None):
-        self.logger = getArkoudaLogger(name=__class__.__name__)  # type: ignore
+        self.logger = getArkoudaLogger(name=__class__.__name__)
         self.registered_name: Optional[str] = None
 
         # validate inputs
@@ -211,6 +211,19 @@ class SegArray:
             self._grouping = GroupBy(
                 broadcast(self.segments[self.non_empty], arange(self._non_empty_count), self.valsize)
             )
+
+    @property
+    def nbytes(self):
+        """
+        The size of the segarray in bytes.
+
+        Returns
+        -------
+        int
+            The size of the segarray in bytes.
+
+        """
+        return self.values.nbytes
 
     def _get_lengths(self):
         if self.size == 0:
@@ -820,7 +833,7 @@ class SegArray:
         keyidx = self.grouping.broadcast(arange(self.size), permute=True)
         ukey, uval = GroupBy([keyidx, x]).unique_keys
         g = GroupBy(ukey, assume_sorted=True)
-        _, lengths = g.count()
+        _, lengths = g.size()
         return SegArray(g.segments, uval, grouping=g, lengths=lengths)
 
     def hash(self) -> Tuple[pdarray, pdarray]:
@@ -1178,7 +1191,7 @@ class SegArray:
         else:
             segments = zeros(self.size, dtype=akint64)
             truth = ones(self.size, dtype=akbool)
-            k, ct = g.count()
+            k, ct = g.size()
             segments[k] = g.segments
             truth[k] = zeros(k.size, dtype=akbool)
             if truth[-1]:
@@ -1232,7 +1245,7 @@ class SegArray:
         else:
             segments = zeros(self.size, dtype=akint64)
             truth = ones(self.size, dtype=akbool)
-            k, ct = g.count()
+            k, ct = g.size()
             segments[k] = g.segments
             truth[k] = zeros(k.size, dtype=akbool)
             if truth[-1]:
@@ -1286,7 +1299,7 @@ class SegArray:
         else:
             segments = zeros(self.size, dtype=akint64)
             truth = ones(self.size, dtype=akbool)
-            k, ct = g.count()
+            k, ct = g.size()
             segments[k] = g.segments
             truth[k] = zeros(k.size, dtype=akbool)
             if truth[-1]:
@@ -1340,7 +1353,7 @@ class SegArray:
         else:
             segments = zeros(self.size, dtype=akint64)
             truth = ones(self.size, dtype=akbool)
-            k, ct = g.count()
+            k, ct = g.size()
             segments[k] = g.segments
             truth[k] = zeros(k.size, dtype=akbool)
             if truth[-1]:

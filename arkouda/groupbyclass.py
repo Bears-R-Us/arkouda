@@ -17,19 +17,22 @@ from typing import (
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
 
-import numpy as np  # type: ignore
+import numpy as np
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
-from arkouda.dtypes import bigint
+from arkouda.dtypes import _val_isinstance_of_union, bigint
+from arkouda.dtypes import dtype as to_numpy_dtype
 from arkouda.dtypes import float64 as akfloat64
+from arkouda.dtypes import float_scalars
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import int_scalars
 from arkouda.dtypes import uint64 as akuint64
 from arkouda.logger import getArkoudaLogger
 from arkouda.pdarrayclass import RegistrationError, create_pdarray, is_sorted, pdarray
-from arkouda.pdarraycreation import arange
-from arkouda.sorting import argsort
+from arkouda.pdarraycreation import arange, full
+from arkouda.random import default_rng
+from arkouda.sorting import argsort, sort
 from arkouda.strings import Strings
 
 __all__ = ["unique", "GroupBy", "broadcast", "GROUPBY_REDUCTION_TYPES"]
@@ -64,9 +67,7 @@ def unique(
     return_groups: bool = False,
     assume_sorted: bool = False,
     return_indices: bool = False,
-) -> Union[
-    groupable, Tuple[groupable, pdarray, pdarray, int]  # type: ignore
-]:  # type: ignore
+) -> Union[groupable, Tuple[groupable, pdarray, pdarray, int]]:
     """
     Find the unique elements of an array.
 
@@ -155,6 +156,7 @@ def unique(
 
 class GroupByReductionType(enum.Enum):
     SUM = "sum"
+    COUNT = "count"
     PROD = "prod"
     VAR = "var"
     STD = "std"
@@ -532,45 +534,44 @@ class GroupBy:
         array([1, 2, 4, 3])
         """
         repMsg = generic_msg(
-            cmd="countReduction",
+            cmd="sizeReduction",
             args={"segments": cast(pdarray, self.segments), "size": self.length},
         )
         self.logger.debug(repMsg)
         return self.unique_keys, create_pdarray(repMsg)
 
-    def count(self) -> Tuple[groupable, pdarray]:
+    def count(self, values: pdarray) -> Tuple[groupable, pdarray]:
         """
-        Count the number of elements in each group, i.e. the number of times
-        each key appears.  This counts the total number of rows (including NaN values).
+        Count the number of elements in each group.  NaN values will be excluded from the total.
 
         Parameters
         ----------
-        none
-
+        values: pdarray
+            The values to be count by group (excluding NaN values).
         Returns
         -------
         unique_keys : (list of) pdarray or Strings
             The unique keys, in grouped order
         counts : pdarray, int64
-            The number of times each unique key appears
-
-        Notes
-        -----
-        This alias is an alias of "size".
+            The number of times each unique key appears (excluding NaN values).
 
         Examples
         --------
-        >>> a = ak.randint(1,5,10)
+        >>> a = ak.array([1, 0, -1, 1, 0, -1])
         >>> a
-        array([3, 2, 3, 1, 2, 4, 3, 4, 3, 4])
+        array([1 0 -1 1 0 -1])
+        >>> b = ak.array([1, np.nan, -1, np.nan, np.nan, -1], dtype = "float64")
+        >>> b
+        array([1.00000000000000000 nan -1.00000000000000000 nan nan -1.00000000000000000])
         >>> g = ak.GroupBy(a)
-        >>> keys,counts = g.count()
+        >>> keys,counts = g.count(b)
         >>> keys
-        array([1, 2, 3, 4])
+        array([-1 0 1])
         >>> counts
-        array([1, 2, 4, 3])
+        array([2 0 1])
         """
-        return self.size()
+        k, v = self.aggregate(values, "count")
+        return k, cast(pdarray, v)
 
     def aggregate(
         self,
@@ -678,6 +679,9 @@ class GroupBy:
         ----------
         values : pdarray
             The values to group and sum
+        skipna: bool
+            boolean which determines if NANs should be skipped
+
 
         Returns
         -------
@@ -685,8 +689,6 @@ class GroupBy:
             The unique keys, in grouped order
         group_sums : pdarray
             One sum per unique key in the GroupBy instance
-        skipna: bool
-            boolean which determines if NANs should be skipped
 
         Raises
         ------
@@ -1267,8 +1269,8 @@ class GroupBy:
         g = GroupBy(togroup)
         # Group unique pairs again by original key
         g2 = GroupBy(g.unique_keys[0], assume_sorted=False)
-        # Count number of unique values per key
-        keyorder, nuniq = g2.count()
+        # Count number of values per key
+        keyorder, nuniq = g2.size()
         # The last GroupBy *should* result in sorted key indices, but in case it
         # doesn't, we need to permute the answer to match the original key order
         if not is_sorted(keyorder):
@@ -1467,7 +1469,7 @@ class GroupBy:
         """
         # Index of first value in each segment, in input domain
         first_idx = self.permutation[self.segments]
-        return self.unique_keys, values[first_idx]  # type: ignore
+        return self.unique_keys, values[first_idx]
 
     def mode(self, values: groupable) -> Tuple[groupable, groupable]:
         """
@@ -1489,7 +1491,7 @@ class GroupBy:
         togroup = self._nested_grouping_helper(values)
         # Get value counts for each key group
         g = GroupBy(togroup)
-        keys_values, value_count = g.count()
+        keys_values, value_count = g.size()
         # Descending rank of first instance of each (key, value) pair
         first_rank = g.length - g.permutation[g.segments]
         ki, unique_values = keys_values[0], keys_values[1:]
@@ -1510,9 +1512,167 @@ class GroupBy:
             mode = unique_values[0][mode_idx]
         else:
             mode = [uv[mode_idx] for uv in unique_values]
-        return self.unique_keys, mode  # type: ignore
+        return self.unique_keys, mode
 
-    def unique(self, values: groupable):  # type: ignore
+    def sample(
+        self,
+        values: groupable,
+        n=None,
+        frac=None,
+        replace=False,
+        weights=None,
+        random_state=None,
+        return_indices=False,
+        permute_samples=False,
+    ):
+        """
+        Return a random sample from each group. You can either specify the number of elements
+        or the fraction of elements to be sampled. random_state can be used for reproducibility
+
+        Parameters
+        ----------
+        values : (list of) pdarray-like
+            The values from which to sample, according to their group membership.
+
+        n: int, optional
+            Number of items to return for each group.
+            Cannot be used with frac and must be no larger than
+            the smallest group unless replace is True.
+            Default is one if frac is None.
+
+        frac: float, optional
+            Fraction of items to return. Cannot be used with n.
+
+        replace: bool, default False
+            Allow or disallow sampling of the value more than once.
+
+        weights: pdarray, optional
+            Default None results in equal probability weighting.
+            If passed a pdarray, then values must have the same length as the groupby keys
+            and will be used as sampling probabilities after normalization within each group.
+            Weights must be non-negative with at least one positive element within each group.
+
+        random_state: int or ak.random.Generator, optional
+            If int, seed for random number generator.
+            If ak.random.Generator, use as given.
+
+        return_indices: bool, default False
+            if True, return the indices of the sampled values.
+            Otherwise, return the sample values.
+
+        permute_samples: bool, default False
+            if True, return permute the samples according to group
+            Otherwise, keep samples in original order.
+
+        Returns
+        -------
+        pdarray
+            if return_indices is True, return the indices of the sampled values.
+            Otherwise, return the sample values.
+        """
+        from arkouda.numeric import cast as akcast
+        from arkouda.numeric import round as akround
+
+        if frac is not None and n is not None:
+            raise ValueError("Please enter a value for `frac` OR `n`, not both")
+        if frac is None and n is None:
+            n = 1
+
+        if not isinstance(values, Sequence):
+            if values.size != self.length:
+                raise ValueError("Attempt to group values using key array of different length")
+        else:
+            if any(val.size != self.length for val in values):
+                raise ValueError("Attempt to group values using key array of different length")
+
+        _, seg_lens = self.size()
+
+        if n is not None:
+            if not _val_isinstance_of_union(n, int_scalars):
+                raise TypeError("n must be an int scalar.")
+            num_samples = full(seg_lens.size, n, akint64)
+
+        if frac is not None:
+            if not _val_isinstance_of_union(frac, float_scalars):
+                raise TypeError("frac must be a float scalar.")
+            num_samples = akcast(akround(frac * seg_lens), dt=akint64)
+
+        if not replace and (num_samples > seg_lens).any():
+            raise ValueError("Cannot take a larger sample than population when replace is False")
+
+        if (num_samples <= 0).any():
+            raise ValueError("Cannot take a negative number of samples")
+
+        has_weights = weights is not None
+        if has_weights:
+            if not isinstance(weights, pdarray):
+                raise TypeError("weights must be a pdarray")
+
+            if weights.size != self.length:
+                raise ValueError("Weights and values to be sampled must be of same length")
+
+            if (weights < 0).any():
+                raise ValueError("Weights may not include negative values")
+
+            permuted_weights = weights[self.permutation]
+
+            # the below is equivalent to doing `_, weight_sum = self.sum(weights)`, but
+            # by calling segmentedReduction directly, we avoid permuting the weights twice.
+            # it's unclear if this is worth the additional code complexity
+            repMsg = generic_msg(
+                cmd="segmentedReduction",
+                args={
+                    "values": permuted_weights,
+                    "segments": self.segments,
+                    "op": "sum",
+                    "skip_nan": True,
+                    "ddof": 1,
+                },
+            )
+            weight_sum = create_pdarray(repMsg)
+
+            if (weight_sum == 0).any():
+                raise ValueError("All segments must have at least one value of non-zero weight")
+
+            if permuted_weights.dtype != akfloat64:
+                permuted_weights = akcast(permuted_weights, akfloat64)
+        else:
+            permuted_weights = ""
+
+        random_state = default_rng(random_state)
+        gen_name = random_state._name_dict[to_numpy_dtype(akfloat64 if has_weights else akint64)]
+
+        has_seed = random_state._seed is not None
+
+        repMsg = generic_msg(
+            cmd="segmentedSample",
+            args={
+                "genName": gen_name,
+                "perm": self.permutation,
+                "segs": self.segments,
+                "segLens": seg_lens,
+                "weights": permuted_weights,
+                "numSamples": num_samples,
+                "replace": replace,
+                "hasWeights": has_weights,
+                "hasSeed": has_seed,
+                "seed": random_state._seed if has_seed else "",
+                "state": random_state._state,
+            },
+        )
+        random_state._state += self.length
+
+        self.logger.debug(repMsg)
+        # sorting the sample permutation gives the sampled indices
+        sampled_idx = create_pdarray(repMsg) if permute_samples else sort(create_pdarray(repMsg))
+        if return_indices:
+            return sampled_idx
+        elif not isinstance(values, Sequence):
+            return values[sampled_idx]
+        else:
+            return [val[sampled_idx] for val in values]
+
+    def unique(self, values: groupable):
         """
         Return the set of unique values in each group, as a SegArray.
 
@@ -1567,7 +1727,7 @@ class GroupBy:
             ret = [SegArray(g2.segments, uv) for uv in unique_values]  # type: ignore
             if reorder:
                 ret = [r[perm] for r in ret]  # type: ignore
-        return self.unique_keys, ret  # type: ignore
+        return self.unique_keys, ret
 
     @typechecked
     def broadcast(
@@ -1620,7 +1780,7 @@ class GroupBy:
         >>> a
         array([3, 1, 4, 4, 4, 1, 3, 3, 2, 2])
         >>> g = ak.GroupBy(a)
-        >>> keys,counts = g.count()
+        >>> keys,counts = g.size()
         >>> g.broadcast(counts > 2)
         array([True False True True True False True True False False])
         >>> g.broadcast(counts == 3)
@@ -1630,6 +1790,10 @@ class GroupBy:
         """
         if values.size != self.segments.size:
             raise ValueError("Must have one value per segment")
+        is_str = isinstance(values, Strings)
+        if is_str:
+            str_vals = values
+            values = arange(str_vals.size)
         cmd = "broadcast"
         repMsg = cast(
             str,
@@ -1639,16 +1803,13 @@ class GroupBy:
                     "permName": self.permutation.name,
                     "segName": self.segments.name,
                     "valName": values.name,
-                    "objType": values.objType,
                     "permute": permute,
                     "size": self.length,
                 },
             ),
         )
-        if values.objType == Strings.objType:
-            return Strings.from_return_msg(repMsg)
-        else:
-            return create_pdarray(repMsg)
+        broadcasted = create_pdarray(repMsg)
+        return str_vals[broadcasted] if is_str else broadcasted
 
     @staticmethod
     def build_from_components(user_defined_name: Optional[str] = None, **kwargs) -> GroupBy:
@@ -2005,6 +2166,12 @@ def broadcast(
         size = cast(Union[int, np.int64, np.uint64], permutation.size)
     if size < 1:
         raise ValueError("result size must be greater than zero")
+
+    is_str = isinstance(values, Strings)
+    if is_str:
+        str_vals = values
+        values = arange(str_vals.size)
+
     cmd = "broadcast"
     repMsg = cast(
         str,
@@ -2014,13 +2181,10 @@ def broadcast(
                 "permName": pname,
                 "segName": segments.name,
                 "valName": values.name,
-                "objType": values.objType,
                 "permute": permute,
                 "size": size,
             },
         ),
     )
-    if values.objType == Strings.objType:
-        return Strings.from_return_msg(repMsg)
-    else:
-        return create_pdarray(repMsg)
+    broadcasted = create_pdarray(repMsg)
+    return str_vals[broadcasted] if is_str else broadcasted
