@@ -1,6 +1,5 @@
 module Stats {
     use AryUtil;
-    use ArkoudaMathCompat;
 
     // TODO: cast to real(32) instead of real(64) for arrays of
     // real(32) or smaller integer types

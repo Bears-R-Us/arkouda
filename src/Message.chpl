@@ -7,7 +7,6 @@ module Message {
     use List;
     use BigInteger;
 
-    use ArkoudaFileCompat;
     use Map;
     use ArkoudaIOCompat;
 

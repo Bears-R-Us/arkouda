@@ -6,9 +6,8 @@ module HDF5Msg {
     use PrivateDist;
     use Reflection;
     use Set;
-    use ArkoudaTimeCompat as Time;
+    use Time;
     use AryUtil;
-    use ArkoudaRegexCompat;
 
     use CommAggregation;
     use FileIO;
@@ -25,10 +24,10 @@ module HDF5Msg {
     use SegmentedString;
     use Sort;
     use Map;
-
+    use CTypes;
     use BigInteger;
+    use Regex;
 
-    use ArkoudaCTypesCompat;
     use ArkoudaIOCompat;
 
 
@@ -38,7 +37,7 @@ module HDF5Msg {
 
     const ARKOUDA_HDF5_FILE_METADATA_GROUP = "/_arkouda_metadata";
     const ARKOUDA_HDF5_ARKOUDA_VERSION_KEY = "arkouda_version"; // see ServerConfig.arkoudaVersion
-    type ARKOUDA_HDF5_ARKOUDA_VERSION_TYPE = c_string_ptr;
+    type ARKOUDA_HDF5_ARKOUDA_VERSION_TYPE = c_ptrConst(c_char);
     const ARKOUDA_HDF5_FILE_VERSION_KEY = "file_version";
     const ARKOUDA_HDF5_FILE_VERSION_VAL = 2.0:real(32);
     type ARKOUDA_HDF5_FILE_VERSION_TYPE = real(32);
@@ -60,10 +59,10 @@ module HDF5Msg {
     config const MULTI_FILE: int = 1;
 
     require "c_helpers/help_h5ls.h", "c_helpers/help_h5ls.c";
-    private extern proc c_get_HDF5_obj_type(loc_id:C_HDF5.hid_t, name:c_string_ptr, obj_type:c_ptr(C_HDF5.H5O_type_t)):C_HDF5.herr_t;
+    private extern proc c_get_HDF5_obj_type(loc_id:C_HDF5.hid_t, name:c_ptrConst(c_char), obj_type:c_ptr(C_HDF5.H5O_type_t)):C_HDF5.herr_t;
     private extern proc c_strlen(s:c_ptr(c_char)):c_size_t;
-    private extern proc c_incrementCounter(data:c_ptr_void);
-    private extern proc c_append_HDF5_fieldname(data:c_ptr_void, name:c_string_ptr);
+    private extern proc c_incrementCounter(data:c_ptr(void));
+    private extern proc c_append_HDF5_fieldname(data:c_ptr(void), name:c_ptrConst(c_char));
 
     /*
      * Returns the HDF5 data type corresponding to the dataset, which delegates
@@ -519,7 +518,7 @@ module HDF5Msg {
                             C_HDF5.H5P_DEFAULT,
                             C_HDF5.H5P_DEFAULT);
 
-        // For the value, we need to build a ptr to a char[]; c_string_ptr doesn't work because it is a const char*        
+        // For the value, we need to build a ptr to a char[]; c_ptrConst(c_char) doesn't work because it is a const char*        
         var akVersion = allocate(c_char, arkoudaVersion.size+1, clear=true);
         for (c, i) in zip(arkoudaVersion.codepoints(), 0..<arkoudaVersion.size) {
             akVersion[i] = c:c_char;
@@ -579,7 +578,7 @@ module HDF5Msg {
                             C_HDF5.H5P_DEFAULT,
                             C_HDF5.H5P_DEFAULT);
 
-        // For the value, we need to build a ptr to a char[]; c_string_ptr doesn't work because it is a const char*        
+        // For the value, we need to build a ptr to a char[]; c_ptrConst(c_char) doesn't work because it is a const char*        
         var akVersion = allocate(c_char, arkoudaVersion.size+1, clear=true);
         for (c, i) in zip(arkoudaVersion.codepoints(), 0..<arkoudaVersion.size) {
             akVersion[i] = c:c_char;
@@ -2940,8 +2939,8 @@ module HDF5Msg {
          * This is an H5Literate call-back function, c_helper funcs are used to process data in void*
          * this proc counts the number of of HDF5 groups/datasets under the root, non-recursive
          */
-        proc get_item_count(loc_id:C_HDF5.hid_t, name:c_ptr_void, info:c_ptr_void, data:c_ptr_void) {
-            var obj_name = name:c_string_ptr;
+        proc get_item_count(loc_id:C_HDF5.hid_t, name:c_ptr(void), info:c_ptr(void), data:c_ptr(void)) {
+            var obj_name = name:c_ptrConst(c_char);
             var obj_type:C_HDF5.H5O_type_t;
             var status:C_HDF5.H5O_type_t = c_get_HDF5_obj_type(loc_id, obj_name, c_ptrTo(obj_type));
             if (obj_type == C_HDF5.H5O_TYPE_GROUP || obj_type == C_HDF5.H5O_TYPE_DATASET) {
@@ -2954,8 +2953,8 @@ module HDF5Msg {
          * This is an H5Literate call-back function, c_helper funcs are used to process data in void*
          * this proc builds string of HDF5 group/dataset objects names under the root, non-recursive
          */
-        proc simulate_h5ls_help(loc_id:C_HDF5.hid_t, name:c_ptr_void, info:c_ptr_void, data:c_ptr_void) {
-            var obj_name = name:c_string_ptr;
+        proc simulate_h5ls_help(loc_id:C_HDF5.hid_t, name:c_ptr(void), info:c_ptr(void), data:c_ptr(void)) {
+            var obj_name = name:c_ptrConst(c_char);
             var obj_type:C_HDF5.H5O_type_t;
             var status:C_HDF5.H5O_type_t = c_get_HDF5_obj_type(loc_id, obj_name, c_ptrTo(obj_type));
             if (obj_type == C_HDF5.H5O_TYPE_GROUP || obj_type == C_HDF5.H5O_TYPE_DATASET) {
@@ -3044,8 +3043,6 @@ module HDF5Msg {
      *  as well as the total length of the array. 
      */
     proc get_subdoms(filenames: [?FD] string, dsetName: string, validFiles: [] bool) throws {
-        use CTypes;
-
         var lengths: [FD] int;
         var skips = new set(string); // Case where there is no data in the file for this dsetName
         for (i, filename, isValid) in zip(FD, filenames, validFiles) {
@@ -4496,7 +4493,7 @@ module HDF5Msg {
             }
             else{
                 // generate regex to match distributed filename
-                var dist_regex = compile("_LOCALE\\d{4}");
+                var dist_regex = new regex("_LOCALE\\d{4}");
 
                 if dist_regex.search(filename){
                     repMsg = "distribute";

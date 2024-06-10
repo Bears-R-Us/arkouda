@@ -17,7 +17,6 @@ module CSVMsg {
     use FileIO;
     use Set;
 
-    use ArkoudaFileCompat;
     use ArkoudaIOCompat;
 
     const CSV_HEADER_OPEN = "**HEADER**";

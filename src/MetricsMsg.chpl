@@ -2,18 +2,17 @@ module MetricsMsg {
     use ServerConfig;
     use Reflection;
     use ServerErrors;
-    use Logging;    
+    use Logging;
     use List;
     use IO;
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use Message;
-    use ArkoudaMemDiagnosticsCompat;
+    use MemDiagnostics;
     use NumPyDType;
     use Map;
-    use ArkoudaTimeCompat as Time;
+    use Time;
 
-    use ArkoudaMapCompat;
     use ArkoudaIOCompat;
 
     enum MetricCategory{ALL,NUM_REQUESTS,RESPONSE_TIME,AVG_RESPONSE_TIME,TOTAL_RESPONSE_TIME,

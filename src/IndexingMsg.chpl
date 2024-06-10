@@ -17,12 +17,9 @@ module IndexingMsg
 
     use FileIO;
     use List;
+    use BigInteger;
 
-    use ArkoudaBigIntCompat;
     use Map;
-    use ArkoudaFileCompat;
-    use ArkoudaBigIntCompat;
-    use ArkoudaRangeCompat;
     use ArkoudaIOCompat;
 
     private config const logLevel = ServerConfig.logLevel;
@@ -63,7 +60,7 @@ module IndexingMsg
                 }
                 when "slice" {
                     var (start, stop, stride) = jsonToTuple(typeCoords[i+1], 3*int);
-                    var slice: stridableRange = convertSlice(start, stop, stride);
+                    var slice: range(strides=strideKind.any) = convertSlice(start, stop, stride);
                     var scaled: [0..#slice.size] int = slice * dimProdEntry.a[i/2];
                     for j in 0..#slice.size {
                         scaledCoords[offsets[i/2]+j] = scaled[j];
@@ -264,8 +261,8 @@ module IndexingMsg
     }
 
     /* convert python slice to chapel slice */
-    proc convertSlice(start: int, stop: int, stride: int): stridableRange {
-        var slice: stridableRange;
+    proc convertSlice(start: int, stop: int, stride: int): range(strides=strideKind.any) {
+        var slice: range(strides=strideKind.any);
         // backwards iteration with negative stride
         if  (start > stop) & (stride < 0) {slice = (stop+1)..start by stride;}
         // forward iteration with positive stride
@@ -286,8 +283,8 @@ module IndexingMsg
               array = msgArgs.getValueOf("array"),
               rname = st.nextName();
 
-        var sliceRanges: nd * stridableRange,
-            outDomRanges: nd * stridableRange;
+        var sliceRanges: nd * range(strides=strideKind.any),
+            outDomRanges: nd * range(strides=strideKind.any);
         for param dim in 0..<nd {
             sliceRanges[dim] = convertSlice(starts[dim], stops[dim], strides[dim]);
             outDomRanges[dim] = starts[dim]..#sliceRanges[dim].size;
@@ -336,7 +333,7 @@ module IndexingMsg
         const start = msgArgs.get("starts").getTuple(1);
         const stop = msgArgs.get("stops").getTuple(1);
         const stride = msgArgs.get("strides").getTuple(1);
-        var slice: stridableRange = convertSlice(start[0], stop[0], stride[0]);
+        var slice: range(strides=strideKind.any) = convertSlice(start[0], stop[0], stride[0]);
 
         // get next symbol name
         var rname = st.nextName();
@@ -1194,7 +1191,7 @@ module IndexingMsg
 
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
-        var sliceRanges: nd * stridableRange;
+        var sliceRanges: nd * range(strides=strideKind.any);
         for param dim in 0..<nd do
             sliceRanges[dim] = convertSlice(starts[dim], stops[dim], strides[dim]);
         const sliceDom = {(...sliceRanges)};
@@ -1270,7 +1267,7 @@ module IndexingMsg
         const stop = msgArgs.get("stop").getIntValue();
         const stride = msgArgs.get("stride").getIntValue();
         const dtype = str2dtype(msgArgs.getValueOf("dtype"));
-        var slice: stridableRange = convertSlice(start, stop, stride);
+        var slice: range(strides=strideKind.any) = convertSlice(start, stop, stride);
         var value = msgArgs.get("value");
 
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -1431,7 +1428,7 @@ module IndexingMsg
               name = msgArgs.getValueOf("array"),
               yname = msgArgs.getValueOf("value");
 
-        var sliceRanges: nd * stridableRange;
+        var sliceRanges: nd * range(strides=strideKind.any);
         for param dim in 0..<nd do
             sliceRanges[dim] = convertSlice(starts[dim], stops[dim], strides[dim]);
         const sliceDom = {(...sliceRanges)};
@@ -1526,7 +1523,7 @@ module IndexingMsg
         const start = msgArgs.get("starts").getIntValue();
         const stop = msgArgs.get("stops").getIntValue();
         const stride = msgArgs.get("strides").getIntValue();
-        var slice: stridableRange;
+        var slice: range(strides=strideKind.any);
 
         const name = msgArgs.getValueOf("array");
         const yname = msgArgs.getValueOf("value");

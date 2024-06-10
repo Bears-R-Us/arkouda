@@ -12,14 +12,14 @@ module Unique
 {
     use ServerConfig;
 
-    use ArkoudaTimeCompat as Time;
+    use Time;
     use Math only;
-    
+
     //use PrivateDist;
     //use HashedDist;
     use BlockDist;
 
-    use SymArrayDmapCompat;
+    use SymArrayDmap;
 
     use CommAggregation;
     use RadixSortLSD;

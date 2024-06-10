@@ -12,8 +12,6 @@ module FileIO {
     use Sort;
     use Map;
 
-    use ArkoudaFileCompat;
-    use ArkoudaRangeCompat;
     use ArkoudaIOCompat;
 
     use ServerConfig, Logging, CommandMap;
@@ -216,7 +214,7 @@ module FileIO {
             //TODO: change this to throw
             halt("At least one domain must have stride 1");
         }
-        if !stridable(d1) && !stridable(d2) {
+        if d1.strides==strideKind.one && d2.strides==strideKind.one {
             return {low..high};
         } else {
             var stride = max(d1.stride, d2.stride);
@@ -229,7 +227,7 @@ module FileIO {
         var reader = fileIOReaderCompat(f);
         var header:bytes;
         if (binaryCheckCompat(reader)) {
-          reader.bytesRead(header, 8);
+          reader.readBytes(header, 8);
         } else {
           throw getErrorWithContext(
                      msg="File reader was not in binary mode",

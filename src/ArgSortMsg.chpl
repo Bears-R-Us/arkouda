@@ -8,7 +8,7 @@ module ArgSortMsg
     
     use CTypes;
 
-    use ArkoudaTimeCompat as Time;
+    use Time;
     use Math only;
     private use Sort;
     use ArkoudaSortCompat;

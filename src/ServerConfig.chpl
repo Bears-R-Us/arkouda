@@ -3,7 +3,7 @@ module ServerConfig
 {
     use ZMQ only;
     use HDF5.C_HDF5 only H5get_libversion;
-    use SymArrayDmapCompat only makeDistDom;
+    use SymArrayDmap only makeDistDomType;
 
     public use IO;
     public use ArkoudaIOCompat;
@@ -17,12 +17,8 @@ module ServerConfig
     import NumPyDType.DType;
     use Math;
 
-    use ArkoudaFileCompat;
-    use ArkoudaMathCompat;
-    private use ArkoudaCTypesCompat;
-
     import BigInteger.bigint;
-    
+
     enum Deployment {STANDARD,KUBERNETES}
 
     enum ObjType {
@@ -224,8 +220,6 @@ module ServerConfig
     const scLogger = new Logger(lLevel,lChannel);
    
     proc createConfig() {
-        use ArkoudaCTypesCompat;
-
         class LocaleConfig {
             const id: int;
             const name: string;
@@ -281,7 +275,7 @@ module ServerConfig
             numPUs = here.numPUs(),
             maxTaskPar = here.maxTaskPar,
             physicalMemory = getPhysicalMemHere(),
-            distributionType = (makeDistDom(10).type):string,
+            distributionType = makeDistDomType(1):string,
             LocaleConfigs = [loc in LocaleSpace] new owned LocaleConfig(loc),
             authenticate = authenticate,
             logLevel = logLevel,
@@ -303,7 +297,7 @@ module ServerConfig
     proc getEnv(name: string, default=""): string throws {
         use OS.POSIX;
         var envBytes = getenv(name.localize().c_str());
-        var val = string.createCopyingBuffer(envBytes:c_string_ptr);
+        var val = string.createCopyingBuffer(envBytes:c_ptrConst(c_char));
         if envBytes == nil || val.isEmpty() { val = default; }
         return val;
     }
@@ -313,9 +307,9 @@ module ServerConfig
     chpl_comm_regMemHeapInfo if using a fixed heap, otherwise physical memory
     */ 
     proc getPhysicalMemHere() {
-        use ArkoudaMemDiagnosticsCompat, ArkoudaCTypesCompat;
-        extern proc chpl_comm_regMemHeapInfo(start: c_ptr(c_ptr_void), size: c_ptr(c_size_t)): void;
-        var unused: c_ptr_void;
+        use MemDiagnostics;
+        extern proc chpl_comm_regMemHeapInfo(start: c_ptr(c_ptr(void)), size: c_ptr(c_size_t)): void;
+        var unused: c_ptr(void);
         var heap_size: c_size_t;
         chpl_comm_regMemHeapInfo(c_ptrTo(unused), c_ptrTo(heap_size));
         if heap_size != 0 then
@@ -335,7 +329,7 @@ module ServerConfig
     Get the memory used on this locale
     */
     proc getMemUsed() {
-        use ArkoudaMemDiagnosticsCompat;
+        use MemDiagnostics;
         return memoryUsed();
     }
 
@@ -362,7 +356,7 @@ module ServerConfig
         // to use memoryUsed() procedure from Chapel's Memory module
         proc checkStaticMemoryLimit(total: real) {
             if total > getMemLimit() {
-                var pct = mathRound((total:real / getMemLimit():real * 100):uint);
+                var pct = Math.round((total:real / getMemLimit():real * 100):uint);
                 var msg = "cmd requiring %i bytes of memory exceeds %i limit with projected pct memory used of %i%%".doFormat(
                                    total * numLocales, getMemLimit() * numLocales, pct);
                 scLogger.error(getModuleName(),getRoutineName(),getLineNumber(), msg);  
@@ -385,7 +379,7 @@ module ServerConfig
                     "memory high watermark = %i memory limit = %i projected pct memory used of %i%%".doFormat(
                            memHighWater:uint * numLocales:uint, 
                            getMemLimit():uint * numLocales:uint,
-                           mathRound((memHighWater:real * numLocales / 
+                           Math.round((memHighWater:real * numLocales / 
                                          (getMemLimit():real * numLocales)) * 100):uint));
                 }
             }
@@ -403,7 +397,7 @@ module ServerConfig
              */
             if memMgmtType == MemMgmtType.STATIC {
                 if total > getMemLimit() {
-                    var pct = mathRound((total:real / getMemLimit():real * 100):uint);
+                    var pct = Math.round((total:real / getMemLimit():real * 100):uint);
                     var msg = "cmd requiring %i bytes of memory exceeds %i limit with projected pct memory used of %i%%".doFormat(
                                    total * numLocales, getMemLimit() * numLocales, pct);
                     scLogger.error(getModuleName(),getRoutineName(),getLineNumber(), msg);  
@@ -503,7 +497,7 @@ module ServerConfig
     }
 
     proc getEnvInt(name: string, default: int): int {
-      extern proc getenv(name) : c_string_ptr;
+      extern proc getenv(name) : c_ptrConst(c_char);
       var strval:string;
       try! strval = string.createCopyingBuffer(getenv(name.localize().c_str()));
       if strval.isEmpty() { return default; }

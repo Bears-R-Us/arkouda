@@ -9,8 +9,7 @@ module ArraySetops
     use ServerConfig;
     use Logging;
 
-    use SymArrayDmapCompat;
-
+    use SymArrayDmap;
     use RadixSortLSD;
     use Unique;
     use Indexing;

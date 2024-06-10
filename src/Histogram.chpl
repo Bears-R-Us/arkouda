@@ -1,12 +1,12 @@
 module Histogram
 {
     use ServerConfig;
-    
-    use ArkoudaTimeCompat as Time;
+
+    use Time;
     use Math only;
 
     use PrivateDist;
-    use SymArrayDmapCompat;
+    use SymArrayDmap;
     use Logging;
     use Reflection;
 

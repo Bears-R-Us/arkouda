@@ -343,7 +343,7 @@ module StatsMsg {
             var eOut = st.addEntry(rname, outShape, t);
 
             const DD = domOffAxis(eIn.a.domain, axis);
-            forall idx in DD {
+            for idx in DD {
                 // TODO: avoid making a copy of the slice here
                 const sliceDom = domOnAxis(eIn.a.domain, idx, axis),
                       slice = removeDegenRanks(eIn.a[sliceDom], 1);

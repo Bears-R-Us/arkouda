@@ -4,7 +4,7 @@ module ServerDaemon {
     use Security;
     use ServerConfig;
     use ServerErrors;
-    use ArkoudaTimeCompat as Time;
+    use Time;
     use ZMQ;
     use FileSystem;
     use IO;
@@ -15,7 +15,7 @@ module ServerDaemon {
     use MsgProcessing;
     use GenSymIO;
     use Reflection;
-    use SymArrayDmapCompat;
+    use SymArrayDmap;
     use ServerErrorStrings;
     use Message;
     use CommandMap;
@@ -27,7 +27,6 @@ module ServerDaemon {
     use NumPyDType;
     use StatusMsg;
 
-    use ArkoudaFileCompat;
     use ArkoudaIOCompat;
 
     enum ServerDaemonType {DEFAULT,INTEGRATION,METRICS,STATUS}
