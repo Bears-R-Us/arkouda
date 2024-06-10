@@ -840,7 +840,6 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_
           
           (void)reader->ReadBatch(batchSize, definition_levels.data(), nullptr, values.data(), &values_read);
           totalProcessed += values_read;
-          // if values_read is 0, that means that it was a null value
           int j = 0;
           int numProcessed = 0;
           while(numProcessed < values_read) {
@@ -851,9 +850,10 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_
               }
               i++; // skip one space so the strings are null terminated with a 0
               numProcessed++;
+            } else {
+              i++;
             }
             j++;
-            i++;
           }
         }
       } else if(ty == ARROWFLOAT) {
