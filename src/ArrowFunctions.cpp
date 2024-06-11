@@ -310,6 +310,7 @@ int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname, v
               i++;
               numProcessed++;
             }
+            j++;
           }
         }
       }
