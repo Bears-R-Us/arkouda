@@ -286,20 +286,30 @@ int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname, v
           static_cast<parquet::ByteArrayReader*>(column_reader.get());
 
         int64_t numRead = 0;
-        while (ba_reader->HasNext() && numRead < numElems) {
-          parquet::ByteArray value;
-          (void)ba_reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
-          if ((ty == ARROWLIST && definition_level == 3) || ty == ARROWSTRING) {
-            if(values_read > 0) {
-              offsets[i] = value.len + 1;
-              byteSize += value.len + 1;
-              numRead += values_read;
-            } else {
-              offsets[i] = 1;
-              byteSize+=1;
-              numRead+=1;
+        
+        int totalProcessed = 0;
+        std::vector<parquet::ByteArray> values(batchSize);
+        std::vector<int16_t> definition_levels(batchSize);
+        while (ba_reader->HasNext() && totalProcessed < numElems) {
+          if((numElems - totalProcessed) < batchSize) // adjust batchSize if needed
+            batchSize = numElems - totalProcessed;
+          
+          (void)ba_reader->ReadBatch(batchSize, definition_levels.data(), nullptr, values.data(), &values_read);
+          totalProcessed += values_read;
+          int j = 0;
+          int numProcessed = 0;
+          while(numProcessed < values_read) {
+            if ((ty == ARROWLIST && definition_level == 3) || ty == ARROWSTRING) {
+              if(definition_levels[j] > 0) {
+                offsets[i] = values[numProcessed].len + 1;
+                byteSize += values[numProcessed].len + 1;
+              } else {
+                offsets[i] = 1;
+                byteSize+=1;
+              }
+              i++;
+              numProcessed++;
             }
-            i++;
           }
         }
       }
