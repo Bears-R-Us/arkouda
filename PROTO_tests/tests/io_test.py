@@ -118,7 +118,7 @@ def make_multi_dtype_dict():
                 ]
             ),
         ),
-        #"c_9": ak.array(["abc", " ", "xyz", ""]),
+        "c_9": ak.array(["abc", " ", "xyz", ""]),
         "c_10": ak.SegArray(
             ak.array([0, 2, 5, 5]), ak.array(["a", "b", "c", "d", "e", "f", "g", "h", "i"])
         ),
@@ -1521,7 +1521,7 @@ class TestImportExport:
                 "c_1": np.array([np.iinfo(np.int64).min, -1, 0, np.iinfo(np.int64).max]),
                 "c_3": np.array([False, True, False, False]),
                 "c_4": np.array([-0.0, np.finfo(np.float64).min, np.nan, np.inf]),
-                #"c_5": np.array(["abc", " ", "xyz", ""]),
+                "c_5": np.array(["abc", " ", "xyz", ""]),
             },
             index=np.arange(4),
         )
