@@ -834,7 +834,7 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_
         int totalProcessed = 0;
         std::vector<parquet::ByteArray> values(batchSize);
         std::vector<int16_t> definition_levels(batchSize);
-        while (reader->HasNext()) {
+        while (reader->HasNext() && totalProcessed < numElems) {
           if((numElems - totalProcessed) < batchSize) // adjust batchSize if needed
               batchSize = numElems - totalProcessed;
           
