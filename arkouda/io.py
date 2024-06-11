@@ -1508,6 +1508,8 @@ def to_csv(
 def to_zarr(store_path: str, arr: pdarray, chunk_shape):
     """
     Writes a pdarray to disk as a Zarr store. Supports multi-dimensional pdarrays of numeric types.
+    To use this function, ensure you have installed the blosc dependency (`make install-blosc`)
+    and have included `ZarrMsg.chpl` in the `ServerModules.cfg` file.
 
     Parameters
     ----------
@@ -1544,7 +1546,9 @@ def to_zarr(store_path: str, arr: pdarray, chunk_shape):
 def read_zarr(store_path: str, ndim: int, dtype):
     """
     Reads a Zarr store from disk into a pdarray. Supports multi-dimensional pdarrays of numeric types.
-
+    To use this function, ensure you have installed the blosc dependency (`make install-blosc`)
+    and have included `ZarrMsg.chpl` in the `ServerModules.cfg` file.
+    
     Parameters
     ----------
     store_path : str
