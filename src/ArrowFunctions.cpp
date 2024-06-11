@@ -852,6 +852,8 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_
               numProcessed++;
             } else if(definition_levels[j] == 0) {
               i++;
+            } else {
+              j = batchSize; // exit loop, not read
             }
             j++;
           }
