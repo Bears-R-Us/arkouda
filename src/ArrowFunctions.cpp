@@ -843,7 +843,7 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_
           int j = 0;
           int numProcessed = 0;
           while(numProcessed < values_read) {
-            if(definition_levels[j] == 1 || definition_levels[j] == 3) {
+            if(definition_levels[j] == 1) {
               for(int k = 0; k < values[numProcessed].len; k++) {
                 chpl_ptr[i] = values[numProcessed].ptr[k];
                 i++;
