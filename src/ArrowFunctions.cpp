@@ -952,7 +952,7 @@ std::shared_ptr<parquet::schema::GroupNode> SetupSchema(void* column_names, void
         auto list = parquet::schema::GroupNode::Make("list", parquet::Repetition::REPEATED, {element});
         fields.push_back(parquet::schema::GroupNode::Make(cname_ptr[i], parquet::Repetition::OPTIONAL, {list}, parquet::ConvertedType::LIST));
       } else {
-        fields.push_back(parquet::schema::PrimitiveNode::Make(cname_ptr[i], parquet::Repetition::REQUIRED, parquet::Type::BYTE_ARRAY, parquet::ConvertedType::NONE));
+        fields.push_back(parquet::schema::PrimitiveNode::Make(cname_ptr[i], parquet::Repetition::OPTIONAL, parquet::Type::BYTE_ARRAY, parquet::ConvertedType::NONE));
       }
     }
   }
