@@ -300,7 +300,7 @@ int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname, v
           int numProcessed = 0;
           while(numProcessed < values_read) {
             if ((ty == ARROWLIST && definition_level == 3) || ty == ARROWSTRING) {
-              if(definition_levels[j] > 0) {
+              if(definition_levels[j] == 1 || definition_levels[j] == 3) {
                 offsets[i] = values[numProcessed].len + 1;
                 byteSize += values[numProcessed].len + 1;
               } else {
