@@ -833,8 +833,8 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_
 
         int totalProcessed = 0;
         std::vector<parquet::ByteArray> values(batchSize);
-        std::vector<int16_t> definition_levels(batchSize);
         while (reader->HasNext() && totalProcessed < numElems) {
+          std::vector<int16_t> definition_levels(batchSize,-1);
           if((numElems - totalProcessed) < batchSize) // adjust batchSize if needed
               batchSize = numElems - totalProcessed;
           
@@ -842,7 +842,7 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_
           totalProcessed += values_read;
           int j = 0;
           int numProcessed = 0;
-          while(numProcessed < values_read) {
+          while(j < batchSize) {
             if(definition_levels[j] == 1) {
               for(int k = 0; k < values[numProcessed].len; k++) {
                 chpl_ptr[i] = values[numProcessed].ptr[k];
@@ -850,7 +850,7 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_
               }
               i++; // skip one space so the strings are null terminated with a 0
               numProcessed++;
-            } else {
+            } else if(definition_levels[j] == 0) {
               i++;
             }
             j++;
