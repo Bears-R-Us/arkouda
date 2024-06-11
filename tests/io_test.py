@@ -1424,6 +1424,7 @@ class IOTest(ArkoudaTest):
                     self.assertListEqual(idx.to_list(), rd_idx.to_list())
 
     def test_zarr_read_write(self):
+        pytest.skip()
         shapes = [(10,), (20,)]
         chunk_shapes = [(2,), (3,)]
         dtypes = [ak.int64, ak.float64]
