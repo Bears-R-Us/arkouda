@@ -13,6 +13,7 @@ from arkouda.pdarrayclass import *
 from arkouda.sorting import *
 from arkouda.pdarraysetops import *
 from arkouda.pdarraycreation import *
+from arkouda.pdarraymanipulation import *
 from arkouda.numeric import *
 from arkouda.groupbyclass import *
 from arkouda.strings import *
