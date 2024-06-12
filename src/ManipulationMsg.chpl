@@ -12,6 +12,7 @@ module ManipulationMsg {
   use ArkoudaAryUtilCompat;
 
   use Reflection;
+  use Search;
 
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
@@ -1258,5 +1259,89 @@ module ManipulationMsg {
     for (i, name) in zip(d, names) do gEnts[i] = getGenericTypedArrayEntry(name, st);
     const ret = [i in d] gEnts[i]!;
     return ret;
+  }
+
+  // https://numpy.org/doc/stable/reference/generated/numpy.delete.html
+  @arkouda.registerND
+  proc deleteMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
+    param pn = Reflection.getRoutineName();
+    const arr = msgArgs.getValueOf("arr"),
+          obj = msgArgs.getValueOf("obj"),
+          objSorted = msgArgs.get("obj_sorted").getBoolValue(),
+          repeats = msgArgs.getValueOf("repeats"),
+          axis = msgArgs.get("axis").getPositiveIntValue(nd),
+          rname = st.nextName();
+
+    var gArr: borrowed GenSymEntry = getGenericTypedArrayEntry(arr, st),
+        gObj: borrowed GenSymEntry = getGenericTypedArrayEntry(obj, st);
+
+    proc doDelete(type t): MsgTuple throws
+      where nd == 1
+    {
+      const eIn = toSymEntry(gArr, t, 1),
+            eObj = toSymEntry(gObj, int, 1);
+
+      var eOut = st.addEntry(rname, eIn.a.size - eObj.a.size, t);
+
+      var ii = 0;
+      for i in 0..<eIn.a.size {
+        const (found, _) = search(eObj.a, i, sorted=objSorted);
+        if !found {
+          eOut.a[ii] = eIn.a[i];
+          ii += 1;
+        }
+      }
+
+      const repMsg = "created " + st.attrib(rname);
+      mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
+    proc doDelete(type t): MsgTuple throws
+      where nd > 1
+    {
+      const eIn = toSymEntry(gArr, t, nd),
+            eObj = toSymEntry(gObj, int, 1);
+
+      var shapeOut: nd*int;
+      for i in 0..<nd do shapeOut[i] = eIn.tupShape[i] - eObj.a.size;
+
+      var eOut = st.addEntry(rname, (...shapeOut), t);
+
+      // create an array of indices to keep
+      var indexer = makeDistArray(eObj.a.size, nd*int),
+          ii = 0;
+      const firstSliceIdx: nd*int;
+      for i in domOnAxis(eIn.a.domain, firstSliceIdx, axis) {
+        const (found, _) = search(eObj.a, i[axis], sorted=objSorted);
+        if found {
+          indexer[ii] = i;
+          ii += 1;
+        }
+      }
+
+      // copy the selected indices from the input array to the output array
+      forall sliceIdx in domOffAxis(eIn.a.domain, axis) {
+        forall ii in domOnAxis(eOut.a.domain, sliceIdx, axis) {
+          eOut.a[ii] = eIn.a[indexer[ii[axis]]];
+        }
+      }
+
+      const repMsg = "created " + st.attrib(rname);
+      mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
+    select gArr.dtype {
+      when DType.Int64 do return doDelete(int);
+      when DType.UInt64 do return doDelete(uint);
+      when DType.Float64 do return doDelete(real);
+      when DType.Bool do return doDelete(bool);
+      otherwise {
+        var errorMsg = notImplementedError(pn,dtype2str(gArr.dtype));
+        mLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+        return new MsgTuple(errorMsg,MsgType.ERROR);
+      }
+    }
   }
 }
