@@ -6274,7 +6274,7 @@ def _inner_join_merge(
         new_dict[new_col] = left[col].iloc[left_inds]
     for col in right_cols:
         new_col = col + right_suffix if col in col_intersect else col
-        new_dict[new_col] = right[col].iloc[right_inds]
+        new_dict[new_col] = right[col][right_inds]
 
     ret_df = DataFrame(new_dict)
     if sort is True:
