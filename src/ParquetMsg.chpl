@@ -811,7 +811,7 @@ module ParquetMsg {
     var strictTypes: bool = msgArgs.get("strict_types").getBoolValue();
 
     var useNew = msgArgs.get('use_new').getBoolValue();
-    var fixedLen = msgArgs.get('fixed_len').getIntValue();
+    var fixedLen = msgArgs.get('fixed_len').getIntValue() + 1;
 
     var allowErrors: bool = msgArgs.get("allow_errors").getBoolValue(); // default is false
     var hasNonFloatNulls: bool = msgArgs.get("has_non_float_nulls").getBoolValue();
