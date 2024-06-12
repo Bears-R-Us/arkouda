@@ -7,7 +7,7 @@ from arkouda.dtypes import dtype as akdtype
 
 import numpy as np
 
-__all__ = ["vstack"]
+__all__ = ["vstack", "delete"]
 
 
 @typechecked
@@ -79,6 +79,25 @@ def delete(
     obj: Union[pdarray, slice, int],
     axis: Optional[int] = None,
 ) -> pdarray:
+    """
+    Return a copy of 'arr' with elements along the specified axis removed.
+
+    Parameters
+    ----------
+    arr : pdarray
+        The array to remove elements from
+    obj : Union[pdarray, slice, int]
+        The indices to remove from 'arr'. If obj is a pdarray, it must
+        have an integer dtype.
+    axis : Optional[int], optional
+        The axis along which to remove elements. If None, the array will
+        be flattened before removing elements. Defaults to None.
+
+    Returns
+    -------
+    pdarray
+        A copy of 'arr' with elements removed
+    """
 
     if axis is None:
         # flatten the array if axis is None
@@ -86,7 +105,7 @@ def delete(
             generic_msg(
                 cmd=f"reshape{arr.ndim}Dx1D",
                 args={
-                    "names": arr,
+                    "name": arr,
                     "shape": (arr.size,),
                 },
             )
@@ -103,7 +122,8 @@ def delete(
                 args={
                     "arr": _arr,
                     "obj": obj,
-                    "obj_sorted": False,  # TODO: maybe expose this as an optional argument?
+                    # TODO: maybe expose this as an optional argument? Or sort the array first?
+                    "obj_sorted": False,
                     "axis": _axis,
                 },
             )

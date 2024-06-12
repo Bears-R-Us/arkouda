@@ -1312,13 +1312,13 @@ module ManipulationMsg {
       var eOut = st.addEntry(rname, (...shapeOut), t);
 
       // create an array of indices to keep
-      var indexer = makeDistArray(eObj.a.size, nd*int),
+      var indexer = makeDistArray(eOut.tupShape[axis], int),
           ii = 0;
       const firstSliceIdx: nd*int;
       for i in domOnAxis(eIn.a.domain, firstSliceIdx, axis) {
         const (found, _) = search(eObj.a, i[axis], sorted=objSorted);
-        if found {
-          indexer[ii] = i;
+        if !found {
+          indexer[ii] = i[axis];
           ii += 1;
         }
       }
@@ -1326,7 +1326,9 @@ module ManipulationMsg {
       // copy the selected indices from the input array to the output array
       forall array1DSliceIdx in domOffAxis(eIn.a.domain, axis) {
         forall ii in domOnAxis(eOut.a.domain, array1DSliceIdx, axis) {
-          eOut.a[ii] = eIn.a[indexer[ii[axis]]];
+          var i: nd*int = ii;
+          i[axis] = indexer[ii[axis]];
+          eOut.a[ii] = eIn.a[i];
         }
       }
 
@@ -1354,7 +1356,6 @@ module ManipulationMsg {
 
     param pn = Reflection.getRoutineName();
     const arr = msgArgs.getValueOf("arr"),
-          obj = msgArgs.getValueOf("obj"),
           start = msgArgs.get("start").getIntValue(),
           stop = msgArgs.get("stop").getIntValue(),
           stride = msgArgs.get("stride").getIntValue(),
@@ -1378,12 +1379,8 @@ module ManipulationMsg {
       // copy the indices not contained in the slice from the input array to the output array
       // note: the 1D array slices created from dom[on|off]Axis are conceptually distinct from the slice indices in 'slice'
       forall array1DSliceIdx in domOffAxis(eIn.a.domain, axis) {
-        var ii: nd*int;
-        for i in domOnAxis(
-          eIn.a.domain,
-          if nd == 1 then (array1DSliceIdx,) else array1DSliceIdx,
-          axis
-      ) {
+        var ii: nd*int = if nd == 1 then (array1DSliceIdx, ) else array1DSliceIdx;
+        for i in domOnAxis(eIn.a.domain, ii, axis) {
           if !slice.contains(if nd == 1 then i else i[axis]) {
             eOut.a[ii] = eIn.a[i];
             ii[axis] += 1;
