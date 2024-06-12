@@ -1268,7 +1268,6 @@ module ManipulationMsg {
     const arr = msgArgs.getValueOf("arr"),
           obj = msgArgs.getValueOf("obj"),
           objSorted = msgArgs.get("obj_sorted").getBoolValue(),
-          repeats = msgArgs.getValueOf("repeats"),
           axis = msgArgs.get("axis").getPositiveIntValue(nd),
           rname = st.nextName();
 
@@ -1304,7 +1303,10 @@ module ManipulationMsg {
             eObj = toSymEntry(gObj, int, 1);
 
       var shapeOut: nd*int;
-      for i in 0..<nd do shapeOut[i] = eIn.tupShape[i] - eObj.a.size;
+      for i in 0..<nd do shapeOut[i] =
+        if i == axis
+          then eIn.tupShape[i] - eObj.a.size
+          else eIn.tupShape[i];
 
       var eOut = st.addEntry(rname, (...shapeOut), t);
 
@@ -1324,6 +1326,62 @@ module ManipulationMsg {
       forall sliceIdx in domOffAxis(eIn.a.domain, axis) {
         forall ii in domOnAxis(eOut.a.domain, sliceIdx, axis) {
           eOut.a[ii] = eIn.a[indexer[ii[axis]]];
+        }
+      }
+
+      const repMsg = "created " + st.attrib(rname);
+      mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
+    select gArr.dtype {
+      when DType.Int64 do return doDelete(int);
+      when DType.UInt64 do return doDelete(uint);
+      when DType.Float64 do return doDelete(real);
+      when DType.Bool do return doDelete(bool);
+      otherwise {
+        var errorMsg = notImplementedError(pn,dtype2str(gArr.dtype));
+        mLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+        return new MsgTuple(errorMsg,MsgType.ERROR);
+      }
+    }
+  }
+
+  @arkouda.registerND
+  proc deleteSlice(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
+    import IndexingMsg.convertSlice;
+
+    param pn = Reflection.getRoutineName();
+    const arr = msgArgs.getValueOf("arr"),
+          obj = msgArgs.getValueOf("obj"),
+          start = msgArgs.get("start").getIntValue(),
+          stop = msgArgs.get("stop").getIntValue(),
+          stride = msgArgs.get("stride").getIntValue(),
+          axis = msgArgs.get("axis").getPositiveIntValue(nd),
+          rname = st.nextName();
+
+    const slice: range(strides=strideKind.any) = convertSlice(start, stop, stride);
+    var gArr: borrowed GenSymEntry = getGenericTypedArrayEntry(arr, st);
+
+    proc doDelete(type t): MsgTuple throws {
+      const eIn = toSymEntry(gArr, t, nd);
+
+      var shapeOut: nd*int;
+      for i in 0..<nd do shapeOut[i] =
+        if i == axis
+          then eIn.tupShape[i] - slice.size
+          else eIn.tupShape[i];
+
+      var eOut = st.addEntry(rname, (...shapeOut), t);
+
+      // copy the indices not contained in the slice from the input array to the output array
+      forall sliceIdx in domOffAxis(eIn.a.domain, axis) {
+        var ii: nd*int;
+        for i in domOnAxis(eIn.a.domain, if nd == 1 then (sliceIdx,) else sliceIdx, axis) {
+          if !slice.contains(if nd == 1 then i else i[axis]) {
+            eOut.a[ii] = eIn.a[i];
+            ii[axis] += 1;
+          }
         }
       }
 

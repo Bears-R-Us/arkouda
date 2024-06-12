@@ -2,7 +2,7 @@ from typing import Tuple, List, Literal, Union, Optional
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
-from arkouda.pdarrayclass import pdarray, create_pdarray
+from arkouda.pdarrayclass import pdarray, create_pdarray, create_scalar_array
 from arkouda.dtypes import dtype as akdtype
 
 import numpy as np
@@ -71,3 +71,62 @@ def vstack(
             },
         )
     )
+
+
+@typechecked
+def delete(
+    arr: pdarray,
+    obj: Union[pdarray, slice, int],
+    axis: Optional[int] = None,
+) -> pdarray:
+
+    if axis is None:
+        # flatten the array if axis is None
+        _arr = create_pdarray(
+            generic_msg(
+                cmd=f"reshape{arr.ndim}Dx1D",
+                args={
+                    "names": arr,
+                    "shape": (arr.size,),
+                },
+            )
+        )
+        _axis = 0
+    else:
+        _arr = arr
+        _axis = axis
+
+    if isinstance(obj, pdarray):
+        return create_pdarray(
+            generic_msg(
+                cmd=f"delete{_arr.ndim}D",
+                args={
+                    "arr": _arr,
+                    "obj": obj,
+                    "obj_sorted": False,  # TODO: maybe expose this as an optional argument?
+                    "axis": _axis,
+                },
+            )
+        )
+    else:
+        if isinstance(obj, int):
+            start = obj
+            stop = obj + 1
+            stride = 1
+        elif isinstance(obj, slice):
+            start, stop, stride = obj.indices(_arr.shape[_axis])
+        else:
+            raise ValueError("obj must be an integer, pdarray, or slice")
+
+        return create_pdarray(
+            generic_msg(
+                cmd=f"deleteSlice{_arr.ndim}D",
+                args={
+                    "arr": _arr,
+                    "start": start,
+                    "stop": stop,
+                    "stride": stride,
+                    "axis": _axis,
+                },
+            )
+        )
