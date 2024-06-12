@@ -404,6 +404,22 @@ module CSVMsg {
                 moduleName=getModuleName(),
                 errorClass="DatasetNotFoundError");
 
+        // The same file might have data meant to be distributed across locales,
+        // Therefore the 0th line in the file may not correspond to the 0th index of the array
+        // So we skip over lines till we get the lower bound of the intersection
+        // But the filedom may not start at 0, so we need to substract that offset
+        for 0..<(intersection.low-filedom.low) {
+            try {fr.advanceThrough(b'\n');}
+            catch {
+                throw getErrorWithContext(
+                    msg="This CSV file is missing lines.",
+                    lineNumber=getLineNumber(),
+                    routineName=getRoutineName(),
+                    moduleName=getModuleName(),
+                    errorClass="IOError");
+            }
+        }
+
         var line = new csvLine(t, colIdx, colDelim);
         for x in intersection {
             try {
