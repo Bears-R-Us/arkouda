@@ -734,6 +734,8 @@ def read_parquet(
     tag_data: bool = False,
     read_nested: bool = True,
     has_non_float_nulls: bool = False,
+    use_new: bool = False,
+    fixed_len = -1,
 ) -> Union[
     Mapping[
         str,
@@ -862,6 +864,8 @@ def read_parquet(
                 "filenames": filenames,
                 "tag_data": tag_data,
                 "has_non_float_nulls": has_non_float_nulls,
+                "use_new": use_new,
+                "fixed_len": fixed_len,
             },
         )
         rep = json.loads(rep_msg)  # See GenSymIO._buildReadAllMsgJson for json structure

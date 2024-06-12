@@ -810,6 +810,9 @@ module ParquetMsg {
     var tagData: bool = msgArgs.get("tag_data").getBoolValue();
     var strictTypes: bool = msgArgs.get("strict_types").getBoolValue();
 
+    var useNew = msgArgs.get('use_new').getBoolValue();
+    var fixedLen = msgArgs.get('fixed_len').getIntValue();
+
     var allowErrors: bool = msgArgs.get("allow_errors").getBoolValue(); // default is false
     var hasNonFloatNulls: bool = msgArgs.get("has_non_float_nulls").getBoolValue();
     if allowErrors {
@@ -980,8 +983,14 @@ module ParquetMsg {
           rnames.pushBack((dsetname, ObjType.PDARRAY, valName));
         } else if ty == ArrowTypes.stringArr {
           var entrySeg = createSymEntry(len, int);
-          byteSizes = calcStrSizesAndOffset(entrySeg.a, filenames, sizes, dsetname);
-          entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
+          if fixedLen == -1 {
+            byteSizes = calcStrSizesAndOffset(entrySeg.a, filenames, sizes, dsetname);
+            entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
+          } else {
+            entrySeg.a = fixedLen;
+            entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
+            byteSizes = fixedLen*len;
+          }
           
           var entryVal = createSymEntry((+ reduce byteSizes), uint(8));
           readStrFilesByName(entryVal.a, whereNull, filenames, byteSizes, dsetname, ty);
