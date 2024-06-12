@@ -2,7 +2,7 @@ from typing import Tuple, List, Literal, Union, Optional
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
-from arkouda.pdarrayclass import pdarray, create_pdarray, create_scalar_array
+from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.dtypes import dtype as akdtype
 
 import numpy as np

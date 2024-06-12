@@ -1282,6 +1282,7 @@ module ManipulationMsg {
 
       var eOut = st.addEntry(rname, eIn.a.size - eObj.a.size, t);
 
+      // copy the data from the input array to the output array, excluding the indices in 'obj'
       var ii = 0;
       for i in 0..<eIn.a.size {
         const (found, _) = search(eObj.a, i, sorted=objSorted);
@@ -1323,8 +1324,8 @@ module ManipulationMsg {
       }
 
       // copy the selected indices from the input array to the output array
-      forall sliceIdx in domOffAxis(eIn.a.domain, axis) {
-        forall ii in domOnAxis(eOut.a.domain, sliceIdx, axis) {
+      forall array1DSliceIdx in domOffAxis(eIn.a.domain, axis) {
+        forall ii in domOnAxis(eOut.a.domain, array1DSliceIdx, axis) {
           eOut.a[ii] = eIn.a[indexer[ii[axis]]];
         }
       }
@@ -1375,9 +1376,14 @@ module ManipulationMsg {
       var eOut = st.addEntry(rname, (...shapeOut), t);
 
       // copy the indices not contained in the slice from the input array to the output array
-      forall sliceIdx in domOffAxis(eIn.a.domain, axis) {
+      // note: the 1D array slices created from dom[on|off]Axis are conceptually distinct from the slice indices in 'slice'
+      forall array1DSliceIdx in domOffAxis(eIn.a.domain, axis) {
         var ii: nd*int;
-        for i in domOnAxis(eIn.a.domain, if nd == 1 then (sliceIdx,) else sliceIdx, axis) {
+        for i in domOnAxis(
+          eIn.a.domain,
+          if nd == 1 then (array1DSliceIdx,) else array1DSliceIdx,
+          axis
+      ) {
           if !slice.contains(if nd == 1 then i else i[axis]) {
             eOut.a[ii] = eIn.a[i];
             ii[axis] += 1;
