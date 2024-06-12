@@ -549,34 +549,34 @@ module RandMsg
 
     proc poissonGeneratorMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
 
-	// this is an idea
-	proc ziggurat (lam : real, ref rs : ? ) : int {
-		var L = exp(-lam);
-		var k = 0;
-		var p = 1.0;
-		do {
-			k += 1;
-			p = p * rs.next(0,1);
-		} while p > L;
-		return k;
-	}
+        // this is an idea
+        proc ziggurat (lam : real, ref rs : ? ) : int {
+             var L = exp(-lam);
+             var k = 0;
+             var p = 1.0;
+             do {
+                 k += 1;
+                 p = p * rs.next(0,1);
+             } while p > L;
+             return k;
+        }
 
-	proc setLocaleParameters (ref par : ?) : (int, domain(?), int) {
+        proc setLocaleParameters (ref par : ?) : (int, domain(?), int) {
              var generatorIdxOffset = here.id * here.maxTaskPar;
              var locSubDom = par.localSubdomain();  // the chunk that this locale needs to handle
              var indicesPerTask = locSubDom.size / here.maxTaskPar;  // the number of elements each task needs to handle
              return (generatorIdxOffset, locSubDom, indicesPerTask) ;
-	}
+        }
 
-	proc setTaskParameters (tid : int, locSubDom : ?, generatorSeed : int, generatorIdxOffset : int, 
-				indicesPerTask : int, nTasksPerLoc : int ) : (int, int, int) {
+        proc setTaskParameters (tid : int, locSubDom : ?, generatorSeed : int, generatorIdxOffset : int, 
+                                indicesPerTask : int, nTasksPerLoc : int ) : (int, int, int) {
              var taskSeed = generatorSeed + generatorIdxOffset + tid;  // initial seed offset by other locales threads plus current thread id
              var startIdx = tid * indicesPerTask;
              var stopIdx = if tid == nTasksPerLoc - 1 then locSubDom.size else (tid + 1) * indicesPerTask;  // the last task picks up the remainder of indices
-	     return (taskSeed, startIdx, stopIdx) ;
-	}
+             return (taskSeed, startIdx, stopIdx) ;
+        }
 
-	// end of idea
+        // end of idea
 
         const pn = Reflection.getRoutineName(),
               name = msgArgs.getValueOf("name"),                                // generator name
@@ -614,13 +614,13 @@ module RandMsg
             const lam = lamStr:real;
             // using nested coforalls over locales and tasks so we know how to generate taskSeed
             coforall loc in Locales do on loc {
-		const (generatorIdxOffset, locSubDom, indicesPerTask) = setLocaleParameters( poissonArr ) ;
+                const (generatorIdxOffset, locSubDom, indicesPerTask) = setLocaleParameters( poissonArr ) ;
                 coforall tid in Tasks {
-		    const (taskSeed, startIdx, stopIdx) = setTaskParameters( tid, locSubDom, generatorSeed,
-		       						generatorIdxOffset, indicesPerTask, nTasksPerLoc );
+                    const (taskSeed, startIdx, stopIdx) = setTaskParameters( tid, locSubDom, generatorSeed,
+                                                            generatorIdxOffset, indicesPerTask, nTasksPerLoc );
                     var rs = new randomStream(real, taskSeed);
                     for i in startIdx..<stopIdx {
-			var k = ziggurat (lam, rs);
+                        var k = ziggurat (lam, rs);
                         poissonArr[locSubDom.low + i] = k - 1;
                     }
                 }
@@ -631,14 +631,14 @@ module RandMsg
             const lamArr = toSymEntry(getGenericTypedArrayEntry(lamStr, st),real).a;
             // using nested coforalls over locales and task so we know exactly how many generators we need
             coforall loc in Locales do on loc {
-		const (generatorIdxOffset, locSubDom, indicesPerTask) = setLocaleParameters( poissonArr ) ;
+                const (generatorIdxOffset, locSubDom, indicesPerTask) = setLocaleParameters( poissonArr ) ;
                 coforall tid in Tasks {
-		    const (taskSeed, startIdx, stopIdx) = setTaskParameters( tid, locSubDom, generatorSeed,
-		       						generatorIdxOffset, indicesPerTask, nTasksPerLoc );
+                    const (taskSeed, startIdx, stopIdx) = setTaskParameters( tid, locSubDom, generatorSeed,
+                                                            generatorIdxOffset, indicesPerTask, nTasksPerLoc );
                     var rs = new randomStream(real, taskSeed);
                     for i in startIdx..<stopIdx {
                         const lam = lamArr[locSubDom.low + i];
-			var k = ziggurat (lam, rs);
+                        var k = ziggurat (lam, rs);
                         poissonArr[locSubDom.low + i] = k - 1;
                     }
                 }
