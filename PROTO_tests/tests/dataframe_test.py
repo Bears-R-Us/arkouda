@@ -252,14 +252,14 @@ class TestDataFrame:
 
         for df in dict_dfs + lists_dfs:
             assert isinstance(df, ak.DataFrame)
-            assert isinstance(df["0"].values, ak.pdarray)
-            assert df["0"].values.dtype == int
-            assert isinstance(df["1"].values, ak.pdarray)
-            assert df["1"].values.dtype == bool
-            assert isinstance(df["2"].values, ak.Strings)
-            assert df["2"].values.dtype == str
-            assert isinstance(df["3"].values, ak.pdarray)
-            assert df["3"].values.dtype == float
+            assert isinstance(df["0"], ak.pdarray)
+            assert df["0"].dtype == int
+            assert isinstance(df["1"], ak.pdarray)
+            assert df["1"].dtype == bool
+            assert isinstance(df["2"], ak.Strings)
+            assert df["2"].dtype == str
+            assert isinstance(df["3"], ak.pdarray)
+            assert df["3"].dtype == float
 
     def test_client_type_creation(self):
         f = ak.Fields(ak.arange(10), ["A", "B", "c"])
@@ -1242,7 +1242,7 @@ class TestDataFrame:
         weighted_sample = g.sample(n=num_samples, replace=True, weights=weights, random_state=rng)
 
         # count how many of each category we saw
-        uk, f_obs = ak.GroupBy(weighted_sample["vals"].values).size()
+        uk, f_obs = ak.GroupBy(weighted_sample["vals"]).size()
 
         # I think the keys should always be sorted but just in case
         if not ak.is_sorted(uk):
