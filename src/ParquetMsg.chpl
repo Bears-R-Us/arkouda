@@ -983,7 +983,7 @@ module ParquetMsg {
           rnames.pushBack((dsetname, ObjType.PDARRAY, valName));
         } else if ty == ArrowTypes.stringArr {
           var entrySeg = createSymEntry(len, int);
-          if fixedLen == -1 {
+          if fixedLen < 2 {
             byteSizes = calcStrSizesAndOffset(entrySeg.a, filenames, sizes, dsetname);
             entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
           } else {
