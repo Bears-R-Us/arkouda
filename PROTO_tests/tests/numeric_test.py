@@ -4,10 +4,13 @@ import arkouda as ak
 from arkouda.dtypes import npstr
 from math import isclose
 
+ARRAY_TYPES = [ak.int64, ak.float64, ak.bool, ak.uint64, npstr]
 NUMERIC_TYPES = [ak.int64, ak.float64, ak.bool, ak.uint64]
 NO_BOOL = [ak.int64, ak.float64, ak.uint64]
 NO_FLOAT = [ak.int64, ak.bool, ak.uint64]
 INT_FLOAT = [ak.int64, ak.float64]
+YES_NO = [True, False]
+VOWELS_AND_SUCH = ["a", "e", "i", "o", "u", "AB", 47, 2, 3.14159]
 
 # There are many ways to create a vector of alternating values.
 # This is a fairly fast and fairly straightforward approach.
@@ -17,12 +20,6 @@ def alternate(L, R, n):
     v = np.full(n, R)
     v[::2] = L
     return v
-
-
-def alternatingTF(n):
-    atf = np.full(n, False)
-    atf[::2] = True
-    return atf
 
 
 #  The following tuples support a simplification of the trigonometric
@@ -638,6 +635,51 @@ class TestNumeric:
         h3, h4 = ak.hash([bi])
         assert h1.to_list() == h3.to_list()
         assert h2.to_list() == h4.to_list()
+
+    # Notes about array_equal:
+    #   Strings compared to non-strings are always not equal.
+    #   nan handling is (of course) unique to floating point
+    #   we deliberately test on matched and mismatched arrays
+
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    @pytest.mark.parametrize("data_type", ARRAY_TYPES)
+    @pytest.mark.parametrize("same_size", YES_NO)
+    @pytest.mark.parametrize("matching", YES_NO)
+    @pytest.mark.parametrize("nan_handling", YES_NO)
+    def test_array_equal(self, prob_size, data_type, same_size, matching, nan_handling):
+        seed = pytest.seed if pytest.seed is not None else 8675309
+        if data_type is npstr:  # strings require special handling
+            np.random.seed(seed)
+            temp = np.random.choice(VOWELS_AND_SUCH, prob_size)
+            pda_a = ak.array(temp)
+            pda_b = ak.array(temp)
+            assert ak.array_equal(pda_a, pda_b)  # matching string arrays
+            temp = np.random.choice(VOWELS_AND_SUCH, prob_size)
+            pda_b = ak.array(temp)
+            assert not (ak.array_equal(pda_a, pda_b))  # mismatching string arrays
+            pda_b = ak.randint(0, 100, prob_size, dtype=ak.int64)
+            assert not (ak.array_equal(pda_a, pda_b))  # string to int comparison
+            pda_b = ak.randint(0, 2, prob_size, dtype=ak.bool)
+            assert not (ak.array_equal(pda_a, pda_b))  # string to bool comparison
+        elif data_type is ak.float64:  # so do floats, because of nan
+            nda_a = np.random.uniform(0, 100, prob_size)
+            if nan_handling:
+                nda_a[-1] = np.nan
+            nda_b = nda_a.copy() if matching else np.random.uniform(0, 100, prob_size)
+            pda_a = ak.array(nda_a)
+            pda_b = ak.array(nda_b)
+            assert ak.array_equal(pda_a, pda_b, nan_handling) == matching
+        else:  # other types have simpler tests
+            pda_a = ak.random.randint(0, 100, prob_size, dtype=data_type)
+            if matching:  # known to match?
+                pda_b = pda_a
+                assert ak.array_equal(pda_a, pda_b)
+            elif same_size:  # not matching, but same size?
+                pda_b = ak.random.randint(0, 100, prob_size, dtype=data_type)
+                assert not (ak.array_equal(pda_a, pda_b))
+            else:  # different sizes
+                pda_b = ak.random.randint(0, 100, prob_size + 1, dtype=data_type)
+                assert not (ak.array_equal(pda_a, pda_b))
 
     # Notes about median:
     #  prob_size is either even or odd, so one of sample_e, sample_o will have an even
