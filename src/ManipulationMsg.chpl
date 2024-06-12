@@ -12,7 +12,6 @@ module ManipulationMsg {
   use ArkoudaAryUtilCompat;
 
   use Reflection;
-  use Search;
 
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
@@ -1283,10 +1282,11 @@ module ManipulationMsg {
       var eOut = st.addEntry(rname, eIn.a.size - eObj.a.size, t);
 
       // copy the data from the input array to the output array, excluding the indices in 'obj'
+      // TODO: fold this loop into 'parSearch' (avoid repeatedly spawning tasks by kicking
+      //       off coforall loops for each array element)
       var ii = 0;
       for i in 0..<eIn.a.size {
-        const (found, _) = search(eObj.a, i, sorted=objSorted);
-        if !found {
+        if !parSearch(eObj.a, i, objSorted) {
           eOut.a[ii] = eIn.a[i];
           ii += 1;
         }
@@ -1316,8 +1316,7 @@ module ManipulationMsg {
           ii = 0;
       const firstSliceIdx: nd*int;
       for i in domOnAxis(eIn.a.domain, firstSliceIdx, axis) {
-        const (found, _) = search(eObj.a, i[axis], sorted=objSorted);
-        if !found {
+        if !parSearch(eObj.a, i[axis], objSorted) {
           indexer[ii] = i[axis];
           ii += 1;
         }
@@ -1405,4 +1404,29 @@ module ManipulationMsg {
       }
     }
   }
+
+  proc parSearch(a: [?d] ?t, x: t, sorted: bool): bool {
+    use Search;
+    var found = false;
+
+    const nTasks=here.maxTaskPar;
+    coforall loc in Locales with (|| reduce found) do on loc {
+      const locDom = a.localSubdomain(),
+            nPerTask = locDom.size / nTasks;
+
+      coforall tid in 0..<nTasks with (|| reduce found) {
+        const (lf, _) = search(
+          a, x, sorted=sorted,
+          lo = locDom.low + nPerTask*tid,
+          hi = if tid == nTasks-1
+            then locDom.high
+            else locDom.low + nPerTask*(tid+1)
+        );
+
+        found ||= lf;
+      }
+    }
+    return found;
+  }
+
 }
