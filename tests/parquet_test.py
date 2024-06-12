@@ -485,7 +485,7 @@ class ParquetTest(ArkoudaTest):
             # read files and ensure that all resulting fields are as expected
             rd_data = ak.read_parquet(f"{tmp_dirname}/multicol_parquet*")
             for k, v in rd_data.items():
-                self.assertListEqual(v.to_list(), akdf[k].values.to_list())
+                self.assertListEqual(v.to_list(), akdf[k].to_list())
 
             # extra insurance, check dataframes are equivalent
             rd_df = ak.DataFrame(rd_data)
@@ -517,20 +517,20 @@ class ParquetTest(ArkoudaTest):
             data = ak.read_parquet(fname + "_*")
             self.assertTrue("idx" in data)
             self.assertTrue("seg" in data)
-            self.assertListEqual(df["idx"].values.to_list(), data["idx"].to_list())
-            self.assertListEqual(df["seg"].values.to_list(), data["seg"].to_list())
+            self.assertListEqual(df["idx"].to_list(), data["idx"].to_list())
+            self.assertListEqual(df["seg"].to_list(), data["seg"].to_list())
 
             # test read with read_nested=false and no supplied datasets
             data = ak.read_parquet(fname + "_*", read_nested=False).popitem()[1]
             self.assertIsInstance(data, ak.pdarray)
-            self.assertListEqual(df["idx"].values.to_list(), data.to_list())
+            self.assertListEqual(df["idx"].to_list(), data.to_list())
 
             # test read with read_nested=false and user supplied datasets. Should ignore read_nested
             data = ak.read_parquet(fname + "_*", datasets=["idx", "seg"], read_nested=False)
             self.assertTrue("idx" in data)
             self.assertTrue("seg" in data)
-            self.assertListEqual(df["idx"].values.to_list(), data["idx"].to_list())
-            self.assertListEqual(df["seg"].values.to_list(), data["seg"].to_list())
+            self.assertListEqual(df["idx"].to_list(), data["idx"].to_list())
+            self.assertListEqual(df["seg"].to_list(), data["seg"].to_list())
 
     def test_segarray_string(self):
         words = ak.array(["one,two,three", "uno,dos,tres"])
@@ -619,7 +619,7 @@ class ParquetTest(ArkoudaTest):
                 pddf.to_parquet(file_path)
                 akdf = ak.DataFrame(ak.read_parquet(file_path))
 
-                to_pd = pd.Series(akdf["rand"].values.to_list())
+                to_pd = pd.Series(akdf["rand"].to_list())
                 # raises an error if the two series aren't equal
                 # we can't use np.allclose(pddf['rand'].to_list, akdf['rand'].to_list) since these
                 # are lists of lists. assert_series_equal handles this and properly handles nans.

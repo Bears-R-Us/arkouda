@@ -31,15 +31,12 @@ from arkouda.index import Index, MultiIndex
 from arkouda.join import inner_join
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import cumsum, where
-from arkouda.pdarrayclass import RegistrationError
-from arkouda.pdarrayclass import any as akany
-from arkouda.pdarrayclass import pdarray
-from arkouda.pdarrayclass import sum as aksum
+from arkouda.pdarrayclass import RegistrationError, pdarray
 from arkouda.pdarraycreation import arange, array, create_pdarray, full, zeros
-from arkouda.pdarraysetops import concatenate, in1d, indexof1d, intersect1d
+from arkouda.pdarraysetops import concatenate, in1d, intersect1d
 from arkouda.row import Row
 from arkouda.segarray import SegArray
-from arkouda.series import Series, is_supported_scalar
+from arkouda.series import Series
 from arkouda.sorting import argsort, coargsort
 from arkouda.strings import Strings
 from arkouda.timeclass import Datetime, Timedelta
@@ -317,7 +314,7 @@ class DataFrameGroupBy:
         |  5 |   3 |   8 |
         +----+-----+-----+
         """
-        return self.df.loc[
+        return self.df[
             self.gb.sample(
                 values=self.df.index.values,
                 n=n,
@@ -761,11 +758,9 @@ class DataFrame(UserDict):
                 for key, val in initialdata.items():
                     if isinstance(val, (list, tuple)):
                         val = array(val)
-                    if isinstance(val, Series):
-                        val = val.values
                     if not isinstance(val, self._COLUMN_CLASSES):
                         raise ValueError(f"Values must be one of {self._COLUMN_CLASSES}.")
-                    if isinstance(key, str) and key.lower() == "index":
+                    if key.lower() == "index":
                         # handles the index as an Index object instead of a column
                         self._set_index(val)
                         continue
@@ -809,18 +804,17 @@ class DataFrame(UserDict):
 
             # If the index param was passed in, use that instead of
             # creating a new one.
-            if index is not None:
-                self._set_index(index)
-            elif self.index is None:
+            if self.index is None:
                 self._set_index(arange(self._nrows))
-
+            else:
+                self._set_index(index)
             self.update_nrows()
 
     def __getattr__(self, key):
         if key not in self.columns.values:
             raise AttributeError(f"Attribute {key} not found")
         # Should this be cached?
-        return self[key]
+        return Series(data=self[key], index=self.index.index)
 
     def __dir__(self):
         return dir(DataFrame) + self.columns.values + ["columns"]
@@ -838,289 +832,74 @@ class DataFrame(UserDict):
             self._empty = True
         self.update_nrows()
 
-    def validate_key(self, key):
-        if key is None:
-            raise ValueError("Key cannot be None")
-        if isinstance(key, Series):
-            # TODO: check index alignment
-            return self.validate_key(key.values)
-        if isinstance(key, list):
-            return self.validate_key(array(key))
-
-        if isinstance(key, slice):
-            if key.start is not None and key.start < 0:
-                raise ValueError("Negative start index not supported")
-            if key.stop is not None and key.stop > len(self):
-                raise ValueError("Slice stop index out of range")
-            return key
-
-        if is_supported_scalar(key):
-            if len(self.columns) == 0:
-                # Empty DataFrame, scalar key is valid
-                return key
-            if self.column_label_type() != resolve_scalar_dtype(key):
-                raise TypeError(f"Expected key of type {self.column_label_type()}, received {type(key)}")
-            return key
-
-        if isinstance(key, pdarray) and key.dtype == akbool:
-            if len(key) != len(self):
-                raise ValueError("Boolean mask arguments must have the same length as the DataFrame.")
-            return key
-
-        if isinstance(key, (pdarray, Strings, Categorical, SegArray)):
-            k = key[0]
-            if len(self.columns) != 0 and resolve_scalar_dtype(k) != self.column_label_type():
-                raise TypeError(
-                    "Expected key of type {}, received {}".format(type(self.columns[0]), type(k))
-                )
-            return key
-
-        raise TypeError("Indexing with keys of type {} not supported".format(type(key)))
-
-    def column_label_type(self):
-        if len(self._columns) != 0:
-            return resolve_scalar_dtype(self._columns[0])
-        else:
-            return None
-
     def __getitem__(self, key):
-        """
-        Name-based indexing of columns, except for integer slices and boolean masks,
-        which does position-based indexing of rows.
-
-        Parameters
-        ----------
-        key : str, int, float, list, pdarray, slice
-            The column label(s) the resulting Series or DataFrame should contain. If
-            using a slice, the indices of the desired rows. If using a boolean mask,
-            a pdarray where "True" entries correspond to desired rows.
-
-        Returns
-        -------
-        Series, DataFrame
-            The columns or rows of the DataFrame. If only one column label is
-            provided, the return type is a Series. Otherwise a DataFrame is returned.
-
-        Raises
-        ------
-        KeyError
-            Raised if a column label is not present in the DataFrame
-        ValueError
-            Raised if a boolean mask has the incorrect length or a slice's bounds are
-            out of range
-        TypeError
-            Raised if the key is not a supported type
-        """
         # convert series to underlying values
         # Should check for index alignment
-        key = self.validate_key(key)
+        if isinstance(key, Series):
+            key = key.values
 
-        # if a scalar argument, return a Series
-        if is_supported_scalar(key):
-            if key not in self._columns:
-                raise KeyError("column {} not present in DataFrame".format(key))
-            values = UserDict.__getitem__(self, key)
-            index = self.index
-            return Series(values, index=index)
+        # Select rows using an integer pdarray
+        if isinstance(key, pdarray):
+            if key.dtype == akbool:
+                key = arange(key.size)[key]
+            result = {}
+            for k in self._columns:
+                result[k] = UserDict.__getitem__(self, k)[key]
+            # To stay consistent with numpy, provide the old index values
+            return DataFrame(initialdata=result, index=self.index.index[key])
 
-        # boolean mask
-        if isinstance(key, pdarray) and key.dtype == akbool:
-            return self._get_rows(key)
-
-        # slice
-        if isinstance(key, slice):
-            return self._get_rows(key)
-
-        if isinstance(key, (pdarray, Strings)):
-            for k in key.to_ndarray():
-                if k not in self.columns:
-                    raise KeyError("column {} not present in DataFrame".format(k))
+        # Select rows or columns using a list
+        if isinstance(key, (list, tuple)):
             result = DataFrame()
             if len(key) <= 0:
                 return result
-            for k in key.to_ndarray():
-                result.data[k] = UserDict.__getitem__(self, k)
-                result._columns.append(k)
-            result._empty = False
-            result._set_index(self.index)
-            return result
+            if len({type(x) for x in key}) > 1:
+                raise TypeError("Invalid selector: too many types in list.")
+            if isinstance(key[0], str):
+                for k in key:
+                    result[k] = self[k]
+                result._empty = False
+                result._set_index(self.index)  # column lens remain the same. Copy the indexing
+                return result
+            else:
+                raise TypeError(
+                    "DataFrames only support lists for column indexing. "
+                    "All list entries must be of type str."
+                )
 
-        raise TypeError("key not supported: {}".format(key))
+        # Select a single row using an integer
+        if isinstance(key, int):
+            result = {}
+            row = array([key])
+            for k in self._columns:
+                result[k] = (UserDict.__getitem__(self, k)[row])[0]
+            return Row(result)
 
-    def validate_value(self, value):
-        if isinstance(value, Series):
-            # TODO: check index alignment
-            return self.validate_value(value.values)
-        if isinstance(value, list):
-            return self.validate_value(array(value))
-        if isinstance(value, tuple):
-            raise TypeError("DataFrame does not support tuple values")
+        # Select a single column using a string
+        elif isinstance(key, str):
+            if key not in self.keys():
+                raise KeyError(f"Invalid column name '{key}'.")
+            return UserDict.__getitem__(self, key)
 
-        return value
+        # Select rows using a slice
+        elif isinstance(key, slice):
+            # result = DataFrame()
+            rtn_data = {}
+            s = key
+            for k in self._columns:
+                rtn_data[k] = UserDict.__getitem__(self, k)[s]
+            return DataFrame(initialdata=rtn_data, index=self.index.index[arange(self._nrows)[s]])
+        else:
+            raise IndexError("Invalid selector: unknown error.")
 
     def __setitem__(self, key, value):
-        """
-        Inserts/updates columns in the DataFrame. Can also be used to
-        update one DataFrame with values from another.
-
-        Parameters
-        ----------
-        key : str, int, float, list, pdarray
-            The column label(s) the resulting Series or DataFrame should contain.
-        value : str, int, float, list, pdarray, Series, DataFrame
-            The value(s) that should be inserted or updated within the DataFrame.
-
-        Raises
-        ------
-        KeyError
-            Raised if a column label is not present in the DataFrame
-        IndexError
-            Raised if a boolean mask has the incorrect length
-        TypeError
-            Raised if the key or value are not a supported type
-        """
         self.update_nrows()
 
-        key = self.validate_key(key)
-        value = self.validate_value(value)
+        # If this is the first column added, we must create an index column.
+        add_index = False
+        if self._empty:
+            add_index = True
 
-        # adding first column
-        if len(self._columns) == 0 and is_supported_scalar(key):
-            self._columns.append(key)
-            self._empty = False
-            if is_supported_scalar(value):
-                value = full(1, value, resolve_scalar_dtype(value))
-            UserDict.__setitem__(self, key, value)
-            self._set_index(Index(arange(len(value))))
-            self.update_nrows()
-            return
-
-        # Update or insert a single column into the dataframe
-        if resolve_scalar_dtype(key) == self.column_label_type():
-            if is_supported_scalar(value):
-                value = full(len(self), value, resolve_scalar_dtype(value))
-            assert isinstance(value, (pdarray, Strings, Categorical, SegArray))
-            if len(value) != len(self):
-                raise ValueError("Column length must match DataFrame length")
-
-            # Set a single column in the dataframe using a scalar value
-            if key not in self.columns:
-                self._empty = False
-                self._columns.append(key)
-
-            UserDict.__setitem__(self, key, value)
-            return
-
-        # Boolean mask
-        elif isinstance(key, pdarray) and key.dtype == akbool:
-            if not isinstance(value, DataFrame):
-                raise ValueError("Expected DataFrame type for boolean mask assignment")
-            shared_columns = intersect1d(array(self.columns.values), array(value.columns.values))
-            if len(shared_columns) != len(self.columns) or len(shared_columns) != len(value.columns):
-                raise ValueError("Right-hand side columns do not match left-hand side columns")
-            if len(value) != aksum(key):
-                raise IndexError("Boolean mask length must match DataFrame length")
-            for k in self.columns:
-                self[k].values[key] = value[k].values
-            return
-
-        # Index lists
-        if isinstance(key, (pdarray, Strings)):
-            if isinstance(value, DataFrame):
-                if not len(key) == len(value.columns):
-                    raise ValueError(
-                        f"Number of keys and values must match: {len(key)} != {len(value.columns)}"
-                    )
-            else:
-                raise ValueError("When setting multiple columns, value must be a DataFrame")
-
-            for k, valueColumn in zip(key.to_ndarray(), value.columns):
-                v = value[valueColumn].values
-                if len(v) != len(self):
-                    raise ValueError("Column length must match DataFrame length")
-                if k not in self.columns:
-                    self._empty = False
-                    self._columns.append(k)
-                UserDict.__setitem__(self, k, v)
-            return
-
-        raise TypeError("Setting on dataframe with unexpected type: {}".format(type(key)))
-
-    @property
-    def loc(self):
-        """
-        Label-based row indexing. Supports getting and setting. If there is
-        a single indexing argument, it is interpreted as a row selector. If
-        there are two, the first is interpreted as a row selector and the
-        second as a column selector. Selectors can be scalar label values;
-        lists, pdarrays, or slices of label values; boolean masks as pdarrays;
-        or Series. Setting values with .loc requires both the row and column
-        selectors to be present.
-
-        Raises
-        ------
-        KeyError
-            Raised if a label is not present in the DataFrame.
-        TypeError
-            Raised if the key or value types are not supported.
-        """
-        return _LocIndexer(self)
-
-    @property
-    def iloc(self):
-        """
-        Position-based row indexing. Supports getting and setting. If there
-        is a single indexing argument, it is interpreted as a row selector.
-        If there are two, the first is interpreted as a row selector and the
-        second as a column selector. Selectors can be scalar integer values;
-        lists, pdarrays, or slices of integer values; boolean masks as pdarrays;
-        or integer Series. Setting values with .iloc requires both the row and
-        column selectors to be present.
-
-        Raises
-        ------
-        TypeError
-            Raised if the keys or value types are not supported.
-
-        IndexError
-            Raised if an index is out of range.
-
-        ValueError
-            Raised if a boolean mask is of the wrong length.
-        """
-        return _ILocIndexer(self)
-
-    @property
-    def at(self) -> AtIndexer:
-        """
-        Access a single value for a row/column by label. Similar to `.loc`.
-        Use only if you need to get or set a single value.
-
-        Raises
-        ------
-        KeyError
-            Raised if a label is not present in the DataFrame.
-        TypeError
-            Raised if the key or value types are not supported.
-        """
-        return AtIndexer(self)
-
-    @property
-    def iat(self) -> IAtIndexer:
-        """
-        Access a single value for a row/column pair by integer position.
-        Similar to `.iloc`. Use only if you need to get or set a single value.
-
-        Raises
-        ------
-        IndexError
-            Raised if an index is out of range.
-        TypeError
-            Raised if the key or value types are not supported.
-        """
-        return IAtIndexer(self)
-
-    def set_row(self, key, value):
         # Set a single row in the dataframe using a dict of values
         if isinstance(key, int):
             for k in self._columns:
@@ -1142,6 +921,28 @@ class DataFrame(UserDict):
                     if k == "index":
                         continue
                     self[k][key] = v
+
+        # Set a single column in the dataframe using a an arkouda array
+        elif isinstance(key, str):
+            if not isinstance(value, self._COLUMN_CLASSES):
+                raise ValueError(f"Column must be one of {self._COLUMN_CLASSES}.")
+            elif self._nrows is not None and self._nrows != value.size:
+                raise ValueError(f"Expected size {self._nrows} but received size {value.size}.")
+            else:
+                self._empty = False
+                UserDict.__setitem__(self, key, value)
+                # Update the index values
+                if key not in self._columns:
+                    self._columns.append(key)
+
+        # Do nothing and return if there's no valid data
+        else:
+            raise ValueError("No valid data received.")
+
+        # Update the dataframe indices and metadata.
+        if add_index:
+            self.update_nrows()
+            self._set_index(arange(self._nrows))
 
     def __len__(self):
         """
@@ -1223,10 +1024,10 @@ class DataFrame(UserDict):
         if self._nrows <= maxrows:
             newdf = DataFrame()
             for col in self._columns:
-                if isinstance(self[col].values, Categorical):
-                    newdf[col] = self[col].values.categories[self[col].values.codes]
+                if isinstance(self[col], Categorical):
+                    newdf[col] = self[col].categories[self[col].codes]
                 else:
-                    newdf[col] = self[col].values
+                    newdf[col] = self[col]
             newdf._set_index(self.index)
             return newdf.to_pandas(retain_index=True)
         # Being 1 above the threshold causes the PANDAS formatter to split the data frame vertically
@@ -1235,27 +1036,22 @@ class DataFrame(UserDict):
         )
         msg_list = []
         for col in self._columns:
-            if isinstance(self[col].values, Categorical):
-                msg_list.append(
-                    f"Categorical+{col}+{self[col].values.codes.name}"
-                    f"+{self[col].values.categories.name}"
-                )
-            elif isinstance(self[col].values, SegArray):
-                msg_list.append(
-                    f"SegArray+{col}+{self[col].values.segments.name}+{self[col].values.values.name}"
-                )
-            elif isinstance(self[col].values, Strings):
-                msg_list.append(f"Strings+{col}+{self[col].values.name}")
-            elif isinstance(self[col].values, Fields):
-                msg_list.append(f"Fields+{col}+{self[col].values.name}")
-            elif isinstance(self[col].values, IPv4):
-                msg_list.append(f"IPv4+{col}+{self[col].values.name}")
-            elif isinstance(self[col].values, Datetime):
-                msg_list.append(f"Datetime+{col}+{self[col].values.name}")
-            elif isinstance(self[col].values, BitVector):
-                msg_list.append(f"BitVector+{col}+{self[col].values.name}")
+            if isinstance(self[col], Categorical):
+                msg_list.append(f"Categorical+{col}+{self[col].codes.name}+{self[col].categories.name}")
+            elif isinstance(self[col], SegArray):
+                msg_list.append(f"SegArray+{col}+{self[col].segments.name}+{self[col].values.name}")
+            elif isinstance(self[col], Strings):
+                msg_list.append(f"Strings+{col}+{self[col].name}")
+            elif isinstance(self[col], Fields):
+                msg_list.append(f"Fields+{col}+{self[col].name}")
+            elif isinstance(self[col], IPv4):
+                msg_list.append(f"IPv4+{col}+{self[col].name}")
+            elif isinstance(self[col], Datetime):
+                msg_list.append(f"Datetime+{col}+{self[col].name}")
+            elif isinstance(self[col], BitVector):
+                msg_list.append(f"BitVector+{col}+{self[col].name}")
             else:
-                msg_list.append(f"pdarray+{col}+{self[col].values.name}")
+                msg_list.append(f"pdarray+{col}+{self[col].name}")
 
         repMsg = cast(
             str,
@@ -1285,11 +1081,11 @@ class DataFrame(UserDict):
             elif t == "Fields":
                 df_dict[msg[1]] = Fields(
                     create_pdarray(msg[2]),
-                    self[msg[1]].values.names,
-                    MSB_left=self[msg[1]].values.MSB_left,
-                    pad=self[msg[1]].values.padchar,
-                    separator=self[msg[1]].values.separator,
-                    show_int=self[msg[1]].values.show_int,
+                    self[msg[1]].names,
+                    MSB_left=self[msg[1]].MSB_left,
+                    pad=self[msg[1]].padchar,
+                    separator=self[msg[1]].separator,
+                    show_int=self[msg[1]].show_int,
                 )
             elif t == "IPv4":
                 df_dict[msg[1]] = IPv4(create_pdarray(msg[2]))
@@ -1298,8 +1094,8 @@ class DataFrame(UserDict):
             elif t == "BitVector":
                 df_dict[msg[1]] = BitVector(
                     create_pdarray(msg[2]),
-                    width=self[msg[1]].values.width,
-                    reverse=self[msg[1]].values.reverse,
+                    width=self[msg[1]].width,
+                    reverse=self[msg[1]].reverse,
                 )
             else:
                 df_dict[msg[1]] = create_pdarray(msg[2])
@@ -1307,72 +1103,6 @@ class DataFrame(UserDict):
         new_df = DataFrame(df_dict)
         new_df._set_index(self.index.index[idx])
         return new_df.to_pandas(retain_index=True)[self._columns]
-
-    def _get_rows(self, key):
-        """
-        Gets rows of the dataframe based with the provided indices
-        """
-        if not isinstance(key, (pdarray, slice)):
-            raise TypeError("_get_rows requires pdarray of row indices or a slice")
-
-        if isinstance(key, slice):
-            start = key.start if key.start is not None else 0
-            stop = key.stop if key.stop is not None else len(self)
-            step = key.step if key.step is not None else 1
-            key = arange(start, stop, step)
-        if key.dtype == akbool:
-            key = arange(key.size)[key]
-        result = {}
-        for k in self._columns:
-            result[k] = UserDict.__getitem__(self, k)[key]
-        # To stay consistent with numpy, provide the old index values
-        return DataFrame(initialdata=result, index=self.index.index[key])
-
-    def column_labels(self):
-        """
-        Return the column labels.
-        """
-        return self._columns
-
-    def _add_new_rows(self, key):
-        # If the key is a scalar, convert it to an array
-        if is_supported_scalar(key) and dtype(type(key)) == self.index.dtype:
-            key = array([key])
-
-        # Cannot add new rows to dataframes with String columns
-        for k in self._columns:
-            if isinstance(UserDict.__getitem__(self, k), Strings):
-                raise ValueError(
-                    "This DataFrame has a column of type ak.Strings;"
-                    " so this DataFrame is immutable. This feature could change"
-                    " if arkouda supports mutable Strings in the future."
-                )
-
-        if isinstance(key, pdarray) and key.dtype == self.index.dtype:
-            new_keys = key[in1d(key, self.index.values, invert=True)]
-            self._set_index(self.index.concat(Index(new_keys)))
-            for k in self._columns:
-                current_col = UserDict.__getitem__(self, k)
-                default_val = np.nan if current_col.dtype == akfloat64 else 0
-                new_col = concatenate(
-                    [current_col, full(len(new_keys), default_val, dtype=current_col.dtype)]
-                )
-                UserDict.__setitem__(self, k, new_col)
-
-            self.update_nrows()
-        else:
-            raise ValueError("Invalid key type for adding new rows")
-
-    def _add_column(self, key, dtype):
-        """
-        Adds a column to the DataFrame with the given key and dtype.
-        """
-        if key in self.columns:
-            raise ValueError(f"Column {key} already exists in DataFrame")
-        default_value = 0
-        if dtype == akfloat64:
-            default_value = np.nan
-        self[key] = full(len(self), default_value, dtype=dtype)
 
     def transfer(self, hostname, port):
         """
@@ -1648,7 +1378,6 @@ class DataFrame(UserDict):
         if len(obj._columns) == 0:
             obj._set_index(None)
             obj._empty = True
-
         obj.update_nrows()
 
         if not inplace:
@@ -1726,9 +1455,9 @@ class DataFrame(UserDict):
 
         if keep == "last":
             _segment_ends = concatenate([gp.segments[1:] - 1, array([gp.permutation.size - 1])])
-            return self.iloc[gp.permutation[_segment_ends]]
+            return self[gp.permutation[_segment_ends]]
         else:
-            return self.iloc[gp.permutation[gp.segments]]
+            return self[gp.permutation[gp.segments]]
 
     @property
     def size(self):
@@ -2033,6 +1762,7 @@ class DataFrame(UserDict):
         """
 
         obj = self if inplace else self.copy()
+
         if not size:
             obj.update_nrows()
             obj._set_index(arange(obj._nrows))
@@ -2100,36 +1830,6 @@ class DataFrame(UserDict):
             rows = " row"
         return "DataFrame([" + keystr + "], {:,}".format(self._nrows) + rows + ", " + str(mem) + ")"
 
-    def items(self):
-        """
-        Iterate over (column name, column) pairs.
-
-        Returns
-        -------
-        generator
-            A generator of (column name, column) pairs.
-
-        Examples
-        --------
-
-        >>> import arkouda as ak
-        >>> ak.connect()
-        >>> df = ak.DataFrame({'col1': [1, 2], 'col2': [3, 4]})
-        >>> for key, value in df.items():
-        ...     print(key, value)
-        col1 [1 2]
-        col2 [3 4]
-        """
-        for key in self._columns:
-            elt = UserDict.__getitem__(self, key)
-            if isinstance(elt, Series):
-                elt = elt.values
-            yield key, elt
-
-    def values(self):
-        for key, elts in self.items():
-            yield elts
-
     def update_nrows(self):
         """
         Computes the number of rows on the arkouda server and updates the size parameter.
@@ -2139,7 +1839,7 @@ class DataFrame(UserDict):
             if val is not None:
                 sizes.add(val.size)
         if len(sizes) > 1:
-            raise ValueError("Size mismatch in DataFrame columns: ", sizes, ".")
+            raise ValueError("Size mismatch in DataFrame columns.")
         if len(sizes) == 0:
             self._nrows = None
         else:
@@ -2453,13 +2153,13 @@ class DataFrame(UserDict):
             tmp_data = {}
             for key in keylist:
                 try:
-                    tmp_data[key] = util_concatenate([self[key], other[key]], ordered=ordered).values
+                    tmp_data[key] = util_concatenate([self[key], other[key]], ordered=ordered)
                 except TypeError as e:
                     raise TypeError(
                         f"Incompatible types for column {key}: {type(self[key])} vs {type(other[key])}"
                     ) from e
             self.data = tmp_data
-            self._set_index(self.index.concat(other.index))
+
         # Clean up
         self.update_nrows()
         self.reset_index(inplace=True)
@@ -3044,7 +2744,7 @@ class DataFrame(UserDict):
         # Proceed with conversion if possible
         pandas_data = {}
         for key in self._columns:
-            val = self[key].values
+            val = self[key]
             try:
                 # in order for proper pandas functionality, SegArrays must be seen as 1d
                 # and therefore need to be converted to list
@@ -3805,15 +3505,15 @@ class DataFrame(UserDict):
         if self._empty:
             return array([], dtype=akint64)
         if ascending:
-            return argsort(self.data[key])
+            return argsort(self[key])
         else:
-            if isinstance(self.data[key], pdarray) and self.data[key].dtype in (
+            if isinstance(self[key], pdarray) and self[key].dtype in (
                 akint64,
                 akfloat64,
             ):
-                return argsort(-self.data[key])
+                return argsort(-self[key])
             else:
-                return argsort(self.data[key])[arange(self._nrows - 1, -1, -1)]
+                return argsort(self[key])[arange(self._nrows - 1, -1, -1)]
 
     def coargsort(self, keys, ascending=True):
         """
@@ -3858,7 +3558,7 @@ class DataFrame(UserDict):
             return array([], dtype=akint64)
         arrays = []
         for key in keys:
-            arrays.append(self[key].values)
+            arrays.append(self[key])
         i = coargsort(arrays)
         if not ascending:
             i = i[arange(self._nrows - 1, -1, -1)]
@@ -3872,7 +3572,7 @@ class DataFrame(UserDict):
         else:
             new_index = Index(self.index[idx])
 
-        return DataFrame(self.iloc[idx], index=new_index)
+        return DataFrame(self[idx], index=new_index)
 
     def sort_index(self, ascending=True):
         """
@@ -3997,7 +3697,7 @@ class DataFrame(UserDict):
             i = self.coargsort(by, ascending=ascending)
         else:
             raise TypeError("Column name(s) must be str or list/tuple of str")
-        return self.iloc[i]
+        return self[i]
 
     def apply_permutation(self, perm):
         """
@@ -4202,16 +3902,20 @@ class DataFrame(UserDict):
         +----+--------+--------+
 
         """
+
         if deep:
             res = DataFrame()
             res._size = self._nrows
             res._bytes = self._bytes
             res._empty = self._empty
+            res._columns = self._columns[:]  # if this is not a slice, droping columns modifies both
 
-            for col in self._columns:
-                res[col] = self[col].iloc[:]
+            for key, val in self.items():
+                res[key] = val[:]
+
             # if this is not a slice, renaming indexes with update both
             res._set_index(Index(self.index.index[:]))
+
             return res
         else:
             return DataFrame(self)
@@ -4519,9 +4223,9 @@ class DataFrame(UserDict):
             index_values_list = []
             count_values_list = []
             for col in self.columns:
-                if is_numeric(self[col].values):
+                if is_numeric(self[col]):
                     index_values_list.append(col)
-                    count_values_list.append((~isnan(self[col].values)).sum())
+                    count_values_list.append((~isnan(self[col])).sum())
                 elif not numeric_only or self[col].dtype == bool:
                     index_values_list.append(col)
                     # Non-numeric columns do not have NaN values.
@@ -4531,12 +4235,12 @@ class DataFrame(UserDict):
             first = True
             count_values = arange(0)
             for col in self.columns:
-                if is_numeric(self[col].values):
+                if is_numeric(self[col]):
                     if first:
-                        count_values = akcast(~isnan(self[col].values), dt="int64")
+                        count_values = akcast(~isnan(self[col]), dt="int64")
                         first = False
                     else:
-                        count_values += ~isnan(self[col].values)
+                        count_values += ~isnan(self[col])
                 elif not numeric_only or self[col].dtype == bool:
                     if first:
                         count_values = full(self.index.size, 1, dtype=akint64)
@@ -4611,7 +4315,7 @@ class DataFrame(UserDict):
         args = {
             "size": len(self.columns.values),
             "columns": self.columns.values,
-            "data_names": [numeric_help(self[c].values) for c in self.columns.values],
+            "data_names": [numeric_help(self[c]) for c in self.columns.values],
         }
 
         ret_dict = json.loads(generic_msg(cmd="corrMatrix", args=args))
@@ -4828,8 +4532,8 @@ class DataFrame(UserDict):
         from arkouda.util import is_numeric
 
         def is_nan_col(col: str):
-            if is_numeric(self[col].values):
-                return isnan(self[col].values)
+            if is_numeric(self[col]):
+                return isnan(self[col])
             else:
                 return full(self.shape[0], False, dtype=akbool)
 
@@ -4883,8 +4587,8 @@ class DataFrame(UserDict):
         from arkouda.util import is_numeric
 
         def not_nan_col(col: str):
-            if is_numeric(self[col].values):
-                return ~isnan(self[col].values)
+            if is_numeric(self[col]):
+                return ~isnan(self[col])
             else:
                 return full(self.shape[0], True, dtype=akbool)
 
@@ -4969,7 +4673,7 @@ class DataFrame(UserDict):
         bool_cols = [col for col in self.columns.values if self.dtypes[col] == "bool"]
         if (isinstance(axis, int) and axis == 0) or (isinstance(axis, str) and axis == "index"):
             return Series(
-                array([akany(self[col].values) for col in bool_cols]),
+                array([akany(self[col]) for col in bool_cols]),
                 index=Index(bool_cols),
             )
         elif (isinstance(axis, int) and axis == 1) or (isinstance(axis, str) and axis == "columns"):
@@ -4985,7 +4689,7 @@ class DataFrame(UserDict):
                 mask = full(self.shape[0], False, dtype=bool)
             return Series(mask, index=self.index.values[:])
         elif axis is None:
-            return any([akany(self[col].values) for col in bool_cols])
+            return any([akany(self[col]) for col in bool_cols])
         else:
             raise ValueError("axis must have value 0, 1, 'index', 'columns', or None.")
 
@@ -5066,7 +4770,7 @@ class DataFrame(UserDict):
         bool_cols = [col for col in self.columns.values if self.dtypes[col] == "bool"]
         if (isinstance(axis, int) and axis == 0) or (isinstance(axis, str) and axis == "index"):
             return Series(
-                array([akall(self[col].values) for col in bool_cols]),
+                array([akall(self[col]) for col in bool_cols]),
                 index=Index(bool_cols),
             )
         elif (isinstance(axis, int) and axis == 1) or (isinstance(axis, str) and axis == "columns"):
@@ -5083,7 +4787,7 @@ class DataFrame(UserDict):
 
             return Series(mask, index=self.index.values[:])
         elif axis is None:
-            return all([akall(self[col].values) for col in bool_cols])
+            return all([akall(self[col]) for col in bool_cols])
         else:
             raise ValueError("axis must have value 0, 1, 'index', 'columns', or None.")
 
@@ -5247,7 +4951,7 @@ class DataFrame(UserDict):
                 if isinstance(mask, Series):
                     for col, truth in zip(mask.index.values.to_list(), mask.values.to_list()):
                         if truth is True:
-                            result[col] = self[col].values[:]
+                            result[col] = self[col][:]
 
         if ignore_index is True and result.empty is False:
             result = result.reset_index()
@@ -5625,341 +5329,6 @@ class DataFrame(UserDict):
         return cls(columns, idx)
 
 
-class _LocIndexer:
-    def __init__(self, df):
-        self.df = df
-
-    def __getitem__(self, key):
-        if isinstance(key, tuple) and len(key) == 2:
-            return self._get_row_col(key[0], key[1])
-        if isinstance(key, list):
-            key = array(key)
-        if isinstance(key, Series):
-            key = key.values
-        if is_supported_scalar(key) and self.df.index.dtype == dtype(type(key)):
-            return self.df._get_rows(indexof1d(array([key]), self.df.index.values))
-
-        if isinstance(key, pdarray) and key.dtype == self.df.index.dtype:
-            return self.df._get_rows(indexof1d(key, self.df.index.values))
-
-        if isinstance(key, slice):
-            if key.start is not None and akfind(array([key.start]), self.df.index.values)[0] == -1:
-                raise KeyError(f"Index {key.start} not found in DataFrame index")
-            if key.stop is not None and akfind(array([key.stop]), self.df.index.values)[0] == -1:
-                raise KeyError(f"Index {key.stop} not found in DataFrame index")
-
-            start_idx = (
-                akfind(array([key.start]), self.df.index.values)[0] if key.start is not None else 0
-            )
-            stop_idx = (
-                akfind(array([key.stop]), self.df.index.values)[0] + 1
-                if key.stop is not None
-                else self.df.index.size
-            )
-
-            indices = arange(start_idx, stop_idx)
-            return self.df._get_rows(indices)
-
-        if isinstance(key, pdarray) and key.dtype == akbool:
-            return self.df._get_rows(key)
-
-        return None
-
-    def _get_row_col(self, row_key, col_key):
-        return self[row_key][col_key]
-
-    def __setitem__(self, key, val):
-        if isinstance(key, tuple) and len(key) == 2:
-            self._set_row_col(key[0], key[1], val)
-            return
-        else:
-            raise ValueError(
-                "Invalid key type. '.loc' indexing only supports keys with row and column selectors."
-            )
-
-    def _set_row_col(self, row_key, col_key, val):
-        if isinstance(row_key, list):
-            row_key = array(row_key)
-        if isinstance(row_key, Series):
-            row_key = row_key.values
-        if is_supported_scalar(col_key) and col_key not in self.df.columns.values:
-            self.df._add_column(col_key, dtype(type(val)))
-
-        if is_supported_scalar(val):
-            return self._set_row_col_scalar_val(row_key, col_key, val)
-        else:
-            assert isinstance(val, (pdarray, Series, Strings, SegArray)), "Invalid value type"
-            return self._set_row_col_vector_val(row_key, col_key, val)
-
-    def _set_row_col_scalar_val(self, row_key, col_key, val):
-        if is_supported_scalar(row_key):
-            if not self.df.index.dtype == dtype(type(row_key)):
-                raise TypeError("Row key must be of the same type as the DataFrame index")
-            if akfind(array([row_key]), self.df.index.values)[0] == -1:
-                self.df._add_new_rows(row_key)
-            # updating a single row
-            row_idx = indexof1d(array([row_key]), self.df.index.values)
-            if row_idx.size == 0:
-                raise ValueError(f"Index {row_key} not found in DataFrame index")
-
-            self.df.data[col_key][row_idx] = val
-
-        if isinstance(row_key, pdarray) and row_key.dtype == self.df.index.dtype:
-            if akany(in1d(row_key, self.df.index.values, invert=True)):
-                self.df._add_new_rows(row_key)
-            # updating multiple rows
-            row_idx = indexof1d(row_key, self.df.index.values)
-            self.df.data[col_key][row_idx] = val
-
-        if isinstance(row_key, pdarray) and row_key.dtype == akbool:
-            self.df.data[col_key][row_key] = val
-        if isinstance(row_key, slice):
-            if (
-                row_key.start is not None
-                and akfind(array([row_key.start]), self.df.index.values)[0] == -1
-            ):
-                raise KeyError(f"Index {row_key.start} not found in DataFrame index")
-            if row_key.stop is not None and akfind(array([row_key.stop]), self.df.index.values)[0] == -1:
-                raise KeyError(f"Index {row_key.stop} not found in DataFrame index")
-
-            start_idx = (
-                akfind(array([row_key.start]), self.df.index.values)[0]
-                if row_key.start is not None
-                else 0
-            )
-            stop_idx = (
-                akfind(array([row_key.stop]), self.df.index.values)[0] + 1
-                if row_key.stop is not None
-                else self.df.index.size
-            )
-            indices = arange(start_idx, stop_idx)
-            self.df.data[col_key][indices] = val
-        return None
-
-    def _set_row_col_vector_val(self, row_key, col_key, val):
-        if isinstance(val, Series):
-            aligned_indices = indexof1d(val.index.values, self.df.index.values)
-            self.df.data[col_key][aligned_indices] = val.values
-            return
-        if isinstance(row_key, pdarray) and row_key.dtype == self.df.index.dtype:
-            if akany(in1d(row_key, self.df.index.values, invert=True)):
-                self.df._add_new_rows(row_key)
-            # updating multiple rows
-            row_idx = indexof1d(row_key, self.df.index.values)
-            self.df.data[col_key][row_idx] = val
-        if isinstance(row_key, slice):
-            if (
-                row_key.start is not None
-                and akfind(array([row_key.start]), self.df.index.values)[0] == -1
-            ):
-                raise ValueError(f"Index {row_key.start} not found in DataFrame index")
-            if row_key.stop is not None and akfind(array([row_key.stop]), self.df.index.values)[0] == -1:
-                raise ValueError(f"Index {row_key.stop} not found in DataFrame index")
-
-            start_idx = (
-                akfind(array([row_key.start]), self.df.index.values)[0]
-                if row_key.start is not None
-                else 0
-            )
-            # should the below have + 1 like the other stop_idxs?
-            stop_idx = (
-                akfind(array([row_key.stop]), self.df.index.values)[0]
-                if row_key.stop is not None
-                else self.df.index.size
-            )
-
-            indices = arange(start_idx, stop_idx)
-            self.df.data[col_key][indices] = val
-        return None
-
-
-class _ILocIndexer:
-    def __init__(self, df):
-        self.df = df
-
-    def __getitem__(self, key):
-        if isinstance(key, tuple) and len(key) == 2:
-            return self._get_row_col(key[0], key[1])
-        if isinstance(key, list):
-            key = array(key)
-        if isinstance(key, Series):
-            key = key.values
-
-        if is_supported_scalar(key):
-            if not isinstance(key, int):
-                raise TypeError("iloc key must be an integer")
-            if key >= len(self.df) or key < -len(self.df):
-                raise IndexError("Index out of range")
-            return self.df._get_rows(array([key]))
-
-        if isinstance(key, pdarray):
-            if key.dtype == akint64:
-                if akany(key < -len(self.df)) or akany(key >= len(self.df)):
-                    raise IndexError("Index out of range")
-                return self.df._get_rows(key)
-            if key.dtype == akbool:
-                if key.size != self.df.index.size:
-                    raise IndexError("Boolean array must be the same size as the DataFrame index")
-                return self.df._get_rows(key)
-            raise TypeError("Invalid dtype for iloc key, must be int or bool: {}".format(key.dtype))
-
-        if isinstance(key, slice):
-            if key.start is not None and not isinstance(key.start, int):
-                raise TypeError("Start of slice must be an integer")
-            if key.stop is not None and not isinstance(key.stop, int):
-                raise TypeError("Stop of slice must be an integer")
-            if key.step is not None and not isinstance(key.step, int):
-                raise TypeError("Step of slice must be an integer")
-            start = key.start if key.start is not None else 0
-            stop = key.stop if key.stop is not None else self.df.index.size
-            step = key.step if key.step is not None else 1
-            if start < 0 or start >= len(self.df) or stop < 0 or stop > len(self.df) or step <= 0:
-                raise IndexError("Slice index out of range")
-            return self.df._get_rows(arange(start, stop, step))
-
-        raise TypeError("Invalid iloc key: {}".format(key))
-
-    def _get_row_col(self, row_key, col_key):
-        row_indexed = self[row_key]
-
-        if isinstance(col_key, list):
-            col_key = array(col_key)
-        if isinstance(col_key, Series):
-            col_key = col_key.values
-
-        if isinstance(row_indexed, DataFrame):
-            if isinstance(col_key, int):
-                column_name = row_indexed.columns[col_key]
-                column = row_indexed[column_name]
-                if len(column) == 1:
-                    return column.values[0]
-                else:
-                    return column
-
-            if isinstance(col_key, pdarray):
-                column_array = array(row_indexed.columns)
-                if col_key.dtype == akbool or col_key.dtype == akint64:
-                    return row_indexed[column_array[col_key]]
-                raise ValueError(
-                    "Invalid dtype for iloc key, must be int or bool: {}".format(col_key.dtype)
-                )
-
-    def __setitem__(self, key, val):
-        if isinstance(key, tuple) and len(key) == 2:
-            self._set_row_col(key[0], key[1], val)
-            return
-        else:
-            raise ValueError(
-                "Invalid key type. '.iloc' indexing only supports keys with row and column selectors."
-            )
-
-    def _set_row_col(self, row_key, col_key, val):
-        if isinstance(row_key, list):
-            row_key = array(row_key)
-        if isinstance(row_key, Series):
-            row_key = row_key.values
-
-        # Only supports setting a single column at a time
-        if not isinstance(col_key, int):
-            raise ValueError("Column key must be an integer")
-        if col_key >= len(self.df.columns) or col_key < -len(self.df.columns):
-            raise IndexError("Index out of range")
-
-        row_indices = None
-
-        if is_supported_scalar(row_key):
-            if not isinstance(row_key, int):
-                raise ValueError("Row key must be an integer")
-            if row_key >= len(self.df) or row_key < -len(self.df):
-                raise IndexError("Index out of range")
-            row_indices = array([row_key])
-        elif isinstance(row_key, pdarray):
-            if row_key.dtype == akint64:
-                if akany(row_key < -len(self.df)) or akany(row_key >= len(self.df)):
-                    raise IndexError("Index out of range")
-                row_indices = row_key
-            elif row_key.dtype == akbool:
-                if row_key.size != self.df.index.size:
-                    raise IndexError("Boolean array must be the same size as the DataFrame index")
-                row_indices = row_key
-            else:
-                raise ValueError(
-                    "Invalid dtype for iloc key, must be int or bool: {}".format(row_key.dtype)
-                )
-        elif isinstance(row_key, slice):
-            if row_key.start is not None and not isinstance(row_key.start, int):
-                raise ValueError("Start of slice must be an integer")
-            if row_key.stop is not None and not isinstance(row_key.stop, int):
-                raise ValueError("Stop of slice must be an integer")
-            if row_key.step is not None and not isinstance(row_key.step, int):
-                raise ValueError("Step of slice must be an integer")
-            start = row_key.start if row_key.start is not None else 0
-            stop = row_key.stop if row_key.stop is not None else self.df.index.size
-            step = row_key.step if row_key.step is not None else 1
-            row_indices = arange(start, stop, step)
-        else:
-            raise TypeError("invalid row key type: {}".format(type(row_key)))
-
-        if is_supported_scalar(val):
-            self.df.data[self.df.columns[col_key]][row_indices] = val
-        elif isinstance(val, pdarray):
-            if val.size != len(row_indices):
-                raise ValueError("Value array must be the same size as the row indices")
-            self.df.data[self.df.columns[col_key]][row_indices] = val
-        else:
-            raise ValueError("Invalid value type: {}".format(type(val)))
-
-
-class AtIndexer:
-    def __init__(self, df) -> None:
-        self.df = df
-
-    def __getitem__(self, key):
-        if not isinstance(key, tuple) or len(key) != 2:
-            raise ValueError(".at requires a row key and a column key")
-        (row, col) = key
-        if not is_supported_scalar(row):
-            raise ValueError(".at only supports scalar row keys")
-        if not is_supported_scalar(col):
-            raise ValueError(".at only supports scalar column keys")
-        return self.df.loc[row, col]
-
-    def __setitem__(self, key, val):
-        if not isinstance(key, tuple) or len(key) != 2:
-            raise ValueError(".at requires a row key and a column key")
-        (row, col) = key
-        if not is_supported_scalar(row):
-            raise ValueError(".at only supports scalar row keys")
-        if not is_supported_scalar(col):
-            raise ValueError(".at only supports scalar column keys")
-        self.df.loc[row, col] = val
-
-
-class IAtIndexer:
-    def __init__(self, df) -> None:
-        self.df = df
-
-    def __getitem__(self, key):
-        if not isinstance(key, tuple) or len(key) != 2:
-            raise ValueError(".iat requires a row key and a column key")
-        (row, col) = key
-        if not isinstance(row, int):
-            raise ValueError(".iat requires integer row keys")
-        if not isinstance(col, int):
-            raise ValueError(".iat requires integer column keys")
-        return self.df.iloc[row, col]
-
-    def __setitem__(self, key, val):
-        if not isinstance(key, tuple) or len(key) != 2:
-            raise ValueError(".iat requires a row key and a column key")
-        (row, col) = key
-        if not is_supported_scalar(row):
-            raise ValueError(".iat requires integer row keys")
-        if not is_supported_scalar(col):
-            raise ValueError(".iat requires integer column keys")
-        self.df.iloc[row, col] = val
-
-
 def intx(a, b):
     """
     Find all the rows that are in both dataframes.
@@ -6256,22 +5625,20 @@ def _inner_join_merge(
     """
     left_cols, right_cols = left.columns.values.copy(), right.columns.values.copy()
     if isinstance(on, str):
-        left_inds, right_inds = inner_join(left[on].values, right[on].values)
-        new_dict = {on: left[on].iloc[left_inds]}
+        left_inds, right_inds = inner_join(left[on], right[on])
+        new_dict = {on: left[on][left_inds]}
         left_cols.remove(on)
         right_cols.remove(on)
     else:
-        left_inds, right_inds = inner_join(
-            [left[col].values for col in on], [right[col].values for col in on]
-        )
-        new_dict = {col: left[col].iloc[left_inds] for col in on}
+        left_inds, right_inds = inner_join([left[col] for col in on], [right[col] for col in on])
+        new_dict = {col: left[col][left_inds] for col in on}
         for col in on:
             left_cols.remove(col)
             right_cols.remove(col)
 
     for col in left_cols:
         new_col = col + left_suffix if col in col_intersect else col
-        new_dict[new_col] = left[col].iloc[left_inds]
+        new_dict[new_col] = left[col][left_inds]
     for col in right_cols:
         new_col = col + right_suffix if col in col_intersect else col
         new_dict[new_col] = right[col][right_inds]
@@ -6329,13 +5696,13 @@ def _right_join_merge(
     in_left = _inner_join_merge(left, right, on, col_intersect, left_suffix, right_suffix, sort=False)
     in_left_cols, left_cols = in_left.columns.values.copy(), left.columns.values.copy()
     if isinstance(on, str):
-        left_at_on = left[on].values
-        right_at_on = right[on].values
+        left_at_on = left[on]
+        right_at_on = right[on]
         left_cols.remove(on)
         in_left_cols.remove(on)
     else:
-        left_at_on = [left[col].values for col in on]
-        right_at_on = [right[col].values for col in on]
+        left_at_on = [left[col] for col in on]
+        right_at_on = [right[col] for col in on]
         for col in on:
             left_cols.remove(col)
             in_left_cols.remove(col)
@@ -6349,10 +5716,10 @@ def _right_join_merge(
     nan_cols = list(set(in_left) - set(not_in_left))
     for col in nan_cols:
         if convert_ints is True and in_left[col].dtype == int:
-            in_left[col] = akcast(in_left[col].values, akfloat64)
+            in_left[col] = akcast(in_left[col], akfloat64)
 
         # Create a nan array for all values not in the left df
-        not_in_left[col] = __nulls_like(in_left[col].values, len(not_in_left))
+        not_in_left[col] = __nulls_like(in_left[col], len(not_in_left))
     ret_df = DataFrame.append(in_left, not_in_left)
     if sort is True:
         ret_df = ret_df.sort_values(on).reset_index()
@@ -6409,14 +5776,14 @@ def _outer_join_merge(
     )
 
     if isinstance(on, str):
-        left_at_on = left[on].values
-        right_at_on = right[on].values
+        left_at_on = left[on]
+        right_at_on = right[on]
         left_cols.remove(on)
         right_cols.remove(on)
 
     else:
-        left_at_on = [left[col].values for col in on]
-        right_at_on = [right[col].values for col in on]
+        left_at_on = [left[col] for col in on]
+        right_at_on = [right[col] for col in on]
         for col in on:
             left_cols.remove(col)
             right_cols.remove(col)
@@ -6438,25 +5805,25 @@ def _outer_join_merge(
 
     for col in set(left_nan_cols).union(set(right_nan_cols)):
         if convert_ints is True and inner[col].dtype == int:
-            inner[col] = akcast(inner[col].values, akfloat64)
+            inner[col] = akcast(inner[col], akfloat64)
         if col in left_nan_cols:
             if convert_ints is True and not_in_right[col].dtype == int:
-                not_in_right[col] = akcast(not_in_right[col].values, akfloat64)
+                not_in_right[col] = akcast(not_in_right[col], akfloat64)
             elif col in not_in_left.columns.values:
-                not_in_right[col] = akcast(not_in_right[col].values, not_in_left[col].dtype)
+                not_in_right[col] = akcast(not_in_right[col], not_in_left[col].dtype)
         if col in right_nan_cols:
             if convert_ints is True and not_in_left[col].dtype == int:
-                not_in_left[col] = akcast(not_in_left[col].values, akfloat64)
+                not_in_left[col] = akcast(not_in_left[col], akfloat64)
             elif col in not_in_right.columns.values:
-                not_in_left[col] = akcast(not_in_left[col].values, not_in_right[col].dtype)
+                not_in_left[col] = akcast(not_in_left[col], not_in_right[col].dtype)
 
     for col in left_nan_cols:
         # Create a nan array for all values not in the left df
-        not_in_left[col] = __nulls_like(inner[col].values, len(not_in_left))
+        not_in_left[col] = __nulls_like(inner[col], len(not_in_left))
 
     for col in right_nan_cols:
         # Create a nan array for all values not in the left df
-        not_in_right[col] = __nulls_like(inner[col].values, len(not_in_right))
+        not_in_right[col] = __nulls_like(inner[col], len(not_in_right))
 
     ret_df = DataFrame.append(DataFrame.append(inner, not_in_left), not_in_right)
     if sort is True:
@@ -6654,8 +6021,7 @@ def merge(
 
     if not isinstance(on, str):
         if not all(
-            isinstance(left[col].values, (pdarray, Strings))
-            and isinstance(right[col].values, (pdarray, Strings))
+            isinstance(left[col], (pdarray, Strings)) and isinstance(right[col], (pdarray, Strings))
             for col in on
         ):
             raise ValueError("All columns of a multi-column merge must be pdarrays")
