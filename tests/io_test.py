@@ -1336,7 +1336,7 @@ class IOTest(ArkoudaTest):
             df.to_hdf(f"{tmp_dirname}/seg_test")
 
             rd_data = ak.read_hdf(f"{tmp_dirname}/seg_test*").popitem()[1]
-            self.assertListEqual(df["c_11"].values.to_list(), rd_data.to_list())
+            self.assertListEqual(df["c_11"].to_list(), rd_data.to_list())
 
         df = ak.DataFrame({"c_2": ak.SegArray(ak.array([0, 9, 14]), ak.arange(-10, 10))})
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
@@ -1383,8 +1383,8 @@ class IOTest(ArkoudaTest):
             self.assertIsInstance(rd_df["datetime"], ak.Datetime)
             self.assertIsInstance(rd_df["timedelta"], ak.Timedelta)
             self.assertListEqual(df["ip"].to_list(), rd_df["ip"].to_list())
-            self.assertListEqual(df["datetime"].values.to_list(), rd_df["datetime"].to_list())
-            self.assertListEqual(df["timedelta"].values.to_list(), rd_df["timedelta"].to_list())
+            self.assertListEqual(df["datetime"].to_list(), rd_df["datetime"].to_list())
+            self.assertListEqual(df["timedelta"].to_list(), rd_df["timedelta"].to_list())
 
     def test_index(self):
         tests = [
