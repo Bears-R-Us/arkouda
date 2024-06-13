@@ -641,7 +641,6 @@
 <span class="sd">    RuntimeError</span>
 <span class="sd">        Raised if the dtype of either array is not supported</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># from arkouda.alignment import find as akfind</span>
     <span class="kn">from</span> <span class="nn">arkouda.categorical</span> <span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">)):</span>
@@ -650,16 +649,17 @@
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;If keys is pdarray, arr must also be pdarray&quot;</span><span class="p">)</span>
 
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;indexof1d&quot;</span><span class="p">,</span>
-        <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;keys&quot;</span><span class="p">:</span> <span class="n">query</span><span class="p">,</span> <span class="s2">&quot;arr&quot;</span><span class="p">:</span> <span class="n">space</span><span class="p">},</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span></div>
+    <span class="c1"># repMsg = generic_msg(</span>
+    <span class="c1">#     cmd=&quot;indexof1d&quot;,</span>
+    <span class="c1">#     args={&quot;keys&quot;: query, &quot;arr&quot;: space},</span>
+    <span class="c1"># )</span>
+    <span class="c1"># return create_pdarray(cast(str, repMsg))</span>
 
+    <span class="kn">from</span> <span class="nn">arkouda.alignment</span> <span class="kn">import</span> <span class="n">find</span> <span class="k">as</span> <span class="n">akfind</span>
 
-    <span class="c1"># TODO see issue #3229 reverted back to old implementation until we can investigate</span>
-    <span class="c1"># found = akfind(query, space, all_occurrences=True, remove_missing=True)</span>
-    <span class="c1"># return found if isinstance(found, pdarray) else found.values</span>
+    <span class="n">found</span> <span class="o">=</span> <span class="n">akfind</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">all_occurrences</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">remove_missing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">found</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">found</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">found</span><span class="o">.</span><span class="n">values</span></div>
+
 
 
 <span class="c1"># fmt: off</span>

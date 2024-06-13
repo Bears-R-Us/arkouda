@@ -5196,17 +5196,18 @@ of the original pdarray</p>
 return all occurrences found as a SegArray, otherwise return only the first
 occurrences as a pdarray. Defaults to only finding the first occurrence.
 Finding all occurrences is not yet supported on sequences of arrays</p></li>
-<li><p><strong>remove_missing</strong> (<em>bool</em>) – If False, return -1 for any items in query not found in space. If True,
+<li><p><strong>remove_missing</strong> (<em>bool</em>) – If all_occurrences is True, remove_missing is automatically enabled.
+If False, return -1 for any items in query not found in space. If True,
 remove these and only return indices of items that are found.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>indices</strong> – For each item in query, its index in space. If remove_missing is True,
-exclued missing values otherwise return -1. If all_occurrences is False,
+<dd class="field-even"><p><strong>indices</strong> – For each item in query, its index in space. If all_occurrences is False,
 the return will be a pdarray of the first index where each value in the
-query appears in the space. if all_occurrences is True, the return will be
+query appears in the space. If all_occurrences is True, the return will be
 a SegArray containing every index where each value in the query appears in
-the space.</p>
+the space. If all_occurrences is True, remove_missing is automatically enabled.
+If remove_missing is True, exclude missing values, otherwise return -1.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray">pdarray</a> or <a class="reference internal" href="../index.html#arkouda.SegArray" title="arkouda.SegArray">SegArray</a></p>
@@ -5231,31 +5232,6 @@ array([-1 -1 -1 0 1 -1 -1 -1 2 -1 5 -1 8 -1 5 -1 -1 11 5 0])</p>
 &gt;&gt;&gt; ak.find(arr1, arr2, remove_missing=True)</p>
 </div></blockquote>
 <p>array([0 1 2 5 8 5 11 5 0])</p>
-<p># set all_occurrences to True, the first index of each list
-# is the first occurence and should match the default
-&gt;&gt;&gt; ak.find(arr1, arr2, all_occurrences=True).to_list()
-[[-1],</p>
-<blockquote>
-<div><p>[-1],
-[-1],
-[0, 4],
-[1, 3, 10],
-[-1],
-[-1],
-[-1],
-[2, 6, 12, 13],
-[-1],
-[5, 7],
-[-1],
-[8, 9, 14],
-[-1],
-[5, 7],
-[-1],
-[-1],
-[11, 15],
-[5, 7],
-[0, 4]]</p>
-</div></blockquote>
 <p># set both remove_missing and all_occurrences to True, missing values
 # will be empty segments
 &gt;&gt;&gt; ak.find(arr1, arr2, remove_missing=True, all_occurrences=True).to_list()
