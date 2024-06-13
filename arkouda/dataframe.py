@@ -13,16 +13,13 @@ from numpy import ndarray
 from numpy._typing import _8Bit, _16Bit, _32Bit, _64Bit
 from typeguard import typechecked
 
-from arkouda.alignment import find as akfind
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, maxTransferBytes
 from arkouda.client_dtypes import BitVector, Fields, IPv4
 from arkouda.dtypes import BigInt
 from arkouda.dtypes import bool as akbool
-from arkouda.dtypes import dtype
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import int64 as akint64
-from arkouda.dtypes import resolve_scalar_dtype
 from arkouda.dtypes import uint64 as akuint64
 from arkouda.groupbyclass import GROUPBY_REDUCTION_TYPES
 from arkouda.groupbyclass import GroupBy as akGroupBy
