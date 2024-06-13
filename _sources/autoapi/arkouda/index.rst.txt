@@ -3591,14 +3591,6 @@ Package Contents
 
 
 
-   .. py:property:: at
-      Access a single value for a row/column by label. Similar to `.loc`.
-      Use only if you need to get or set a single value.
-
-      :raises KeyError: Raised if a label is not present in the DataFrame.
-      :raises TypeError: Raised if the key or value types are not supported.
-
-
    .. py:method:: attach(user_defined_name: str) -> DataFrame
 
       Function to return a DataFrame object attached to the registered name in the
@@ -3657,16 +3649,6 @@ Package Contents
       >>> df.coargsort(['col1', 'col2'])
       array([2 0 1])
       >>>
-
-
-
-   .. py:method:: column_label_type()
-
-
-   .. py:method:: column_labels()
-
-      Return the column labels.
-
 
 
 
@@ -4328,28 +4310,6 @@ Package Contents
 
 
 
-   .. py:property:: iat
-      Access a single value for a row/column pair by integer position.
-      Similar to `.iloc`. Use only if you need to get or set a single value.
-
-      :raises IndexError: Raised if an index is out of range.
-      :raises TypeError: Raised if the key or value types are not supported.
-
-
-   .. py:property:: iloc
-      Position-based row indexing. Supports getting and setting. If there
-      is a single indexing argument, it is interpreted as a row selector.
-      If there are two, the first is interpreted as a row selector and the
-      second as a column selector. Selectors can be scalar integer values;
-      lists, pdarrays, or slices of integer values; boolean masks as pdarrays;
-      or integer Series. Setting values with .iloc requires both the row and
-      column selectors to be present.
-
-      :raises TypeError: Raised if the keys or value types are not supported.
-      :raises IndexError: Raised if an index is out of range.
-      :raises ValueError: Raised if a boolean mask is of the wrong length.
-
-
    .. py:property:: index
       The index of the dataframe.
 
@@ -4603,19 +4563,6 @@ Package Contents
       |  4 |   4 |  -4 |
       +----+-----+-----+
 
-
-
-   .. py:property:: loc
-      Label-based row indexing. Supports getting and setting. If there is
-      a single indexing argument, it is interpreted as a row selector. If
-      there are two, the first is interpreted as a row selector and the
-      second as a column selector. Selectors can be scalar label values;
-      lists, pdarrays, or slices of label values; boolean masks as pdarrays;
-      or Series. Setting values with .loc requires both the row and column
-      selectors to be present.
-
-      :raises KeyError: Raised if a label is not present in the DataFrame.
-      :raises TypeError: Raised if the key or value types are not supported.
 
 
    .. py:method:: memory_usage(index=True, unit='B') -> Series
@@ -5283,9 +5230,6 @@ Package Contents
 
 
 
-   .. py:method:: set_row(key, value)
-
-
    .. py:property:: shape
       The shape of the dataframe.
 
@@ -5928,12 +5872,6 @@ Package Contents
       Computes the number of rows on the arkouda server and updates the size parameter.
 
 
-
-
-   .. py:method:: validate_key(key)
-
-
-   .. py:method:: validate_value(value)
 
 
 .. py:class:: DataFrame(dict=None, /, **kwargs)
@@ -6435,14 +6373,6 @@ Package Contents
 
 
 
-   .. py:property:: at
-      Access a single value for a row/column by label. Similar to `.loc`.
-      Use only if you need to get or set a single value.
-
-      :raises KeyError: Raised if a label is not present in the DataFrame.
-      :raises TypeError: Raised if the key or value types are not supported.
-
-
    .. py:method:: attach(user_defined_name: str) -> DataFrame
 
       Function to return a DataFrame object attached to the registered name in the
@@ -6501,16 +6431,6 @@ Package Contents
       >>> df.coargsort(['col1', 'col2'])
       array([2 0 1])
       >>>
-
-
-
-   .. py:method:: column_label_type()
-
-
-   .. py:method:: column_labels()
-
-      Return the column labels.
-
 
 
 
@@ -7172,28 +7092,6 @@ Package Contents
 
 
 
-   .. py:property:: iat
-      Access a single value for a row/column pair by integer position.
-      Similar to `.iloc`. Use only if you need to get or set a single value.
-
-      :raises IndexError: Raised if an index is out of range.
-      :raises TypeError: Raised if the key or value types are not supported.
-
-
-   .. py:property:: iloc
-      Position-based row indexing. Supports getting and setting. If there
-      is a single indexing argument, it is interpreted as a row selector.
-      If there are two, the first is interpreted as a row selector and the
-      second as a column selector. Selectors can be scalar integer values;
-      lists, pdarrays, or slices of integer values; boolean masks as pdarrays;
-      or integer Series. Setting values with .iloc requires both the row and
-      column selectors to be present.
-
-      :raises TypeError: Raised if the keys or value types are not supported.
-      :raises IndexError: Raised if an index is out of range.
-      :raises ValueError: Raised if a boolean mask is of the wrong length.
-
-
    .. py:property:: index
       The index of the dataframe.
 
@@ -7447,19 +7345,6 @@ Package Contents
       |  4 |   4 |  -4 |
       +----+-----+-----+
 
-
-
-   .. py:property:: loc
-      Label-based row indexing. Supports getting and setting. If there is
-      a single indexing argument, it is interpreted as a row selector. If
-      there are two, the first is interpreted as a row selector and the
-      second as a column selector. Selectors can be scalar label values;
-      lists, pdarrays, or slices of label values; boolean masks as pdarrays;
-      or Series. Setting values with .loc requires both the row and column
-      selectors to be present.
-
-      :raises KeyError: Raised if a label is not present in the DataFrame.
-      :raises TypeError: Raised if the key or value types are not supported.
 
 
    .. py:method:: memory_usage(index=True, unit='B') -> Series
@@ -8127,9 +8012,6 @@ Package Contents
 
 
 
-   .. py:method:: set_row(key, value)
-
-
    .. py:property:: shape
       The shape of the dataframe.
 
@@ -8772,12 +8654,6 @@ Package Contents
       Computes the number of rows on the arkouda server and updates the size parameter.
 
 
-
-
-   .. py:method:: validate_key(key)
-
-
-   .. py:method:: validate_value(value)
 
 
 .. py:class:: DataFrameGroupBy

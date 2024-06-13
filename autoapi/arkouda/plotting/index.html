@@ -1309,23 +1309,6 @@ Otherwise, sort the key in descending order.</p></li>
 </div>
 </dd></dl>
 
-<dl class="py property">
-<dt class="sig sig-object py" id="arkouda.plotting.DataFrame.at">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">at</span></span><a class="headerlink" href="#arkouda.plotting.DataFrame.at" title="Link to this definition">¶</a></dt>
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">Access</span> <span class="pre">a</span> <span class="pre">single</span> <span class="pre">value</span> <span class="pre">for</span> <span class="pre">a</span> <span class="pre">row/column</span> <span class="pre">by</span> <span class="pre">label.</span> <span class="pre">Similar</span> <span class="pre">to</span> <span class="pre">`.loc`.</span></span></dt>
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">Use</span> <span class="pre">only</span> <span class="pre">if</span> <span class="pre">you</span> <span class="pre">need</span> <span class="pre">to</span> <span class="pre">get</span> <span class="pre">or</span> <span class="pre">set</span> <span class="pre">a</span> <span class="pre">single</span> <span class="pre">value.</span></span></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>KeyError</strong> – Raised if a label is not present in the DataFrame.</p></li>
-<li><p><strong>TypeError</strong> – Raised if the key or value types are not supported.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.plotting.DataFrame.attach">
 <span class="sig-name descname"><span class="pre">attach</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.plotting.DataFrame" title="arkouda.plotting.DataFrame"><span class="pre">DataFrame</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/dataframe.html#DataFrame.attach"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.plotting.DataFrame.attach" title="Link to this definition">¶</a></dt>
@@ -1416,17 +1399,6 @@ arkouda server which was registered using register().</p>
 <span class="gp">&gt;&gt;&gt;</span>
 </pre></div>
 </div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.plotting.DataFrame.column_label_type">
-<span class="sig-name descname"><span class="pre">column_label_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/dataframe.html#DataFrame.column_label_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.plotting.DataFrame.column_label_type" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.plotting.DataFrame.column_labels">
-<span class="sig-name descname"><span class="pre">column_labels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/dataframe.html#DataFrame.column_labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.plotting.DataFrame.column_labels" title="Link to this definition">¶</a></dt>
-<dd><p>Return the column labels.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -2635,51 +2607,6 @@ appending rows.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="arkouda.plotting.DataFrame.iat">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">iat</span></span><a class="headerlink" href="#arkouda.plotting.DataFrame.iat" title="Link to this definition">¶</a></dt>
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">Access</span> <span class="pre">a</span> <span class="pre">single</span> <span class="pre">value</span> <span class="pre">for</span> <span class="pre">a</span> <span class="pre">row/column</span> <span class="pre">pair</span> <span class="pre">by</span> <span class="pre">integer</span> <span class="pre">position.</span></span></dt>
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">Similar</span> <span class="pre">to</span> <span class="pre">`.iloc`.</span> <span class="pre">Use</span> <span class="pre">only</span> <span class="pre">if</span> <span class="pre">you</span> <span class="pre">need</span> <span class="pre">to</span> <span class="pre">get</span> <span class="pre">or</span> <span class="pre">set</span> <span class="pre">a</span> <span class="pre">single</span> <span class="pre">value.</span></span></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>IndexError</strong> – Raised if an index is out of range.</p></li>
-<li><p><strong>TypeError</strong> – Raised if the key or value types are not supported.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="arkouda.plotting.DataFrame.iloc">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">iloc</span></span><a class="headerlink" href="#arkouda.plotting.DataFrame.iloc" title="Link to this definition">¶</a></dt>
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">Position-based</span> <span class="pre">row</span> <span class="pre">indexing.</span> <span class="pre">Supports</span> <span class="pre">getting</span> <span class="pre">and</span> <span class="pre">setting.</span> <span class="pre">If</span> <span class="pre">there</span></span></dt>
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">is</span> <span class="pre">a</span> <span class="pre">single</span> <span class="pre">indexing</span> <span class="pre">argument,</span> <span class="pre">it</span> <span class="pre">is</span> <span class="pre">interpreted</span> <span class="pre">as</span> <span class="pre">a</span> <span class="pre">row</span> <span class="pre">selector.</span></span></dt>
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">If</span> <span class="pre">there</span> <span class="pre">are</span> <span class="pre">two,</span> <span class="pre">the</span> <span class="pre">first</span> <span class="pre">is</span> <span class="pre">interpreted</span> <span class="pre">as</span> <span class="pre">a</span> <span class="pre">row</span> <span class="pre">selector</span> <span class="pre">and</span> <span class="pre">the</span></span></dt>
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">second</span> <span class="pre">as</span> <span class="pre">a</span> <span class="pre">column</span> <span class="pre">selector.</span> <span class="pre">Selectors</span> <span class="pre">can</span> <span class="pre">be</span> <span class="pre">scalar</span> <span class="pre">integer</span> <span class="pre">values;</span></span></dt>
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">lists,</span> <span class="pre">pdarrays,</span> <span class="pre">or</span> <span class="pre">slices</span> <span class="pre">of</span> <span class="pre">integer</span> <span class="pre">values;</span> <span class="pre">boolean</span> <span class="pre">masks</span> <span class="pre">as</span> <span class="pre">pdarrays;</span></span></dt>
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">or</span> <span class="pre">integer</span> <span class="pre">Series.</span> <span class="pre">Setting</span> <span class="pre">values</span> <span class="pre">with</span> <span class="pre">.iloc</span> <span class="pre">requires</span> <span class="pre">both</span> <span class="pre">the</span> <span class="pre">row</span> <span class="pre">and</span></span></dt>
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">column</span> <span class="pre">selectors</span> <span class="pre">to</span> <span class="pre">be</span> <span class="pre">present.</span></span></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>TypeError</strong> – Raised if the keys or value types are not supported.</p></li>
-<li><p><strong>IndexError</strong> – Raised if an index is out of range.</p></li>
-<li><p><strong>ValueError</strong> – Raised if a boolean mask is of the wrong length.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
 <dt class="sig sig-object py" id="arkouda.plotting.DataFrame.index">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">index</span></span><a class="headerlink" href="#arkouda.plotting.DataFrame.index" title="Link to this definition">¶</a></dt>
 <dt class="sig sig-object py">
@@ -3101,33 +3028,6 @@ use “&lt;my_dir&gt;/my_data” as the prefix.</p>
 </tbody>
 </table>
 </div>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="arkouda.plotting.DataFrame.loc">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">loc</span></span><a class="headerlink" href="#arkouda.plotting.DataFrame.loc" title="Link to this definition">¶</a></dt>
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">Label-based</span> <span class="pre">row</span> <span class="pre">indexing.</span> <span class="pre">Supports</span> <span class="pre">getting</span> <span class="pre">and</span> <span class="pre">setting.</span> <span class="pre">If</span> <span class="pre">there</span> <span class="pre">is</span></span></dt>
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">a</span> <span class="pre">single</span> <span class="pre">indexing</span> <span class="pre">argument,</span> <span class="pre">it</span> <span class="pre">is</span> <span class="pre">interpreted</span> <span class="pre">as</span> <span class="pre">a</span> <span class="pre">row</span> <span class="pre">selector.</span> <span class="pre">If</span></span></dt>
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">there</span> <span class="pre">are</span> <span class="pre">two,</span> <span class="pre">the</span> <span class="pre">first</span> <span class="pre">is</span> <span class="pre">interpreted</span> <span class="pre">as</span> <span class="pre">a</span> <span class="pre">row</span> <span class="pre">selector</span> <span class="pre">and</span> <span class="pre">the</span></span></dt>
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">second</span> <span class="pre">as</span> <span class="pre">a</span> <span class="pre">column</span> <span class="pre">selector.</span> <span class="pre">Selectors</span> <span class="pre">can</span> <span class="pre">be</span> <span class="pre">scalar</span> <span class="pre">label</span> <span class="pre">values;</span></span></dt>
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">lists,</span> <span class="pre">pdarrays,</span> <span class="pre">or</span> <span class="pre">slices</span> <span class="pre">of</span> <span class="pre">label</span> <span class="pre">values;</span> <span class="pre">boolean</span> <span class="pre">masks</span> <span class="pre">as</span> <span class="pre">pdarrays;</span></span></dt>
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">or</span> <span class="pre">Series.</span> <span class="pre">Setting</span> <span class="pre">values</span> <span class="pre">with</span> <span class="pre">.loc</span> <span class="pre">requires</span> <span class="pre">both</span> <span class="pre">the</span> <span class="pre">row</span> <span class="pre">and</span> <span class="pre">column</span></span></dt>
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">selectors</span> <span class="pre">to</span> <span class="pre">be</span> <span class="pre">present.</span></span></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>KeyError</strong> – Raised if a label is not present in the DataFrame.</p></li>
-<li><p><strong>TypeError</strong> – Raised if the key or value types are not supported.</p></li>
-</ul>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -4229,11 +4129,6 @@ locale number.</p>
 </div>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.plotting.DataFrame.set_row">
-<span class="sig-name descname"><span class="pre">set_row</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/dataframe.html#DataFrame.set_row"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.plotting.DataFrame.set_row" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="py property">
 <dt class="sig sig-object py" id="arkouda.plotting.DataFrame.shape">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#arkouda.plotting.DataFrame.shape" title="Link to this definition">¶</a></dt>
@@ -5206,16 +5101,6 @@ file sizes to expand.</p></li>
 <span class="sig-name descname"><span class="pre">update_nrows</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/dataframe.html#DataFrame.update_nrows"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.plotting.DataFrame.update_nrows" title="Link to this definition">¶</a></dt>
 <dd><p>Computes the number of rows on the arkouda server and updates the size parameter.</p>
 </dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.plotting.DataFrame.validate_key">
-<span class="sig-name descname"><span class="pre">validate_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/dataframe.html#DataFrame.validate_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.plotting.DataFrame.validate_key" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.plotting.DataFrame.validate_value">
-<span class="sig-name descname"><span class="pre">validate_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/dataframe.html#DataFrame.validate_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.plotting.DataFrame.validate_value" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
 
 </dd></dl>
 
@@ -7345,11 +7230,8 @@ exactly three must be specified. If <code class="docutils literal notranslate"><
 <li><a class="reference internal" href="#arkouda.plotting.DataFrame.append"><code class="docutils literal notranslate"><span class="pre">DataFrame.append()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.plotting.DataFrame.apply_permutation"><code class="docutils literal notranslate"><span class="pre">DataFrame.apply_permutation()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.plotting.DataFrame.argsort"><code class="docutils literal notranslate"><span class="pre">DataFrame.argsort()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.plotting.DataFrame.at"><code class="docutils literal notranslate"><span class="pre">DataFrame.at</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.plotting.DataFrame.attach"><code class="docutils literal notranslate"><span class="pre">DataFrame.attach()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.plotting.DataFrame.coargsort"><code class="docutils literal notranslate"><span class="pre">DataFrame.coargsort()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.plotting.DataFrame.column_label_type"><code class="docutils literal notranslate"><span class="pre">DataFrame.column_label_type()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.plotting.DataFrame.column_labels"><code class="docutils literal notranslate"><span class="pre">DataFrame.column_labels()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.plotting.DataFrame.columns"><code class="docutils literal notranslate"><span class="pre">DataFrame.columns</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.plotting.DataFrame.concat"><code class="docutils literal notranslate"><span class="pre">DataFrame.concat()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.plotting.DataFrame.corr"><code class="docutils literal notranslate"><span class="pre">DataFrame.corr()</span></code></a></li>
@@ -7364,15 +7246,12 @@ exactly three must be specified. If <code class="docutils literal notranslate"><
 <li><a class="reference internal" href="#arkouda.plotting.DataFrame.from_return_msg"><code class="docutils literal notranslate"><span class="pre">DataFrame.from_return_msg()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.plotting.DataFrame.groupby"><code class="docutils literal notranslate"><span class="pre">DataFrame.groupby()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.plotting.DataFrame.head"><code class="docutils literal notranslate"><span class="pre">DataFrame.head()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.plotting.DataFrame.iat"><code class="docutils literal notranslate"><span class="pre">DataFrame.iat</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.plotting.DataFrame.iloc"><code class="docutils literal notranslate"><span class="pre">DataFrame.iloc</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.plotting.DataFrame.index"><code class="docutils literal notranslate"><span class="pre">DataFrame.index</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.plotting.DataFrame.info"><code class="docutils literal notranslate"><span class="pre">DataFrame.info</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.plotting.DataFrame.is_registered"><code class="docutils literal notranslate"><span class="pre">DataFrame.is_registered()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.plotting.DataFrame.isin"><code class="docutils literal notranslate"><span class="pre">DataFrame.isin()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.plotting.DataFrame.isna"><code class="docutils literal notranslate"><span class="pre">DataFrame.isna()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.plotting.DataFrame.load"><code class="docutils literal notranslate"><span class="pre">DataFrame.load()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.plotting.DataFrame.loc"><code class="docutils literal notranslate"><span class="pre">DataFrame.loc</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.plotting.DataFrame.memory_usage"><code class="docutils literal notranslate"><span class="pre">DataFrame.memory_usage()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.plotting.DataFrame.memory_usage_info"><code class="docutils literal notranslate"><span class="pre">DataFrame.memory_usage_info()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.plotting.DataFrame.merge"><code class="docutils literal notranslate"><span class="pre">DataFrame.merge()</span></code></a></li>
@@ -7384,7 +7263,6 @@ exactly three must be specified. If <code class="docutils literal notranslate"><
 <li><a class="reference internal" href="#arkouda.plotting.DataFrame.reset_index"><code class="docutils literal notranslate"><span class="pre">DataFrame.reset_index()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.plotting.DataFrame.sample"><code class="docutils literal notranslate"><span class="pre">DataFrame.sample()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.plotting.DataFrame.save"><code class="docutils literal notranslate"><span class="pre">DataFrame.save()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.plotting.DataFrame.set_row"><code class="docutils literal notranslate"><span class="pre">DataFrame.set_row()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.plotting.DataFrame.shape"><code class="docutils literal notranslate"><span class="pre">DataFrame.shape</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.plotting.DataFrame.size"><code class="docutils literal notranslate"><span class="pre">DataFrame.size</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.plotting.DataFrame.sort_index"><code class="docutils literal notranslate"><span class="pre">DataFrame.sort_index()</span></code></a></li>
@@ -7400,8 +7278,6 @@ exactly three must be specified. If <code class="docutils literal notranslate"><
 <li><a class="reference internal" href="#arkouda.plotting.DataFrame.unregister_dataframe_by_name"><code class="docutils literal notranslate"><span class="pre">DataFrame.unregister_dataframe_by_name()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.plotting.DataFrame.update_hdf"><code class="docutils literal notranslate"><span class="pre">DataFrame.update_hdf()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.plotting.DataFrame.update_nrows"><code class="docutils literal notranslate"><span class="pre">DataFrame.update_nrows()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.plotting.DataFrame.validate_key"><code class="docutils literal notranslate"><span class="pre">DataFrame.validate_key()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.plotting.DataFrame.validate_value"><code class="docutils literal notranslate"><span class="pre">DataFrame.validate_value()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#arkouda.plotting.Datetime"><code class="docutils literal notranslate"><span class="pre">Datetime</span></code></a><ul>
