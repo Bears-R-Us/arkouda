@@ -1740,15 +1740,12 @@ def matching_shapes(pda_a: pdarray, pda_b: pdarray):
 
     Examples
     --------
-    >>> a = np.random.randint(0,10,10).astype(np.float64)
-    >>> b = np.random.randint(0,3,10)
-    >>> c = ak.array(a)
-    >>> d = ak.array(b)
-    >>> ak.matching_shapes(c,d)
+    >>> a = ak.randint(0,10,10)
+    >>> b = ak.randint(0,3,10)
+    >>> ak.matching_shapes(a,b)
     True
-    >>> b = np.random.randint(0,10,5000)
-    >>> d = ak.array(b)
-    >>> ak.matching_shapes(c,d)
+    >>> b = ak.randint(0,10,5000)
+    >>> ak.matching_shapes(a,b)
     False
 
     """
@@ -1770,6 +1767,8 @@ def array_equal(pda_a: pdarray, pda_b: pdarray, equal_nan: bool = False):
         equal_nan : boolean to determine how to handle nans, default False
 
     Returns:
+        boolean
+
         With string data: False if one array is of type npstr and the other isn't,
                             True is both are npstr and they match.
         With numeric data: True if neither array has any nan elements, and all elements pairwise equal.
@@ -1779,21 +1778,17 @@ def array_equal(pda_a: pdarray, pda_b: pdarray, equal_nan: bool = False):
 
     Examples
     --------
-    >>> a = np.random.randint(0,10,10).astype(np.float64)
-    >>> b = a.copy()
-    >>> c = ak.array(a)
-    >>> d = ak.array(b)
-    >>> ak.array_equal(c,d)
+    >>> a = ak.randint(0,10,10,dtype=ak.float64)
+    >>> b = a
+    >>> ak.array_equal(a,b)
     True
     >>> b[9] = np.nan
-    >>> d = ak.array(b)
-    >>> ak.array_equal(c,d)
+    >>> ak.array_equal(a,b)
     False
     >>> a[9] = np.nan
-    >>> c = ak.array(a)
-    >>> array_equal(c,d)
+    >>> array_equal(a,b)
     False
-    >>> ak.array_equal(c,d,True)
+    >>> ak.array_equal(a,b,True)
     True
     """
     if not matching_shapes(pda_a, pda_b):

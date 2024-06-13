@@ -636,6 +636,14 @@ class TestNumeric:
         assert h1.to_list() == h3.to_list()
         assert h2.to_list() == h4.to_list()
 
+    @pytest.mark.parametrize("prob_size",pytest.prob_size)
+    def test_matching_shapes(self,prob_size) :
+        a = ak.randint(0,10,prob_size)
+        b = ak.randint(0,10,prob_size)
+        assert ak.matching_shapes(a,b)
+        b = ak.randint(0,10,prob_size+1)
+        assert not(ak.matching_shapes(a,b))
+
     # Notes about array_equal:
     #   Strings compared to non-strings are always not equal.
     #   nan handling is (of course) unique to floating point
@@ -654,6 +662,8 @@ class TestNumeric:
             pda_a = ak.array(temp)
             pda_b = ak.array(temp)
             assert ak.array_equal(pda_a, pda_b)  # matching string arrays
+            pda_c = pda_b[:-1]
+            assert not (ak.array_equal(pda_a,pda_c))   # matching except c is shorter by 1
             temp = np.random.choice(VOWELS_AND_SUCH, prob_size)
             pda_b = ak.array(temp)
             assert not (ak.array_equal(pda_a, pda_b))  # mismatching string arrays
@@ -667,18 +677,18 @@ class TestNumeric:
                 nda_a[-1] = np.nan
             nda_b = nda_a.copy() if matching else np.random.uniform(0, 100, prob_size)
             pda_a = ak.array(nda_a)
-            pda_b = ak.array(nda_b)
-            assert ak.array_equal(pda_a, pda_b, nan_handling) == matching
+            pda_b = ak.array(nda_b) if same_size else ak.array(nda_b[:-1])
+            assert ak.array_equal(pda_a, pda_b, nan_handling) == (matching and same_size)
         else:  # other types have simpler tests
             pda_a = ak.random.randint(0, 100, prob_size, dtype=data_type)
             if matching:  # known to match?
-                pda_b = pda_a
-                assert ak.array_equal(pda_a, pda_b)
-            elif same_size:  # not matching, but same size?
-                pda_b = ak.random.randint(0, 100, prob_size, dtype=data_type)
-                assert not (ak.array_equal(pda_a, pda_b))
-            else:  # different sizes
-                pda_b = ak.random.randint(0, 100, prob_size + 1, dtype=data_type)
+                pda_b = pda_a if same_size else pda_a[:-1]
+                assert (ak.array_equal(pda_a, pda_b) == (matching and same_size))
+            #elif same_size:  # not matching, but same size?
+            #    pda_b = ak.random.randint(0, 100, prob_size, dtype=data_type)
+            #    assert not (ak.array_equal(pda_a, pda_b))
+            else: 
+                pda_b = ak.random.randint(0, 100, (prob_size if same_size else prob_size-1), dtype=data_type)
                 assert not (ak.array_equal(pda_a, pda_b))
 
     # Notes about median:
