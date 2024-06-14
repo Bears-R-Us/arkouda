@@ -104,15 +104,6 @@ extern "C" {
                                   const char* dsetname, int64_t numelems,
                                   int64_t rowGroupSize, int64_t dtype, int64_t compression,
                                   char** errMsg);
-
-  int c_writeStrListColumnToParquet(const char* filename, void* chpl_segs, void* chpl_offsets, 
-                                  void* chpl_arr, const char* dsetname, int64_t numelems,
-                                  int64_t rowGroupSize, int64_t dtype, int64_t compression,
-                                  char** errMsg);
-  int cpp_writeStrListColumnToParquet(const char* filename, void* chpl_segs, void* chpl_offsets, 
-                                  void* chpl_arr, const char* dsetname, int64_t numelems,
-                                  int64_t rowGroupSize, int64_t dtype, int64_t compression,
-                                  char** errMsg);
   
   int c_createEmptyParquetFile(const char* filename, const char* dsetname, int64_t dtype,
                                int64_t compression, char** errMsg);

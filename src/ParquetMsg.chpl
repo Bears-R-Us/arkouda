@@ -33,6 +33,8 @@ module ParquetMsg {
   use Reflection;
   require "ReadParquet.h";
   require "ReadParquet.o";
+  require "WriteParquet.h";
+  require "WriteParquet.o";
   require "OtherParquet.h";
   require "OtherParquet.o";
 
