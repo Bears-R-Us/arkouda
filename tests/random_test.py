@@ -1,3 +1,4 @@
+import os
 from collections import Counter
 
 import numpy as np
@@ -222,6 +223,20 @@ class RandomTest(ArkoudaTest):
         rng = ak.random.default_rng(17)
         self.assertEqual(rng.poisson(lam=scal_lam, size=num_samples).to_list(), scal_sample)
         self.assertEqual(rng.poisson(lam=arr_lam, size=num_samples).to_list(), arr_sample)
+
+    def test_poisson_seed_reproducibility(self):
+        # test resolution of issue #3322, same seed gives same result across machines / num locales
+        seed = 11
+        # test with many orders of magnitude to ensure we test different remainders
+        # and case where all elements are pulled to first locale i.e. total_size < (elemsPerStream = 4096)
+        saved_seeded_file_patterns = ["third_order*", "fourth_order*", "fifth_order*"]
+
+        # directory of this file
+        file_dir = os.path.dirname(os.path.realpath(__file__))
+        for i, f_name in zip(range(3, 6), saved_seeded_file_patterns):
+            generated = ak.random.default_rng(seed=seed).poisson(size=10**i)
+            saved = ak.read_parquet(f"{file_dir}/saved_seeded_random/{f_name}")["array"]
+            self.assertListEqual(generated.to_list(), saved.to_list())
 
     def test_choice_hypothesis_testing(self):
         # perform a weighted sample and use chisquare to test

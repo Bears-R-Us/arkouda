@@ -496,6 +496,7 @@ class Generator:
                 "lam": lam,
                 "is_single_lambda": is_single_lambda,
                 "size": size,
+                "has_seed": self._seed is not None,
                 "state": self._state,
             },
         )
