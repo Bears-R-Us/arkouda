@@ -1,5 +1,5 @@
 #include "WriteParquet.h"
-#include "OtherParquet.h"
+#include "UtilParquet.h"
 
   /*
     Arrow Error Helpers

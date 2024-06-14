@@ -212,7 +212,7 @@ endif
 
 .PHONY: compile-arrow-cpp
 compile-arrow-cpp:
-	$(CHPL_CXX) -O3 -std=c++17 -c $(ARROW_OTHER_CPP) -o $(ARROW_OTHER_O) $(INCLUDE_FLAGS) $(ARROW_SANITIZE)
+	$(CHPL_CXX) -O3 -std=c++17 -c $(ARROW_UTIL_CPP) -o $(ARROW_UTIL_O) $(INCLUDE_FLAGS) $(ARROW_SANITIZE)
 	$(CHPL_CXX) -O3 -std=c++17 -c $(ARROW_READ_CPP) -o $(ARROW_READ_O) $(INCLUDE_FLAGS) $(ARROW_SANITIZE)
 	$(CHPL_CXX) -O3 -std=c++17 -c $(ARROW_WRITE_CPP) -o $(ARROW_READ_O) $(INCLUDE_FLAGS) $(ARROW_SANITIZE)
 

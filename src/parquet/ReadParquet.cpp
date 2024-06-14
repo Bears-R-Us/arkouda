@@ -1,5 +1,5 @@
 #include "ReadParquet.h"
-#include "OtherParquet.h"
+#include "UtilParquet.h"
 
 int cpp_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_chpl, const char* colname, int64_t numElems, int64_t startIdx, int64_t batchSize, int64_t byteLength, bool hasNonFloatNulls, char** errMsg) {
   try {
