@@ -979,58 +979,13 @@ module ParquetMsg {
           }
           rnames.pushBack((dsetname, ObjType.PDARRAY, valName));
         } else if ty == ArrowTypes.stringArr {
-          /*
-            1. create a block distributed files array (locale owner reads file)
-            2. get number of row groups so we know how much data we have to store
-            3. create array to store data (2D array with same distribution dist files)
-            4. go distributed and create readers for each file
-          */
-          extern proc c_getNumRowGroups(readerIdx): c_int;
-          extern proc c_openFile(filename, idx);
-          extern proc c_createRowGroupReader(rowGroup, readerIdx);
-          extern proc c_createColumnReader(colname, readerIdx);
-          extern proc c_freeMapValues(rowToFree);
-          extern proc c_readParquetColumnChunks(filename, batchSize,
-                                                numElems, readerIdx, numRead,
-                                                externalData, defLevels, errMsg): int;
-
           var entrySeg = createSymEntry(len, int);
-
-          var distFiles = makeDistArray(filenames);
-          var numRowGroups: [distFiles.domain] int;
-
-          var maxRowGroups = getRowGroupNums(distFiles, numRowGroups);
-          var externalData: [distFiles.domain] [0..#maxRowGroups] c_ptr(void);
-          var containsNulls: [distFiles.domain] [0..#maxRowGroups] bool;
-          var valsRead: [distFiles.domain] [0..#maxRowGroups] int;
-          var bytesPerRG: [distFiles.domain] [0..#maxRowGroups] int;
-          var startIdxs: [distFiles.domain] [0..#maxRowGroups] int; // correspond to starting idx in entrySeg
-
-          fillSegmentsAndPersistData(distFiles, entrySeg, externalData, containsNulls, valsRead, dsetname, sizes, len, numRowGroups, bytesPerRG, startIdxs);
-
-          var (rgSubdomains, totalBytes) = getRGSubdomains(bytesPerRG, maxRowGroups);
+          byteSizes = calcStrSizesAndOffset(entrySeg.a, filenames, sizes, dsetname);
+          entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
           
-          var entryVal;
-          
-          if containsNulls[0][0] {
-            byteSizes = calcStrSizesAndOffset(entrySeg.a, filenames, sizes, dsetname);
-            entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
-            entryVal = createSymEntry((+ reduce byteSizes), uint(8));
-            readStrFilesByName(entryVal.a, whereNull, filenames, byteSizes, dsetname, ty);
-          } else {
-            entryVal = createSymEntry(totalBytes, uint(8));
-            entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
-            copyValuesFromC(entryVal, distFiles, externalData, valsRead, numRowGroups, rgSubdomains, maxRowGroups, sizes, entrySeg.a, startIdxs);
-          }
+          var entryVal = createSymEntry((+ reduce byteSizes), uint(8));
+          readStrFilesByName(entryVal.a, whereNull, filenames, byteSizes, dsetname, ty);
 
-          for i in externalData.domain {
-            for j in externalData[i].domain {
-              if valsRead[i][j] > 0 then
-                on externalData[i][j] do
-                  c_freeMapValues(externalData[i][j]);
-            }
-          }
-          
           var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
           rnames.pushBack((dsetname, ObjType.STRINGS, "%s+%?".doFormat(stringsEntry.name, stringsEntry.nBytes)));
         } else if ty == ArrowTypes.double || ty == ArrowTypes.float {

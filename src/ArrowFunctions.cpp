@@ -827,23 +827,37 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_
           }
         }
       } else if(ty == ARROWSTRING) {
-        int16_t definition_level; // nullable type and only reading single records in batch
         auto chpl_ptr = (unsigned char*)chpl_arr;
         parquet::ByteArrayReader* reader =
           static_cast<parquet::ByteArrayReader*>(column_reader.get());
 
-        while (reader->HasNext()) {
-          parquet::ByteArray value;
-          (void)reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
-          // if values_read is 0, that means that it was a null value
-          if(values_read > 0) {
-            for(int j = 0; j < value.len; j++) {
-              chpl_ptr[i] = value.ptr[j];
+        int totalProcessed = 0;
+        std::vector<parquet::ByteArray> values(batchSize);
+        while (reader->HasNext() && totalProcessed < numElems) {
+          std::vector<int16_t> definition_levels(batchSize,-1);
+          if((numElems - totalProcessed) < batchSize) // adjust batchSize if needed
+              batchSize = numElems - totalProcessed;
+          
+          (void)reader->ReadBatch(batchSize, definition_levels.data(), nullptr, values.data(), &values_read);
+          totalProcessed += values_read;
+          int j = 0;
+          int numProcessed = 0;
+          while(j < batchSize) {
+            if(definition_levels[j] == 1) {
+              for(int k = 0; k < values[numProcessed].len; k++) {
+                chpl_ptr[i] = values[numProcessed].ptr[k];
+                i++;
+              }
+              i++; // skip one space so the strings are null terminated with a 0
+              numProcessed++;
+            } else if(definition_levels[j] == 0) {
               i++;
+            } else {
+              j = batchSize; // exit loop, not read
             }
+            j++;
           }
-          i++; // skip one space so the strings are null terminated with a 0
-        }        
+        }
       } else if(ty == ARROWFLOAT) {
         int16_t definition_level; // nullable type and only reading single records in batch
         auto chpl_ptr = (double*)chpl_arr;
