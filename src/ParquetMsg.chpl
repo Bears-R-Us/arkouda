@@ -35,8 +35,8 @@ module ParquetMsg {
   require "ReadParquet.o";
   require "WriteParquet.h";
   require "WriteParquet.o";
-  require "OtherParquet.h";
-  require "OtherParquet.o";
+  require "UtilParquet.h";
+  require "UtilParquet.o";
 
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;

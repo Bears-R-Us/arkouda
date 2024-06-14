@@ -96,10 +96,10 @@ ARROW_WRITE_CPP += $(ARROW_WRITE_FILE_NAME).cpp
 ARROW_WRITE_H += $(ARROW_WRITE_FILE_NAME).h
 ARROW_WRITE_O += $(ARKOUDA_SOURCE_DIR)/WriteParquet.o
 
-ARROW_OTHER_FILE_NAME += $(ARKOUDA_SOURCE_DIR)/parquet/OtherParquet
-ARROW_OTHER_CPP += $(ARROW_OTHER_FILE_NAME).cpp
-ARROW_OTHER_H += $(ARROW_OTHER_FILE_NAME).h
-ARROW_OTHER_O += $(ARKOUDA_SOURCE_DIR)/OtherParquet.o
+ARROW_UTIL_FILE_NAME += $(ARKOUDA_SOURCE_DIR)/parquet/UtilParquet
+ARROW_UTIL_CPP += $(ARROW_UTIL_FILE_NAME).cpp
+ARROW_UTIL_H += $(ARROW_UTIL_FILE_NAME).h
+ARROW_UTIL_O += $(ARKOUDA_SOURCE_DIR)/UtilParquet.o
 
 .PHONY: install-deps
 install-deps: install-zmq install-hdf5 install-arrow install-iconv install-idn2
