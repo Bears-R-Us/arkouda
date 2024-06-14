@@ -144,7 +144,7 @@ extern "C" {
   void c_freeMapValues(void* row);
   void cpp_freeMapValues(void* row);
 
-    int c_readParquetColumnChunks(const char* filename, int64_t batchSize, int64_t numElems,
+  int c_readParquetColumnChunks(const char* filename, int64_t batchSize, int64_t numElems,
                                 int64_t readerIdx, int64_t* numRead,
                                 void** outData, bool* containsNulls, char** errMsg);
   int cpp_readParquetColumnChunks(const char* filename, int64_t batchSize, int64_t numElems,
@@ -152,5 +152,6 @@ extern "C" {
                                   void** outData, bool* containsNulls, char** errMsg);
   
 #ifdef __cplusplus
+  bool check_status_ok(arrow::Status status, char** errMsg);
 }
 #endif

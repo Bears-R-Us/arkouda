@@ -33,14 +33,6 @@
   if(!check_status_ok(cmd, errMsg))             \
     return ARROWERROR;
 
-bool check_status_ok(arrow::Status status, char** errMsg) {
-  if(!status.ok()) {
-    *errMsg = strdup(status.message().c_str());
-    return false;
-  }
-  return true;
-}
-
 int cpp_writeColumnToParquet(const char* filename, void* chpl_arr,
                              int64_t colnum, const char* dsetname, int64_t numelems,
                              int64_t rowGroupSize, int64_t dtype, int64_t compression,
