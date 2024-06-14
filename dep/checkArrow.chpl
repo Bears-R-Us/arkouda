@@ -1,8 +1,12 @@
 use IO;
 use CTypes;
 
-require "../src/ArrowFunctions.h";
-require "../src/ArrowFunctions.o";
+require "../src/parquet/WriteParquet.h";
+require "../src/WriteParquet.o";
+require "../src/parquet/ReadParquet.h";
+require "../src/ReadParquet.o";
+require "../src/parquet/UtilParquet.h";
+require "../src/UtilParquet.o";
 
 proc getVersionInfo() {
   extern proc c_getVersionInfo(): c_ptrConst(c_char);
