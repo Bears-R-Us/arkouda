@@ -31,8 +31,10 @@ module ParquetMsg {
 
   // Use reflection for error information
   use Reflection;
-  require "ArrowFunctions.h";
-  require "ArrowFunctions.o";
+  require "ReadParquet.h";
+  require "ReadParquet.o";
+  require "OtherParquet.h";
+  require "OtherParquet.o";
 
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;

@@ -55,13 +55,6 @@ extern "C" {
   void c_createColumnReader(const char* colname, int64_t readerIdx);
   void cpp_createColumnReader(const char* colname, int64_t readerIdx);
 
-  int c_readParquetColumnChunks(const char* filename, int64_t batchSize, int64_t numElems,
-                                int64_t readerIdx, int64_t* numRead,
-                                void** outData, bool* containsNulls, char** errMsg);
-  int cpp_readParquetColumnChunks(const char* filename, int64_t batchSize, int64_t numElems,
-                                  int64_t readerIdx, int64_t* numRead,
-                                  void** outData, bool* containsNulls, char** errMsg);
-
   int c_getNumRowGroups(int64_t readerIdx);
   int cpp_getNumRowGroups(int64_t readerIdx);
   
@@ -71,30 +64,6 @@ extern "C" {
   // is no C++ interoperability supported in Chapel today.
   int64_t c_getNumRows(const char*, char** errMsg);
   int64_t cpp_getNumRows(const char*, char** errMsg);
-
-  int c_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_chpl,
-                         const char* colname, int64_t numElems, int64_t startIdx,
-                         int64_t batchSize, int64_t byteLength, bool hasNonFloatNulls, char** errMsg);
-  int cpp_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_chpl,
-                           const char* colname, int64_t numElems, int64_t startIdx,
-                           int64_t batchSize, int64_t byteLength, bool hasNonFloatNulls, char** errMsg);
-
-  int c_readListColumnByName(const char* filename, void* chpl_arr, 
-                            const char* colname, int64_t numElems, 
-                            int64_t startIdx, int64_t batchSize, char** errMsg);
-  int cpp_readListColumnByName(const char* filename, void* chpl_arr, 
-                              const char* colname, int64_t numElems, 
-                              int64_t startIdx, int64_t batchSize, char** errMsg);
-
-  int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname, void* chpl_offsets,
-                                      int64_t numElems, int64_t startIdx, int64_t batchSize, char** errMsg);
-  int64_t c_getStringColumnNumBytes(const char* filename, const char* colname, void* chpl_offsets,
-                                      int64_t numElems, int64_t startIdx, int64_t batchSize, char** errMsg);
-
-  int64_t c_getListColumnSize(const char* filename, const char* colname,
-                                    void* chpl_seg_sizes, int64_t numElems, int64_t startIdx, char** errMsg);
-  int64_t cpp_getListColumnSize(const char* filename, const char* colname,
-                                    void* chpl_seg_sizes, int64_t numElems, int64_t startIdx, char** errMsg);
   
   int64_t c_getStringColumnNullIndices(const char* filename, const char* colname, void* chpl_nulls, char** errMsg);
   int64_t cpp_getStringColumnNullIndices(const char* filename, const char* colname, void* chpl_nulls, char** errMsg);
@@ -183,6 +152,13 @@ extern "C" {
   
   void c_freeMapValues(void* row);
   void cpp_freeMapValues(void* row);
+
+    int c_readParquetColumnChunks(const char* filename, int64_t batchSize, int64_t numElems,
+                                int64_t readerIdx, int64_t* numRead,
+                                void** outData, bool* containsNulls, char** errMsg);
+  int cpp_readParquetColumnChunks(const char* filename, int64_t batchSize, int64_t numElems,
+                                  int64_t readerIdx, int64_t* numRead,
+                                  void** outData, bool* containsNulls, char** errMsg);
   
 #ifdef __cplusplus
 }
