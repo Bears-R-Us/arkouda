@@ -579,7 +579,8 @@ module RandMsg
             // use a fixed number of elements per stream instead of relying on number of locales or numTasksPerLoc because these
             // can vary from run to run / machine to mahchine. And it's important for the same seed to give the same results
             const generatorSeed = (rng.next() * 2**62):int,
-                elemsPerStream = 4096;
+                minPerStream = 256,
+                elemsPerStream = max(minPerStream, 2**(2 * ceil(log10(size)):int));
 
             if isSingleLam {
                 const lam = lamStr:real;
