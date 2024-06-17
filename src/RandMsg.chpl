@@ -597,11 +597,10 @@ module RandMsg
 
                         coforall streamID in 0..<thisLocsNumChunks {
                             const taskSeed = generatorSeed + chunksAlreadyDone + streamID,  // initial seed offset by other locales threads plus current thread id
-                                startIdx = (streamID * elemsPerStream) + offset,
-                                stopIdx = min(startIdx + elemsPerStream, (poissonArr.domain.size - locSubDom.low));  // continue past end of localSubDomain to read full block to avoid seed sharing
-
+                                startIdx = (streamID * elemsPerStream) + locSubDom.low + offset,
+                                stopIdx = min(startIdx + elemsPerStream - 1, poissonArr.domain.high);  // continue past end of localSubDomain to read full block to avoid seed sharing
                             var rs = new randomStream(real, taskSeed);
-                            for i in startIdx..<stopIdx {
+                            for i in startIdx..stopIdx {
                                 var L = exp(-lam);
                                 var k = 0;
                                 var p = 1.0;
@@ -610,7 +609,7 @@ module RandMsg
                                     k += 1;
                                     p = p * rs.next(0, 1);
                                 } while p > L;
-                                poissonArr[locSubDom.low + i] = k - 1;
+                                poissonArr[i] = k - 1;
                             }
                         }
                     }
@@ -633,11 +632,11 @@ module RandMsg
 
                         coforall streamID in 0..<thisLocsNumChunks {
                             const taskSeed = generatorSeed + chunksAlreadyDone + streamID,  // initial seed offset by other locales threads plus current thread id
-                                startIdx = (streamID * elemsPerStream) + offset,
-                                stopIdx = min(startIdx + elemsPerStream, (poissonArr.domain.size - locSubDom.low));  // continue past end of localSubDomain to read full block to avoid seed sharing
+                                startIdx = (streamID * elemsPerStream) + locSubDom.low + offset,
+                                stopIdx = min(startIdx + elemsPerStream - 1, poissonArr.domain.high);  // continue past end of localSubDomain to read full block to avoid seed sharing
 
                             var rs = new randomStream(real, taskSeed);
-                            for i in startIdx..<stopIdx {
+                            for i in startIdx..stopIdx {
                                 const lam = lamArr[locSubDom.low + i];
                                 var L = exp(-lam);
                                 var k = 0;
@@ -647,7 +646,7 @@ module RandMsg
                                     k += 1;
                                     p = p * rs.next(0, 1);
                                 } while p > L;
-                                poissonArr[locSubDom.low + i] = k - 1;
+                                poissonArr[i] = k - 1;
                             }
                         }
                     }
