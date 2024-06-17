@@ -268,13 +268,13 @@ class TestRandom:
     def test_poisson_seed_reproducibility(self):
         # test resolution of issue #3322, same seed gives same result across machines / num locales
         seed = 11
-        # test with many orders of magnitude to ensure we test different remainders
-        # and case where all elements are pulled to first locale i.e. total_size < (elemsPerStream = 4096)
-        saved_seeded_file_patterns = ["third_order*", "fourth_order*", "fifth_order*"]
+        # test with many orders of magnitude to ensure we test different remainders and case where
+        # all elements are pulled to first locale i.e. total_size < (minimum elemsPerStream = 256)
+        saved_seeded_file_patterns = ["second_order*", "third_order*", "fourth_order*"]
 
         # directory of this file
         file_dir = os.path.dirname(os.path.realpath(__file__))
-        for i, f_name in zip(range(3, 6), saved_seeded_file_patterns):
+        for i, f_name in zip(range(2, 5), saved_seeded_file_patterns):
             generated = ak.random.default_rng(seed=seed).poisson(size=10**i)
             saved = ak.read_parquet(f"{file_dir}/saved_seeded_random/{f_name}")["array"]
             assert (generated == saved).all()
