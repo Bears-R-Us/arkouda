@@ -554,7 +554,7 @@ class pdarray:
         # pdarray binop scalar
         # If scalar cannot be safely cast, server will infer the return dtype
         dt = resolve_scalar_dtype(other)
-        if self.dtype != bigint and np.can_cast(other, self.dtype):
+        if self.dtype != bigint and np.can_cast(type(other), self.dtype):
             # If scalar can be losslessly cast to array dtype,
             # do the cast so that return array will have same dtype
             dt = self.dtype.name
@@ -599,7 +599,7 @@ class pdarray:
         # pdarray binop scalar
         # If scalar cannot be safely cast, server will infer the return dtype
         dt = resolve_scalar_dtype(other)
-        if self.dtype != bigint and np.can_cast(other, self.dtype):
+        if self.dtype != bigint and np.can_cast(type(other), self.dtype):
             # If scalar can be losslessly cast to array dtype,
             # do the cast so that return array will have same dtype
             dt = self.dtype.name
