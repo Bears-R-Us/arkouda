@@ -33,14 +33,6 @@ def ndStamp(nd_msg_handler_name, cmd_prefix, d, mod_name):
     f"registerFunction(\"{cmd_prefix}{d}D\", {msg_proc_name}, \"{mod_name}\");\n"
 
 
-def ndStampArrayMsg(d):
-    msg_proc_name = f"arkouda_nd_stamp_arrayMsg{d}D"
-    return \
-    f"\nproc {msg_proc_name}(cmd: string, msgArgs: borrowed MessageArgs, ref data: bytes, st: borrowed SymTab): MsgTuple throws\n" + \
-    f"    do return arrayMsg(cmd, msgArgs, data, st, {d});\n" + \
-    f"registerArrayFunction(\"array{d}D\", {msg_proc_name});\n"
-
-
 def ndStampMultiRank(nd_msg_handler_name, cmd_prefix, d1, d2, mod_name):
     msg_proc_name = f"arkouda_nd_stamp_{nd_msg_handler_name}{d1}Dx{d2}D"
     return \
@@ -117,13 +109,6 @@ def stampOutModule(mod, src_dir, stamp_file, max_dims):
                 ndStampPermDec(proc_name, cmd_prefix, modOut, max_dims, mod)
             else:
                 ndStampPermAll(proc_name, cmd_prefix, modOut, max_dims, mod)
-
-        # special handling for 'arrayMsg'
-        for m in re.finditer(r'\@arkouda.registerArrayMsg', ftext):
-            found_annotation = True
-
-            for d in range(1, max_dims+1):
-                modOut.write(ndStampArrayMsg(d))
 
         # include the source module in the stamp file if any procs were stamped out
         if found_annotation:

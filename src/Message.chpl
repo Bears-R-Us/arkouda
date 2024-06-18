@@ -402,15 +402,18 @@ module Message {
     class MessageArgs {
         var param_list: list(ParameterObj);
         var size: int;
+        var payload: bytes;
 
         proc init() {
             this.param_list = new list(ParameterObj);
             this.size = 0;
+            this.payload = b"";
         }
 
         proc init(param_list: list(ParameterObj)) {
             this.param_list = param_list;
             this.size = param_list.size;
+            this.payload = b"";
         }
 
         proc init(param_list: list(ParameterObj, parSafe=true)) {
@@ -422,6 +425,11 @@ module Message {
             this.size = param_list.size;
 
             this.param_list = param_list;
+            this.payload = b"";
+        }
+
+        proc addPayload(in p: bytes) {
+            this.payload = p;
         }
 
         proc getJSON(keys: list(string) = list(string)): string throws {

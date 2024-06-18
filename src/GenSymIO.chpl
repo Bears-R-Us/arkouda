@@ -31,8 +31,8 @@ module GenSymIO {
      * Creates a pdarray server-side and returns the SymTab name used to
      * retrieve the pdarray from the SymTab.
     */
-    @arkouda.registerArrayMsg
-    proc arrayMsg(cmd: string, msgArgs: borrowed MessageArgs, ref data: bytes, st: borrowed SymTab, param nd: int): MsgTuple throws {
+    @arkouda.registerND
+    proc arrayMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
         const dtype = str2dtype(msgArgs.getValueOf("dtype")),
               shape = msgArgs.get("shape").getTuple(nd),
               asSegStr = msgArgs.get("seg_string").getBoolValue(),
@@ -47,7 +47,7 @@ module GenSymIO {
 
         proc bytesToSymEntry(type t) throws {
             var entry = createSymEntry((...shape), t);
-            var localA = makeArrayFromPtr(data.c_str():c_ptr(void):c_ptr(t), num_elts=size:uint);
+            var localA = makeArrayFromPtr(msgArgs.payload.c_str():c_ptr(void):c_ptr(t), num_elts=size:uint);
             if nd == 1 {
                 entry.a = localA;
             } else {

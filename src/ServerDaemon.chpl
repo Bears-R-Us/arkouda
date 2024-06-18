@@ -526,14 +526,13 @@ module ServerDaemon {
                 this.reqCount += 1;
 
                 var s0 = timeSinceEpoch().totalSeconds();
-        
+
                 /*
                  * Separate the first tuple, which is a string binary containing the JSON binary
                  * string encapsulating user, token, cmd, message format and args from the 
                  * remaining payload.
                  */
                 var (rawRequest, _) = reqMsgRaw.splitMsgToTuple(b"BINARY_PAYLOAD",2);
-                var payload = if reqMsgRaw.endsWith(b"BINARY_PAYLOAD") then socket.recv(bytes) else b"";
                 var user, token, cmd: string;
 
                 // parse requests, execute requests, format responses
@@ -579,10 +578,13 @@ module ServerDaemon {
                         msgArgs = new owned MessageArgs();
                     }
 
+                    const payload = if reqMsgRaw.endsWith(b"BINARY_PAYLOAD") then socket.recv(bytes) else b"";
+                    msgArgs.addPayload(payload);
+
                     sdLogger.info(getModuleName(),
                                   getRoutineName(),
                                   getLineNumber(),
-                                  "MessageArgs: %?".doFormat(msgArgs));                    
+                                  "MessageArgs: %?".doFormat(msgArgs));
 
                     /*
                      * If authentication is enabled with the --authenticate flag, authenticate
@@ -664,18 +666,14 @@ module ServerDaemon {
                             repMsg = new MsgTuple("imok", MsgType.NORMAL);
                         }
                         otherwise { // Look up in CommandMap or Binary CommandMap (or array CommandMap for special handling)
-                            if commandMapArray.contains(cmd) {
-                                repMsg = commandMapArray[cmd](cmd, msgArgs, payload, st);
-                            } else if commandMap.contains(cmd) {
+                            if commandMap.contains(cmd) {
                                 if moduleMap.contains(cmd) then
                                     usedModules.add(moduleMap[cmd]);
                                 repMsg = commandMap[cmd](cmd, msgArgs, st);
                             } else {
                                 const (multiDimCommand, nd, rawCmd) = getNDSpec(cmd),
                                     command1D = rawCmd + "1D";
-                                if multiDimCommand && nd > ServerConfig.MaxArrayDims &&
-                                    (commandMap.contains(command1D) || commandMapArray.contains(command1D))
-                                {
+                                if multiDimCommand && nd > ServerConfig.MaxArrayDims && commandMap.contains(command1D) {
                                     const errMsg = "Error: Command '%s' is not supported with the current server configuration "
                                                     .doFormat(cmd) +
                                                     "as the maximum array dimensionality is %i. Please recompile with support for at least %iD arrays"

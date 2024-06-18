@@ -14,17 +14,9 @@ module CommandMap {
   proc akMsgSign(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     return MsgTuple.success("");
   }
-
-  proc arrayMsgSign(cmd: string, msgArgs: borrowed MessageArgs, ref data: bytes, st: borrowed SymTab): MsgTuple throws {
-    var rep = new MsgTuple("dummy-msg", MsgType.NORMAL);
-    return rep;
-  }
-
   private var f = akMsgSign;
-  private var a = arrayMsgSign;
 
   var commandMap: map(string, f.type);
-  var commandMapArray: map(string, a.type);
   var moduleMap: map(string, string);
   use Set;
   var usedModules: set(string);
@@ -62,10 +54,6 @@ module CommandMap {
     var chnl = try! newCfgFile.writer(locking=false);
     for mod in usedModules do
       try! chnl.write(mod + '\n');
-  }
-
-  proc registerArrayFunction(cmd: string, fcf: a.type) {
-    commandMapArray.add(cmd, fcf);
   }
 
   /**
