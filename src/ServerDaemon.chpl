@@ -293,26 +293,26 @@ module ServerDaemon {
                               "Error in deleting serverConnectionInfo file %s".doFormat(e.message()));    
             }
         }
-        
+
         /*
         Following processing of incoming message, sends a message back to the client.
 
-        :arg repMsg: either a string or bytes to be sent
         */
-        proc sendRepMsg(repMsg: ?t) throws where t==string || t==bytes {
+        proc sendRepMsg(in response: MsgTuple, user: string) throws {
             this.repCount += 1;
-            if trace {
-                if t==bytes {
-                    sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
-                                                        "repMsg: <binary-data>");
-                } else {
-                 sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(), 
-                                                        "repMsg: %s".doFormat(repMsg));
-                }
+
+            if response.msgFormat == MsgFormat.BINARY {
+                if trace then sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
+                                           "repMsg: <binary-data>");
+                this.socket.send(response.payload);
+            } else {
+                const repMsg = response.serialize(user);
+                if trace then sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
+                                          "repMsg: " + repMsg);
+                this.socket.send(repMsg);
             }
-            this.socket.send(repMsg);
         }
-        
+
         /*
         Compares the token submitted by the user with the arkouda_server token. If the
         tokens do not match, or the user did not submit a token, an ErrorWithMsg is thrown.    
@@ -551,8 +551,7 @@ module ServerDaemon {
                         sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
                            "illegal byte sequence in command: %?".doFormat(
                                           rawRequest.decode(decodePolicy.replace)));
-                        sendRepMsg(serialize(msg=unknownError(e.message()),msgType=MsgType.ERROR,
-                                                 msgFormat=MsgFormat.STRING, user="Unknown"));
+                        sendRepMsg(MsgTuple.error(e.message()), "Unknown");
                     }
 
                     // deserialize the decoded, JSON-formatted cmdStr into a RequestMsg
@@ -569,8 +568,7 @@ module ServerDaemon {
                     catch e {
                         sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
                                "Argument List size is not an integer. %s cannot be cast".doFormat(msg.size));
-                        sendRepMsg(serialize(msg=unknownError(e.message()),msgType=MsgType.ERROR,
-                                                         msgFormat=MsgFormat.STRING, user="Unknown"));
+                        sendRepMsg(MsgTuple.error(e.message()), "Unknown");
                     }
 
                     var msgArgs: owned MessageArgs;
@@ -607,507 +605,163 @@ module ServerDaemon {
                        } catch {
                            // No action on error
                        }
-                }
-
-                inline proc sendShutdownRequest(user: string) throws {
-                    requestShutdown(user=user);
-                    if (trace) {
-                        sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
-                                        "<<< shutdown initiated by %s took %.17r sec".doFormat(user, 
-                                                timeSinceEpoch().totalSeconds() - s0));
                     }
-                }
 
-                // If cmd is shutdown, don't bother generating a repMsg
-                if cmd == "shutdown" {
-                    sendShutdownRequest(user=user);
-                    break;
-                }
-
-                /*
-                 * If logCommands is true, log incoming request to the .arkouda/commands.log file
-                 */
-                if logCommands {
-                    appendFile(filePath="%s/commands.log".doFormat(this.arkDirectory), formatJson(msg));
-                }
-
-                /*
-                 * For messages that return a string repTuple is filled. For binary
-                 * messages the message is sent directly to minimize copies.
-                 */
-                var repTuple: MsgTuple;
-            
-                /**
-                 * Command processing: Look for our specialized, default commands first, then check the command maps
-                 * Note: Our specialized commands have been added to the commandMap with dummy signatures so they show
-                 *  up in the client.print_server_commands() function, but we need to intercept & process them as appropriate
-                 */
-                 select cmd {
-                    when "connect" {
-                        if authenticate {
-                            repTuple = new MsgTuple("connected to arkouda server tcp://*:%i as user %s with token %s".doFormat(
-                                                            ServerPort,user,token), MsgType.NORMAL);
-                        } else {
-                            repTuple = new MsgTuple("connected to arkouda server tcp://*:%i".doFormat(ServerPort), MsgType.NORMAL);
+                    inline proc sendShutdownRequest(user: string) throws {
+                        requestShutdown(user=user);
+                        if (trace) {
+                            sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
+                                            "<<< shutdown initiated by %s took %.17r sec".doFormat(user, 
+                                                    timeSinceEpoch().totalSeconds() - s0));
                         }
                     }
-                    when "disconnect" {
-                        if autoShutdown {
-                            sendShutdownRequest(user=user);
-                            break;
-                        }
-                        
-                        repTuple = new MsgTuple("disconnected from arkouda server tcp://*:%i".doFormat(ServerPort), MsgType.NORMAL);
+
+                    // If cmd is shutdown, don't bother generating a repMsg
+                    if cmd == "shutdown" {
+                        sendShutdownRequest(user=user);
+                        break;
                     }
-                    when "noop" {
-                        repTuple = new MsgTuple("noop", MsgType.NORMAL);
+
+                    /*
+                    * If logCommands is true, log incoming request to the .arkouda/commands.log file
+                    */
+                    if logCommands {
+                        appendFile(filePath="%s/commands.log".doFormat(this.arkDirectory), formatJson(msg));
                     }
-                    when "ruok" {
-                        repTuple = new MsgTuple("imok", MsgType.NORMAL);
-                    }
-                    otherwise { // Look up in CommandMap or Binary CommandMap (or array CommandMap for special handling)
-                        if commandMapArray.contains(cmd) {
-                            repTuple = commandMapArray[cmd](cmd, msgArgs, payload, st);
-                        } else if commandMap.contains(cmd) {
-                            if moduleMap.contains(cmd) then
-                                usedModules.add(moduleMap[cmd]);
-                            repTuple = commandMap[cmd](cmd, msgArgs, st);
-                        } else if commandMapBinary.contains(cmd) { // Binary response commands require different handling
-                            if moduleMap.contains(cmd) then
-                                usedModules.add(moduleMap[cmd]);
-                            const binaryRepMsg = commandMapBinary[cmd](cmd, msgArgs, st);
-                            sendRepMsg(binaryRepMsg);
-                        } else {
-                            const (multiDimCommand, nd, rawCmd) = getNDSpec(cmd),
-                                  command1D = rawCmd + "1D";
-                            if multiDimCommand && nd > ServerConfig.MaxArrayDims &&
-                                (commandMap.contains(command1D) || commandMapBinary.contains(command1D)) || commandMapArray.contains(command1D)
-                            {
-                                const errMsg = "Error: Command '%s' is not supported with the current server configuration "
-                                                .doFormat(cmd) +
-                                                "as the maximum array dimensionality is %i. Please recompile with support for at least %iD arrays"
-                                                .doFormat(ServerConfig.MaxArrayDims, nd);
-                                repTuple = new MsgTuple(errMsg, MsgType.ERROR);
-                                sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errMsg);
-                            } else if multiDimCommand &&
-                                (commandMap.contains(rawCmd) || commandMapBinary.contains(rawCmd))
-                            {
-                                const errMsg = "Error: Command '%s' is not supported for multidimensional arrays".doFormat(rawCmd);
-                                repTuple = new MsgTuple(errMsg, MsgType.ERROR);
-                                sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errMsg);
+
+                    /*
+                    * For messages that return a string repTuple is filled. For binary
+                    * messages the message is sent directly to minimize copies.
+                    */
+                    var repMsg: MsgTuple;
+
+                    /**
+                    * Command processing: Look for our specialized, default commands first, then check the command maps
+                    * Note: Our specialized commands have been added to the commandMap with dummy signatures so they show
+                    *  up in the client.print_server_commands() function, but we need to intercept & process them as appropriate
+                    */
+                    select cmd {
+                        when "connect" {
+                            if authenticate {
+                                repMsg = new MsgTuple("connected to arkouda server tcp://*:%i as user %s with token %s".doFormat(
+                                                                ServerPort,user,token), MsgType.NORMAL);
                             } else {
-                                repTuple = new MsgTuple("Unrecognized command: %s".doFormat(cmd), MsgType.ERROR);
-                                sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),repTuple.msg);
+                                repMsg = new MsgTuple("connected to arkouda server tcp://*:%i".doFormat(ServerPort), MsgType.NORMAL);
+                            }
+                        }
+                        when "disconnect" {
+                            if autoShutdown {
+                                sendShutdownRequest(user=user);
+                                break;
                             }
 
+                            repMsg = new MsgTuple("disconnected from arkouda server tcp://*:%i".doFormat(ServerPort), MsgType.NORMAL);
+                        }
+                        when "noop" {
+                            repMsg = new MsgTuple("noop", MsgType.NORMAL);
+                        }
+                        when "ruok" {
+                            repMsg = new MsgTuple("imok", MsgType.NORMAL);
+                        }
+                        otherwise { // Look up in CommandMap or Binary CommandMap (or array CommandMap for special handling)
+                            if commandMapArray.contains(cmd) {
+                                repMsg = commandMapArray[cmd](cmd, msgArgs, payload, st);
+                            } else if commandMap.contains(cmd) {
+                                if moduleMap.contains(cmd) then
+                                    usedModules.add(moduleMap[cmd]);
+                                repMsg = commandMap[cmd](cmd, msgArgs, st);
+                            } else {
+                                const (multiDimCommand, nd, rawCmd) = getNDSpec(cmd),
+                                    command1D = rawCmd + "1D";
+                                if multiDimCommand && nd > ServerConfig.MaxArrayDims &&
+                                    (commandMap.contains(command1D) || commandMapArray.contains(command1D))
+                                {
+                                    const errMsg = "Error: Command '%s' is not supported with the current server configuration "
+                                                    .doFormat(cmd) +
+                                                    "as the maximum array dimensionality is %i. Please recompile with support for at least %iD arrays"
+                                                    .doFormat(ServerConfig.MaxArrayDims, nd);
+                                    repMsg = new MsgTuple(errMsg, MsgType.ERROR);
+                                    sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errMsg);
+                                } else if multiDimCommand && commandMap.contains(rawCmd) {
+                                    const errMsg = "Error: Command '%s' is not supported for multidimensional arrays".doFormat(rawCmd);
+                                    repMsg = new MsgTuple(errMsg, MsgType.ERROR);
+                                    sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errMsg);
+                                } else {
+                                    repMsg = new MsgTuple("Unrecognized command: %s".doFormat(cmd), MsgType.ERROR);
+                                    sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),repMsg.msg);
+                                }
+
+                            }
                         }
                     }
-                }
 
-                /*
-                 * If the reply message is a string send it now
-                 */          
-                if !repTuple.msg.isEmpty() {
-                    sendRepMsg(serialize(msg=repTuple.msg,msgType=repTuple.msgType,
-                                                              msgFormat=MsgFormat.STRING, user=user));
-                }
+                    // send response message
+                    sendRepMsg(repMsg, user);
 
-                var elapsedTime = timeSinceEpoch().totalSeconds() - s0;
+                    var elapsedTime = timeSinceEpoch().totalSeconds() - s0;
 
-                /*
-                 * log that the request message has been handled and reply message has been sent 
-                 * along with the time to do so
-                 */
-                if trace {
-                    sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(), 
-                                              "<<< %s took %.17r sec".doFormat(cmd, elapsedTime));
-                }
-                if (trace && memTrack) {
-                    var memUsed = getMemUsed():uint * numLocales:uint;
-                    var memLimit = (getMemLimit():real * numLocales:uint):int;
-                    var pctMemUsed = ((memUsed:real/memLimit)*100):int;
-                    sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
-                        "bytes of memory %? used after %s command is %?%% pct of max memory %?".doFormat(memUsed,
-                                                                                                       cmd,
-                                                                                                       pctMemUsed,
-                                                                                                       memLimit));
+                    /*
+                    * log that the request message has been handled and reply message has been sent 
+                    * along with the time to do so
+                    */
+                    if trace {
+                        sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(), 
+                                                "<<< %s took %.17r sec".doFormat(cmd, elapsedTime));
+                    }
+                    if (trace && memTrack) {
+                        var memUsed = getMemUsed():uint * numLocales:uint;
+                        var memLimit = (getMemLimit():real * numLocales:uint):int;
+                        var pctMemUsed = ((memUsed:real/memLimit)*100):int;
+                        sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
+                            "bytes of memory %? used after %s command is %?%% pct of max memory %?".doFormat(memUsed,
+                                                                                                        cmd,
+                                                                                                        pctMemUsed,
+                                                                                                        memLimit));
+                        if metricsEnabled() {
+                            processMetrics(user, cmd, msgArgs, elapsedTime, memUsed);
+                        }
+                    }
+                } catch (ewm: ErrorWithMsg) {
+                    // Generate a ReplyMsg of type ERROR and serialize to a JSON-formatted string
+                    sendRepMsg(MsgTuple.error(ewm.msg), user);
                     if metricsEnabled() {
-                        processMetrics(user, cmd, msgArgs, elapsedTime, memUsed);
+                        processErrorMessageMetrics(user, cmd, ewm);
+                    }
+
+                    if trace {
+                        sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                            "<<< %s resulted in error %s in  %.17r sec".doFormat(cmd,
+                                                                                ewm.msg,
+                                                                                timeSinceEpoch().totalSeconds() - s0));
+                    }
+                } catch err {
+                    var errorMsg = err.message();
+                    var errorName = getErrorName(err);
+
+                    if metricsEnabled() {
+                        processErrorMetrics(user, cmd, errorName);
+                    }
+
+                    sendRepMsg(MsgTuple.error(errorMsg), user);
+                    if trace {
+                        sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
+                        "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd, 
+                                                                        errorName,
+                                                                        errorMsg,
+                                                                        timeSinceEpoch().totalSeconds() - s0));
                     }
                 }
-            } catch (ewm: ErrorWithMsg) {
-                // Generate a ReplyMsg of type ERROR and serialize to a JSON-formatted string
-                sendRepMsg(serialize(msg=ewm.msg,msgType=MsgType.ERROR, msgFormat=MsgFormat.STRING, 
-                                                        user=user));
-                if metricsEnabled() {
-                    processErrorMessageMetrics(user, cmd, ewm);
-                }                
-
-                if trace {
-                    sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                        "<<< %s resulted in error %s in  %.17r sec".doFormat(cmd, 
-                                                                             ewm.msg, 
-                                                                             timeSinceEpoch().totalSeconds() - s0));
-                }
-            } catch (err: OverMemoryLimitError) {
-                var errorMsg = err.message();
-                var errorName = getErrorName(err);
-
-                if metricsEnabled() {
-                    processErrorMetrics(user, cmd, errorName);
-                }
-
-                sendRepMsg(serialize(msg=errorMsg,
-                                     msgType=MsgType.ERROR,
-                                     msgFormat=MsgFormat.STRING, 
-                                     user=user));
-                if trace {
-                    sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd, 
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
-                }
-            } catch (err: IOError) {
-                var errorMsg = err.message();
-                var errorName = getErrorName(err);
-
-                if metricsEnabled() {
-                    processErrorMetrics(user, cmd, errorName);
-                }
-
-                sendRepMsg(serialize(msg=errorMsg,
-                                     msgType=MsgType.ERROR,
-                                     msgFormat=MsgFormat.STRING,
-                                     user=user));
-                if trace {
-                    sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd, 
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
-                }
-            } catch (err: WriteModeError) {
-                var errorMsg = err.message();
-                var errorName = getErrorName(err);
-
-                if metricsEnabled() {
-                    processErrorMetrics(user, cmd, errorName);
-                }
-
-                sendRepMsg(serialize(msg=errorMsg,
-                                     msgType=MsgType.ERROR,
-                                     msgFormat=MsgFormat.STRING,
-                                     user=user));
-                if trace {
-                    sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd, 
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
-                }
-            } catch (err: FileNotFoundError) {
-                var errorMsg = err.message();
-                var errorName = getErrorName(err);
-
-                if metricsEnabled() {
-                    processErrorMetrics(user, cmd, errorName);
-                }
-
-                sendRepMsg(serialize(msg=errorMsg,
-                                     msgType=MsgType.ERROR,
-                                     msgFormat=MsgFormat.STRING,
-                                     user=user));
-                if trace {
-                    sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd, 
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
-                } 
-            } catch (err: PermissionError) {
-                var errorMsg = err.message();
-                var errorName = getErrorName(err);
-
-                if metricsEnabled() {
-                    processErrorMetrics(user, cmd, errorName);
-                }
-
-                sendRepMsg(serialize(msg=errorMsg,
-                                     msgType=MsgType.ERROR,
-                                     msgFormat=MsgFormat.STRING,
-                                     user=user));
-                if trace {
-                    sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd, 
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
-                }
-            } catch (err: DatasetNotFoundError) {
-                var errorMsg = err.message();
-                var errorName = getErrorName(err);
-
-                if metricsEnabled() {
-                    processErrorMetrics(user, cmd, errorName);
-                }
-
-                sendRepMsg(serialize(msg=errorMsg,
-                                     msgType=MsgType.ERROR,
-                                     msgFormat=MsgFormat.STRING,
-                                     user=user));
-                if trace {
-                    sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd, 
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
-                }
-            } catch (err: MismatchedAppendError) {
-                var errorMsg = err.message();
-                var errorName = getErrorName(err);
-
-                if metricsEnabled() {
-                    processErrorMetrics(user, cmd, errorName);
-                }
-
-                sendRepMsg(serialize(msg=errorMsg,
-                                     msgType=MsgType.ERROR,
-                                     msgFormat=MsgFormat.STRING,
-                                     user=user));
-                if trace {
-                    sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd,
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
-                }
-            } catch (err: IllegalArgumentError) {
-                var errorMsg = err.message();
-                var errorName = getErrorName(err);
-
-                if metricsEnabled() {
-                    processErrorMetrics(user, cmd, errorName);
-                }
-
-                sendRepMsg(serialize(msg=errorMsg,
-                                     msgType=MsgType.ERROR,
-                                     msgFormat=MsgFormat.STRING,
-                                     user=user));
-                if trace {
-                    sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd,
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
-                }
-            } catch (err: UnknownSymbolError) {
-                var errorMsg = err.message();
-                var errorName = getErrorName(err);
-
-                if metricsEnabled() {
-                    processErrorMetrics(user, cmd, errorName);
-                }
-
-                sendRepMsg(serialize(msg=errorMsg,
-                                     msgType=MsgType.ERROR,
-                                     msgFormat=MsgFormat.STRING,
-                                     user=user));
-                if trace {
-                    sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd,
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
-                }
-            } catch (err: ArgumentError) {
-                var errorMsg = err.message();
-                var errorName = getErrorName(err);
-
-                if metricsEnabled() {
-                    processErrorMetrics(user, cmd, errorName);
-                }
-
-                sendRepMsg(serialize(msg=errorMsg,
-                                     msgType=MsgType.ERROR,
-                                     msgFormat=MsgFormat.STRING,
-                                     user=user));
-                if trace {
-                    sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd,
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
-                }
-            } catch (err: ZMQError) {
-                var errorMsg = err.message();
-                var errorName = getErrorName(err);
-
-                if metricsEnabled() {
-                    processErrorMetrics(user, cmd, errorName);
-                }
-
-                sendRepMsg(serialize(msg=errorMsg,
-                                     msgType=MsgType.ERROR,
-                                     msgFormat=MsgFormat.STRING,
-                                     user=user));
-                if trace {
-                    sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd,
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
-                }
-            } catch (err: TimeoutError) {
-                var errorMsg = err.message();
-                var errorName = getErrorName(err);
-
-                if metricsEnabled() {
-                    processErrorMetrics(user, cmd, errorName);
-                }
-
-                sendRepMsg(serialize(msg=errorMsg,
-                                     msgType=MsgType.ERROR,
-                                     msgFormat=MsgFormat.STRING,
-                                     user=user));
-                if trace {
-                    sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd,
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
-                }
-            } catch (err: InsufficientCapacityError) {
-                var errorMsg = err.message();
-                var errorName = getErrorName(err);
-
-                if metricsEnabled() {
-                    processErrorMetrics(user, cmd, errorName);
-                }
-
-                sendRepMsg(serialize(msg=errorMsg,
-                                     msgType=MsgType.ERROR,
-                                     msgFormat=MsgFormat.STRING,
-                                     user=user));
-                if trace {
-                    sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd,
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
-                }
-
-            } catch (err: UnexpectedEofError) {
-                var errorMsg = err.message();
-                var errorName = getErrorName(err);
-
-                if metricsEnabled() {
-                    processErrorMetrics(user, cmd, errorName);
-                }
-
-                sendRepMsg(serialize(msg=errorMsg,
-                                     msgType=MsgType.ERROR,
-                                     msgFormat=MsgFormat.STRING,
-                                     user=user));
-                if trace {
-                    sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd,
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
-                }
-
-            } catch (err: BadFormatError) {
-                var errorMsg = err.message();
-                var errorName = getErrorName(err);
-
-                if metricsEnabled() {
-                    processErrorMetrics(user, cmd, errorName);
-                }
-
-                sendRepMsg(serialize(msg=errorMsg,
-                                     msgType=MsgType.ERROR,
-                                     msgFormat=MsgFormat.STRING,
-                                     user=user));
-                if trace {
-                    sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd,
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
-                }
-
-            } catch (err: ConnectionError) {
-                var errorMsg = err.message();
-                var errorName = getErrorName(err);
-
-                if metricsEnabled() {
-                    processErrorMetrics(user, cmd, errorName);
-                }
-
-                sendRepMsg(serialize(msg=errorMsg,
-                                     msgType=MsgType.ERROR,
-                                     msgFormat=MsgFormat.STRING,
-                                     user=user));
-                if trace {
-                    sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd,
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
-                }
-
-            } catch (err: SystemError) {
-                var errorMsg = err.message();
-                var errorName = getErrorName(err);
-
-                if metricsEnabled() {
-                    processErrorMetrics(user, cmd, errorName);
-                }
-
-                sendRepMsg(serialize(msg=errorMsg,
-                                     msgType=MsgType.ERROR,
-                                     msgFormat=MsgFormat.STRING,
-                                     user=user));
-                if trace {
-                    sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd,
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
-                }
-            } catch (err: Error) {
-                // Generate a ReplyMsg of type ERROR and serialize to a JSON-formatted string
-                var errorMsg = err.message();
- 
-                if errorMsg.isEmpty() {
-                    errorMsg = "unexpected error";
-                }
-
-                if metricsEnabled() {
-                    processErrorMetrics(user, cmd, 'Error');
-                }
-
-                sendRepMsg(serialize(msg=errorMsg,msgType=MsgType.ERROR, 
-                                                         msgFormat=MsgFormat.STRING, user=user));
-                if trace {
-                    sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(), 
-                    "<<< %s resulted in error: %s in %.17r sec".doFormat(cmd, 
-                                                                         errorMsg,
-                                                                         timeSinceEpoch().totalSeconds() - s0));
-                }
             }
-        }
 
-        var elapsed = timeSinceEpoch().totalSeconds() - startTime;
+            var elapsed = timeSinceEpoch().totalSeconds() - startTime;
 
-        deleteServerConnectionInfo();
+            deleteServerConnectionInfo();
 
-        sdLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
-            "requests = %i responseCount = %i elapsed sec = %i".doFormat(reqCount,
-                                                                         repCount,
-                                                                         elapsed));
-        this.shutdown(); 
+            sdLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
+                "requests = %i responseCount = %i elapsed sec = %i".doFormat(reqCount,
+                                                                            repCount,
+                                                                            elapsed));
+            this.shutdown(); 
         }
     }
 

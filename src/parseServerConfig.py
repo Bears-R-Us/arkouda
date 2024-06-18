@@ -33,14 +33,6 @@ def ndStamp(nd_msg_handler_name, cmd_prefix, d, mod_name):
     f"registerFunction(\"{cmd_prefix}{d}D\", {msg_proc_name}, \"{mod_name}\");\n"
 
 
-def ndStampBinary(nd_msg_handler_name, cmd_prefix, d, mod_name):
-    msg_proc_name = f"arkouda_nd_stamp_{nd_msg_handler_name}{d}D"
-    return \
-    f"\nproc {msg_proc_name}(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): bytes throws\n" + \
-    f"    do return {nd_msg_handler_name}(cmd, msgArgs, st, {d});\n" + \
-    f"registerBinaryFunction(\"{cmd_prefix}{d}D\", {msg_proc_name}, \"{mod_name}\");\n"
-
-
 def ndStampArrayMsg(d):
     msg_proc_name = f"arkouda_nd_stamp_arrayMsg{d}D"
     return \
@@ -89,8 +81,8 @@ def stampOutModule(mod, src_dir, stamp_file, max_dims):
 
         # find each procedure annotated with '@arkouda.registerND'
         #  (with an optional 'cmd_prefix' argument)
-        #            group 0  \/                     1 \/          2 \/                               3 \/                        4\/
-        for m in re.finditer(r'\@arkouda\.registerND\(?(cmd_prefix=\"([\[\]a-zA-Z0-9\-\=<>]*)\")?\)?\s*proc\s*([a-zA-Z0-9]*)\(.*\)\s*:\s*(bytes)?', ftext):
+        #            group 0  \/                     1 \/          2 \/                               3 \/
+        for m in re.finditer(r'\@arkouda\.registerND\(?(cmd_prefix=\"([\[\]a-zA-Z0-9\-\=<>]*)\")?\)?\s*proc\s*([a-zA-Z0-9]*)\(.*\)', ftext):
             found_annotation = True
             g = m.groups()
             proc_name = g[2]
@@ -102,16 +94,10 @@ def stampOutModule(mod, src_dir, stamp_file, max_dims):
                 # group 2 contains the 'cmd_prefix' argument
                 cmd_prefix = g[1]
 
-            # if return type is bytes, this is a binary message handler
-            binaryHandler = g[3] is not None
-
             # instantiate the message handler for each rank from 1..max_dims
             # and register the instantiated proc with a unique command name
             for d in range(1, max_dims+1):
-                if binaryHandler:
-                    modOut.write(ndStampBinary(proc_name, cmd_prefix, d, mod))
-                else:
-                    modOut.write(ndStamp(proc_name, cmd_prefix, d, mod))
+                modOut.write(ndStamp(proc_name, cmd_prefix, d, mod))
 
         # find each procedure annotated with '@arkouda.registerNDPerm[Inc|Dec|All]'
         #            group 0  \/                      1 \/            2 \/          3 \/                                4\/

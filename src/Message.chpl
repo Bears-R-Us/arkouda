@@ -19,18 +19,10 @@ module Message {
      */
     record MsgTuple {
         var msg: string;
-        var msgType: MsgType;    
-    }
-
-    /*
-     * Encapsulates state corresponding to a reply message sent back to 
-     * the Arkouda client.
-     */
-    class ReplyMsg {
-        var msg: string;
         var msgType: MsgType;
         var msgFormat: MsgFormat;
         var user: string;
+        var payload: bytes;
     }
 
     /*
@@ -43,6 +35,62 @@ module Message {
         var format: string;
         var args: string;
         var size: int; // currently unused, but wired for once all functionality moved to json
+    }
+
+    proc MsgTuple.init() {
+        this.msg = "";
+        this.msgType = MsgType.NORMAL;
+        this.msgFormat = MsgFormat.STRING;
+        this.user = "";
+        this.payload = b"";
+    }
+
+    proc MsgTuple.init(msg: string, msgType: MsgType) {
+        this.msg = msg;
+        this.msgType = msgType;
+        this.msgFormat = MsgFormat.STRING;
+        this.user = "";
+        this.payload = b"";
+    }
+
+    proc MsgTuple.init(msg: string, msgType: MsgType, msgFormat: MsgFormat, user = "", payload = b"") {
+        this.msg = msg;
+        this.msgType = msgType;
+        this.msgFormat = msgFormat;
+        this.user = "";
+        this.payload = payload;
+    }
+
+    proc type MsgTuple.success(msg: string): MsgTuple {
+        return new MsgTuple(
+            msg = msg,
+            msgType = MsgType.NORMAL,
+            msgFormat = MsgFormat.STRING,
+            payload = b""
+        );
+    }
+
+    proc type MsgTuple.error(msg: string): MsgTuple {
+        return new MsgTuple(
+            msg = msg,
+            msgType = MsgType.ERROR,
+            msgFormat = MsgFormat.STRING,
+            payload = b""
+        );
+    }
+
+    proc type MsgTuple.payload(data: bytes): MsgTuple {
+        return new MsgTuple(
+            msg = "",
+            msgType = MsgType.NORMAL,
+            msgFormat = MsgFormat.BINARY,
+            payload = data
+        );
+    }
+
+    proc ref MsgTuple.serialize(user: string) throws {
+        this.user = user;
+        return formatJson(this);
     }
 
     /*
@@ -520,8 +568,8 @@ module Message {
     */
    proc serialize(msg: string, msgType: MsgType, msgFormat: MsgFormat, 
                                                                  user: string) : string throws {
-       return formatJson(new ReplyMsg(msg=msg,msgType=msgType, 
-                                                        msgFormat=msgFormat, user=user));
+       return formatJson(new MsgTuple(msg=msg,msgType=msgType,
+                                      msgFormat=msgFormat, user=user));
    }
 
     /*

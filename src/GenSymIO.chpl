@@ -121,13 +121,13 @@ module GenSymIO {
      * Chapel Bytes object
      */
     @arkouda.registerND
-    proc tondarrayMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): bytes throws {
+    proc tondarrayMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
         var arrayBytes: bytes;
         var abstractEntry = st.lookup(msgArgs.getValueOf("array"));
         if !abstractEntry.isAssignableTo(SymbolEntryType.TypedArraySymEntry) {
             var errorMsg = "Error: Unhandled SymbolEntryType %s".doFormat(abstractEntry.entryType);
             gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return errorMsg.encode(); // return as bytes
+            return MsgTuple.error(errorMsg);
         }
         var entry:borrowed GenSymEntry = abstractEntry: borrowed GenSymEntry;
 
@@ -157,12 +157,12 @@ module GenSymIO {
         } else if entry.dtype == DType.UInt8 {
             arrayBytes = distArrToBytes(toSymEntry(entry, uint(8), nd).a);
         } else {
-            var errorMsg = "Error: Unhandled dtype %s".doFormat(entry.dtype);
+            const errorMsg = "Error: Unhandled dtype %s".doFormat(entry.dtype);
             gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return errorMsg.encode(); // return as bytes
+            return MsgTuple.error(errorMsg);
         }
 
-       return arrayBytes;
+       return MsgTuple.payload(arrayBytes);
     }
 
     /*
