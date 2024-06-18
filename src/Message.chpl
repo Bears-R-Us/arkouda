@@ -399,7 +399,7 @@ module Message {
     :param_list:  array of ParameterObj
     :size: int - number of parameters contained in list
     */
-    class MessageArgs {
+    class MessageArgs: writeSerializable {
         var param_list: list(ParameterObj);
         var size: int;
         var payload: bytes;
@@ -447,6 +447,14 @@ module Message {
                 }
             }
             return formatJson(json);
+        }
+
+        override proc serialize(writer: fileWriter(?), ref serializer: ?st) throws {
+            var ser = serializer.startClass(writer, "MessageArgs", 3);
+            ser.writeField("param_list", this.param_list);
+            ser.writeField("size", this.size);
+            ser.writeField("payload", if this.payload.size > 0 then "<binary_payload>" else "");
+            ser.endClass();
         }
 
         /*
