@@ -61,18 +61,34 @@ module CSVMsg {
             var errorMsg = "File %s does not exist in a location accessible to Arkouda".doFormat(filename);
             csvLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg,MsgType.ERROR);
-        } 
+        }
 
         // open file and determine if header exists.
         var idx = 0;
         var reader = openReader(filename);
-        var lines = reader.lines().strip();
-        if lines[0] == CSV_HEADER_OPEN {
-            idx = 3; // set to first line after header
+        var line = reader.readLine(stripNewline=true);
+        var hasHeader = false;
+        if line == CSV_HEADER_OPEN {
+            hasHeader=true;
+            // The first three lines are headers we don't care about
+            // Advance through them without reading them in
+            for param i in 1..<3 {
+                try {reader.advanceThrough(b'\n');}
+                catch {
+                    throw getErrorWithContext(
+                        msg="This CSV file is missing header values when headers were detected.",
+                        lineNumber=getLineNumber(),
+                        routineName=getRoutineName(),
+                        moduleName=getModuleName(),
+                        errorClass="IOError");
+                }
+            }
         }
 
         var col_delim: string = msgArgs.getValueOf("col_delim");
-        var column_names = lines[idx].split(col_delim);
+        var column_names = if !hasHeader then line.split(col_delim).strip()
+                           else
+                             reader.readLine(stripNewline = true).split(col_delim).strip();
         return new MsgTuple(formatJson(column_names), MsgType.NORMAL);
 
     }
@@ -307,28 +323,56 @@ module CSVMsg {
         }
 
         var reader = openReader(filename);
-        var lines = reader.lines();
         var hasHeader = false;
-        var dtype_idx = 0;
-        var column_name_idx = 0;
 
-        if lines[0] == CSV_HEADER_OPEN + "\n" {
+        var line = reader.readLine(stripNewline=true);
+        if line == CSV_HEADER_OPEN {
             hasHeader = true;
-            dtype_idx = 1;
-            column_name_idx = 3;
+            // The first three lines are headers
+            for param i in 1..<3 {
+                try {
+                    if i==1 {
+                        line = reader.readLine(stripNewline=true);
+                        // Line has the data types after this
+                    } else {
+                        // Advance through CSV_HEADER_CLOSE line
+                        reader.advanceThrough(b'\n');
+                    }
+                }
+                catch {
+                    throw getErrorWithContext(
+                        msg="This CSV file is missing header values when headers were detected.",
+                        lineNumber=getLineNumber(),
+                        routineName=getRoutineName(),
+                        moduleName=getModuleName(),
+                        errorClass="IOError");
+                }
+            }
         }
 
-        var columns = lines[column_name_idx].split(col_delim).strip();
+        var columns = if !hasHeader then line.split(col_delim).strip()
+                      else
+                        reader.readLine(stripNewline = true).split(col_delim).strip();
         var file_dtypes: [0..#columns.size] string;
-        if dtype_idx > 0 {
-            file_dtypes = lines[dtype_idx].split(",").strip();
+        if hasHeader {
+            file_dtypes = line.split(",").strip(); // Line was already read above
         }
         else {
             file_dtypes = "str";
         }
-        var data_start_offset = column_name_idx + 1;
         // get the row count
-        var row_ct: int = lines.size - data_start_offset;
+        var row_ct: int = 0;
+        var eof = false;
+        while (!eof) {
+            try {
+                reader.advanceThrough(b'\n');
+                row_ct+=1;
+            } catch e: EofError {
+                eof = true;
+            } catch e:UnexpectedEofError {
+                eof = true;
+            }
+        }
 
         reader.close();
 
