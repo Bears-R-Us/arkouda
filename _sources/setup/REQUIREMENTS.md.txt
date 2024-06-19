@@ -18,7 +18,7 @@ The installation instructions for the dependencies listed here may vary dependin
 The following python packages are required by the Arkouda client package.
 
 - `python>=3.8`
-- `numpy>=1.24.1`
+- `numpy>=1.24.1,<2.0`
 - `pandas>=1.4.0,!=2.2.0`
 - `pyzmq>=20.0.0`
 - `typeguard==2.10.0`
