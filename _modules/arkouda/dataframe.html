@@ -1483,7 +1483,7 @@
         <span class="k">return</span> <span class="n">new_df</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">(</span><span class="n">retain_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns</span><span class="p">]</span>
 
 <div class="viewcode-block" id="DataFrame.transfer">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.transfer">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.transfer">[docs]</a>
     <span class="k">def</span> <span class="nf">transfer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sends a DataFrame to a different Arkouda server.</span>
@@ -1588,7 +1588,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_columns</span>
 
 <div class="viewcode-block" id="DataFrame.from_pandas">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.from_pandas">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.from_pandas">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_pandas</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">pd_df</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1679,7 +1679,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_index</span><span class="p">(</span><span class="n">idx_to_keep</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DataFrame.drop">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.drop">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.drop">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">drop</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -1773,7 +1773,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.drop_duplicates">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.drop_duplicates">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.drop_duplicates">[docs]</a>
     <span class="k">def</span> <span class="nf">drop_duplicates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="s2">&quot;first&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Drops duplcated rows and returns resulting DataFrame.</span>
@@ -2080,7 +2080,7 @@
             <span class="p">)</span>
 
 <div class="viewcode-block" id="DataFrame.reset_index">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.reset_index">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.reset_index">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">reset_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2224,7 +2224,7 @@
         <span class="k">return</span> <span class="s2">&quot;DataFrame([&quot;</span> <span class="o">+</span> <span class="n">keystr</span> <span class="o">+</span> <span class="s2">&quot;], </span><span class="si">{:,}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nrows</span><span class="p">)</span> <span class="o">+</span> <span class="n">rows</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">mem</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
 
 <div class="viewcode-block" id="DataFrame.update_nrows">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.update_nrows">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.update_nrows">[docs]</a>
     <span class="k">def</span> <span class="nf">update_nrows</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes the number of rows on the arkouda server and updates the size parameter.</span>
@@ -2342,7 +2342,7 @@
         <span class="k">return</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="DataFrame.rename">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.rename">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.rename">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">rename</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -2469,7 +2469,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.append">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.append">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.append">[docs]</a>
     <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Concatenate data from &#39;other&#39; onto the end of this DataFrame, in place.</span>
@@ -2570,7 +2570,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.concat">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.concat">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.concat">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">concat</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">items</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2606,7 +2606,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.head">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.head">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.head">[docs]</a>
     <span class="k">def</span> <span class="nf">head</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the first `n` rows.</span>
@@ -2693,7 +2693,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.tail">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.tail">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.tail">[docs]</a>
     <span class="k">def</span> <span class="nf">tail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the last `n` rows.</span>
@@ -2782,7 +2782,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.sample">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.sample">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.sample">[docs]</a>
     <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a random sample of `n` rows.</span>
@@ -2839,7 +2839,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.GroupBy">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.GroupBy">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.GroupBy">[docs]</a>
     <span class="k">def</span> <span class="nf">GroupBy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">use_series</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dropna</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Group the dataframe by a column or a list of columns.</span>
@@ -2927,7 +2927,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.memory_usage">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.memory_usage">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.memory_usage">[docs]</a>
     <span class="k">def</span> <span class="nf">memory_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the memory usage of each column in bytes.</span>
@@ -3042,7 +3042,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.memory_usage_info">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.memory_usage_info">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.memory_usage_info">[docs]</a>
     <span class="k">def</span> <span class="nf">memory_usage_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;GB&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A formatted string representation of the size of this DataFrame.</span>
@@ -3078,7 +3078,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.to_pandas">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.to_pandas">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.to_pandas">[docs]</a>
     <span class="k">def</span> <span class="nf">to_pandas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datalimit</span><span class="o">=</span><span class="n">maxTransferBytes</span><span class="p">,</span> <span class="n">retain_index</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send this DataFrame to a pandas DataFrame.</span>
@@ -3186,7 +3186,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.to_markdown">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.to_markdown">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.to_markdown">[docs]</a>
     <span class="k">def</span> <span class="nf">to_markdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wt&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s2">&quot;grid&quot;</span><span class="p">,</span> <span class="n">storage_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print DataFrame in Markdown-friendly format.</span>
@@ -3260,7 +3260,7 @@
         <span class="k">return</span> <span class="n">data</span>
 
 <div class="viewcode-block" id="DataFrame.to_hdf">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.to_hdf">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.to_hdf">[docs]</a>
     <span class="k">def</span> <span class="nf">to_hdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">file_type</span><span class="o">=</span><span class="s2">&quot;distribute&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save DataFrame to disk as hdf5, preserving column names.</span>
@@ -3401,7 +3401,7 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="DataFrame.update_hdf">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.update_hdf">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.update_hdf">[docs]</a>
     <span class="k">def</span> <span class="nf">update_hdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">repack</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Overwrite the dataset with the name provided with this dataframe. If</span>
@@ -3479,7 +3479,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.to_parquet">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.to_parquet">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.to_parquet">[docs]</a>
     <span class="k">def</span> <span class="nf">to_parquet</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">path</span><span class="p">,</span>
@@ -3567,7 +3567,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.to_csv">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.to_csv">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.to_csv">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">to_csv</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -3654,7 +3654,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.read_csv">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.read_csv">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.read_csv">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">read_csv</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">col_delim</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -3730,7 +3730,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.save">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.save">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.save">[docs]</a>
     <span class="k">def</span> <span class="nf">save</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">path</span><span class="p">,</span>
@@ -3815,7 +3815,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.load">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.load">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.load">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">prefix_path</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="s2">&quot;INFER&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3882,7 +3882,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.argsort">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.argsort">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.argsort">[docs]</a>
     <span class="k">def</span> <span class="nf">argsort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the permutation that sorts the dataframe by `key`.</span>
@@ -3969,7 +3969,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.coargsort">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.coargsort">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.coargsort">[docs]</a>
     <span class="k">def</span> <span class="nf">coargsort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the permutation that sorts the dataframe by `keys`.</span>
@@ -4031,7 +4031,7 @@
         <span class="k">return</span> <span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="n">new_index</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DataFrame.sort_index">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.sort_index">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.sort_index">[docs]</a>
     <span class="k">def</span> <span class="nf">sort_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sort the DataFrame by indexed columns.</span>
@@ -4081,7 +4081,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.sort_values">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.sort_values">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.sort_values">[docs]</a>
     <span class="k">def</span> <span class="nf">sort_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sort the DataFrame by one or more columns.</span>
@@ -4162,7 +4162,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.apply_permutation">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.apply_permutation">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.apply_permutation">[docs]</a>
     <span class="k">def</span> <span class="nf">apply_permutation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">perm</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Apply a permutation to an entire DataFrame.  The operation is done in</span>
@@ -4231,7 +4231,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.filter_by_range">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.filter_by_range">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.filter_by_range">[docs]</a>
     <span class="k">def</span> <span class="nf">filter_by_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find all rows where the value count of the items in a given set of</span>
@@ -4389,7 +4389,7 @@
             <span class="k">return</span> <span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DataFrame.groupby">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.groupby">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.groupby">[docs]</a>
     <span class="k">def</span> <span class="nf">groupby</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">use_series</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dropna</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Group the dataframe by a column or a list of columns.  Alias for GroupBy.</span>
@@ -4463,7 +4463,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.isin">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.isin">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.isin">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">isin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Series</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4611,7 +4611,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.count">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.count">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.count">[docs]</a>
     <span class="k">def</span> <span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">numeric_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Count non-NA cells for each column or row.</span>
@@ -4735,7 +4735,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.corr">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.corr">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.corr">[docs]</a>
     <span class="k">def</span> <span class="nf">corr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return new DataFrame with pairwise correlation of columns.</span>
@@ -4805,7 +4805,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.merge">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.merge">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.merge">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">merge</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -4968,7 +4968,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.isna">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.isna">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.isna">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">isna</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5027,7 +5027,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.notna">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.notna">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.notna">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">notna</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5085,7 +5085,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.any">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.any">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.any">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">any</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Series</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5186,7 +5186,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.all">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.all">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.all">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Series</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5287,7 +5287,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.dropna">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.dropna">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.dropna">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">dropna</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -5457,7 +5457,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.register">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.register">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.register">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_defined_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5564,7 +5564,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.unregister">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.unregister">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.unregister">[docs]</a>
     <span class="k">def</span> <span class="nf">unregister</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Unregister this DataFrame object in the arkouda server which was previously</span>
@@ -5610,7 +5610,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.is_registered">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.is_registered">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.is_registered">[docs]</a>
     <span class="k">def</span> <span class="nf">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return True if the object is contained in the registry.</span>
@@ -5659,7 +5659,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.attach">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.attach">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.attach">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">attach</span><span class="p">(</span><span class="n">user_defined_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5710,7 +5710,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.unregister_dataframe_by_name">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.unregister_dataframe_by_name">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.unregister_dataframe_by_name">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">unregister_dataframe_by_name</span><span class="p">(</span><span class="n">user_defined_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -5795,7 +5795,7 @@
             <span class="k">return</span> <span class="n">colParts</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">colType</span>
 
 <div class="viewcode-block" id="DataFrame.from_return_msg">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.dataframe.DataFrame.from_return_msg">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.from_return_msg">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_return_msg</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

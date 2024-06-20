@@ -9,7 +9,6 @@ Classes
 
 .. autoapisummary::
 
-   arkouda.array_api.set_functions.Array
    arkouda.array_api.set_functions.UniqueAllResult
    arkouda.array_api.set_functions.UniqueCountsResult
    arkouda.array_api.set_functions.UniqueInverseResult
@@ -20,8 +19,6 @@ Functions
 
 .. autoapisummary::
 
-   arkouda.array_api.set_functions.create_pdarray
-   arkouda.array_api.set_functions.generic_msg
    arkouda.array_api.set_functions.unique_all
    arkouda.array_api.set_functions.unique_counts
    arkouda.array_api.set_functions.unique_inverse
@@ -30,116 +27,6 @@ Functions
 
 Module Contents
 ---------------
-
-.. py:class:: Array
-
-   n-d array object for the array API namespace.
-
-   See the docstring of :py:obj:`np.ndarray <numpy.ndarray>` for more
-   information.
-
-   This is a wrapper around numpy.ndarray that restricts the usage to only
-   those things that are required by the array API namespace. Note,
-   attributes on this object that start with a single underscore are not part
-   of the API specification and should only be used internally. This object
-   should not be constructed directly. Rather, use one of the creation
-   functions, such as asarray().
-
-
-
-   .. py:property:: T
-      :type: Array
-
-
-
-   .. py:method:: chunk_info(/) -> List[List[int]]
-
-      Get a list of indices indicating how the array is chunked across
-      Locales (compute nodes). Although Arkouda arrays don't have a notion
-      of chunking, like Dask arrays for example, it can be useful to know
-      how the array is distributed across locales in order to write/read
-      data to/from a chunked format like Zarr.
-
-      Returns a nested list of integers, where the outer list corresponds to
-      dimensions, and the inner lists correspond to locales. The value at [d][l]
-      is the global array index where locale l's local subdomain along the
-      d-th dimension begins.
-
-      For example, calling this function on a 100x40 2D array stored across 4
-      locales could return: [[0, 50], [0, 20]], indicating that the 4 "chunks"
-      start at indices 0 and 50 in the first dimension, and 0 and 20 in the
-      second dimension.
-
-
-
-   .. py:property:: device
-      :type: arkouda.array_api._typing.Device
-
-
-
-   .. py:property:: dtype
-      :type: arkouda.array_api._typing.Dtype
-
-
-
-   .. py:method:: item()
-
-      Get the scalar value from a 0-dimensional array.
-
-      Raises a ValueError if the array has more than one element.
-
-
-
-   .. py:property:: mT
-      :type: Array
-
-
-
-   .. py:property:: ndim
-      :type: int
-
-
-
-   .. py:property:: shape
-      :type: Tuple[int, Ellipsis]
-
-
-
-   .. py:property:: size
-      :type: int
-
-
-
-   .. py:method:: to_device(device: arkouda.array_api._typing.Device, /, stream: None = None) -> Array
-
-
-   .. py:method:: to_ndarray()
-
-      Convert the array to a numpy ndarray
-
-      This involves copying the data from the server to the client, and thus
-      will fail if the array is too large (see:
-      :func:`~arkouda.client.maxTransferBytes`)
-
-
-
-   .. py:method:: tolist()
-
-      Convert the array to a Python list or nested lists
-
-      This involves copying the data from the server to the client, and thus
-      will fail if the array is too large (see:
-      :func:`~arkouda.client.maxTransferBytes`)
-
-
-
-   .. py:method:: transpose(axes: Optional[Tuple[int, Ellipsis]] = None)
-
-      Return a view of the array with the specified axes transposed.
-
-      For axes=None, reverse all the dimensions of the array.
-
-
 
 .. py:class:: UniqueAllResult
 
@@ -186,54 +73,6 @@ Module Contents
 
    .. py:attribute:: values
       :type:  arkouda.array_api.array_object.Array
-
-
-.. py:function:: create_pdarray(repMsg: str, max_bits=None) -> pdarray
-
-   Return a pdarray instance pointing to an array created by the arkouda server.
-   The user should not call this function directly.
-
-   :param repMsg: space-delimited string containing the pdarray name, datatype, size
-                  dimension, shape,and itemsize
-   :type repMsg: str
-
-   :returns: A pdarray with the same attributes and data as the pdarray; on GPU
-   :rtype: pdarray
-
-   :raises ValueError: If there's an error in parsing the repMsg parameter into the six
-       values needed to create the pdarray instance
-   :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
-       the pdarray instance
-
-
-.. py:function:: generic_msg(cmd: str, args: Optional[Dict] = None, payload: Optional[memoryview] = None, send_binary: bool = False, recv_binary: bool = False) -> Union[str, memoryview]
-
-   Sends a binary or string message composed of a command and corresponding
-   arguments to the arkouda_server, returning the response sent by the server.
-
-   :param cmd: The server-side command to be executed
-   :type cmd: str
-   :param args: A space-delimited list of command arguments
-   :type args: str
-   :param payload: The payload when sending binary data
-   :type payload: memoryview
-   :param send_binary: Indicates if the message to be sent is a string or binary
-   :type send_binary: bool
-   :param recv_binary: Indicates if the return message will be a string or binary
-   :type recv_binary: bool
-
-   :returns: The string or binary return message
-   :rtype: Union[str, memoryview]
-
-   :raises KeyboardInterrupt: Raised if the user interrupts during command execution
-   :raises RuntimeError: Raised if the client is not connected to the server or if
-       there is a server-side error thrown
-
-   .. rubric:: Notes
-
-   If the server response is a string, the string corresponds to a success
-   confirmation, warn message, or error message. A memoryview response
-   corresponds to an Arkouda array output as a numpy array.
 
 
 .. py:function:: unique_all(x: arkouda.array_api.array_object.Array, /) -> UniqueAllResult

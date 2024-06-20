@@ -406,14 +406,8 @@ of ndarray.</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.array_object.asarray" title="arkouda.array_api.array_object.asarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">asarray</span></code></a>(→ arkouda.array_api.array_object.Array)</p></td>
-<td><p>Create a new Array from one of:</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.array_object.implements_numpy" title="arkouda.array_api.array_object.implements_numpy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">implements_numpy</span></code></a>(numpy_function)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.array_object.implements_numpy" title="arkouda.array_api.array_object.implements_numpy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">implements_numpy</span></code></a>(numpy_function)</p></td>
 <td><p>Register an __array_function__ implementation for MyArray objects.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.array_object.scalar_array" title="arkouda.array_api.array_object.scalar_array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scalar_array</span></code></a>(value)</p></td>
-<td><p>Create a pdarray from a single scalar value.</p></td>
 </tr>
 </tbody>
 </table>
@@ -531,48 +525,9 @@ will fail if the array is too large (see:
 <dd></dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.array_api.array_object.asarray">
-<span class="sig-prename descclassname"><span class="pre">arkouda.array_api.array_object.</span></span><span class="sig-name descname"><span class="pre">asarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.array_api.array_object.Array" title="arkouda.array_api.array_object.Array"><span class="pre">arkouda.array_api.array_object.Array</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">arkouda.array_api._typing.NestedSequence</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">arkouda.array_api._typing.SupportsBufferProtocol</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">arkouda.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.array_api._typing.Dtype</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.array_api._typing.Device</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.array_api.array_object.Array" title="arkouda.array_api.array_object.Array"><span class="pre">arkouda.array_api.array_object.Array</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/array_api/creation_functions.html#asarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api.array_object.asarray" title="Link to this definition">¶</a></dt>
-<dd><p>Create a new Array from one of:
-- another Array
-- a scalar value (bool, int, float)
-- a sequence of scalar values (not yet implemented)
-- a buffer (not yet implemented)
-- an arkouda <a class="reference internal" href="../../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">pdarray</span></code></a>
-- a numpy ndarray</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>obj</strong> – The object to convert to an Array</p></li>
-<li><p><strong>dtype</strong> (<em>Optional</em><em>[</em><em>Dtype</em><em>]</em>) – The dtype of the resulting Array. If None, the dtype is inferred from the input object</p></li>
-<li><p><strong>device</strong> (<em>Optional</em><em>[</em><em>Device</em><em>]</em>) – The device on which to create the Array (not yet implemented)</p></li>
-<li><p><strong>copy</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – Whether to copy the input object (not yet implemented)</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="arkouda.array_api.array_object.implements_numpy">
 <span class="sig-prename descclassname"><span class="pre">arkouda.array_api.array_object.</span></span><span class="sig-name descname"><span class="pre">implements_numpy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">numpy_function</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/array_api/array_object.html#implements_numpy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api.array_object.implements_numpy" title="Link to this definition">¶</a></dt>
 <dd><p>Register an __array_function__ implementation for MyArray objects.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.array_api.array_object.scalar_array">
-<span class="sig-prename descclassname"><span class="pre">arkouda.array_api.array_object.</span></span><span class="sig-name descname"><span class="pre">scalar_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.dtypes.numeric_scalars</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pdarraycreation.html#scalar_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api.array_object.scalar_array" title="Link to this definition">¶</a></dt>
-<dd><p>Create a pdarray from a single scalar value.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>value</strong> (<em>numeric_scalars</em>) – Value to create pdarray from</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>pdarray with a single element</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../alignment/index.html#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray">pdarray</a></p>
-</dd>
-</dl>
 </dd></dl>
 
 </section>
@@ -655,9 +610,7 @@ will fail if the array is too large (see:
 </ul>
 </li>
 <li><a class="reference internal" href="#arkouda.array_api.array_object.HANDLED_FUNCTIONS"><code class="docutils literal notranslate"><span class="pre">HANDLED_FUNCTIONS</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.array_api.array_object.asarray"><code class="docutils literal notranslate"><span class="pre">asarray()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.array_api.array_object.implements_numpy"><code class="docutils literal notranslate"><span class="pre">implements_numpy()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.array_api.array_object.scalar_array"><code class="docutils literal notranslate"><span class="pre">scalar_array()</span></code></a></li>
 </ul>
 </li>
 </ul>

@@ -436,8 +436,6 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">getArkoudaLogger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;pdarrayclass&quot;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="parse_single_value">
-<a class="viewcode-back" href="../../autoapi/arkouda/array_api/statistical_functions/index.html#arkouda.alignment.parse_single_value">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">parse_single_value</span><span class="p">(</span><span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -488,8 +486,7 @@
             <span class="k">return</span> <span class="n">mydtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">unescape</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
         <span class="k">return</span> <span class="n">mydtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported value from server </span><span class="si">{</span><span class="n">mydtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
-
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported value from server </span><span class="si">{</span><span class="n">mydtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_create_scalar_array</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
@@ -686,7 +683,7 @@
 
 <span class="c1"># class for the pdarray</span>
 <div class="viewcode-block" id="pdarray">
-<a class="viewcode-back" href="../../usage/pdarray.html#arkouda.alignment.pdarray">[docs]</a>
+<a class="viewcode-back" href="../../usage/pdarray.html#arkouda.pdarray">[docs]</a>
 <span class="k">class</span> <span class="nc">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The basic arkouda array class. This class contains only the</span>
@@ -806,7 +803,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_max_bits</span> <span class="o">=</span> <span class="n">max_bits</span>
 
 <div class="viewcode-block" id="pdarray.equals">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.equals">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.equals">[docs]</a>
     <span class="k">def</span> <span class="nf">equals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Whether pdarrays are the same size and all entries are equal.</span>
@@ -843,7 +840,7 @@
 
 
 <div class="viewcode-block" id="pdarray.format_other">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.format_other">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.format_other">[docs]</a>
     <span class="k">def</span> <span class="nf">format_other</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Attempt to cast scalar other to the element dtype of this pdarray,</span>
@@ -985,7 +982,7 @@
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
 
 <div class="viewcode-block" id="pdarray.transfer">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.transfer">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.transfer">[docs]</a>
     <span class="k">def</span> <span class="nf">transfer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sends a pdarray to a different Arkouda server</span>
@@ -1168,7 +1165,7 @@
 
     <span class="c1"># op= operators</span>
 <div class="viewcode-block" id="pdarray.opeq">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.opeq">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.opeq">[docs]</a>
     <span class="k">def</span> <span class="nf">opeq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">op</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">OpEqOps</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;bad operator </span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1616,7 +1613,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span>
 
 <div class="viewcode-block" id="pdarray.fill">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.fill">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.fill">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">fill</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">numeric_scalars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1638,7 +1635,7 @@
 
 
 <div class="viewcode-block" id="pdarray.any">
-<a class="viewcode-back" href="../../usage/histogram.html#arkouda.alignment.pdarray.any">[docs]</a>
+<a class="viewcode-back" href="../../usage/histogram.html#arkouda.pdarray.any">[docs]</a>
     <span class="k">def</span> <span class="nf">any</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return True iff any element of the array evaluates to True.</span>
@@ -1647,7 +1644,7 @@
 
 
 <div class="viewcode-block" id="pdarray.all">
-<a class="viewcode-back" href="../../usage/histogram.html#arkouda.alignment.pdarray.all">[docs]</a>
+<a class="viewcode-back" href="../../usage/histogram.html#arkouda.pdarray.all">[docs]</a>
     <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return True iff all elements of the array evaluate to True.</span>
@@ -1656,7 +1653,7 @@
 
 
 <div class="viewcode-block" id="pdarray.is_registered">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.is_registered">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.is_registered">[docs]</a>
     <span class="k">def</span> <span class="nf">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return True iff the object is contained in the registry</span>
@@ -1703,7 +1700,7 @@
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
 
 <div class="viewcode-block" id="pdarray.info">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.info">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.info">[docs]</a>
     <span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a JSON formatted string containing information about all components of self</span>
@@ -1721,7 +1718,7 @@
 
 
 <div class="viewcode-block" id="pdarray.pretty_print_info">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.pretty_print_info">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.pretty_print_info">[docs]</a>
     <span class="k">def</span> <span class="nf">pretty_print_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Prints information about all components of self in a human readable format</span>
@@ -1738,7 +1735,7 @@
 
 
 <div class="viewcode-block" id="pdarray.is_sorted">
-<a class="viewcode-back" href="../../usage/histogram.html#arkouda.alignment.pdarray.is_sorted">[docs]</a>
+<a class="viewcode-back" href="../../usage/histogram.html#arkouda.pdarray.is_sorted">[docs]</a>
     <span class="k">def</span> <span class="nf">is_sorted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return True iff the array is monotonically non-decreasing.</span>
@@ -1763,7 +1760,7 @@
 
 
 <div class="viewcode-block" id="pdarray.sum">
-<a class="viewcode-back" href="../../usage/histogram.html#arkouda.alignment.pdarray.sum">[docs]</a>
+<a class="viewcode-back" href="../../usage/histogram.html#arkouda.pdarray.sum">[docs]</a>
     <span class="k">def</span> <span class="nf">sum</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numeric_and_bool_scalars</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the sum of all elements in the array.</span>
@@ -1772,7 +1769,7 @@
 
 
 <div class="viewcode-block" id="pdarray.prod">
-<a class="viewcode-back" href="../../usage/histogram.html#arkouda.alignment.pdarray.prod">[docs]</a>
+<a class="viewcode-back" href="../../usage/histogram.html#arkouda.pdarray.prod">[docs]</a>
     <span class="k">def</span> <span class="nf">prod</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the product of all elements in the array. Return value is</span>
@@ -1782,7 +1779,7 @@
 
 
 <div class="viewcode-block" id="pdarray.min">
-<a class="viewcode-back" href="../../usage/histogram.html#arkouda.alignment.pdarray.min">[docs]</a>
+<a class="viewcode-back" href="../../usage/histogram.html#arkouda.pdarray.min">[docs]</a>
     <span class="k">def</span> <span class="nf">min</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy_scalars</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the minimum value of the array.</span>
@@ -1791,7 +1788,7 @@
 
 
 <div class="viewcode-block" id="pdarray.max">
-<a class="viewcode-back" href="../../usage/histogram.html#arkouda.alignment.pdarray.max">[docs]</a>
+<a class="viewcode-back" href="../../usage/histogram.html#arkouda.pdarray.max">[docs]</a>
     <span class="k">def</span> <span class="nf">max</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy_scalars</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the maximum value of the array.</span>
@@ -1800,7 +1797,7 @@
 
 
 <div class="viewcode-block" id="pdarray.argmin">
-<a class="viewcode-back" href="../../usage/histogram.html#arkouda.alignment.pdarray.argmin">[docs]</a>
+<a class="viewcode-back" href="../../usage/histogram.html#arkouda.pdarray.argmin">[docs]</a>
     <span class="k">def</span> <span class="nf">argmin</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the index of the first occurrence of the array min value</span>
@@ -1809,7 +1806,7 @@
 
 
 <div class="viewcode-block" id="pdarray.argmax">
-<a class="viewcode-back" href="../../usage/histogram.html#arkouda.alignment.pdarray.argmax">[docs]</a>
+<a class="viewcode-back" href="../../usage/histogram.html#arkouda.pdarray.argmax">[docs]</a>
     <span class="k">def</span> <span class="nf">argmax</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the index of the first occurrence of the array max value.</span>
@@ -1818,7 +1815,7 @@
 
 
 <div class="viewcode-block" id="pdarray.mean">
-<a class="viewcode-back" href="../../usage/histogram.html#arkouda.alignment.pdarray.mean">[docs]</a>
+<a class="viewcode-back" href="../../usage/histogram.html#arkouda.pdarray.mean">[docs]</a>
     <span class="k">def</span> <span class="nf">mean</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the mean of the array.</span>
@@ -1827,7 +1824,7 @@
 
 
 <div class="viewcode-block" id="pdarray.var">
-<a class="viewcode-back" href="../../usage/histogram.html#arkouda.alignment.pdarray.var">[docs]</a>
+<a class="viewcode-back" href="../../usage/histogram.html#arkouda.pdarray.var">[docs]</a>
     <span class="k">def</span> <span class="nf">var</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ddof</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the variance. See ``arkouda.var`` for details.</span>
@@ -1856,7 +1853,7 @@
 
 
 <div class="viewcode-block" id="pdarray.std">
-<a class="viewcode-back" href="../../usage/histogram.html#arkouda.alignment.pdarray.std">[docs]</a>
+<a class="viewcode-back" href="../../usage/histogram.html#arkouda.pdarray.std">[docs]</a>
     <span class="k">def</span> <span class="nf">std</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ddof</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the standard deviation. See ``arkouda.std`` for details.</span>
@@ -1882,7 +1879,7 @@
 
 
 <div class="viewcode-block" id="pdarray.cov">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.cov">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.cov">[docs]</a>
     <span class="k">def</span> <span class="nf">cov</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the covariance between self and y.</span>
@@ -1908,7 +1905,7 @@
 
 
 <div class="viewcode-block" id="pdarray.corr">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.corr">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.corr">[docs]</a>
     <span class="k">def</span> <span class="nf">corr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the correlation between self and y using pearson correlation coefficient.</span>
@@ -1934,7 +1931,7 @@
 
 
 <div class="viewcode-block" id="pdarray.mink">
-<a class="viewcode-back" href="../../usage/histogram.html#arkouda.alignment.pdarray.mink">[docs]</a>
+<a class="viewcode-back" href="../../usage/histogram.html#arkouda.pdarray.mink">[docs]</a>
     <span class="k">def</span> <span class="nf">mink</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the minimum &quot;k&quot; values.</span>
@@ -1958,7 +1955,7 @@
 
 
 <div class="viewcode-block" id="pdarray.maxk">
-<a class="viewcode-back" href="../../usage/histogram.html#arkouda.alignment.pdarray.maxk">[docs]</a>
+<a class="viewcode-back" href="../../usage/histogram.html#arkouda.pdarray.maxk">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">maxk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1983,7 +1980,7 @@
 
 
 <div class="viewcode-block" id="pdarray.argmink">
-<a class="viewcode-back" href="../../usage/histogram.html#arkouda.alignment.pdarray.argmink">[docs]</a>
+<a class="viewcode-back" href="../../usage/histogram.html#arkouda.pdarray.argmink">[docs]</a>
     <span class="k">def</span> <span class="nf">argmink</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the minimum &quot;k&quot; values.</span>
@@ -2007,7 +2004,7 @@
 
 
 <div class="viewcode-block" id="pdarray.argmaxk">
-<a class="viewcode-back" href="../../usage/histogram.html#arkouda.alignment.pdarray.argmaxk">[docs]</a>
+<a class="viewcode-back" href="../../usage/histogram.html#arkouda.pdarray.argmaxk">[docs]</a>
     <span class="k">def</span> <span class="nf">argmaxk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Finds the indices corresponding to the maximum &quot;k&quot; values.</span>
@@ -2031,7 +2028,7 @@
 
 
 <div class="viewcode-block" id="pdarray.popcount">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.popcount">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.popcount">[docs]</a>
     <span class="k">def</span> <span class="nf">popcount</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find the population (number of bits set) in each element. See `ak.popcount`.</span>
@@ -2040,7 +2037,7 @@
 
 
 <div class="viewcode-block" id="pdarray.parity">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.parity">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.parity">[docs]</a>
     <span class="k">def</span> <span class="nf">parity</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find the parity (XOR of all bits) in each element. See `ak.parity`.</span>
@@ -2049,7 +2046,7 @@
 
 
 <div class="viewcode-block" id="pdarray.clz">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.clz">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.clz">[docs]</a>
     <span class="k">def</span> <span class="nf">clz</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Count the number of leading zeros in each element. See `ak.clz`.</span>
@@ -2058,7 +2055,7 @@
 
 
 <div class="viewcode-block" id="pdarray.ctz">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.ctz">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.ctz">[docs]</a>
     <span class="k">def</span> <span class="nf">ctz</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Count the number of trailing zeros in each element. See `ak.ctz`.</span>
@@ -2067,7 +2064,7 @@
 
 
 <div class="viewcode-block" id="pdarray.rotl">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.rotl">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.rotl">[docs]</a>
     <span class="k">def</span> <span class="nf">rotl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Rotate bits left by &lt;other&gt;.</span>
@@ -2076,7 +2073,7 @@
 
 
 <div class="viewcode-block" id="pdarray.rotr">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.rotr">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.rotr">[docs]</a>
     <span class="k">def</span> <span class="nf">rotr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Rotate bits right by &lt;other&gt;.</span>
@@ -2085,7 +2082,7 @@
 
 
 <div class="viewcode-block" id="pdarray.value_counts">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.value_counts">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.value_counts">[docs]</a>
     <span class="k">def</span> <span class="nf">value_counts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Count the occurrences of the unique values of self.</span>
@@ -2109,7 +2106,7 @@
 
 
 <div class="viewcode-block" id="pdarray.astype">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.astype">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.astype">[docs]</a>
     <span class="k">def</span> <span class="nf">astype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Cast values of pdarray to provided dtype</span>
@@ -2134,7 +2131,7 @@
 
 
 <div class="viewcode-block" id="pdarray.slice_bits">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.slice_bits">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.slice_bits">[docs]</a>
     <span class="k">def</span> <span class="nf">slice_bits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a pdarray containing only bits from low to high of self.</span>
@@ -2175,7 +2172,7 @@
 
 
 <div class="viewcode-block" id="pdarray.bigint_to_uint_arrays">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.bigint_to_uint_arrays">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.bigint_to_uint_arrays">[docs]</a>
     <span class="nd">@typechecked</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">bigint_to_uint_arrays</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2214,7 +2211,7 @@
 
 
 <div class="viewcode-block" id="pdarray.reshape">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.reshape">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.reshape">[docs]</a>
     <span class="k">def</span> <span class="nf">reshape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">shape</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;row_major&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gives a new shape to an array without changing its data.</span>
@@ -2247,7 +2244,7 @@
 
 
 <div class="viewcode-block" id="pdarray.to_ndarray">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.to_ndarray">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.to_ndarray">[docs]</a>
     <span class="k">def</span> <span class="nf">to_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the array to a np.ndarray, transferring array data from the</span>
@@ -2334,7 +2331,7 @@
 
 
 <div class="viewcode-block" id="pdarray.to_list">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.to_list">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.to_list">[docs]</a>
     <span class="k">def</span> <span class="nf">to_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the array to a list, transferring array data from the</span>
@@ -2379,7 +2376,7 @@
 
 
 <div class="viewcode-block" id="pdarray.to_cuda">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.to_cuda">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.to_cuda">[docs]</a>
     <span class="k">def</span> <span class="nf">to_cuda</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the array to a Numba DeviceND array, transferring array data from the</span>
@@ -2441,7 +2438,7 @@
 
 
 <div class="viewcode-block" id="pdarray.to_parquet">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.to_parquet">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.to_parquet">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">to_parquet</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -2518,7 +2515,7 @@
 
 
 <div class="viewcode-block" id="pdarray.to_hdf">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.to_hdf">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.to_hdf">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">to_hdf</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -2599,7 +2596,7 @@
 
 
 <div class="viewcode-block" id="pdarray.update_hdf">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.update_hdf">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.update_hdf">[docs]</a>
     <span class="k">def</span> <span class="nf">update_hdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="n">repack</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Overwrite the dataset with the name provided with this pdarray. If</span>
@@ -2662,7 +2659,7 @@
 
 
 <div class="viewcode-block" id="pdarray.to_csv">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.to_csv">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.to_csv">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">to_csv</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -2731,7 +2728,7 @@
 
 
 <div class="viewcode-block" id="pdarray.save">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.save">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.save">[docs]</a>
     <span class="k">def</span> <span class="nf">save</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -2833,7 +2830,7 @@
 
 
 <div class="viewcode-block" id="pdarray.register">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.register">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.register">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_defined_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2898,7 +2895,7 @@
 
 
 <div class="viewcode-block" id="pdarray.unregister">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.unregister">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.unregister">[docs]</a>
     <span class="k">def</span> <span class="nf">unregister</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Unregister a pdarray in the arkouda server which was previously</span>
@@ -2945,7 +2942,7 @@
     <span class="c1"># class method self is not passed in</span>
     <span class="c1"># invoke with ak.pdarray.attach(&#39;user_defined_name&#39;)</span>
 <div class="viewcode-block" id="pdarray.attach">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.pdarray.attach">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.attach">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">attach</span><span class="p">(</span><span class="n">user_defined_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
@@ -3032,7 +3029,7 @@
 <span class="c1">#       all values have been checked by python module and...</span>
 <span class="c1">#       server has created pdarray already before this is called</span>
 <div class="viewcode-block" id="create_pdarray">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.alignment.create_pdarray">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.create_pdarray">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">max_bits</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3084,7 +3081,7 @@
 
 
 <div class="viewcode-block" id="clear">
-<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.alignment.clear">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.clear">[docs]</a>
 <span class="k">def</span> <span class="nf">clear</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Send a clear message to clear all unregistered data from the server symbol table</span>
@@ -3103,7 +3100,7 @@
 
 
 <div class="viewcode-block" id="any">
-<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.alignment.any">[docs]</a>
+<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.any">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">any</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3133,7 +3130,7 @@
 
 
 <div class="viewcode-block" id="all">
-<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.alignment.all">[docs]</a>
+<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.all">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3163,7 +3160,7 @@
 
 
 <div class="viewcode-block" id="is_sorted">
-<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.alignment.is_sorted">[docs]</a>
+<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.is_sorted">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">is_sorted</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3195,7 +3192,7 @@
 
 
 <div class="viewcode-block" id="sum">
-<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.alignment.sum">[docs]</a>
+<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.sum">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">sum</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numeric_and_bool_scalars</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3226,7 +3223,7 @@
 
 
 <div class="viewcode-block" id="dot">
-<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.alignment.dot">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.dot">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">dot</span><span class="p">(</span>
     <span class="n">pda1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span>
@@ -3280,7 +3277,7 @@
 
 
 <div class="viewcode-block" id="prod">
-<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.alignment.prod">[docs]</a>
+<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.prod">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">prod</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3312,7 +3309,7 @@
 
 
 <div class="viewcode-block" id="min">
-<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.alignment.min">[docs]</a>
+<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.min">[docs]</a>
 <span class="k">def</span> <span class="nf">min</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy_scalars</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the minimum value of the array.</span>
@@ -3342,7 +3339,7 @@
 
 
 <div class="viewcode-block" id="max">
-<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.alignment.max">[docs]</a>
+<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.max">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">max</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy_scalars</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3373,7 +3370,7 @@
 
 
 <div class="viewcode-block" id="argmin">
-<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.alignment.argmin">[docs]</a>
+<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.argmin">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">argmin</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3405,7 +3402,7 @@
 
 
 <div class="viewcode-block" id="argmax">
-<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.alignment.argmax">[docs]</a>
+<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.argmax">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">argmax</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3437,7 +3434,7 @@
 
 
 <div class="viewcode-block" id="mean">
-<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.alignment.mean">[docs]</a>
+<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.mean">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">mean</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3470,7 +3467,7 @@
 
 
 <div class="viewcode-block" id="var">
-<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.alignment.var">[docs]</a>
+<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.var">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">var</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">ddof</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3525,7 +3522,7 @@
 
 
 <div class="viewcode-block" id="std">
-<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.alignment.std">[docs]</a>
+<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.std">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">std</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">ddof</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3584,7 +3581,7 @@
 
 
 <div class="viewcode-block" id="cov">
-<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.alignment.cov">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.cov">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">cov</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3623,7 +3620,7 @@
 
 
 <div class="viewcode-block" id="corr">
-<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.alignment.corr">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.corr">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">corr</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3662,7 +3659,7 @@
 
 
 <div class="viewcode-block" id="divmod">
-<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.alignment.divmod">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.divmod">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">divmod</span><span class="p">(</span>
     <span class="n">x</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span>
@@ -3740,7 +3737,7 @@
 
 
 <div class="viewcode-block" id="mink">
-<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.alignment.mink">[docs]</a>
+<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.mink">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">mink</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3798,7 +3795,7 @@
 
 
 <div class="viewcode-block" id="maxk">
-<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.alignment.maxk">[docs]</a>
+<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.maxk">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">maxk</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3857,7 +3854,7 @@
 
 
 <div class="viewcode-block" id="argmink">
-<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.alignment.argmink">[docs]</a>
+<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.argmink">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">argmink</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3913,7 +3910,7 @@
 
 
 <div class="viewcode-block" id="argmaxk">
-<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.alignment.argmaxk">[docs]</a>
+<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.argmaxk">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">argmaxk</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3972,7 +3969,7 @@
 
 
 <div class="viewcode-block" id="popcount">
-<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.alignment.popcount">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.popcount">[docs]</a>
 <span class="k">def</span> <span class="nf">popcount</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the population (number of bits set) for each integer in an array.</span>
@@ -4017,7 +4014,7 @@
 
 
 <div class="viewcode-block" id="parity">
-<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.alignment.parity">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.parity">[docs]</a>
 <span class="k">def</span> <span class="nf">parity</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the bit parity (XOR of all bits) for each integer in an array.</span>
@@ -4061,7 +4058,7 @@
 
 
 <div class="viewcode-block" id="clz">
-<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.alignment.clz">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.clz">[docs]</a>
 <span class="k">def</span> <span class="nf">clz</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Count leading zeros for each integer in an array.</span>
@@ -4132,7 +4129,7 @@
 
 
 <div class="viewcode-block" id="ctz">
-<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.alignment.ctz">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.ctz">[docs]</a>
 <span class="k">def</span> <span class="nf">ctz</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Count trailing zeros for each integer in an array.</span>
@@ -4205,7 +4202,7 @@
 
 
 <div class="viewcode-block" id="rotl">
-<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.alignment.rotl">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.rotl">[docs]</a>
 <span class="k">def</span> <span class="nf">rotl</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">rot</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Rotate bits of &lt;x&gt; to the left by &lt;rot&gt;.</span>
@@ -4246,7 +4243,7 @@
 
 
 <div class="viewcode-block" id="rotr">
-<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.alignment.rotr">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.rotr">[docs]</a>
 <span class="k">def</span> <span class="nf">rotr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">rot</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Rotate bits of &lt;x&gt; to the left by &lt;rot&gt;.</span>
@@ -4287,7 +4284,7 @@
 
 
 <div class="viewcode-block" id="power">
-<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.alignment.power">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.power">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">power</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">pwr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4338,7 +4335,7 @@
 
 
 <div class="viewcode-block" id="sqrt">
-<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.alignment.sqrt">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.sqrt">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">sqrt</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4371,7 +4368,7 @@
 
 
 <div class="viewcode-block" id="skew">
-<a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.alignment.skew">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.skew">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">skew</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">bias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4420,7 +4417,7 @@
 
 <span class="c1"># there&#39;s no need for typechecking, % can handle that</span>
 <div class="viewcode-block" id="mod">
-<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.alignment.mod">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.mod">[docs]</a>
 <span class="k">def</span> <span class="nf">mod</span><span class="p">(</span><span class="n">dividend</span><span class="p">,</span> <span class="n">divisor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the element-wise remainder of division.</span>
@@ -4445,7 +4442,7 @@
 
 
 <div class="viewcode-block" id="fmod">
-<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.alignment.fmod">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.fmod">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">fmod</span><span class="p">(</span><span class="n">dividend</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">],</span> <span class="n">divisor</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4509,8 +4506,6 @@
 
 
 
-<div class="viewcode-block" id="broadcast_if_needed">
-<a class="viewcode-back" href="../../autoapi/arkouda/array_api/linalg/index.html#arkouda.alignment.broadcast_if_needed">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">broadcast_if_needed</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
     <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">broadcast_dims</span>
@@ -4541,12 +4536,11 @@
             <span class="n">tmp_x2</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">x2b</span> <span class="o">=</span> <span class="n">x2</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">x1b</span><span class="p">,</span> <span class="n">x2b</span><span class="p">,</span> <span class="n">tmp_x1</span><span class="p">,</span> <span class="n">tmp_x2</span><span class="p">)</span></div>
-
+        <span class="k">return</span> <span class="p">(</span><span class="n">x1b</span><span class="p">,</span> <span class="n">x2b</span><span class="p">,</span> <span class="n">tmp_x1</span><span class="p">,</span> <span class="n">tmp_x2</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="broadcast_to_shape">
-<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.alignment.broadcast_to_shape">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.broadcast_to_shape">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">broadcast_to_shape</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">shape</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4569,7 +4563,7 @@
 
 
 <div class="viewcode-block" id="attach_pdarray">
-<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.alignment.attach_pdarray">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.attach_pdarray">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">attach_pdarray</span><span class="p">(</span><span class="n">user_defined_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4674,7 +4668,7 @@
 
 
 <div class="viewcode-block" id="unregister_pdarray_by_name">
-<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.alignment.unregister_pdarray_by_name">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.unregister_pdarray_by_name">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">unregister_pdarray_by_name</span><span class="p">(</span><span class="n">user_defined_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4727,7 +4721,7 @@
 
 <span class="c1"># TODO In the future move this to a specific errors file</span>
 <div class="viewcode-block" id="RegistrationError">
-<a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.alignment.RegistrationError">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.RegistrationError">[docs]</a>
 <span class="k">class</span> <span class="nc">RegistrationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Error/Exception used when the Arkouda Server cannot register an object&quot;&quot;&quot;</span></div>
 

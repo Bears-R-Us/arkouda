@@ -406,7 +406,7 @@
 
 
 <div class="viewcode-block" id="Array">
-<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/utility_functions/index.html#arkouda.array_api.array_object.Array">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/index.html#arkouda.array_api.array_object.Array">[docs]</a>
 <span class="k">class</span> <span class="nc">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    n-d array object for the array API namespace.</span>
@@ -452,7 +452,7 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Array.tolist">
-<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/utility_functions/index.html#arkouda.array_api.array_object.Array.tolist">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/index.html#arkouda.array_api.array_object.Array.tolist">[docs]</a>
     <span class="k">def</span> <span class="nf">tolist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the array to a Python list or nested lists</span>
@@ -470,7 +470,7 @@
 
 
 <div class="viewcode-block" id="Array.to_ndarray">
-<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/utility_functions/index.html#arkouda.array_api.array_object.Array.to_ndarray">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/index.html#arkouda.array_api.array_object.Array.to_ndarray">[docs]</a>
     <span class="k">def</span> <span class="nf">to_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the array to a numpy ndarray</span>
@@ -483,7 +483,7 @@
 
 
 <div class="viewcode-block" id="Array.item">
-<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/utility_functions/index.html#arkouda.array_api.array_object.Array.item">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/index.html#arkouda.array_api.array_object.Array.item">[docs]</a>
     <span class="k">def</span> <span class="nf">item</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the scalar value from a 0-dimensional array.</span>
@@ -497,7 +497,7 @@
 
 
 <div class="viewcode-block" id="Array.transpose">
-<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/utility_functions/index.html#arkouda.array_api.array_object.Array.transpose">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/index.html#arkouda.array_api.array_object.Array.transpose">[docs]</a>
     <span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a view of the array with the specified axes transposed.</span>
@@ -541,7 +541,7 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Arkouda Array (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">)&quot;</span>
 
 <div class="viewcode-block" id="Array.chunk_info">
-<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/utility_functions/index.html#arkouda.array_api.array_object.Array.chunk_info">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/index.html#arkouda.array_api.array_object.Array.chunk_info">[docs]</a>
     <span class="k">def</span> <span class="nf">chunk_info</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a list of indices indicating how the array is chunked across</span>
@@ -1305,7 +1305,7 @@
             <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_array</span> <span class="o">^</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Array.to_device">
-<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/utility_functions/index.html#arkouda.array_api.array_object.Array.to_device">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/index.html#arkouda.array_api.array_object.Array.to_device">[docs]</a>
     <span class="k">def</span> <span class="nf">to_device</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">Device</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">stream</span><span class="p">:</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Not implemented&quot;</span><span class="p">)</span></div>
 
@@ -1353,7 +1353,7 @@
 
 
 <div class="viewcode-block" id="implements_numpy">
-<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/statistical_functions/index.html#arkouda.array_api.array_object.implements_numpy">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/array_object/index.html#arkouda.array_api.array_object.implements_numpy">[docs]</a>
 <span class="k">def</span> <span class="nf">implements_numpy</span><span class="p">(</span><span class="n">numpy_function</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Register an __array_function__ implementation for MyArray objects.&quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>

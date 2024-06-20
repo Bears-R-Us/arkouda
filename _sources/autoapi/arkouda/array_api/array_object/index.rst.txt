@@ -41,9 +41,7 @@ Functions
 
 .. autoapisummary::
 
-   arkouda.array_api.array_object.asarray
    arkouda.array_api.array_object.implements_numpy
-   arkouda.array_api.array_object.scalar_array
 
 
 Module Contents
@@ -162,38 +160,8 @@ Module Contents
 .. py:data:: HANDLED_FUNCTIONS
    :type:  Dict[str, Callable]
 
-.. py:function:: asarray(obj: Union[arkouda.array_api.array_object.Array, bool, int, float, arkouda.array_api._typing.NestedSequence[bool | int | float], arkouda.array_api._typing.SupportsBufferProtocol, arkouda.pdarray, numpy.ndarray], /, *, dtype: Optional[arkouda.array_api._typing.Dtype] = None, device: Optional[arkouda.array_api._typing.Device] = None, copy: Optional[bool] = None) -> arkouda.array_api.array_object.Array
-
-   Create a new Array from one of:
-   - another Array
-   - a scalar value (bool, int, float)
-   - a sequence of scalar values (not yet implemented)
-   - a buffer (not yet implemented)
-   - an arkouda :class:`~arkouda.pdarrayclass.pdarray`
-   - a numpy ndarray
-
-   :param obj: The object to convert to an Array
-   :param dtype: The dtype of the resulting Array. If None, the dtype is inferred from the input object
-   :type dtype: Optional[Dtype]
-   :param device: The device on which to create the Array (not yet implemented)
-   :type device: Optional[Device]
-   :param copy: Whether to copy the input object (not yet implemented)
-   :type copy: Optional[bool]
-
-
 .. py:function:: implements_numpy(numpy_function)
 
    Register an __array_function__ implementation for MyArray objects.
-
-
-.. py:function:: scalar_array(value: arkouda.dtypes.numeric_scalars)
-
-   Create a pdarray from a single scalar value.
-
-   :param value: Value to create pdarray from
-   :type value: numeric_scalars
-
-   :returns: pdarray with a single element
-   :rtype: pdarray
 
 

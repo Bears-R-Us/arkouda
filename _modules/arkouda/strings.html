@@ -394,7 +394,7 @@
 
 
 <div class="viewcode-block" id="Strings">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings">[docs]</a>
 <span class="k">class</span> <span class="nc">Strings</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents an array of strings whose data resides on the</span>
@@ -432,7 +432,7 @@
     <span class="n">objType</span> <span class="o">=</span> <span class="s2">&quot;Strings&quot;</span>
 
 <div class="viewcode-block" id="Strings.from_return_msg">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.from_return_msg">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.from_return_msg">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">from_return_msg</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -466,7 +466,7 @@
 
 
 <div class="viewcode-block" id="Strings.from_parts">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.from_parts">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.from_parts">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">from_parts</span><span class="p">(</span><span class="n">offset_attrib</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">bytes_attrib</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -715,7 +715,7 @@
         <span class="k">return</span> <span class="s2">&quot;string&quot;</span>
 
 <div class="viewcode-block" id="Strings.equals">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.equals">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.equals">[docs]</a>
     <span class="k">def</span> <span class="nf">equals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Whether Strings are the same size and all entries are equal.</span>
@@ -752,7 +752,7 @@
 
 
 <div class="viewcode-block" id="Strings.get_lengths">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.get_lengths">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.get_lengths">[docs]</a>
     <span class="k">def</span> <span class="nf">get_lengths</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the length of each string in the array.</span>
@@ -773,7 +773,7 @@
 
 
 <div class="viewcode-block" id="Strings.get_bytes">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.get_bytes">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.get_bytes">[docs]</a>
     <span class="k">def</span> <span class="nf">get_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Getter for the bytes component (uint8 pdarray) of this Strings.</span>
@@ -800,7 +800,7 @@
 
 
 <div class="viewcode-block" id="Strings.get_offsets">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.get_offsets">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.get_offsets">[docs]</a>
     <span class="k">def</span> <span class="nf">get_offsets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Getter for the offsets component (int64 pdarray) of this Strings.</span>
@@ -826,7 +826,7 @@
 
 
 <div class="viewcode-block" id="Strings.encode">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.encode">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.encode">[docs]</a>
     <span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">toEncoding</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fromEncoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;UTF-8&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a new strings object in `toEncoding`, expecting that the</span>
@@ -886,7 +886,7 @@
 
 
 <div class="viewcode-block" id="Strings.decode">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.decode">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.decode">[docs]</a>
     <span class="k">def</span> <span class="nf">decode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fromEncoding</span><span class="p">,</span> <span class="n">toEncoding</span><span class="o">=</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a new strings object in `fromEncoding`, expecting that the</span>
@@ -914,7 +914,7 @@
 
 
 <div class="viewcode-block" id="Strings.lower">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.lower">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.lower">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">lower</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -951,7 +951,7 @@
 
 
 <div class="viewcode-block" id="Strings.upper">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.upper">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.upper">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">upper</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -988,7 +988,7 @@
 
 
 <div class="viewcode-block" id="Strings.title">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.title">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.title">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">title</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1024,7 +1024,7 @@
 
 
 <div class="viewcode-block" id="Strings.isdecimal">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.isdecimal">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.isdecimal">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">isdecimal</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1070,7 +1070,7 @@
 
 
 <div class="viewcode-block" id="Strings.capitalize">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.capitalize">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.capitalize">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">capitalize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1110,7 +1110,7 @@
 
 
 <div class="viewcode-block" id="Strings.islower">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.islower">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.islower">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">islower</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1149,7 +1149,7 @@
 
 
 <div class="viewcode-block" id="Strings.isupper">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.isupper">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.isupper">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">isupper</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1188,7 +1188,7 @@
 
 
 <div class="viewcode-block" id="Strings.istitle">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.istitle">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.istitle">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">istitle</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1228,7 +1228,7 @@
 
 
 <div class="viewcode-block" id="Strings.isalnum">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.isalnum">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.isalnum">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">isalnum</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1269,7 +1269,7 @@
 
 
 <div class="viewcode-block" id="Strings.isalpha">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.isalpha">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.isalpha">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">isalpha</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1312,7 +1312,7 @@
 
 
 <div class="viewcode-block" id="Strings.isdigit">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.isdigit">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.isdigit">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">isdigit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1359,7 +1359,7 @@
 
 
 <div class="viewcode-block" id="Strings.isempty">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.isempty">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.isempty">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">isempty</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1402,7 +1402,7 @@
 
 
 <div class="viewcode-block" id="Strings.isspace">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.isspace">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.isspace">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">isspace</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1444,7 +1444,7 @@
 
 
 <div class="viewcode-block" id="Strings.strip">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.strip">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.strip">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">strip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chars</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1490,7 +1490,7 @@
 
 
 <div class="viewcode-block" id="Strings.cached_regex_patterns">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.cached_regex_patterns">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.cached_regex_patterns">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">cached_regex_patterns</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1500,7 +1500,7 @@
 
 
 <div class="viewcode-block" id="Strings.purge_cached_regex_patterns">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.purge_cached_regex_patterns">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.purge_cached_regex_patterns">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">purge_cached_regex_patterns</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1539,7 +1539,7 @@
         <span class="k">return</span> <span class="n">matcher</span>
 
 <div class="viewcode-block" id="Strings.find_locations">
-<a class="viewcode-back" href="../../usage/strings.html#arkouda.accessor.Strings.find_locations">[docs]</a>
+<a class="viewcode-back" href="../../usage/strings.html#arkouda.Strings.find_locations">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">find_locations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1590,7 +1590,7 @@
 
 
 <div class="viewcode-block" id="Strings.search">
-<a class="viewcode-back" href="../../usage/strings.html#arkouda.accessor.Strings.search">[docs]</a>
+<a class="viewcode-back" href="../../usage/strings.html#arkouda.Strings.search">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Match</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1619,7 +1619,7 @@
 
 
 <div class="viewcode-block" id="Strings.match">
-<a class="viewcode-back" href="../../usage/strings.html#arkouda.accessor.Strings.match">[docs]</a>
+<a class="viewcode-back" href="../../usage/strings.html#arkouda.Strings.match">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Match</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1648,7 +1648,7 @@
 
 
 <div class="viewcode-block" id="Strings.fullmatch">
-<a class="viewcode-back" href="../../usage/strings.html#arkouda.accessor.Strings.fullmatch">[docs]</a>
+<a class="viewcode-back" href="../../usage/strings.html#arkouda.Strings.fullmatch">[docs]</a>
     <span class="nd">@typechecked</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">fullmatch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Match</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1677,7 +1677,7 @@
 
 
 <div class="viewcode-block" id="Strings.split">
-<a class="viewcode-back" href="../../usage/strings.html#arkouda.accessor.Strings.split">[docs]</a>
+<a class="viewcode-back" href="../../usage/strings.html#arkouda.Strings.split">[docs]</a>
     <span class="nd">@typechecked</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">split</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">maxsplit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">return_segments</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
@@ -1715,7 +1715,7 @@
 
 
 <div class="viewcode-block" id="Strings.findall">
-<a class="viewcode-back" href="../../usage/strings.html#arkouda.accessor.Strings.findall">[docs]</a>
+<a class="viewcode-back" href="../../usage/strings.html#arkouda.Strings.findall">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">findall</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">return_match_origins</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
@@ -1761,7 +1761,7 @@
 
 
 <div class="viewcode-block" id="Strings.sub">
-<a class="viewcode-back" href="../../usage/strings.html#arkouda.accessor.Strings.sub">[docs]</a>
+<a class="viewcode-back" href="../../usage/strings.html#arkouda.Strings.sub">[docs]</a>
     <span class="nd">@typechecked</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">sub</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">repl</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
@@ -1811,7 +1811,7 @@
 
 
 <div class="viewcode-block" id="Strings.subn">
-<a class="viewcode-back" href="../../usage/strings.html#arkouda.accessor.Strings.subn">[docs]</a>
+<a class="viewcode-back" href="../../usage/strings.html#arkouda.Strings.subn">[docs]</a>
     <span class="nd">@typechecked</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">subn</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">repl</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
@@ -1861,7 +1861,7 @@
 
 
 <div class="viewcode-block" id="Strings.contains">
-<a class="viewcode-back" href="../../usage/strings.html#arkouda.accessor.Strings.contains">[docs]</a>
+<a class="viewcode-back" href="../../usage/strings.html#arkouda.Strings.contains">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">substr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">regex</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1921,7 +1921,7 @@
 
 
 <div class="viewcode-block" id="Strings.startswith">
-<a class="viewcode-back" href="../../usage/strings.html#arkouda.accessor.Strings.startswith">[docs]</a>
+<a class="viewcode-back" href="../../usage/strings.html#arkouda.Strings.startswith">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">startswith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">substr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">regex</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1980,7 +1980,7 @@
 
 
 <div class="viewcode-block" id="Strings.endswith">
-<a class="viewcode-back" href="../../usage/strings.html#arkouda.accessor.Strings.endswith">[docs]</a>
+<a class="viewcode-back" href="../../usage/strings.html#arkouda.Strings.endswith">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">endswith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">substr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">regex</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2035,7 +2035,7 @@
 
 
 <div class="viewcode-block" id="Strings.flatten">
-<a class="viewcode-back" href="../../usage/strings.html#arkouda.accessor.Strings.flatten">[docs]</a>
+<a class="viewcode-back" href="../../usage/strings.html#arkouda.Strings.flatten">[docs]</a>
     <span class="k">def</span> <span class="nf">flatten</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">delimiter</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">return_segments</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">regex</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">]:</span>
@@ -2109,7 +2109,7 @@
 
 
 <div class="viewcode-block" id="Strings.peel">
-<a class="viewcode-back" href="../../usage/strings.html#arkouda.accessor.Strings.peel">[docs]</a>
+<a class="viewcode-back" href="../../usage/strings.html#arkouda.Strings.peel">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">peel</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -2220,7 +2220,7 @@
 
 
 <div class="viewcode-block" id="Strings.rpeel">
-<a class="viewcode-back" href="../../usage/strings.html#arkouda.accessor.Strings.rpeel">[docs]</a>
+<a class="viewcode-back" href="../../usage/strings.html#arkouda.Strings.rpeel">[docs]</a>
     <span class="k">def</span> <span class="nf">rpeel</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">delimiter</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span>
@@ -2296,7 +2296,7 @@
 
 
 <div class="viewcode-block" id="Strings.stick">
-<a class="viewcode-back" href="../../usage/strings.html#arkouda.accessor.Strings.stick">[docs]</a>
+<a class="viewcode-back" href="../../usage/strings.html#arkouda.Strings.stick">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">stick</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">delimiter</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">toLeft</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
@@ -2363,7 +2363,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">stick</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Strings.lstick">
-<a class="viewcode-back" href="../../usage/strings.html#arkouda.accessor.Strings.lstick">[docs]</a>
+<a class="viewcode-back" href="../../usage/strings.html#arkouda.Strings.lstick">[docs]</a>
     <span class="k">def</span> <span class="nf">lstick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">delimiter</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Join the strings from another array onto the left of the strings</span>
@@ -2409,7 +2409,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lstick</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Strings.get_prefixes">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.get_prefixes">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.get_prefixes">[docs]</a>
     <span class="k">def</span> <span class="nf">get_prefixes</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">return_origins</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">proper</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Strings</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]]:</span>
@@ -2461,7 +2461,7 @@
 
 
 <div class="viewcode-block" id="Strings.get_suffixes">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.get_suffixes">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.get_suffixes">[docs]</a>
     <span class="k">def</span> <span class="nf">get_suffixes</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">return_origins</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">proper</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Strings</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]]:</span>
@@ -2513,7 +2513,7 @@
 
 
 <div class="viewcode-block" id="Strings.hash">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.hash">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.hash">[docs]</a>
     <span class="k">def</span> <span class="nf">hash</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute a 128-bit hash of each string.</span>
@@ -2538,7 +2538,7 @@
 
 
 <div class="viewcode-block" id="Strings.group">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.group">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.group">[docs]</a>
     <span class="k">def</span> <span class="nf">group</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the permutation that groups the array, placing equivalent</span>
@@ -2584,7 +2584,7 @@
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="p">]</span>
 
 <div class="viewcode-block" id="Strings.to_ndarray">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.to_ndarray">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.to_ndarray">[docs]</a>
     <span class="k">def</span> <span class="nf">to_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the array to a np.ndarray, transferring array data from the</span>
@@ -2635,7 +2635,7 @@
 
 
 <div class="viewcode-block" id="Strings.to_list">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.to_list">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.to_list">[docs]</a>
     <span class="k">def</span> <span class="nf">to_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the SegString to a list, transferring data from the</span>
@@ -2740,7 +2740,7 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Strings.astype">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.astype">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.astype">[docs]</a>
     <span class="k">def</span> <span class="nf">astype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Cast values of Strings object to provided dtype</span>
@@ -2765,7 +2765,7 @@
 
 
 <div class="viewcode-block" id="Strings.to_parquet">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.to_parquet">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.to_parquet">[docs]</a>
     <span class="k">def</span> <span class="nf">to_parquet</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -2831,7 +2831,7 @@
 
 
 <div class="viewcode-block" id="Strings.to_hdf">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.to_hdf">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.to_hdf">[docs]</a>
     <span class="k">def</span> <span class="nf">to_hdf</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -2913,7 +2913,7 @@
 
 
 <div class="viewcode-block" id="Strings.update_hdf">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.update_hdf">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.update_hdf">[docs]</a>
     <span class="k">def</span> <span class="nf">update_hdf</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -2987,7 +2987,7 @@
 
 
 <div class="viewcode-block" id="Strings.to_csv">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.to_csv">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.to_csv">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">to_csv</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -3058,7 +3058,7 @@
 
 
 <div class="viewcode-block" id="Strings.save">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.save">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.save">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">save</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -3147,7 +3147,7 @@
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">entry</span><span class="o">.</span><span class="n">_list_component_names</span><span class="p">()]))</span>
 
 <div class="viewcode-block" id="Strings.info">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.info">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.info">[docs]</a>
     <span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a JSON formatted string containing information about all components of self</span>
@@ -3165,7 +3165,7 @@
 
 
 <div class="viewcode-block" id="Strings.pretty_print_info">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.pretty_print_info">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.pretty_print_info">[docs]</a>
     <span class="k">def</span> <span class="nf">pretty_print_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Prints information about all components of self in a human readable format</span>
@@ -3182,7 +3182,7 @@
 
 
 <div class="viewcode-block" id="Strings.register">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.register">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.register">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_defined_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3239,7 +3239,7 @@
 
 
 <div class="viewcode-block" id="Strings.unregister">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.unregister">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.unregister">[docs]</a>
     <span class="k">def</span> <span class="nf">unregister</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Unregister a Strings object in the arkouda server which was previously</span>
@@ -3275,7 +3275,7 @@
 
 
 <div class="viewcode-block" id="Strings.is_registered">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.is_registered">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.is_registered">[docs]</a>
     <span class="k">def</span> <span class="nf">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return True iff the object is contained in the registry</span>
@@ -3303,7 +3303,7 @@
 
 
 <div class="viewcode-block" id="Strings.attach">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.attach">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.attach">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">attach</span><span class="p">(</span><span class="n">user_defined_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
@@ -3347,7 +3347,7 @@
 
 
 <div class="viewcode-block" id="Strings.unregister_strings_by_name">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.unregister_strings_by_name">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.unregister_strings_by_name">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">unregister_strings_by_name</span><span class="p">(</span><span class="n">user_defined_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -3376,7 +3376,7 @@
 
 
 <div class="viewcode-block" id="Strings.transfer">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Strings.transfer">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.transfer">[docs]</a>
     <span class="k">def</span> <span class="nf">transfer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sends a Strings object to a different Arkouda server</span>

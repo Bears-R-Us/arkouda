@@ -801,7 +801,7 @@
 
 
 <div class="viewcode-block" id="Datetime">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Datetime">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.Datetime">[docs]</a>
 <span class="k">class</span> <span class="nc">Datetime</span><span class="p">(</span><span class="n">_AbstractBaseTime</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a date and/or time.</span>
 
@@ -956,7 +956,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_leap_year</span>
 
 <div class="viewcode-block" id="Datetime.isocalendar">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Datetime.isocalendar">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.Datetime.isocalendar">[docs]</a>
     <span class="k">def</span> <span class="nf">isocalendar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">arkouda</span> <span class="kn">import</span> <span class="n">DataFrame</span>
 
@@ -991,7 +991,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_datetime_scalar</span><span class="p">(</span><span class="n">scalar</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Datetime.to_pandas">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Datetime.to_pandas">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.Datetime.to_pandas">[docs]</a>
     <span class="k">def</span> <span class="nf">to_pandas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert array to a pandas DatetimeIndex. Note: if the array size</span>
 <span class="sd">        exceeds client.maxTransferBytes, a RuntimeError is raised.</span>
@@ -1004,13 +1004,13 @@
 
 
 <div class="viewcode-block" id="Datetime.sum">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Datetime.sum">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.Datetime.sum">[docs]</a>
     <span class="k">def</span> <span class="nf">sum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Cannot sum datetime64 values&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Datetime.register">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Datetime.register">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.Datetime.register">[docs]</a>
     <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_defined_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Register this Datetime object and underlying components with the Arkouda server</span>
@@ -1062,7 +1062,7 @@
 
 
 <div class="viewcode-block" id="Datetime.unregister">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Datetime.unregister">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.Datetime.unregister">[docs]</a>
     <span class="k">def</span> <span class="nf">unregister</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Unregister this Datetime object in the arkouda server which was previously</span>
@@ -1092,7 +1092,7 @@
 
 
 <div class="viewcode-block" id="Datetime.is_registered">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Datetime.is_registered">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.Datetime.is_registered">[docs]</a>
     <span class="k">def</span> <span class="nf">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">         Return True iff the object is contained in the registry or is a component of a</span>
@@ -1128,7 +1128,7 @@
 
 
 <div class="viewcode-block" id="Timedelta">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Timedelta">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.Timedelta">[docs]</a>
 <span class="k">class</span> <span class="nc">Timedelta</span><span class="p">(</span><span class="n">_AbstractBaseTime</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a duration, the difference between two dates or times.</span>
 
@@ -1210,7 +1210,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_days</span>
 
 <div class="viewcode-block" id="Timedelta.total_seconds">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Timedelta.total_seconds">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.Timedelta.total_seconds">[docs]</a>
     <span class="k">def</span> <span class="nf">total_seconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_total_seconds</span></div>
@@ -1256,7 +1256,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_timedelta_scalar</span><span class="p">(</span><span class="n">scalar</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Timedelta.to_pandas">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Timedelta.to_pandas">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.Timedelta.to_pandas">[docs]</a>
     <span class="k">def</span> <span class="nf">to_pandas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert array to a pandas TimedeltaIndex. Note: if the array size</span>
 <span class="sd">        exceeds client.maxTransferBytes, a RuntimeError is raised.</span>
@@ -1269,7 +1269,7 @@
 
 
 <div class="viewcode-block" id="Timedelta.std">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Timedelta.std">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.Timedelta.std">[docs]</a>
     <span class="k">def</span> <span class="nf">std</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ddof</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the standard deviation as a pd.Timedelta object</span>
@@ -1278,21 +1278,21 @@
 
 
 <div class="viewcode-block" id="Timedelta.sum">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Timedelta.sum">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.Timedelta.sum">[docs]</a>
     <span class="k">def</span> <span class="nf">sum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Sum as a pd.Timedelta</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scalar_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span></div>
 
 
 <div class="viewcode-block" id="Timedelta.abs">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Timedelta.abs">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.Timedelta.abs">[docs]</a>
     <span class="k">def</span> <span class="nf">abs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Absolute value of time interval.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">akabs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">),</span> <span class="s2">&quot;int64&quot;</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="Timedelta.register">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Timedelta.register">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.Timedelta.register">[docs]</a>
     <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_defined_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Register this Timedelta object and underlying components with the Arkouda server</span>
@@ -1344,7 +1344,7 @@
 
 
 <div class="viewcode-block" id="Timedelta.unregister">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Timedelta.unregister">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.Timedelta.unregister">[docs]</a>
     <span class="k">def</span> <span class="nf">unregister</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Unregister this timedelta object in the arkouda server which was previously</span>
@@ -1374,7 +1374,7 @@
 
 
 <div class="viewcode-block" id="Timedelta.is_registered">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.accessor.Timedelta.is_registered">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.Timedelta.is_registered">[docs]</a>
     <span class="k">def</span> <span class="nf">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">         Return True iff the object is contained in the registry or is a component of a</span>
@@ -1410,7 +1410,7 @@
 
 
 <div class="viewcode-block" id="date_range">
-<a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.accessor.date_range">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.date_range">[docs]</a>
 <span class="k">def</span> <span class="nf">date_range</span><span class="p">(</span>
     <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1495,7 +1495,7 @@
 
 
 <div class="viewcode-block" id="timedelta_range">
-<a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.accessor.timedelta_range">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.timedelta_range">[docs]</a>
 <span class="k">def</span> <span class="nf">timedelta_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">closed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a fixed frequency TimedeltaIndex, with day as the default</span>
 <span class="sd">    frequency. Alias for ``ak.Timedelta(pd.timedelta_range(args))``.</span>

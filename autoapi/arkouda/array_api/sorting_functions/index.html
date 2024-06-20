@@ -367,18 +367,6 @@
         <article role="main" id="furo-main-content">
           <section id="module-arkouda.array_api.sorting_functions">
 <span id="arkouda-array-api-sorting-functions"></span><h1>arkouda.array_api.sorting_functions<a class="headerlink" href="#module-arkouda.array_api.sorting_functions" title="Link to this heading">¶</a></h1>
-<section id="classes">
-<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">¶</a></h2>
-<div class="table-wrapper autosummary longtable docutils container">
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.sorting_functions.Array" title="arkouda.array_api.sorting_functions.Array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Array</span></code></a></p></td>
-<td><p>n-d array object for the array API namespace.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
 <section id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
@@ -387,10 +375,7 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.sorting_functions.argsort" title="arkouda.array_api.sorting_functions.argsort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argsort</span></code></a>(→ arkouda.array_api.array_object.Array)</p></td>
 <td><p>Return the indices that sort an array along a specified axis.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.sorting_functions.flip" title="arkouda.array_api.sorting_functions.flip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flip</span></code></a>(→ arkouda.array_api.array_object.Array)</p></td>
-<td><p>Reverse an array's values along a particular axis or axes.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.sorting_functions.sort" title="arkouda.array_api.sorting_functions.sort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sort</span></code></a>(→ arkouda.array_api.array_object.Array)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.sorting_functions.sort" title="arkouda.array_api.sorting_functions.sort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sort</span></code></a>(→ arkouda.array_api.array_object.Array)</p></td>
 <td><p>Return a sorted copy of an array along a specified axis.</p></td>
 </tr>
 </tbody>
@@ -399,110 +384,6 @@
 </section>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="arkouda.array_api.sorting_functions.Array">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.array_api.sorting_functions.</span></span><span class="sig-name descname"><span class="pre">Array</span></span><a class="reference internal" href="../../../../_modules/arkouda/array_api/array_object.html#Array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api.sorting_functions.Array" title="Link to this definition">¶</a></dt>
-<dd><p>n-d array object for the array API namespace.</p>
-<p>See the docstring of <code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code> for more
-information.</p>
-<p>This is a wrapper around numpy.ndarray that restricts the usage to only
-those things that are required by the array API namespace. Note,
-attributes on this object that start with a single underscore are not part
-of the API specification and should only be used internally. This object
-should not be constructed directly. Rather, use one of the creation
-functions, such as asarray().</p>
-<dl class="py property">
-<dt class="sig sig-object py" id="arkouda.array_api.sorting_functions.Array.T">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">T</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.array_api.sorting_functions.Array" title="arkouda.array_api.sorting_functions.Array"><span class="pre">Array</span></a></em><a class="headerlink" href="#arkouda.array_api.sorting_functions.Array.T" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.array_api.sorting_functions.Array.chunk_info">
-<span class="sig-name descname"><span class="pre">chunk_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/array_api/array_object.html#Array.chunk_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api.sorting_functions.Array.chunk_info" title="Link to this definition">¶</a></dt>
-<dd><p>Get a list of indices indicating how the array is chunked across
-Locales (compute nodes). Although Arkouda arrays don’t have a notion
-of chunking, like Dask arrays for example, it can be useful to know
-how the array is distributed across locales in order to write/read
-data to/from a chunked format like Zarr.</p>
-<p>Returns a nested list of integers, where the outer list corresponds to
-dimensions, and the inner lists correspond to locales. The value at [d][l]
-is the global array index where locale l’s local subdomain along the
-d-th dimension begins.</p>
-<p>For example, calling this function on a 100x40 2D array stored across 4
-locales could return: [[0, 50], [0, 20]], indicating that the 4 “chunks”
-start at indices 0 and 50 in the first dimension, and 0 and 20 in the
-second dimension.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="arkouda.array_api.sorting_functions.Array.device">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">device</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">arkouda.array_api._typing.Device</span></em><a class="headerlink" href="#arkouda.array_api.sorting_functions.Array.device" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="arkouda.array_api.sorting_functions.Array.dtype">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">arkouda.array_api._typing.Dtype</span></em><a class="headerlink" href="#arkouda.array_api.sorting_functions.Array.dtype" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.array_api.sorting_functions.Array.item">
-<span class="sig-name descname"><span class="pre">item</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/array_api/array_object.html#Array.item"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api.sorting_functions.Array.item" title="Link to this definition">¶</a></dt>
-<dd><p>Get the scalar value from a 0-dimensional array.</p>
-<p>Raises a ValueError if the array has more than one element.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="arkouda.array_api.sorting_functions.Array.mT">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mT</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.array_api.sorting_functions.Array" title="arkouda.array_api.sorting_functions.Array"><span class="pre">Array</span></a></em><a class="headerlink" href="#arkouda.array_api.sorting_functions.Array.mT" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="arkouda.array_api.sorting_functions.Array.ndim">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ndim</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#arkouda.array_api.sorting_functions.Array.ndim" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="arkouda.array_api.sorting_functions.Array.shape">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#arkouda.array_api.sorting_functions.Array.shape" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="arkouda.array_api.sorting_functions.Array.size">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#arkouda.array_api.sorting_functions.Array.size" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.array_api.sorting_functions.Array.to_device">
-<span class="sig-name descname"><span class="pre">to_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.array_api._typing.Device</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.array_api.sorting_functions.Array" title="arkouda.array_api.sorting_functions.Array"><span class="pre">Array</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/array_api/array_object.html#Array.to_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api.sorting_functions.Array.to_device" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.array_api.sorting_functions.Array.to_ndarray">
-<span class="sig-name descname"><span class="pre">to_ndarray</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/array_api/array_object.html#Array.to_ndarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api.sorting_functions.Array.to_ndarray" title="Link to this definition">¶</a></dt>
-<dd><p>Convert the array to a numpy ndarray</p>
-<p>This involves copying the data from the server to the client, and thus
-will fail if the array is too large (see:
-<code class="xref py py-func docutils literal notranslate"><span class="pre">maxTransferBytes()</span></code>)</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.array_api.sorting_functions.Array.tolist">
-<span class="sig-name descname"><span class="pre">tolist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/array_api/array_object.html#Array.tolist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api.sorting_functions.Array.tolist" title="Link to this definition">¶</a></dt>
-<dd><p>Convert the array to a Python list or nested lists</p>
-<p>This involves copying the data from the server to the client, and thus
-will fail if the array is too large (see:
-<code class="xref py py-func docutils literal notranslate"><span class="pre">maxTransferBytes()</span></code>)</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.array_api.sorting_functions.Array.transpose">
-<span class="sig-name descname"><span class="pre">transpose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/array_api/array_object.html#Array.transpose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api.sorting_functions.Array.transpose" title="Link to this definition">¶</a></dt>
-<dd><p>Return a view of the array with the specified axes transposed.</p>
-<p>For axes=None, reverse all the dimensions of the array.</p>
-</dd></dl>
-
-</dd></dl>
-
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.array_api.sorting_functions.argsort">
 <span class="sig-prename descclassname"><span class="pre">arkouda.array_api.sorting_functions.</span></span><span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../array_object/index.html#arkouda.array_api.array_object.Array" title="arkouda.array_api.array_object.Array"><span class="pre">arkouda.array_api.array_object.Array</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">descending</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../array_object/index.html#arkouda.array_api.array_object.Array" title="arkouda.array_api.array_object.Array"><span class="pre">arkouda.array_api.array_object.Array</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/array_api/sorting_functions.html#argsort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api.sorting_functions.argsort" title="Link to this definition">¶</a></dt>
@@ -510,25 +391,11 @@ will fail if the array is too large (see:
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference internal" href="#arkouda.array_api.sorting_functions.Array" title="arkouda.array_api.sorting_functions.Array"><em>Array</em></a>) – The array to sort</p></li>
+<li><p><strong>x</strong> (<a class="reference internal" href="../array_object/index.html#arkouda.array_api.array_object.Array" title="arkouda.array_api.array_object.Array"><em>Array</em></a>) – The array to sort</p></li>
 <li><p><strong>axis</strong> (<em>int</em><em>, </em><em>optional</em>) – The axis along which to sort.</p></li>
 <li><p><strong>descending</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to sort in descending order.</p></li>
 <li><p><strong>stable</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use a stable sorting algorithm. Note: arkouda’s sorting algorithm is always stable so
 this argument is ignored.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.array_api.sorting_functions.flip">
-<span class="sig-prename descclassname"><span class="pre">arkouda.array_api.sorting_functions.</span></span><span class="sig-name descname"><span class="pre">flip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../array_object/index.html#arkouda.array_api.array_object.Array" title="arkouda.array_api.array_object.Array"><span class="pre">arkouda.array_api.array_object.Array</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../array_object/index.html#arkouda.array_api.array_object.Array" title="arkouda.array_api.array_object.Array"><span class="pre">arkouda.array_api.array_object.Array</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/array_api/manipulation_functions.html#flip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.array_api.sorting_functions.flip" title="Link to this definition">¶</a></dt>
-<dd><p>Reverse an array’s values along a particular axis or axes.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference internal" href="#arkouda.array_api.sorting_functions.Array" title="arkouda.array_api.sorting_functions.Array"><em>Array</em></a>) – The array to flip</p></li>
-<li><p><strong>axis</strong> (<em>int</em><em> or </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em>) – The axis or axes along which to flip the array. If None, flip the array along all axes.</p></li>
 </ul>
 </dd>
 </dl>
@@ -541,7 +408,7 @@ this argument is ignored.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference internal" href="#arkouda.array_api.sorting_functions.Array" title="arkouda.array_api.sorting_functions.Array"><em>Array</em></a>) – The array to sort</p></li>
+<li><p><strong>x</strong> (<a class="reference internal" href="../array_object/index.html#arkouda.array_api.array_object.Array" title="arkouda.array_api.array_object.Array"><em>Array</em></a>) – The array to sort</p></li>
 <li><p><strong>axis</strong> (<em>int</em><em>, </em><em>optional</em>) – The axis along which to sort.</p></li>
 <li><p><strong>descending</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to sort in descending order.</p></li>
 <li><p><strong>stable</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use a stable sorting algorithm. Note: arkouda’s sorting algorithm is always stable so
@@ -610,27 +477,9 @@ this argument is ignored.</p></li>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">arkouda.array_api.sorting_functions</a><ul>
-<li><a class="reference internal" href="#classes">Classes</a></li>
 <li><a class="reference internal" href="#functions">Functions</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
-<li><a class="reference internal" href="#arkouda.array_api.sorting_functions.Array"><code class="docutils literal notranslate"><span class="pre">Array</span></code></a><ul>
-<li><a class="reference internal" href="#arkouda.array_api.sorting_functions.Array.T"><code class="docutils literal notranslate"><span class="pre">Array.T</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.array_api.sorting_functions.Array.chunk_info"><code class="docutils literal notranslate"><span class="pre">Array.chunk_info()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.array_api.sorting_functions.Array.device"><code class="docutils literal notranslate"><span class="pre">Array.device</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.array_api.sorting_functions.Array.dtype"><code class="docutils literal notranslate"><span class="pre">Array.dtype</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.array_api.sorting_functions.Array.item"><code class="docutils literal notranslate"><span class="pre">Array.item()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.array_api.sorting_functions.Array.mT"><code class="docutils literal notranslate"><span class="pre">Array.mT</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.array_api.sorting_functions.Array.ndim"><code class="docutils literal notranslate"><span class="pre">Array.ndim</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.array_api.sorting_functions.Array.shape"><code class="docutils literal notranslate"><span class="pre">Array.shape</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.array_api.sorting_functions.Array.size"><code class="docutils literal notranslate"><span class="pre">Array.size</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.array_api.sorting_functions.Array.to_device"><code class="docutils literal notranslate"><span class="pre">Array.to_device()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.array_api.sorting_functions.Array.to_ndarray"><code class="docutils literal notranslate"><span class="pre">Array.to_ndarray()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.array_api.sorting_functions.Array.tolist"><code class="docutils literal notranslate"><span class="pre">Array.tolist()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.array_api.sorting_functions.Array.transpose"><code class="docutils literal notranslate"><span class="pre">Array.transpose()</span></code></a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#arkouda.array_api.sorting_functions.argsort"><code class="docutils literal notranslate"><span class="pre">argsort()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.array_api.sorting_functions.flip"><code class="docutils literal notranslate"><span class="pre">flip()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.array_api.sorting_functions.sort"><code class="docutils literal notranslate"><span class="pre">sort()</span></code></a></li>
 </ul>
 </li>

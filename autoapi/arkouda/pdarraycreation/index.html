@@ -450,7 +450,7 @@ if stride is specified then start must also be specified.</p></li>
 <dd class="field-even"><p>Integers from start (inclusive) to stop (exclusive) by stride</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../alignment/index.html#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray">pdarray</a>, dtype</p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, dtype</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -494,7 +494,7 @@ the corresponding data to the arkouda server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>Union</em><em>[</em><a class="reference internal" href="../alignment/index.html#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray"><em>pdarray</em></a><em>, </em><em>np.ndarray</em><em>]</em>) – Rank-1 array of a supported dtype</p></li>
+<li><p><strong>a</strong> (<em>Union</em><em>[</em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>np.ndarray</em><em>]</em>) – Rank-1 array of a supported dtype</p></li>
 <li><p><strong>dtype</strong> (<em>np.dtype</em><em>, </em><em>type</em><em>, or </em><em>str</em>) – The target dtype to cast values to</p></li>
 <li><p><strong>max_bits</strong> (<em>int</em>) – Specifies the maximum number of bits; only used for bigint pdarrays</p></li>
 </ul>
@@ -504,7 +504,7 @@ the corresponding data to the arkouda server.</p>
 is composed of two pdarrays stored on arkouda server</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../alignment/index.html#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray">pdarray</a> or <a class="reference internal" href="../accessor/index.html#arkouda.accessor.Strings" title="arkouda.accessor.Strings">Strings</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../index.html#id670" title="arkouda.Strings">Strings</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -557,7 +557,7 @@ the last item will be the lowest 64 bits.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>arrays</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="../alignment/index.html#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray"><em>pdarray</em></a><em>]</em>) – An iterable of uint pdarrays used to construct the bigint pdarray.
+<li><p><strong>arrays</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>]</em>) – An iterable of uint pdarrays used to construct the bigint pdarray.
 The first item in arrays will be the highest 64 bits and
 the last item will be the lowest 64 bits.</p></li>
 <li><p><strong>max_bits</strong> (<em>int</em>) – Specifies the maximum number of bits; only used for bigint pdarrays</p></li>
@@ -567,7 +567,7 @@ the last item will be the lowest 64 bits.</p></li>
 <dd class="field-even"><p>bigint pdarray constructed from uint arrays</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../alignment/index.html#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -614,7 +614,7 @@ dtype is object).</p>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>Union[<a class="reference internal" href="../alignment/index.html#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray">pdarray</a>,<a class="reference internal" href="../accessor/index.html#arkouda.accessor.Strings" title="arkouda.accessor.Strings">Strings</a>]</p>
+<dd class="field-even"><p>Union[<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>,<a class="reference internal" href="../index.html#id670" title="arkouda.Strings">Strings</a>]</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -686,7 +686,7 @@ contains strings and sets the dtype to str</p>
 <dd class="field-even"><p>array of the requested size and dtype filled with fill_value</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../alignment/index.html#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray">pdarray</a> or <a class="reference internal" href="../accessor/index.html#arkouda.accessor.Strings" title="arkouda.accessor.Strings">Strings</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../index.html#id670" title="arkouda.Strings">Strings</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the supplied dtype is not supported or if the size
@@ -720,7 +720,7 @@ pdarray.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../alignment/index.html#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray"><em>pdarray</em></a>) – Array to use for size and dtype</p></li>
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Array to use for size and dtype</p></li>
 <li><p><strong>fill_value</strong> (<em>int_scalars</em>) – Value with which the array will be filled</p></li>
 </ul>
 </dd>
@@ -728,7 +728,7 @@ pdarray.</p>
 <dd class="field-even"><p>Equivalent to ak.full(pda.size, fill_value, pda.dtype)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../alignment/index.html#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the pda parameter is not a pdarray.</p>
@@ -775,7 +775,7 @@ Accordingly, the supported dtypes match are defined by the ak.full method.</p>
 <dd class="field-even"><p>Array of evenly spaced float values along the interval</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../alignment/index.html#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray">pdarray</a>, <a class="reference internal" href="../numpy/index.html#arkouda.numpy.float64" title="arkouda.numpy.float64">float64</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../numpy/index.html#arkouda.numpy.float64" title="arkouda.numpy.float64">float64</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if start or stop is not a float or int or if length is not an int</p>
@@ -819,7 +819,7 @@ in descending order.</p>
 <dd class="field-even"><p>Ones of the requested size and dtype</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../alignment/index.html#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the supplied dtype is not supported or if the size
@@ -852,13 +852,13 @@ parameter is neither an int nor a str that is parseable to an int.</p>
 pdarray.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../alignment/index.html#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray"><em>pdarray</em></a>) – Array to use for size and dtype</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Array to use for size and dtype</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Equivalent to ak.ones(pda.size, pda.dtype)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../alignment/index.html#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the pda parameter is not a pdarray.</p>
@@ -908,7 +908,7 @@ specified range bounded by the low and high parameters.</p>
 <dd class="field-even"><p>Values drawn uniformly from the specified range having the desired dtype</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../alignment/index.html#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -969,7 +969,7 @@ with characters drawn from a specified set.</p>
 <dd class="field-even"><p>The Strings object encapsulating a pdarray of random strings</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../accessor/index.html#arkouda.accessor.Strings" title="arkouda.accessor.Strings">Strings</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id670" title="arkouda.Strings">Strings</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1018,7 +1018,7 @@ minlen and maxlen, and with characters drawn from a specified set.</p>
 <dd class="field-even"><p>The array of random strings</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../accessor/index.html#arkouda.accessor.Strings" title="arkouda.accessor.Strings">Strings</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id670" title="arkouda.Strings">Strings</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ValueError</strong> – Raised if minlen &lt; 0, maxlen &lt; minlen, or size &lt; 0</p>
@@ -1055,7 +1055,7 @@ minlen and maxlen, and with characters drawn from a specified set.</p>
 <dd class="field-even"><p>The array of random numbers</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../alignment/index.html#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray">pdarray</a>, <a class="reference internal" href="../numpy/index.html#arkouda.numpy.float64" title="arkouda.numpy.float64">float64</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../numpy/index.html#arkouda.numpy.float64" title="arkouda.numpy.float64">float64</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1096,7 +1096,7 @@ in a specified range.</p>
 <dd class="field-even"><p>Values drawn uniformly from the specified range</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../alignment/index.html#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray">pdarray</a>, <a class="reference internal" href="../numpy/index.html#arkouda.numpy.float64" title="arkouda.numpy.float64">float64</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../numpy/index.html#arkouda.numpy.float64" title="arkouda.numpy.float64">float64</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1136,7 +1136,7 @@ is invoked with a dtype of float64</p>
 <dd class="field-even"><p>Zeros of the requested size and dtype</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../alignment/index.html#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the supplied dtype is not supported or if the size
@@ -1169,13 +1169,13 @@ parameter is neither an int nor a str that is parseable to an int.</p>
 pdarray.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../alignment/index.html#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray"><em>pdarray</em></a>) – Array to use for size and dtype</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Array to use for size and dtype</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Equivalent to ak.zeros(pda.size, pda.dtype)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../alignment/index.html#arkouda.alignment.pdarray" title="arkouda.alignment.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the pda parameter is not a pdarray.</p>

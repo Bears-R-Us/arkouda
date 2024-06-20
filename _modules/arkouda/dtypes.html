@@ -419,7 +419,7 @@
 
 
 <div class="viewcode-block" id="dtype">
-<a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.array_api.creation_functions.dtype">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dtypes.dtype">[docs]</a>
 <span class="k">def</span> <span class="nf">dtype</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="c1"># we had to create our own bigint type since numpy</span>
     <span class="c1"># gives them dtype=object there&#39;s no np equivalent</span>
@@ -629,7 +629,7 @@
 
 
 <div class="viewcode-block" id="isSupportedInt">
-<a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.array_api.creation_functions.isSupportedInt">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dtypes.isSupportedInt">[docs]</a>
 <span class="k">def</span> <span class="nf">isSupportedInt</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">ARKOUDA_SUPPORTED_INTS</span><span class="p">)</span></div>
 
@@ -640,7 +640,7 @@
 
 
 <div class="viewcode-block" id="isSupportedNumber">
-<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.array_api.creation_functions.isSupportedNumber">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dtypes.isSupportedNumber">[docs]</a>
 <span class="k">def</span> <span class="nf">isSupportedNumber</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">ARKOUDA_SUPPORTED_NUMBERS</span><span class="p">)</span></div>
 
@@ -653,7 +653,7 @@
 
 
 <div class="viewcode-block" id="check_np_dtype">
-<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.array_api.creation_functions.check_np_dtype">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dtypes.check_np_dtype">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">check_np_dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="s2">&quot;BigInt&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -673,7 +673,7 @@
 
 
 <div class="viewcode-block" id="translate_np_dtype">
-<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.array_api.creation_functions.translate_np_dtype">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dtypes.translate_np_dtype">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">translate_np_dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">builtins</span><span class="o">.</span><span class="n">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -696,7 +696,7 @@
 
 
 <div class="viewcode-block" id="resolve_scalar_dtype">
-<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.array_api.creation_functions.resolve_scalar_dtype">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dtypes.resolve_scalar_dtype">[docs]</a>
 <span class="k">def</span> <span class="nf">resolve_scalar_dtype</span><span class="p">(</span><span class="n">val</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Try to infer what dtype arkouda_server should treat val as.</span>
@@ -733,7 +733,7 @@
 
 
 <div class="viewcode-block" id="get_byteorder">
-<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.array_api.creation_functions.get_byteorder">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dtypes.get_byteorder">[docs]</a>
 <span class="k">def</span> <span class="nf">get_byteorder</span><span class="p">(</span><span class="n">dt</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a concrete byteorder (turns &#39;=&#39; into &#39;&lt;&#39; or &#39;&gt;&#39;)</span>
@@ -751,7 +751,7 @@
 
 
 <div class="viewcode-block" id="get_server_byteorder">
-<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.array_api.creation_functions.get_server_byteorder">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dtypes.get_server_byteorder">[docs]</a>
 <span class="k">def</span> <span class="nf">get_server_byteorder</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the server&#39;s byteorder</span>

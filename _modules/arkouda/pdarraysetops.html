@@ -487,7 +487,7 @@
 
 
 <div class="viewcode-block" id="in1d">
-<a class="viewcode-back" href="../../usage/setops.html#arkouda.alignment.in1d">[docs]</a>
+<a class="viewcode-back" href="../../usage/setops.html#arkouda.in1d">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">in1d</span><span class="p">(</span>
     <span class="n">pda1</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span>
@@ -597,7 +597,7 @@
 
 
 <div class="viewcode-block" id="indexof1d">
-<a class="viewcode-back" href="../../autoapi/arkouda/pdarraysetops/index.html#arkouda.alignment.indexof1d">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarraysetops/index.html#arkouda.indexof1d">[docs]</a>
 <span class="k">def</span> <span class="nf">indexof1d</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span> <span class="n">space</span><span class="p">:</span> <span class="n">groupable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return indices of query items in a search list of items. Items not found will be excluded.</span>
@@ -664,7 +664,7 @@
 
 <span class="c1"># fmt: off</span>
 <div class="viewcode-block" id="concatenate">
-<a class="viewcode-back" href="../../usage/creation.html#arkouda.alignment.concatenate">[docs]</a>
+<a class="viewcode-back" href="../../usage/creation.html#arkouda.concatenate">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">concatenate</span><span class="p">(</span>
     <span class="n">arrays</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="s2">&quot;Categorical&quot;</span><span class="p">,</span> <span class="p">]],</span>  <span class="c1"># type: ignore</span>
@@ -813,7 +813,7 @@
 
 <span class="c1"># (A1 | A2) Set Union: elements are in one or the other or both</span>
 <div class="viewcode-block" id="union1d">
-<a class="viewcode-back" href="../../usage/setops.html#arkouda.alignment.union1d">[docs]</a>
+<a class="viewcode-back" href="../../usage/setops.html#arkouda.union1d">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">union1d</span><span class="p">(</span>
     <span class="n">pda1</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span>
@@ -910,7 +910,7 @@
 
 <span class="c1"># (A1 &amp; A2) Set Intersection: elements have to be in both arrays</span>
 <div class="viewcode-block" id="intersect1d">
-<a class="viewcode-back" href="../../usage/setops.html#arkouda.alignment.intersect1d">[docs]</a>
+<a class="viewcode-back" href="../../usage/setops.html#arkouda.intersect1d">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">intersect1d</span><span class="p">(</span>
     <span class="n">pda1</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span> <span class="n">pda2</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span> <span class="n">assume_unique</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
@@ -1031,7 +1031,7 @@
 
 <span class="c1"># (A1 - A2) Set Difference: elements have to be in first array but not second</span>
 <div class="viewcode-block" id="setdiff1d">
-<a class="viewcode-back" href="../../usage/setops.html#arkouda.alignment.setdiff1d">[docs]</a>
+<a class="viewcode-back" href="../../usage/setops.html#arkouda.setdiff1d">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">setdiff1d</span><span class="p">(</span>
     <span class="n">pda1</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span> <span class="n">pda2</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span> <span class="n">assume_unique</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
@@ -1149,7 +1149,7 @@
 
 <span class="c1"># (A1 ^ A2) Set Symmetric Difference: elements are not in the intersection</span>
 <div class="viewcode-block" id="setxor1d">
-<a class="viewcode-back" href="../../usage/setops.html#arkouda.alignment.setxor1d">[docs]</a>
+<a class="viewcode-back" href="../../usage/setops.html#arkouda.setxor1d">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">setxor1d</span><span class="p">(</span><span class="n">pda1</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span> <span class="n">pda2</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span> <span class="n">assume_unique</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">groupable</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
