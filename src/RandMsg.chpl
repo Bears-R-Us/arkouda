@@ -550,9 +550,10 @@ module RandMsg
     proc poissonGeneratorMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         const pn = Reflection.getRoutineName(),
               name = msgArgs.getValueOf("name"),                                // generator name
-              isSingleLam = msgArgs.get("is_single_lambda").getBoolValue(),     // boolean indicated if lambda is a single value or array
+              isSingleLam = msgArgs.get("is_single_lambda").getBoolValue(),     // boolean indicating if lambda is a single value or array
               lamStr = msgArgs.getValueOf("lam"),                               // lambda for poisson distribution
               size = msgArgs.get("size").getIntValue(),                         // number of values to be generated
+              hasSeed = msgArgs.get("has_seed").getBoolValue(),                  // boolean indicating if the generator has a seed
               state = msgArgs.get("state").getIntValue(),                       // rng state
               rname = st.nextName();
 
@@ -572,67 +573,114 @@ module RandMsg
         // uses the algorithm from knuth found here:
         // https://en.wikipedia.org/wiki/Poisson_distribution#Random_variate_generation
         // generates values drawn from poisson distribution using a stream of uniformly distributed random numbers
-
-        const nTasksPerLoc = here.maxTaskPar; // tasks per locale based on locale0
-        const Tasks = {0..#nTasksPerLoc}; // these need to be const for comms/performance reasons
-
-        const generatorSeed = (rng.next() * 2**62):int;
         var poissonArr = makeDistArray(size, int);
 
-        // I hate the code duplication here but it's not immediately obvious to me how to avoid it
-        if isSingleLam {
-            const lam = lamStr:real;
-            // using nested coforalls over locales and tasks so we know how to generate taskSeed
-            coforall loc in Locales do on loc {
-                const generatorIdxOffset = here.id * nTasksPerLoc,
-                    locSubDom = poissonArr.localSubdomain(),  // the chunk that this locale needs to handle
-                    indicesPerTask = locSubDom.size / nTasksPerLoc;  // the number of elements each task needs to handle
+        if hasSeed {
+            // use a fixed number of elements per stream instead of relying on number of locales or numTasksPerLoc because these
+            // can vary from run to run / machine to mahchine. And it's important for the same seed to give the same results
+            const generatorSeed = (rng.next() * 2**62):int,
+                minPerStream = 256,
+                elemsPerStream = max(minPerStream, 2**(2 * ceil(log10(size)):int));
 
-                coforall tid in Tasks {
-                    const taskSeed = generatorSeed + generatorIdxOffset + tid,  // initial seed offset by other locales threads plus current thread id
-                        startIdx = tid * indicesPerTask,
-                        stopIdx = if tid == nTasksPerLoc - 1 then locSubDom.size else (tid + 1) * indicesPerTask;  // the last task picks up the remainder of indices
-                    var rs = new randomStream(real, taskSeed);
-                    for i in startIdx..<stopIdx {
-                        var L = exp(-lam);
-                        var k = 0;
-                        var p = 1.0;
+            if isSingleLam {
+                const lam = lamStr:real;
+                // using nested coforalls over locales and tasks so we know how to generate taskSeed
+                coforall loc in Locales do on loc {
+                    const locSubDom = poissonArr.localSubdomain(),
+                        offset = if loc.id == 0 then 0 else elemsPerStream - (locSubDom.low % elemsPerStream);
 
-                        do {
-                            k += 1;
-                            p = p * rs.next(0, 1);
-                        } while p > L;
-                        poissonArr[locSubDom.low + i] = k - 1;
+                    // skip if all the values were pulled to previous locale
+                    if offset <= locSubDom.high {
+                        // we take the ceil in chunk calculation because if elemsPerStream doesn't evenly divide along locale boundaries, the remainder is pulled to the previous locale
+                        const chunksAlreadyDone = if loc.id == 0 then 0 else ceil((locSubDom.low + 1) / elemsPerStream:real):int,  // number of chunks handled by previous locales
+                            thisLocsNumChunks = ceil((locSubDom.high + 1 - locSubDom.low + offset) / elemsPerStream:real):int;  // number of chunks this locale needs to handle
+
+                        coforall streamID in 0..<thisLocsNumChunks {
+                            const taskSeed = generatorSeed + chunksAlreadyDone + streamID,  // initial seed offset by other locales threads plus current thread id
+                                startIdx = (streamID * elemsPerStream) + locSubDom.low + offset,
+                                stopIdx = min(startIdx + elemsPerStream - 1, poissonArr.domain.high);  // continue past end of localSubDomain to read full block to avoid seed sharing
+                            var rs = new randomStream(real, taskSeed);
+                            for i in startIdx..stopIdx {
+                                var L = exp(-lam);
+                                var k = 0;
+                                var p = 1.0;
+
+                                do {
+                                    k += 1;
+                                    p = p * rs.next(0, 1);
+                                } while p > L;
+                                poissonArr[i] = k - 1;
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                st.checkTable(lamStr);
+                const lamArr = toSymEntry(getGenericTypedArrayEntry(lamStr, st),real).a;
+
+                // using nested coforalls over locales and tasks so we know how to generate taskSeed
+                coforall loc in Locales do on loc {
+                    const locSubDom = poissonArr.localSubdomain(),
+                        offset = if loc.id == 0 then 0 else elemsPerStream - (locSubDom.low % elemsPerStream);
+
+                    // skip if all the values were pulled to previous locale
+                    if offset <= locSubDom.high {
+                        // we take the ceil in chunk calculation because if elemsPerStream doesn't evenly divide along locale boundaries, the remainder is pulled to the previous locale
+                        const chunksAlreadyDone = if loc.id == 0 then 0 else ceil((locSubDom.low + 1) / elemsPerStream:real):int,  // number of chunks handled by previous locales
+                            thisLocsNumChunks = ceil((locSubDom.high + 1 - locSubDom.low + offset) / elemsPerStream:real):int;  // number of chunks this locale needs to handle
+
+                        coforall streamID in 0..<thisLocsNumChunks {
+                            const taskSeed = generatorSeed + chunksAlreadyDone + streamID,  // initial seed offset by other locales threads plus current thread id
+                                startIdx = (streamID * elemsPerStream) + locSubDom.low + offset,
+                                stopIdx = min(startIdx + elemsPerStream - 1, poissonArr.domain.high);  // continue past end of localSubDomain to read full block to avoid seed sharing
+
+                            var rs = new randomStream(real, taskSeed);
+                            for i in startIdx..stopIdx {
+                                const lam = lamArr[locSubDom.low + i];
+                                var L = exp(-lam);
+                                var k = 0;
+                                var p = 1.0;
+
+                                do {
+                                    k += 1;
+                                    p = p * rs.next(0, 1);
+                                } while p > L;
+                                poissonArr[i] = k - 1;
+                            }
+                        }
                     }
                 }
             }
         }
-        else {
-            st.checkTable(lamStr);
-            const lamArr = toSymEntry(getGenericTypedArrayEntry(lamStr, st),real).a;
-            // using nested coforalls over locales and task so we know exactly how many generators we need
-            coforall loc in Locales do on loc {
-                const generatorIdxOffset = here.id * nTasksPerLoc,
-                    locSubDom = poissonArr.localSubdomain(),  // the chunk that this locale needs to handle
-                    indicesPerTask = locSubDom.size / nTasksPerLoc;  // the number of elements each task needs to handle
+        else {  // non-seeded case, we can just use task private variables for our random streams
+            if isSingleLam {
+                const lam = lamStr:real;
+                forall pv in poissonArr with (var rs = new randomStream(real)) {
+                    var L = exp(-lam);
+                    var k = 0;
+                    var p = 1.0;
 
-                coforall tid in Tasks {
-                    const taskSeed = generatorSeed + generatorIdxOffset + tid,
-                        startIdx = tid * indicesPerTask,
-                        stopIdx = if tid == nTasksPerLoc - 1 then locSubDom.size else (tid + 1) * indicesPerTask;  // the last task picks up the remainder of indices
-                    var rs = new randomStream(real, taskSeed);
-                    for i in startIdx..<stopIdx {
-                        const lam = lamArr[locSubDom.low + i];
-                        var L = exp(-lam);
-                        var k = 0;
-                        var p = 1.0;
+                    do {
+                        k += 1;
+                        p = p * rs.next(0, 1);
+                    } while p > L;
+                    pv = k - 1;
+                }
+            }
+            else {
+                st.checkTable(lamStr);
+                const lamArr = toSymEntry(getGenericTypedArrayEntry(lamStr, st),real).a;
+                forall (pv, lam) in zip(poissonArr, lamArr) with (var rs = new randomStream(real)) {
+                    var L = exp(-lam);
+                    var k = 0;
+                    var p = 1.0;
 
-                        do {
-                            k += 1;
-                            p = p * rs.next(0, 1);
-                        } while p > L;
-                        poissonArr[locSubDom.low + i] = k - 1;
-                    }
+                    do {
+                        k += 1;
+                        p = p * rs.next(0, 1);
+                    } while p > L;
+                    pv = k - 1;
                 }
             }
         }
