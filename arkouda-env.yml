@@ -3,8 +3,8 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python>=3.8   # minimum 3.8
-  - numpy>=1.24.1
+  - python>=3.8,<3.12.4   # minimum 3.8
+  - numpy>=1.24.1,<2.0
   - pandas>=1.4.0,!=2.2.0
   - pyzmq>=20.0.0
   - tabulate
