@@ -86,11 +86,20 @@ endif
 
 CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq -liconv -lidn2 -lparquet -larrow
 
-ARROW_FILE_NAME += $(ARKOUDA_SOURCE_DIR)/ArrowFunctions
-ARROW_CPP += $(ARROW_FILE_NAME).cpp
-ARROW_H += $(ARROW_FILE_NAME).h
-ARROW_O += $(ARROW_FILE_NAME).o
+ARROW_READ_FILE_NAME += $(ARKOUDA_SOURCE_DIR)/parquet/ReadParquet
+ARROW_READ_CPP += $(ARROW_READ_FILE_NAME).cpp
+ARROW_READ_H += $(ARROW_READ_FILE_NAME).h
+ARROW_READ_O += $(ARKOUDA_SOURCE_DIR)/ReadParquet.o
 
+ARROW_WRITE_FILE_NAME += $(ARKOUDA_SOURCE_DIR)/parquet/WriteParquet
+ARROW_WRITE_CPP += $(ARROW_WRITE_FILE_NAME).cpp
+ARROW_WRITE_H += $(ARROW_WRITE_FILE_NAME).h
+ARROW_WRITE_O += $(ARKOUDA_SOURCE_DIR)/WriteParquet.o
+
+ARROW_UTIL_FILE_NAME += $(ARKOUDA_SOURCE_DIR)/parquet/UtilParquet
+ARROW_UTIL_CPP += $(ARROW_UTIL_FILE_NAME).cpp
+ARROW_UTIL_H += $(ARROW_UTIL_FILE_NAME).h
+ARROW_UTIL_O += $(ARKOUDA_SOURCE_DIR)/UtilParquet.o
 
 .PHONY: install-deps
 install-deps: install-zmq install-hdf5 install-arrow install-iconv install-idn2
@@ -203,10 +212,30 @@ endif
 
 .PHONY: compile-arrow-cpp
 compile-arrow-cpp:
-	$(CHPL_CXX) -O3 -std=c++17 -c $(ARROW_CPP) -o $(ARROW_O) $(INCLUDE_FLAGS) $(ARROW_SANITIZE)
+	make compile-arrow-write
+	make compile-arrow-read
+	make compile-arrow-util
 
-$(ARROW_O): $(ARROW_CPP) $(ARROW_H)
-	make compile-arrow-cpp
+.PHONY: compile-arrow-write
+compile-arrow-write:
+	$(CHPL_CXX) -O3 -std=c++17 -c $(ARROW_WRITE_CPP) -o $(ARROW_WRITE_O) $(INCLUDE_FLAGS) $(ARROW_SANITIZE)
+
+.PHONY: compile-arrow-read
+compile-arrow-read:
+	$(CHPL_CXX) -O3 -std=c++17 -c $(ARROW_READ_CPP) -o $(ARROW_READ_O) $(INCLUDE_FLAGS) $(ARROW_SANITIZE)
+
+.PHONY: compile-arrow-util
+compile-arrow-util:
+	$(CHPL_CXX) -O3 -std=c++17 -c $(ARROW_UTIL_CPP) -o $(ARROW_UTIL_O) $(INCLUDE_FLAGS) $(ARROW_SANITIZE)
+
+$(ARROW_UTIL_O): $(ARROW_UTIL_CPP) $(ARROW_UTIL_H)
+	make compile-arrow-util
+
+$(ARROW_READ_O): $(ARROW_READ_CPP) $(ARROW_READ_H)
+	make compile-arrow-read
+
+$(ARROW_WRITE_O): $(ARROW_WRITE_CPP) $(ARROW_WRITE_H)
+	make compile-arrow-write
 
 CHPL_MAJOR := $(shell $(CHPL) --version | sed -n "s/chpl version \([0-9]\)\.[0-9]*.*/\1/p")
 CHPL_MINOR := $(shell $(CHPL) --version | sed -n "s/chpl version [0-9]\.\([0-9]*\).*/\1/p")
@@ -243,10 +272,10 @@ check-re2: $(RE2_CHECK)
 	@rm -f $(DEP_INSTALL_DIR)/$@ $(DEP_INSTALL_DIR)/$@_real
 
 ARROW_CHECK = $(DEP_INSTALL_DIR)/checkArrow.chpl
-check-arrow: $(ARROW_CHECK) $(ARROW_O)
+check-arrow: $(ARROW_CHECK) $(ARROW_UTIL_O) $(ARROW_READ_O) $(ARROW_WRITE_O)
 	@echo "Checking for Arrow"
 	make compile-arrow-cpp
-	@$(CHPL) $(CHPL_FLAGS) $(ARKOUDA_COMPAT_MODULES) $< $(ARROW_M) -M $(ARKOUDA_SOURCE_DIR) -o $(DEP_INSTALL_DIR)/$@ && ([ $$? -eq 0 ] && echo "Success compiling program") || echo "\nERROR: Please ensure that dependencies have been installed correctly (see -> https://github.com/Bears-R-Us/arkouda/blob/master/pydoc/setup/BUILD.md)\n"
+	@$(CHPL) $(CHPL_FLAGS) $(ARKOUDA_COMPAT_MODULES) $< $(ARROW_M) -M $(ARKOUDA_SOURCE_DIR) -I $(ARKOUDA_SOURCE_DIR)/parquet -o $(DEP_INSTALL_DIR)/$@ && ([ $$? -eq 0 ] && echo "Success compiling program") || echo "\nERROR: Please ensure that dependencies have been installed correctly (see -> https://github.com/Bears-R-Us/arkouda/blob/master/pydoc/setup/BUILD.md)\n"
 	$(DEP_INSTALL_DIR)/$@ -nl 1
 	@rm -f $(DEP_INSTALL_DIR)/$@ $(DEP_INSTALL_DIR)/$@_real
 
@@ -349,15 +378,15 @@ endif
 
 SERVER_CONFIG_SCRIPT=$(ARKOUDA_SOURCE_DIR)/parseServerConfig.py
 # This is the main compilation statement section
-$(ARKOUDA_MAIN_MODULE): check-deps $(ARROW_O) $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
+$(ARKOUDA_MAIN_MODULE): check-deps $(ARROW_UTIL_O) $(ARROW_READ_O) $(ARROW_WRITE_O) $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
 	$(eval MOD_GEN_OUT=$(shell python3 $(SERVER_CONFIG_SCRIPT) $(ARKOUDA_CONFIG_FILE) $(ARKOUDA_SOURCE_DIR)))
 
-	$(CHPL) $(CHPL_DEBUG_FLAGS) $(PRINT_PASSES_FLAGS) $(REGEX_MAX_CAPTURES_FLAG) $(OPTIONAL_SERVER_FLAGS) $(CHPL_FLAGS_WITH_VERSION) $(CHPL_COMPAT_FLAGS) $(ARKOUDA_MAIN_SOURCE) $(ARKOUDA_COMPAT_MODULES) $(ARKOUDA_SERVER_USER_MODULES) $(MOD_GEN_OUT) $(ARKOUDA_RW_DEFAULT_FLAG) -o $@
+	$(CHPL) $(CHPL_DEBUG_FLAGS) $(PRINT_PASSES_FLAGS) $(REGEX_MAX_CAPTURES_FLAG) $(OPTIONAL_SERVER_FLAGS) $(CHPL_FLAGS_WITH_VERSION) $(CHPL_COMPAT_FLAGS) $(ARKOUDA_MAIN_SOURCE) $(ARKOUDA_COMPAT_MODULES) $(ARKOUDA_SERVER_USER_MODULES) $(MOD_GEN_OUT) $(ARKOUDA_RW_DEFAULT_FLAG) -I$(ARKOUDA_SOURCE_DIR)/parquet -o $@
 
 CLEAN_TARGETS += arkouda-clean
 .PHONY: arkouda-clean
 arkouda-clean:
-	$(RM) $(ARKOUDA_MAIN_MODULE) $(ARKOUDA_MAIN_MODULE)_real $(ARROW_O)
+	$(RM) $(ARKOUDA_MAIN_MODULE) $(ARKOUDA_MAIN_MODULE)_real $(ARROW_UTIL_O) $(ARROW_READ_O) $(ARROW_WRITE_O)
 
 .PHONY: tags
 tags:
