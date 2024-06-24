@@ -998,7 +998,7 @@ module ParquetMsg {
 
           // Read into distributed array
           var entryVal = new shared SymEntry((+ reduce byteSizes), uint(8));
-          readStrFilesByName(entryVal.a, filenames, byteSizes, dsetname, ty);
+          readStrFilesByName(entryVal.a, whereNull, filenames, byteSizes, dsetname, ty);
           
           var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
           rnames.pushBack((dsetname, ObjType.STRINGS, "%s+%?".doFormat(stringsEntry.name, stringsEntry.nBytes)));
