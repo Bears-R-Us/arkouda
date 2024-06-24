@@ -47,7 +47,7 @@ module RandMsg
 
         // if verbose print action
         randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-               "cmd: %s len: %i dtype: %s rname: %s aMin: %s: aMax: %s".doFormat(
+               "cmd: %s len: %i dtype: %s rname: %s aMin: %s: aMax: %s".format(
                                            cmd,len,dtype2str(dtype),rname,low.getValue(),high.getValue()));
 
         proc doFillRand(type t, param sub: t): MsgTuple throws {
@@ -57,11 +57,11 @@ module RandMsg
                   t1 = Time.timeSinceEpoch().totalSeconds();
             var e = st.addEntry(rname, (...shape), t);
             randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                              "alloc time = %i sec".doFormat(Time.timeSinceEpoch().totalSeconds() - t1));
+                              "alloc time = %i sec".format(Time.timeSinceEpoch().totalSeconds() - t1));
             const t2 = Time.timeSinceEpoch().totalSeconds();
             fillRand(e.a, aMin, aMax, seed);
             randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                              "compute time = %i sec".doFormat(Time.timeSinceEpoch().totalSeconds() - t2));
+                              "compute time = %i sec".format(Time.timeSinceEpoch().totalSeconds() - t2));
 
             const repMsg = "created " + st.attrib(rname);
             randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
@@ -141,11 +141,11 @@ module RandMsg
                     const t1 = Time.timeSinceEpoch().totalSeconds();
                     var e = st.addEntry(rname, (...shape), bool);
                     randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                              "alloc time = %i sec".doFormat(Time.timeSinceEpoch().totalSeconds() - t1));
+                              "alloc time = %i sec".format(Time.timeSinceEpoch().totalSeconds() - t1));
                     const t2 = Time.timeSinceEpoch().totalSeconds();
                     fillBool(e.a, seed);
                     randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                              "compute time = %i sec".doFormat(Time.timeSinceEpoch().totalSeconds() - t2));
+                              "compute time = %i sec".format(Time.timeSinceEpoch().totalSeconds() - t2));
 
                     const repMsg = "created " + st.attrib(rname);
                     randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
@@ -191,11 +191,11 @@ module RandMsg
 
         if hasSeed {
             randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                            "dtype: %? seed: %i state: %i".doFormat(dtypeStr,seed,state));
+                                            "dtype: %? seed: %i state: %i".format(dtypeStr,seed,state));
         }
         else {
             randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                            "dtype: %? state: %i".doFormat(dtypeStr,state));
+                                            "dtype: %? state: %i".format(dtypeStr,state));
         }
 
         proc creationHelper(type t, seed, state, st: borrowed SymTab): string throws {
@@ -224,7 +224,7 @@ module RandMsg
                 rname = creationHelper(bool, seed, state, st);
             }
             otherwise {
-                var errorMsg = "Unhandled data type %s".doFormat(dtypeStr);
+                var errorMsg = "Unhandled data type %s".format(dtypeStr);
                 randLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
             }
@@ -245,7 +245,7 @@ module RandMsg
         const state = msgArgs.get("state").getIntValue();
 
         randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                "name: %? size %i dtype: %? state %i".doFormat(name, size, dtypeStr, state));
+                                "name: %? size %i dtype: %? state %i".format(name, size, dtypeStr, state));
 
         st.checkTable(name);
 
@@ -288,7 +288,7 @@ module RandMsg
                 uniformHelper(bool, 0, 1, state, st);
             }
             otherwise {
-                var errorMsg = "Unhandled data type %s".doFormat(dtypeStr);
+                var errorMsg = "Unhandled data type %s".format(dtypeStr);
                 randLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
             }
@@ -306,7 +306,7 @@ module RandMsg
               rname = st.nextName();
 
         randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                "name: %? size %i state %i".doFormat(name, size, state));
+                                "name: %? size %i state %i".format(name, size, state));
 
         st.checkTable(name);
 
@@ -350,7 +350,7 @@ module RandMsg
 
         randLogger.debug(getModuleName(),pn,getLineNumber(),
                          "genName: %? permName %? segsName: %? weightsName: %? numSamplesName %? replace %i hasWeights %i state %i rname %?"
-                         .doFormat(genName, permName, segsName, weightsName, numSamplesName, replace, hasWeights, state, rname));
+                         .format(genName, permName, segsName, weightsName, numSamplesName, replace, hasWeights, state, rname));
 
         st.checkTable(permName);
         st.checkTable(segsName);
@@ -408,7 +408,7 @@ module RandMsg
 
         randLogger.debug(getModuleName(),pn,getLineNumber(),
                          "gname: %? aname %? wname: %? numSamples %i replace %i hasWeights %i isDom %i dtype %? popSize %? state %i rname %?"
-                         .doFormat(gName, aName, wName, numSamples, replace, hasWeights, isDom, dtypeStr, popSize, state, rname));
+                         .format(gName, aName, wName, numSamples, replace, hasWeights, isDom, dtypeStr, popSize, state, rname));
 
         proc weightedIdxHelper() throws {
             var generatorEntry = toGeneratorSymEntry(st.lookup(gName), real);
@@ -470,7 +470,7 @@ module RandMsg
                 return choiceHelper(bool);
             }
             otherwise {
-                const errorMsg = "Unhandled data type %s".doFormat(dtypeStr);
+                const errorMsg = "Unhandled data type %s".format(dtypeStr);
                 randLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
                 return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
             }
@@ -489,7 +489,7 @@ module RandMsg
         const isDomPerm = msgArgs.get("isDomPerm").getBoolValue();
 
         randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                "name: %? size %i dtype: %? state %i isDomPerm %?".doFormat(name, size, dtypeStr, state, isDomPerm));
+                                "name: %? size %i dtype: %? state %i isDomPerm %?".format(name, size, dtypeStr, state, isDomPerm));
 
         st.checkTable(name);
 
@@ -538,7 +538,7 @@ module RandMsg
                 permuteHelper(bool);
             }
             otherwise {
-                var errorMsg = "Unhandled data type %s".doFormat(dtypeStr);
+                var errorMsg = "Unhandled data type %s".format(dtypeStr);
                 randLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
             }
@@ -575,7 +575,7 @@ module RandMsg
 
 
         randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                "name: %? size %i hasSeed %? isSingleLam %? lamStr %? state %i".doFormat(name, size, hasSeed, isSingleLam, lamStr, state));
+                         "name: %? size %i hasSeed %? isSingleLam %? lamStr %? state %i".format(name, size, hasSeed, isSingleLam, lamStr, state));
 
         st.checkTable(name);
 
@@ -606,7 +606,7 @@ module RandMsg
         const state = msgArgs.get("state").getIntValue();
 
         randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                "name: %? size %i dtype: %? state %i".doFormat(name, size, dtypeStr, state));
+                                "name: %? size %i dtype: %? state %i".format(name, size, dtypeStr, state));
 
         st.checkTable(name);
 
@@ -637,7 +637,7 @@ module RandMsg
                 shuffleHelper(bool);
             }
             otherwise {
-                var errorMsg = "Unhandled data type %s".doFormat(dtypeStr);
+                var errorMsg = "Unhandled data type %s".format(dtypeStr);
                 randLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
             }

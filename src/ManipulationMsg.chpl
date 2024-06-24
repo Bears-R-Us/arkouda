@@ -187,7 +187,7 @@ module ManipulationMsg {
 
       if !valid {
         const errMsg = "Arrays must have compatible shapes to concatenate: " +
-          "attempt to concatenate arrays of shapes %? along axis %?".doFormat(shapes, axis);
+          "attempt to concatenate arrays of shapes %? along axis %?".format(shapes, axis);
         mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
         return new MsgTuple(errMsg,MsgType.ERROR);
       } else {
@@ -301,8 +301,8 @@ module ManipulationMsg {
     param pn = Reflection.getRoutineName();
 
     if nd == MaxArrayDims {
-      const errMsg = "Cannot expand arrays with rank %i, as this would result an an array with rank %i".doFormat(nd, nd+1) +
-                     ", exceeding the server's configured maximum of %i. ".doFormat(MaxArrayDims) +
+      const errMsg = "Cannot expand arrays with rank %i, as this would result an an array with rank %i".format(nd, nd+1) +
+                     ", exceeding the server's configured maximum of %i. ".format(MaxArrayDims) +
                      "Please update the configuration and recompile to support higher-dimensional arrays.";
       mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
       return new MsgTuple(errMsg,MsgType.ERROR);
@@ -385,7 +385,7 @@ module ManipulationMsg {
       var eOut = st.addEntry(rname, (...eIn.tupShape), t);
 
       if !valid {
-        const errMsg = "Unable to flip array with shape %? along axes %?".doFormat(eIn.tupShape, axesRaw);
+        const errMsg = "Unable to flip array with shape %? along axes %?".format(eIn.tupShape, axesRaw);
         mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
         return new MsgTuple(errMsg,MsgType.ERROR);
       } else {
@@ -519,7 +519,7 @@ module ManipulationMsg {
             (valid, perm) = validateAxes(axes);
 
       if !valid {
-        const errMsg = "Unable to permute array with shape %? using axes %?".doFormat(eIn.tupShape, axes);
+        const errMsg = "Unable to permute array with shape %? using axes %?".format(eIn.tupShape, axes);
         mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
         return new MsgTuple(errMsg,MsgType.ERROR);
       } else {
@@ -591,7 +591,7 @@ module ManipulationMsg {
             (valid, outShape) = validateShape(rawShape, eIn.a.size);
 
       if !valid {
-        const errMsg = "Cannot reshape array of shape %? into shape %?. The total number of elements must match".doFormat(eIn.tupShape, rawShape);
+        const errMsg = "Cannot reshape array of shape %? into shape %?. The total number of elements must match".format(eIn.tupShape, rawShape);
         mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
         return new MsgTuple(errMsg,MsgType.ERROR);
       } else {
@@ -701,7 +701,7 @@ module ManipulationMsg {
             (valid, axes) = validateAxes(axesRaw, nd);
 
       if !valid {
-        const errMsg = "Unable to roll array with shape %? along axes %?".doFormat(eIn.tupShape, axesRaw);
+        const errMsg = "Unable to roll array with shape %? along axes %?".format(eIn.tupShape, axesRaw);
         mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
         return new MsgTuple(errMsg,MsgType.ERROR);
       } else {
@@ -818,7 +818,7 @@ module ManipulationMsg {
             (valid, shape, mapping) = validateSqueeze(eIn.tupShape, axes, ndOut);
 
       if !valid {
-        const errMsg = "Unable to squeeze array with shape %? along axes %? into a %iD array".doFormat(eIn.tupShape, axes, ndOut);
+        const errMsg = "Unable to squeeze array with shape %? along axes %? into a %iD array".format(eIn.tupShape, axes, ndOut);
         mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
         return new MsgTuple(errMsg,MsgType.ERROR);
       } else {
@@ -895,8 +895,8 @@ module ManipulationMsg {
     param pn = Reflection.getRoutineName();
 
     if nd == MaxArrayDims {
-      const errMsg = "Cannot stack arrays with rank %i, as this would result an an array with rank %i".doFormat(nd, nd+1) +
-                     ", exceeding the server's configured maximum of %i. ".doFormat(MaxArrayDims) +
+      const errMsg = "Cannot stack arrays with rank %i, as this would result an an array with rank %i".format(nd, nd+1) +
+                     ", exceeding the server's configured maximum of %i. ".format(MaxArrayDims) +
                      "Please update the configuration and recompile to support higher-dimensional arrays.";
       mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
       return new MsgTuple(errMsg,MsgType.ERROR);
@@ -1073,7 +1073,7 @@ module ManipulationMsg {
             shapeOut = unstackedShape(eIn.tupShape, axis);
 
       if eIn.tupShape[axis] != numReturnArrays {
-        const errMsg = "Cannot unstack array with shape %? along axis %? into %? arrays".doFormat(eIn.tupShape, axis, numReturnArrays);
+        const errMsg = "Cannot unstack array with shape %? along axis %? into %? arrays".format(eIn.tupShape, axis, numReturnArrays);
         mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
         return new MsgTuple(errMsg,MsgType.ERROR);
       }
@@ -1229,7 +1229,7 @@ module ManipulationMsg {
           }
         }
       } else {
-        const errMsg = "Unable to repeat array with shape %? using repeats %?. ".doFormat(eIn.tupShape, eRepeats.tupShape) +
+        const errMsg = "Unable to repeat array with shape %? using repeats %?. ".format(eIn.tupShape, eRepeats.tupShape) +
                        "Repeats must be a scalar or have the same number of elements as the input array";
         mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
         return new MsgTuple(errMsg,MsgType.ERROR);

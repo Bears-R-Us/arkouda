@@ -36,7 +36,7 @@ module IndexingMsg
         const indexDimName = msgArgs.getValueOf("index_dim");
         const dimProdName = msgArgs.getValueOf("dim_prod");
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                    "%s %s %i %s %s".doFormat(cmd, pdaName, ndim, dimProdName, msgArgs.getValueOf("coords")));
+                                                    "%s %s %i %s %s".format(cmd, pdaName, ndim, dimProdName, msgArgs.getValueOf("coords")));
 
         var dimProd: borrowed GenSymEntry = getGenericTypedArrayEntry(dimProdName, st);
         var dimProdEntry = toSymEntry(dimProd, int);
@@ -86,7 +86,7 @@ module IndexingMsg
         var indiciesName = st.nextName();
         var indicies = st.addEntry(indiciesName, * reduce dims, int);
 
-        imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "rname = %s".doFormat(indiciesName));
+        imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "rname = %s".format(indiciesName));
 
         // avoid dividing by 0
         // if any dim is 0 we return an empty list
@@ -98,10 +98,10 @@ module IndexingMsg
             recursiveIndexCalc(0,0,0);
             proc recursiveIndexCalc(depth: int, ind:int, sum:int) throws {
                 for j in 0..#dims[depth] {
-                    imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "depth = %i".doFormat(depth));
-                    imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "j = %i".doFormat(j));
-                    imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "SUM: sum + scaledCoords[offsets[depth]+j] = %i".doFormat(sum + scaledCoords[offsets[depth]+j]));
-                    imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "IND: ind + j*dim_prod[depth] = %i".doFormat(ind+(j*dim_prod[depth])));
+                    imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "depth = %i".format(depth));
+                    imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "j = %i".format(j));
+                    imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "SUM: sum + scaledCoords[offsets[depth]+j] = %i".format(sum + scaledCoords[offsets[depth]+j]));
+                    imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "IND: ind + j*dim_prod[depth] = %i".format(ind+(j*dim_prod[depth])));
 
                     if depth == ndim-1 then indicies.a[ind+(j*dim_prod[depth])] = sum+scaledCoords[offsets[depth]+j];
                     else recursiveIndexCalc(depth+1, ind+(j*dim_prod[depth]), sum+scaledCoords[offsets[depth]+j]);
@@ -122,7 +122,7 @@ module IndexingMsg
         const pdaName = msgArgs.getValueOf("base");
         const dimProdName = msgArgs.getValueOf("dim_prod");
         const coordsName = msgArgs.getValueOf("coords");
-        imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "%s %s %s %s".doFormat(cmd, pdaName, dimProdName, coordsName));
+        imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "%s %s %s %s".format(cmd, pdaName, dimProdName, coordsName));
 
         var dimProd: borrowed GenSymEntry = getGenericTypedArrayEntry(dimProdName, st);
         var dimProdEntry = toSymEntry(dimProd, int);
@@ -167,7 +167,7 @@ module IndexingMsg
         const coordsName = msgArgs.getValueOf("coords");
         const dtypeStr = msgArgs.getValueOf("dtype");
         var value = msgArgs.getValueOf("value");
-        imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "%s %s %s %s".doFormat(cmd, pdaName, dimProdName, coordsName));
+        imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "%s %s %s %s".format(cmd, pdaName, dimProdName, coordsName));
 
         var dimProd: borrowed GenSymEntry = getGenericTypedArrayEntry(dimProdName, st);
         var dimProdEntry = toSymEntry(dimProd, int);
@@ -212,34 +212,34 @@ module IndexingMsg
         var idx = msgArgs.get("idx").getTuple(nd);
         const name = msgArgs.getValueOf("array");
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                    "%s %s %?".doFormat(cmd, name, idx));
+                                                    "%s %s %?".format(cmd, name, idx));
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
         select (gEnt.dtype) {
              when (DType.Int64) {
                  var e = toSymEntry(gEnt, int, nd);
-                 repMsg = "item %s %?".doFormat(dtype2str(e.dtype),e.a[(...idx)]);
+                 repMsg = "item %s %?".format(dtype2str(e.dtype),e.a[(...idx)]);
 
                  imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
                  return new MsgTuple(repMsg, MsgType.NORMAL);  
              }
              when (DType.UInt64) {
                var e = toSymEntry(gEnt, uint, nd);
-                 repMsg = "item %s %?".doFormat(dtype2str(e.dtype),e.a[(...idx)]);
+                 repMsg = "item %s %?".format(dtype2str(e.dtype),e.a[(...idx)]);
 
                  imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
                  return new MsgTuple(repMsg, MsgType.NORMAL);  
              }
              when (DType.Float64) {
                  var e = toSymEntry(gEnt,real, nd);
-                 repMsg = "item %s %.17r".doFormat(dtype2str(e.dtype),e.a[(...idx)]);
+                 repMsg = "item %s %.17r".format(dtype2str(e.dtype),e.a[(...idx)]);
 
                  imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
                  return new MsgTuple(repMsg, MsgType.NORMAL); 
              }
              when (DType.Bool) {
                  var e = toSymEntry(gEnt,bool, nd);
-                 repMsg = "item %s %?".doFormat(dtype2str(e.dtype),e.a[(...idx)]);
+                 repMsg = "item %s %?".format(dtype2str(e.dtype),e.a[(...idx)]);
                  repMsg = repMsg.replace("true","True"); // chapel to python bool
                  repMsg = repMsg.replace("false","False"); // chapel to python bool
 
@@ -248,7 +248,7 @@ module IndexingMsg
              }
              when (DType.BigInt) {
                  var e = toSymEntry(gEnt,bigint, nd);
-                 repMsg = "item %s %?".doFormat(dtype2str(e.dtype),e.a[(...idx)]);
+                 repMsg = "item %s %?".format(dtype2str(e.dtype),e.a[(...idx)]);
                  imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
                  return new MsgTuple(repMsg, MsgType.NORMAL);
              }
@@ -294,7 +294,7 @@ module IndexingMsg
 
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(array, st);
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-            "cmd: %s pdarray to slice: %s starts: %? stops: %? strides: %? new name: %s".doFormat(
+            "cmd: %s pdarray to slice: %s starts: %? stops: %? strides: %? new name: %s".format(
                        cmd, st.attrib(array), starts, stops, strides, rname));
 
         proc sliceHelper(type t): MsgTuple throws {
@@ -341,7 +341,7 @@ module IndexingMsg
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
         
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-            "cmd: %s pdarray to slice: %s start: %i stop: %i stride: %i slice: %? new name: %s".doFormat(
+            "cmd: %s pdarray to slice: %s start: %i stop: %i stride: %i slice: %? new name: %s".format(
                        cmd, st.attrib(name), start[0], stop[0], stride[0], slice, rname));
 
         proc sliceHelper(type t) throws {
@@ -423,13 +423,13 @@ module IndexingMsg
             }
 
             if gIdx[i].size != outSize {
-                const errorMsg = "All index arrays must have the same length".doFormat(pn);
+                const errorMsg = "All index arrays must have the same length".format(pn);
                 imLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg,MsgType.ERROR);
             }
 
             if gIdx[i].dtype != idxDT {
-                const errorMsg = "All index arrays must have the same dtype".doFormat(pn);
+                const errorMsg = "All index arrays must have the same dtype".format(pn);
                 imLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg,MsgType.ERROR);
             }
@@ -462,7 +462,7 @@ module IndexingMsg
                 imLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
                 return new MsgTuple(repMsg, MsgType.NORMAL);
             } else {
-                const errorMsg = "Invalid index dimensions: %? for %iD array".doFormat(idxDims, nd);
+                const errorMsg = "Invalid index dimensions: %? for %iD array".format(idxDims, nd);
                 imLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg,MsgType.ERROR);
             }
@@ -534,7 +534,7 @@ module IndexingMsg
         var gIV: borrowed GenSymEntry = getGenericTypedArrayEntry(iname, st);
         
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                           "cmd: %s name: %s gX: %? gIV: %?".doFormat(
+                                           "cmd: %s name: %s gX: %? gIV: %?".format(
                                            cmd, name, st.attrib(name), st.attrib(iname)));       
 
         // gather indexing by integer index vector
@@ -550,12 +550,12 @@ module IndexingMsg
             var ivMin = min reduce iv.a;
             var ivMax = max reduce iv.a;
             if ivMin < 0 {
-                var errorMsg = "Error: %s: OOBindex %i < 0".doFormat(pn,ivMin);
+                var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,ivMin);
                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg,MsgType.ERROR);               
             }
             if ivMax >= e.size {
-                var errorMsg = "Error: %s: OOBindex %i > %i".doFormat(pn,ivMax,e.size-1);
+                var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);
                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);             
                 return new MsgTuple(errorMsg,MsgType.ERROR);
             }
@@ -586,12 +586,12 @@ module IndexingMsg
             var ivMin = min reduce iv.a;
             var ivMax = max reduce iv.a;
             if ivMin < 0 {
-                var errorMsg = "Error: %s: OOBindex %i < 0".doFormat(pn,ivMin);
+                var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,ivMin);
                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg,MsgType.ERROR);               
             }
             if ivMax >= e.size {
-                var errorMsg = "Error: %s: OOBindex %i > %i".doFormat(pn,ivMax,e.size-1);
+                var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);
                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);             
                 return new MsgTuple(errorMsg,MsgType.ERROR);
             }
@@ -624,7 +624,7 @@ module IndexingMsg
             var iv: [truth.a.domain] int = (+ scan truth.a);
             var pop = iv[iv.size-1];
             imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                                              "pop = %? last-scan = %?".doFormat(pop,iv[iv.size-1]));
+                                              "pop = %? last-scan = %?".format(pop,iv[iv.size-1]));
 
             var a = st.addEntry(rname, pop, XType);
             //[i in e.a.domain] if (truth.a[i] == true) {a.a[iv[i]-1] = e.a[i];}// iv[i]-1 for zero base index
@@ -709,7 +709,7 @@ module IndexingMsg
               valueArg = msgArgs.get("value");
 
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                               "%s %s %? %s %s".doFormat(cmd, name, idx, dtype2str(dtype), valueArg.getValue()));
+                               "%s %s %? %s %s".format(cmd, name, idx, dtype2str(dtype), valueArg.getValue()));
 
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
@@ -718,7 +718,7 @@ module IndexingMsg
             const val = valueArg.getValueAsType(valType);
             e.a[(...idx)] = val:arrType;
 
-            const repMsg = "%s success".doFormat(pn);
+            const repMsg = "%s success".format(pn);
             imLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
             return new MsgTuple(repMsg, MsgType.NORMAL);
         }
@@ -734,7 +734,7 @@ module IndexingMsg
             }
             e.a[(...idx)] = val;
 
-            const repMsg = "%s success".doFormat(pn);
+            const repMsg = "%s success".format(pn);
             imLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
             return new MsgTuple(repMsg, MsgType.NORMAL);
         }
@@ -755,7 +755,7 @@ module IndexingMsg
                 var e = toSymEntry(gEnt,real, nd);
                 e.a[(...idx)] = if valueArg.getBoolValue() then 1.0 else 0.0;
 
-                const repMsg = "%s success".doFormat(pn);
+                const repMsg = "%s success".format(pn);
                 imLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
                 return new MsgTuple(repMsg, MsgType.NORMAL);
             }
@@ -787,7 +787,7 @@ module IndexingMsg
         const dtype = if gX.dtype == DType.BigInt then DType.BigInt else str2dtype(msgArgs.getValueOf("dtype"));
         var value = msgArgs.getValueOf("value");
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                              "cmd: %s gX: %s gIV: %s value: %s".doFormat(cmd,st.attrib(name),
+                              "cmd: %s gX: %s gIV: %s value: %s".format(cmd,st.attrib(name),
                                         st.attrib(iname),value));
 
         // scatter indexing by integer index vector
@@ -797,12 +797,12 @@ module IndexingMsg
             var ivMin = min reduce iv.a;
             var ivMax = max reduce iv.a;
             if ivMin < 0 {
-                var errorMsg = "Error: %s: OOBindex %i < 0".doFormat(pn,ivMin);
+                var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,ivMin);
                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg,MsgType.ERROR);
             }
             if ivMax >= e.size {
-                var errorMsg = "Error: %s: OOBindex %i > %i".doFormat(pn,ivMax,e.size-1);
+                var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);
                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg,MsgType.ERROR);
             }
@@ -817,7 +817,7 @@ module IndexingMsg
             forall i in iva with (var agg = newDstAggregator(dtype), var locVal = val) {
               agg.copy(ea[i],locVal);
             }
-            var repMsg = "%s success".doFormat(pn);
+            var repMsg = "%s success".format(pn);
             imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
             return new MsgTuple(repMsg, MsgType.NORMAL);
         }
@@ -829,12 +829,12 @@ module IndexingMsg
             var ivMin = min reduce iv.a;
             var ivMax = max reduce iv.a;
             if ivMin < 0 {
-                var errorMsg = "Error: %s: OOBindex %i < 0".doFormat(pn,ivMin);
+                var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,ivMin);
                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg,MsgType.ERROR);
             }
             if ivMax >= e.size {
-                var errorMsg = "Error: %s: OOBindex %i > %i".doFormat(pn,ivMax,e.size-1);
+                var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);
                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg,MsgType.ERROR);
             }
@@ -849,7 +849,7 @@ module IndexingMsg
             forall i in iva with (var agg = newDstAggregator(dtype), var locVal = val) {
               agg.copy(ea[i:int],locVal);
             }
-            var repMsg = "%s success".doFormat(pn);
+            var repMsg = "%s success".format(pn);
             imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
             return new MsgTuple(repMsg, MsgType.NORMAL);
         }
@@ -859,7 +859,7 @@ module IndexingMsg
             var e = toSymEntry(gX,Xtype);
             var truth = toSymEntry(gIV,bool);
             if (e.size != truth.size) {
-                var errorMsg = "Error: %s: bool iv must be same size %i != %i".doFormat(pn,e.size,
+                var errorMsg = "Error: %s: bool iv must be same size %i != %i".format(pn,e.size,
                                                                                     truth.size);
                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg,MsgType.ERROR);
@@ -878,7 +878,7 @@ module IndexingMsg
               }
             }
 
-            var repMsg = "%s success".doFormat(pn);
+            var repMsg = "%s success".format(pn);
             imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
             return new MsgTuple(repMsg, MsgType.NORMAL);
         }
@@ -952,7 +952,7 @@ module IndexingMsg
 
         if logLevel == LogLevel.DEBUG {
             imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                             "cmd: %s gX: %? gIV: %? gY: %?".doFormat(
+                                             "cmd: %s gX: %? gIV: %? gY: %?".format(
                                               cmd, st.attrib(name), st.attrib(iname),
                                               st.attrib(yname)));
         }
@@ -963,7 +963,7 @@ module IndexingMsg
         proc ivInt64Helper(type t): MsgTuple throws {
             // add check to make sure IV and Y are same size
             if (gIV.size != gY.size) {
-                var errorMsg = "Error: %s: size mismatch %i %i".doFormat(pn,gIV.size,gY.size);
+                var errorMsg = "Error: %s: size mismatch %i %i".format(pn,gIV.size,gY.size);
                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg,MsgType.ERROR);
             }
@@ -972,12 +972,12 @@ module IndexingMsg
             var ivMax = max reduce iv.a;
             var y = toSymEntry(gY,t);
             if ivMin < 0 {
-                var errorMsg = "Error: %s: OOBindex %i < 0".doFormat(pn,ivMin);
+                var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,ivMin);
                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
                 return new MsgTuple(errorMsg,MsgType.ERROR);
             }
             if ivMax >= gX.size {
-                var errorMsg = "Error: %s: OOBindex %i > %i".doFormat(pn,ivMax,gX.size-1);
+                var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,ivMax,gX.size-1);
                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);           
                 return new MsgTuple(errorMsg,MsgType.ERROR);
             }
@@ -999,7 +999,7 @@ module IndexingMsg
                     agg.copy(ea[i],v);
                 }
             }
-            var repMsg = "%s success".doFormat(pn);
+            var repMsg = "%s success".format(pn);
             imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
             return new MsgTuple(repMsg, MsgType.NORMAL);
         }
@@ -1008,7 +1008,7 @@ module IndexingMsg
         proc ivUInt64Helper(type t): MsgTuple throws {
             // add check to make sure IV and Y are same size
             if (gIV.size != gY.size) {
-                var errorMsg = "Error: %s: size mismatch %i %i".doFormat(pn,gIV.size,gY.size);
+                var errorMsg = "Error: %s: size mismatch %i %i".format(pn,gIV.size,gY.size);
                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg,MsgType.ERROR);
             }
@@ -1017,12 +1017,12 @@ module IndexingMsg
             var ivMax = max reduce iv.a;
             var y = toSymEntry(gY,t);
             if ivMin < 0 {
-                var errorMsg = "Error: %s: OOBindex %i < 0".doFormat(pn,ivMin);
+                var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,ivMin);
                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
                 return new MsgTuple(errorMsg,MsgType.ERROR);
             }
             if ivMax >= gX.size {
-                var errorMsg = "Error: %s: OOBindex %i > %i".doFormat(pn,ivMax,gX.size-1);
+                var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,ivMax,gX.size-1);
                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);           
                 return new MsgTuple(errorMsg,MsgType.ERROR);
             }
@@ -1044,7 +1044,7 @@ module IndexingMsg
                     agg.copy(ea[i:int],v);
                 }
             }
-            var repMsg = "%s success".doFormat(pn);
+            var repMsg = "%s success".format(pn);
             imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
             return new MsgTuple(repMsg, MsgType.NORMAL);
         }
@@ -1053,7 +1053,7 @@ module IndexingMsg
         proc ivBoolHelper(type t): MsgTuple throws {
             // add check to make sure IV and Y are same size
             if (gIV.size != gX.size) {
-                var errorMsg = "Error: %s: size mismatch %i %i".doFormat(pn,gIV.size,gX.size);
+                var errorMsg = "Error: %s: size mismatch %i %i".format(pn,gIV.size,gX.size);
                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg,MsgType.ERROR);
             }
@@ -1063,10 +1063,10 @@ module IndexingMsg
             var iv: [truth.a.domain] int = (+ scan truth.a);
             var pop = iv[iv.size-1];
             imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                                        "pop = %? last-scan = %?".doFormat(pop,iv[iv.size-1]));
+                                        "pop = %? last-scan = %?".format(pop,iv[iv.size-1]));
             var y = toSymEntry(gY,t);
             if (y.size != pop) {
-                var errorMsg = "Error: %s: pop size mismatch %i %i".doFormat(pn,pop,y.size);
+                var errorMsg = "Error: %s: pop size mismatch %i %i".format(pn,pop,y.size);
                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg,MsgType.ERROR);
             }
@@ -1094,7 +1094,7 @@ module IndexingMsg
                     }
                 }
             }
-            var repMsg = "%s success".doFormat(pn);
+            var repMsg = "%s success".format(pn);
             imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
             return new MsgTuple(repMsg, MsgType.NORMAL);
         }
@@ -1186,7 +1186,7 @@ module IndexingMsg
               valueArg = msgArgs.get("value");
 
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                       "%s %s %? %? %? %s %s".doFormat(cmd, name, starts, stops, strides,
+                       "%s %s %? %? %? %s %s".format(cmd, name, starts, stops, strides,
                                   dtype2str(dtype), valueArg.getValue()));
 
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
@@ -1201,7 +1201,7 @@ module IndexingMsg
             const value = valueArg.getValueAsType(valType);
             e.a[sliceDom] = value:arrType;
 
-            const repMsg = "%s success".doFormat(pn);
+            const repMsg = "%s success".format(pn);
             imLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
             return new MsgTuple(repMsg, MsgType.NORMAL);
         }
@@ -1217,7 +1217,7 @@ module IndexingMsg
             }
             e.a[sliceDom] = value;
 
-            const repMsg = "%s success".doFormat(pn);
+            const repMsg = "%s success".format(pn);
             imLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
             return new MsgTuple(repMsg, MsgType.NORMAL);
         }
@@ -1238,7 +1238,7 @@ module IndexingMsg
                 var e = toSymEntry(gEnt,real, nd);
                 e.a[sliceDom] = if valueArg.getBoolValue() then 1.0 else 0.0;
 
-                const repMsg = "%s success".doFormat(pn);
+                const repMsg = "%s success".format(pn);
                 imLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
                 return new MsgTuple(repMsg, MsgType.NORMAL);
             }
@@ -1271,7 +1271,7 @@ module IndexingMsg
         var value = msgArgs.get("value");
 
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                       "%s %s %i %i %i %s %s".doFormat(cmd, name, start, stop, stride, 
+                       "%s %s %i %i %i %s %s".format(cmd, name, start, stop, stride, 
                                   dtype2str(dtype), value.getValue()));
         
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
@@ -1411,7 +1411,7 @@ module IndexingMsg
             }
         }
 
-        repMsg = "%s success".doFormat(pn);
+        repMsg = "%s success".format(pn);
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL); 
     }
@@ -1435,7 +1435,7 @@ module IndexingMsg
 
         imLogger.debug(getModuleName(),pn,getLineNumber(),
                        "%s into: '%s' over domain: '%?' from: %s''"
-                       .doFormat(cmd, name, sliceDom, yname));
+                       .format(cmd, name, sliceDom, yname));
 
         var gX: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st),
             gY: borrowed GenSymEntry = getGenericTypedArrayEntry(yname, st);
@@ -1449,14 +1449,14 @@ module IndexingMsg
             // ensure the slice assignment is valid
             for dim in 0..<nd {
                 if ey.tupShape[dim] != sliceDom.dim[dim].size {
-                    const errMsg = "shape of slice does not match array in dimension %i".doFormat(dim) +
-                                    " (%i != %i)".doFormat(ey.tupShape[dim], sliceDom.dim[dim].size);
+                    const errMsg = "shape of slice does not match array in dimension %i".format(dim) +
+                                    " (%i != %i)".format(ey.tupShape[dim], sliceDom.dim[dim].size);
                     imLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
                     return new MsgTuple(errMsg, MsgType.ERROR);
                 }
                 if sliceDom.dim[dim].low < 0 || sliceDom.dim[dim].high > ex.tupShape[dim] {
-                    const errMsg = "slice indices out of bounds in dimension %i".doFormat(dim) +
-                                   " (%i..%i not in 0..<%i)".doFormat(sliceDom.dim[dim].low,
+                    const errMsg = "slice indices out of bounds in dimension %i".format(dim) +
+                                   " (%i..%i not in 0..<%i)".format(sliceDom.dim[dim].low,
                                                                 sliceDom.dim[dim].high, ex.tupShape[dim]);
                     imLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
                     return new MsgTuple(errMsg, MsgType.ERROR);
@@ -1481,7 +1481,7 @@ module IndexingMsg
                 ex.a[sliceDom] = ey.a:xt;
             }
 
-            const repMsg = "%s success".doFormat(pn);
+            const repMsg = "%s success".format(pn);
             imLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
             return new MsgTuple(repMsg, MsgType.NORMAL);
         }
@@ -1537,14 +1537,14 @@ module IndexingMsg
         else {slice = 1..0;}
 
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                        "%s %s %i %i %i %s".doFormat(cmd, name, start, stop, stride, yname));
+                        "%s %s %i %i %i %s".format(cmd, name, start, stop, stride, yname));
 
         var gX: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
         var gY: borrowed GenSymEntry = getGenericTypedArrayEntry(yname, st);
 
         // add check to make sure IV and Y are same size
         if (slice.size != gY.size) {      
-            var errorMsg = "%s: size mismatch %i %i".doFormat(pn,slice.size, gY.size);
+            var errorMsg = "%s: size mismatch %i %i".format(pn,slice.size, gY.size);
             imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);        
             return new MsgTuple(errorMsg, MsgType.ERROR); 
         }
@@ -1694,7 +1694,7 @@ module IndexingMsg
             }
         }
 
-        repMsg = "%s success".doFormat(pn);
+        repMsg = "%s success".format(pn);
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
@@ -1718,7 +1718,7 @@ module IndexingMsg
 
             if x.tupShape[axis] != idx.size {
                 const errMsg = "Error: %s: index array length (%i) does not match x's length (%i) along the provided axis (%i)"
-                    .doFormat(pn, idx.size, x.tupShape[axis], axis);
+                    .format(pn, idx.size, x.tupShape[axis], axis);
                 imLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
                 return new MsgTuple(errMsg, MsgType.ERROR);
             }
@@ -1728,7 +1728,7 @@ module IndexingMsg
 
             if minIdx < 0 || maxIdx >= x.a.shape(axis) {
                 const errMsg = "Error: %s: index array contains out-of-bounds indices (%i, %i) along the provided axis (%i)"
-                    .doFormat(pn, minIdx, maxIdx, axis);
+                    .format(pn, minIdx, maxIdx, axis);
                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errMsg);
                 return new MsgTuple(errMsg, MsgType.ERROR);
             }

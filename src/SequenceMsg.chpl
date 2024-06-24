@@ -27,13 +27,13 @@ module SequenceMsg {
     proc arangeMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         proc arangeHelper(start: ?t, stop: t, stride: t, len, rname) throws {
             smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                "cmd: %s start: %? stop: %? stride: %? : len: %? rname: %s".doFormat(
+                "cmd: %s start: %? stop: %? stride: %? : len: %? rname: %s".format(
                 cmd, start, stop, stride, len, rname));
             
             var t1 = Time.timeSinceEpoch().totalSeconds();
             var ea = makeDistArray(len, t);
             smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                        "alloc time = %i sec".doFormat(Time.timeSinceEpoch().totalSeconds() - t1));
+                                        "alloc time = %i sec".format(Time.timeSinceEpoch().totalSeconds() - t1));
 
             t1 = Time.timeSinceEpoch().totalSeconds();
             const ref ead = ea.domain;
@@ -42,7 +42,7 @@ module SequenceMsg {
             }
             var e = st.addEntry(rname, createSymEntry(ea));
             smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                        "compute time = %i sec".doFormat(Time.timeSinceEpoch().totalSeconds() - t1));
+                                        "compute time = %i sec".format(Time.timeSinceEpoch().totalSeconds() - t1));
         }
 
         var repMsg: string; // response message
@@ -105,13 +105,13 @@ module SequenceMsg {
         // get next symbol name
         var rname = st.nextName();
         smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                        "cmd: %s start: %r stop: %r len: %i stride: %r rname: %s".doFormat(
+                        "cmd: %s start: %r stop: %r len: %i stride: %r rname: %s".format(
                          cmd, start, stop, len, stride, rname));
 
         var t1 = Time.timeSinceEpoch().totalSeconds();
         var e = st.addEntry(rname, len, real);
         smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                      "alloc time = %i".doFormat(Time.timeSinceEpoch().totalSeconds() - t1));
+                                      "alloc time = %i".format(Time.timeSinceEpoch().totalSeconds() - t1));
 
         t1 = Time.timeSinceEpoch().totalSeconds();
         ref ea = e.a;
@@ -122,7 +122,7 @@ module SequenceMsg {
         ea[0] = start;
         ea[len-1] = stop;
         smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                   "compute time = %i".doFormat(Time.timeSinceEpoch().totalSeconds() - t1));
+                                   "compute time = %i".format(Time.timeSinceEpoch().totalSeconds() - t1));
 
         repMsg = "created " + st.attrib(rname);
         smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);       

@@ -157,26 +157,26 @@ module ServerDaemon {
        
         proc init() {
             this.socket = this.context.socket(ZMQ.REP); 
-            try! this.socket.bind("tcp://*:%?".doFormat(ServerPort));
+            try! this.socket.bind("tcp://*:%?".format(ServerPort));
         }
         
         proc getConnectUrl(token: string) throws {
             if token.isEmpty() {
-                return "tcp://%s:%?".doFormat(serverHostname, 
+                return "tcp://%s:%?".format(serverHostname, 
                                             ServerPort);
             } else {
-                return "tcp://%s:%i?token=%s".doFormat(serverHostname,
+                return "tcp://%s:%i?token=%s".format(serverHostname,
                                                      ServerPort,
                                                      token);
             }
         }
 
         proc printServerSplashMessage(token: string, arkDirectory: string) throws {
-            var verMessage = "arkouda server version = %s".doFormat(arkoudaVersion);
-            var chplVerMessage = "built with chapel version%s".doFormat(chplVersionArkouda);
-            var dirMessage = ".arkouda directory %s".doFormat(arkDirectory);
-            var memLimMessage =  "memory limit = %i".doFormat(getMemLimit());
-            var memUsedMessage = "bytes of memory used = %i".doFormat(getMemUsed());
+            var verMessage = "arkouda server version = %s".format(arkoudaVersion);
+            var chplVerMessage = "built with chapel version%s".format(chplVersionArkouda);
+            var dirMessage = ".arkouda directory %s".format(arkDirectory);
+            var memLimMessage =  "memory limit = %i".format(getMemLimit());
+            var memUsedMessage = "bytes of memory used = %i".format(getMemUsed());
             var serverMessage: string;
     
             const buff = '                         ';
@@ -201,25 +201,25 @@ module ServerDaemon {
                 return buffer;
             }
 
-            serverMessage = "server listening on %s".doFormat(this.connectUrl);
+            serverMessage = "server listening on %s".format(this.connectUrl);
             serverMessage = adjustMsg(serverMessage);      
-            serverMessage = "%s %s %s".doFormat(buff,serverMessage,buff);
+            serverMessage = "%s %s %s".format(buff,serverMessage,buff);
         
             var vBuff = generateBuffer(serverMessage,verMessage);
             verMessage = adjustMsg(verMessage);
-            verMessage = "*%s %s %s*".doFormat(vBuff,verMessage,vBuff);
+            verMessage = "*%s %s %s*".format(vBuff,verMessage,vBuff);
             
             var cvBuff = generateBuffer(serverMessage,chplVerMessage);
             chplVerMessage = adjustMsg(chplVerMessage);
-            chplVerMessage = "*%s %s %s*".doFormat(cvBuff,chplVerMessage,cvBuff);
+            chplVerMessage = "*%s %s %s*".format(cvBuff,chplVerMessage,cvBuff);
 
             var mlBuff = generateBuffer(serverMessage,memLimMessage);
             memLimMessage = adjustMsg(memLimMessage);
-            memLimMessage = "*%s %s %s*".doFormat(mlBuff,memLimMessage,mlBuff);
+            memLimMessage = "*%s %s %s*".format(mlBuff,memLimMessage,mlBuff);
 
             var muBuff = generateBuffer(serverMessage,memUsedMessage);
             memUsedMessage = adjustMsg(memUsedMessage);
-            memUsedMessage = "*%s %s %s*".doFormat(muBuff,memUsedMessage,muBuff);
+            memUsedMessage = "*%s %s %s*".format(muBuff,memUsedMessage,muBuff);
         
             var blankBuffer: string;
             var counter = 0;
@@ -229,7 +229,7 @@ module ServerDaemon {
                 counter+=1;
             }
 
-            var blankLine = '*%s*'.doFormat(blankBuffer);
+            var blankLine = '*%s*'.format(blankBuffer);
         
             var tag = '*';
             counter = 0;
@@ -244,7 +244,7 @@ module ServerDaemon {
             writeln(tag);
             writeln(tag);
             writeln(blankLine);
-            writeln('*%s*'.doFormat(serverMessage));
+            writeln('*%s*'.format(serverMessage));
             writeln(verMessage);
             writeln(chplVerMessage);
 
@@ -268,7 +268,7 @@ module ServerDaemon {
             use IO;
             if !serverConnectionInfo.isEmpty() {
                 sdLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                               'writing serverConnectionInfo to %?'.doFormat(serverConnectionInfo));
+                               'writing serverConnectionInfo to %?'.format(serverConnectionInfo));
                 try! {
                     var w = open(serverConnectionInfo, ioMode.cw).writer(locking=false);
                     w.writef("%s %i %s\n",serverHostname,ServerPort,this.connectUrl);
@@ -287,10 +287,10 @@ module ServerDaemon {
                 }
             } catch fnfe : FileNotFoundError {
                sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                              "The serverConnectionInfo file was not found %s".doFormat(fnfe.message()));
+                              "The serverConnectionInfo file was not found %s".format(fnfe.message()));
             } catch e : Error {
                sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                              "Error in deleting serverConnectionInfo file %s".doFormat(e.message()));    
+                              "Error in deleting serverConnectionInfo file %s".format(e.message()));    
             }
         }
         
@@ -307,7 +307,7 @@ module ServerDaemon {
                                                         "repMsg: <binary-data>");
                 } else {
                  sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(), 
-                                                        "repMsg: %s".doFormat(repMsg));
+                                                        "repMsg: %s".format(repMsg));
                 }
             }
             this.socket.send(repMsg);
@@ -324,7 +324,7 @@ module ServerDaemon {
                 throw new owned ErrorWithMsg("Error: access to arkouda requires a token");
             }
             else if serverToken != token {
-                throw new owned ErrorWithMsg("Error: token %s does not match server token, check with server owner".doFormat(token));
+                throw new owned ErrorWithMsg("Error: token %s does not match server token, check with server owner".format(token));
             }
         }
 
@@ -337,7 +337,7 @@ module ServerDaemon {
                 writeUsedModules(usedModulesFmt);
             super.requestShutdown(user);
             this.repCount += 1;
-            this.socket.send(serialize(msg="shutdown server (%i req)".doFormat(repCount), 
+            this.socket.send(serialize(msg="shutdown server (%i req)".format(repCount), 
                          msgType=MsgType.NORMAL,msgFormat=MsgFormat.STRING, user=user));
         }
 
@@ -376,7 +376,7 @@ module ServerDaemon {
         }
         
         proc initArkoudaDirectory() throws {
-            var arkDirectory = '%s%s%s'.doFormat(here.cwd(), pathSep,'.arkouda');
+            var arkDirectory = '%s%s%s'.format(here.cwd(), pathSep,'.arkouda');
             initDirectory(arkDirectory);
             return arkDirectory;
         }
@@ -422,7 +422,7 @@ module ServerDaemon {
             sdLogger.debug(getModuleName(),
                           getRoutineName(),
                           getLineNumber(),
-                          "Set Response Time for %s: %?".doFormat(cmd,elapsedTime));
+                          "Set Response Time for %s: %?".format(cmd,elapsedTime));
             
             // Add response time to the avg response time for the cmd
             avgResponseTimeMetrics.add(cmd,elapsedTime:real);
@@ -436,17 +436,17 @@ module ServerDaemon {
             sdLogger.debug(getModuleName(),
                           getRoutineName(),
                           getLineNumber(),
-                          "Added Avg Response Time for cmd %s: %?".doFormat(cmd,elapsedTime));
+                          "Added Avg Response Time for cmd %s: %?".format(cmd,elapsedTime));
                           
             sdLogger.debug(getModuleName(),
                           getRoutineName(),
                           getLineNumber(),
-                          "Total Response Time for cmd %s: %?".doFormat(cmd,totalResponseTimeMetrics.get(cmd)));
+                          "Total Response Time for cmd %s: %?".format(cmd,totalResponseTimeMetrics.get(cmd)));
                           
             sdLogger.debug(getModuleName(),
                           getRoutineName(),
                           getLineNumber(),
-                          "Total Memory Used for cmd %s: %? GB".doFormat(cmd,totalMemoryUsedMetrics.get(cmd)));    
+                          "Total Memory Used for cmd %s: %? GB".format(cmd,totalMemoryUsedMetrics.get(cmd)));    
 
             var apo = getArrayParameterObj(args);
 
@@ -481,7 +481,7 @@ module ServerDaemon {
             sdLogger.error(getModuleName(),
                            getRoutineName(),
                            getLineNumber(),
-                           'user: %s cmd: %s error: %s'.doFormat(user,
+                           'user: %s cmd: %s error: %s'.format(user,
                                                                  cmd,
                                                                  err.msg));
 
@@ -501,11 +501,11 @@ module ServerDaemon {
             this.arkDirectory = this.initArkoudaDirectory();
 
             if authenticate {
-                this.serverToken = getArkoudaToken('%s%s%s'.doFormat(this.arkDirectory, pathSep, 'tokens.txt'));
+                this.serverToken = getArkoudaToken('%s%s%s'.format(this.arkDirectory, pathSep, 'tokens.txt'));
             }
 
             sdLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
-                               "initialized the .arkouda directory %s".doFormat(this.arkDirectory));
+                               "initialized the .arkouda directory %s".format(this.arkDirectory));
     
             this.connectUrl = this.getConnectUrl(this.serverToken);
             this.createServerConnectionInfo();
@@ -549,7 +549,7 @@ module ServerDaemon {
                         request = rawRequest.decode();
                     } catch e: DecodeError {
                         sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                           "illegal byte sequence in command: %?".doFormat(
+                           "illegal byte sequence in command: %?".format(
                                           rawRequest.decode(decodePolicy.replace)));
                         sendRepMsg(serialize(msg=unknownError(e.message()),msgType=MsgType.ERROR,
                                                  msgFormat=MsgFormat.STRING, user="Unknown"));
@@ -568,7 +568,7 @@ module ServerDaemon {
                     }
                     catch e {
                         sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                               "Argument List size is not an integer. %s cannot be cast".doFormat(msg.size));
+                               "Argument List size is not an integer. %s cannot be cast".format(msg.size));
                         sendRepMsg(serialize(msg=unknownError(e.message()),msgType=MsgType.ERROR,
                                                          msgFormat=MsgFormat.STRING, user="Unknown"));
                     }
@@ -584,7 +584,7 @@ module ServerDaemon {
                     sdLogger.info(getModuleName(),
                                   getRoutineName(),
                                   getLineNumber(),
-                                  "MessageArgs: %?".doFormat(msgArgs));                    
+                                  "MessageArgs: %?".format(msgArgs));
 
                     /*
                      * If authentication is enabled with the --authenticate flag, authenticate
@@ -599,10 +599,10 @@ module ServerDaemon {
                         try {
                             if (cmd != "array") {
                                 sdLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
-                                                     ">>> %? %?".doFormat(cmd, args));
+                                                     ">>> %? %?".format(cmd, args));
                             } else {
                                 sdLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
-                                                     ">>> %s [binary data]".doFormat(cmd));
+                                                     ">>> %s [binary data]".format(cmd));
                             }
                        } catch {
                            // No action on error
@@ -613,7 +613,7 @@ module ServerDaemon {
                     requestShutdown(user=user);
                     if (trace) {
                         sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
-                                        "<<< shutdown initiated by %s took %.17r sec".doFormat(user, 
+                                        "<<< shutdown initiated by %s took %.17r sec".format(user, 
                                                 timeSinceEpoch().totalSeconds() - s0));
                     }
                 }
@@ -628,7 +628,7 @@ module ServerDaemon {
                  * If logCommands is true, log incoming request to the .arkouda/commands.log file
                  */
                 if logCommands {
-                    appendFile(filePath="%s/commands.log".doFormat(this.arkDirectory), formatJson(msg));
+                    appendFile(filePath="%s/commands.log".format(this.arkDirectory), formatJson(msg));
                 }
 
                 /*
@@ -645,10 +645,10 @@ module ServerDaemon {
                  select cmd {
                     when "connect" {
                         if authenticate {
-                            repTuple = new MsgTuple("connected to arkouda server tcp://*:%i as user %s with token %s".doFormat(
+                            repTuple = new MsgTuple("connected to arkouda server tcp://*:%i as user %s with token %s".format(
                                                             ServerPort,user,token), MsgType.NORMAL);
                         } else {
-                            repTuple = new MsgTuple("connected to arkouda server tcp://*:%i".doFormat(ServerPort), MsgType.NORMAL);
+                            repTuple = new MsgTuple("connected to arkouda server tcp://*:%i".format(ServerPort), MsgType.NORMAL);
                         }
                     }
                     when "disconnect" {
@@ -657,7 +657,7 @@ module ServerDaemon {
                             break;
                         }
                         
-                        repTuple = new MsgTuple("disconnected from arkouda server tcp://*:%i".doFormat(ServerPort), MsgType.NORMAL);
+                        repTuple = new MsgTuple("disconnected from arkouda server tcp://*:%i".format(ServerPort), MsgType.NORMAL);
                     }
                     when "noop" {
                         repTuple = new MsgTuple("noop", MsgType.NORMAL);
@@ -684,19 +684,19 @@ module ServerDaemon {
                                 (commandMap.contains(command1D) || commandMapBinary.contains(command1D)) || commandMapArray.contains(command1D)
                             {
                                 const errMsg = "Error: Command '%s' is not supported with the current server configuration "
-                                                .doFormat(cmd) +
+                                                .format(cmd) +
                                                 "as the maximum array dimensionality is %i. Please recompile with support for at least %iD arrays"
-                                                .doFormat(ServerConfig.MaxArrayDims, nd);
+                                                .format(ServerConfig.MaxArrayDims, nd);
                                 repTuple = new MsgTuple(errMsg, MsgType.ERROR);
                                 sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errMsg);
                             } else if multiDimCommand &&
                                 (commandMap.contains(rawCmd) || commandMapBinary.contains(rawCmd))
                             {
-                                const errMsg = "Error: Command '%s' is not supported for multidimensional arrays".doFormat(rawCmd);
+                                const errMsg = "Error: Command '%s' is not supported for multidimensional arrays".format(rawCmd);
                                 repTuple = new MsgTuple(errMsg, MsgType.ERROR);
                                 sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errMsg);
                             } else {
-                                repTuple = new MsgTuple("Unrecognized command: %s".doFormat(cmd), MsgType.ERROR);
+                                repTuple = new MsgTuple("Unrecognized command: %s".format(cmd), MsgType.ERROR);
                                 sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),repTuple.msg);
                             }
 
@@ -720,14 +720,14 @@ module ServerDaemon {
                  */
                 if trace {
                     sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(), 
-                                              "<<< %s took %.17r sec".doFormat(cmd, elapsedTime));
+                                              "<<< %s took %.17r sec".format(cmd, elapsedTime));
                 }
                 if (trace && memTrack) {
                     var memUsed = getMemUsed():uint * numLocales:uint;
                     var memLimit = (getMemLimit():real * numLocales:uint):int;
                     var pctMemUsed = ((memUsed:real/memLimit)*100):int;
                     sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
-                        "bytes of memory %? used after %s command is %?%% pct of max memory %?".doFormat(memUsed,
+                        "bytes of memory %? used after %s command is %?%% pct of max memory %?".format(memUsed,
                                                                                                        cmd,
                                                                                                        pctMemUsed,
                                                                                                        memLimit));
@@ -745,9 +745,9 @@ module ServerDaemon {
 
                 if trace {
                     sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                        "<<< %s resulted in error %s in  %.17r sec".doFormat(cmd, 
-                                                                             ewm.msg, 
-                                                                             timeSinceEpoch().totalSeconds() - s0));
+                        "<<< %s resulted in error %s in  %.17r sec".format(cmd, 
+                                                                           ewm.msg, 
+                                                                           timeSinceEpoch().totalSeconds() - s0));
                 }
             } catch (err: OverMemoryLimitError) {
                 var errorMsg = err.message();
@@ -763,10 +763,10 @@ module ServerDaemon {
                                      user=user));
                 if trace {
                     sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd, 
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
+                    "<<< %s resulted in %s: %s in %.17r sec".format(cmd, 
+                                                                    errorName,
+                                                                    errorMsg,
+                                                                    timeSinceEpoch().totalSeconds() - s0));
                 }
             } catch (err: IOError) {
                 var errorMsg = err.message();
@@ -782,10 +782,10 @@ module ServerDaemon {
                                      user=user));
                 if trace {
                     sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd, 
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
+                    "<<< %s resulted in %s: %s in %.17r sec".format(cmd, 
+                                                                    errorName,
+                                                                    errorMsg,
+                                                                    timeSinceEpoch().totalSeconds() - s0));
                 }
             } catch (err: WriteModeError) {
                 var errorMsg = err.message();
@@ -801,10 +801,10 @@ module ServerDaemon {
                                      user=user));
                 if trace {
                     sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd, 
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
+                    "<<< %s resulted in %s: %s in %.17r sec".format(cmd, 
+                                                                    errorName,
+                                                                    errorMsg,
+                                                                    timeSinceEpoch().totalSeconds() - s0));
                 }
             } catch (err: FileNotFoundError) {
                 var errorMsg = err.message();
@@ -820,10 +820,10 @@ module ServerDaemon {
                                      user=user));
                 if trace {
                     sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd, 
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
+                    "<<< %s resulted in %s: %s in %.17r sec".format(cmd, 
+                                                                    errorName,
+                                                                    errorMsg,
+                                                                    timeSinceEpoch().totalSeconds() - s0));
                 } 
             } catch (err: PermissionError) {
                 var errorMsg = err.message();
@@ -839,10 +839,10 @@ module ServerDaemon {
                                      user=user));
                 if trace {
                     sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd, 
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
+                    "<<< %s resulted in %s: %s in %.17r sec".format(cmd, 
+                                                                    errorName,
+                                                                    errorMsg,
+                                                                    timeSinceEpoch().totalSeconds() - s0));
                 }
             } catch (err: DatasetNotFoundError) {
                 var errorMsg = err.message();
@@ -858,10 +858,10 @@ module ServerDaemon {
                                      user=user));
                 if trace {
                     sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd, 
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
+                    "<<< %s resulted in %s: %s in %.17r sec".format(cmd, 
+                                                                    errorName,
+                                                                    errorMsg,
+                                                                    timeSinceEpoch().totalSeconds() - s0));
                 }
             } catch (err: MismatchedAppendError) {
                 var errorMsg = err.message();
@@ -877,10 +877,10 @@ module ServerDaemon {
                                      user=user));
                 if trace {
                     sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd,
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
+                    "<<< %s resulted in %s: %s in %.17r sec".format(cmd,
+                                                                    errorName,
+                                                                    errorMsg,
+                                                                    timeSinceEpoch().totalSeconds() - s0));
                 }
             } catch (err: IllegalArgumentError) {
                 var errorMsg = err.message();
@@ -896,10 +896,10 @@ module ServerDaemon {
                                      user=user));
                 if trace {
                     sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd,
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
+                    "<<< %s resulted in %s: %s in %.17r sec".format(cmd,
+                                                                    errorName,
+                                                                    errorMsg,
+                                                                    timeSinceEpoch().totalSeconds() - s0));
                 }
             } catch (err: UnknownSymbolError) {
                 var errorMsg = err.message();
@@ -915,10 +915,10 @@ module ServerDaemon {
                                      user=user));
                 if trace {
                     sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd,
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
+                    "<<< %s resulted in %s: %s in %.17r sec".format(cmd,
+                                                                    errorName,
+                                                                    errorMsg,
+                                                                    timeSinceEpoch().totalSeconds() - s0));
                 }
             } catch (err: ArgumentError) {
                 var errorMsg = err.message();
@@ -934,10 +934,10 @@ module ServerDaemon {
                                      user=user));
                 if trace {
                     sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd,
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
+                    "<<< %s resulted in %s: %s in %.17r sec".format(cmd,
+                                                                    errorName,
+                                                                    errorMsg,
+                                                                    timeSinceEpoch().totalSeconds() - s0));
                 }
             } catch (err: ZMQError) {
                 var errorMsg = err.message();
@@ -953,10 +953,10 @@ module ServerDaemon {
                                      user=user));
                 if trace {
                     sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd,
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
+                    "<<< %s resulted in %s: %s in %.17r sec".format(cmd,
+                                                                    errorName,
+                                                                    errorMsg,
+                                                                    timeSinceEpoch().totalSeconds() - s0));
                 }
             } catch (err: TimeoutError) {
                 var errorMsg = err.message();
@@ -972,10 +972,10 @@ module ServerDaemon {
                                      user=user));
                 if trace {
                     sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd,
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
+                    "<<< %s resulted in %s: %s in %.17r sec".format(cmd,
+                                                                    errorName,
+                                                                    errorMsg,
+                                                                    timeSinceEpoch().totalSeconds() - s0));
                 }
             } catch (err: InsufficientCapacityError) {
                 var errorMsg = err.message();
@@ -991,10 +991,10 @@ module ServerDaemon {
                                      user=user));
                 if trace {
                     sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd,
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
+                    "<<< %s resulted in %s: %s in %.17r sec".format(cmd,
+                                                                    errorName,
+                                                                    errorMsg,
+                                                                    timeSinceEpoch().totalSeconds() - s0));
                 }
 
             } catch (err: UnexpectedEofError) {
@@ -1011,10 +1011,10 @@ module ServerDaemon {
                                      user=user));
                 if trace {
                     sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd,
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
+                    "<<< %s resulted in %s: %s in %.17r sec".format(cmd,
+                                                                    errorName,
+                                                                    errorMsg,
+                                                                    timeSinceEpoch().totalSeconds() - s0));
                 }
 
             } catch (err: BadFormatError) {
@@ -1031,10 +1031,10 @@ module ServerDaemon {
                                      user=user));
                 if trace {
                     sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd,
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
+                    "<<< %s resulted in %s: %s in %.17r sec".format(cmd,
+                                                                    errorName,
+                                                                    errorMsg,
+                                                                    timeSinceEpoch().totalSeconds() - s0));
                 }
 
             } catch (err: ConnectionError) {
@@ -1051,10 +1051,10 @@ module ServerDaemon {
                                      user=user));
                 if trace {
                     sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd,
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
+                    "<<< %s resulted in %s: %s in %.17r sec".format(cmd,
+                                                                    errorName,
+                                                                    errorMsg,
+                                                                    timeSinceEpoch().totalSeconds() - s0));
                 }
 
             } catch (err: SystemError) {
@@ -1071,10 +1071,10 @@ module ServerDaemon {
                                      user=user));
                 if trace {
                     sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(),
-                    "<<< %s resulted in %s: %s in %.17r sec".doFormat(cmd,
-                                                                      errorName,
-                                                                      errorMsg,
-                                                                      timeSinceEpoch().totalSeconds() - s0));
+                    "<<< %s resulted in %s: %s in %.17r sec".format(cmd,
+                                                                    errorName,
+                                                                    errorMsg,
+                                                                    timeSinceEpoch().totalSeconds() - s0));
                 }
             } catch (err: Error) {
                 // Generate a ReplyMsg of type ERROR and serialize to a JSON-formatted string
@@ -1092,9 +1092,9 @@ module ServerDaemon {
                                                          msgFormat=MsgFormat.STRING, user=user));
                 if trace {
                     sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(), 
-                    "<<< %s resulted in error: %s in %.17r sec".doFormat(cmd, 
-                                                                         errorMsg,
-                                                                         timeSinceEpoch().totalSeconds() - s0));
+                    "<<< %s resulted in error: %s in %.17r sec".format(cmd, 
+                                                                        errorMsg,
+                                                                        timeSinceEpoch().totalSeconds() - s0));
                 }
             }
         }
@@ -1103,11 +1103,11 @@ module ServerDaemon {
 
         deleteServerConnectionInfo();
 
-        sdLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
-            "requests = %i responseCount = %i elapsed sec = %i".doFormat(reqCount,
-                                                                         repCount,
-                                                                         elapsed));
-        this.shutdown(); 
+            sdLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
+                "requests = %i responseCount = %i elapsed sec = %i".format(reqCount,
+                                                                            repCount,
+                                                                            elapsed));
+            this.shutdown();
         }
     }
 
@@ -1142,18 +1142,18 @@ module ServerDaemon {
             this.socket = this.context.socket(ZMQ.REP); 
             this.port = try! getEnv('METRICS_SERVER_PORT','5556'):int;
 
-            try! this.socket.bind("tcp://*:%?".doFormat(this.port));
+            try! this.socket.bind("tcp://*:%?".format(this.port));
             try! sdLogger.debug(getModuleName(), 
                                 getRoutineName(), 
                                 getLineNumber(),
-                                "initialized and listening in port %i".doFormat(
+                                "initialized and listening in port %i".format(
                                 this.port));
         }
 
         override proc run() throws {
             while !this.shutdownDaemon {
                 sdLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
-                               "awaiting message on port %i".doFormat(this.port));
+                               "awaiting message on port %i".format(this.port));
                 var req = this.socket.recv(bytes).decode();
 
                 var msg: RequestMsg = extractRequest(req);
@@ -1179,9 +1179,9 @@ module ServerDaemon {
                     when "connect" {
                         if authenticate {
                             repTuple = new MsgTuple("connected to arkouda metrics server tcp://*:%i as user " +
-                                                "%s with token %s".doFormat(this.port,user,token), MsgType.NORMAL);
+                                                "%s with token %s".format(this.port,user,token), MsgType.NORMAL);
                         } else {
-                            repTuple = new MsgTuple("connected to arkouda metrics server tcp://*:%i".doFormat(this.port), 
+                            repTuple = new MsgTuple("connected to arkouda metrics server tcp://*:%i".format(this.port), 
                                                                                     MsgType.NORMAL);
                         }
                     }
@@ -1246,18 +1246,18 @@ module ServerDaemon {
             this.socket = this.context.socket(ZMQ.REP); 
             this.port = try! getEnv('SERVER_STATUS_PORT','5557'):int;
 
-            try! this.socket.bind("tcp://*:%?".doFormat(this.port));
+            try! this.socket.bind("tcp://*:%?".format(this.port));
             try! sdLogger.debug(getModuleName(), 
                                 getRoutineName(), 
                                 getLineNumber(),
-                                "initialized and listening in port %i".doFormat(
+                                "initialized and listening in port %i".format(
                                 this.port));
         }
 
         override proc run() throws {
             while !this.shutdownDaemon {
                 sdLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
-                         "awaiting status requests on port %i".doFormat(this.port));
+                         "awaiting status requests on port %i".format(this.port));
                 var req = this.socket.recv(bytes).decode();
 
                 var msg: RequestMsg = extractRequest(req);
@@ -1289,9 +1289,9 @@ module ServerDaemon {
                     when "connect" {
                         if authenticate {
                             repTuple = new MsgTuple("connected to arkouda status server tcp://*:%i as user " +
-                                                "%s with token %s".doFormat(this.port,user,token), MsgType.NORMAL);
+                                                "%s with token %s".format(this.port,user,token), MsgType.NORMAL);
                         } else {
-                            repTuple = new MsgTuple("connected to arkouda status server tcp://*:%i".doFormat(this.port), 
+                            repTuple = new MsgTuple("connected to arkouda status server tcp://*:%i".format(this.port), 
                                                                                     MsgType.NORMAL);
                         }
                     }
@@ -1322,7 +1322,7 @@ module ServerDaemon {
             }
             otherwise {
                 throw getErrorWithContext(
-                      msg="Unsupported ServerDaemonType: %?".doFormat(daemonType),
+                      msg="Unsupported ServerDaemonType: %?".format(daemonType),
                       lineNumber=getLineNumber(),
                       routineName=getRoutineName(),
                       moduleName=getModuleName(),

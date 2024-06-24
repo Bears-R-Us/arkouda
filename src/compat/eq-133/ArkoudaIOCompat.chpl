@@ -17,10 +17,6 @@ module ArkoudaIOCompat {
     return f.reader().readAll(string);
   }
 
-  proc string.doFormat(vals...?): string throws {
-    return this.format((...vals));
-  }
-
   proc jsonToTupleCompat(json: string, type t) throws {
     var f = openMemFile();
     var w = f.writer();
