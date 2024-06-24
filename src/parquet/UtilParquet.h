@@ -13,6 +13,9 @@
 #include <parquet/schema.h>
 #include <cmath>
 #include <queue>
+
+std::shared_ptr<parquet::schema::GroupNode> SetupSchema(void* column_names, void * objTypes, void* datatypes, int64_t colnum);
+
 extern "C" {
 #endif
 
@@ -118,16 +121,6 @@ extern "C" {
                                 const char* dsetname, int64_t numelems,
                                 int64_t dtype, int64_t compression,
                                 char** errMsg);
-  
-  int c_writeMultiColToParquet(const char* filename, void* column_names, 
-                                void** ptr_arr, void** offset_arr, void* objTypes, void* datatypes,
-                                void* segArr_sizes, int64_t colnum, int64_t numelems, int64_t rowGroupSize,
-                                int64_t compression, char** errMsg);
-
-  int cpp_writeMultiColToParquet(const char* filename, void* column_names, 
-                                  void** ptr_arr, void** offset_arr, void* objTypes, void* datatypes,
-                                  void* segArr_sizes, int64_t colnum, int64_t numelems, int64_t rowGroupSize,
-                                  int64_t compression, char** errMsg);
 
   int c_getPrecision(const char* filename, const char* colname, char** errMsg);
   int cpp_getPrecision(const char* filename, const char* colname, char** errMsg);
