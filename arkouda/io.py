@@ -1802,7 +1802,7 @@ def read(
     column_delim: str = ",",
     read_nested: bool = True,
     has_non_float_nulls: bool = False,
-    fixed_len: int_scalars = -1,
+    fixed_len: int = -1,
 ) -> Union[
     Mapping[
         str,
@@ -1857,7 +1857,7 @@ def read(
     has_non_float_nulls: bool
         Default False. This flag must be set to True to read non-float parquet columns
         that contain null values.
-    fixed_len: int_scalars
+    fixed_len: int
         Default -1. This value can be set for reading Parquet string columns when the
         length of each string is known at runtime. This can allow for skipping byte
         calculation, which can have an impact on performance.
