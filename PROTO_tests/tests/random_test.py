@@ -1,3 +1,4 @@
+import os
 from collections import Counter
 
 import numpy as np
@@ -263,6 +264,20 @@ class TestRandom:
             sp_stats.norm, sample_list, known_params={"loc": mean, "scale": deviation}
         )
         assert good_fit_res.pvalue > 0.05
+
+    def test_poisson_seed_reproducibility(self):
+        # test resolution of issue #3322, same seed gives same result across machines / num locales
+        seed = 11
+        # test with many orders of magnitude to ensure we test different remainders and case where
+        # all elements are pulled to first locale i.e. total_size < (minimum elemsPerStream = 256)
+        saved_seeded_file_patterns = ["second_order*", "third_order*", "fourth_order*"]
+
+        # directory of this file
+        file_dir = os.path.dirname(os.path.realpath(__file__))
+        for i, f_name in zip(range(2, 5), saved_seeded_file_patterns):
+            generated = ak.random.default_rng(seed=seed).poisson(size=10**i)
+            saved = ak.read_parquet(f"{file_dir}/saved_seeded_random/{f_name}")["array"]
+            assert (generated == saved).all()
 
     def test_poisson_hypothesis_testing(self):
         # I tested this many times without a set seed, but with no seed

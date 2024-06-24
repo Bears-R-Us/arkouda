@@ -823,7 +823,7 @@ class SegArrayTest(ArkoudaTest):
         )
 
         for col in df.columns:
-            a = df[col].values
+            a = df[col]
             if a.dtype == ak.float64:
                 a = a.to_ndarray()
                 if isinstance(a[0], np.ndarray):
