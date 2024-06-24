@@ -13,7 +13,7 @@ from pandas.testing import assert_frame_equal, assert_series_equal
 
 from arkouda import io_util
 from arkouda.index import Index
-from arkouda.scipy import chisquare as akchisquare
+from arkouda.scipy.stats import chisquare as akchisquare
 
 
 def build_ak_df():

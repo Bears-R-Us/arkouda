@@ -2,13 +2,13 @@ from collections import namedtuple
 
 import numpy as np
 from numpy import asarray
-from scipy.stats import chi2  # type: ignore
+from scipy.stats import chi2  # type:ignore
 
 import arkouda as ak
-from arkouda.scipy.special import xlogy
 from arkouda.dtypes import float64 as akfloat64
+from arkouda.scipy.special import xlogy
 
-__all__ = ["power_divergence", "chisquare", "Power_divergenceResult"]
+__all__ = ["Power_divergenceResult", "power_divergence", "chisquare"]
 
 
 class Power_divergenceResult(namedtuple("Power_divergenceResult", ("statistic", "pvalue"))):
@@ -74,7 +74,7 @@ def power_divergence(f_obs, f_exp=None, ddof=0, lambda_=None):
 
     >>> import arkouda as ak
     >>> ak.connect()
-    >>> from arkouda.stats import power_divergence
+    >>> from arkouda.scipy.stats import power_divergence
     >>> x = ak.array([10, 20, 30, 10])
     >>> y = ak.array([10, 30, 20, 10])
     >>> power_divergence(x, y, lambda_="pearson")
