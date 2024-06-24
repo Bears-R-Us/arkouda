@@ -19,8 +19,7 @@ module GenSymIO {
     use Map;
     use CTypes;
     use CommAggregation;
-
-    use ArkoudaIOCompat;
+    use IOUtils;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;

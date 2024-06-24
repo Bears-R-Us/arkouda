@@ -27,8 +27,7 @@ module HDF5Msg {
     use CTypes;
     use BigInteger;
     use Regex;
-
-    use ArkoudaIOCompat;
+    use IOUtils;
 
 
     private config const logLevel = ServerConfig.logLevel;

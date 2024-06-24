@@ -16,8 +16,7 @@ module ParquetMsg {
   use CTypes;
   use Map;
   use SegmentedString;
-
-  use ArkoudaIOCompat;
+  use IOUtils;
 
   enum CompressionType {
     NONE=0,

@@ -12,8 +12,7 @@ module MetricsMsg {
     use NumPyDType;
     use Map;
     use Time;
-
-    use ArkoudaIOCompat;
+    use IOUtils;
 
     enum MetricCategory{ALL,NUM_REQUESTS,RESPONSE_TIME,AVG_RESPONSE_TIME,TOTAL_RESPONSE_TIME,
                         TOTAL_MEMORY_USED,SYSTEM,SERVER,SERVER_INFO,NUM_ERRORS};

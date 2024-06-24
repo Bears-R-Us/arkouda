@@ -8,6 +8,7 @@ module Registry {
     use Reflection;
     use ServerErrors;
     use Logging;
+    use IOUtils;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;

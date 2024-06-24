@@ -10,6 +10,7 @@ module StatsMsg {
     use MultiTypeSymEntry;
     use ServerErrorStrings;
     use Stats;
+    use IOUtils;
 
     use Map;
     use ArkoudaIOCompat;

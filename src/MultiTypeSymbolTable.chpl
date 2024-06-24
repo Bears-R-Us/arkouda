@@ -10,9 +10,9 @@ module MultiTypeSymbolTable
     use Regex;
     use MultiTypeSymEntry;
     use IO;
+    use IOUtils;
 
     use Map;
-    use ArkoudaIOCompat;
     use Registry;
 
     private config const logLevel = ServerConfig.logLevel;
@@ -365,13 +365,14 @@ module MultiTypeSymbolTable
         proc formatEntry(name:string, abstractEntry:borrowed AbstractSymEntry): string throws {
             if abstractEntry.isAssignableTo(SymbolEntryType.TypedArraySymEntry) {
                 var item:borrowed GenSymEntry = toGenSymEntry(abstractEntry);
+                // TODO: doesn't make sense to pass a string to 'formatJson' that is already in JSON format
+                // (This will just add extra quotes around the string)
                 return formatJson('{"name":%?, "dtype":%?, "size":%?, "ndim":%?, "shape":%s, "itemsize":%?, "registered":%?}',
                                   name, dtype2str(item.dtype), item.size, item.ndim, item.shape, item.itemsize, registry.contains(name));
             } else if abstractEntry.isAssignableTo(SymbolEntryType.SegStringSymEntry) {
                 var item:borrowed SegStringSymEntry = toSegStringSymEntry(abstractEntry);
                 return formatJson('{"name":%?, "dtype":%?, "size":%?, "ndim":%?, "shape":%s, "itemsize":%?, "registered":%?}',
                                   name, dtype2str(item.dtype), item.size, item.ndim, item.shape, item.itemsize, registry.contains(name));
-                              
             } else {
               return formatJson('{"name":%?, "dtype":%?, "size":%?, "ndim":%?, "shape":%s, "itemsize":%?, "registered":%?}',
                                 name, dtype2str(DType.UNDEF), 0, 0, "[0]", 0, registry.contains(name));

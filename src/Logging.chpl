@@ -188,11 +188,8 @@ module Logging {
         }
          
         proc generateDateTimeString() throws {
-            var dts = formatString(dateTime.now());
-            var vals = dts.split("T");
-            var cd = vals(0);
-            var rawCms = vals(1).split(".");
-            return "%s:%s".format(cd,rawCms(0));        
+            const t = dateTime.now();
+            return "%i-%02i-%02i %02i:%02i:%02i".format(t.year, t.month, t.day, t.hour, t.minute, t.second);
         }
     }
 }

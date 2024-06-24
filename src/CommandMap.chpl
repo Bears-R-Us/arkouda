@@ -2,7 +2,9 @@ module CommandMap {
   use Message;
   use MultiTypeSymbolTable;
 
-  use ArkoudaIOCompat;
+  use JSON;
+  use IO;
+  use IOUtils;
   use Map;
 
   /**
@@ -33,6 +35,13 @@ module CommandMap {
   proc registerFunction(cmd: string, fcf: f.type, modName: string) {
     commandMap.add(cmd, fcf);
     moduleMap.add(cmd, modName);
+  }
+
+  proc writeUsedModulesJson(ref mods: set(string)) {
+    const cfgFile = try! open("UsedModules.json", ioMode.cw),
+          w = try! cfgFile.writer(locking=false, serializer = new jsonSerializer());
+
+    try! w.write(mods);
   }
 
   proc writeUsedModules(fmt: string = "cfg") {

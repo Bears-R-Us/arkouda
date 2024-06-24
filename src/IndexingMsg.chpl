@@ -9,6 +9,7 @@ module IndexingMsg
     use Message;
     use AryUtil;
     use ArkoudaAryUtilCompat;
+    use IOUtils;
 
     use MultiTypeSymEntry;
     use MultiTypeSymbolTable;
@@ -19,16 +20,12 @@ module IndexingMsg
     use List;
     use BigInteger;
 
+
     use Map;
-    use ArkoudaIOCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const imLogger = new Logger(logLevel, logChannel);
-
-    proc jsonToTuple(json: string, type t) throws {
-      return jsonToTupleCompat(json, t);
-    }
 
     proc arrayViewMixedIndexMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         var ndim = msgArgs.get("ndim").getIntValue();
@@ -59,7 +56,7 @@ module IndexingMsg
                     scaledCoords[offsets[i/2]] = typeCoords[i+1]:int * dimProdEntry.a[i/2];
                 }
                 when "slice" {
-                    var (start, stop, stride) = jsonToTuple(typeCoords[i+1], 3*int);
+                    var (start, stop, stride) = parseJson(typeCoords[i+1], 3*int);
                     var slice: range(strides=strideKind.any) = convertSlice(start, stop, stride);
                     var scaled: [0..#slice.size] int = slice * dimProdEntry.a[i/2];
                     for j in 0..#slice.size {

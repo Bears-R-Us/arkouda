@@ -1,5 +1,7 @@
 module Message {
     use IO;
+    use JSON;
+    use IOUtils;
     use FileIO;
     use Reflection;
     use ServerErrors;
@@ -339,7 +341,7 @@ module Message {
                                     getModuleName(),
                                     "TypeError");
             }
-            return jsonToPdArray(this.val, size);
+            return jsonToArray(this.val, size);
         }
 
         proc getListAs(type t, size: int) throws {
@@ -351,7 +353,7 @@ module Message {
                                     "TypeError");
             }
             try {
-                const vals = jsonToPdArray(this.val, size);
+                const vals = jsonToArray(this.val, size);
                 var ret: [0..<size] t;
                 forall (idx, v) in zip(0..<size, vals) do ret[idx] = v:t;
                 return ret;
@@ -365,7 +367,7 @@ module Message {
         }
 
         /*
-        Parse value as a tuple of integers with the given size
+            Parse value as a tuple of integers with the given size
         */
         proc getTuple(param size: int): size*int throws {
             if size == 1 {
@@ -374,11 +376,11 @@ module Message {
                     return (this.getIntValue(),);
                 } catch {
                     // try to parse '(x,)'
-                    return parseJsonTuple(this.val, 1);
+                    return parseJson(this.val, 1*int);
                 }
             } else {
                 // try to parse '(x,y,...)'
-                return parseJsonTuple(this.val, size);
+                return parseJson(this.val, size*int);
             }
         }
 
@@ -534,7 +536,8 @@ module Message {
         var newmem = openMemFile();
         newmem.writer(locking=false).write(payload);
         try {
-          readfCompat(newmem, "%?", p);
+            var nreader = newmem.reader(deserializer=new jsonDeserializer(), locking=false);
+            nreader.readf("%?", p);
         } catch bfe : BadFormatError {
             throw new owned ErrorWithContext("Incorrect JSON format %s".format(payload),
                                        getLineNumber(),
@@ -549,7 +552,7 @@ module Message {
     Parse arguments formatted as json string into objects
     */
     proc parseMessageArgs(json_str: string, size: int) throws {
-        var pArr = jsonToPdArray(json_str, size);
+        var pArr = jsonToArray(json_str, size);
         var param_list = new list(ParameterObj, parSafe=true);
         forall j_str in pArr with (ref param_list) {
             param_list.pushBack(parseParameter(j_str));
@@ -567,9 +570,9 @@ module Message {
     proc deserialize(ref msg: RequestMsg, request: string) throws {
         var newmem = openMemFile();
         newmem.writer(locking=false).write(request);
-        var nreader = newmem.reader(locking=false);
         try {
-            readfCompat(newmem, "%?", msg);
+            var nreader = newmem.reader(deserializer=new jsonDeserializer(), locking=false);
+            nreader.readf("%?", msg);
         } catch bfe : BadFormatError {
             throw new owned ErrorWithContext("Incorrect JSON format %s".format(request),
                                        getLineNumber(),
@@ -578,7 +581,7 @@ module Message {
                                        "ValueError");
         }
     }
-    
+
    /*
     * Generates a ReplyMsg object and serializes it into a JSON-formatted reply message
     */
@@ -587,33 +590,4 @@ module Message {
        return formatJson(new MsgTuple(msg=msg,msgType=msgType,
                                       msgFormat=msgFormat, user=user));
    }
-
-    /*
-     * Converts the JSON array to a pdarray
-     */
-    proc jsonToPdArray(json: string, size: int) throws {
-      return jsonToPdArrayCompat(json, size);
-    }
-
-    /*
-      Helper function to parse a JSON string as a tuple of integers
-    */
-    proc parseJsonTuple(json: string, param size: int): size*int throws {
-        var f = openMemFile();
-        var w = f.writer(locking=false);
-        w.write(json);
-        w.close();
-        var r = f.reader(locking=false),
-            t: size*int,
-            first = true;
-
-        r.readLiteral("(");
-        for i in 0..<size {
-            if first then first = false; else r.readLiteral(",");
-            t[i] = r.read(int);
-        }
-        // r.readLiteral(")");
-        return t;
-    }
-
 }
