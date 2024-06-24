@@ -20,7 +20,7 @@ module Cast {
     try {
       after.a = before.a : toType;
     } catch e: IllegalArgumentError {
-      const errorMsg = "Error: bad value in cast from %s to %s".doFormat(
+      const errorMsg = "Error: bad value in cast from %s to %s".format(
                        fromType:string, toType:string);
       castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
       return (false, errorMsg);
@@ -44,7 +44,7 @@ module Cast {
         tmp = before.a:bigint;
       }
     } catch e: IllegalArgumentError {
-      const errorMsg = "Error: bad value in cast from %s to bigint".doFormat(fromType:string);
+      const errorMsg = "Error: bad value in cast from %s to bigint".format(fromType:string);
       castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
       return (false, errorMsg);
     }
@@ -64,7 +64,7 @@ module Cast {
     if fromType == real {
       try {
           forall (s, v) in zip(strings, before.a) {
-              s = "%.17r".doFormat(v);
+              s = "%.17r".format(v);
           }
       } catch e {
           const errorMsg = "Error: could not convert float64 value to decimal representation";
@@ -75,7 +75,7 @@ module Cast {
       try {
           strings = [s in before.a] s : string;
       } catch e: IllegalArgumentError {
-          const errorMsg = "Error: bad value in cast from %s to string".doFormat(fromType:string);
+          const errorMsg = "Error: bad value in cast from %s to string".format(fromType:string);
           castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           return (false, errorMsg);
       }
