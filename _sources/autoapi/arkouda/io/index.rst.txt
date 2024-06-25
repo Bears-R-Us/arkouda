@@ -310,7 +310,7 @@ Module Contents
    .. seealso:: :obj:`ls`
 
 
-.. py:function:: read(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False, column_delim: str = ',', read_nested: bool = True, has_non_float_nulls: bool = False) -> Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index]]]
+.. py:function:: read(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False, column_delim: str = ',', read_nested: bool = True, has_non_float_nulls: bool = False, fixed_len: int = -1) -> Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index]]]
 
    Read datasets from files.
    File Type is determined automatically.
@@ -346,6 +346,10 @@ Module Contents
    :param has_non_float_nulls: Default False. This flag must be set to True to read non-float parquet columns
                                that contain null values.
    :type has_non_float_nulls: bool
+   :param fixed_len: Default -1. This value can be set for reading Parquet string columns when the
+                     length of each string is known at runtime. This can allow for skipping byte
+                     calculation, which can have an impact on performance.
+   :type fixed_len: int
 
    :returns:
 
@@ -495,7 +499,7 @@ Module Contents
    >>> x = ak.read_hdf('path/name_prefix*') # Reads HDF5
 
 
-.. py:function:: read_parquet(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False, tag_data: bool = False, read_nested: bool = True, has_non_float_nulls: bool = False) -> Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index]]]
+.. py:function:: read_parquet(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False, tag_data: bool = False, read_nested: bool = True, has_non_float_nulls: bool = False, fixed_len: int = -1) -> Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index]]]
 
    Read Arkouda objects from Parquet file/s
 
@@ -526,6 +530,10 @@ Module Contents
    :param has_non_float_nulls: Default False. This flag must be set to True to read non-float parquet columns
                                that contain null values.
    :type has_non_float_nulls: bool
+   :param fixed_len: Default -1. This value can be set for reading Parquet string columns when the
+                     length of each string is known at runtime. This can allow for skipping byte
+                     calculation, which can have an impact on performance.
+   :type fixed_len: int
 
    :returns:
 

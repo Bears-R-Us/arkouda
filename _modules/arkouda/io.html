@@ -1118,6 +1118,7 @@
     <span class="n">tag_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">read_nested</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">has_non_float_nulls</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">fixed_len</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span>
     <span class="n">Mapping</span><span class="p">[</span>
         <span class="nb">str</span><span class="p">,</span>
@@ -1167,6 +1168,10 @@
 <span class="sd">    has_non_float_nulls: bool</span>
 <span class="sd">        Default False. This flag must be set to True to read non-float parquet columns</span>
 <span class="sd">        that contain null values.</span>
+<span class="sd">    fixed_len: int</span>
+<span class="sd">        Default -1. This value can be set for reading Parquet string columns when the</span>
+<span class="sd">        length of each string is known at runtime. This can allow for skipping byte</span>
+<span class="sd">        calculation, which can have an impact on performance.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1231,6 +1236,7 @@
                 <span class="n">tag_data</span><span class="o">=</span><span class="n">tag_data</span><span class="p">,</span>
                 <span class="n">read_nested</span><span class="o">=</span><span class="n">read_nested</span><span class="p">,</span>
                 <span class="n">has_non_float_nulls</span><span class="o">=</span><span class="n">has_non_float_nulls</span><span class="p">,</span>
+                <span class="n">fixed_len</span><span class="o">=</span><span class="n">fixed_len</span><span class="p">,</span>
             <span class="p">)[</span><span class="n">dset</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">dset</span> <span class="ow">in</span> <span class="n">datasets</span>
         <span class="p">}</span>
@@ -1246,6 +1252,7 @@
                 <span class="s2">&quot;filenames&quot;</span><span class="p">:</span> <span class="n">filenames</span><span class="p">,</span>
                 <span class="s2">&quot;tag_data&quot;</span><span class="p">:</span> <span class="n">tag_data</span><span class="p">,</span>
                 <span class="s2">&quot;has_non_float_nulls&quot;</span><span class="p">:</span> <span class="n">has_non_float_nulls</span><span class="p">,</span>
+                <span class="s2">&quot;fixed_len&quot;</span><span class="p">:</span> <span class="n">fixed_len</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
         <span class="n">rep</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>  <span class="c1"># See GenSymIO._buildReadAllMsgJson for json structure</span>
@@ -2212,6 +2219,7 @@
     <span class="n">column_delim</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span>
     <span class="n">read_nested</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">has_non_float_nulls</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">fixed_len</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span>
     <span class="n">Mapping</span><span class="p">[</span>
         <span class="nb">str</span><span class="p">,</span>
@@ -2266,6 +2274,10 @@
 <span class="sd">    has_non_float_nulls: bool</span>
 <span class="sd">        Default False. This flag must be set to True to read non-float parquet columns</span>
 <span class="sd">        that contain null values.</span>
+<span class="sd">    fixed_len: int</span>
+<span class="sd">        Default -1. This value can be set for reading Parquet string columns when the</span>
+<span class="sd">        length of each string is known at runtime. This can allow for skipping byte</span>
+<span class="sd">        calculation, which can have an impact on performance.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -2330,6 +2342,7 @@
             <span class="n">allow_errors</span><span class="o">=</span><span class="n">allow_errors</span><span class="p">,</span>
             <span class="n">read_nested</span><span class="o">=</span><span class="n">read_nested</span><span class="p">,</span>
             <span class="n">has_non_float_nulls</span><span class="o">=</span><span class="n">has_non_float_nulls</span><span class="p">,</span>
+            <span class="n">fixed_len</span><span class="o">=</span><span class="n">fixed_len</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">elif</span> <span class="n">ftype</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;csv&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">read_csv</span><span class="p">(</span>
