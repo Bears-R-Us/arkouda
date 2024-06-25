@@ -1,12 +1,12 @@
 #include "ReadParquet.h"
 #include "UtilParquet.h"
 
-template <typename ReaderType, typename RetType>
+template <typename ReaderType, typename ChplType>
 void readColumn(void* chpl_arr, int startIdx, std::shared_ptr<parquet::ColumnReader> column_reader,
                 bool hasNonFloatNulls, int64_t i, int64_t numElems, int64_t batchSize,
                 int64_t values_read, bool* where_null_chpl) {
   int16_t definition_level; // nullable type and only reading single records in batch
-  auto chpl_ptr = (RetType*)chpl_arr;
+  auto chpl_ptr = (ChplType*)chpl_arr;
   ReaderType* reader =
     static_cast<ReaderType*>(column_reader.get());
   startIdx -= reader->Skip(startIdx);
@@ -25,6 +25,46 @@ void readColumn(void* chpl_arr, int startIdx, std::shared_ptr<parquet::ColumnRea
       // if values_read is 0, that means that it was a null value
       if(values_read == 0) {
         where_null_chpl[i] = true;
+      }
+      i++;
+    }
+  }
+}
+
+template <typename ReaderType, typename ChplType, typename PqType>
+void readColumnIrregularBitWidth(void* chpl_arr, int startIdx, std::shared_ptr<parquet::ColumnReader> column_reader,
+                                 bool hasNonFloatNulls, int64_t i, int64_t numElems, int64_t batchSize,
+                                 int64_t values_read, bool* where_null_chpl) {
+  int16_t definition_level; // nullable type and only reading single records in batch
+  auto chpl_ptr = (ChplType*)chpl_arr;
+  ReaderType* reader =
+    static_cast<ReaderType*>(column_reader.get());
+  startIdx -= reader->Skip(startIdx);
+
+  if (not hasNonFloatNulls) {
+    PqType* tmpArr = (PqType*)malloc(batchSize * sizeof(int32_t));
+    while (reader->HasNext() && i < numElems) {
+      if((numElems - i) < batchSize) // adjust batchSize if needed
+        batchSize = numElems - i;
+
+      // Can't read directly into chpl_ptr because it is int64
+      (void)reader->ReadBatch(batchSize, nullptr, nullptr, tmpArr, &values_read);
+      for (int64_t j = 0; j < values_read; j++)
+        chpl_ptr[i+j] = (ChplType)tmpArr[j];
+      i+=values_read;
+    }
+    free(tmpArr);
+  }
+  else {
+    int32_t tmp;
+    while (reader->HasNext() && i < numElems) {
+      (void)reader->ReadBatch(1, &definition_level, nullptr, &tmp, &values_read);
+      // if values_read is 0, that means that it was a null value
+      if(values_read == 0) {
+        where_null_chpl[i] = true;
+      }
+      else {
+        chpl_ptr[i] = (int64_t)tmp;
       }
       i++;
     }
@@ -69,40 +109,8 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_
         readColumn<parquet::Int64Reader, int64_t>(chpl_arr, startIdx, column_reader, hasNonFloatNulls, i,
                    numElems, batchSize, values_read, where_null_chpl);
       } else if(ty == ARROWINT32 || ty == ARROWUINT32) {
-        int16_t definition_level; // nullable type and only reading single records in batch
-        auto chpl_ptr = (int64_t*)chpl_arr;
-        parquet::Int32Reader* reader =
-          static_cast<parquet::Int32Reader*>(column_reader.get());
-        startIdx -= reader->Skip(startIdx);
-
-        if (not hasNonFloatNulls) {
-          int32_t* tmpArr = (int32_t*)malloc(batchSize * sizeof(int32_t));
-          while (reader->HasNext() && i < numElems) {
-            if((numElems - i) < batchSize) // adjust batchSize if needed
-              batchSize = numElems - i;
-
-            // Can't read directly into chpl_ptr because it is int64
-            (void)reader->ReadBatch(batchSize, nullptr, nullptr, tmpArr, &values_read);
-            for (int64_t j = 0; j < values_read; j++)
-              chpl_ptr[i+j] = (int64_t)tmpArr[j];
-            i+=values_read;
-          }
-          free(tmpArr);
-        }
-        else {
-          int32_t tmp;
-          while (reader->HasNext() && i < numElems) {
-            (void)reader->ReadBatch(1, &definition_level, nullptr, &tmp, &values_read);
-            // if values_read is 0, that means that it was a null value
-            if(values_read == 0) {
-              where_null_chpl[i] = true;
-            }
-            else {
-              chpl_ptr[i] = (int64_t)tmp;
-            }
-            i++;
-          }
-        }
+        readColumnIrregularBitWidth<parquet::Int32Reader, int64_t, int32_t>(chpl_arr, startIdx, column_reader, hasNonFloatNulls, i,
+                                              numElems, batchSize, values_read, where_null_chpl);
       } else if(ty == ARROWBOOLEAN) {
         readColumn<parquet::BoolReader, bool>(chpl_arr, startIdx, column_reader, hasNonFloatNulls, i,
                                               numElems, batchSize, values_read, where_null_chpl);
