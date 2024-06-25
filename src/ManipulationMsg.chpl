@@ -63,8 +63,8 @@ module ManipulationMsg {
     param ndIn: int, // rank of the array to be broadcast
     param ndOut: int // rank of the result array
   ): MsgTuple throws {
-    const name = msgArgs.getValueOf("name"),
-          shapeOut = msgArgs.get("shape").getTuple(ndOut),
+    const name = msgArgs["name"],
+          shapeOut = msgArgs["shape"].toScalarTuple(int, ndOut),
           rname = st.nextName();
 
     var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
@@ -164,9 +164,9 @@ module ManipulationMsg {
   @arkouda.registerND
   proc concatMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
-    const nArrays = msgArgs.get("n").getIntValue(),
-          names = msgArgs.get("names").getList(nArrays),
-          axis = msgArgs.get("axis").getPositiveIntValue(nd),
+    const nArrays = msgArgs["n"].toScalar(int),
+          names = msgArgs["names"].getList(nArrays),
+          axis = msgArgs["axis"].getPositiveIntValue(nd),
           rname = st.nextName();
 
     var gEnts: [0..<nArrays] borrowed GenSymEntry = getGenericEntries(names, st);
@@ -247,8 +247,8 @@ module ManipulationMsg {
   @arkouda.registerND
   proc concatFlatMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
-    const nArrays = msgArgs.get("n").getIntValue(),
-          names = msgArgs.get("names").getList(nArrays),
+    const nArrays = msgArgs["n"].toScalar(int),
+          names = msgArgs["names"].getList(nArrays),
           rname = st.nextName();
 
     var gEnts: [0..<nArrays] borrowed GenSymEntry = getGenericEntries(names, st);
@@ -308,8 +308,8 @@ module ManipulationMsg {
       return new MsgTuple(errMsg,MsgType.ERROR);
     }
 
-    const name = msgArgs.getValueOf("name"),
-          axis = msgArgs.get("axis").getPositiveIntValue(nd+1),
+    const name = msgArgs["name"],
+          axis = msgArgs["axis"].getPositiveIntValue(nd+1),
           rname = st.nextName();
 
     var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
@@ -372,9 +372,9 @@ module ManipulationMsg {
   @arkouda.registerND
   proc flipMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
-    const name = msgArgs.getValueOf("name"),
-          nAxes = msgArgs.get("nAxes").getIntValue(),
-          axesRaw = msgArgs.get("axis").getListAs(int, nAxes),
+    const name = msgArgs["name"],
+          nAxes = msgArgs["nAxes"].toScalar(int),
+          axesRaw = msgArgs["axis"].toScalarArray(int, nAxes),
           rname = st.nextName();
 
     var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
@@ -458,7 +458,7 @@ module ManipulationMsg {
   @arkouda.registerND
   proc flipAllMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
-    const name = msgArgs.getValueOf("name"),
+    const name = msgArgs["name"],
           rname = st.nextName();
 
     var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
@@ -508,8 +508,8 @@ module ManipulationMsg {
   @arkouda.registerND
   proc permuteDims(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
-    const name = msgArgs.getValueOf("name"),
-          axes = msgArgs.get("axes").getTuple(nd),
+    const name = msgArgs["name"],
+          axes = msgArgs["axes"].toScalarTuple(int, nd),
           rname = st.nextName();
 
     var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
@@ -580,8 +580,8 @@ module ManipulationMsg {
     param ndOut: int
   ): MsgTuple throws {
     param pn = Reflection.getRoutineName();
-    const name = msgArgs.getValueOf("name"),
-          rawShape = msgArgs.get("shape").getTuple(ndOut),
+    const name = msgArgs["name"],
+          rawShape = msgArgs["shape"].toScalarTuple(int, ndOut),
           rname = st.nextName();
 
     var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
@@ -677,11 +677,11 @@ module ManipulationMsg {
   @arkouda.registerND
   proc rollMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
-    const name = msgArgs.getValueOf("name"),
-          nShifts = msgArgs.get("nShifts").getIntValue(), // number of elements in 'shift' argument
-          nAxes = msgArgs.get("nAxes").getIntValue(),     // number of elements in 'axis' argument
-          shiftsRaw = msgArgs.get("shift").getListAs(int, nShifts),
-          axesRaw = msgArgs.get("axis").getListAs(int, nAxes),
+    const name = msgArgs["name"],
+          nShifts = msgArgs["nShifts"].toScalar(int),  // number of elements in 'shift' argument
+          nAxes = msgArgs["nAxes"].toScalar(int),      // number of elements in 'axis' argument
+          shiftsRaw = msgArgs["shift"].toScalarArray(int, nShifts),
+          axesRaw = msgArgs["axis"].toScalarArray(int, nAxes),
           rname = st.nextName();
 
     if nShifts != 1 && nShifts != nAxes {
@@ -761,8 +761,8 @@ module ManipulationMsg {
   @arkouda.registerND
   proc rollFlattenedMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
-    const name = msgArgs.getValueOf("name"),
-          shift = msgArgs.get("shift").getListAs(int, 1)[0],
+    const name = msgArgs["name"],
+          shift = msgArgs["shift"].toScalarArray(int, 1)[0],
           rname = st.nextName();
 
     var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
@@ -806,9 +806,9 @@ module ManipulationMsg {
     param ndOut: int
   ): MsgTuple throws {
     param pn = Reflection.getRoutineName();
-    const name = msgArgs.getValueOf("name"),
-          nAxes = msgArgs.get("nAxes").getIntValue(),
-          axes = msgArgs.get("axes").getListAs(int, nAxes),
+    const name = msgArgs["name"],
+          nAxes = msgArgs["nAxes"].toScalar(int),
+          axes = msgArgs["axes"].toScalarArray(int, nAxes),
           rname = st.nextName();
 
     var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
@@ -902,9 +902,9 @@ module ManipulationMsg {
       return new MsgTuple(errMsg,MsgType.ERROR);
     }
 
-    const nArrays = msgArgs.get("n").getIntValue(),
-          names = msgArgs.get("names").getList(nArrays),
-          axis = msgArgs.get("axis").getPositiveIntValue(nd+1),
+    const nArrays = msgArgs["n"].toScalar(int),
+          names = msgArgs["names"].toScalarArray(string, nArrays),
+          axis = msgArgs["axis"].getPositiveIntValue(nd+1),
           rname = st.nextName();
 
     var gEnts = for n in names do getGenericTypedArrayEntry(n, st);
@@ -993,8 +993,8 @@ module ManipulationMsg {
   @arkouda.registerND
   proc tileMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
-    const name = msgArgs.getValueOf("name"),
-          reps = msgArgs.get("reps").getTuple(nd),
+    const name = msgArgs["name"],
+          reps = msgArgs["reps"].toScalarTuple(int, nd),
           rname = st.nextName();
 
     var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
@@ -1061,9 +1061,9 @@ module ManipulationMsg {
       return new MsgTuple(errMsg,MsgType.ERROR);
     }
 
-    const name = msgArgs.getValueOf("name"),
-          axis = msgArgs.get("axis").getPositiveIntValue(nd),
-          numReturnArrays = msgArgs.get("numReturnArrays").getIntValue(),
+    const name = msgArgs["name"],
+          axis = msgArgs["axis"].getPositiveIntValue(nd),
+          numReturnArrays = msgArgs["numReturnArrays"].toScalar(int),
           rnames = for 0..<numReturnArrays do st.nextName();
 
     var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
@@ -1154,7 +1154,7 @@ module ManipulationMsg {
   @arkouda.registerND
   proc repeatFlatMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
-    const name = msgArgs.getValueOf("name"),
+    const name = msgArgs["name"],
           repeats = msgArgs.getValueOf("repeats"),
           rname = st.nextName();
 

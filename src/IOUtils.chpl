@@ -20,13 +20,13 @@ module IOUtils {
   /*
     Deserialize a Chapel array of strings from a JSON string
   */
-  proc jsonToArray(json: string, size: int) throws {
+  proc jsonToArray(json: string, type t, size: int) throws {
     var f = openMemFile();
     var w = f.writer(locking=false);
     w.write(json);
     w.close();
     var r = f.reader(deserializer=new jsonDeserializer(), locking=false);
-    var array: [0..#size] string;
+    var array: [0..#size] t;
     r.readf("%?", array);
     r.close();
     return array;

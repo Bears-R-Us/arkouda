@@ -402,8 +402,8 @@ module IndexingMsg
         param pn = Reflection.getRoutineName();
         const name = msgArgs.getValueOf("array"),
               nIdxArrays = msgArgs.get("nIdxArrays").getIntValue(),
-              idxArrays = msgArgs.get("idx").getList(nIdxArrays),           // lists of indices to use along a particular dimension
-              idxDims = msgArgs.get("idxDims").getListAs(int, nIdxArrays),  // which dimension each index array corresponds to
+              idxArrays = msgArgs.get("idx").getList(nIdxArrays),               // lists of indices to use along a particular dimension
+              idxDims = msgArgs.get("idxDims").toScalarArray(int, nIdxArrays),  // which dimension each index array corresponds to
               rname = st.nextName();
 
         const gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
@@ -712,7 +712,7 @@ module IndexingMsg
 
         proc setValue(type arrType, type valType): MsgTuple throws {
             var e = toSymEntry(gEnt, arrType, nd);
-            const val = valueArg.getValueAsType(valType);
+            const val = valueArg.toScalar(valType);
             e.a[(...idx)] = val:arrType;
 
             const repMsg = "%s success".format(pn);
@@ -722,7 +722,7 @@ module IndexingMsg
 
         proc setBigintValue(type valType): MsgTuple throws {
             var e = toSymEntry(gEnt, bigint, nd),
-                val = valueArg.getValueAsType(valType):bigint;
+                val = valueArg.toScalar(valType):bigint;
             if e.max_bits != -1 {
                 var max_size = 1:bigint;
                 max_size <<= e.max_bits;
@@ -1195,7 +1195,7 @@ module IndexingMsg
 
         proc sliceAssign(type arrType, type valType): MsgTuple throws {
             var e = toSymEntry(gEnt, arrType, nd);
-            const value = valueArg.getValueAsType(valType);
+            const value = valueArg.toScalar(valType);
             e.a[sliceDom] = value:arrType;
 
             const repMsg = "%s success".format(pn);
@@ -1205,7 +1205,7 @@ module IndexingMsg
 
         proc sliceAssignBigint(type valType): MsgTuple throws {
             var e = toSymEntry(gEnt, bigint, nd),
-                value = valueArg.getValueAsType(valType):bigint;
+                value = valueArg.toScalar(valType):bigint;
             if e.max_bits != -1 {
                 var max_size = 1:bigint;
                 max_size <<= e.max_bits;

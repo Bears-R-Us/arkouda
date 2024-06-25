@@ -398,7 +398,7 @@ module ServerDaemon {
             proc getArrayParameterObj(args: MessageArgs) throws {
                 var obj : ParameterObj;
 
-                for item in args.items() {
+                for item in args {
                     if item.key == 'a' || item.key == 'array' { 
                         obj = item;
                     }

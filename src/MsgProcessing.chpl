@@ -84,7 +84,7 @@ module MsgProcessing
         proc setValue(type t) throws {
             try {
                 const valueArg = msgArgs.get("value");
-                toSymEntry(e, t, 1).a[0] = valueArg.getValueAsType(t);
+                toSymEntry(e, t, 1).a[0] = valueArg.toScalar(t);
             } catch e: ErrorWithContext {
             } catch e {
                 throw e;

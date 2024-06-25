@@ -15,6 +15,8 @@ module MultiTypeSymbolTable
     use Map;
     use Registry;
 
+    import Message.ParameterObj;
+
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const mtLogger = new Logger(logLevel, logChannel);
@@ -521,6 +523,10 @@ module MultiTypeSymbolTable
             throw new Error(errorMsg);
         }
         return (abstractEntry: borrowed GenSymEntry);
+    }
+
+    proc getGenericTypedArrayEntry(name: ParameterObj, st: borrowed SymTab): borrowed GenSymEntry throws {
+        return getGenericTypedArrayEntry(name.toScalar(string), st);
     }
 
     /**
