@@ -51,7 +51,7 @@ module RandUtil {
                 if offset <= locSubDom.high {
                     // we take the ceil in chunk calculation because if elemsPerStream doesn't evenly divide along locale boundaries, the remainder is pulled to the previous locale
                     const chunksAlreadyDone = if loc.id == 0 then 0 else ceil((locSubDom.low + 1) / elemsPerStream:real):int,  // number of chunks handled by previous locales
-                        thisLocsNumChunks = ceil((locSubDom.high + 1 - locSubDom.low + offset) / elemsPerStream:real):int;  // number of chunks this locale needs to handle
+                        thisLocsNumChunks = ceil((locSubDom.high + 1 - (locSubDom.low + offset)) / elemsPerStream:real):int;  // number of chunks this locale needs to handle
 
                     coforall streamID in 0..<thisLocsNumChunks {
                         const taskSeed = generatorSeed + chunksAlreadyDone + streamID,  // initial seed offset by other locales threads plus current thread id
