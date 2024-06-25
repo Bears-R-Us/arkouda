@@ -1,6 +1,36 @@
 #include "ReadParquet.h"
 #include "UtilParquet.h"
 
+template <typename ReaderType, typename RetType>
+void readColumn(void* chpl_arr, int startIdx, std::shared_ptr<parquet::ColumnReader> column_reader,
+                bool hasNonFloatNulls, int64_t i, int64_t numElems, int64_t batchSize,
+                int64_t values_read, bool* where_null_chpl) {
+  int16_t definition_level; // nullable type and only reading single records in batch
+  auto chpl_ptr = (RetType*)chpl_arr;
+  ReaderType* reader =
+    static_cast<ReaderType*>(column_reader.get());
+  startIdx -= reader->Skip(startIdx);
+
+  if (not hasNonFloatNulls) {
+    while (reader->HasNext() && i < numElems) {
+      if((numElems - i) < batchSize) // adjust batchSize if needed
+        batchSize = numElems - i;
+      (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
+      i+=values_read;
+    }
+  }
+  else {
+    while (reader->HasNext() && i < numElems) {
+      (void)reader->ReadBatch(1, &definition_level, nullptr, &chpl_ptr[i], &values_read);
+      // if values_read is 0, that means that it was a null value
+      if(values_read == 0) {
+        where_null_chpl[i] = true;
+      }
+      i++;
+    }
+  }
+}
+
 int cpp_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_chpl, const char* colname, int64_t numElems, int64_t startIdx, int64_t batchSize, int64_t byteLength, bool hasNonFloatNulls, char** errMsg) {
   try {
     int64_t ty = cpp_getType(filename, colname, errMsg);
@@ -36,30 +66,8 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_
       // Since int64 and uint64 Arrow dtypes share a physical type and only differ
       // in logical type, they must be read from the file in the same way
       if(ty == ARROWINT64 || ty == ARROWUINT64) {
-        int16_t definition_level; // nullable type and only reading single records in batch
-        auto chpl_ptr = (int64_t*)chpl_arr;
-        parquet::Int64Reader* reader =
-          static_cast<parquet::Int64Reader*>(column_reader.get());
-        startIdx -= reader->Skip(startIdx);
-
-        if (not hasNonFloatNulls) {
-          while (reader->HasNext() && i < numElems) {
-            if((numElems - i) < batchSize) // adjust batchSize if needed
-              batchSize = numElems - i;
-            (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
-            i+=values_read;
-          }
-        }
-        else {
-          while (reader->HasNext() && i < numElems) {
-            (void)reader->ReadBatch(1, &definition_level, nullptr, &chpl_ptr[i], &values_read);
-            // if values_read is 0, that means that it was a null value
-            if(values_read == 0) {
-              where_null_chpl[i] = true;
-            }
-            i++;
-          }
-        }
+        readColumn<parquet::Int64Reader, int64_t>(chpl_arr, startIdx, column_reader, hasNonFloatNulls, i,
+                   numElems, batchSize, values_read, where_null_chpl);
       } else if(ty == ARROWINT32 || ty == ARROWUINT32) {
         int16_t definition_level; // nullable type and only reading single records in batch
         auto chpl_ptr = (int64_t*)chpl_arr;
@@ -96,30 +104,8 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_
           }
         }
       } else if(ty == ARROWBOOLEAN) {
-        int16_t definition_level; // nullable type and only reading single records in batch
-        auto chpl_ptr = (bool*)chpl_arr;
-        parquet::BoolReader* reader =
-          static_cast<parquet::BoolReader*>(column_reader.get());
-        startIdx -= reader->Skip(startIdx);
-
-        if (not hasNonFloatNulls) {
-          while (reader->HasNext() && i < numElems) {
-            if((numElems - i) < batchSize) // adjust batchSize if needed
-              batchSize = numElems - i;
-            (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
-            i+=values_read;
-          }
-        }
-        else {
-          while (reader->HasNext() && i < numElems) {
-            (void)reader->ReadBatch(1, &definition_level, nullptr, &chpl_ptr[i], &values_read);
-            // if values_read is 0, that means that it was a null value
-            if(values_read == 0) {
-              where_null_chpl[i] = true;
-            }
-            i++;
-          }
-        }
+        readColumn<parquet::BoolReader, bool>(chpl_arr, startIdx, column_reader, hasNonFloatNulls, i,
+                                              numElems, batchSize, values_read, where_null_chpl);
       } else if(ty == ARROWSTRING) {
         int16_t definition_level; // nullable type and only reading single records in batch
         auto chpl_ptr = (unsigned char*)chpl_arr;
