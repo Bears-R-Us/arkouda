@@ -67,7 +67,7 @@ module ManipulationMsg {
           shapeOut = msgArgs["shape"].toScalarTuple(int, ndOut),
           rname = st.nextName();
 
-    var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+    var gEnt = st[name]: borrowed GenSymEntry;
 
     proc doBroadcast(type t): MsgTuple throws {
       var eIn = toSymEntry(gEnt, t, ndIn),
@@ -165,11 +165,11 @@ module ManipulationMsg {
   proc concatMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
     const nArrays = msgArgs["n"].toScalar(int),
-          names = msgArgs["names"].getList(nArrays),
+          names = msgArgs["names"].toScalarArray(string, nArrays),
           axis = msgArgs["axis"].getPositiveIntValue(nd),
           rname = st.nextName();
 
-    var gEnts: [0..<nArrays] borrowed GenSymEntry = getGenericEntries(names, st);
+    var gEnts = [i in 0..<nArrays] st[names[i]]: borrowed GenSymEntry;
 
     // confirm that all arrays have the same dtype
     // (type promotion needs to be completed before calling 'concat')
@@ -248,10 +248,10 @@ module ManipulationMsg {
   proc concatFlatMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
     const nArrays = msgArgs["n"].toScalar(int),
-          names = msgArgs["names"].getList(nArrays),
+          names = msgArgs["names"].toScalarArray(string, nArrays),
           rname = st.nextName();
 
-    var gEnts: [0..<nArrays] borrowed GenSymEntry = getGenericEntries(names, st);
+    var gEnts = [i in 0..<nArrays] st[names[i]]: borrowed GenSymEntry;
 
     // confirm that all arrays have the same dtype
     // (type promotion needs to be completed before calling 'concat')
@@ -312,7 +312,7 @@ module ManipulationMsg {
           axis = msgArgs["axis"].getPositiveIntValue(nd+1),
           rname = st.nextName();
 
-    var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+    var gEnt = st[name]: borrowed GenSymEntry;
 
     proc expandDims(type t): MsgTuple throws {
       const eIn = toSymEntry(gEnt, t, nd),
@@ -377,7 +377,7 @@ module ManipulationMsg {
           axesRaw = msgArgs["axis"].toScalarArray(int, nAxes),
           rname = st.nextName();
 
-    var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+    var gEnt = st[name]: borrowed GenSymEntry;
 
     proc doFlip(type t): MsgTuple throws {
       const eIn = toSymEntry(gEnt, t, nd),
@@ -461,7 +461,7 @@ module ManipulationMsg {
     const name = msgArgs["name"],
           rname = st.nextName();
 
-    var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+    var gEnt = st[name]: borrowed GenSymEntry;
 
     proc doFlip(type t): MsgTuple throws {
       const eIn = toSymEntry(gEnt, t, nd);
@@ -512,7 +512,7 @@ module ManipulationMsg {
           axes = msgArgs["axes"].toScalarTuple(int, nd),
           rname = st.nextName();
 
-    var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+    var gEnt = st[name]: borrowed GenSymEntry;
 
     proc doPermutation(type t): MsgTuple throws {
       const eIn = toSymEntry(gEnt, t, nd),
@@ -584,7 +584,7 @@ module ManipulationMsg {
           rawShape = msgArgs["shape"].toScalarTuple(int, ndOut),
           rname = st.nextName();
 
-    var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+    var gEnt = st[name]: borrowed GenSymEntry;
 
     proc doReshape(type t): MsgTuple throws {
       const eIn = toSymEntry(gEnt, t, ndIn),
@@ -694,7 +694,7 @@ module ManipulationMsg {
       if nShifts == 1
         then shifts = [i in 0..<nAxes] shiftsRaw[0];
         else shifts = shiftsRaw;
-    var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+    var gEnt = st[name]: borrowed GenSymEntry;
 
     proc doRoll(type t): MsgTuple throws {
       const eIn = toSymEntry(gEnt, t, nd),
@@ -765,7 +765,7 @@ module ManipulationMsg {
           shift = msgArgs["shift"].toScalarArray(int, 1)[0],
           rname = st.nextName();
 
-    var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+    var gEnt = st[name]: borrowed GenSymEntry;
 
     proc doRoll(type t): MsgTuple throws {
       const eIn = toSymEntry(gEnt, t, nd),
@@ -811,7 +811,7 @@ module ManipulationMsg {
           axes = msgArgs["axes"].toScalarArray(int, nAxes),
           rname = st.nextName();
 
-    var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+    var gEnt = st[name]: borrowed GenSymEntry;
 
     proc doSqueeze(type t): MsgTuple throws {
       const eIn = toSymEntry(gEnt, t, ndIn),
@@ -907,7 +907,7 @@ module ManipulationMsg {
           axis = msgArgs["axis"].getPositiveIntValue(nd+1),
           rname = st.nextName();
 
-    var gEnts = for n in names do getGenericTypedArrayEntry(n, st);
+    var gEnts = [i in 0..<nArrays] st[names[i]]: borrowed GenSymEntry;
 
     // confirm that all arrays have the same dtype and shape
     // (type promotion needs to be completed before calling 'stack')
@@ -997,7 +997,7 @@ module ManipulationMsg {
           reps = msgArgs["reps"].toScalarTuple(int, nd),
           rname = st.nextName();
 
-    var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+    var gEnt = st[name]: borrowed GenSymEntry;
 
     proc doTile(type t): MsgTuple throws {
       const eIn = toSymEntry(gEnt, t, nd),
@@ -1066,7 +1066,7 @@ module ManipulationMsg {
           numReturnArrays = msgArgs["numReturnArrays"].toScalar(int),
           rnames = for 0..<numReturnArrays do st.nextName();
 
-    var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+    var gEnt = st[name]: borrowed GenSymEntry;
 
     proc doUnstack(type t): MsgTuple throws {
       const eIn = toSymEntry(gEnt, t, nd),
@@ -1158,8 +1158,8 @@ module ManipulationMsg {
           repeats = msgArgs.getValueOf("repeats"),
           rname = st.nextName();
 
-    var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st),
-        gEntRepeats: borrowed GenSymEntry = getGenericTypedArrayEntry(repeats, st);
+    var gEnt = st[name]: borrowed GenSymEntry,
+        gEntRepeats = st[repeats]: borrowed GenSymEntry;
 
     proc doRepeatFlat(type t): MsgTuple throws {
       const eIn = toSymEntry(gEnt, t, nd),
@@ -1251,12 +1251,5 @@ module ManipulationMsg {
         return new MsgTuple(errorMsg,MsgType.ERROR);
       }
     }
-  }
-
-  proc getGenericEntries(names: [?d] string, st: borrowed SymTab): [] borrowed GenSymEntry throws {
-    var gEnts: [d] borrowed GenSymEntry?;
-    for (i, name) in zip(d, names) do gEnts[i] = getGenericTypedArrayEntry(name, st);
-    const ret = [i in d] gEnts[i]!;
-    return ret;
   }
 }
