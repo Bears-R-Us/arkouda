@@ -108,7 +108,7 @@ module IndexingMsg
 
         var arrParam = msgArgs.get("base");
         arrParam.setKey("array");
-        var idxParam = new ParameterObj("idx", indiciesName, ObjectType.PDARRAY, "int");
+        var idxParam = new ParameterObj("idx", indiciesName, "int");
         var subArgs = new MessageArgs(new list([arrParam, idxParam]));
         return pdarrayIndexMsg(cmd, subArgs, st);
     }
@@ -127,7 +127,7 @@ module IndexingMsg
 
         var arrParam = msgArgs.get("base");
         arrParam.setKey("array");
-        var idxParam = new ParameterObj("idx", "", ObjectType.VALUE, "");
+        var idxParam = new ParameterObj("idx", "", "");
 
         // multi-dim to 1D address calculation
         // (dimProd and coords are reversed on python side to account for row_major vs column_major)
@@ -136,7 +136,6 @@ module IndexingMsg
                 var coordsEntry = toSymEntry(coords, int);
                 var idx = + reduce (dimProdEntry.a * coordsEntry.a);
                 idxParam.setVal(idx:string);
-                idxParam.setDType("int");
                 var subArgs = new MessageArgs(new list([arrParam, idxParam]));
                 return intIndexMsg(cmd, subArgs, st, 1);
             }
@@ -144,7 +143,6 @@ module IndexingMsg
                 var coordsEntry = toSymEntry(coords, uint);
                 var idx = + reduce (dimProdEntry.a: uint * coordsEntry.a);
                 idxParam.setVal(idx:string);
-                idxParam.setDType("uint");
                 var subArgs = new MessageArgs(new list([arrParam, idxParam]));
                 return intIndexMsg(cmd, subArgs, st, 1);
             }
@@ -172,7 +170,7 @@ module IndexingMsg
 
         var arrParam = msgArgs.get("base");
         arrParam.setKey("array");
-        var idxParam = new ParameterObj("idx", "", ObjectType.VALUE, "");
+        var idxParam = new ParameterObj("idx", "", "");
 
         // multi-dim to 1D address calculation
         // (dimProd and coords are reversed on python side to account for row_major vs column_major)
@@ -181,7 +179,6 @@ module IndexingMsg
                 var coordsEntry = toSymEntry(coords, int);
                 var idx = + reduce (dimProdEntry.a * coordsEntry.a);
                 idxParam.setVal(idx:string);
-                idxParam.setDType("int");
                 var subArgs = new MessageArgs(new list([arrParam, msgArgs.get("value"), msgArgs.get("dtype"), idxParam]));
                 return setIntIndexToValueMsg(cmd, subArgs, st, 1);
             }
@@ -189,7 +186,6 @@ module IndexingMsg
                 var coordsEntry = toSymEntry(coords, uint);
                 var idx = + reduce (dimProdEntry.a: uint * coordsEntry.a);
                 idxParam.setVal(idx:string);
-                idxParam.setDType("uint");
                 var subArgs = new MessageArgs(new list([arrParam, msgArgs.get("value"), msgArgs.get("dtype"), idxParam]));
                 return setIntIndexToValueMsg(cmd, subArgs, st, 1);
             }

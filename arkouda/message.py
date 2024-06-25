@@ -10,47 +10,15 @@ from typeguard import typechecked
 from arkouda.dtypes import isSupportedNumber, resolve_scalar_dtype
 
 
-class ObjectType(Enum):
-    """
-    Class used for assigning object types in the JSON string
-    sent to the server for processing
-    """
-
-    PDARRAY = "PDARRAY"
-    STRINGS = "SEGSTRING"
-    SEGARRAY = "SEGARRAY"
-    LIST = "LIST"
-    DICT = "DICT"
-    VALUE = "VALUE"
-    DATETIME = "DATETIME"
-    TIMEDELTA = "TIMEDELTA"
-
-    def __str__(self) -> str:
-        """
-        Overridden method returns value, which is useful in outputting
-        a MessageType object to JSON.
-        """
-        return self.value
-
-    def __repr__(self) -> str:
-        """
-        Overridden method returns value, which is useful in outputting
-        a MessageType object to JSON.
-        """
-        return self.value
-
-
 class ParameterObject:
-    __slots__ = ("key", "objType", "dtype", "val")
+    __slots__ = ("key", "dtype", "val")
 
     key: str
-    objType: MessageFormat
     dtype: str
     val: str
 
-    def __init__(self, key, objType, dtype, val):
+    def __init__(self, key, dtype, val):
         object.__setattr__(self, "key", key)
-        object.__setattr__(self, "objType", objType)
         object.__setattr__(self, "dtype", dtype)
         object.__setattr__(self, "val", val)
 
@@ -58,7 +26,6 @@ class ParameterObject:
     def dict(self):
         return {
             "key": self.key,
-            "objType": str(self.objType),
             "dtype": self.dtype,
             "val": self.val,
         }
@@ -80,7 +47,7 @@ class ParameterObject:
         -------
         ParameterObject
         """
-        return ParameterObject(key, ObjectType.PDARRAY, str(val.dtype), val.name)
+        return ParameterObject(key, str(val.dtype), val.name)
 
     @staticmethod
     @typechecked
@@ -101,7 +68,7 @@ class ParameterObject:
         """
         # empty string if name of String obj is none
         name = val.name if val.name else ""
-        return ParameterObject(key, ObjectType.STRINGS, "str", name)
+        return ParameterObject(key, "str", name)
 
     @staticmethod
     @typechecked
@@ -121,7 +88,7 @@ class ParameterObject:
         ParameterObject
         """
         data = json.dumps({"segments": val.segments.name, "values": val.values.name})
-        return ParameterObject(key, ObjectType.SEGARRAY, str(val.values.dtype), data)
+        return ParameterObject(key, str(val.values.dtype), data)
 
     @staticmethod
     def _is_supported_value(val):
@@ -184,7 +151,7 @@ class ParameterObject:
             str(p) if ParameterObject._is_supported_value(p) else ParameterObject._format_param(p)
             for p in val
         ]
-        return ParameterObject(key, ObjectType.LIST, t, json.dumps(data))
+        return ParameterObject(key, t, json.dumps(data))
 
     @staticmethod
     @typechecked
@@ -195,7 +162,7 @@ class ParameterObject:
                 raise TypeError(f"Argument keys are required to be str. Found {type(k)}")
             param = ParameterObject.factory(k, v)
             j.append(json.dumps(param.dict))
-        return ParameterObject(key, ObjectType.DICT, str(dict.__name__), json.dumps(j))
+        return ParameterObject(key, str(dict.__name__), json.dumps(j))
 
     @staticmethod
     @typechecked
@@ -215,7 +182,7 @@ class ParameterObject:
         ParameterObject
         """
         v = val if isinstance(val, str) else str(val)
-        return ParameterObject(key, ObjectType.VALUE, resolve_scalar_dtype(val), v)
+        return ParameterObject(key, resolve_scalar_dtype(val), v)
 
     @staticmethod
     def generate_dispatch() -> Dict:

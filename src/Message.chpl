@@ -14,7 +14,6 @@ module Message {
 
     enum MsgType {NORMAL,WARNING,ERROR}
     enum MsgFormat {STRING,BINARY}
-    enum ObjectType {PDARRAY, SEGSTRING, LIST, DICT, VALUE, DATETIME, TIMEDELTA}
 
     /*
      * Encapsulates the message string and message type.
@@ -104,25 +103,14 @@ module Message {
     record ParameterObj {
         var key: string; // json key value 
         var val: string; // json value
-        var objType: ObjectType; // type of the object
         var dtype: string; // type of elements contained in the object
 
         proc init() {}
 
-        proc init(key: string, val: string, objType: ObjectType, dtype: string) {
+        proc init(key: string, val: string, dtype: string) {
             this.key = key;
             this.val = val;
-            this.objType = objType;
             this.dtype = dtype;
-        }
-
-        proc asMap() throws {
-            var m = new map(string, string);
-            m.add("key", this.key);
-            m.add("val", this.val);
-            m.add("objType", this.objType:string);
-            m.add("dtype", this.dtype);
-            return m;
         }
 
         proc ref setKey(value: string) {
@@ -131,22 +119,6 @@ module Message {
 
         proc ref setVal(value: string) {
             this.val = value;
-        }
-
-        proc ref setObjType(value: ObjectType) {
-            this.ObjectType = value;
-        }
-
-        proc ref setDType(value: string) {
-            this.dtype = value;
-        }
-
-        /*
-        * Return the objType value
-        * Returns str
-        */
-        proc getObjType(){
-            return this.objType;
         }
 
         /*
@@ -163,6 +135,25 @@ module Message {
         */
         proc getValue() {
             return this.val;
+        }
+
+        // temporary implementation until more robust JSON parsing is implemented
+        proc tryGetScalar(type t): (t, bool) {
+            if t == string {
+                // is this a number? if so, assume it isn't a string
+                try {
+                    const x = this.val: real;
+                    return ("", false);
+                } catch {
+                    return (this.val, true);
+                }
+            } else {
+                try {
+                    return (this.val: t, true);
+                } catch {
+                    return (t.init, false);
+                }
+            }
         }
 
         /*
@@ -225,7 +216,6 @@ module Message {
                 try {
                     return (this.toScalar(t),);
                 } catch {
-                    if this.objType != ObjectType.LIST then throw err();
 
                     try {
                         return parseJson(this.val, 1*t);
@@ -234,7 +224,6 @@ module Message {
                     }
                 }
             } else {
-                if this.objType != ObjectType.LIST then throw err();
 
                 try {
                     return parseJson(this.val, size*t);
@@ -261,10 +250,6 @@ module Message {
                     getModuleName(),
                     "TypeError"
                 );
-            }
-
-            if this.objType != ObjectType.LIST {
-                throw err();
             }
 
             try {
@@ -294,10 +279,6 @@ module Message {
                     getModuleName(),
                     "TypeError"
                 );
-            }
-
-            if this.objType != ObjectType.LIST {
-                throw err();
             }
 
             try {
