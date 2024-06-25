@@ -990,11 +990,11 @@ module ParquetMsg {
           // Calculate byte sizes by reading or fixed length
           if fixedLen < 2 {
             byteSizes = calcStrSizesAndOffset(entrySeg.a, filenames, sizes, dsetname);
-            entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
           } else {
             entrySeg.a = fixedLen;
             byteSizes = fixedLen*len;
           }
+          entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
 
           // Read into distributed array
           var entryVal = new shared SymEntry((+ reduce byteSizes), uint(8));
