@@ -16,7 +16,7 @@ tables>=3.7.0
 pyarrow
 libiconv
 libidn2
-scipy
+scipy<=1.13.1
 
 # Developer dependencies
 pexpect
