@@ -32,6 +32,30 @@ void readColumn(void* chpl_arr, int startIdx, std::shared_ptr<parquet::ColumnRea
 }
 
 template <typename ReaderType, typename ChplType, typename PqType>
+void readColumnDbFl(void* chpl_arr, int startIdx, std::shared_ptr<parquet::ColumnReader> column_reader,
+                    bool hasNonFloatNulls, int64_t i, int64_t numElems, int64_t batchSize,
+                    int64_t values_read, bool* where_null_chpl) {
+  int16_t definition_level; // nullable type and only reading single records in batch
+  auto chpl_ptr = (ChplType*)chpl_arr;
+  ReaderType* reader =
+    static_cast<ReaderType*>(column_reader.get());
+  startIdx -= reader->Skip(startIdx);
+
+  while (reader->HasNext() && i < numElems) {
+    PqType value;
+    (void)reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
+    // if values_read is 0, that means that it was a null value
+    if(values_read > 0) {
+      // this means it wasn't null
+      chpl_ptr[i] = (ChplType) value;
+    } else {
+      chpl_ptr[i] = NAN;
+    }
+    i++;
+  }
+}
+
+template <typename ReaderType, typename ChplType, typename PqType>
 void readColumnIrregularBitWidth(void* chpl_arr, int startIdx, std::shared_ptr<parquet::ColumnReader> column_reader,
                                  bool hasNonFloatNulls, int64_t i, int64_t numElems, int64_t batchSize,
                                  int64_t values_read, bool* where_null_chpl) {
@@ -133,43 +157,11 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_
           i++; // skip one space so the strings are null terminated with a 0
         }        
       } else if(ty == ARROWFLOAT) {
-        int16_t definition_level; // nullable type and only reading single records in batch
-        auto chpl_ptr = (double*)chpl_arr;
-        parquet::FloatReader* reader =
-          static_cast<parquet::FloatReader*>(column_reader.get());
-        startIdx -= reader->Skip(startIdx);
-
-        while (reader->HasNext() && i < numElems) {
-          float value;
-          (void)reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
-          // if values_read is 0, that means that it was a null value
-          if(values_read > 0) {
-            // this means it wasn't null
-            chpl_ptr[i] = (double) value;
-          } else {
-            chpl_ptr[i] = NAN;
-          }
-          i++;
-        }
+        readColumnDbFl<parquet::FloatReader, double, float>(chpl_arr, startIdx, column_reader, hasNonFloatNulls, i,
+                                                            numElems, batchSize, values_read, where_null_chpl);
       } else if(ty == ARROWDOUBLE) {
-        int16_t definition_level; // nullable type and only reading single records in batch
-        auto chpl_ptr = (double*)chpl_arr;
-        parquet::DoubleReader* reader =
-          static_cast<parquet::DoubleReader*>(column_reader.get());
-        startIdx -= reader->Skip(startIdx);
-
-        while (reader->HasNext() && i < numElems) {
-          double value;
-          (void)reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
-          // if values_read is 0, that means that it was a null value
-          if(values_read > 0) {
-            // this means it wasn't null
-            chpl_ptr[i] = value;
-          } else {
-            chpl_ptr[i] = NAN;
-          }
-          i++;
-        }
+        readColumnDbFl<parquet::DoubleReader, double, double>(chpl_arr, startIdx, column_reader, hasNonFloatNulls, i,
+                                                            numElems, batchSize, values_read, where_null_chpl);
       } else if(ty == ARROWDECIMAL) {
         auto chpl_ptr = (double*)chpl_arr;
         parquet::FixedLenByteArray value;
