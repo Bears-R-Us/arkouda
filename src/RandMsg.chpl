@@ -403,7 +403,7 @@ module RandMsg
               rname = st.nextName();
 
         randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                "name: %? size %i method %s state %i".doFormat(name, size, method, state));
+                                "name: %? size %i method %s state %i".format(name, size, method, state));
 
         st.checkTable(name);
 
@@ -429,7 +429,7 @@ module RandMsg
                 st.addEntry(rname, createSymEntry(exponentialArr));
             }
             otherwise {
-                var errorMsg = "Only ZIG and INV are supported for method. Recieved: %s".doFormat(method);
+                var errorMsg = "Only ZIG and INV are supported for method. Recieved: %s".format(method);
                 randLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
             }
