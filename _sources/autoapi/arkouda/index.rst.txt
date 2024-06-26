@@ -9977,6 +9977,34 @@ Package Contents
 
 
 
+   .. py:method:: exponential(scale=1.0, size=None, method='zig')
+
+      Draw samples from an exponential distribution.
+
+      Its probability density function is
+
+      .. math::
+          f(x; \frac{1}{\beta}) = \frac{1}{\beta} \exp(-\frac{x}{\beta}),
+
+      for ``x > 0`` and 0 elsewhere. :math:`\beta` is the scale parameter,
+      which is the inverse of the rate parameter :math:`\lambda = 1/\beta`.
+      The rate parameter is an alternative, widely used parameterization
+      of the exponential distribution.
+
+      :param scale: The scale parameter, :math:`\beta = 1/\lambda`. Must be
+                    non-negative. An array must have the same size as the size argument.
+      :type scale: float or pdarray
+      :param size: Output shape. Default is None, in which case a single value is returned.
+      :type size: numeric_scalars, optional
+      :param method: Either 'inv' or 'zig'. 'inv' uses the default inverse CDF method.
+                     'zig' uses the Ziggurat method.
+      :type method: str, optional
+
+      :returns: Drawn samples from the parameterized exponential distribution.
+      :rtype: pdarray
+
+
+
    .. py:method:: integers(low, high=None, size=None, dtype=akint64, endpoint=False)
 
       Return random integers from low (inclusive) to high (exclusive),
@@ -10131,6 +10159,24 @@ Package Contents
       :type x: pdarray
 
       :rtype: None
+
+
+
+   .. py:method:: standard_exponential(size=None, method='zig')
+
+      Draw samples from the standard exponential distribution.
+
+      `standard_exponential` is identical to the exponential distribution
+      with a scale parameter of 1.
+
+      :param size: Output shape. Default is None, in which case a single value is returned.
+      :type size: numeric_scalars, optional
+      :param method: Either 'inv' or 'zig'. 'inv' uses the default inverse CDF method.
+                     'zig' uses the Ziggurat method.
+      :type method: str, optional
+
+      :returns: Drawn samples from the standard exponential distribution.
+      :rtype: pdarray
 
 
 
