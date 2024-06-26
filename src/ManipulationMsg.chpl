@@ -165,7 +165,7 @@ module ManipulationMsg {
           names = msgArgs["names"].toScalarArray(string, nArrays),
           axis = msgArgs["axis"].getPositiveIntValue(nd);
 
-    var gEnts = [i in 0..<nArrays] st[names[i]]: borrowed GenSymEntry;
+    var gEnts = getGenericEntries(names, st);
 
     // confirm that all arrays have the same dtype
     // (type promotion needs to be completed before calling 'concat')
@@ -244,7 +244,7 @@ module ManipulationMsg {
     const nArrays = msgArgs["n"].toScalar(int),
           names = msgArgs["names"].toScalarArray(string, nArrays);
 
-    var gEnts = [i in 0..<nArrays] st[names[i]]: borrowed GenSymEntry;
+    var gEnts = getGenericEntries(names, st);
 
     // confirm that all arrays have the same dtype
     // (type promotion needs to be completed before calling 'concat')
@@ -872,7 +872,7 @@ module ManipulationMsg {
           names = msgArgs["names"].toScalarArray(string, nArrays),
           axis = msgArgs["axis"].getPositiveIntValue(nd+1);
 
-    var gEnts = [i in 0..<nArrays] st[names[i]]: borrowed GenSymEntry;
+    var gEnts = getGenericEntries(names, st);
 
     // confirm that all arrays have the same dtype and shape
     // (type promotion needs to be completed before calling 'stack')
@@ -1209,5 +1209,15 @@ module ManipulationMsg {
         return MsgTuple.error(errorMsg);
       }
     }
+  }
+
+  // Get an array of generic symbol table entries from an array of names
+  // should replace calls to this proc with: 'var gEnts = [i in 0..<nArrays] st[names[i]]: borrowed GenSymEntry;'
+  // after 2.1 is the oldest supported version (relevant bug was fixed here https://github.com/chapel-lang/chapel/pull/24693)
+  proc getGenericEntries(names: [?d] string, st: borrowed SymTab): [] borrowed GenSymEntry throws {
+    var gEnts: [d] borrowed GenSymEntry?;
+    for (i, name) in zip(d, names) do gEnts[i] = st[name]: borrowed GenSymEntry?;
+    const ret = [i in d] gEnts[i]!;
+    return ret;
   }
 }
