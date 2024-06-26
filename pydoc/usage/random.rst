@@ -21,6 +21,10 @@ choice
 ---------
 .. autofunction:: arkouda.random.Generator.choice
 
+exponential
+---------
+.. autofunction:: arkouda.random.Generator.exponential
+
 integers
 ---------
 .. autofunction:: arkouda.random.Generator.integers
@@ -44,6 +48,10 @@ shuffle
 random
 ---------
 .. autofunction:: arkouda.random.Generator.random
+
+standard_exponential
+---------
+.. autofunction:: arkouda.random.Generator.standard_exponential
 
 standard_normal
 ---------
