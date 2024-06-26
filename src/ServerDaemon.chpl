@@ -645,7 +645,7 @@ module ServerDaemon {
                     select cmd {
                         when "connect" {
                             if authenticate {
-                                repMsg = new MsgTuple("connected to arkouda server tcp://*:%i as user %s with token %s".doFormat(
+                                repMsg = new MsgTuple("connected to arkouda server tcp://*:%i as user %s with token %s".format(
                                                                 ServerPort,user,token), MsgType.NORMAL);
                             } else {
                                 repMsg = new MsgTuple("connected to arkouda server tcp://*:%i".format(ServerPort), MsgType.NORMAL);
