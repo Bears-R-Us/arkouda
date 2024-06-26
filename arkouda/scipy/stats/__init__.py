@@ -1,4 +1,5 @@
 # mypy: ignore-errors
+
 from scipy.stats import (  # noqa
     ConstantInputWarning,
     DegenerateDataWarning,
@@ -140,6 +141,12 @@ from scipy.stats import (  # noqa
     yulesimon,
     zipf,
     zipfian,
+)
+
+from arkouda.scipy._utils import (
+    arrays_not_implemented_decorator,
+    clean_doc_string,
+    not_implemented,
 )
 
 from ._stats_py import Power_divergenceResult, chisquare, power_divergence  # noqa
@@ -289,3 +296,170 @@ scipy_imports = [
 ]
 
 __all__ = scipy_imports + ["Power_divergenceResult", "power_divergence", "chisquare"]
+
+
+alpha.__doc__ = clean_doc_string(alpha.__doc__)
+alpha.rvs = not_implemented
+alpha.var = arrays_not_implemented_decorator(alpha.var)
+
+
+func_list = [
+    ConstantInputWarning,
+    DegenerateDataWarning,
+    FitError,
+    NearConstantInputWarning,
+    alpha,
+    anglit,
+    arcsine,
+    argus,
+    bernoulli,
+    beta,
+    betabinom,
+    biasedurn,
+    binom,
+    binomtest,
+    boltzmann,
+    bradford,
+    burr,
+    burr12,
+    cauchy,
+    chi,
+    chi2,
+    contingency,
+    cosine,
+    crystalball,
+    dgamma,
+    distributions,
+    dlaplace,
+    dweibull,
+    erlang,
+    expon,
+    exponnorm,
+    exponpow,
+    exponweib,
+    f,
+    fatiguelife,
+    fisk,
+    foldcauchy,
+    foldnorm,
+    gamma,
+    gausshyper,
+    genexpon,
+    genextreme,
+    gengamma,
+    genhalflogistic,
+    genhyperbolic,
+    geninvgauss,
+    genlogistic,
+    gennorm,
+    genpareto,
+    geom,
+    gibrat,
+    gompertz,
+    gumbel_l,
+    gumbel_r,
+    halfcauchy,
+    halfgennorm,
+    halflogistic,
+    halfnorm,
+    hypergeom,
+    hypsecant,
+    invgamma,
+    invgauss,
+    invweibull,
+    johnsonsb,
+    johnsonsu,
+    kappa3,
+    kappa4,
+    kde,
+    ksone,
+    kstwo,
+    kstwobign,
+    laplace,
+    laplace_asymmetric,
+    levy,
+    levy_l,
+    levy_stable,
+    loggamma,
+    logistic,
+    loglaplace,
+    lognorm,
+    logser,
+    loguniform,
+    lomax,
+    maxwell,
+    mielke,
+    morestats,
+    moyal,
+    mstats_basic,
+    mstats_extras,
+    mvn,
+    nakagami,
+    nbinom,
+    ncf,
+    nchypergeom_fisher,
+    nchypergeom_wallenius,
+    nct,
+    ncx2,
+    nhypergeom,
+    norm,
+    norminvgauss,
+    pareto,
+    pearson3,
+    planck,
+    poisson,
+    poisson_means_test,
+    powerlaw,
+    powerlognorm,
+    powernorm,
+    randint,
+    rayleigh,
+    rdist,
+    recipinvgauss,
+    reciprocal,
+    rice,
+    sampling,
+    semicircular,
+    skellam,
+    skewcauchy,
+    skewnorm,
+    stats,
+    studentized_range,
+    t,
+    trapezoid,
+    trapz,
+    triang,
+    truncexpon,
+    truncnorm,
+    truncpareto,
+    truncweibull_min,
+    tukeylambda,
+    uniform,
+    vonmises,
+    vonmises_line,
+    wald,
+    weibull_max,
+    weibull_min,
+    wrapcauchy,
+    yulesimon,
+    zipf,
+    zipfian,
+]
+
+
+def adapt_for_arkouda(obj):
+    if hasattr(obj, "__doc__") and obj.__doc__ is not None:
+        obj.__doc__ = clean_doc_string(obj.__doc__)
+
+    # for attribute in dir(obj):
+    #     a = getattr(obj, attribute)
+    #     if not attribute.startswith("__") and (callable(a) or hasattr(a, "__call__")):
+    #         setattr(obj, attribute, arrays_not_implemented_decorator(a))
+
+    if hasattr(obj, "rvs"):
+        setattr(obj, "rvs", not_implemented)
+
+    return obj
+
+
+chi2 = adapt_for_arkouda(chi2)

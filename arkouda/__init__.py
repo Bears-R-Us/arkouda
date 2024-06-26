@@ -41,3 +41,4 @@ from arkouda.util import (
     broadcast_dims,
 )
 from arkouda.random import *
+from arkouda.scipy import *
