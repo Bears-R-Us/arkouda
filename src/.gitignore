@@ -1,3 +1,5 @@
 TAGS
-ArrowFunctions.o
 ServerRegistration.chpl
+ReadParquet.o
+WriteParquet.o
+UtilParquet.o
