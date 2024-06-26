@@ -577,6 +577,7 @@ Module Contents
       :type: int
 
       Integer number of levels in this MultiIndex.
+
       .. seealso:: :obj:`Index.nlevels`
 
 
