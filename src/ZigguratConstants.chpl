@@ -19,9 +19,9 @@ module ZigguratConstants {
             fe_double
     */
 
-    const ziggurat_nor_r = 3.6541528853610087963519472518;
-    const ziggurat_nor_inv_r = 0.27366123732975827203338247596; // 1.0 / ziggurat_nor_r;
-    const ziggurat_exp_r = 7.6971174701310497140446280481;
+    param ziggurat_nor_r = 3.6541528853610087963519472518;
+    param ziggurat_nor_inv_r = 0.27366123732975827203338247596; // 1.0 / ziggurat_nor_r;
+    param ziggurat_exp_r = 7.6971174701310497140446280481;
 
     const ki_double = (
         0x000EF33D8025EF6A, 0x0000000000000000, 0x000C08BE98FBC6A8,
