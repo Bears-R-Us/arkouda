@@ -52,17 +52,17 @@ module SegmentedMsg {
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-  proc segStrTondarrayMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): bytes throws {
+  proc segStrTondarrayMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
       var entry = getSegString(msgArgs.getValueOf("obj"), st);
       const comp = msgArgs.getValueOf("comp");
       if comp == "offsets" {
-          return tondarrayMsg(entry.offsets);
+          return MsgTuple.payload(tondarrayMsg(entry.offsets));
       } else if (comp == "values") {
-          return tondarrayMsg(entry.values);
+          return MsgTuple.payload(tondarrayMsg(entry.values));
       } else {
           const msg = "Unrecognized component: %s".format(comp);
           smLogger.error(getModuleName(),getRoutineName(),getLineNumber(), msg);
-          return msg.encode();
+          return MsgTuple.error(msg);
       }
   }
 
@@ -1206,7 +1206,7 @@ module SegmentedMsg {
   registerFunction("randomStrings", randomStringsMsg, getModuleName());
   registerFunction("segStr-assemble", assembleStringsMsg, getModuleName());
   registerFunction("stringsToJSON", stringsToJSONMsg, getModuleName());
-  registerBinaryFunction("segStr-tondarray", segStrTondarrayMsg, getModuleName());
+  registerFunction("segStr-tondarray", segStrTondarrayMsg, getModuleName());
   registerFunction("segmentedSubstring", segmentedSubstringMsg, getModuleName());
   registerFunction("segmentedWhere", segmentedWhereMsg, getModuleName());
   registerFunction("segmentedFull", segmentedFullMsg, getModuleName());
