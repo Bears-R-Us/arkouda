@@ -4,7 +4,7 @@ import pytest
 
 import arkouda as ak
 from arkouda.groupbyclass import GroupByReductionType
-from arkouda.scipy import chisquare as akchisquare
+from arkouda.scipy.stats import chisquare as akchisquare
 
 
 def to_tuple_dict(labels, values):

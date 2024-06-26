@@ -6,7 +6,7 @@ import pytest
 from scipy import stats as sp_stats
 
 import arkouda as ak
-from arkouda.scipy import chisquare as akchisquare
+from arkouda.scipy.stats import chisquare as akchisquare
 
 
 class TestRandom:

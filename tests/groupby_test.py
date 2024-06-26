@@ -5,7 +5,7 @@ from context import arkouda as ak
 
 from arkouda.dtypes import float64, int64
 from arkouda.groupbyclass import GroupByReductionType
-from arkouda.scipy import chisquare as akchisquare
+from arkouda.scipy.stats import chisquare as akchisquare
 
 SIZE = 100
 GROUPS = 8

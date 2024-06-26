@@ -4,8 +4,8 @@ from scipy.stats import chisquare as scipy_chisquare
 from scipy.stats import power_divergence as scipy_power_divergence
 
 import arkouda as ak
-from arkouda.scipy import chisquare as ak_chisquare
-from arkouda.scipy import power_divergence as ak_power_divergence
+from arkouda.scipy.stats import chisquare as ak_chisquare
+from arkouda.scipy.stats import power_divergence as ak_power_divergence
 
 DDOF = [0, 1, 2, 3, 4, 5]
 PAIRS = [

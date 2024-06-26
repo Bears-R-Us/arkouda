@@ -40,6 +40,4 @@ from arkouda.util import (
     is_registered,
     broadcast_dims,
 )
-from arkouda.scipy.special import *
-from arkouda.scipy import *
 from arkouda.random import *

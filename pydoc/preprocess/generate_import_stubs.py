@@ -3,14 +3,45 @@ import inspect
 import re
 
 
+def clean_signature(signature: inspect.Signature) -> str:
+
+    function_at_pattern = "\w+=<function \w+ at 0x\w+>"
+    object_at_pattern = "\w+=<object object at 0x\w+>"
+
+    signature_string = str(signature)
+
+    match = re.findall(function_at_pattern, signature_string)
+    if len(match) > 0:
+        for key in signature.parameters.keys():
+            param = signature.parameters.get(key)
+            default = param.default
+            if "function" in str(default):
+                mod = default.__module__
+                name = default.__name__
+                replacement = param.name + "=" + mod + "." + name
+                signature_string = re.sub(function_at_pattern, replacement, signature_string, count=1)
+
+    match = re.findall(object_at_pattern, signature_string)
+    if len(match) > 0:
+        for key in signature.parameters.keys():
+            param = signature.parameters.get(key)
+            default = param.default
+            if "object" in str(default):
+                replacement = param.name + "=object"
+                signature_string = re.sub(object_at_pattern, replacement, signature_string, count=1)
+
+    signature_string = re.sub(object_at_pattern, "", signature_string, count=1)
+    return signature_string
+
+
 def insert_spaces_after_newlines(input_string, spaces):
     if input_string is not None:
         pattern = r"^\n(\s+)"
-        starting_indents = re.findall(pattern, input_string)
+        starting_indents = [item for item in re.findall(pattern, input_string) if len(item) > 0]
         if len(starting_indents) > 0:
             old_indent_pattern = "^" + starting_indents[0]
         else:
-            return input_string
+            old_indent_pattern = "^"
 
         lines = input_string.split("\n")
         result = []
@@ -47,9 +78,9 @@ def get_parent_class_str(obj):
 def write_formatted_docstring(f, doc_string, spaces):
     doc_string = insert_spaces_after_newlines(doc_string, spaces)
     if doc_string is not None and len(doc_string) > 0:
-        f.write(spaces + "r'''\n")
+        f.write(spaces + 'r"""\n')
         f.write(f"{doc_string}\n")
-        f.write(spaces + "'''")
+        f.write(spaces + '"""')
         f.write("\n" + spaces + "...")
     else:
         f.write("\n" + spaces + "...")
@@ -81,7 +112,9 @@ def write_stub(module, filename, all_only=False, allow_arkouda=False):
             elif inspect.isfunction(obj):
                 if not name.startswith("__"):
                     try:
-                        f.write(f"def {name}{inspect.signature(obj)}:\n")
+                        signature = clean_signature(inspect.signature(obj))
+
+                        f.write(f"def {name}{signature}:\n")
                     except:
                         f.write(f"def {name}(self, *args, **kwargs):\n")
 
@@ -125,7 +158,7 @@ def write_stub(module, filename, all_only=False, allow_arkouda=False):
                             f.write(f"    def {func_name}{signature}:\n")
                         else:
                             try:
-                                signature = str(inspect.signature(func))
+                                signature = clean_signature(inspect.signature(func))
                                 if "self" not in signature:
                                     signature = signature.replace("(", "(self, ")
                                 f.write(f"    def {func_name}{signature}:\n")
