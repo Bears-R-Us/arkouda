@@ -575,7 +575,7 @@ module RandMsg
 
 
         randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                         "name: %? size %i hasSeed %? isSingleLam %? lamStr %? state %i".forma(name, size, hasSeed, isSingleLam, lamStr, state));
+                         "name: %? size %i hasSeed %? isSingleLam %? lamStr %? state %i".format(name, size, hasSeed, isSingleLam, lamStr, state));
 
         st.checkTable(name);
 
