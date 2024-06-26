@@ -142,12 +142,11 @@ or
       Deletes the serverConnetionFile on arkouda_server shutdown
       
 
-   .. method:: proc sendRepMsg(repMsg: ?t) throws where t == string || t == bytes
+   .. method:: proc sendRepMsg(in response: MsgTuple, user: string) throws
 
       
       Following processing of incoming message, sends a message back to the client.
       
-      :arg repMsg: either a string or bytes to be sent
       
 
    .. method:: proc authenticateUser(token: string) throws

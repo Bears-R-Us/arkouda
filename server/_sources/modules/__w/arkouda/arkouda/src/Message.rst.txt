@@ -57,20 +57,11 @@ or
 
    .. attribute:: var msgType: MsgType
 
-.. class:: ReplyMsg
-
-   
-   * Encapsulates state corresponding to a reply message sent back to 
-   * the Arkouda client.
-   
-
-   .. attribute:: var msg: string
-
-   .. attribute:: var msgType: MsgType
-
    .. attribute:: var msgFormat: MsgFormat
 
    .. attribute:: var user: string
+
+   .. attribute:: var payload: bytes
 
 .. record:: RequestMsg
 
@@ -89,6 +80,20 @@ or
    .. attribute:: var args: string
 
    .. attribute:: var size: int
+
+.. method:: proc MsgTuple.init()
+
+.. method:: proc MsgTuple.init(msg: string, msgType: MsgType)
+
+.. method:: proc MsgTuple.init(msg: string, msgType: MsgType, msgFormat: MsgFormat, user = "", payload = b"")
+
+.. method:: proc type MsgTuple.success(msg: string): MsgTuple
+
+.. method:: proc type MsgTuple.error(msg: string): MsgTuple
+
+.. method:: proc type MsgTuple.payload(data: bytes): MsgTuple
+
+.. method:: proc ref MsgTuple.serialize(user: string) throws
 
 .. record:: ParameterObj
 
@@ -217,7 +222,7 @@ or
 
    .. method:: proc getJSON(size: int) throws
 
-.. class:: MessageArgs
+.. class:: MessageArgs : writeSerializable
 
    
    Container class for the message arguments formatted as json
@@ -229,13 +234,19 @@ or
 
    .. attribute:: var size: int
 
+   .. attribute:: var payload: bytes
+
    .. method:: proc init()
 
    .. method:: proc init(param_list: list(ParameterObj))
 
    .. method:: proc init(param_list: list(ParameterObj, parSafe = true))
 
+   .. method:: proc addPayload(in p: bytes)
+
    .. method:: proc getJSON(keys: list(string) = list(string)): string throws
+
+   .. method:: override proc serialize(writer: fileWriter(?), ref serializer: ?st) throws
 
    .. method:: proc get(key: string) throws
 

@@ -335,13 +335,8 @@
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.sendRepMsg">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">sendRepMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">repMsg:</span> <span class="pre">?t</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">string</span> <span class="pre">||</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">bytes</span></em><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.sendRepMsg" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">sendRepMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">response:</span> <span class="pre">MsgTuple</span></em>, <em class="sig-param"><span class="pre">user:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.sendRepMsg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Following processing of incoming message, sends a message back to the client.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
-<dd class="field-odd"><p><strong>repMsg</strong> – either a string or bytes to be sent</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="chpl method">
