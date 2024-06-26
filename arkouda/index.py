@@ -354,10 +354,8 @@ class Index:
         self, ascending: bool = True, return_indexer: bool = False, na_position="last"
     ) -> Union[Index, Tuple]:
         """
-        Return a sorted copy of the index.
-
-        Return a sorted copy of the index, and optionally return the indices
-        that sorted the index itself.
+        Return a sorted copy of the index,
+        and optionally return the indices that sorted the index itself.
 
         Parameters
         ----------
@@ -691,7 +689,7 @@ class Index:
             if isinstance(self.values, pdarray) and self.dtype in (akint64, akfloat64):
                 i = argsort(-self.values)
             else:
-                i = argsort(self.values)[arange(self.size - 1, -1, -1)]
+                i = argsort(self.values)[::-1]
         else:
             i = argsort(self.values)
         return i
@@ -1433,7 +1431,7 @@ class MultiIndex(Index):
     def argsort(self, ascending=True):
         i = coargsort(self.index)
         if not ascending:
-            i = i[arange(self.size - 1, -1, -1)]
+            i = i[::-1]
         return i
 
     def concat(self, other):

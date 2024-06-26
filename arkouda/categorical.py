@@ -866,7 +866,7 @@ class Categorical:
         if ascending is True:
             return sorted_array
         else:
-            return sorted_array[arange(sorted_array.size - 1, -1, -1)]
+            return sorted_array[::-1]
 
     def sort_values(self):
         # __doc__ = sort.__doc__

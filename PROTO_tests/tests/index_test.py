@@ -297,6 +297,7 @@ class TestIndex:
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_sort_values(self, prob_size):
+
         # floats
         ak_array = ak.randint(0, 10 * prob_size, prob_size, dtype=ak.float64, seed=1)
         idx = Index(ak_array)
@@ -319,16 +320,6 @@ class TestIndex:
         )
         assert np.array_equal(
             idx.sort_values(ascending=False).values.to_ndarray(),
-            np_array[np.flip(np.argsort(np_array))],
-        )
-
-        # ints as list
-        ak_array = ak.randint(0, 10 * prob_size, prob_size, dtype=ak.int64, seed=1).to_list()
-        np_array = np.array(ak_array)
-        idx = Index(ak_array, allow_list=True)
-        assert np.array_equal(idx.sort_values(ascending=True).values, np_array[np.argsort(np_array)])
-        assert np.array_equal(
-            idx.sort_values(ascending=False).values,
             np_array[np.flip(np.argsort(np_array))],
         )
 
@@ -358,6 +349,17 @@ class TestIndex:
 
         with pytest.raises(ValueError):
             idx.sort_values(na_position="test")
+
+        # ints as list
+        prob_size = 100  # cannot exceed Index.max_list_size
+        ak_array = ak.randint(0, 10 * prob_size, prob_size, dtype=ak.int64, seed=1).to_list()
+        np_array = np.array(ak_array)
+        idx = Index(ak_array, allow_list=True)
+        assert np.array_equal(idx.sort_values(ascending=True).values, np_array[np.argsort(np_array)])
+        assert np.array_equal(
+            idx.sort_values(ascending=False).values,
+            np_array[np.flip(np.argsort(np_array))],
+        )
 
     def test_sort_values_na_position(self):
         idx = ak.Index([10, 100, 1, 1000, np.nan])

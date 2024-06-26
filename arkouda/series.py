@@ -708,9 +708,7 @@ class Series:
                 # For numeric values, negation reverses sort order
                 perm = argsort(-self.values)
             else:
-                # For non-numeric values, need the descending arange because reverse slicing
-                # is not supported
-                perm = argsort(self.values)[arange(self.values.size - 1, -1, -1)]
+                perm = argsort(self.values)[::-1]
         else:
             perm = argsort(self.values)
         return self._reindex(perm)

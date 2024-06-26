@@ -90,7 +90,7 @@ def argsort(
     else:
         from arkouda import arange
 
-        return sorted_array[arange(sorted_array.size - 1, -1, -1)]
+        return sorted_array[::-1]
 
 
 def coargsort(
@@ -205,7 +205,7 @@ def coargsort(
     else:
         from arkouda import arange
 
-        return sorted_array[arange(sorted_array.size - 1, -1, -1)]
+        return sorted_array[::-1]
 
 
 @typechecked
