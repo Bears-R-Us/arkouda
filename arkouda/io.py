@@ -734,6 +734,7 @@ def read_parquet(
     tag_data: bool = False,
     read_nested: bool = True,
     has_non_float_nulls: bool = False,
+    fixed_len: int = -1
 ) -> Union[
     Mapping[
         str,
@@ -783,6 +784,10 @@ def read_parquet(
     has_non_float_nulls: bool
         Default False. This flag must be set to True to read non-float parquet columns
         that contain null values.
+    fixed_len: int
+        Default -1. This value can be set for reading Parquet string columns when the
+        length of each string is known at runtime. This can allow for skipping byte
+        calculation, which can have an impact on performance.
 
     Returns
     -------
@@ -847,6 +852,7 @@ def read_parquet(
                 tag_data=tag_data,
                 read_nested=read_nested,
                 has_non_float_nulls=has_non_float_nulls,
+                fixed_len=fixed_len,
             )[dset]
             for dset in datasets
         }
@@ -862,6 +868,7 @@ def read_parquet(
                 "filenames": filenames,
                 "tag_data": tag_data,
                 "has_non_float_nulls": has_non_float_nulls,
+                "fixed_len": fixed_len,
             },
         )
         rep = json.loads(rep_msg)  # See GenSymIO._buildReadAllMsgJson for json structure
@@ -1795,6 +1802,7 @@ def read(
     column_delim: str = ",",
     read_nested: bool = True,
     has_non_float_nulls: bool = False,
+    fixed_len: int = -1,
 ) -> Union[
     Mapping[
         str,
@@ -1849,6 +1857,10 @@ def read(
     has_non_float_nulls: bool
         Default False. This flag must be set to True to read non-float parquet columns
         that contain null values.
+    fixed_len: int
+        Default -1. This value can be set for reading Parquet string columns when the
+        length of each string is known at runtime. This can allow for skipping byte
+        calculation, which can have an impact on performance.
 
     Returns
     -------
@@ -1913,6 +1925,7 @@ def read(
             allow_errors=allow_errors,
             read_nested=read_nested,
             has_non_float_nulls=has_non_float_nulls,
+            fixed_len=fixed_len,
         )
     elif ftype.lower() == "csv":
         return read_csv(
