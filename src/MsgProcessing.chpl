@@ -44,14 +44,14 @@ module MsgProcessing
 
         // if verbose print action
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-            "cmd: %s dtype: %s size: %i new pdarray name: %s".doFormat(
+            "cmd: %s dtype: %s size: %i new pdarray name: %s".format(
                                                      cmd,dtype2str(dtype),size,rname));
         if isSupportedDType(dtype) {
             // create and add entry to symbol table
             st.addEntry(rname, (...shape), dtype);
             // if verbose print result
             mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                        "created the pdarray %s".doFormat(st.attrib(rname)));
+                                        "created the pdarray %s".format(st.attrib(rname)));
 
             const repMsg = "created " + st.attrib(rname);
             mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), repMsg);
@@ -69,7 +69,7 @@ module MsgProcessing
               rname = st.nextName();
 
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                       "cmd: %s dtype: %s size: 1 new pdarray name: %s".doFormat(
+                       "cmd: %s dtype: %s size: 1 new pdarray name: %s".format(
                        cmd,dtype2str(dtype),rname));
 
         // on the client side, scalar (0D) arrays have a shape of "()" and a size of 1
@@ -105,7 +105,7 @@ module MsgProcessing
         }
 
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                       "created the pdarray %s".doFormat(st.attrib(rname)));
+                       "created the pdarray %s".format(st.attrib(rname)));
 
         var repMsg = "created " + st.attrib(rname);
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), repMsg);
@@ -127,13 +127,13 @@ module MsgProcessing
         var repMsg: string; // response message
         const name = msgArgs.getValueOf("name");
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                                     "cmd: %s array: %s".doFormat(cmd,st.attrib(name)));
+                                     "cmd: %s array: %s".format(cmd,st.attrib(name)));
         // delete entry from symbol table
         if st.deleteEntry(name) {
-            repMsg = "deleted %s".doFormat(name);
+            repMsg = "deleted %s".format(name);
         }
         else {
-            repMsg = "registered symbol, %s, not deleted".doFormat(name);
+            repMsg = "registered symbol, %s, not deleted".format(name);
         }
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);       
         return new MsgTuple(repMsg, MsgType.NORMAL);
@@ -152,7 +152,7 @@ module MsgProcessing
      */
     proc clearMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         var repMsg: string; // response message
-        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "cmd: %s".doFormat(cmd));
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "cmd: %s".format(cmd));
         st.clear();
 
         repMsg = "success";
@@ -195,7 +195,7 @@ module MsgProcessing
      */
     proc getconfigMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         var repMsg: string; // response message
-        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %s".doFormat(cmd));
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %s".format(cmd));
         return new MsgTuple(getConfig(), MsgType.NORMAL);
     }
 
@@ -214,7 +214,7 @@ module MsgProcessing
         var repMsg: string; // response message
         var factor = msgArgs.get("factor").getIntValue();
         var asPercent = msgArgs.get("as_percent").getBoolValue();
-        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %s".doFormat(cmd));
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %s".format(cmd));
         var memUsed = if memTrack then getMemUsed():real * numLocales else st.memUsed():real;
         if asPercent {
             repMsg = Math.round((memUsed / (getMemLimit():real * numLocales)) * 100):uint:string;
@@ -240,7 +240,7 @@ module MsgProcessing
         var repMsg: string; // response message
         var factor = msgArgs.get("factor").getIntValue();
         var asPercent = msgArgs.get("as_percent").getBoolValue();
-        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %s".doFormat(cmd));
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %s".format(cmd));
         var memUsed = if memTrack then getMemUsed():real * numLocales else st.memUsed():real;
         var totMem = getMemLimit():real * numLocales;
         if asPercent {
@@ -300,7 +300,7 @@ module MsgProcessing
 
         var printThresh = msgArgs.get("printThresh").getIntValue();
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                                              "cmd: %s name: %s threshold: %i".doFormat(
+                                              "cmd: %s name: %s threshold: %i".format(
                                                cmd,name,printThresh));  
                                                
         repMsg  = st.datastr(name,printThresh);        
@@ -350,7 +350,7 @@ module MsgProcessing
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                            "cmd: %s value: %s in pdarray %s".doFormat(cmd,name,st.attrib(name)));
+                            "cmd: %s value: %s in pdarray %s".format(cmd,name,st.attrib(name)));
 
         proc doAssignment(type t): MsgTuple throws
             where isSupportedType(t)
@@ -359,9 +359,9 @@ module MsgProcessing
             const val = value.getScalarValue(t);
             e.a = val;
             mpLogger.debug(getModuleName(),pn,getLineNumber(),
-                            "cmd: %s name: %s to val: %?".doFormat(cmd,name,val));
+                            "cmd: %s name: %s to val: %?".format(cmd,name,val));
 
-            const repMsg = "set %s to %?".doFormat(name, val);
+            const repMsg = "set %s to %?".format(name, val);
             mpLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
             return new MsgTuple(repMsg, MsgType.NORMAL);
         }
@@ -390,7 +390,7 @@ module MsgProcessing
             when DType.BigInt do return doAssignment(bigint);
             otherwise {
                 mpLogger.error(getModuleName(),getRoutineName(),
-                                               getLineNumber(),"dtype: %s".doFormat(msgArgs.getValueOf("dtype")));
+                                               getLineNumber(),"dtype: %s".format(msgArgs.getValueOf("dtype")));
                 return new MsgTuple(unrecognizedTypeError(pn,msgArgs.getValueOf("dtype")), MsgType.ERROR);
             }
         }

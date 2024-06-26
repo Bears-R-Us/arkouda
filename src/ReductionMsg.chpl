@@ -77,13 +77,13 @@ module ReductionMsg
 
           const scalarValue = if (t == bool && (op == "min" || op == "max"))
             then "bool " + bool2str(if s == 1 then true else false)
-            else (type2str(opType) + " " + type2fmt(opType)).doFormat(s);
+            else (type2str(opType) + " " + type2fmt(opType)).format(s);
           rmLogger.debug(getModuleName(),pn,getLineNumber(),scalarValue);
           return new MsgTuple(scalarValue, MsgType.NORMAL);
         } else {
           const (valid, axes) = validateNegativeAxes(axesRaw, nd);
           if !valid {
-            var errorMsg = "Invalid axis value(s) '%?' in slicing reduction".doFormat(axesRaw);
+            var errorMsg = "Invalid axis value(s) '%?' in slicing reduction".format(axesRaw);
             rmLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg,MsgType.ERROR);
           } else {
@@ -194,7 +194,7 @@ module ReductionMsg
         } else {
           const (valid, axes) = validateNegativeAxes(axesRaw, nd);
           if !valid {
-            var errorMsg = "Invalid axis value(s) '%?' in slicing reduction".doFormat(axesRaw);
+            var errorMsg = "Invalid axis value(s) '%?' in slicing reduction".format(axesRaw);
             rmLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg,MsgType.ERROR);
           } else {
@@ -285,7 +285,7 @@ module ReductionMsg
             otherwise halt("unreachable");
           }
 
-          const scalarValue = "int %i".doFormat(s);
+          const scalarValue = "int %i".format(s);
           rmLogger.debug(getModuleName(),pn,getLineNumber(),scalarValue);
           return new MsgTuple(scalarValue, MsgType.NORMAL);
         } else {
@@ -519,7 +519,7 @@ module ReductionMsg
       const size = msgArgs.get("size").getIntValue();
       var rname = st.nextName();
       rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                       "cmd: %s segments_name: %s size: %s".doFormat(cmd,segments_name, size));
+                       "cmd: %s segments_name: %s size: %s".format(cmd,segments_name, size));
 
       var gSeg: borrowed GenSymEntry = getGenericTypedArrayEntry(segments_name, st);
       var segments = toSymEntry(gSeg, int);
@@ -591,7 +591,7 @@ module ReductionMsg
       
         var rname = st.nextName();
         rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                      "cmd: %s values_name: %s segments_name: %s operator: %s skipNan: %s".doFormat(
+                      "cmd: %s values_name: %s segments_name: %s operator: %s skipNan: %s".format(
                                        cmd,values_name,segments_name,op,skipNan));
         var gVal: borrowed GenSymEntry = getGenericTypedArrayEntry(values_name, st);
         var gSeg: borrowed GenSymEntry = getGenericTypedArrayEntry(segments_name, st);
@@ -1612,7 +1612,7 @@ module ReductionMsg
         valsAgg.copy(kvi1, values[idx]);
       }
       rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                           "sort time = %i".doFormat(Time.timeSinceEpoch().totalSeconds() - t1));
+                                           "sort time = %i".format(Time.timeSinceEpoch().totalSeconds() - t1));
       rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                            "Finding unique (key, value) pairs...");
       var truth = makeDistArray(kD, bool);
@@ -1639,7 +1639,7 @@ module ReductionMsg
         }
       }
       rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                       "time = %i".doFormat(Time.timeSinceEpoch().totalSeconds() - t1));
+                                       "time = %i".format(Time.timeSinceEpoch().totalSeconds() - t1));
       rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                        "Finding unique keys and num unique vals per key.");
       // find steps in keys
@@ -1677,7 +1677,7 @@ module ReductionMsg
         }
       }
       rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                   "time = %i".doFormat(Time.timeSinceEpoch().totalSeconds() - t1));
+                                                   "time = %i".format(Time.timeSinceEpoch().totalSeconds() - t1));
       return res;
     }
 

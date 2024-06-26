@@ -80,7 +80,7 @@ module Logging {
         if channel == LogChannel.CONSOLE {
             return new owned ConsoleOutputHandler();
         } else {
-            return new owned FileOutputHandler("%s/.arkouda/arkouda.log".doFormat(here.cwd()));
+            return new owned FileOutputHandler("%s/.arkouda/arkouda.log".format(here.cwd()));
         }
     }
     
@@ -170,19 +170,19 @@ module Logging {
         
         proc generateErrorMsg(moduleName: string, routineName, lineNumber, 
                            error) throws {
-            return "Error in logging message for %s %s %i: %?".doFormat(
+            return "Error in logging message for %s %s %i: %?".format(
                     moduleName, routineName, lineNumber, error.message());                
         }
         
         proc generateLogMessage(moduleName: string, routineName, lineNumber, 
                            msg, level: string) throws {
-            var lineStr: string = if lineNumber != 0 then "Line %i ".doFormat(lineNumber) else "";
+            var lineStr: string = if lineNumber != 0 then "Line %i ".format(lineNumber) else "";
              if printDate {
-                 return "%s [%s] %s %s%s [Chapel] %s".doFormat(
+                 return "%s [%s] %s %s%s [Chapel] %s".format(
                  generateDateTimeString(), moduleName,routineName,lineStr, 
                                      level,msg);
              } else {
-                 return "[%s] %s %s%s [Chapel] %s".doFormat(moduleName, 
+                 return "[%s] %s %s%s [Chapel] %s".format(moduleName, 
                  routineName,lineStr,level,msg);            
              }
         }
@@ -192,7 +192,7 @@ module Logging {
             var vals = dts.split("T");
             var cd = vals(0);
             var rawCms = vals(1).split(".");
-            return "%s:%s".doFormat(cd,rawCms(0));        
+            return "%s:%s".format(cd,rawCms(0));        
         }
     }
 }
