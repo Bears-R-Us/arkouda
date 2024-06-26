@@ -23,8 +23,6 @@ or
 
 .. function:: proc formatJson(input: string, vals ...?): string throws
 
-.. method:: proc string.doFormat(vals ...?): string throws
-
 .. function:: proc jsonToTupleCompat(json: string, type t) throws
 
 .. function:: proc jsonToPdArrayCompat(json: string, size: int) throws
