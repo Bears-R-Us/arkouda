@@ -218,7 +218,7 @@ module Message {
                 } catch {
 
                     try {
-                        return parseJson(this.val, 1*t);
+                        return parseJson(this.val, 1, t);
                     } catch {
                         throw err();
                     }
@@ -226,7 +226,7 @@ module Message {
             } else {
 
                 try {
-                    return parseJson(this.val, size*t);
+                    return parseJson(this.val, size, t);
                 } catch {
                     throw err();
                 }

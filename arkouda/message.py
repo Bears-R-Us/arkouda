@@ -110,6 +110,25 @@ class ParameterObject:
 
     @staticmethod
     @typechecked
+    def _build_tuple_param(key: str, val: tuple) -> ParameterObject:
+        """
+        Create a ParameterObject from a tuple
+
+        Parameters
+        ----------
+        key : str
+            key from the dictionary object
+        val : tuple
+            tuple object to format as string
+
+        Returns
+        -------
+        ParameterObject
+        """
+        return ParameterObject._build_list_param(key, list(val))
+
+    @staticmethod
+    @typechecked
     def _build_list_param(key: str, val: list) -> ParameterObject:
         """
         Create a ParameterObject from a list
@@ -201,6 +220,7 @@ class ParameterObject:
             SegArray.__name__: ParameterObject._build_segarray_param,
             list.__name__: ParameterObject._build_list_param,
             dict.__name__: ParameterObject._build_dict_param,
+            tuple.__name__: ParameterObject._build_tuple_param,
         }
 
     @classmethod
