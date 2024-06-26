@@ -477,14 +477,14 @@ module ServerDaemon {
             
         }
 
-        proc processErrorMessageMetrics(user, cmd, err) throws {
+        proc processErrorMessageMetrics(user, cmd, errorMsg) throws {
             // Log to the console or arkouda.log file
             sdLogger.error(getModuleName(),
                            getRoutineName(),
                            getLineNumber(),
                            'user: %s cmd: %s error: %s'.format(user,
                                                                  cmd,
-                                                                 err.msg));
+                                                                 errorMsg));
 
         }
 
@@ -492,10 +492,6 @@ module ServerDaemon {
             var errString = err.type:string;
             var tokens = errString.split(' ');
             return tokens[1];
-        }
-
-        proc processErrorMetrics(user, cmd, errName) throws {
-            errorMetrics.increment(errName);
         }
 
         override proc run() throws {
@@ -667,7 +663,7 @@ module ServerDaemon {
                     }
                     otherwise { // Look up in CommandMap or Binary CommandMap (or array CommandMap for special handling)
                         if commandMap.contains(cmd) {
-                            repMsg = executeCommand(cmd, msgArgs, st, trace);
+                            repMsg = executeCommand(cmd, msgArgs, st);
                         } else {
                             const (multiDimCommand, nd, rawCmd) = getNDSpec(cmd),
                                 command1D = rawCmd + "1D";
@@ -703,7 +699,7 @@ module ServerDaemon {
                 if trace {
                     if repMsg.msgType == MsgType.ERROR {
                         if metricsEnabled() {
-                            processErrorMessageMetrics(user, cmd, ewm);
+                            processErrorMessageMetrics(user, cmd, repMsg.msg);
                         }
 
                         sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
