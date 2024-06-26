@@ -11,6 +11,7 @@ module MultiTypeSymbolTable
     use MultiTypeSymEntry;
     use IO;
     use IOUtils;
+    use Message;
 
     use Map;
     use Registry;
@@ -43,6 +44,19 @@ module MultiTypeSymbolTable
         proc nextName():string {
             nid += 1;
             return serverid + nid:string;
+        }
+
+        /*
+            Insert a symbol into the table.
+
+            Returns a symbol-creation message with the symbol's attributes
+        */
+        proc insert(in symbol: shared AbstractSymEntry): MsgTuple throws {
+            const name = nextName(),
+                  response = MsgTuple.newSymbol(name, symbol.borrow());
+            tab.addOrReplace(name, symbol);
+            mtLogger.info(getModuleName(),getRoutineName(),getLineNumber(),response.msg);
+            return response;
         }
 
         /*
@@ -402,6 +416,7 @@ module MultiTypeSymbolTable
 
         :returns: s (string) containing info
         */
+        // deprecated in favor of using st.insert(sym)
         proc attrib(name:string):string throws {
             checkTable(name, "attrib");
 
