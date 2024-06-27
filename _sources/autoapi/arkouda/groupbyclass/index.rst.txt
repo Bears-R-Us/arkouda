@@ -529,6 +529,55 @@ Module Contents
    .. py:method:: from_return_msg(rep_msg)
 
 
+   .. py:method:: head(values: groupable_element_type, n: int = 5, return_indices: bool = True) -> Tuple[groupable, groupable_element_type]
+
+      Return the first n values from each group.
+
+      :param values: The values from which to select, according to their group membership.
+      :type values: (list of) pdarray-like
+      :param n: Maximum number of items to return for each group.
+                If the number of values in a group is less than n,
+                all the values from that group will be returned.
+      :type n: int, optional, default = 5
+      :param return_indices: If True, return the indices of the sampled values.
+                             Otherwise, return the selected values.
+      :type return_indices: bool, default False
+
+      :returns: * **unique_keys** (*(list of) pdarray-like*) -- The unique keys, in grouped order
+                * **result** (*pdarray-like*) -- The first n items of each group.
+                  If return_indices is True, the result are indices.
+                  O.W. the result are values.
+
+      .. rubric:: Examples
+
+      >>> a = ak.arange(10) %3
+      >>> a
+      array([0 1 2 0 1 2 0 1 2 0])
+      >>> v = ak.arange(10)
+      >>> v
+      array([0 1 2 3 4 5 6 7 8 9])
+      >>> g = GroupBy(a)
+      >>> unique_keys, idx = g.head(v, 2, return_indices=True)
+      >>> _, values = g.head(v, 2, return_indices=False)
+      >>> unique_keys
+      array([0 1 2])
+      >>> idx
+      array([0 3 1 4 2 5])
+      >>> values
+      array([0 3 1 4 2 5])
+
+      >>> v2 =  -2 * ak.arange(10)
+      >>> v2
+      array([0 -2 -4 -6 -8 -10 -12 -14 -16 -18])
+      >>> _, idx2 = g.head(v2, 2, return_indices=True)
+      >>> _, values2 = g.head(v2, 2, return_indices=False)
+      >>> idx2
+      array([0 3 1 4 2 5])
+      >>> values2
+      array([0 -6 -2 -8 -4 -10])
+
+
+
    .. py:method:: is_registered() -> bool
 
       Return True if the object is contained in the registry
@@ -983,6 +1032,55 @@ Module Contents
       array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
       >>> g.sum(b)
       (array([2, 3, 4]), array([8, 14, 6]))
+
+
+
+   .. py:method:: tail(values: groupable_element_type, n: int = 5, return_indices: bool = True) -> Tuple[groupable, groupable_element_type]
+
+      Return the last n values from each group.
+
+      :param values: The values from which to select, according to their group membership.
+      :type values: (list of) pdarray-like
+      :param n: Maximum number of items to return for each group.
+                If the number of values in a group is less than n,
+                all the values from that group will be returned.
+      :type n: int, optional, default = 5
+      :param return_indices: If True, return the indices of the sampled values.
+                             Otherwise, return the selected values.
+      :type return_indices: bool, default False
+
+      :returns: * **unique_keys** (*(list of) pdarray-like*) -- The unique keys, in grouped order
+                * **result** (*pdarray-like*) -- The last n items of each group.
+                  If return_indices is True, the result are indices.
+                  O.W. the result are values.
+
+      .. rubric:: Examples
+
+      >>> a = ak.arange(10) %3
+      >>> a
+      array([0 1 2 0 1 2 0 1 2 0])
+      >>> v = ak.arange(10)
+      >>> v
+      array([0 1 2 3 4 5 6 7 8 9])
+      >>> g = GroupBy(a)
+      >>> unique_keys, idx = g.tail(v, 2, return_indices=True)
+      >>> _, values = g.tail(v, 2, return_indices=False)
+      >>> unique_keys
+      array([0 1 2])
+      >>> idx
+      array([6 9 4 7 5 8])
+      >>> values
+      array([6 9 4 7 5 8])
+
+      >>> v2 =  -2 * ak.arange(10)
+      >>> v2
+      array([0 -2 -4 -6 -8 -10 -12 -14 -16 -18])
+      >>> _, idx2 = g.tail(v2, 2, return_indices=True)
+      >>> _, values2 = g.tail(v2, 2, return_indices=False)
+      >>> idx2
+      array([6 9 4 7 5 8])
+      >>> values2
+      array([-12 -18 -8 -14 -10 -16])
 
 
 

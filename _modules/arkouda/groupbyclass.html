@@ -778,16 +778,18 @@
 
         <span class="c1"># access the names of the key or names of properties for categorical</span>
         <span class="n">gb_keys</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">k</span><span class="o">.</span><span class="n">name</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">)</span>
-            <span class="k">else</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
-                <span class="p">{</span>
-                    <span class="s2">&quot;codes&quot;</span><span class="p">:</span> <span class="n">k</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                    <span class="s2">&quot;categories&quot;</span><span class="p">:</span> <span class="n">k</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                    <span class="s2">&quot;NA_codes&quot;</span><span class="p">:</span> <span class="n">k</span><span class="o">.</span><span class="n">_akNAcode</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                    <span class="o">**</span><span class="p">({</span><span class="s2">&quot;permutation&quot;</span><span class="p">:</span> <span class="n">k</span><span class="o">.</span><span class="n">permutation</span><span class="o">.</span><span class="n">name</span><span class="p">}</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">permutation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}),</span>
-                    <span class="o">**</span><span class="p">({</span><span class="s2">&quot;segments&quot;</span><span class="p">:</span> <span class="n">k</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">name</span><span class="p">}</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">segments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}),</span>
-                <span class="p">}</span>
+            <span class="p">(</span>
+                <span class="n">k</span><span class="o">.</span><span class="n">name</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;codes&quot;</span><span class="p">:</span> <span class="n">k</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                        <span class="s2">&quot;categories&quot;</span><span class="p">:</span> <span class="n">k</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                        <span class="s2">&quot;NA_codes&quot;</span><span class="p">:</span> <span class="n">k</span><span class="o">.</span><span class="n">_akNAcode</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                        <span class="o">**</span><span class="p">({</span><span class="s2">&quot;permutation&quot;</span><span class="p">:</span> <span class="n">k</span><span class="o">.</span><span class="n">permutation</span><span class="o">.</span><span class="n">name</span><span class="p">}</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">permutation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}),</span>
+                        <span class="o">**</span><span class="p">({</span><span class="s2">&quot;segments&quot;</span><span class="p">:</span> <span class="n">k</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">name</span><span class="p">}</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">segments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}),</span>
+                    <span class="p">}</span>
+                <span class="p">)</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span>
         <span class="p">]</span>
@@ -840,16 +842,18 @@
 
         <span class="c1"># access the names of the key or names of properties for categorical</span>
         <span class="n">gb_keys</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">k</span><span class="o">.</span><span class="n">name</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">)</span>
-            <span class="k">else</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
-                <span class="p">{</span>
-                    <span class="s2">&quot;codes&quot;</span><span class="p">:</span> <span class="n">k</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                    <span class="s2">&quot;categories&quot;</span><span class="p">:</span> <span class="n">k</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                    <span class="s2">&quot;NA_codes&quot;</span><span class="p">:</span> <span class="n">k</span><span class="o">.</span><span class="n">_akNAcode</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                    <span class="o">**</span><span class="p">({</span><span class="s2">&quot;permutation&quot;</span><span class="p">:</span> <span class="n">k</span><span class="o">.</span><span class="n">permutation</span><span class="o">.</span><span class="n">name</span><span class="p">}</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">permutation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}),</span>
-                    <span class="o">**</span><span class="p">({</span><span class="s2">&quot;segments&quot;</span><span class="p">:</span> <span class="n">k</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">name</span><span class="p">}</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">segments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}),</span>
-                <span class="p">}</span>
+            <span class="p">(</span>
+                <span class="n">k</span><span class="o">.</span><span class="n">name</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;codes&quot;</span><span class="p">:</span> <span class="n">k</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                        <span class="s2">&quot;categories&quot;</span><span class="p">:</span> <span class="n">k</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                        <span class="s2">&quot;NA_codes&quot;</span><span class="p">:</span> <span class="n">k</span><span class="o">.</span><span class="n">_akNAcode</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                        <span class="o">**</span><span class="p">({</span><span class="s2">&quot;permutation&quot;</span><span class="p">:</span> <span class="n">k</span><span class="o">.</span><span class="n">permutation</span><span class="o">.</span><span class="n">name</span><span class="p">}</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">permutation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}),</span>
+                        <span class="o">**</span><span class="p">({</span><span class="s2">&quot;segments&quot;</span><span class="p">:</span> <span class="n">k</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">name</span><span class="p">}</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">segments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}),</span>
+                    <span class="p">}</span>
+                <span class="p">)</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span>
         <span class="p">]</span>
@@ -1884,6 +1888,170 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="s2">&quot;xor&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore</span></div>
 
 
+<div class="viewcode-block" id="GroupBy.head">
+<a class="viewcode-back" href="../../usage/groupby.html#arkouda.groupbyclass.GroupBy.head">[docs]</a>
+    <span class="k">def</span> <span class="nf">head</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">values</span><span class="p">:</span> <span class="n">groupable_element_type</span><span class="p">,</span>
+        <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="n">return_indices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">groupable</span><span class="p">,</span> <span class="n">groupable_element_type</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the first n values from each group.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        values : (list of) pdarray-like</span>
+<span class="sd">            The values from which to select, according to their group membership.</span>
+<span class="sd">        n: int, optional, default = 5</span>
+<span class="sd">            Maximum number of items to return for each group.</span>
+<span class="sd">            If the number of values in a group is less than n,</span>
+<span class="sd">            all the values from that group will be returned.</span>
+<span class="sd">        return_indices: bool, default False</span>
+<span class="sd">            If True, return the indices of the sampled values.</span>
+<span class="sd">            Otherwise, return the selected values.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        unique_keys : (list of) pdarray-like</span>
+<span class="sd">            The unique keys, in grouped order</span>
+<span class="sd">        result : pdarray-like</span>
+<span class="sd">            The first n items of each group.</span>
+<span class="sd">            If return_indices is True, the result are indices.</span>
+<span class="sd">            O.W. the result are values.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; a = ak.arange(10) %3</span>
+<span class="sd">        &gt;&gt;&gt; a</span>
+<span class="sd">        array([0 1 2 0 1 2 0 1 2 0])</span>
+<span class="sd">        &gt;&gt;&gt; v = ak.arange(10)</span>
+<span class="sd">        &gt;&gt;&gt; v</span>
+<span class="sd">        array([0 1 2 3 4 5 6 7 8 9])</span>
+<span class="sd">        &gt;&gt;&gt; g = GroupBy(a)</span>
+<span class="sd">        &gt;&gt;&gt; unique_keys, idx = g.head(v, 2, return_indices=True)</span>
+<span class="sd">        &gt;&gt;&gt; _, values = g.head(v, 2, return_indices=False)</span>
+<span class="sd">        &gt;&gt;&gt; unique_keys</span>
+<span class="sd">        array([0 1 2])</span>
+<span class="sd">        &gt;&gt;&gt; idx</span>
+<span class="sd">        array([0 3 1 4 2 5])</span>
+<span class="sd">        &gt;&gt;&gt; values</span>
+<span class="sd">        array([0 3 1 4 2 5])</span>
+
+<span class="sd">        &gt;&gt;&gt; v2 =  -2 * ak.arange(10)</span>
+<span class="sd">        &gt;&gt;&gt; v2</span>
+<span class="sd">        array([0 -2 -4 -6 -8 -10 -12 -14 -16 -18])</span>
+<span class="sd">        &gt;&gt;&gt; _, idx2 = g.head(v2, 2, return_indices=True)</span>
+<span class="sd">        &gt;&gt;&gt; _, values2 = g.head(v2, 2, return_indices=False)</span>
+<span class="sd">        &gt;&gt;&gt; idx2</span>
+<span class="sd">        array([0 3 1 4 2 5])</span>
+<span class="sd">        &gt;&gt;&gt; values2</span>
+<span class="sd">        array([0 -6 -2 -8 -4 -10])</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;segmentedReduction&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;values&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span><span class="p">,</span>
+                <span class="s2">&quot;segments&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="p">,</span>
+                <span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;head&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;n&quot;</span><span class="p">:</span> <span class="n">n</span><span class="p">,</span>
+                <span class="s2">&quot;skip_nan&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="s2">&quot;ddof&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+
+        <span class="n">ret_indices</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">return_indices</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">,</span> <span class="n">ret_indices</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">,</span> <span class="n">values</span><span class="p">[</span><span class="n">ret_indices</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="GroupBy.tail">
+<a class="viewcode-back" href="../../usage/groupby.html#arkouda.groupbyclass.GroupBy.tail">[docs]</a>
+    <span class="k">def</span> <span class="nf">tail</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">values</span><span class="p">:</span> <span class="n">groupable_element_type</span><span class="p">,</span>
+        <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="n">return_indices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">groupable</span><span class="p">,</span> <span class="n">groupable_element_type</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the last n values from each group.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        values : (list of) pdarray-like</span>
+<span class="sd">            The values from which to select, according to their group membership.</span>
+<span class="sd">        n: int, optional, default = 5</span>
+<span class="sd">            Maximum number of items to return for each group.</span>
+<span class="sd">            If the number of values in a group is less than n,</span>
+<span class="sd">            all the values from that group will be returned.</span>
+<span class="sd">        return_indices: bool, default False</span>
+<span class="sd">            If True, return the indices of the sampled values.</span>
+<span class="sd">            Otherwise, return the selected values.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        unique_keys : (list of) pdarray-like</span>
+<span class="sd">            The unique keys, in grouped order</span>
+<span class="sd">        result : pdarray-like</span>
+<span class="sd">            The last n items of each group.</span>
+<span class="sd">            If return_indices is True, the result are indices.</span>
+<span class="sd">            O.W. the result are values.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; a = ak.arange(10) %3</span>
+<span class="sd">        &gt;&gt;&gt; a</span>
+<span class="sd">        array([0 1 2 0 1 2 0 1 2 0])</span>
+<span class="sd">        &gt;&gt;&gt; v = ak.arange(10)</span>
+<span class="sd">        &gt;&gt;&gt; v</span>
+<span class="sd">        array([0 1 2 3 4 5 6 7 8 9])</span>
+<span class="sd">        &gt;&gt;&gt; g = GroupBy(a)</span>
+<span class="sd">        &gt;&gt;&gt; unique_keys, idx = g.tail(v, 2, return_indices=True)</span>
+<span class="sd">        &gt;&gt;&gt; _, values = g.tail(v, 2, return_indices=False)</span>
+<span class="sd">        &gt;&gt;&gt; unique_keys</span>
+<span class="sd">        array([0 1 2])</span>
+<span class="sd">        &gt;&gt;&gt; idx</span>
+<span class="sd">        array([6 9 4 7 5 8])</span>
+<span class="sd">        &gt;&gt;&gt; values</span>
+<span class="sd">        array([6 9 4 7 5 8])</span>
+
+<span class="sd">        &gt;&gt;&gt; v2 =  -2 * ak.arange(10)</span>
+<span class="sd">        &gt;&gt;&gt; v2</span>
+<span class="sd">        array([0 -2 -4 -6 -8 -10 -12 -14 -16 -18])</span>
+<span class="sd">        &gt;&gt;&gt; _, idx2 = g.tail(v2, 2, return_indices=True)</span>
+<span class="sd">        &gt;&gt;&gt; _, values2 = g.tail(v2, 2, return_indices=False)</span>
+<span class="sd">        &gt;&gt;&gt; idx2</span>
+<span class="sd">        array([6 9 4 7 5 8])</span>
+<span class="sd">        &gt;&gt;&gt; values2</span>
+<span class="sd">        array([-12 -18 -8 -14 -10 -16])</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;segmentedReduction&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;values&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span><span class="p">,</span>
+                <span class="s2">&quot;segments&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="p">,</span>
+                <span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;tail&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;n&quot;</span><span class="p">:</span> <span class="n">n</span><span class="p">,</span>
+                <span class="s2">&quot;skip_nan&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="s2">&quot;ddof&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+
+        <span class="n">ret_indices</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">return_indices</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">,</span> <span class="n">ret_indices</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">,</span> <span class="n">values</span><span class="p">[</span><span class="n">ret_indices</span><span class="p">]</span></div>
+
+
 <div class="viewcode-block" id="GroupBy.first">
 <a class="viewcode-back" href="../../usage/groupby.html#arkouda.groupbyclass.GroupBy.first">[docs]</a>
     <span class="k">def</span> <span class="nf">first</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">groupable_element_type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">groupable</span><span class="p">,</span> <span class="n">groupable_element_type</span><span class="p">]:</span>
@@ -2361,38 +2529,42 @@
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)):</span>
             <span class="n">key_data</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">keys</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)</span>
-                <span class="k">else</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
-                    <span class="p">{</span>
-                        <span class="s2">&quot;codes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                        <span class="s2">&quot;categories&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                        <span class="s2">&quot;NA_codes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">_akNAcode</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                        <span class="o">**</span><span class="p">(</span>
-                            <span class="p">{</span><span class="s2">&quot;permutation&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">permutation</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
-                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">permutation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-                            <span class="k">else</span> <span class="p">{}</span>
-                        <span class="p">),</span>
-                        <span class="o">**</span><span class="p">(</span>
-                            <span class="p">{</span><span class="s2">&quot;segments&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
-                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">segments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-                            <span class="k">else</span> <span class="p">{}</span>
-                        <span class="p">),</span>
-                    <span class="p">}</span>
+                <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">keys</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
+                        <span class="p">{</span>
+                            <span class="s2">&quot;codes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                            <span class="s2">&quot;categories&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                            <span class="s2">&quot;NA_codes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">_akNAcode</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                            <span class="o">**</span><span class="p">(</span>
+                                <span class="p">{</span><span class="s2">&quot;permutation&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">permutation</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
+                                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">permutation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                                <span class="k">else</span> <span class="p">{}</span>
+                            <span class="p">),</span>
+                            <span class="o">**</span><span class="p">(</span>
+                                <span class="p">{</span><span class="s2">&quot;segments&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
+                                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">segments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                                <span class="k">else</span> <span class="p">{}</span>
+                            <span class="p">),</span>
+                        <span class="p">}</span>
+                    <span class="p">)</span>
                 <span class="p">)</span>
             <span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">key_data</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">k</span><span class="o">.</span><span class="n">name</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)</span>
-                <span class="k">else</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
-                    <span class="p">{</span>
-                        <span class="s2">&quot;codes&quot;</span><span class="p">:</span> <span class="n">k</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                        <span class="s2">&quot;categories&quot;</span><span class="p">:</span> <span class="n">k</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                        <span class="s2">&quot;NA_codes&quot;</span><span class="p">:</span> <span class="n">k</span><span class="o">.</span><span class="n">_akNAcode</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                        <span class="o">**</span><span class="p">({</span><span class="s2">&quot;permutation&quot;</span><span class="p">:</span> <span class="n">k</span><span class="o">.</span><span class="n">permutation</span><span class="o">.</span><span class="n">name</span><span class="p">}</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">permutation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}),</span>
-                        <span class="o">**</span><span class="p">({</span><span class="s2">&quot;segments&quot;</span><span class="p">:</span> <span class="n">k</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">name</span><span class="p">}</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">segments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}),</span>
-                    <span class="p">}</span>
+                <span class="p">(</span>
+                    <span class="n">k</span><span class="o">.</span><span class="n">name</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
+                        <span class="p">{</span>
+                            <span class="s2">&quot;codes&quot;</span><span class="p">:</span> <span class="n">k</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                            <span class="s2">&quot;categories&quot;</span><span class="p">:</span> <span class="n">k</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                            <span class="s2">&quot;NA_codes&quot;</span><span class="p">:</span> <span class="n">k</span><span class="o">.</span><span class="n">_akNAcode</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                            <span class="o">**</span><span class="p">({</span><span class="s2">&quot;permutation&quot;</span><span class="p">:</span> <span class="n">k</span><span class="o">.</span><span class="n">permutation</span><span class="o">.</span><span class="n">name</span><span class="p">}</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">permutation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}),</span>
+                            <span class="o">**</span><span class="p">({</span><span class="s2">&quot;segments&quot;</span><span class="p">:</span> <span class="n">k</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">name</span><span class="p">}</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">segments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}),</span>
+                        <span class="p">}</span>
+                    <span class="p">)</span>
                 <span class="p">)</span>
                 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span>
             <span class="p">]</span>
@@ -2407,9 +2579,11 @@
                 <span class="s2">&quot;uki&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uki</span><span class="p">,</span>
                 <span class="s2">&quot;num_keys&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span> <span class="k">else</span> <span class="mi">1</span><span class="p">,</span>
                 <span class="s2">&quot;keys&quot;</span><span class="p">:</span> <span class="n">key_data</span><span class="p">,</span>
-                <span class="s2">&quot;key_objTypes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">objType</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">]</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span>
-                <span class="k">else</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">objType</span><span class="p">],</span>
+                <span class="s2">&quot;key_objTypes&quot;</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">objType</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">objType</span><span class="p">]</span>
+                <span class="p">),</span>
             <span class="p">},</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="o">=</span> <span class="n">user_defined_name</span>
