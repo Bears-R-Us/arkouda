@@ -40318,11 +40318,11 @@ Package Contents
    :type pda: (list of) pdarray, Strings, or Categorical
    :param return_groups: If True, also return grouping information for the array.
    :type return_groups: bool, optional
+   :param assume_sorted: If True, assume pda is sorted and skip sorting step
+   :type assume_sorted: bool, optional
    :param return_indices: Only applicable if return_groups is True.
                           If True, return unique key indices along with other groups
    :type return_indices: bool, optional
-   :param assume_sorted: If True, assume pda is sorted and skip sorting step
-   :type assume_sorted: bool, optional
 
    :returns: * **unique** (*(list of) pdarray, Strings, or Categorical*) -- The unique values. If input dtype is int64, return values will be sorted.
              * **permutation** (*pdarray, optional*) -- Permutation that groups equivalent values together (only when return_groups=True)
@@ -40356,11 +40356,11 @@ Package Contents
    :type pda: (list of) pdarray, Strings, or Categorical
    :param return_groups: If True, also return grouping information for the array.
    :type return_groups: bool, optional
+   :param assume_sorted: If True, assume pda is sorted and skip sorting step
+   :type assume_sorted: bool, optional
    :param return_indices: Only applicable if return_groups is True.
                           If True, return unique key indices along with other groups
    :type return_indices: bool, optional
-   :param assume_sorted: If True, assume pda is sorted and skip sorting step
-   :type assume_sorted: bool, optional
 
    :returns: * **unique** (*(list of) pdarray, Strings, or Categorical*) -- The unique values. If input dtype is int64, return values will be sorted.
              * **permutation** (*pdarray, optional*) -- Permutation that groups equivalent values together (only when return_groups=True)
@@ -40394,11 +40394,11 @@ Package Contents
    :type pda: (list of) pdarray, Strings, or Categorical
    :param return_groups: If True, also return grouping information for the array.
    :type return_groups: bool, optional
+   :param assume_sorted: If True, assume pda is sorted and skip sorting step
+   :type assume_sorted: bool, optional
    :param return_indices: Only applicable if return_groups is True.
                           If True, return unique key indices along with other groups
    :type return_indices: bool, optional
-   :param assume_sorted: If True, assume pda is sorted and skip sorting step
-   :type assume_sorted: bool, optional
 
    :returns: * **unique** (*(list of) pdarray, Strings, or Categorical*) -- The unique values. If input dtype is int64, return values will be sorted.
              * **permutation** (*pdarray, optional*) -- Permutation that groups equivalent values together (only when return_groups=True)
