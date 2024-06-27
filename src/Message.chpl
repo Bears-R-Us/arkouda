@@ -173,7 +173,6 @@ module Message {
                     if t == bool {
                         return this.val.toLower():bool;
                     }
-
                     return this.val: t;
                 }
             } catch {
@@ -214,7 +213,6 @@ module Message {
                 try {
                     return (this.toScalar(t),);
                 } catch {
-
                     try {
                         return parseJson(this.val, 1, t);
                     } catch {
@@ -222,7 +220,6 @@ module Message {
                     }
                 }
             } else {
-
                 try {
                     return parseJson(this.val, size, t);
                 } catch {
