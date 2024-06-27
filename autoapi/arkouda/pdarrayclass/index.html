@@ -2453,7 +2453,7 @@ instead return the value of the original array in these positions.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – A pdarray of values that will be raised to a power (pwr)</p></li>
-<li><p><strong>pwr</strong> (<em>integer</em><em>, </em><em>float</em><em>, or </em><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – The power(s) that pda is raised to</p></li>
+<li><p><strong>pwr</strong> (<a class="reference internal" href="../numpy/index.html#arkouda.numpy.integer" title="arkouda.numpy.integer"><em>integer</em></a><em>, </em><em>float</em><em>, or </em><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – The power(s) that pda is raised to</p></li>
 <li><p><strong>where</strong> (<em>Boolean</em><em> or </em><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – This condition is broadcast over the input. At locations where the condition is True, the
 corresponding value will be raised to the respective power. Elsewhere, it will retain its
 original value. Default set to True.</p></li>
@@ -2505,8 +2505,8 @@ always a np.float64 or np.int64</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em>(</em><em>int64/uint64</em><em>) or </em><em>integer</em>) – Value(s) to rotate left.</p></li>
-<li><p><strong>rot</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em>(</em><em>int64/uint64</em><em>) or </em><em>integer</em>) – Amount(s) to rotate by.</p></li>
+<li><p><strong>x</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em>(</em><em>int64/uint64</em><em>) or </em><a class="reference internal" href="../numpy/index.html#arkouda.numpy.integer" title="arkouda.numpy.integer"><em>integer</em></a>) – Value(s) to rotate left.</p></li>
+<li><p><strong>rot</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em>(</em><em>int64/uint64</em><em>) or </em><a class="reference internal" href="../numpy/index.html#arkouda.numpy.integer" title="arkouda.numpy.integer"><em>integer</em></a>) – Amount(s) to rotate by.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2534,8 +2534,8 @@ always a np.float64 or np.int64</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em>(</em><em>int64/uint64</em><em>) or </em><em>integer</em>) – Value(s) to rotate left.</p></li>
-<li><p><strong>rot</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em>(</em><em>int64/uint64</em><em>) or </em><em>integer</em>) – Amount(s) to rotate by.</p></li>
+<li><p><strong>x</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em>(</em><em>int64/uint64</em><em>) or </em><a class="reference internal" href="../numpy/index.html#arkouda.numpy.integer" title="arkouda.numpy.integer"><em>integer</em></a>) – Value(s) to rotate left.</p></li>
+<li><p><strong>rot</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em>(</em><em>int64/uint64</em><em>) or </em><a class="reference internal" href="../numpy/index.html#arkouda.numpy.integer" title="arkouda.numpy.integer"><em>integer</em></a>) – Amount(s) to rotate by.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

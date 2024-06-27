@@ -37,18 +37,25 @@ Classes
    arkouda.numpy.clongdouble
    arkouda.numpy.csingle
    arkouda.numpy.double
+   arkouda.numpy.finfo
    arkouda.numpy.float32
    arkouda.numpy.float64
+   arkouda.numpy.floating
    arkouda.numpy.half
+   arkouda.numpy.iinfo
    arkouda.numpy.int16
    arkouda.numpy.int32
    arkouda.numpy.int64
    arkouda.numpy.int8
    arkouda.numpy.int_
    arkouda.numpy.intc
+   arkouda.numpy.integer
+   arkouda.numpy.intp
    arkouda.numpy.longdouble
    arkouda.numpy.longlong
+   arkouda.numpy.number
    arkouda.numpy.short
+   arkouda.numpy.signedinteger
    arkouda.numpy.single
    arkouda.numpy.ubyte
    arkouda.numpy.uint
@@ -67,6 +74,8 @@ Functions
 .. autoapisummary::
 
    arkouda.numpy.floor
+   arkouda.numpy.isscalar
+   arkouda.numpy.issubdtype
 
 
 Module Contents
@@ -272,6 +281,200 @@ Module Contents
 .. py:data:: euler_gamma
    :type:  float
 
+.. py:class:: finfo
+
+   finfo(dtype)
+
+   Machine limits for floating point types.
+
+   .. attribute:: bits
+
+      The number of bits occupied by the type.
+
+      :type: int
+
+   .. attribute:: dtype
+
+      Returns the dtype for which `finfo` returns information. For complex
+      input, the returned dtype is the associated ``float*`` dtype for its
+      real and complex components.
+
+      :type: dtype
+
+   .. attribute:: eps
+
+      The difference between 1.0 and the next smallest representable float
+      larger than 1.0. For example, for 64-bit binary floats in the IEEE-754
+      standard, ``eps = 2**-52``, approximately 2.22e-16.
+
+      :type: float
+
+   .. attribute:: epsneg
+
+      The difference between 1.0 and the next smallest representable float
+      less than 1.0. For example, for 64-bit binary floats in the IEEE-754
+      standard, ``epsneg = 2**-53``, approximately 1.11e-16.
+
+      :type: float
+
+   .. attribute:: iexp
+
+      The number of bits in the exponent portion of the floating point
+      representation.
+
+      :type: int
+
+   .. attribute:: machep
+
+      The exponent that yields `eps`.
+
+      :type: int
+
+   .. attribute:: max
+
+      The largest representable number.
+
+      :type: floating point number of the appropriate type
+
+   .. attribute:: maxexp
+
+      The smallest positive power of the base (2) that causes overflow.
+
+      :type: int
+
+   .. attribute:: min
+
+      The smallest representable number, typically ``-max``.
+
+      :type: floating point number of the appropriate type
+
+   .. attribute:: minexp
+
+      The most negative power of the base (2) consistent with there
+      being no leading 0's in the mantissa.
+
+      :type: int
+
+   .. attribute:: negep
+
+      The exponent that yields `epsneg`.
+
+      :type: int
+
+   .. attribute:: nexp
+
+      The number of bits in the exponent including its sign and bias.
+
+      :type: int
+
+   .. attribute:: nmant
+
+      The number of bits in the mantissa.
+
+      :type: int
+
+   .. attribute:: precision
+
+      The approximate number of decimal digits to which this kind of
+      float is precise.
+
+      :type: int
+
+   .. attribute:: resolution
+
+      The approximate decimal resolution of this type, i.e.,
+      ``10**-precision``.
+
+      :type: floating point number of the appropriate type
+
+   .. attribute:: tiny
+
+      An alias for `smallest_normal`, kept for backwards compatibility.
+
+      :type: float
+
+   .. attribute:: smallest_normal
+
+      The smallest positive floating point number with 1 as leading bit in
+      the mantissa following IEEE-754 (see Notes).
+
+      :type: float
+
+   .. attribute:: smallest_subnormal
+
+      The smallest positive floating point number with 0 as leading bit in
+      the mantissa following IEEE-754.
+
+      :type: float
+
+   :param dtype: Kind of floating point or complex floating point
+                 data-type about which to get information.
+   :type dtype: float, dtype, or instance
+
+   .. seealso::
+
+      :obj:`iinfo`
+          The equivalent for integer data types.
+
+      :obj:`spacing`
+          The distance between a value and the nearest adjacent number
+
+      :obj:`nextafter`
+          The next floating point value after x1 towards x2
+
+   .. rubric:: Notes
+
+   For developers of NumPy: do not instantiate this at the module level.
+   The initial calculation of these parameters is expensive and negatively
+   impacts import times.  These objects are cached, so calling ``finfo()``
+   repeatedly inside your functions is not a problem.
+
+   Note that ``smallest_normal`` is not actually the smallest positive
+   representable value in a NumPy floating point type. As in the IEEE-754
+   standard [1]_, NumPy floating point types make use of subnormal numbers to
+   fill the gap between 0 and ``smallest_normal``. However, subnormal numbers
+   may have significantly reduced precision [2]_.
+
+   This function can also be used for complex data types as well. If used,
+   the output will be the same as the corresponding real float type
+   (e.g. numpy.finfo(numpy.csingle) is the same as numpy.finfo(numpy.single)).
+   However, the output is true for the real and imaginary components.
+
+   .. rubric:: References
+
+   .. [1] IEEE Standard for Floating-Point Arithmetic, IEEE Std 754-2008,
+          pp.1-70, 2008, http://www.doi.org/10.1109/IEEESTD.2008.4610935
+   .. [2] Wikipedia, "Denormal Numbers",
+          https://en.wikipedia.org/wiki/Denormal_number
+
+   .. rubric:: Examples
+
+   >>> np.finfo(np.float64).dtype
+   dtype('float64')
+   >>> np.finfo(np.complex64).dtype
+   dtype('float32')
+
+
+   .. py:property:: smallest_normal
+      Return the value for the smallest normal.
+
+      :returns: **smallest_normal** -- Value for the smallest normal.
+      :rtype: float
+
+      :Warns: **UserWarning** -- If the calculated value for the smallest normal is requested for
+              double-double.
+
+
+   .. py:property:: tiny
+      Return the value for tiny, alias of smallest_normal.
+
+      :returns: **tiny** -- Value for the smallest normal, alias of smallest_normal.
+      :rtype: float
+
+      :Warns: **UserWarning** -- If the calculated value for the smallest normal is requested for
+              double-double.
+
+
 .. py:class:: float32(value)
 
    Bases: :py:obj:`numpy.floating`
@@ -398,6 +601,15 @@ Module Contents
 
 
 
+.. py:class:: floating(value)
+
+   Bases: :py:obj:`numpy.inexact`
+
+
+   Abstract base class of all floating-point scalar types.
+
+
+
 .. py:function:: floor(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
 
    Return the element-wise floor of the array.
@@ -464,6 +676,76 @@ Module Contents
               False
 
 
+
+
+.. py:class:: iinfo
+
+   iinfo(type)
+
+   Machine limits for integer types.
+
+   .. attribute:: bits
+
+      The number of bits occupied by the type.
+
+      :type: int
+
+   .. attribute:: dtype
+
+      Returns the dtype for which `iinfo` returns information.
+
+      :type: dtype
+
+   .. attribute:: min
+
+      The smallest integer expressible by the type.
+
+      :type: int
+
+   .. attribute:: max
+
+      The largest integer expressible by the type.
+
+      :type: int
+
+   :param int_type: The kind of integer data type to get information about.
+   :type int_type: integer type, dtype, or instance
+
+   .. seealso::
+
+      :obj:`finfo`
+          The equivalent for floating point data types.
+
+   .. rubric:: Examples
+
+   With types:
+
+   >>> ii16 = np.iinfo(np.int16)
+   >>> ii16.min
+   -32768
+   >>> ii16.max
+   32767
+   >>> ii32 = np.iinfo(np.int32)
+   >>> ii32.min
+   -2147483648
+   >>> ii32.max
+   2147483647
+
+   With instances:
+
+   >>> ii32 = np.iinfo(np.int32(10))
+   >>> ii32.min
+   -2147483648
+   >>> ii32.max
+   2147483647
+
+
+   .. py:property:: max
+      Maximum value of given dtype.
+
+
+   .. py:property:: min
+      Minimum value of given dtype.
 
 
 .. py:data:: inf
@@ -654,6 +936,209 @@ Module Contents
 
 
 
+.. py:class:: integer(value)
+
+   Bases: :py:obj:`numpy.number`
+
+
+   Abstract base class of all integer scalar types.
+
+
+
+   .. py:method:: denominator(*args, **kwargs)
+
+      denominator of value (1)
+
+
+
+
+   .. py:method:: is_integer(*args, **kwargs)
+
+      integer.is_integer() -> bool
+
+          Return ``True`` if the number is finite with integral value.
+
+          .. versionadded:: 1.22
+
+          Examples
+          --------
+          >>> np.int64(-2).is_integer()
+          True
+          >>> np.uint32(5).is_integer()
+          True
+
+
+
+
+   .. py:method:: numerator(*args, **kwargs)
+
+      numerator of value (the value itself)
+
+
+
+
+.. py:class:: intp(value)
+
+   Bases: :py:obj:`numpy.signedinteger`
+
+
+   Signed integer type, compatible with Python `int` and C ``long``.
+
+       :Character code: ``'l'``
+       :Canonical name: `numpy.int_`
+       :Alias on this platform (Linux x86_64): `numpy.int64`: 64-bit signed integer (``-9_223_372_036_854_775_808`` to ``9_223_372_036_854_775_807``).
+       :Alias on this platform (Linux x86_64): `numpy.intp`: Signed integer large enough to fit pointer, compatible with C ``intptr_t``.
+
+
+
+   .. py:method:: bit_count(*args, **kwargs)
+
+      int64.bit_count() -> int
+
+              Computes the number of 1-bits in the absolute value of the input.
+              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+
+              Examples
+              --------
+              >>> np.int64(127).bit_count()
+              7
+              >>> np.int64(-127).bit_count()
+              7
+
+
+
+
+.. py:function:: isscalar(element)
+
+   Returns True if the type of `element` is a scalar type.
+
+   :param element: Input argument, can be of any type and shape.
+   :type element: any
+
+   :returns: **val** -- True if `element` is a scalar type, False if it is not.
+   :rtype: bool
+
+   .. seealso::
+
+      :obj:`ndim`
+          Get the number of dimensions of an array
+
+   .. rubric:: Notes
+
+   If you need a stricter way to identify a *numerical* scalar, use
+   ``isinstance(x, numbers.Number)``, as that returns ``False`` for most
+   non-numerical elements such as strings.
+
+   In most cases ``np.ndim(x) == 0`` should be used instead of this function,
+   as that will also return true for 0d arrays. This is how numpy overloads
+   functions in the style of the ``dx`` arguments to `gradient` and the ``bins``
+   argument to `histogram`. Some key differences:
+
+   +--------------------------------------+---------------+-------------------+
+   | x                                    |``isscalar(x)``|``np.ndim(x) == 0``|
+   +======================================+===============+===================+
+   | PEP 3141 numeric objects (including  | ``True``      | ``True``          |
+   | builtins)                            |               |                   |
+   +--------------------------------------+---------------+-------------------+
+   | builtin string and buffer objects    | ``True``      | ``True``          |
+   +--------------------------------------+---------------+-------------------+
+   | other builtin objects, like          | ``False``     | ``True``          |
+   | `pathlib.Path`, `Exception`,         |               |                   |
+   | the result of `re.compile`           |               |                   |
+   +--------------------------------------+---------------+-------------------+
+   | third-party objects like             | ``False``     | ``True``          |
+   | `matplotlib.figure.Figure`           |               |                   |
+   +--------------------------------------+---------------+-------------------+
+   | zero-dimensional numpy arrays        | ``False``     | ``True``          |
+   +--------------------------------------+---------------+-------------------+
+   | other numpy arrays                   | ``False``     | ``False``         |
+   +--------------------------------------+---------------+-------------------+
+   | `list`, `tuple`, and other sequence  | ``False``     | ``False``         |
+   | objects                              |               |                   |
+   +--------------------------------------+---------------+-------------------+
+
+   .. rubric:: Examples
+
+   >>> np.isscalar(3.1)
+   True
+   >>> np.isscalar(np.array(3.1))
+   False
+   >>> np.isscalar([3.1])
+   False
+   >>> np.isscalar(False)
+   True
+   >>> np.isscalar('numpy')
+   True
+
+   NumPy supports PEP 3141 numbers:
+
+   >>> from fractions import Fraction
+   >>> np.isscalar(Fraction(5, 17))
+   True
+   >>> from numbers import Number
+   >>> np.isscalar(Number())
+   True
+
+
+.. py:function:: issubdtype(arg1, arg2)
+
+   Returns True if first argument is a typecode lower/equal in type hierarchy.
+
+   This is like the builtin :func:`issubclass`, but for `dtype`\ s.
+
+   :param arg1: `dtype` or object coercible to one
+   :type arg1: dtype_like
+   :param arg2: `dtype` or object coercible to one
+   :type arg2: dtype_like
+
+   :returns: **out**
+   :rtype: bool
+
+   .. seealso::
+
+      :ref:`arrays.scalars`
+          Overview of the numpy type hierarchy.
+
+      :obj:`issubsctype`, :obj:`issubclass_`
+
+   .. rubric:: Examples
+
+   `issubdtype` can be used to check the type of arrays:
+
+   >>> ints = np.array([1, 2, 3], dtype=np.int32)
+   >>> np.issubdtype(ints.dtype, np.integer)
+   True
+   >>> np.issubdtype(ints.dtype, np.floating)
+   False
+
+   >>> floats = np.array([1, 2, 3], dtype=np.float32)
+   >>> np.issubdtype(floats.dtype, np.integer)
+   False
+   >>> np.issubdtype(floats.dtype, np.floating)
+   True
+
+   Similar types of different sizes are not subdtypes of each other:
+
+   >>> np.issubdtype(np.float64, np.float32)
+   False
+   >>> np.issubdtype(np.float32, np.float64)
+   False
+
+   but both are subtypes of `floating`:
+
+   >>> np.issubdtype(np.float64, np.floating)
+   True
+   >>> np.issubdtype(np.float32, np.floating)
+   True
+
+   For convenience, dtype-like objects are allowed too:
+
+   >>> np.issubdtype('S1', np.string_)
+   True
+   >>> np.issubdtype('i4', np.signedinteger)
+   True
+
+
 .. py:class:: longdouble(value)
 
    Bases: :py:obj:`numpy.floating`
@@ -725,6 +1210,15 @@ Module Contents
 .. py:data:: newaxis
    :type:  None
 
+.. py:class:: number(value)
+
+   Bases: :py:obj:`numpy.generic`
+
+
+   Abstract base class of all numeric scalar types.
+
+
+
 .. py:data:: pi
    :type:  float
 
@@ -755,6 +1249,15 @@ Module Contents
               >>> np.int16(-127).bit_count()
               7
 
+
+
+
+.. py:class:: signedinteger(value)
+
+   Bases: :py:obj:`numpy.integer`
+
+
+   Abstract base class of all signed integer scalar types.
 
 
 
