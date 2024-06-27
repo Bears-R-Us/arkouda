@@ -727,9 +727,7 @@ module ServerDaemon {
             }
 
             var elapsed = timeSinceEpoch().totalSeconds() - startTime;
-            var elapsed = timeSinceEpoch().totalSeconds() - startTime;
 
-            deleteServerConnectionInfo();
             deleteServerConnectionInfo();
 
             sdLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
@@ -782,14 +780,12 @@ module ServerDaemon {
                                 getRoutineName(), 
                                 getLineNumber(),
                                 "initialized and listening in port %i".format(
-                                "initialized and listening in port %i".format(
                                 this.port));
         }
 
         override proc run() throws {
             while !this.shutdownDaemon {
                 sdLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
-                               "awaiting message on port %i".format(this.port));
                                "awaiting message on port %i".format(this.port));
                 var req = this.socket.recv(bytes).decode();
 
@@ -816,10 +812,8 @@ module ServerDaemon {
                     when "connect" {
                         if authenticate {
                             repTuple = new MsgTuple("connected to arkouda metrics server tcp://*:%i as user " +
-                                                "%s with token %s".format(this.port,user,token), MsgType.NORMAL);
-                                                "%s with token %s".format(this.port,user,token), MsgType.NORMAL);
+                                                    "%s with token %s".format(this.port,user,token), MsgType.NORMAL);
                         } else {
-                            repTuple = new MsgTuple("connected to arkouda metrics server tcp://*:%i".format(this.port), 
                             repTuple = new MsgTuple("connected to arkouda metrics server tcp://*:%i".format(this.port), 
                                                                                     MsgType.NORMAL);
                         }
