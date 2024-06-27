@@ -19,18 +19,10 @@ module Message {
      */
     record MsgTuple {
         var msg: string;
-        var msgType: MsgType;    
-    }
-
-    /*
-     * Encapsulates state corresponding to a reply message sent back to 
-     * the Arkouda client.
-     */
-    class ReplyMsg {
-        var msg: string;
         var msgType: MsgType;
         var msgFormat: MsgFormat;
         var user: string;
+        var payload: bytes;
     }
 
     /*
@@ -43,6 +35,62 @@ module Message {
         var format: string;
         var args: string;
         var size: int; // currently unused, but wired for once all functionality moved to json
+    }
+
+    proc MsgTuple.init() {
+        this.msg = "";
+        this.msgType = MsgType.NORMAL;
+        this.msgFormat = MsgFormat.STRING;
+        this.user = "";
+        this.payload = b"";
+    }
+
+    proc MsgTuple.init(msg: string, msgType: MsgType) {
+        this.msg = msg;
+        this.msgType = msgType;
+        this.msgFormat = MsgFormat.STRING;
+        this.user = "";
+        this.payload = b"";
+    }
+
+    proc MsgTuple.init(msg: string, msgType: MsgType, msgFormat: MsgFormat, user = "", payload = b"") {
+        this.msg = msg;
+        this.msgType = msgType;
+        this.msgFormat = msgFormat;
+        this.user = "";
+        this.payload = payload;
+    }
+
+    proc type MsgTuple.success(msg: string): MsgTuple {
+        return new MsgTuple(
+            msg = msg,
+            msgType = MsgType.NORMAL,
+            msgFormat = MsgFormat.STRING,
+            payload = b""
+        );
+    }
+
+    proc type MsgTuple.error(msg: string): MsgTuple {
+        return new MsgTuple(
+            msg = msg,
+            msgType = MsgType.ERROR,
+            msgFormat = MsgFormat.STRING,
+            payload = b""
+        );
+    }
+
+    proc type MsgTuple.payload(data: bytes): MsgTuple {
+        return new MsgTuple(
+            msg = "",
+            msgType = MsgType.NORMAL,
+            msgFormat = MsgFormat.BINARY,
+            payload = data
+        );
+    }
+
+    proc ref MsgTuple.serialize(user: string) throws {
+        this.user = user;
+        return formatJson(this);
     }
 
     /*
@@ -130,7 +178,7 @@ module Message {
                     else return this.val:t;
             } catch {
                 throw new ErrorWithContext(
-                    "Parameter cannot be cast as %s. Attempting to cast %s as type %s failed".doFormat(t:string, this.val, t:string),
+                    "Parameter cannot be cast as %s. Attempting to cast %s as type %s failed".format(t:string, this.val, t:string),
                     getLineNumber(),
                     getRoutineName(),
                     getModuleName(),
@@ -148,7 +196,7 @@ module Message {
                 return this.val:int;
             }
             catch {
-                throw new owned ErrorWithContext("Parameter cannot be cast as int. Attempting to cast %s as type int failed".doFormat(this.val),
+                throw new owned ErrorWithContext("Parameter cannot be cast as int. Attempting to cast %s as type int failed".format(this.val),
                                     getLineNumber(),
                                     getRoutineName(),
                                     getModuleName(),
@@ -168,7 +216,7 @@ module Message {
             if x >= 0 && x < max then return x;
             if x < 0 && x >= -max then return x + max;
             else throw new ErrorWithContext(
-                "Parameter cannot be cast as a positive int in the range: [%?, %?)".doFormat(-max, max),
+                "Parameter cannot be cast as a positive int in the range: [%?, %?)".format(-max, max),
                 getLineNumber(),
                 getRoutineName(),
                 getModuleName(),
@@ -185,7 +233,7 @@ module Message {
                 return this.val:uint;
             }
             catch {
-                throw new owned ErrorWithContext("Parameter cannot be cast as uint. Attempting to cast %s as type uint failed".doFormat(this.val),
+                throw new owned ErrorWithContext("Parameter cannot be cast as uint. Attempting to cast %s as type uint failed".format(this.val),
                                     getLineNumber(),
                                     getRoutineName(),
                                     getModuleName(),
@@ -198,7 +246,7 @@ module Message {
                 return this.val:uint(8);
             }
             catch {
-                throw new owned ErrorWithContext("Parameter cannot be cast as uint(8). Attempting to cast %s as type uint(8) failed".doFormat(this.val),
+                throw new owned ErrorWithContext("Parameter cannot be cast as uint(8). Attempting to cast %s as type uint(8) failed".format(this.val),
                                     getLineNumber(),
                                     getRoutineName(),
                                     getModuleName(),
@@ -215,7 +263,7 @@ module Message {
                 return this.val:real;
             }
             catch {
-                throw new owned ErrorWithContext("Parameter cannot be cast as real. Attempting to cast %s as type real failed".doFormat(this.val),
+                throw new owned ErrorWithContext("Parameter cannot be cast as real. Attempting to cast %s as type real failed".format(this.val),
                                     getLineNumber(),
                                     getRoutineName(),
                                     getModuleName(),
@@ -232,7 +280,7 @@ module Message {
                 return this.val.toLower():bool;
             }
             catch {
-                throw new owned ErrorWithContext("Parameter cannot be cast as bool. Attempting to cast %s as type bool failed".doFormat(this.val),
+                throw new owned ErrorWithContext("Parameter cannot be cast as bool. Attempting to cast %s as type bool failed".format(this.val),
                                     getLineNumber(),
                                     getRoutineName(),
                                     getModuleName(),
@@ -245,7 +293,7 @@ module Message {
                 return this.val:bigint;
             }
             catch {
-                throw new owned ErrorWithContext("Parameter cannot be cast as bigint. Attempting to cast %s as type bigint failed".doFormat(this.val),
+                throw new owned ErrorWithContext("Parameter cannot be cast as bigint. Attempting to cast %s as type bigint failed".format(this.val),
                                     getLineNumber(),
                                     getRoutineName(),
                                     getModuleName(),
@@ -270,7 +318,7 @@ module Message {
                              else return this.val:t;
             }
             catch {
-                throw new owned ErrorWithContext("Parameter cannot be cast as %?. Attempting to cast %s as type %? failed".doFormat(t:string, this.val, t:string),
+                throw new owned ErrorWithContext("Parameter cannot be cast as %?. Attempting to cast %s as type %? failed".format(t:string, this.val, t:string),
                                     getLineNumber(),
                                     getRoutineName(),
                                     getModuleName(),
@@ -285,7 +333,7 @@ module Message {
         */
         proc getList(size: int) throws {
             if this.objType != ObjectType.LIST {
-                throw new owned ErrorWithContext("Parameter with key, %s, is not a list.".doFormat(this.key),
+                throw new owned ErrorWithContext("Parameter with key, %s, is not a list.".format(this.key),
                                     getLineNumber(),
                                     getRoutineName(),
                                     getModuleName(),
@@ -296,7 +344,7 @@ module Message {
 
         proc getListAs(type t, size: int) throws {
             if this.objType != ObjectType.LIST {
-                throw new owned ErrorWithContext("Parameter with key, %s, is not a list.".doFormat(this.key),
+                throw new owned ErrorWithContext("Parameter with key, %s, is not a list.".format(this.key),
                                     getLineNumber(),
                                     getRoutineName(),
                                     getModuleName(),
@@ -308,7 +356,7 @@ module Message {
                 forall (idx, v) in zip(0..<size, vals) do ret[idx] = v:t;
                 return ret;
             } catch {
-                throw new owned ErrorWithContext("Parameter cannot be cast as an array of %?. Attempting to cast %s as ([0..<%?] %?) failed".doFormat(t:string, this.val, size, t:string),
+                throw new owned ErrorWithContext("Parameter cannot be cast as an array of %?. Attempting to cast %s as ([0..<%?] %?) failed".format(t:string, this.val, size, t:string),
                                     getLineNumber(),
                                     getRoutineName(),
                                     getModuleName(),
@@ -336,7 +384,7 @@ module Message {
 
         proc getJSON(size: int) throws {
             if this.objType != ObjectType.DICT {
-                throw new owned ErrorWithContext("Parameter with key, %s, is not a JSON obj.".doFormat(this.key),
+                throw new owned ErrorWithContext("Parameter with key, %s, is not a JSON obj.".format(this.key),
                                     getLineNumber(),
                                     getRoutineName(),
                                     getModuleName(),
@@ -351,18 +399,21 @@ module Message {
     :param_list:  array of ParameterObj
     :size: int - number of parameters contained in list
     */
-    class MessageArgs {
+    class MessageArgs: writeSerializable {
         var param_list: list(ParameterObj);
         var size: int;
+        var payload: bytes;
 
         proc init() {
             this.param_list = new list(ParameterObj);
             this.size = 0;
+            this.payload = b"";
         }
 
         proc init(param_list: list(ParameterObj)) {
             this.param_list = param_list;
             this.size = param_list.size;
+            this.payload = b"";
         }
 
         proc init(param_list: list(ParameterObj, parSafe=true)) {
@@ -374,6 +425,11 @@ module Message {
             this.size = param_list.size;
 
             this.param_list = param_list;
+            this.payload = b"";
+        }
+
+        proc addPayload(in p: bytes) {
+            this.payload = p;
         }
 
         proc getJSON(keys: list(string) = list(string)): string throws {
@@ -393,6 +449,14 @@ module Message {
             return formatJson(json);
         }
 
+        override proc serialize(writer: fileWriter(?), ref serializer: ?st) throws {
+            var ser = serializer.startClass(writer, "MessageArgs", 3);
+            ser.writeField("param_list", this.param_list);
+            ser.writeField("size", this.size);
+            ser.writeField("payload", if this.payload.size > 0 then "<binary_payload>" else "");
+            ser.endClass();
+        }
+
         /*
         * Identify the parameter with the provided key and return it
         * Returns ParameterObj with the provided key
@@ -404,7 +468,7 @@ module Message {
                     return p;
                 }
             }
-            throw new owned ErrorWithContext("Key Not Found; %s".doFormat(key),
+            throw new owned ErrorWithContext("Key Not Found; %s".format(key),
                                     getLineNumber(),
                                     getRoutineName(),
                                     getModuleName(),
@@ -417,7 +481,7 @@ module Message {
                     return p.val;
                 }
             }
-            throw new owned ErrorWithContext("Key Not Found; %s".doFormat(key),
+            throw new owned ErrorWithContext("Key Not Found; %s".format(key),
                                     getLineNumber(),
                                     getRoutineName(),
                                     getModuleName(),
@@ -472,7 +536,7 @@ module Message {
         try {
           readfCompat(newmem, "%?", p);
         } catch bfe : BadFormatError {
-            throw new owned ErrorWithContext("Incorrect JSON format %s".doFormat(payload),
+            throw new owned ErrorWithContext("Incorrect JSON format %s".format(payload),
                                        getLineNumber(),
                                        getRoutineName(),
                                        getModuleName(),
@@ -507,7 +571,7 @@ module Message {
         try {
             readfCompat(newmem, "%?", msg);
         } catch bfe : BadFormatError {
-            throw new owned ErrorWithContext("Incorrect JSON format %s".doFormat(request),
+            throw new owned ErrorWithContext("Incorrect JSON format %s".format(request),
                                        getLineNumber(),
                                        getRoutineName(),
                                        getModuleName(),
@@ -520,8 +584,8 @@ module Message {
     */
    proc serialize(msg: string, msgType: MsgType, msgFormat: MsgFormat, 
                                                                  user: string) : string throws {
-       return formatJson(new ReplyMsg(msg=msg,msgType=msgType, 
-                                                        msgFormat=msgFormat, user=user));
+       return formatJson(new MsgTuple(msg=msg,msgType=msgType,
+                                      msgFormat=msgFormat, user=user));
    }
 
     /*

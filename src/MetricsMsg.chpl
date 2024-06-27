@@ -496,7 +496,7 @@ module MetricsMsg {
             var total = getMaxLocaleMemory(loc);
             
             mLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                              'memoryUsed: %i physicalMemory: %i'.doFormat(used,total));
+                              'memoryUsed: %i physicalMemory: %i'.format(used,total));
 
             metrics.pushBack(new LocaleMetric(name="arkouda_memory_used_per_locale",
                              category=MetricCategory.SYSTEM,
@@ -651,7 +651,7 @@ module MetricsMsg {
         var category = msgArgs.getValueOf("category"):MetricCategory;
             
         mLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                            'category: %s'.doFormat(category));
+                            'category: %s'.format(category));
         var metrics: string;
 
         select category {
@@ -689,7 +689,7 @@ module MetricsMsg {
         }
 
         mLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                            'metrics %s'.doFormat(metrics));
+                            'metrics %s'.format(metrics));
         return new MsgTuple(metrics, MsgType.NORMAL);        
     }
 

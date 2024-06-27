@@ -34,7 +34,7 @@ module SegmentedMsg {
     const offsetsName = msgArgs.getValueOf("offsets");
     const valuesName = msgArgs.getValueOf("values");
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-            "cmd: %s offsetsName: %s valuesName: %s".doFormat(cmd, offsetsName, valuesName));
+            "cmd: %s offsetsName: %s valuesName: %s".format(cmd, offsetsName, valuesName));
     st.checkTable(offsetsName);
     st.checkTable(valuesName);
     var offsets = getGenericTypedArrayEntry(offsetsName, st);
@@ -47,22 +47,22 @@ module SegmentedMsg {
     // st.deleteEntry(valuesName);
 
     // Now return msg binding our newly created SegString object
-    var repMsg = "created " + st.attrib(segString.name) + "+created bytes.size %?".doFormat(segString.nBytes);
+    var repMsg = "created " + st.attrib(segString.name) + "+created bytes.size %?".format(segString.nBytes);
     smLogger.debug(getModuleName(), getRoutineName(), getLineNumber(), repMsg);
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-  proc segStrTondarrayMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): bytes throws {
+  proc segStrTondarrayMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
       var entry = getSegString(msgArgs.getValueOf("obj"), st);
       const comp = msgArgs.getValueOf("comp");
       if comp == "offsets" {
-          return tondarrayMsg(entry.offsets);
+          return MsgTuple.payload(tondarrayMsg(entry.offsets));
       } else if (comp == "values") {
-          return tondarrayMsg(entry.values);
+          return MsgTuple.payload(tondarrayMsg(entry.values));
       } else {
-          var msg = "Unrecognized component: %s".doFormat(comp);
+          const msg = "Unrecognized component: %s".format(comp);
           smLogger.error(getModuleName(),getRoutineName(),getLineNumber(), msg);
-          return msg.encode();
+          return MsgTuple.error(msg);
       }
   }
 
@@ -92,7 +92,7 @@ module SegmentedMsg {
         } else if entry.dtype == DType.BigInt {
             arrayBytes = distArrToBytes(toSymEntry(entry, bigint).a);
         } else {
-            var errorMsg = "Error: Unhandled dtype %s".doFormat(entry.dtype);
+            var errorMsg = "Error: Unhandled dtype %s".format(entry.dtype);
             smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return errorMsg.encode(); // return as bytes
         }
@@ -115,7 +115,7 @@ module SegmentedMsg {
               overMemLimit(8*len + 16*len + (maxLen + minLen)*len);
               var (segs, vals) = newRandStringsUniformLength(len, minLen, maxLen, charset, seedStr);
               var strings = getSegString(segs, vals, st);
-              repMsg = 'created ' + st.attrib(strings.name) + '+created bytes.size %?'.doFormat(strings.nBytes);
+              repMsg = 'created ' + st.attrib(strings.name) + '+created bytes.size %?'.format(strings.nBytes);
           }
           when "lognormal" {
               var logMean = msgArgs.get("arg1").getRealValue();
@@ -124,7 +124,7 @@ module SegmentedMsg {
               overMemLimit(8*len + 16*len + exp(logMean + (logStd**2)/2):int*len);
               var (segs, vals) = newRandStringsLogNormalLength(len, logMean, logStd, charset, seedStr);
               var strings = getSegString(segs, vals, st);
-              repMsg = 'created ' + st.attrib(strings.name) + '+created bytes.size %?'.doFormat(strings.nBytes);
+              repMsg = 'created ' + st.attrib(strings.name) + '+created bytes.size %?'.format(strings.nBytes);
           }
           otherwise { 
               var errorMsg = notImplementedError(pn, dist);      
@@ -148,7 +148,7 @@ module SegmentedMsg {
     
     var rname = st.nextName();
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-            "cmd: %s objtype: %? name: %?".doFormat(
+            "cmd: %s objtype: %? name: %?".format(
                    cmd,objtype,name));
 
     select objtype {
@@ -159,7 +159,7 @@ module SegmentedMsg {
         lengths.a = strings.getLengths() - 1;
       }
       otherwise {
-          var errorMsg = notImplementedError(pn, "%s".doFormat(objtype));
+          var errorMsg = notImplementedError(pn, "%s".format(objtype));
           smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                      
           return new MsgTuple(errorMsg, MsgType.ERROR);
       }
@@ -178,7 +178,7 @@ module SegmentedMsg {
     var genSym = toGenSymEntry(st.lookup(name));
 
     if genSym.dtype != DType.Strings{
-      var errorMsg = notImplementedError(pn, "%s".doFormat(dtype2str(genSym.dtype)));
+      var errorMsg = notImplementedError(pn, "%s".format(dtype2str(genSym.dtype)));
       smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                      
       return new MsgTuple(errorMsg, MsgType.ERROR);
     }
@@ -216,7 +216,7 @@ module SegmentedMsg {
     st.checkTable(name);
 
     var rname = st.nextName();
-    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %s objtype: %? name: %?".doFormat(cmd,objtype,name));
+    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %s objtype: %? name: %?".format(cmd,objtype,name));
 
     select objtype {
       when ObjType.STRINGS {
@@ -225,32 +225,32 @@ module SegmentedMsg {
           when "toLower" {
             var (off, val) = strings.lower();
             var retString = getSegString(off, val, st);
-            repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".doFormat(retString.nBytes);
+            repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".format(retString.nBytes);
           }
           when "toUpper" {
             var (off, val) = strings.upper();
             var retString = getSegString(off, val, st);
-            repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".doFormat(retString.nBytes);
+            repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".format(retString.nBytes);
           }
           when "toTitle" {
             var (off, val) = strings.title();
             var retString = getSegString(off, val, st);
-            repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".doFormat(retString.nBytes);
+            repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".format(retString.nBytes);
           }
           when "capitalize" {
             var (off, val) = strings.capitalize();
             var retString = getSegString(off, val, st);
-            repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".doFormat(retString.nBytes);
+            repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".format(retString.nBytes);
           }
           otherwise {
-            var errorMsg = notImplementedError(pn, "%s".doFormat(subcmd));
+            var errorMsg = notImplementedError(pn, "%s".format(subcmd));
             smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR);
           }
         }
       }
       otherwise {
-          var errorMsg = notImplementedError(pn, "%s".doFormat(objtype));
+          var errorMsg = notImplementedError(pn, "%s".format(objtype));
           smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           return new MsgTuple(errorMsg, MsgType.ERROR);
       }
@@ -270,7 +270,7 @@ module SegmentedMsg {
     st.checkTable(name);
 
     var rname = st.nextName();
-    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %s objtype: %? name: %?".doFormat(cmd,objtype,name));
+    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %s objtype: %? name: %?".format(cmd,objtype,name));
 
     select objtype {
       when ObjType.STRINGS {
@@ -314,14 +314,14 @@ module SegmentedMsg {
             repMsg = "created "+st.attrib(rname);
           }
           otherwise {
-            var errorMsg = notImplementedError(pn, "%s".doFormat(subcmd));
+            var errorMsg = notImplementedError(pn, "%s".format(subcmd));
             smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR);
           }
         }
       }
       otherwise {
-          var errorMsg = notImplementedError(pn, "%s".doFormat(objtype));
+          var errorMsg = notImplementedError(pn, "%s".format(objtype));
           smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           return new MsgTuple(errorMsg, MsgType.ERROR);
       }
@@ -343,7 +343,7 @@ module SegmentedMsg {
       var rname = st.nextName();
     
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                         "cmd: %s objtype: %? valtype: %?".doFormat(
+                         "cmd: %s objtype: %? valtype: %?".format(
                           cmd,objtype,valtype));
     
       select (objtype, valtype) {
@@ -354,7 +354,7 @@ module SegmentedMsg {
               repMsg = "created "+st.attrib(rname);
           }
           otherwise {
-            var errorMsg = "(%s, %s)".doFormat(objtype, valtype);
+            var errorMsg = "(%s, %s)".format(objtype, valtype);
             smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
           }
@@ -389,7 +389,7 @@ module SegmentedMsg {
     checkMatchStrings(name, st);
 
     smLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
-                   "cmd: %s objtype: %?".doFormat(cmd, objtype));
+                   "cmd: %s objtype: %?".format(cmd, objtype));
 
     if objtype == "Matcher" || objtype  == "Match" {
       const rNumMatchesName = st.nextName();
@@ -417,20 +417,20 @@ module SegmentedMsg {
       st.addEntry(rfullMatchScanName, createSymEntry(fullMatchScan));
 
       var createdMap = new map(keyType=string,valType=string);
-      createdMap.add("NumMatches", "created %s".doFormat(st.attrib(rNumMatchesName)));
-      createdMap.add("Starts", "created %s".doFormat(st.attrib(rStartsName)));
-      createdMap.add("Lens", "created %s".doFormat(st.attrib(rLensName)));
-      createdMap.add("Indices", "created %s".doFormat(st.attrib(rIndicesName)));
-      createdMap.add("SearchBool", "created %s".doFormat(st.attrib(rSearchBoolName)));
-      createdMap.add("SearchInd", "created %s".doFormat(st.attrib(rSearchScanName)));
-      createdMap.add("MatchBool", "created %s".doFormat(st.attrib(rMatchBoolName)));
-      createdMap.add("MatchInd", "created %s".doFormat(st.attrib(rMatchScanName)));
-      createdMap.add("FullMatchBool", "created %s".doFormat(st.attrib(rfullMatchBoolName)));
-      createdMap.add("FullMatchInd", "created %s".doFormat(st.attrib(rfullMatchScanName)));
+      createdMap.add("NumMatches", "created %s".format(st.attrib(rNumMatchesName)));
+      createdMap.add("Starts", "created %s".format(st.attrib(rStartsName)));
+      createdMap.add("Lens", "created %s".format(st.attrib(rLensName)));
+      createdMap.add("Indices", "created %s".format(st.attrib(rIndicesName)));
+      createdMap.add("SearchBool", "created %s".format(st.attrib(rSearchBoolName)));
+      createdMap.add("SearchInd", "created %s".format(st.attrib(rSearchScanName)));
+      createdMap.add("MatchBool", "created %s".format(st.attrib(rMatchBoolName)));
+      createdMap.add("MatchInd", "created %s".format(st.attrib(rMatchScanName)));
+      createdMap.add("FullMatchBool", "created %s".format(st.attrib(rfullMatchBoolName)));
+      createdMap.add("FullMatchInd", "created %s".format(st.attrib(rfullMatchScanName)));
       repMsg = formatJson(createdMap);
     }
     else {
-      var errorMsg = "%s".doFormat(objtype);
+      var errorMsg = "%s".format(objtype);
       smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
       return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
     }
@@ -457,7 +457,7 @@ module SegmentedMsg {
     st.checkTable(indicesName);
 
     smLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
-                   "cmd: %s objtype: %?".doFormat(cmd, objtype));
+                   "cmd: %s objtype: %?".format(cmd, objtype));
 
     select objtype {
       when "Matcher" {
@@ -470,11 +470,11 @@ module SegmentedMsg {
 
         var (off, val, matchOrigins) = strings.findAllMatches(numMatches, starts, lens, indices, returnMatchOrig);
         var retString = getSegString(off, val, st);
-        repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".doFormat(retString.nBytes);
+        repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".format(retString.nBytes);
         if returnMatchOrig {
           const optName: string = if returnMatchOrig then st.nextName() else "";
           st.addEntry(optName, createSymEntry(matchOrigins));
-          repMsg += "+created %s".doFormat(st.attrib(optName));
+          repMsg += "+created %s".format(st.attrib(optName));
         }
       }
       when "Match" {
@@ -488,15 +488,15 @@ module SegmentedMsg {
 
         var (off, val, matchOrigins) = strings.findAllMatches(numMatches, starts, lens, indices, returnMatchOrig);
         var retString = getSegString(off, val, st);
-        repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".doFormat(retString.nBytes);
+        repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".format(retString.nBytes);
         if returnMatchOrig {
           st.addEntry(optName, createSymEntry(matchOrigins));
-          repMsg += "+created %s".doFormat(st.attrib(optName));
+          repMsg += "+created %s".format(st.attrib(optName));
         }
       }
       // when "Match" do numMatch SymEntry(bool) AND ?t in FindAll declaration in Strings idk if "for k in matchInd..#numMatches[stringInd]" will still work
       otherwise {
-        var errorMsg = "%s".doFormat(objtype);
+        var errorMsg = "%s".format(objtype);
         smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
         return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
       }
@@ -519,7 +519,7 @@ module SegmentedMsg {
     st.checkTable(name);
 
     smLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
-                   "cmd: %s objtype: %?".doFormat(cmd, objtype));
+                   "cmd: %s objtype: %?".format(cmd, objtype));
 
     select objtype {
       when "Matcher" {
@@ -527,14 +527,14 @@ module SegmentedMsg {
         const strings = getSegString(name, st);
         var (off, val, numSubs) = strings.sub(pattern, repl, count, returnNumSubs);
         var retString = getSegString(off, val, st);
-        repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".doFormat(retString.nBytes);
+        repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".format(retString.nBytes);
         if returnNumSubs {
           st.addEntry(optName, createSymEntry(numSubs));
-          repMsg += "+created %s".doFormat(st.attrib(optName));
+          repMsg += "+created %s".format(st.attrib(optName));
         }
       }
       otherwise {
-        var errorMsg = "%s".doFormat(objtype);
+        var errorMsg = "%s".format(objtype);
         smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
         return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
       }
@@ -558,11 +558,11 @@ module SegmentedMsg {
         var strings = getSegString(name, st);
         var (off, val) = strings.strip(msgArgs.getValueOf("chars"));
         var retString = getSegString(off, val, st);
-        repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".doFormat(retString.nBytes);
+        repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".format(retString.nBytes);
         return new MsgTuple(repMsg, MsgType.NORMAL);
       }
       otherwise {
-          var errorMsg = notImplementedError(pn, "%s".doFormat(objtype));
+          var errorMsg = notImplementedError(pn, "%s".format(objtype));
           smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           return new MsgTuple(errorMsg, MsgType.ERROR);
       }
@@ -594,7 +594,7 @@ module SegmentedMsg {
     st.checkTable(name);
 
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                         "cmd: %s subcmd: %s objtype: %? valtype: %?".doFormat(
+                         "cmd: %s subcmd: %s objtype: %? valtype: %?".format(
                           cmd,subcmd,objtype,valtype));
 
     select (objtype, valtype) {
@@ -646,7 +646,7 @@ module SegmentedMsg {
           }
           var leftEntry = getSegString(leftName, st);
           var rightEntry = getSegString(rightName, st);
-          repMsg = "created %s+created bytes.size %?+created %s+created bytes.size %?".doFormat(
+          repMsg = "created %s+created bytes.size %?+created %s+created bytes.size %?".format(
                                                                         st.attrib(leftEntry.name),
                                                                         leftEntry.nBytes,
                                                                         st.attrib(rightEntry.name),
@@ -654,14 +654,14 @@ module SegmentedMsg {
         }
         otherwise {
             var errorMsg = notImplementedError(pn,
-                              "subcmd: %s, (%s, %s)".doFormat(subcmd, objtype, valtype));
+                              "subcmd: %s, (%s, %s)".format(subcmd, objtype, valtype));
             smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR);
         }
       }
     }
     otherwise {
-        var errorMsg = notImplementedError(pn, "(%s, %s)".doFormat(objtype, valtype));
+        var errorMsg = notImplementedError(pn, "(%s, %s)".format(objtype, valtype));
         smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
         return new MsgTuple(errorMsg, MsgType.ERROR);       
       }
@@ -703,7 +703,7 @@ module SegmentedMsg {
             st.addEntry(upperName, createSymEntry(upper));
             var lowerName = st.nextName();
             st.addEntry(lowerName, createSymEntry(lower));
-            repMsg = "created %s+created %s".doFormat(st.attrib(upperName), st.attrib(lowerName));
+            repMsg = "created %s+created %s".format(st.attrib(upperName), st.attrib(lowerName));
         }
         otherwise {
             var errorMsg = notImplementedError(pn, objtype: string);
@@ -736,7 +736,7 @@ module SegmentedMsg {
     const name = msgArgs.getValueOf("obj");
     const dtype = str2dtype(msgArgs.getValueOf("dtype"));
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                            "subcmd: %s objtype: %s".doFormat(subcmd,objtype));
+                            "subcmd: %s objtype: %s".format(subcmd,objtype));
     try {
         select subcmd {
             when "intIndex" {
@@ -750,7 +750,7 @@ module SegmentedMsg {
                 return segPdarrayIndex(objtype, name, msgArgs.getValueOf("key"), dtype, st);
             }
             otherwise {
-                var errorMsg = "Error in %s, unknown subcommand %s".doFormat(pn, subcmd);
+                var errorMsg = "Error in %s, unknown subcommand %s".format(pn, subcmd);
                 smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
                 return new MsgTuple(errorMsg, MsgType.ERROR);
             }
@@ -760,7 +760,7 @@ module SegmentedMsg {
         smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
         return new MsgTuple(errorMsg, MsgType.ERROR);
     } catch e: Error {
-        var errorMsg = "unknown cause %?".doFormat(e);
+        var errorMsg = "unknown cause %?".format(e);
         smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
         return new MsgTuple(errorMsg, MsgType.ERROR);
     }
@@ -774,7 +774,7 @@ module SegmentedMsg {
       var pn = Reflection.getRoutineName();
 
       // check to make sure symbols defined
-      smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "strName: %s".doFormat(objName));
+      smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "strName: %s".format(objName));
       st.checkTable(objName);
       
       select objtype {
@@ -832,7 +832,7 @@ module SegmentedMsg {
             var (newSegs, newVals) = if stride == 1 then strings[convertPythonSliceToChapel(start, stop)] else strings[convertSliceToStridableRange(start, stop, stride)];
             // Store the resulting offsets and bytes arrays
             var newStringsObj = getSegString(newSegs, newVals, st);
-            repMsg = "created " + st.attrib(newStringsObj.name) + "+created bytes.size %?".doFormat(newStringsObj.nBytes);
+            repMsg = "created " + st.attrib(newStringsObj.name) + "+created bytes.size %?".format(newStringsObj.nBytes);
         }
         otherwise {
             var errorMsg = notImplementedError(pn, objtype: string);
@@ -873,7 +873,7 @@ module SegmentedMsg {
     st.checkTable(objName);
     
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                  "objtype:%s".doFormat(objtype));
+                                                  "objtype:%s".format(objtype));
 
     var gIV: borrowed GenSymEntry = getGenericTypedArrayEntry(iname, st);
     
@@ -890,7 +890,7 @@ module SegmentedMsg {
                         var newStringsObj = getSegString(newSegs, newVals, st);
                         newStringsName = newStringsObj.name;
                         nBytes = newStringsObj.nBytes;
-                        repMsg = "created " + st.attrib(newStringsName) + "+created bytes.size %?".doFormat(nBytes);
+                        repMsg = "created " + st.attrib(newStringsName) + "+created bytes.size %?".format(nBytes);
                     }
                     when DType.UInt64 {
                         var iv = toSymEntry(gIV, uint);
@@ -898,7 +898,7 @@ module SegmentedMsg {
                         var newStringsObj = getSegString(newSegs, newVals, st);
                         newStringsName = newStringsObj.name;
                         nBytes = newStringsObj.nBytes;
-                        repMsg = "created " + st.attrib(newStringsName) + "+created bytes.size %?".doFormat(nBytes);
+                        repMsg = "created " + st.attrib(newStringsName) + "+created bytes.size %?".format(nBytes);
                     } 
                     when DType.Bool {
                         var iv = toSymEntry(gIV, bool);
@@ -906,7 +906,7 @@ module SegmentedMsg {
                         var newStringsObj = getSegString(newSegs, newVals, st);
                         newStringsName = newStringsObj.name;
                         nBytes = newStringsObj.nBytes;
-                        repMsg = "created " + st.attrib(newStringsName) + "+created bytes.size %?".doFormat(nBytes);
+                        repMsg = "created " + st.attrib(newStringsName) + "+created bytes.size %?".format(nBytes);
                     }
                     otherwise {
                         var errorMsg = "("+objtype: string+","+dtype2str(gIV.dtype)+")";
@@ -922,7 +922,7 @@ module SegmentedMsg {
             }
         }
         otherwise {
-            var errorMsg = "unsupported objtype: %?".doFormat(objtype);
+            var errorMsg = "unsupported objtype: %?".format(objtype);
             smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(notImplementedError(pn, objtype: string), MsgType.ERROR);
         }
@@ -975,7 +975,7 @@ module SegmentedMsg {
                         var (newOffsets, newVals) = lstrings.stick(rstrings, delim, true);
                         strings = getSegString(newOffsets, newVals, st);
                     }
-                    repMsg = "created %s+created bytes.size %?".doFormat(st.attrib(strings.name), strings.nBytes);
+                    repMsg = "created %s+created bytes.size %?".format(st.attrib(strings.name), strings.nBytes);
                     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
                 }
                 otherwise {
@@ -1035,7 +1035,7 @@ module SegmentedMsg {
           } 
       }
 
-      repMsg = "created %s".doFormat(st.attrib(rname));
+      repMsg = "created %s".format(st.attrib(rname));
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), repMsg);
       return new MsgTuple(repMsg, MsgType.NORMAL);
   }
@@ -1132,7 +1132,7 @@ module SegmentedMsg {
                                                       msgArgs.getValueOf("kind"): Fixes,
                                                       msgArgs.get("proper").getBoolValue());
         var retString = getSegString(off, byt, st);
-        repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".doFormat(retString.nBytes);
+        repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".format(retString.nBytes);
         if returnOrigins {
           var leName = st.nextName();
           st.addEntry(leName, createSymEntry(longEnough));
@@ -1141,7 +1141,7 @@ module SegmentedMsg {
         return new MsgTuple(repMsg, MsgType.NORMAL);
       }
       otherwise {
-          var errorMsg = notImplementedError(pn, "%s".doFormat(objtype));
+          var errorMsg = notImplementedError(pn, "%s".format(objtype));
           smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           return new MsgTuple(errorMsg, MsgType.ERROR);
       }
@@ -1169,7 +1169,7 @@ module SegmentedMsg {
 
     var (off, val) = if isStrLiteral then strings.segStrWhere(other, condition, newLens) else strings.segStrWhere(getSegString(other, st), condition, newLens);
     var retString = getSegString(off, val, st);
-    repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".doFormat(retString.nBytes);
+    repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".format(retString.nBytes);
 
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
     return new MsgTuple(repMsg, MsgType.NORMAL);
@@ -1182,7 +1182,7 @@ module SegmentedMsg {
 
     var (off, val) = segStrFull(segStrSize, segStrFillValue);
     var retString = getSegString(off, val, st);
-    repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".doFormat(retString.nBytes);
+    repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".format(retString.nBytes);
 
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
@@ -1206,7 +1206,7 @@ module SegmentedMsg {
   registerFunction("randomStrings", randomStringsMsg, getModuleName());
   registerFunction("segStr-assemble", assembleStringsMsg, getModuleName());
   registerFunction("stringsToJSON", stringsToJSONMsg, getModuleName());
-  registerBinaryFunction("segStr-tondarray", segStrTondarrayMsg, getModuleName());
+  registerFunction("segStr-tondarray", segStrTondarrayMsg, getModuleName());
   registerFunction("segmentedSubstring", segmentedSubstringMsg, getModuleName());
   registerFunction("segmentedWhere", segmentedWhereMsg, getModuleName());
   registerFunction("segmentedFull", segmentedFullMsg, getModuleName());

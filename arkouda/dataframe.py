@@ -2922,19 +2922,27 @@ class DataFrame(UserDict):
         from arkouda.io import _file_type_to_int, _mode_str_to_int
 
         column_data = [
-            obj.name
-            if not isinstance(obj, (Categorical_, SegArray))
-            else json.dumps(
-                {
-                    "codes": obj.codes.name,
-                    "categories": obj.categories.name,
-                    "NA_codes": obj._akNAcode.name,
-                    **({"permutation": obj.permutation.name} if obj.permutation is not None else {}),
-                    **({"segments": obj.segments.name} if obj.segments is not None else {}),
-                }
+            (
+                obj.name
+                if not isinstance(obj, (Categorical_, SegArray))
+                else (
+                    json.dumps(
+                        {
+                            "codes": obj.codes.name,
+                            "categories": obj.categories.name,
+                            "NA_codes": obj._akNAcode.name,
+                            **(
+                                {"permutation": obj.permutation.name}
+                                if obj.permutation is not None
+                                else {}
+                            ),
+                            **({"segments": obj.segments.name} if obj.segments is not None else {}),
+                        }
+                    )
+                    if isinstance(obj, Categorical_)
+                    else json.dumps({"segments": obj.segments.name, "values": obj.values.name})
+                )
             )
-            if isinstance(obj, Categorical_)
-            else json.dumps({"segments": obj.segments.name, "values": obj.values.name})
             for k, obj in self.items()
         ]
         dtypes = [
@@ -3900,7 +3908,7 @@ class DataFrame(UserDict):
 
         """
 
-        if deep:
+        if deep is True:
             res = DataFrame()
             res._size = self._nrows
             res._bytes = self._bytes
@@ -5015,26 +5023,36 @@ class DataFrame(UserDict):
         if self.registered_name is not None and self.is_registered():
             raise RegistrationError(f"This object is already registered as {self.registered_name}")
         column_data = [
-            obj.name
-            if not isinstance(obj, (Categorical_, SegArray, BitVector))
-            else json.dumps(
-                {
-                    "codes": obj.codes.name,
-                    "categories": obj.categories.name,
-                    "NA_codes": obj._akNAcode.name,
-                    **({"permutation": obj.permutation.name} if obj.permutation is not None else {}),
-                    **({"segments": obj.segments.name} if obj.segments is not None else {}),
-                }
-            )
-            if isinstance(obj, Categorical_)
-            else json.dumps({"segments": obj.segments.name, "values": obj.values.name})
-            if isinstance(obj, SegArray)
-            else json.dumps(
-                {
-                    "name": obj.name,
-                    "width": obj.width,
-                    "reverse": obj.reverse,
-                }  # BitVector Case
+            (
+                obj.name
+                if not isinstance(obj, (Categorical_, SegArray, BitVector))
+                else (
+                    json.dumps(
+                        {
+                            "codes": obj.codes.name,
+                            "categories": obj.categories.name,
+                            "NA_codes": obj._akNAcode.name,
+                            **(
+                                {"permutation": obj.permutation.name}
+                                if obj.permutation is not None
+                                else {}
+                            ),
+                            **({"segments": obj.segments.name} if obj.segments is not None else {}),
+                        }
+                    )
+                    if isinstance(obj, Categorical_)
+                    else (
+                        json.dumps({"segments": obj.segments.name, "values": obj.values.name})
+                        if isinstance(obj, SegArray)
+                        else json.dumps(
+                            {
+                                "name": obj.name,
+                                "width": obj.width,
+                                "reverse": obj.reverse,
+                            }  # BitVector Case
+                        )
+                    )
+                )
             )
             for obj in self.values()
         ]

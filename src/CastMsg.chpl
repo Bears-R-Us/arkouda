@@ -23,7 +23,7 @@ module CastMsg {
           targetDtype = str2dtype(msgArgs.getValueOf("targetDtype")),
           opt = msgArgs.getValueOf("opt");
     castLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-          "name: %s obgtype: %? targetDtype: %? opt: %?".doFormat(
+          "name: %s obgtype: %? targetDtype: %? opt: %?".format(
                                                  name,objtype,targetDtype,opt));
 
     select objtype {
@@ -360,7 +360,7 @@ module CastMsg {
   proc transmuteFloatMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     param pn = Reflection.getRoutineName();
     var name = msgArgs.getValueOf("name");
-    castLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"name: %s".doFormat(name));
+    castLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"name: %s".format(name));
     var e = toSymEntry(getGenericTypedArrayEntry(name, st), real);
     var transmuted = makeDistArray(e.a.domain, uint);
     transmuted = [ei in e.a] ei.transmute(uint(64));

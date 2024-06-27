@@ -44,7 +44,7 @@ module SortMsg
           algorithm = algoName: SortingAlgorithm;
         } catch {
           throw getErrorWithContext(
-            msg="Unrecognized sorting algorithm: %s".doFormat(algoName),
+            msg="Unrecognized sorting algorithm: %s".format(algoName),
             lineNumber=getLineNumber(),
             pn,
             moduleName=getModuleName(),
@@ -57,7 +57,7 @@ module SortMsg
 
       sortLogger.debug(
         getModuleName(),pn,getLineNumber(),
-        "cmd: %s, name: %s, sortedName: %s, dtype: %?, nd: %i, axis: %i".doFormat(
+        "cmd: %s, name: %s, sortedName: %s, dtype: %?, nd: %i, axis: %i".format(
           cmd, name, rname, gEnt.dtype, nd, axis
         )
       );
@@ -152,7 +152,7 @@ module SortMsg
 
       if side != "left" && side != "right" {
         throw getErrorWithContext(
-          msg="Unrecognized side: %s".doFormat(side),
+          msg="Unrecognized side: %s".format(side),
           lineNumber=getLineNumber(),
           pn,
           moduleName=getModuleName(),
@@ -173,7 +173,7 @@ module SortMsg
 
       sortLogger.debug(
         getModuleName(),pn,getLineNumber(),
-        "cmd: %s, x1: %s, x2: %s, side: %s, rname: %s, dtype: %?, nd: %i".doFormat(
+        "cmd: %s, x1: %s, x2: %s, side: %s, rname: %s, dtype: %?, nd: %i".format(
           cmd, x1, x2, side, rname, gEntX1.dtype, nd
         )
       );

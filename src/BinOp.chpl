@@ -177,7 +177,7 @@ module BinOp
           }
         }
       }
-      var repMsg = "created %s".doFormat(st.attrib(rname));
+      var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
     // Since we know that both `l` and `r` are of type `int` and that
@@ -264,7 +264,7 @@ module BinOp
           }   
         }
       }
-      var repMsg = "created %s".doFormat(st.attrib(rname));
+      var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
     else if (e.etype == int && r.etype == uint) ||
@@ -294,7 +294,7 @@ module BinOp
           return new MsgTuple(errorMsg, MsgType.ERROR);
         }
       }
-      var repMsg = "created %s".doFormat(st.attrib(rname));
+      var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
     } else if (l.etype == uint && r.etype == int) ||
               (l.etype == int && r.etype == uint) {
@@ -320,7 +320,7 @@ module BinOp
           return new MsgTuple(errorMsg, MsgType.ERROR); 
         }   
       }
-      var repMsg = "created %s".doFormat(st.attrib(rname));
+      var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
     // If either RHS or LHS type is real, the same operations are supported and the
@@ -361,7 +361,7 @@ module BinOp
             return new MsgTuple(errorMsg, MsgType.ERROR);
           }
         }
-      var repMsg = "created %s".doFormat(st.attrib(rname));
+      var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
     } else if ((l.etype == uint && r.etype == real) || (l.etype == real && r.etype == uint)) {
       select op {
@@ -398,7 +398,7 @@ module BinOp
             return new MsgTuple(errorMsg, MsgType.ERROR);
           }
         }
-      var repMsg = "created %s".doFormat(st.attrib(rname));
+      var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
     } else if ((l.etype == int && r.etype == bool) || (l.etype == bool && r.etype == int)) {
       select op {
@@ -426,7 +426,7 @@ module BinOp
             return new MsgTuple(errorMsg, MsgType.ERROR);
           }
         }
-      var repMsg = "created %s".doFormat(st.attrib(rname));
+      var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
     } else if ((l.etype == uint && r.etype == bool) || (l.etype == bool && r.etype == uint)) {
       select op {
@@ -445,7 +445,7 @@ module BinOp
             return new MsgTuple(errorMsg, MsgType.ERROR);
           }
         }
-      var repMsg = "created %s".doFormat(st.attrib(rname));
+      var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);  
     } else if ((l.etype == real && r.etype == bool) || (l.etype == bool && r.etype == real)) {
       select op {
@@ -464,7 +464,7 @@ module BinOp
             return new MsgTuple(errorMsg, MsgType.ERROR);
           }
         }
-      var repMsg = "created %s".doFormat(st.attrib(rname));
+      var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
     } else if (l.etype == bool && r.etype == bool)  {
       select op {
@@ -480,7 +480,7 @@ module BinOp
             return new MsgTuple(errorMsg, MsgType.ERROR);
           }
         }
-      var repMsg = "created %s".doFormat(st.attrib(rname));
+      var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
     var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
@@ -591,7 +591,7 @@ module BinOp
           }
         }
       }
-      var repMsg = "created %s".doFormat(st.attrib(rname));
+      var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
     // Since we know that both `l` and `r` are of type `int` and that
@@ -668,7 +668,7 @@ module BinOp
           }
         }
       }
-      var repMsg = "created %s".doFormat(st.attrib(rname));
+      var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
     else if (e.etype == int && val.type == uint) ||
@@ -702,7 +702,7 @@ module BinOp
           return new MsgTuple(errorMsg, MsgType.ERROR);
         }
       }
-      var repMsg = "created %s".doFormat(st.attrib(rname));
+      var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
     else if (l.etype == bool && val.type == bool) {
@@ -727,7 +727,7 @@ module BinOp
           return new MsgTuple(errorMsg, MsgType.ERROR);
         }
       }
-      var repMsg = "created %s".doFormat(st.attrib(rname));
+      var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
     // If either RHS or LHS type is real, the same operations are supported and the
@@ -766,7 +766,7 @@ module BinOp
             return new MsgTuple(errorMsg, MsgType.ERROR);
           }
         }
-      var repMsg = "created %s".doFormat(st.attrib(rname));
+      var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
     else if e.etype == real && ((l.etype == uint && val.type == int) || (l.etype == int && val.type == uint)) {
@@ -791,7 +791,7 @@ module BinOp
             return new MsgTuple(errorMsg, MsgType.ERROR);
           }
         }
-      var repMsg = "created %s".doFormat(st.attrib(rname));
+      var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
     else if ((l.etype == uint && val.type == real) || (l.etype == real && val.type == uint)) {
@@ -827,7 +827,7 @@ module BinOp
             return new MsgTuple(errorMsg, MsgType.ERROR);
           }
         }
-      var repMsg = "created %s".doFormat(st.attrib(rname));
+      var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
     } else if ((l.etype == int && val.type == bool) || (l.etype == bool && val.type == int)) {
       select op {
@@ -855,7 +855,7 @@ module BinOp
             return new MsgTuple(errorMsg, MsgType.ERROR);
           }
         }
-      var repMsg = "created %s".doFormat(st.attrib(rname));
+      var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
     } else if ((l.etype == real && val.type == bool) || (l.etype == bool && val.type == real)) {
       select op {
@@ -874,7 +874,7 @@ module BinOp
             return new MsgTuple(errorMsg, MsgType.ERROR);
           }
         }
-      var repMsg = "created %s".doFormat(st.attrib(rname));
+      var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
     var errorMsg = unrecognizedTypeError(pn, "("+dtype2str(l.dtype)+","+dtype2str(dtype)+")");
@@ -985,7 +985,7 @@ module BinOp
           }
         }
       }
-      var repMsg = "created %s".doFormat(st.attrib(rname));
+      var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
     // Since we know that both `l` and `r` are of type `int` and that
@@ -1068,7 +1068,7 @@ module BinOp
             
         }
       }
-      var repMsg = "created %s".doFormat(st.attrib(rname));
+      var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
     else if (e.etype == int && val.type == uint) ||
@@ -1102,7 +1102,7 @@ module BinOp
           return new MsgTuple(errorMsg, MsgType.ERROR);
         }
       }
-      var repMsg = "created %s".doFormat(st.attrib(rname));
+      var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
     // If either RHS or LHS type is real, the same operations are supported and the
@@ -1141,7 +1141,7 @@ module BinOp
             return new MsgTuple(errorMsg, MsgType.ERROR);
           }
         }
-      var repMsg = "created %s".doFormat(st.attrib(rname));
+      var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
     else if e.etype == real && ((r.etype == uint && val.type == int) || (r.etype == int && val.type == uint)) {
@@ -1166,7 +1166,7 @@ module BinOp
             return new MsgTuple(errorMsg, MsgType.ERROR);
           }
         }
-      var repMsg = "created %s".doFormat(st.attrib(rname));
+      var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
     else if ((r.etype == uint && val.type == real) || (r.etype == real && val.type == uint)) {
@@ -1202,7 +1202,7 @@ module BinOp
             return new MsgTuple(errorMsg, MsgType.ERROR);
           }
         }
-      var repMsg = "created %s".doFormat(st.attrib(rname));
+      var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
     } else if ((r.etype == int && val.type == bool) || (r.etype == bool && val.type == int)) {
       select op {
@@ -1230,7 +1230,7 @@ module BinOp
             return new MsgTuple(errorMsg, MsgType.ERROR);
           }
         }
-      var repMsg = "created %s".doFormat(st.attrib(rname));
+      var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
     } else if ((r.etype == real && val.type == bool) || (r.etype == bool && val.type == real)) {
       select op {
@@ -1249,7 +1249,7 @@ module BinOp
             return new MsgTuple(errorMsg, MsgType.ERROR);
           }
         }
-      var repMsg = "created %s".doFormat(st.attrib(rname));
+      var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
     } else if (r.etype == bool && val.type == bool)  {
       select op {
@@ -1269,7 +1269,7 @@ module BinOp
             return new MsgTuple(errorMsg, MsgType.ERROR);
           }
         }
-      var repMsg = "created %s".doFormat(st.attrib(rname));
+      var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
     var errorMsg = unrecognizedTypeError(pn, "("+dtype2str(dtype)+","+dtype2str(r.dtype)+")");

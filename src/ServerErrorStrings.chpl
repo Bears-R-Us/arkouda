@@ -11,38 +11,38 @@ module ServerErrorStrings
 
     /* binary operator is not implemented for DTypes */
     proc notImplementedError(pname: string, ldtype: DType, op: string, rdtype: DType):string {
-        return try! "Error: %s: %s %s %s not implemented".doFormat(pname,
+        return try! "Error: %s: %s %s %s not implemented".format(pname,
                                                                  dtype2str(ldtype),
                                                                  op,
                                                                  dtype2str(rdtype));
     }
     proc notImplementedError(pname: string, ldtype: string, op: string, rdtype: string):string {
-        return try! "Error: %s: %s %s %s not implemented".doFormat(pname,
+        return try! "Error: %s: %s %s %s not implemented".format(pname,
                                                                  ldtype,
                                                                  op,
                                                                  rdtype);
     }
     /* efunc is not implemented for DType */
     proc notImplementedError(pname: string, efunc: string, ldtype: DType):string {
-        return try! "Error: %s: %s %s not implemented".doFormat(pname,
+        return try! "Error: %s: %s %s not implemented".format(pname,
                                                               efunc,
                                                               dtype2str(ldtype));
     }
     proc notImplementedError(pname: string, efunc: string, ldtype: DType, param nd: int):string {
-        return try! "Error: %s: %s %s not implemented for nd = %i".doFormat(pname,
+        return try! "Error: %s: %s %s not implemented for nd = %i".format(pname,
                                                                             efunc,
                                                                             dtype2str(ldtype),
                                                                             nd);
     }
     /* efunc is not implemented for DTypes */
     proc notImplementedError(pname: string, efunc: string, dt1: DType, dt2: DType): string {
-      return try! "Error: %s: %s %s %s not implemented".doFormat(pname,
+      return try! "Error: %s: %s %s %s not implemented".format(pname,
                                                                   efunc,
                                                                   dtype2str(dt1),
                                                                   dtype2str(dt2));
     }
     proc notImplementedError(pname: string, efunc: string, dt1: DType, dt2: DType, dt3: DType): string {
-      return try! "Error: %s: %s %s %s %s not implemented".doFormat(pname,
+      return try! "Error: %s: %s %s %s %s not implemented".format(pname,
                                                                   efunc,
                                                                   dtype2str(dt1),
                                                                   dtype2str(dt2),
@@ -50,40 +50,40 @@ module ServerErrorStrings
     }
     /* algorthm is not implemented for DType */
     proc notImplementedError(pname: string, dtype: DType):string {
-        return try! "Error: %s: %s not implemented".doFormat(pname,
+        return try! "Error: %s: %s not implemented".format(pname,
                                                            dtype2str(dtype));
     }
     /* proc is not implemented for this kind of argument */
     proc notImplementedError(pname: string, arg: string):string {
-        return try! "Error: %s: %s not implemented".doFormat(pname,arg);
+        return try! "Error: %s: %s not implemented".format(pname,arg);
     }
 
     /* unrecognized DType */
     proc unrecognizedTypeError(pname: string, stype: string):string {
-        return try! "Error: %s: unrecognized type: %s".doFormat(pname, stype);
+        return try! "Error: %s: unrecognized type: %s".format(pname, stype);
     }
 
     /* name not found in the symbol table */
     proc unknownSymbolError(pname: string, sname: string):string {
       if pname != "" then
-        return try! "Error: %s: unknown symbol: %s".doFormat(pname, sname);
+        return try! "Error: %s: unknown symbol: %s".format(pname, sname);
       else
-        return try! "Error: unknown symbol: %s".doFormat(sname);
+        return try! "Error: unknown symbol: %s".format(sname);
     }
 
     proc unknownError(pname: string): string {
-      return try! "Error: %s: unexpected error".doFormat(pname);
+      return try! "Error: %s: unexpected error".format(pname);
     }
 
     /* incompatible arguments */
     proc incompatibleArgumentsError(pname: string, reason: string) {
-      return try! "Error: %s: Incompatible arguments: %s".doFormat(pname, reason);
+      return try! "Error: %s: Incompatible arguments: %s".format(pname, reason);
     }
 
     proc unsupportedTypeError(dtype: DType, pname: string): string {
       return try!
         "Error: server not configured to support '%s' (in %s). Please update the configuration and recompile."
-        .doFormat(dtype2str(dtype), pname);
+        .format(dtype2str(dtype), pname);
     }
 
     proc unsupportedTypeError(type t, pname: string): string {
