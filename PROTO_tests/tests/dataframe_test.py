@@ -1158,7 +1158,7 @@ class TestDataFrame:
                     if df.to_pandas(retain_index=True).dropna(axis=axis, thresh=thresh).empty:
                         assert (
                             df.dropna(axis=axis, thresh=thresh).to_pandas(retain_index=True).empty
-                            == True
+                            is True
                         )
 
                     else:
@@ -1309,6 +1309,77 @@ class TestDataFrame:
                             print(f"\nnum locales: {cfg['numLocales']}")
                             print(f"Failure with seed:\n{seed}")
                         assert res
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_head_tail(self, size):
+
+        bool_col = ak.full(size, False, dtype=ak.bool)
+        bool_col[::2] = True
+
+        df = ak.DataFrame(
+            {
+                "a": ak.arange(size) % 3,
+                "b": ak.arange(size, dtype="int64"),
+                "c": ak.arange(size, dtype="float64"),
+                "d": ak.random_strings_uniform(size=size, minlen=1, maxlen=2, seed=18),
+                "e": bool_col,
+            }
+        )
+
+        size_range = ak.arange(size)
+        zeros_idx = size_range[df["a"] == 0][0:2]
+        ones_idx = size_range[df["a"] == 1][0:2]
+        twos_idx = size_range[df["a"] == 2][0:2]
+        head_expected_idx = ak.concatenate([zeros_idx, ones_idx, twos_idx])
+
+        def get_head_values(col):
+            zeros_values = df[col][zeros_idx]
+            ones_values = df[col][ones_idx]
+            twos_values = df[col][twos_idx]
+            expected_values = ak.concatenate([zeros_values, ones_values, twos_values])
+            return expected_values
+
+        head_df = df.groupby("a").head(n=2, sort_index=False)
+        assert ak.all(head_df.index == head_expected_idx)
+        for col in df.columns:
+            assert ak.all(head_df[col] == get_head_values(col))
+
+        head_df_sorted = df.groupby("a").head(n=2, sort_index=True)
+        from pandas.testing import assert_frame_equal
+
+        assert_frame_equal(
+            head_df_sorted.to_pandas(retain_index=True),
+            df.to_pandas(retain_index=True).groupby("a").head(n=2),
+        )
+
+        #   Now test tail
+        tail_zeros_idx = size_range[df["a"] == 0][-2:]
+        tail_ones_idx = size_range[df["a"] == 1][-2:]
+        tail_twos_idx = size_range[df["a"] == 2][-2:]
+        tail_expected_idx = ak.concatenate([tail_zeros_idx, tail_ones_idx, tail_twos_idx])
+
+        def get_tail_values(col):
+            tail_zeros_values = df[col][tail_zeros_idx]
+            tail_ones_values = df[col][tail_ones_idx]
+            tail_twos_values = df[col][tail_twos_idx]
+            tail_expected_values = ak.concatenate(
+                [tail_zeros_values, tail_ones_values, tail_twos_values]
+            )
+            return tail_expected_values
+
+        tail_df = df.groupby("a").tail(n=2, sort_index=False)
+        assert ak.all(tail_df.index == tail_expected_idx)
+
+        for col in df.columns:
+            assert ak.all(tail_df[col] == get_tail_values(col))
+
+        tail_df_sorted = df.groupby("a").tail(n=2, sort_index=True)
+        from pandas.testing import assert_frame_equal
+
+        assert_frame_equal(
+            tail_df_sorted.to_pandas(retain_index=True),
+            df.to_pandas(retain_index=True).groupby("a").tail(n=2),
+        )
 
 
 def pda_to_str_helper(pda):
