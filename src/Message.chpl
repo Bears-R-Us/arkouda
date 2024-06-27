@@ -451,14 +451,6 @@ module Message {
             ser.endClass();
         }
 
-        override proc serialize(writer: fileWriter(?), ref serializer: ?st) throws {
-            var ser = serializer.startClass(writer, "MessageArgs", 3);
-            ser.writeField("param_list", this.param_list);
-            ser.writeField("size", this.size);
-            ser.writeField("payload", if this.payload.size > 0 then "<binary_payload>" else "");
-            ser.endClass();
-        }
-
         /*
         * Identify the parameter with the provided key and return it
         * Returns ParameterObj with the provided key
