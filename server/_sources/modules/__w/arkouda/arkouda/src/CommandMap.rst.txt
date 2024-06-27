@@ -42,6 +42,8 @@ or
 
 .. function:: proc registerFunction(cmd: string, fcf: f.type, modName: string)
 
+.. function:: proc writeUsedModulesJson(ref mods: set(string))
+
 .. function:: proc writeUsedModules(fmt: string = "cfg")
 
 .. function:: proc dumpCommandMap(): string throws

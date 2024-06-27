@@ -53,6 +53,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../ExternalIntegration.html">ExternalIntegration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../FileIO.html">FileIO</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../GenSymIO.html">GenSymIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../IOUtils.html">IOUtils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../In1d.html">In1d</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../Logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../MemoryMgmt.html">MemoryMgmt</a></li>
@@ -119,41 +120,6 @@
 </pre></div>
 </div>
 <dl class="chpl function">
-<dt class="sig sig-object chpl" id="ArkoudaIOCompat.formatString">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">formatString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">input</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ArkoudaIOCompat.formatString" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="ArkoudaIOCompat.formatJson">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">formatJson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">input</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#ArkoudaIOCompat.formatJson" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">formatJson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">input:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">vals</span> <span class="pre">...?</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="ArkoudaIOCompat.jsonToTupleCompat">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">jsonToTupleCompat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">json:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ArkoudaIOCompat.jsonToTupleCompat" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="ArkoudaIOCompat.jsonToPdArrayCompat">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">jsonToPdArrayCompat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">json:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ArkoudaIOCompat.jsonToPdArrayCompat" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="ArkoudaIOCompat.writefCompat">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">writefCompat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">fmt:</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">args</span> <span class="pre">...?k</span></em><span class="sig-paren">)</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">isStringType(t)</span> <span class="pre">||</span> <span class="pre">isBytesType(t)</span></em><a class="headerlink" href="#ArkoudaIOCompat.writefCompat" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="ArkoudaIOCompat.readfCompat">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">readfCompat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">f:</span> <span class="pre">file</span></em>, <em class="sig-param"><span class="pre">str:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">ref</span> <span class="pre">obj</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ArkoudaIOCompat.readfCompat" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
 <dt class="sig sig-object chpl" id="ArkoudaIOCompat.getByteOrderCompat">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getByteOrderCompat</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ArkoudaIOCompat.getByteOrderCompat" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -161,16 +127,6 @@
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ArkoudaIOCompat.fileIOReaderCompat">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">fileIOReaderCompat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">infile</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ArkoudaIOCompat.fileIOReaderCompat" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="ArkoudaIOCompat.binaryCheckCompat">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">binaryCheckCompat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">reader</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ArkoudaIOCompat.binaryCheckCompat" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="ArkoudaIOCompat.writeUsedModulesJson">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">writeUsedModulesJson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">mods:</span> <span class="pre">set(string)</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArkoudaIOCompat.writeUsedModulesJson" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>

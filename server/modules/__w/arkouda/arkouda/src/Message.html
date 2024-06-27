@@ -53,6 +53,7 @@
 <li class="toctree-l1"><a class="reference internal" href="ExternalIntegration.html">ExternalIntegration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FileIO.html">FileIO</a></li>
 <li class="toctree-l1"><a class="reference internal" href="GenSymIO.html">GenSymIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IOUtils.html">IOUtils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="In1d.html">In1d</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="MemoryMgmt.html">MemoryMgmt</a></li>
@@ -149,46 +150,6 @@
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="Message.MsgFormat.BINARY">
 <em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">BINARY</span></span><a class="headerlink" href="#Message.MsgFormat.BINARY" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="chpl enum">
-<dt class="sig sig-object chpl" id="Message.ObjectType">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">ObjectType</span></span> <span class="pre">{</span> <span class="pre">PDARRAY,</span> <span class="pre">SEGSTRING,</span> <span class="pre">LIST,</span> <span class="pre">DICT,</span> <span class="pre">VALUE,</span> <span class="pre">DATETIME,</span> <span class="pre">TIMEDELTA</span> <span class="pre">}</span><a class="headerlink" href="#Message.ObjectType" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="chpl enumconstant">
-<dt class="sig sig-object chpl" id="Message.ObjectType.PDARRAY">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">PDARRAY</span></span><a class="headerlink" href="#Message.ObjectType.PDARRAY" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl enumconstant">
-<dt class="sig sig-object chpl" id="Message.ObjectType.SEGSTRING">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">SEGSTRING</span></span><a class="headerlink" href="#Message.ObjectType.SEGSTRING" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl enumconstant">
-<dt class="sig sig-object chpl" id="Message.ObjectType.LIST">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">LIST</span></span><a class="headerlink" href="#Message.ObjectType.LIST" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl enumconstant">
-<dt class="sig sig-object chpl" id="Message.ObjectType.DICT">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">DICT</span></span><a class="headerlink" href="#Message.ObjectType.DICT" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl enumconstant">
-<dt class="sig sig-object chpl" id="Message.ObjectType.VALUE">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">VALUE</span></span><a class="headerlink" href="#Message.ObjectType.VALUE" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl enumconstant">
-<dt class="sig sig-object chpl" id="Message.ObjectType.DATETIME">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">DATETIME</span></span><a class="headerlink" href="#Message.ObjectType.DATETIME" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl enumconstant">
-<dt class="sig sig-object chpl" id="Message.ObjectType.TIMEDELTA">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">TIMEDELTA</span></span><a class="headerlink" href="#Message.ObjectType.TIMEDELTA" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -319,11 +280,6 @@
 <dd></dd></dl>
 
 <dl class="chpl attribute">
-<dt class="sig sig-object chpl" id="Message.ParameterObj.objType">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">objType</span></span><span class="pre">:</span> <span class="pre">ObjectType</span><a class="headerlink" href="#Message.ParameterObj.objType" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.dtype">
 <em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">dtype</span></span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#Message.ParameterObj.dtype" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -335,17 +291,7 @@
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">val:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">objType:</span> <span class="pre">ObjectType</span></em>, <em class="sig-param"><span class="pre">dtype:</span> <span class="pre">string</span></em><span class="sig-paren">)</span></dt>
-<dd></dd></dl>
-
-<dl class="chpl method">
-<dt class="sig sig-object chpl" id="Message.ParameterObj.asMap">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">asMap</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Message.ParameterObj.asMap" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl method">
-<dt class="sig sig-object chpl" id="Message.ParameterObj.getJSON">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getJSON</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Message.ParameterObj.getJSON" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">val:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">dtype:</span> <span class="pre">string</span></em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
@@ -357,25 +303,6 @@
 <dt class="sig sig-object chpl" id="Message.ParameterObj.setVal">
 <em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">setVal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">value:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Message.ParameterObj.setVal" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="chpl method">
-<dt class="sig sig-object chpl" id="Message.ParameterObj.setObjType">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">setObjType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">value:</span> <span class="pre">ObjectType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Message.ParameterObj.setObjType" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl method">
-<dt class="sig sig-object chpl" id="Message.ParameterObj.setDType">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">setDType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">value:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Message.ParameterObj.setDType" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl method">
-<dt class="sig sig-object chpl" id="Message.ParameterObj.getObjType">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getObjType</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Message.ParameterObj.getObjType" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li><p>Return the objType value</p></li>
-<li><p>Returns str</p></li>
-</ul>
-</dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.getDType">
@@ -396,43 +323,102 @@
 </dd></dl>
 
 <dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.ParameterObj.tryGetScalar">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">tryGetScalar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">(t,</span> <span class="pre">bool)</span><a class="headerlink" href="#Message.ParameterObj.tryGetScalar" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.ParameterObj.toScalar">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toScalar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">t</span> <span class="pre">throws</span><a class="headerlink" href="#Message.ParameterObj.toScalar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a value of the given type from a JSON scalar</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><p><strong>t</strong> – type: the scalar type to parse</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Throws an ErrorWithContext if the value cannot be parsed as the given</dt><dd><p>type</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.ParameterObj.toScalarTuple">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toScalarTuple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">size*t</span> <span class="pre">throws</span><a class="headerlink" href="#Message.ParameterObj.toScalarTuple" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a tuple of the given type from a JSON array of scalar values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>size</strong> – int: the number of elements in the tuple (must match
+the number of elements in the JSON array)</p></li>
+<li><p><strong>t</strong> – type: the scalar type to parse</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Throws an ErrorWithContext if the value is not a JSON array, the</dt><dd><p>tuple is the wrong size, or if the elements of the array cannot
+be parsed as the given type</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.ParameterObj.toScalarList">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toScalarList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">list(t)</span> <span class="pre">throws</span><a class="headerlink" href="#Message.ParameterObj.toScalarList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of the given type from a JSON array of scalar values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><p><strong>t</strong> – type: the scalar type to parse</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Throws an ErrorWithContext if the value is not a JSON array or if the</dt><dd><p>elements of the array cannot be parsed as the given type</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.ParameterObj.toScalarArray">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toScalarArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em>, <em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">[]</span> <span class="pre">t</span> <span class="pre">throws</span><a class="headerlink" href="#Message.ParameterObj.toScalarArray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get an array of the given type from a JSON array of scalar values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t</strong> – type: the scalar type to parse</p></li>
+<li><p><strong>size</strong> – int: the number of elements in the array (must match the
+number of elements in the JSON array)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Throws an ErrorWithContext if the value is not a JSON array, the</dt><dd><p>array is the wrong size, or if the elements of the array cannot
+be parsed as the given type</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.getScalarValue">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getScalarValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">t</span> <span class="pre">throws</span><a class="headerlink" href="#Message.ParameterObj.getScalarValue" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li><p>Attempt to cast the value to the provided type</p></li>
-<li><p>Throw and error if the cast isn’t possible</p></li>
-</ul>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.getIntValue">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getIntValue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">int</span> <span class="pre">throws</span><a class="headerlink" href="#Message.ParameterObj.getIntValue" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li><p>Return the value as int64</p></li>
-<li><p>Returns int</p></li>
-</ul>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.getPositiveIntValue">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getPositiveIntValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">max:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">int</span> <span class="pre">throws</span><a class="headerlink" href="#Message.ParameterObj.getPositiveIntValue" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li><p>Return the value as a positive int64</p></li>
-<li><p>If the value is negative, return ‘value + max + 1’, otherwise return the value</p></li>
-<li><p>This is useful for implementing Python’s negative indexing rules</p></li>
-<li></li>
-<li><p>Returns int</p></li>
-</ul>
+<dd><p>Return the value as a positive int
+If the value is negative, return ‘value + max + 1’, otherwise return the value
+This is useful for implementing Python’s negative indexing rules</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.getUIntValue">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getUIntValue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">uint</span> <span class="pre">throws</span><a class="headerlink" href="#Message.ParameterObj.getUIntValue" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li><p>Return the value as uint64</p></li>
-<li><p>Returns uint</p></li>
-</ul>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.getUInt8Value">
@@ -442,20 +428,12 @@
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.getRealValue">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getRealValue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">real</span> <span class="pre">throws</span><a class="headerlink" href="#Message.ParameterObj.getRealValue" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li><p>Return the value as float64</p></li>
-<li><p>Returns real</p></li>
-</ul>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.getBoolValue">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getBoolValue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">bool</span> <span class="pre">throws</span><a class="headerlink" href="#Message.ParameterObj.getBoolValue" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li><p>Return the value as bool</p></li>
-<li><p>Returns bool</p></li>
-</ul>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.getBigIntValue">
@@ -463,35 +441,13 @@
 <dd></dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="Message.ParameterObj.getValueAsType">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getValueAsType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">t</span> <span class="pre">=</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">t</span> <span class="pre">throws</span><a class="headerlink" href="#Message.ParameterObj.getValueAsType" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li><p>Return the value as the provided type</p></li>
-</ul>
-</dd></dl>
-
-<dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.getList">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Message.ParameterObj.getList" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parse value as a list of strings.
-:size: int: number of values in the list
-Note - not yet able to handle list of pdarray or SegString names</p>
-</dd></dl>
-
-<dl class="chpl method">
-<dt class="sig sig-object chpl" id="Message.ParameterObj.getListAs">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getListAs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em>, <em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Message.ParameterObj.getListAs" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.getTuple">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getTuple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">param</span> <span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">size*int</span> <span class="pre">throws</span><a class="headerlink" href="#Message.ParameterObj.getTuple" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parse value as a tuple of integers with the given size</p>
-</dd></dl>
-
-<dl class="chpl method">
-<dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getJSON</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span> <span class="pre">throws</span></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -535,11 +491,18 @@ Note - not yet able to handle list of pdarray or SegString names</p>
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.MessageArgs.addPayload">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">addPayload</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">p:</span> <span class="pre">bytes</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Message.MessageArgs.addPayload" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Attach a binary payload to the message arguments</p>
+</dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="Message.MessageArgs.getJSON">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getJSON</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">keys:</span> <span class="pre">list(string)</span> <span class="pre">=</span> <span class="pre">list(string)</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#Message.MessageArgs.getJSON" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="Message.MessageArgs.this">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">this</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">ParameterObj</span> <span class="pre">throws</span><a class="headerlink" href="#Message.MessageArgs.this" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the value of the argument with the given key</p>
+</dd></dl>
+
+<dl class="chpl itermethod">
+<dt class="sig sig-object chpl" id="Message.MessageArgs.these">
+<em class="property"><span class="pre">iter</span> </em><span class="sig-name descname"><span class="pre">these</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">ParameterObj</span><a class="headerlink" href="#Message.MessageArgs.these" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
@@ -549,7 +512,7 @@ Note - not yet able to handle list of pdarray or SegString names</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.MessageArgs.get">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Message.MessageArgs.get" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">ParameterObj</span> <span class="pre">throws</span><a class="headerlink" href="#Message.MessageArgs.get" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li><p>Identify the parameter with the provided key and return it</p></li>
 <li><p>Returns ParameterObj with the provided key</p></li>
@@ -559,31 +522,13 @@ Note - not yet able to handle list of pdarray or SegString names</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.MessageArgs.getValueOf">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getValueOf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Message.MessageArgs.getValueOf" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getValueOf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#Message.MessageArgs.getValueOf" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="chpl method">
-<dt class="sig sig-object chpl" id="Message.MessageArgs.items">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">items</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Message.MessageArgs.items" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return “iterable” of ParameterObj</p>
-</dd></dl>
-
-<dl class="chpl method">
-<dt class="sig sig-object chpl" id="Message.MessageArgs.keys">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Message.MessageArgs.keys" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a list of all keys</p>
-</dd></dl>
-
-<dl class="chpl method">
-<dt class="sig sig-object chpl" id="Message.MessageArgs.vals">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">vals</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Message.MessageArgs.vals" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a list of all values</p>
-</dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.MessageArgs.contains">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">bool</span><a class="headerlink" href="#Message.MessageArgs.contains" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return bool if param_list contains given key name</p>
+<dd><p>Return true if there is an argument with the given name, false otherwise</p>
 </dd></dl>
 
 </dd></dl>
@@ -618,20 +563,6 @@ Note - not yet able to handle list of pdarray or SegString names</p>
 <dd><ul class="simple">
 <li><p>Generates a ReplyMsg object and serializes it into a JSON-formatted reply message</p></li>
 </ul>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="Message.jsonToPdArray">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">jsonToPdArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">json:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Message.jsonToPdArray" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li><p>Converts the JSON array to a pdarray</p></li>
-</ul>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="Message.parseJsonTuple">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">parseJsonTuple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">json:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">size*int</span> <span class="pre">throws</span><a class="headerlink" href="#Message.parseJsonTuple" title="Permalink to this definition">¶</a></dt>
-<dd><p>Helper function to parse a JSON string as a tuple of integers</p>
 </dd></dl>
 
 </div>

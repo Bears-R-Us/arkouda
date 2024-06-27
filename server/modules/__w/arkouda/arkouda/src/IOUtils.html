@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>arkouda_server &mdash; chpldoc 0.0.1 documentation</title>
+  <title>IOUtils &mdash; chpldoc 0.0.1 documentation</title>
       <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -17,8 +17,8 @@
     <script src="../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
-    <link rel="next" title="ArkoudaAryUtilCompat" href="compat/e-132/ArkoudaAryUtilCompat.html" />
-    <link rel="prev" title="Unique" href="Unique.html" /> 
+    <link rel="next" title="In1d" href="In1d.html" />
+    <link rel="prev" title="GenSymIO" href="GenSymIO.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -53,7 +53,7 @@
 <li class="toctree-l1"><a class="reference internal" href="ExternalIntegration.html">ExternalIntegration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FileIO.html">FileIO</a></li>
 <li class="toctree-l1"><a class="reference internal" href="GenSymIO.html">GenSymIO</a></li>
-<li class="toctree-l1"><a class="reference internal" href="IOUtils.html">IOUtils</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">IOUtils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="In1d.html">In1d</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="MemoryMgmt.html">MemoryMgmt</a></li>
@@ -78,7 +78,7 @@
 <li class="toctree-l1"><a class="reference internal" href="StatusMsg.html">StatusMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="SymArrayDmap.html">SymArrayDmap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Unique.html">Unique</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">arkouda_server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arkouda_server.html">arkouda_server</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaAryUtilCompat.html">ArkoudaAryUtilCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaIOCompat.html">ArkoudaIOCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaRandomCompat.html">ArkoudaRandomCompat</a></li>
@@ -99,9 +99,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>arkouda_server</li>
+      <li>IOUtils</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../../../../_sources/modules/__w/arkouda/arkouda/src/arkouda_server.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../../../../_sources/modules/__w/arkouda/arkouda/src/IOUtils.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -109,30 +109,43 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <span class="target" id="module-arkouda_server"></span><div class="section" id="arkouda-server">
-<h1>arkouda_server<a class="headerlink" href="#arkouda-server" title="Permalink to this headline">¶</a></h1>
+  <span class="target" id="module-IOUtils"></span><div class="section" id="ioutils">
+<h1>IOUtils<a class="headerlink" href="#ioutils" title="Permalink to this headline">¶</a></h1>
 <p><strong>Usage</strong></p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">arkouda_server</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">IOUtils</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">arkouda_server</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">IOUtils</span><span class="p">;</span>
 </pre></div>
 </div>
-<dl class="chpl data">
-<dt class="sig sig-object chpl" id="arkouda_server.asLogger">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">asLogger</span></span> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel,</span> <span class="pre">logChannel)</span><a class="headerlink" href="#arkouda_server.asLogger" title="Permalink to this definition">¶</a></dt>
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="IOUtils.formatJson">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">formatJson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">input</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#IOUtils.formatJson" title="Permalink to this definition">¶</a></dt>
+<dd><p>Format an argument as a JSON string</p>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">formatJson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">input:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">vals</span> <span class="pre">...?</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt class="sig sig-object chpl" id="arkouda_server.main">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda_server.main" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li></li>
-<li><p>The main method serves as the Arkouda driver that invokes the run</p></li>
-<li><p>method on the configured list of ArkoudaServerDaemon objects</p></li>
-</ul>
+<dt class="sig sig-object chpl" id="IOUtils.jsonToArray">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">jsonToArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">json:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em>, <em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#IOUtils.jsonToArray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deserialize a Chapel array of strings from a JSON string</p>
 </dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="IOUtils.parseJson">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">parseJson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">json:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">t</span> <span class="pre">throws</span><a class="headerlink" href="#IOUtils.parseJson" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function to parse a JSON string as an item of the given type</p>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">parseJson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">json:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">n:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">n*t</span> <span class="pre">throws</span></dt>
+<dd></dd></dl>
 
 </div>
 
@@ -140,8 +153,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="Unique.html" class="btn btn-neutral float-left" title="Unique" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="compat/e-132/ArkoudaAryUtilCompat.html" class="btn btn-neutral float-right" title="ArkoudaAryUtilCompat" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="GenSymIO.html" class="btn btn-neutral float-left" title="GenSymIO" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="In1d.html" class="btn btn-neutral float-right" title="In1d" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -51,6 +51,7 @@
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/ExternalIntegration.html">ExternalIntegration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/FileIO.html">FileIO</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/GenSymIO.html">GenSymIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/IOUtils.html">IOUtils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/In1d.html">In1d</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/Logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/MemoryMgmt.html">MemoryMgmt</a></li>
@@ -234,11 +235,9 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/arkouda_server.html#arkouda_server.asLogger">asLogger (in module arkouda_server)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj.asMap">asMap() (Message.ParameterObj method)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeRegEntry.html#MultiTypeRegEntry.ArrayRegEntry.asMap">asMap() (MultiTypeRegEntry.ArrayRegEntry method)</a>
 
       <ul>
-        <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeRegEntry.html#MultiTypeRegEntry.ArrayRegEntry.asMap">(MultiTypeRegEntry.ArrayRegEntry method)</a>
-</li>
         <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeRegEntry.html#MultiTypeRegEntry.BitVectorRegEntry.asMap">(MultiTypeRegEntry.BitVectorRegEntry method)</a>
 </li>
         <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeRegEntry.html#MultiTypeRegEntry.CategoricalRegEntry.asMap">(MultiTypeRegEntry.CategoricalRegEntry method)</a>
@@ -300,8 +299,6 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/BigIntMsg.html#BigIntMsg.biLogger">biLogger (in module BigIntMsg)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/compat/e-132/ArkoudaIOCompat.html#ArkoudaIOCompat.binaryCheckCompat">binaryCheckCompat() (in module ArkoudaIOCompat)</a>
-</li>
       <li><a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.bitsPerDigit">bitsPerDigit (in module AryUtil)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeRegEntry.html#MultiTypeRegEntry.BitVectorRegEntry">BitVectorRegEntry (class in MultiTypeRegEntry)</a>
@@ -312,10 +309,10 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.BSLASH">BSLASH (in module ServerConfig)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation.html#CommAggregation.bufferIdxAlloc">bufferIdxAlloc() (in module CommAggregation)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation/BigIntegerAggregation.html#BigIntegerAggregation.DstAggregatorBigint.bufferIdxs">bufferIdxs (BigIntegerAggregation.DstAggregatorBigint attribute)</a>
 
       <ul>
@@ -778,10 +775,10 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.Fixes">Fixes (enum in SegmentedString)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.flatten">flatten() (in module AryUtil)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.flatten">flatten() (in module AryUtil)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation/BigIntegerAggregation.html#BigIntegerAggregation.DstAggregatorBigint.flush">flush() (BigIntegerAggregation.DstAggregatorBigint method)</a>
 
       <ul>
@@ -812,9 +809,7 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.SymTab.formatEntry">formatEntry() (MultiTypeSymbolTable.SymTab method)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/compat/e-132/ArkoudaIOCompat.html#ArkoudaIOCompat.formatJson">formatJson() (in module ArkoudaIOCompat)</a>, <a href="modules/__w/arkouda/arkouda/src/compat/e-132/ArkoudaIOCompat.html#ArkoudaIOCompat.formatJson">[1]</a>
-</li>
-      <li><a href="modules/__w/arkouda/arkouda/src/compat/e-132/ArkoudaIOCompat.html#ArkoudaIOCompat.formatString">formatString() (in module ArkoudaIOCompat)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/IOUtils.html#IOUtils.formatJson">formatJson() (in module IOUtils)</a>, <a href="modules/__w/arkouda/arkouda/src/IOUtils.html#IOUtils.formatJson">[1]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -936,18 +931,12 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.getFixes">getFixes() (SegmentedString.SegString method)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.getGenericTypedArrayEntry">getGenericTypedArrayEntry() (in module MultiTypeSymbolTable)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.getGenericTypedArrayEntry">getGenericTypedArrayEntry() (in module MultiTypeSymbolTable)</a>, <a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.getGenericTypedArrayEntry">[1]</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj.getIntValue">getIntValue() (Message.ParameterObj method)</a>
-</li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.MessageArgs.getJSON">getJSON() (Message.MessageArgs method)</a>
-
-      <ul>
-        <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj.getJSON">(Message.ParameterObj method)</a>, <a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj.getJSON">[1]</a>
-</li>
-      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj.getIntValue">getIntValue() (Message.ParameterObj method)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/ExternalIntegration.html#ExternalIntegration.getKubernetesDeregisterParameters">getKubernetesDeregisterParameters() (in module ExternalIntegration)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ExternalIntegration.html#ExternalIntegration.getKubernetesRegistrationParameters">getKubernetesRegistrationParameters() (in module ExternalIntegration)</a>
@@ -957,8 +946,6 @@
       <li><a href="modules/__w/arkouda/arkouda/src/FileIO.html#FileIO.getLineFromFile">getLineFromFile() (in module FileIO)</a>, <a href="modules/__w/arkouda/arkouda/src/FileIO.html#FileIO.getLineFromFile">[1]</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj.getList">getList() (Message.ParameterObj method)</a>
-</li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj.getListAs">getListAs() (Message.ParameterObj method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MemoryMgmt.html#MemoryMgmt.getLocaleMemoryStatuses">getLocaleMemoryStatuses() (in module MemoryMgmt)</a>
 </li>
@@ -987,8 +974,6 @@
       <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.AverageMeasurementTable.getNumMeasurements">getNumMeasurements() (MetricsMsg.AverageMeasurementTable method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.getNumRequestMetrics">getNumRequestMetrics() (in module MetricsMsg)</a>
-</li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj.getObjType">getObjType() (Message.ParameterObj method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Logging.html#Logging.getOutputHandler">getOutputHandler() (in module Logging)</a>
 </li>
@@ -1055,8 +1040,6 @@
       <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.Users.getUsers">getUsers() (MetricsMsg.Users method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj.getValue">getValue() (Message.ParameterObj method)</a>
-</li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj.getValueAsType">getValueAsType() (Message.ParameterObj method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.MessageArgs.getValueOf">getValueOf() (Message.MessageArgs method)</a>
 </li>
@@ -1266,6 +1249,8 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.IOError">IOError (class in ServerErrors)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/IOUtils.html#module-IOUtils">IOUtils (module)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.isalnum">isalnum() (SegmentedString.SegString method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.isalpha">isalpha() (SegmentedString.SegString method)</a>
@@ -1306,11 +1291,9 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.isUpper">isUpper() (SegmentedString.SegString method)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.MessageArgs.items">items() (Message.MessageArgs method)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.CounterTable.items">items() (MetricsMsg.CounterTable iterator)</a>
 
       <ul>
-        <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.CounterTable.items">(MetricsMsg.CounterTable iterator)</a>
-</li>
         <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.MeasurementTable.items">(MetricsMsg.MeasurementTable iterator)</a>
 </li>
       </ul></li>
@@ -1322,15 +1305,11 @@
 <h2 id="J">J</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/__w/arkouda/arkouda/src/GenSymIO.html#GenSymIO.jsonToMap">jsonToMap() (in module GenSymIO)</a>
-</li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.jsonToPdArray">jsonToPdArray() (in module Message)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/IOUtils.html#IOUtils.jsonToArray">jsonToArray() (in module IOUtils)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/__w/arkouda/arkouda/src/compat/e-132/ArkoudaIOCompat.html#ArkoudaIOCompat.jsonToPdArrayCompat">jsonToPdArrayCompat() (in module ArkoudaIOCompat)</a>
-</li>
-      <li><a href="modules/__w/arkouda/arkouda/src/compat/e-132/ArkoudaIOCompat.html#ArkoudaIOCompat.jsonToTupleCompat">jsonToTupleCompat() (in module ArkoudaIOCompat)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/GenSymIO.html#GenSymIO.jsonToMap">jsonToMap() (in module GenSymIO)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1346,13 +1325,11 @@
         <li><a href="modules/__w/arkouda/arkouda/src/RadixSortLSD.html#RadixSortLSD.KeysRanksComparator.key">(RadixSortLSD.KeysRanksComparator method)</a>
 </li>
       </ul></li>
-      <li><a href="modules/__w/arkouda/arkouda/src/SegStringSort.html#SegStringSort.StringIntComparator.keyPart">keyPart() (SegStringSort.StringIntComparator method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeRegEntry.html#MultiTypeRegEntry.GroupByRegEntry.keys">keys (MultiTypeRegEntry.GroupByRegEntry attribute)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/SegStringSort.html#SegStringSort.StringIntComparator.keyPart">keyPart() (SegStringSort.StringIntComparator method)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.MessageArgs.keys">keys() (Message.MessageArgs method)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeRegEntry.html#MultiTypeRegEntry.GroupByRegEntry.keys">keys (MultiTypeRegEntry.GroupByRegEntry attribute)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/RadixSortLSD.html#RadixSortLSD.KeysComparator">KeysComparator (record in RadixSortLSD)</a>
 </li>
@@ -1660,16 +1637,10 @@
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ObjectType">ObjectType (enum in Message)</a>
-</li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.ObjType">ObjType (enum in ServerConfig)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj.objType">objType (Message.ParameterObj attribute)</a>
-
-      <ul>
-        <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeRegEntry.html#MultiTypeRegEntry.GenRegEntry.objType">(MultiTypeRegEntry.GenRegEntry attribute)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeRegEntry.html#MultiTypeRegEntry.GenRegEntry.objType">objType (MultiTypeRegEntry.GenRegEntry attribute)</a>
 </li>
-      </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.offset">offset() (in module AryUtil)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.offsets">offsets (SegmentedString.SegString attribute)</a>
@@ -1710,10 +1681,12 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj">ParameterObj (record in Message)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.SymTab.parseJson">parseJson() (MultiTypeSymbolTable.SymTab method)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/IOUtils.html#IOUtils.parseJson">parseJson() (in module IOUtils)</a>, <a href="modules/__w/arkouda/arkouda/src/IOUtils.html#IOUtils.parseJson">[1]</a>
+
+      <ul>
+        <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.SymTab.parseJson">(MultiTypeSymbolTable.SymTab method)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.parseJsonTuple">parseJsonTuple() (in module Message)</a>
-</li>
+      </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.parseMessageArgs">parseMessageArgs() (in module Message)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.parseParameter">parseParameter() (in module Message)</a>
@@ -1828,8 +1801,6 @@
         <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation.html#CommAggregation.DstAggregator.rBuffers">(CommAggregation.DstAggregator attribute)</a>
 </li>
       </ul></li>
-      <li><a href="modules/__w/arkouda/arkouda/src/compat/e-132/ArkoudaIOCompat.html#ArkoudaIOCompat.readfCompat">readfCompat() (in module ArkoudaIOCompat)</a>
-</li>
       <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.AvgMetricValue.realTotal">realTotal (MetricsMsg.AvgMetricValue attribute)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.MetricValue.realValue">realValue (MetricsMsg.MetricValue attribute)</a>
@@ -2066,8 +2037,6 @@
       </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/Security.html#Security.setArkoudaToken">setArkoudaToken() (in module Security)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj.setDType">setDType() (Message.ParameterObj method)</a>
-</li>
       <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj.setKey">setKey() (Message.ParameterObj method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/BigIntMsg.html#BigIntMsg.setMaxBitsMsg">setMaxBitsMsg() (in module BigIntMsg)</a>
@@ -2080,8 +2049,6 @@
         <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.AbstractSymEntry.setName">(MultiTypeSymEntry.AbstractSymEntry method)</a>
 </li>
       </ul></li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj.setObjType">setObjType() (Message.ParameterObj method)</a>
-</li>
       <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj.setVal">setVal() (Message.ParameterObj method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.GenSymEntry.shape">shape (MultiTypeSymEntry.GenSymEntry attribute)</a>
@@ -2106,10 +2073,10 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/SipHash.html#SipHash.sipHash128">sipHash128() (in module SipHash)</a>, <a href="modules/__w/arkouda/arkouda/src/SipHash.html#SipHash.sipHash128">[1]</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/SipHash.html#SipHash.sipHash64">sipHash64() (in module SipHash)</a>, <a href="modules/__w/arkouda/arkouda/src/SipHash.html#SipHash.sipHash64">[1]</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation.html#CommAggregation.remoteBuffer.size">size (CommAggregation.remoteBuffer attribute)</a>
 
       <ul>
@@ -2270,8 +2237,14 @@
       </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/RadixSortLSD.html#RadixSortLSD.Tasks">Tasks (in module RadixSortLSD)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.this">this() (SegmentedString.SegString method)</a>, <a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.this">[1]</a>, <a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.this">[2]</a>, <a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.this">[3]</a>, <a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.this">[4]</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.MessageArgs.these">these() (Message.MessageArgs iterator)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.MessageArgs.this">this() (Message.MessageArgs method)</a>
+
+      <ul>
+        <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.this">(SegmentedString.SegString method)</a>, <a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.this">[1]</a>, <a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.this">[2]</a>, <a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.this">[3]</a>, <a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.this">[4]</a>
+</li>
+      </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.Metric.timestamp">timestamp (MetricsMsg.Metric attribute)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.title">title() (SegmentedString.SegString method)</a>
@@ -2292,8 +2265,16 @@
       </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/GenSymIO.html#GenSymIO.tondarrayMsg">tondarrayMsg() (in module GenSymIO)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj.toScalar">toScalar() (Message.ParameterObj method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj.toScalarArray">toScalarArray() (Message.ParameterObj method)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj.toScalarList">toScalarList() (Message.ParameterObj method)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj.toScalarTuple">toScalarTuple() (Message.ParameterObj method)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.toSegStringSymEntry">toSegStringSymEntry() (in module MultiTypeSymEntry)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.toSymEntry">toSymEntry() (in module MultiTypeSymEntry)</a>
@@ -2311,6 +2292,8 @@
       <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.totalResponseTimeMetrics">totalResponseTimeMetrics (in module MetricsMsg)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.trace">trace (in module ServerConfig)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj.tryGetScalar">tryGetScalar() (Message.ParameterObj method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.SymEntry.tupShape">tupShape (MultiTypeSymEntry.SymEntry attribute)</a>
 </li>
@@ -2440,8 +2423,6 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.validateNegativeAxes">validateNegativeAxes() (in module AryUtil)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.MessageArgs.vals">vals() (Message.MessageArgs method)</a>
-</li>
       <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.Metric.value">value (MetricsMsg.Metric attribute)</a>
 </li>
   </ul></td>
@@ -2488,8 +2469,6 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/__w/arkouda/arkouda/src/compat/e-132/ArkoudaIOCompat.html#ArkoudaIOCompat.writefCompat">writefCompat() (in module ArkoudaIOCompat)</a>
-</li>
       <li><a href="modules/__w/arkouda/arkouda/src/FileIO.html#FileIO.writeLinesToFile">writeLinesToFile() (in module FileIO)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.WriteModeError">WriteModeError (class in ServerErrors)</a>
@@ -2502,7 +2481,7 @@
       </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/CommandMap.html#CommandMap.writeUsedModules">writeUsedModules() (in module CommandMap)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/compat/e-132/ArkoudaIOCompat.html#ArkoudaIOCompat.writeUsedModulesJson">writeUsedModulesJson() (in module ArkoudaIOCompat)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/CommandMap.html#CommandMap.writeUsedModulesJson">writeUsedModulesJson() (in module CommandMap)</a>
 </li>
   </ul></td>
 </tr></table>

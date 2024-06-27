@@ -295,6 +295,8 @@ or
    * You can pass a logger from the calling function for better error reporting.
    
 
+.. function:: proc getGenericTypedArrayEntry(name: ParameterObj, st: borrowed SymTab): borrowed GenSymEntry throws
+
 .. function:: proc getSegStringEntry(name: string, st: borrowed SymTab): borrowed SegStringSymEntry throws
 
    *

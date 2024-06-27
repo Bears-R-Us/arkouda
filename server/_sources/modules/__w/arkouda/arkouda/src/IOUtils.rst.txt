@@ -1,0 +1,41 @@
+.. default-domain:: chpl
+
+.. module:: IOUtils
+
+IOUtils
+=======
+**Usage**
+
+.. code-block:: chapel
+
+   use IOUtils;
+
+
+or
+
+.. code-block:: chapel
+
+   import IOUtils;
+
+.. function:: proc formatJson(input): string throws
+
+   
+   Format an argument as a JSON string
+   
+
+.. function:: proc formatJson(input: string, vals ...?): string throws
+
+.. function:: proc jsonToArray(json: string, type t, size: int) throws
+
+   
+   Deserialize a Chapel array of strings from a JSON string
+   
+
+.. function:: proc parseJson(json: string, type t): t throws
+
+   
+   Helper function to parse a JSON string as an item of the given type
+   
+
+.. function:: proc parseJson(json: string, param n: int, type t): n*t throws
+

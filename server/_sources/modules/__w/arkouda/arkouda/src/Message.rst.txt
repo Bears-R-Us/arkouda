@@ -31,22 +31,6 @@ or
 
    .. enumconstant:: enum constant BINARY
 
-.. enum:: enum ObjectType { PDARRAY, SEGSTRING, LIST, DICT, VALUE, DATETIME, TIMEDELTA }
-
-   .. enumconstant:: enum constant PDARRAY
-
-   .. enumconstant:: enum constant SEGSTRING
-
-   .. enumconstant:: enum constant LIST
-
-   .. enumconstant:: enum constant DICT
-
-   .. enumconstant:: enum constant VALUE
-
-   .. enumconstant:: enum constant DATETIME
-
-   .. enumconstant:: enum constant TIMEDELTA
-
 .. record:: MsgTuple
 
    
@@ -108,32 +92,15 @@ or
 
    .. attribute:: var val: string
 
-   .. attribute:: var objType: ObjectType
-
    .. attribute:: var dtype: string
 
    .. method:: proc init()
 
-   .. method:: proc init(key: string, val: string, objType: ObjectType, dtype: string)
-
-   .. method:: proc asMap() throws
-
-   .. method:: proc getJSON() throws
+   .. method:: proc init(key: string, val: string, dtype: string)
 
    .. method:: proc ref setKey(value: string)
 
    .. method:: proc ref setVal(value: string)
-
-   .. method:: proc ref setObjType(value: ObjectType)
-
-   .. method:: proc ref setDType(value: string)
-
-   .. method:: proc getObjType()
-
-      
-      * Return the objType value
-      * Returns str
-      
 
    .. method:: proc getDType()
 
@@ -149,78 +116,83 @@ or
       * Returns string
       
 
+   .. method:: proc tryGetScalar(type t): (t, bool)
+
+   .. method:: proc toScalar(type t): t throws
+
+      
+      Get a value of the given type from a JSON scalar
+      
+      :arg t: type: the scalar type to parse
+      
+      Throws an ErrorWithContext if the value cannot be parsed as the given
+          type
+      
+
+   .. method:: proc toScalarTuple(type t, param size: int): size*t throws
+
+      
+      Get a tuple of the given type from a JSON array of scalar values
+      
+      :arg size: int: the number of elements in the tuple (must match
+          the number of elements in the JSON array)
+      :arg t: type: the scalar type to parse
+      
+      Throws an ErrorWithContext if the value is not a JSON array, the
+          tuple is the wrong size, or if the elements of the array cannot
+          be parsed as the given type
+      
+
+   .. method:: proc toScalarList(type t): list(t) throws
+
+      
+      Get a list of the given type from a JSON array of scalar values
+      
+      :arg t: type: the scalar type to parse
+      
+      Throws an ErrorWithContext if the value is not a JSON array or if the
+          elements of the array cannot be parsed as the given type
+      
+
+   .. method:: proc toScalarArray(type t, size: int): [] t throws
+
+      
+      Get an array of the given type from a JSON array of scalar values
+      
+      :arg t: type: the scalar type to parse
+      :arg size: int: the number of elements in the array (must match the
+          number of elements in the JSON array)
+      
+      Throws an ErrorWithContext if the value is not a JSON array, the
+          array is the wrong size, or if the elements of the array cannot
+          be parsed as the given type
+      
+
    .. method:: proc getScalarValue(type t): t throws
 
-      
-      * Attempt to cast the value to the provided type
-      * Throw and error if the cast isn't possible
-      
-
    .. method:: proc getIntValue(): int throws
-
-      
-      * Return the value as int64
-      * Returns int
-      
 
    .. method:: proc getPositiveIntValue(max: int): int throws
 
       
-      * Return the value as a positive int64
-      * If the value is negative, return 'value + max + 1', otherwise return the value
-      * This is useful for implementing Python's negative indexing rules
-      *
-      * Returns int
+      Return the value as a positive int
+      If the value is negative, return 'value + max + 1', otherwise return the value
+      This is useful for implementing Python's negative indexing rules
       
 
    .. method:: proc getUIntValue(): uint throws
-
-      
-      * Return the value as uint64
-      * Returns uint
-      
 
    .. method:: proc getUInt8Value(): uint(8) throws
 
    .. method:: proc getRealValue(): real throws
 
-      
-      * Return the value as float64
-      * Returns real
-      
-
    .. method:: proc getBoolValue(): bool throws
-
-      
-      * Return the value as bool
-      * Returns bool
-      
 
    .. method:: proc getBigIntValue(): bigint throws
 
-   .. method:: proc getValueAsType(type t = string): t throws
-
-      
-      * Return the value as the provided type
-      
-
    .. method:: proc getList(size: int) throws
 
-      
-      Parse value as a list of strings.
-      :size: int: number of values in the list
-      Note - not yet able to handle list of pdarray or SegString names
-      
-
-   .. method:: proc getListAs(type t, size: int) throws
-
    .. method:: proc getTuple(param size: int): size*int throws
-
-      
-      Parse value as a tuple of integers with the given size
-      
-
-   .. method:: proc getJSON(size: int) throws
 
 .. class:: MessageArgs : writeSerializable
 
@@ -244,11 +216,21 @@ or
 
    .. method:: proc addPayload(in p: bytes)
 
-   .. method:: proc getJSON(keys: list(string) = list(string)): string throws
+      
+      Attach a binary payload to the message arguments
+      
+
+   .. method:: proc this(key: string): ParameterObj throws
+
+      
+      Get the value of the argument with the given key
+      
+
+   .. itermethod:: iter these(): ParameterObj
 
    .. method:: override proc serialize(writer: fileWriter(?), ref serializer: ?st) throws
 
-   .. method:: proc get(key: string) throws
+   .. method:: proc get(key: string): ParameterObj throws
 
       
       * Identify the parameter with the provided key and return it
@@ -256,30 +238,12 @@ or
       * Throws KeyNotFound error if the provide key does not exist.
       
 
-   .. method:: proc getValueOf(key: string) throws
-
-   .. method:: proc items()
-
-      
-      Return "iterable" of ParameterObj
-      
-
-   .. method:: proc keys()
-
-      
-      Return a list of all keys
-      
-
-   .. method:: proc vals()
-
-      
-      Return a list of all values
-      
+   .. method:: proc getValueOf(key: string): string throws
 
    .. method:: proc contains(key: string): bool
 
       
-      Return bool if param_list contains given key name
+      Return true if there is an argument with the given name, false otherwise
       
 
 .. function:: proc parseParameter(payload: string) throws
@@ -308,17 +272,5 @@ or
 
    
    * Generates a ReplyMsg object and serializes it into a JSON-formatted reply message
-   
-
-.. function:: proc jsonToPdArray(json: string, size: int) throws
-
-   
-   * Converts the JSON array to a pdarray
-   
-
-.. function:: proc parseJsonTuple(json: string, param size: int): size*int throws
-
-   
-   Helper function to parse a JSON string as a tuple of integers
    
 
