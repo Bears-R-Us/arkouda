@@ -209,8 +209,6 @@ module Message {
                 );
             }
 
-            writeln("parsing tuple of size: ", size, " with type: ", t:string, " from: ", this.val);
-
             if size == 1 {
                 // special case to support parsing a scalar as a 1-tuple
                 try {
@@ -443,6 +441,14 @@ module Message {
             for p in this.param_list {
                 yield p;
             }
+        }
+
+        override proc serialize(writer: fileWriter(?), ref serializer: ?st) throws {
+            var ser = serializer.startClass(writer, "MessageArgs", 3);
+            ser.writeField("param_list", this.param_list);
+            ser.writeField("size", this.size);
+            ser.writeField("payload", if this.payload.size > 0 then "<binary_payload>" else "");
+            ser.endClass();
         }
 
         override proc serialize(writer: fileWriter(?), ref serializer: ?st) throws {

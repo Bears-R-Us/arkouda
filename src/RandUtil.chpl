@@ -3,24 +3,28 @@ module RandUtil {
     use MultiTypeSymEntry;
     use RandMsg;
     use ArkoudaRandomCompat;
+    use CommAggregation;
 
     const minPerStream = 256; // minimum number of elements per random stream
 
     record scalarOrArray {
         var isArray: bool;
-        var sym;  // TODO figure out type hint here to avoid generic
+        var sym;
         var val: real;
 
+        proc init() {
+            this.isArray = false;
+            this.sym = try! makeDistArray([0.0]);
+            val = 0.0;
+        }
+
         proc init(scalarOrArrayString: string, isArray: bool, st: borrowed SymTab) {
-            // I'm not sure if there's a good way to remove these try!
             this.isArray = isArray;
             if isArray {
                 try! st.checkTable(scalarOrArrayString);
                 this.sym = try! toSymEntry(getGenericTypedArrayEntry(scalarOrArrayString, st),real).a;
             }
             else {
-                // prob not the smartest way of doing this
-                // we just want to avoid unnecessarily creating a large array
                 this.sym = try! makeDistArray([0.0]);
                 val = try! scalarOrArrayString:real;
             }
@@ -33,9 +37,10 @@ module RandUtil {
 
     enum GenerationFunction {
       PoissonGenerator,
+      ExponentialGenerator,
     }
 
-    proc uniformStreamPerElem(ref randArr: [?D] ?t, param function: GenerationFunction, hasSeed: bool, const lam: scalarOrArray(?), ref rng) throws {
+    proc uniformStreamPerElem(ref randArr: [?D] ?t, ref rng, param function: GenerationFunction, hasSeed: bool, const lam: scalarOrArray(?) = new scalarOrArray()) throws {
         if hasSeed {
             // use a fixed number of elements per stream instead of relying on number of locales or numTasksPerLoc because these
             // can vary from run to run / machine to mahchine. And it's important for the same seed to give the same results
@@ -58,27 +63,59 @@ module RandUtil {
                             startIdx = (streamID * elemsPerStream) + locSubDom.low + offset,
                             stopIdx = min(startIdx + elemsPerStream - 1, randArr.domain.high);  // continue past end of localSubDomain to read full block to avoid seed sharing
 
-                        var rs = new randomStream(real, taskSeed);
-                        for i in startIdx..stopIdx {
-                            select function {
-                                // TODO look into adding copy aggregation looking here
-                                when GenerationFunction.PoissonGenerator {
-                                    randArr[i] = poissonGenerator(lam[i], rs);
+                        var realRS = new randomStream(real, taskSeed),
+                            uintRS = new randomStream(uint, taskSeed);
+
+                        if stopIdx >= locSubDom.high {
+                            // we are on the last chunk on a locale, so create a copy aggregator since we
+                            // steal the remainder of the chunk that overflows onto the following locale
+                            var agg = newDstAggregator(t);
+                            for i in startIdx..stopIdx {
+                                select function {
+                                    when GenerationFunction.PoissonGenerator {
+                                        agg.copy(randArr[i], poissonGenerator(lam[i], realRS));
+                                    }
+                                    when GenerationFunction.ExponentialGenerator {
+                                        agg.copy(randArr[i], standardExponentialZig(realRS, uintRS));
+                                    }
+                                    otherwise {
+                                        compilerError("Unrecognized generation function");
+                                    }
                                 }
-                                otherwise {
-                                    compilerError("Unrecognized generation function");
+                            }
+                            // manually flush the aggregtor when we exit the scope
+                            // I thought this would happen automatically, so I'm not convinced
+                            // this is necessary. But radixSortLSD does it, so who am I to argue
+                            agg.flush();
+                        }
+                        else {
+                            for i in startIdx..stopIdx {
+                                select function {
+                                    when GenerationFunction.PoissonGenerator {
+                                        randArr[i] = poissonGenerator(lam[i], realRS);
+                                    }
+                                    when GenerationFunction.ExponentialGenerator {
+                                        randArr[i] = standardExponentialZig(realRS, uintRS);
+                                    }
+                                    otherwise {
+                                        compilerError("Unrecognized generation function");
+                                    }
                                 }
                             }
                         }
-                    }
+                    }  // coforall over randomStreams created
                 }
-            }
+            }  // coforall over locales
         }
         else {  // non-seeded case, we can just use task private variables for our random streams
-            forall (rv, i) in zip(randArr, randArr.domain) with (var rs = new randomStream(real)) {
+            forall (rv, i) in zip(randArr, randArr.domain) with (var realRS = new randomStream(real),
+                                                                 var uintRS = new randomStream(uint)) {
                 select function {
                     when GenerationFunction.PoissonGenerator {
-                        rv = poissonGenerator(lam[i], rs);
+                        rv = poissonGenerator(lam[i], realRS);
+                    }
+                    when GenerationFunction.ExponentialGenerator {
+                        rv = standardExponentialZig(realRS, uintRS);
                     }
                     otherwise {
                         compilerError("Unrecognized generation function");
