@@ -665,6 +665,16 @@ module ReductionMsg
                         var res = segCount(segments.a, values.size);
                         st.addEntry(rname, createSymEntry(res));
                     }
+                    when "head" {
+                        const n = msgArgs.get("n").getIntValue();
+                        var res = segHead(values.a, segments.a, n);
+                        st.addEntry(rname, createSymEntry(res));
+                    }
+                    when "tail" {
+                        const n = msgArgs.get("n").getIntValue();
+                        var res = segTail(values.a, segments.a, n);
+                        st.addEntry(rname, createSymEntry(res));
+                    }
                     otherwise {
                         var errorMsg = notImplementedError(pn,op,gVal.dtype);
                         rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -904,12 +914,76 @@ module ReductionMsg
        rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
        return new MsgTuple(repMsg, MsgType.NORMAL);
     }
-          
+
+
+    /*  Compute the maximum/minimum of a vector and a scalar.
+    */
+
+    proc maximum(values:[?vD] ?intype, x: intype) throws{
+      var result: [vD] intype ;
+      forall i in vD {
+        if(values[i] > x){
+          result[i] = values[i];
+        }else{
+          result[i] = x;
+        }
+      }
+      return result;
+    }
+
+    proc minimum(values:[?vD] ?intype, x: intype) throws{
+      var result: [vD] intype ;
+      forall i in vD {
+        if(values[i] < x){
+          result[i] = values[i];
+        }else{
+          result[i] = x;
+        }
+      }
+      return result;
+    }
+
+
     /* Segmented Reductions of the form: seg<Op>(values:[] t, segments: [] int)
        Use <segments> as the boundary indices to divide <values> into chunks, 
        and then reduce over each chunk using the operator <Op>. The return array 
        of reduced values is the same size as <segments>.
      */
+
+    proc segHead(values:[?vD] ?intype, segments:[?D] int, n: int) throws {
+
+      //  segCount counts the size of each segment
+      const newSegLengths = minimum(segCount(segments, values.size), n);
+      const newSegs = (+ scan newSegLengths) - newSegLengths;
+
+      const newSize = + reduce newSegLengths;
+      const dom = makeDistDom(newSize);
+      var ret = makeDistArray(dom, intype);
+
+      forall (oldSegStart, newSegStart, newLength) in zip(segments, newSegs, newSegLengths) with (var agg = newSrcAggregator(intype)){
+          agg.copy(ret[newSegStart..#newLength], values[oldSegStart..#newLength]);
+      }
+      return ret;
+    }
+
+    proc segTail(values:[?vD] ?intype, segments:[?D] int, n: int) throws {
+
+      //  segCount counts the size of each segment
+      const counts = segCount(segments, values.size);
+      const newSegLengths = minimum(counts, n);
+      const newSegEnds = (+ scan newSegLengths);
+      const oldSegEnds = (+ scan counts);
+
+      const newSize = + reduce newSegLengths;
+      const dom = makeDistDom(newSize);
+      var ret = makeDistArray(dom, intype);
+
+      forall (oldSegEnd, newSegEnd, newLength) in zip(oldSegEnds, newSegEnds, newSegLengths) with (var agg = newSrcAggregator(intype)){
+          agg.copy(ret[(newSegEnd - newLength)..#newLength], values[(oldSegEnd - newLength)..#newLength]);
+      }
+      return ret;
+    }
+
     proc segSum(values:[?vD] ?intype, segments:[?D] int, skipNan=false) throws {
       type t = if intype == bool then int else intype;
       var res = makeDistArray(D, t);

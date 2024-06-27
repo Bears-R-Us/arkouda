@@ -13,6 +13,7 @@ from numpy import ndarray
 from numpy._typing import _8Bit, _16Bit, _32Bit, _64Bit
 from typeguard import typechecked
 
+from arkouda import sort as aksort
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, maxTransferBytes
 from arkouda.client_dtypes import BitVector, Fields, IPv4
@@ -205,6 +206,157 @@ class DataFrameGroupBy:
             return self._return_agg_series(self.gb.size(), sort_index=sort_index)
         else:
             return self._return_agg_dataframe(self.gb.size(), "size", sort_index=sort_index)
+
+    def head(
+        self,
+        n: int = 5,
+        sort_index: bool = True,
+    ) -> DataFrame:
+        """
+        Return the first n rows from each group.
+
+        Parameters
+        ----------
+        n: int, optional, default = 5
+            Maximum number of rows to return for each group.
+            If the number of rows in a group is less than n,
+            all the values from that group will be returned.
+        sort_index: bool, default = True
+            If true, return the DataFrame with indices sorted.
+
+        Returns
+        -------
+        arkouda.dataframe.DataFrame
+
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> from arkouda import *
+        >>> df = ak.DataFrame({"a":ak.arange(10) %3 , "b":ak.arange(10)})
+
+        +----+-----+-----+
+        |    |   a |   b |
+        +====+=====+=====+
+        |  0 |   0 |   0 |
+        +----+-----+-----+
+        |  1 |   1 |   1 |
+        +----+-----+-----+
+        |  2 |   2 |   2 |
+        +----+-----+-----+
+        |  3 |   0 |   3 |
+        +----+-----+-----+
+        |  4 |   1 |   4 |
+        +----+-----+-----+
+        |  5 |   2 |   5 |
+        +----+-----+-----+
+        |  6 |   0 |   6 |
+        +----+-----+-----+
+        |  7 |   1 |   7 |
+        +----+-----+-----+
+        |  8 |   2 |   8 |
+        +----+-----+-----+
+        |  9 |   0 |   9 |
+        +----+-----+-----+
+
+        >>> df.groupby("a").head(2)
+
+        +----+-----+-----+
+        |    |   a |   b |
+        +====+=====+=====+
+        |  0 |   0 |   0 |
+        +----+-----+-----+
+        |  1 |   0 |   3 |
+        +----+-----+-----+
+        |  2 |   1 |   1 |
+        +----+-----+-----+
+        |  3 |   1 |   4 |
+        +----+-----+-----+
+        |  4 |   2 |   2 |
+        +----+-----+-----+
+        |  5 |   2 |   5 |
+        +----+-----+-----+
+
+        """
+        _, indx = self.gb.head(self.df.index.values, n=n, return_indices=True)
+        if sort_index:
+            indx = aksort(indx)
+        return self.df[indx]
+
+    def tail(
+        self,
+        n: int = 5,
+        sort_index: bool = True,
+    ) -> DataFrame:
+        """
+        Return the last n rows from each group.
+
+        Parameters
+        ----------
+        n: int, optional, default = 5
+            Maximum number of rows to return for each group.
+            If the number of rows in a group is less than n,
+            all the rows from that group will be returned.
+        sort_index: bool, default = True
+            If true, return the DataFrame with indices sorted.
+
+        Returns
+        -------
+        arkouda.dataframe.DataFrame
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> from arkouda import *
+        >>> df = ak.DataFrame({"a":ak.arange(10) %3 , "b":ak.arange(10)})
+
+        +----+-----+-----+
+        |    |   a |   b |
+        +====+=====+=====+
+        |  0 |   0 |   0 |
+        +----+-----+-----+
+        |  1 |   1 |   1 |
+        +----+-----+-----+
+        |  2 |   2 |   2 |
+        +----+-----+-----+
+        |  3 |   0 |   3 |
+        +----+-----+-----+
+        |  4 |   1 |   4 |
+        +----+-----+-----+
+        |  5 |   2 |   5 |
+        +----+-----+-----+
+        |  6 |   0 |   6 |
+        +----+-----+-----+
+        |  7 |   1 |   7 |
+        +----+-----+-----+
+        |  8 |   2 |   8 |
+        +----+-----+-----+
+        |  9 |   0 |   9 |
+        +----+-----+-----+
+
+        >>> df.groupby("a").tail(2)
+
+        +----+-----+-----+
+        |    |   a |   b |
+        +====+=====+=====+
+        |  0 |   0 |   6 |
+        +----+-----+-----+
+        |  1 |   0 |   9 |
+        +----+-----+-----+
+        |  2 |   1 |   4 |
+        +----+-----+-----+
+        |  3 |   1 |   7 |
+        +----+-----+-----+
+        |  4 |   2 |   5 |
+        +----+-----+-----+
+        |  5 |   2 |   8 |
+        +----+-----+-----+
+
+        """
+        _, indx = self.gb.tail(self.df.index.values, n=n, return_indices=True)
+        if sort_index:
+            indx = aksort(indx)
+        return self.df[indx]
 
     def sample(self, n=None, frac=None, replace=False, weights=None, random_state=None):
         """

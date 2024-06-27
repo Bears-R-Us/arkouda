@@ -3,6 +3,9 @@ import pandas as pd
 import pytest
 
 import arkouda as ak
+from arkouda import GroupBy, concatenate
+from arkouda import sort as aksort
+from arkouda import sum as aksum
 from arkouda.groupbyclass import GroupByReductionType
 from arkouda.scipy import chisquare as akchisquare
 
@@ -624,6 +627,106 @@ class TestGroupBy:
         """
         g = ak.GroupBy(ak.zeros(0, dtype=ak.int64))
         str(g.segments)  # passing condition, if this was deleted it will cause the test to fail
+
+    @pytest.mark.parametrize("dtype", ["bool", "str_", "int64", "float64"])
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_head_aggregation(self, size, dtype):
+
+        if np.issubdtype(dtype, np.number):
+            a = ak.arange(size, dtype=dtype) % 3
+        else:
+            a = ak.arange(size, dtype=ak.int64) % 3
+
+        if dtype is ak.str_:
+            v = ak.random_strings_uniform(size=size, minlen=1, maxlen=2)
+        elif dtype is ak.bool:
+            v = ak.full(size, False, dtype=ak.bool)
+            v[::2] = True
+        else:
+            v = ak.arange(size, dtype=dtype)
+
+        rng = ak.random.default_rng(17)
+        i = ak.arange(size)
+        rng.shuffle(i)
+        a = a[i]
+
+        rng.shuffle(i)
+        v = v[i]
+
+        g = GroupBy(a)
+
+        size_range = ak.arange(size)
+        zeros_idx = size_range[a == 0][0:2]
+        ones_idx = size_range[a == 1][0:2]
+        twos_idx = size_range[a == 2][0:2]
+        expected_idx = concatenate([zeros_idx, ones_idx, twos_idx])
+
+        unique_keys, idx = g.head(v, 2, return_indices=True)
+        assert ak.all(unique_keys == ak.array([0, 1, 2]))
+        assert ak.all(aksort(idx) == aksort(expected_idx))
+
+        zeros_values = v[a == 0][0:2]
+        ones_values = v[a == 1][0:2]
+        twos_values = v[a == 2][0:2]
+        expected_values = concatenate([zeros_values, ones_values, twos_values])
+
+        unique_keys, values = g.head(v, 2, return_indices=False)
+        assert len(values) == len(expected_values)
+        assert ak.all(unique_keys == ak.array([0, 1, 2]))
+        if dtype == ak.bool:
+            assert aksum(values) == aksum(expected_values)
+        else:
+            assert set(values.to_list()) == set(expected_values.to_list())
+
+    @pytest.mark.parametrize("dtype", ["bool", "str_", "int64", "float64"])
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_tail_aggregation(self, size, dtype):
+
+        if np.issubdtype(dtype, np.number):
+            a = ak.arange(size, dtype=dtype) % 3
+        else:
+            a = ak.arange(size, dtype=ak.int64) % 3
+
+        if dtype is ak.str_:
+            v = ak.random_strings_uniform(size=size, minlen=1, maxlen=2)
+        elif dtype is ak.bool:
+            v = ak.full(size, False, dtype=ak.bool)
+            v[::2] = True
+        else:
+            v = ak.arange(size, dtype=dtype)
+
+        rng = ak.random.default_rng(17)
+        i = ak.arange(size)
+        rng.shuffle(i)
+        a = a[i]
+
+        rng.shuffle(i)
+        v = v[i]
+
+        g = GroupBy(a)
+
+        size_range = ak.arange(size)
+        zeros_idx = size_range[a == 0][-2:]
+        ones_idx = size_range[a == 1][-2:]
+        twos_idx = size_range[a == 2][-2:]
+        expected_idx = concatenate([zeros_idx, ones_idx, twos_idx])
+
+        unique_keys, idx = g.tail(v, 2, return_indices=True)
+        assert ak.all(unique_keys == ak.array([0, 1, 2]))
+        assert ak.all(aksort(idx) == aksort(expected_idx))
+
+        zeros_values = v[a == 0][-2:]
+        ones_values = v[a == 1][-2:]
+        twos_values = v[a == 2][-2:]
+        expected_values = concatenate([zeros_values, ones_values, twos_values])
+
+        unique_keys, values = g.tail(v, 2, return_indices=False)
+        assert len(values) == len(expected_values)
+        assert ak.all(unique_keys == ak.array([0, 1, 2]))
+        if dtype == ak.bool:
+            assert aksum(values) == aksum(expected_values)
+        else:
+            assert set(values.to_list()) == set(expected_values.to_list())
 
     def test_first_aggregation(self):
         keys = ak.array([0, 1, 0, 1, 0, 1])
