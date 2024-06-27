@@ -97,7 +97,7 @@ class Array:
         :func:`~arkouda.client.maxTransferBytes`)
         """
         x = self._array.to_list()
-        if self._has_single_elem():
+        if self.shape == ():
             # to match numpy, return a scalar for a 0-dimensional array
             return x[0]
         else:

@@ -10,6 +10,7 @@ module StatsMsg {
     use MultiTypeSymEntry;
     use ServerErrorStrings;
     use Stats;
+    use IOUtils;
 
     use Map;
     use ArkoudaIOCompat;
@@ -32,7 +33,7 @@ module StatsMsg {
         const x = msgArgs.getValueOf("x"),
               comp = msgArgs.getValueOf("comp"),
               nAxes = msgArgs.get("nAxes").getIntValue(),
-              axesRaw = msgArgs.get("axis").getListAs(int, nAxes),
+              axesRaw = msgArgs.get("axis").toScalarArray(int, nAxes),
               ddof = msgArgs.get("ddof").getRealValue(), // "correction" for std and variance
               skipNan = msgArgs.get("skipNan").getBoolValue(),
               rname = st.nextName();

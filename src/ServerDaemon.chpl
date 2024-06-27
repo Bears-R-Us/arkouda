@@ -26,6 +26,7 @@ module ServerDaemon {
     use BigIntMsg;
     use NumPyDType;
     use StatusMsg;
+    use IOUtils;
 
     use ArkoudaIOCompat;
 
@@ -397,7 +398,7 @@ module ServerDaemon {
             proc getArrayParameterObj(args: MessageArgs) throws {
                 var obj : ParameterObj;
 
-                for item in args.items() {
+                for item in args {
                     if item.key == 'a' || item.key == 'array' { 
                         obj = item;
                     }
@@ -624,12 +625,12 @@ module ServerDaemon {
                         break;
                     }
 
-                /*
-                 * If logCommands is true, log incoming request to the .arkouda/commands.log file
-                 */
-                if logCommands {
-                    appendFile(filePath="%s/commands.log".format(this.arkDirectory), formatJson(msg));
-                }
+                    /*
+                    * If logCommands is true, log incoming request to the .arkouda/commands.log file
+                    */
+                    if logCommands {
+                        appendFile(filePath="%s/commands.log".format(this.arkDirectory), formatJson(msg));
+                    }
 
                     /*
                     * For messages that return a string repTuple is filled. For binary

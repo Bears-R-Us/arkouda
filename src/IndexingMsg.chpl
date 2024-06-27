@@ -9,6 +9,7 @@ module IndexingMsg
     use Message;
     use AryUtil;
     use ArkoudaAryUtilCompat;
+    use IOUtils;
 
     use MultiTypeSymEntry;
     use MultiTypeSymbolTable;
@@ -19,16 +20,12 @@ module IndexingMsg
     use List;
     use BigInteger;
 
+
     use Map;
-    use ArkoudaIOCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const imLogger = new Logger(logLevel, logChannel);
-
-    proc jsonToTuple(json: string, type t) throws {
-      return jsonToTupleCompat(json, t);
-    }
 
     proc arrayViewMixedIndexMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         var ndim = msgArgs.get("ndim").getIntValue();
@@ -59,7 +56,7 @@ module IndexingMsg
                     scaledCoords[offsets[i/2]] = typeCoords[i+1]:int * dimProdEntry.a[i/2];
                 }
                 when "slice" {
-                    var (start, stop, stride) = jsonToTuple(typeCoords[i+1], 3*int);
+                    var (start, stop, stride) = parseJson(typeCoords[i+1], 3*int);
                     var slice: range(strides=strideKind.any) = convertSlice(start, stop, stride);
                     var scaled: [0..#slice.size] int = slice * dimProdEntry.a[i/2];
                     for j in 0..#slice.size {
@@ -111,7 +108,7 @@ module IndexingMsg
 
         var arrParam = msgArgs.get("base");
         arrParam.setKey("array");
-        var idxParam = new ParameterObj("idx", indiciesName, ObjectType.PDARRAY, "int");
+        var idxParam = new ParameterObj("idx", indiciesName, "int");
         var subArgs = new MessageArgs(new list([arrParam, idxParam]));
         return pdarrayIndexMsg(cmd, subArgs, st);
     }
@@ -130,7 +127,7 @@ module IndexingMsg
 
         var arrParam = msgArgs.get("base");
         arrParam.setKey("array");
-        var idxParam = new ParameterObj("idx", "", ObjectType.VALUE, "");
+        var idxParam = new ParameterObj("idx", "", "");
 
         // multi-dim to 1D address calculation
         // (dimProd and coords are reversed on python side to account for row_major vs column_major)
@@ -139,7 +136,6 @@ module IndexingMsg
                 var coordsEntry = toSymEntry(coords, int);
                 var idx = + reduce (dimProdEntry.a * coordsEntry.a);
                 idxParam.setVal(idx:string);
-                idxParam.setDType("int");
                 var subArgs = new MessageArgs(new list([arrParam, idxParam]));
                 return intIndexMsg(cmd, subArgs, st, 1);
             }
@@ -147,7 +143,6 @@ module IndexingMsg
                 var coordsEntry = toSymEntry(coords, uint);
                 var idx = + reduce (dimProdEntry.a: uint * coordsEntry.a);
                 idxParam.setVal(idx:string);
-                idxParam.setDType("uint");
                 var subArgs = new MessageArgs(new list([arrParam, idxParam]));
                 return intIndexMsg(cmd, subArgs, st, 1);
             }
@@ -175,7 +170,7 @@ module IndexingMsg
 
         var arrParam = msgArgs.get("base");
         arrParam.setKey("array");
-        var idxParam = new ParameterObj("idx", "", ObjectType.VALUE, "");
+        var idxParam = new ParameterObj("idx", "", "");
 
         // multi-dim to 1D address calculation
         // (dimProd and coords are reversed on python side to account for row_major vs column_major)
@@ -184,7 +179,6 @@ module IndexingMsg
                 var coordsEntry = toSymEntry(coords, int);
                 var idx = + reduce (dimProdEntry.a * coordsEntry.a);
                 idxParam.setVal(idx:string);
-                idxParam.setDType("int");
                 var subArgs = new MessageArgs(new list([arrParam, msgArgs.get("value"), msgArgs.get("dtype"), idxParam]));
                 return setIntIndexToValueMsg(cmd, subArgs, st, 1);
             }
@@ -192,7 +186,6 @@ module IndexingMsg
                 var coordsEntry = toSymEntry(coords, uint);
                 var idx = + reduce (dimProdEntry.a: uint * coordsEntry.a);
                 idxParam.setVal(idx:string);
-                idxParam.setDType("uint");
                 var subArgs = new MessageArgs(new list([arrParam, msgArgs.get("value"), msgArgs.get("dtype"), idxParam]));
                 return setIntIndexToValueMsg(cmd, subArgs, st, 1);
             }
@@ -405,8 +398,8 @@ module IndexingMsg
         param pn = Reflection.getRoutineName();
         const name = msgArgs.getValueOf("array"),
               nIdxArrays = msgArgs.get("nIdxArrays").getIntValue(),
-              idxArrays = msgArgs.get("idx").getList(nIdxArrays),           // lists of indices to use along a particular dimension
-              idxDims = msgArgs.get("idxDims").getListAs(int, nIdxArrays),  // which dimension each index array corresponds to
+              idxArrays = msgArgs.get("idx").getList(nIdxArrays),               // lists of indices to use along a particular dimension
+              idxDims = msgArgs.get("idxDims").toScalarArray(int, nIdxArrays),  // which dimension each index array corresponds to
               rname = st.nextName();
 
         const gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
@@ -715,7 +708,7 @@ module IndexingMsg
 
         proc setValue(type arrType, type valType): MsgTuple throws {
             var e = toSymEntry(gEnt, arrType, nd);
-            const val = valueArg.getValueAsType(valType);
+            const val = valueArg.toScalar(valType);
             e.a[(...idx)] = val:arrType;
 
             const repMsg = "%s success".format(pn);
@@ -725,7 +718,7 @@ module IndexingMsg
 
         proc setBigintValue(type valType): MsgTuple throws {
             var e = toSymEntry(gEnt, bigint, nd),
-                val = valueArg.getValueAsType(valType):bigint;
+                val = valueArg.toScalar(valType):bigint;
             if e.max_bits != -1 {
                 var max_size = 1:bigint;
                 max_size <<= e.max_bits;
@@ -1198,7 +1191,7 @@ module IndexingMsg
 
         proc sliceAssign(type arrType, type valType): MsgTuple throws {
             var e = toSymEntry(gEnt, arrType, nd);
-            const value = valueArg.getValueAsType(valType);
+            const value = valueArg.toScalar(valType);
             e.a[sliceDom] = value:arrType;
 
             const repMsg = "%s success".format(pn);
@@ -1208,7 +1201,7 @@ module IndexingMsg
 
         proc sliceAssignBigint(type valType): MsgTuple throws {
             var e = toSymEntry(gEnt, bigint, nd),
-                value = valueArg.getValueAsType(valType):bigint;
+                value = valueArg.toScalar(valType):bigint;
             if e.max_bits != -1 {
                 var max_size = 1:bigint;
                 max_size <<= e.max_bits;

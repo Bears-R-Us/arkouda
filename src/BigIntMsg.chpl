@@ -10,8 +10,7 @@ module BigIntMsg {
     use ServerErrorStrings;
     use BigInteger;
     use List;
-
-    use ArkoudaIOCompat;
+    use IOUtils;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;

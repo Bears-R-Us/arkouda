@@ -16,8 +16,7 @@ module SegmentedMsg {
   use SegmentedArray;
   use Map;
   use CTypes;
-
-  use ArkoudaIOCompat;
+  use IOUtils;
 
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;

@@ -16,8 +16,7 @@ module CSVMsg {
     use Sort;
     use FileIO;
     use Set;
-
-    use ArkoudaIOCompat;
+    use IOUtils;
 
     const CSV_HEADER_OPEN = "**HEADER**";
     const CSV_HEADER_CLOSE = "*/HEADER/*";

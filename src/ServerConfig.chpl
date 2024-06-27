@@ -6,8 +6,6 @@ module ServerConfig
     use SymArrayDmap only makeDistDomType;
 
     public use IO;
-    public use ArkoudaIOCompat;
-
     use ServerErrorStrings;
     use Reflection;
     use ServerErrors;
@@ -16,6 +14,7 @@ module ServerConfig
     use CTypes;
     import NumPyDType.DType;
     use Math;
+    use IOUtils;
 
     import BigInteger.bigint;
 

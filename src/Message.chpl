@@ -1,5 +1,7 @@
 module Message {
     use IO;
+    use JSON;
+    use IOUtils;
     use FileIO;
     use Reflection;
     use ServerErrors;
@@ -12,7 +14,6 @@ module Message {
 
     enum MsgType {NORMAL,WARNING,ERROR}
     enum MsgFormat {STRING,BINARY}
-    enum ObjectType {PDARRAY, SEGSTRING, LIST, DICT, VALUE, DATETIME, TIMEDELTA}
 
     /*
      * Encapsulates the message string and message type.
@@ -102,29 +103,14 @@ module Message {
     record ParameterObj {
         var key: string; // json key value 
         var val: string; // json value
-        var objType: ObjectType; // type of the object
         var dtype: string; // type of elements contained in the object
 
         proc init() {}
 
-        proc init(key: string, val: string, objType: ObjectType, dtype: string) {
+        proc init(key: string, val: string, dtype: string) {
             this.key = key;
             this.val = val;
-            this.objType = objType;
             this.dtype = dtype;
-        }
-
-        proc asMap() throws {
-            var m = new map(string, string);
-            m.add("key", this.key);
-            m.add("val", this.val);
-            m.add("objType", this.objType:string);
-            m.add("dtype", this.dtype);
-            return m;
-        }
-
-        proc getJSON() throws {
-            return formatJson(this);
         }
 
         proc ref setKey(value: string) {
@@ -133,22 +119,6 @@ module Message {
 
         proc ref setVal(value: string) {
             this.val = value;
-        }
-
-        proc ref setObjType(value: ObjectType) {
-            this.ObjectType = value;
-        }
-
-        proc ref setDType(value: string) {
-            this.dtype = value;
-        }
-
-        /*
-        * Return the objType value
-        * Returns str
-        */
-        proc getObjType(){
-            return this.objType;
         }
 
         /*
@@ -167,18 +137,47 @@ module Message {
             return this.val;
         }
 
+        // temporary implementation until more robust JSON parsing is implemented
+        proc tryGetScalar(type t): (t, bool) {
+            if t == string {
+                // is this a number? if so, assume it isn't a string
+                try {
+                    const x = this.val: real;
+                    return ("", false);
+                } catch {
+                    return (this.val, true);
+                }
+            } else {
+                try {
+                    return (this.val: t, true);
+                } catch {
+                    return (t.init, false);
+                }
+            }
+        }
+
         /*
-         * Attempt to cast the value to the provided type
-         * Throw and error if the cast isn't possible
+            Get a value of the given type from a JSON scalar
+
+            :arg t: type: the scalar type to parse
+
+            Throws an ErrorWithContext if the value cannot be parsed as the given
+                type
         */
-        proc getScalarValue(type t): t throws {
+        proc toScalar(type t): t throws {
             try {
-                if t == bool
-                    then return this.val.toLower():bool;
-                    else return this.val:t;
+                if t == string {
+                    return this.val;
+                } else {
+                    // temporary special case (until frontend is modified to provide lowercase 'true'/'false' values)
+                    if t == bool {
+                        return this.val.toLower():bool;
+                    }
+                    return this.val: t;
+                }
             } catch {
                 throw new ErrorWithContext(
-                    "Parameter cannot be cast as %s. Attempting to cast %s as type %s failed".format(t:string, this.val, t:string),
+                    "Json Argument '%s' cannot be cast as a scalar %s".format(this.val, t:string),
                     getLineNumber(),
                     getRoutineName(),
                     getModuleName(),
@@ -188,31 +187,127 @@ module Message {
         }
 
         /*
-        * Return the value as int64
-        * Returns int
+            Get a tuple of the given type from a JSON array of scalar values
+
+            :arg size: int: the number of elements in the tuple (must match
+                the number of elements in the JSON array)
+            :arg t: type: the scalar type to parse
+
+            Throws an ErrorWithContext if the value is not a JSON array, the
+                tuple is the wrong size, or if the elements of the array cannot
+                be parsed as the given type
         */
-        proc getIntValue(): int throws {
-            try {
-                return this.val:int;
+        proc toScalarTuple(type t, param size: int): size*t throws {
+            proc err() throws {
+                return new ErrorWithContext(
+                    "Json Argument '%s' cannot be cast as a %i-tuple of %s".format(this.val, size, t:string),
+                    getLineNumber(),
+                    getRoutineName(),
+                    getModuleName(),
+                    "TypeError"
+                );
             }
-            catch {
-                throw new owned ErrorWithContext("Parameter cannot be cast as int. Attempting to cast %s as type int failed".format(this.val),
-                                    getLineNumber(),
-                                    getRoutineName(),
-                                    getModuleName(),
-                                    "TypeError");
+
+            if size == 1 {
+                // special case to support parsing a scalar as a 1-tuple
+                try {
+                    return (this.toScalar(t),);
+                } catch {
+                    try {
+                        return parseJson(this.val, 1, t);
+                    } catch {
+                        throw err();
+                    }
+                }
+            } else {
+                try {
+                    return parseJson(this.val, size, t);
+                } catch {
+                    throw err();
+                }
             }
         }
 
         /*
-        * Return the value as a positive int64
-        * If the value is negative, return 'value + max + 1', otherwise return the value
-        * This is useful for implementing Python's negative indexing rules
-        *
+            Get a list of the given type from a JSON array of scalar values
+
+            :arg t: type: the scalar type to parse
+
+            Throws an ErrorWithContext if the value is not a JSON array or if the
+                elements of the array cannot be parsed as the given type
+        */
+        proc toScalarList(type t): list(t) throws {
+            proc err() throws {
+                return new ErrorWithContext(
+                    "Json Argument '%s' cannot be cast as a list of %s".format(this.val, t:string),
+                    getLineNumber(),
+                    getRoutineName(),
+                    getModuleName(),
+                    "TypeError"
+                );
+            }
+
+            try {
+                return parseJson(this.val, list(t));
+            } catch {
+                throw err();
+            }
+        }
+
+        /*
+            Get an array of the given type from a JSON array of scalar values
+
+            :arg t: type: the scalar type to parse
+            :arg size: int: the number of elements in the array (must match the
+                number of elements in the JSON array)
+
+            Throws an ErrorWithContext if the value is not a JSON array, the
+                array is the wrong size, or if the elements of the array cannot
+                be parsed as the given type
+        */
+        proc toScalarArray(type t, size: int): [] t throws {
+            proc err() throws {
+                return new ErrorWithContext(
+                    "Json Argument '%s' cannot be cast as an array of %s".format(this.val, t:string),
+                    getLineNumber(),
+                    getRoutineName(),
+                    getModuleName(),
+                    "TypeError"
+                );
+            }
+
+            try {
+                return jsonToArray(this.val, t, size);
+            } catch {
+                throw err();
+            }
+        }
+
+        /*
+         * Attempt to cast the value to the provided type
+         * Throw and error if the cast isn't possible
+        */
+        // deprecated
+        proc getScalarValue(type t): t throws {
+            return this.toScalar(t);
+        }
+
+        /*
+        * Return the value as int64
         * Returns int
         */
+        // deprecated
+        proc getIntValue(): int throws {
+            return this.toScalar(int);
+        }
+
+        /*
+            Return the value as a positive int
+            If the value is negative, return 'value + max + 1', otherwise return the value
+            This is useful for implementing Python's negative indexing rules
+        */
         proc getPositiveIntValue(max: int): int throws {
-            var x = this.getIntValue();
+            var x = this.toScalar(int);
             if x >= 0 && x < max then return x;
             if x < 0 && x >= -max then return x + max;
             else throw new ErrorWithContext(
@@ -228,102 +323,37 @@ module Message {
         * Return the value as uint64
         * Returns uint
         */
+        // deprecated
         proc getUIntValue(): uint throws {
-            try {
-                return this.val:uint;
-            }
-            catch {
-                throw new owned ErrorWithContext("Parameter cannot be cast as uint. Attempting to cast %s as type uint failed".format(this.val),
-                                    getLineNumber(),
-                                    getRoutineName(),
-                                    getModuleName(),
-                                    "TypeError");
-            }
+            return this.toScalar(uint);
         }
 
+        // deprecated
         proc getUInt8Value(): uint(8) throws {
-            try {
-                return this.val:uint(8);
-            }
-            catch {
-                throw new owned ErrorWithContext("Parameter cannot be cast as uint(8). Attempting to cast %s as type uint(8) failed".format(this.val),
-                                    getLineNumber(),
-                                    getRoutineName(),
-                                    getModuleName(),
-                                    "TypeError");
-            }
+            return this.toScalar(uint(8));
         }
 
         /*
         * Return the value as float64
         * Returns real
         */
+        // deprecated
         proc getRealValue(): real throws {
-            try {
-                return this.val:real;
-            }
-            catch {
-                throw new owned ErrorWithContext("Parameter cannot be cast as real. Attempting to cast %s as type real failed".format(this.val),
-                                    getLineNumber(),
-                                    getRoutineName(),
-                                    getModuleName(),
-                                    "TypeError");
-            }
+            return this.toScalar(real);
         }
 
         /*
         * Return the value as bool
         * Returns bool
         */
+        // deprecated
         proc getBoolValue(): bool throws {
-            try {
-                return this.val.toLower():bool;
-            }
-            catch {
-                throw new owned ErrorWithContext("Parameter cannot be cast as bool. Attempting to cast %s as type bool failed".format(this.val),
-                                    getLineNumber(),
-                                    getRoutineName(),
-                                    getModuleName(),
-                                    "TypeError");
-            }
+            return this.toScalar(bool);
         }
 
+        // deprecated
         proc getBigIntValue(): bigint throws {
-            try {
-                return this.val:bigint;
-            }
-            catch {
-                throw new owned ErrorWithContext("Parameter cannot be cast as bigint. Attempting to cast %s as type bigint failed".format(this.val),
-                                    getLineNumber(),
-                                    getRoutineName(),
-                                    getModuleName(),
-                                    "TypeError");
-            }
-        }
-
-        /*
-        * Return the value as the provided type
-        */
-        proc getValueAsType(type t = string): t throws {
-            if objType != ObjectType.VALUE {
-                throw new owned ErrorWithContext("The value provided is not a castable type, please use ParameterObj.getSymEntry for this object.",
-                                    getLineNumber(),
-                                    getRoutineName(),
-                                    getModuleName(),
-                                    "TypeError");
-            }
-
-            try {
-                if t == bool then return this.val.toLower():bool;
-                             else return this.val:t;
-            }
-            catch {
-                throw new owned ErrorWithContext("Parameter cannot be cast as %?. Attempting to cast %s as type %? failed".format(t:string, this.val, t:string),
-                                    getLineNumber(),
-                                    getRoutineName(),
-                                    getModuleName(),
-                                    "TypeError");
-            }
+            return this.toScalar(bigint);
         }
 
         /*
@@ -331,66 +361,17 @@ module Message {
         :size: int: number of values in the list
         Note - not yet able to handle list of pdarray or SegString names
         */
+        // deprecated
         proc getList(size: int) throws {
-            if this.objType != ObjectType.LIST {
-                throw new owned ErrorWithContext("Parameter with key, %s, is not a list.".format(this.key),
-                                    getLineNumber(),
-                                    getRoutineName(),
-                                    getModuleName(),
-                                    "TypeError");
-            }
-            return jsonToPdArray(this.val, size);
-        }
-
-        proc getListAs(type t, size: int) throws {
-            if this.objType != ObjectType.LIST {
-                throw new owned ErrorWithContext("Parameter with key, %s, is not a list.".format(this.key),
-                                    getLineNumber(),
-                                    getRoutineName(),
-                                    getModuleName(),
-                                    "TypeError");
-            }
-            try {
-                const vals = jsonToPdArray(this.val, size);
-                var ret: [0..<size] t;
-                forall (idx, v) in zip(0..<size, vals) do ret[idx] = v:t;
-                return ret;
-            } catch {
-                throw new owned ErrorWithContext("Parameter cannot be cast as an array of %?. Attempting to cast %s as ([0..<%?] %?) failed".format(t:string, this.val, size, t:string),
-                                    getLineNumber(),
-                                    getRoutineName(),
-                                    getModuleName(),
-                                    "TypeError");
-            }
+            return this.toScalarArray(string, size);
         }
 
         /*
-        Parse value as a tuple of integers with the given size
+            Parse value as a tuple of integers with the given size
         */
+        // deprecated
         proc getTuple(param size: int): size*int throws {
-            if size == 1 {
-                try {
-                    // try to parse 'x' (fast path)
-                    return (this.getIntValue(),);
-                } catch {
-                    // try to parse '(x,)'
-                    return parseJsonTuple(this.val, 1);
-                }
-            } else {
-                // try to parse '(x,y,...)'
-                return parseJsonTuple(this.val, size);
-            }
-        }
-
-        proc getJSON(size: int) throws {
-            if this.objType != ObjectType.DICT {
-                throw new owned ErrorWithContext("Parameter with key, %s, is not a JSON obj.".format(this.key),
-                                    getLineNumber(),
-                                    getRoutineName(),
-                                    getModuleName(),
-                                    "TypeError");
-            }
-            return parseMessageArgs(this.val, size);
+            return this.toScalarTuple(int, size);
         }
     }
 
@@ -400,6 +381,7 @@ module Message {
     :size: int - number of parameters contained in list
     */
     class MessageArgs: writeSerializable {
+        // TODO: reimplement argument representation using a JSON class hierarchy (store the head of the JSON tree here)
         var param_list: list(ParameterObj);
         var size: int;
         var payload: bytes;
@@ -428,25 +410,34 @@ module Message {
             this.payload = b"";
         }
 
+        /*
+            Attach a binary payload to the message arguments
+        */
         proc addPayload(in p: bytes) {
             this.payload = p;
         }
 
-        proc getJSON(keys: list(string) = list(string)): string throws {
-            const noKeys: bool = keys.isEmpty();
-            var s: int = if noKeys then this.size else keys.size;
-            var json: [0..#s] string;
-            var idx: int = 0;
+        /*
+            Get the value of the argument with the given key
+        */
+        proc this(key: string): ParameterObj throws {
             for p in this.param_list {
-                if (noKeys || keys.contains(p.key)) {
-                    json[idx] = p.getJSON();
-                    idx += 1;
-                }
-                if idx > s {
-                    break;
+                if p.key == key {
+                    return p;
                 }
             }
-            return formatJson(json);
+
+            throw new owned ErrorWithContext("JSON argument key Not Found; %s".format(key),
+                                             getLineNumber(),
+                                             getRoutineName(),
+                                             getModuleName(),
+                                             "KeyNotFound");
+        }
+
+        iter these(): ParameterObj {
+            for p in this.param_list {
+                yield p;
+            }
         }
 
         override proc serialize(writer: fileWriter(?), ref serializer: ?st) throws {
@@ -462,67 +453,24 @@ module Message {
         * Returns ParameterObj with the provided key
         * Throws KeyNotFound error if the provide key does not exist.
         */
-        proc get(key: string) throws {
-            for p in this.param_list {
-                if p.key == key {
-                    return p;
-                }
-            }
-            throw new owned ErrorWithContext("Key Not Found; %s".format(key),
-                                    getLineNumber(),
-                                    getRoutineName(),
-                                    getModuleName(),
-                                    "KeyNotFound");
+        proc get(key: string): ParameterObj throws {
+            return this[key];
         }
 
-        proc getValueOf(key: string) throws {
-            for p in this.param_list {
-                if p.key == key {
-                    return p.val;
-                }
-            }
-            throw new owned ErrorWithContext("Key Not Found; %s".format(key),
-                                    getLineNumber(),
-                                    getRoutineName(),
-                                    getModuleName(),
-                                    "KeyNotFound");
+        proc getValueOf(key: string): string throws {
+            return this[key].val;
         }
 
         /*
-        Return "iterable" of ParameterObj
-        */
-        proc items() {
-            return this.param_list;
-        }
-
-        /*
-        Return a list of all keys
-        */
-        proc keys() {
-            var key_list: [0..#this.size] string;
-            forall (idx, p) in zip(0..#this.size, this.param_list) {
-                key_list[idx] = p.key;
-            }
-            return key_list;
-        }
-
-        /*
-        Return a list of all values
-        */
-        proc vals(){
-            var val_list: [0..#this.size] string;
-            forall (idx, p) in zip(0..#this.size, this.param_list) {
-                val_list[idx] = p.val;
-            }
-            return val_list;
-        }
-
-        /*
-        Return bool if param_list contains given key name
+          Return true if there is an argument with the given name, false otherwise
         */
         proc contains(key: string): bool {
-            var key_list = new list(this.keys());
-            return key_list.contains(key);
+            for p in this.param_list {
+                if p.key == key {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
@@ -534,7 +482,8 @@ module Message {
         var newmem = openMemFile();
         newmem.writer(locking=false).write(payload);
         try {
-          readfCompat(newmem, "%?", p);
+            var nreader = newmem.reader(deserializer=new jsonDeserializer(), locking=false);
+            nreader.readf("%?", p);
         } catch bfe : BadFormatError {
             throw new owned ErrorWithContext("Incorrect JSON format %s".format(payload),
                                        getLineNumber(),
@@ -549,7 +498,7 @@ module Message {
     Parse arguments formatted as json string into objects
     */
     proc parseMessageArgs(json_str: string, size: int) throws {
-        var pArr = jsonToPdArray(json_str, size);
+        var pArr = jsonToArray(json_str, string, size);
         var param_list = new list(ParameterObj, parSafe=true);
         forall j_str in pArr with (ref param_list) {
             param_list.pushBack(parseParameter(j_str));
@@ -567,9 +516,9 @@ module Message {
     proc deserialize(ref msg: RequestMsg, request: string) throws {
         var newmem = openMemFile();
         newmem.writer(locking=false).write(request);
-        var nreader = newmem.reader(locking=false);
         try {
-            readfCompat(newmem, "%?", msg);
+            var nreader = newmem.reader(deserializer=new jsonDeserializer(), locking=false);
+            nreader.readf("%?", msg);
         } catch bfe : BadFormatError {
             throw new owned ErrorWithContext("Incorrect JSON format %s".format(request),
                                        getLineNumber(),
@@ -578,7 +527,7 @@ module Message {
                                        "ValueError");
         }
     }
-    
+
    /*
     * Generates a ReplyMsg object and serializes it into a JSON-formatted reply message
     */
@@ -587,33 +536,4 @@ module Message {
        return formatJson(new MsgTuple(msg=msg,msgType=msgType,
                                       msgFormat=msgFormat, user=user));
    }
-
-    /*
-     * Converts the JSON array to a pdarray
-     */
-    proc jsonToPdArray(json: string, size: int) throws {
-      return jsonToPdArrayCompat(json, size);
-    }
-
-    /*
-      Helper function to parse a JSON string as a tuple of integers
-    */
-    proc parseJsonTuple(json: string, param size: int): size*int throws {
-        var f = openMemFile();
-        var w = f.writer(locking=false);
-        w.write(json);
-        w.close();
-        var r = f.reader(locking=false),
-            t: size*int,
-            first = true;
-
-        r.readLiteral("(");
-        for i in 0..<size {
-            if first then first = false; else r.readLiteral(",");
-            t[i] = r.read(int);
-        }
-        // r.readLiteral(")");
-        return t;
-    }
-
 }

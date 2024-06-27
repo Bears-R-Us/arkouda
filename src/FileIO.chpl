@@ -13,6 +13,7 @@ module FileIO {
     use Map;
 
     use ArkoudaIOCompat;
+    use IOUtils;
 
     use ServerConfig, Logging, CommandMap;
     private config const logLevel = ServerConfig.logLevel;
@@ -226,7 +227,7 @@ module FileIO {
         var f:file = open(path, ioMode.r);
         var reader = fileIOReaderCompat(f);
         var header:bytes;
-        if (binaryCheckCompat(reader)) {
+        if reader.deserializerType == binarySerializer {
           reader.readBytes(header, 8);
         } else {
           throw getErrorWithContext(
@@ -240,7 +241,7 @@ module FileIO {
           f.close();
         } catch e {
           throw getErrorWithContext(
-                     msg=formatString(e),
+                     msg="%?".format(e),
                      getLineNumber(),
                      getRoutineName(),
                      getModuleName(),

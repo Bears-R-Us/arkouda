@@ -13,8 +13,7 @@ module MultiTypeRegEntry {
     use MultiTypeSymEntry;
     use GenSymIO;
     use NumPyDType;
-
-    use ArkoudaIOCompat;
+    use IOUtils;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -28,7 +27,7 @@ module MultiTypeRegEntry {
                 GroupByRegEntry,
                 CategoricalRegEntry,
                 SegArrayRegEntry,
-                IndexRegEntry,
+                IndexRegEntry, 
                 SeriesRegEntry,
                 BitVectorRegEntry,           
     }

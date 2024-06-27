@@ -49,7 +49,7 @@ module ReductionMsg
       const x = msgArgs.getValueOf("x"),
             op = msgArgs.getValueOf("op"),
             nAxes = msgArgs.get("nAxes").getIntValue(),
-            axesRaw = msgArgs.get("axis").getListAs(int, nAxes),
+            axesRaw = msgArgs.get("axis").toScalarArray(int, nAxes),
             skipNan = msgArgs.get("skipNan").getBoolValue(),
             rname = st.nextName();
 
@@ -144,7 +144,7 @@ module ReductionMsg
       const x = msgArgs.getValueOf("x"),
             op = msgArgs.getValueOf("op"),
             nAxes = msgArgs.get("nAxes").getIntValue(),
-            axesRaw = msgArgs.get("axis").getListAs(int, nAxes),
+            axesRaw = msgArgs.get("axis").toScalarArray(int, nAxes),
             rname = st.nextName();
 
       var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(x, st);
