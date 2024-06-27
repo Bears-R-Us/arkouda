@@ -90,7 +90,7 @@ module Merge {
               var smallS = small[smallPos];
               if (numLocales == 1) { 
                   mLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                  "Task %? init: bigPos = %?, smallPos = %?, outPos = %?, end = %?, outOffset = %?, bigS = %s, smallS = %s".doFormat(
+                  "Task %? init: bigPos = %?, smallPos = %?, outPos = %?, end = %?, outOffset = %?, bigS = %s, smallS = %s".format(
                             task, bigPos, smallPos, outPos, end, outOffset, bigS, smallS)); 
               }
               // leapfrog the two arrays until all the output has been filled
@@ -100,15 +100,15 @@ module Merge {
               
                       if (outPos > perm.domain.high) { 
                       mLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                          "OOB: outPos = %? not in %?".doFormat(outPos, perm.domain));
+                                          "OOB: outPos = %? not in %?".format(outPos, perm.domain));
                   }
                   if (bigPos > big.offsets.a.domain.high) { 
                       mLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                          "OOB: bigPos = %? not in %?".doFormat(bigPos, big.offsets.a.domain));
+                                          "OOB: bigPos = %? not in %?".format(bigPos, big.offsets.a.domain));
                   }
                   if (outOffset + bigS.numBytes >= vals.size) { 
                       mLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                           "OOB: (outOffset = %? + bigS.numBytes = %?) not in %?".doFormat(
+                           "OOB: (outOffset = %? + bigS.numBytes = %?) not in %?".format(
                                                                outOffset, bigS.numBytes, vals.domain));
                   }
                   if bigIsLeft {
@@ -130,15 +130,15 @@ module Merge {
              while (smallPos <= smallEnd) && ((bigPos > bigEnd) || (smallS < bigS)) {          
                 if (outPos > perm.domain.high) { 
                     mLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                               "OOB: outPos = %? not in %?".doFormat(outPos, perm.domain));
+                               "OOB: outPos = %? not in %?".format(outPos, perm.domain));
                 }
                 if (smallPos > small.offsets.a.domain.high) { 
                     mLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                               "OOB: smallPos = %? not in %?".doFormat(smallPos, small.offsets.a.domain));
+                               "OOB: smallPos = %? not in %?".format(smallPos, small.offsets.a.domain));
                 }
                 if (outOffset + bigS.numBytes >= vals.size) {
                     mLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                               "OOB: (outOffset = %? + smallS.numBytes = %?) not in %?".doFormat(
+                               "OOB: (outOffset = %? + smallS.numBytes = %?) not in %?".format(
                                outOffset, smallS.numBytes, vals.domain));
                 }
             }

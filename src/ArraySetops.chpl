@@ -205,9 +205,9 @@ module ArraySetops
       const totNumElemsMoved = + reduce pullLocalCount;
       const percentTransfered = (totNumElemsMoved:real / allocSize)*100:int;
       asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                      "Total number of elements moved to a different locale = %i".doFormat(totNumElemsMoved));
+                      "Total number of elements moved to a different locale = %i".format(totNumElemsMoved));
       asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                      "Percent of elements moved to a different locale = %i%%".doFormat(percentTransfered));
+                      "Percent of elements moved to a different locale = %i%%".format(percentTransfered));
 
       if toGiveUp || (percentTransfered > percentTransferLimit) {
         // fall back to sort
@@ -217,7 +217,7 @@ module ArraySetops
         }
         else {
           asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                "Falling back to sort workflow since percent of elements moved to a different locale = %i%% exceeds percentTransferLimit = %i%%".doFormat(percentTransfered, percentTransferLimit));
+                "Falling back to sort workflow since percent of elements moved to a different locale = %i%% exceeds percentTransferLimit = %i%%".format(percentTransfered, percentTransferLimit));
         }
         sortHelper(sortedIdx, permutedVals, idx1, idx2, val1, val2);
       }

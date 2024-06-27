@@ -584,11 +584,13 @@ class ParquetTest(ArkoudaTest):
             for i in range(1, 39):
                 self.assertTrue(np.allclose(ak_data["decCol" + str(i)].to_ndarray(), data[i - 1]))
 
-    def test_empty_segs_segarray(self):
+    def test_multi_batch_reads(self):
         # verify reproducer for #3074 is resolved
+        # seagarray w/ empty segs multi-batch pq reads
 
         # bug seemed to consistently appear for val_sizes
-        # exceeding 700000, round up to ensure we'd hit it
+        # exceeding 700000 (likely due to this requiring more than one batch)
+        # we round up to ensure we'd hit it
         val_size = 1000000
 
         df_dict = dict()
@@ -601,7 +603,8 @@ class ParquetTest(ArkoudaTest):
             rng.integers(0, 2**32, size=val_size, dtype="uint"),
             rng.integers(0, 1, size=val_size, dtype="bool"),
             rng.integers(-(2**32), 2**32, size=val_size, dtype="int"),
-            some_nans,
+            some_nans,  # contains nans
+            ak.random_strings_uniform(0, 4, val_size, seed=seed),  # contains empty strings
         ]
 
         for vals in vals_list:
@@ -627,6 +630,15 @@ class ParquetTest(ArkoudaTest):
                 # to ensure float point differences don't cause errors
                 print("\nseed: ", seed)
                 assert_series_equal(pddf["rand"], to_pd, check_names=False, rtol=1e-05, atol=1e-08)
+
+                # test writing multi-batch non-segarrays
+                file_path = f"{tmp_dirname}/multi_batch_vals"
+                vals.to_parquet(file_path, dataset="my_vals")
+                read = ak.read_parquet(file_path + "*")["my_vals"]
+                if isinstance(vals, ak.pdarray) and vals.dtype == ak.float64:
+                    assert np.allclose(read.to_list(), vals.to_list(), equal_nan=True)
+                else:
+                    assert (read == vals).all()
 
     @pytest.mark.optional_parquet
     def test_against_standard_files(self):

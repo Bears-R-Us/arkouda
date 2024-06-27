@@ -13,6 +13,9 @@
 #include <parquet/schema.h>
 #include <cmath>
 #include <queue>
+
+std::shared_ptr<parquet::schema::GroupNode> SetupSchema(void* column_names, void * objTypes, void* datatypes, int64_t colnum);
+
 extern "C" {
 #endif
 
@@ -55,13 +58,6 @@ extern "C" {
   void c_createColumnReader(const char* colname, int64_t readerIdx);
   void cpp_createColumnReader(const char* colname, int64_t readerIdx);
 
-  int c_readParquetColumnChunks(const char* filename, int64_t batchSize, int64_t numElems,
-                                int64_t readerIdx, int64_t* numRead,
-                                void** outData, bool* containsNulls, char** errMsg);
-  int cpp_readParquetColumnChunks(const char* filename, int64_t batchSize, int64_t numElems,
-                                  int64_t readerIdx, int64_t* numRead,
-                                  void** outData, bool* containsNulls, char** errMsg);
-
   int c_getNumRowGroups(int64_t readerIdx);
   int cpp_getNumRowGroups(int64_t readerIdx);
   
@@ -71,30 +67,6 @@ extern "C" {
   // is no C++ interoperability supported in Chapel today.
   int64_t c_getNumRows(const char*, char** errMsg);
   int64_t cpp_getNumRows(const char*, char** errMsg);
-
-  int c_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_chpl,
-                         const char* colname, int64_t numElems, int64_t startIdx,
-                         int64_t batchSize, int64_t byteLength, bool hasNonFloatNulls, char** errMsg);
-  int cpp_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_chpl,
-                           const char* colname, int64_t numElems, int64_t startIdx,
-                           int64_t batchSize, int64_t byteLength, bool hasNonFloatNulls, char** errMsg);
-
-  int c_readListColumnByName(const char* filename, void* chpl_arr, 
-                            const char* colname, int64_t numElems, 
-                            int64_t startIdx, int64_t batchSize, char** errMsg);
-  int cpp_readListColumnByName(const char* filename, void* chpl_arr, 
-                              const char* colname, int64_t numElems, 
-                              int64_t startIdx, int64_t batchSize, char** errMsg);
-
-  int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname, void* chpl_offsets,
-                                      int64_t numElems, int64_t startIdx, int64_t batchSize, char** errMsg);
-  int64_t c_getStringColumnNumBytes(const char* filename, const char* colname, void* chpl_offsets,
-                                      int64_t numElems, int64_t startIdx, int64_t batchSize, char** errMsg);
-
-  int64_t c_getListColumnSize(const char* filename, const char* colname,
-                                    void* chpl_seg_sizes, int64_t numElems, int64_t startIdx, char** errMsg);
-  int64_t cpp_getListColumnSize(const char* filename, const char* colname,
-                                    void* chpl_seg_sizes, int64_t numElems, int64_t startIdx, char** errMsg);
   
   int64_t c_getStringColumnNullIndices(const char* filename, const char* colname, void* chpl_nulls, char** errMsg);
   int64_t cpp_getStringColumnNullIndices(const char* filename, const char* colname, void* chpl_nulls, char** errMsg);
@@ -135,15 +107,6 @@ extern "C" {
                                   const char* dsetname, int64_t numelems,
                                   int64_t rowGroupSize, int64_t dtype, int64_t compression,
                                   char** errMsg);
-
-  int c_writeStrListColumnToParquet(const char* filename, void* chpl_segs, void* chpl_offsets, 
-                                  void* chpl_arr, const char* dsetname, int64_t numelems,
-                                  int64_t rowGroupSize, int64_t dtype, int64_t compression,
-                                  char** errMsg);
-  int cpp_writeStrListColumnToParquet(const char* filename, void* chpl_segs, void* chpl_offsets, 
-                                  void* chpl_arr, const char* dsetname, int64_t numelems,
-                                  int64_t rowGroupSize, int64_t dtype, int64_t compression,
-                                  char** errMsg);
   
   int c_createEmptyParquetFile(const char* filename, const char* dsetname, int64_t dtype,
                                int64_t compression, char** errMsg);
@@ -158,16 +121,6 @@ extern "C" {
                                 const char* dsetname, int64_t numelems,
                                 int64_t dtype, int64_t compression,
                                 char** errMsg);
-  
-  int c_writeMultiColToParquet(const char* filename, void* column_names, 
-                                void** ptr_arr, void** offset_arr, void* objTypes, void* datatypes,
-                                void* segArr_sizes, int64_t colnum, int64_t numelems, int64_t rowGroupSize,
-                                int64_t compression, char** errMsg);
-
-  int cpp_writeMultiColToParquet(const char* filename, void* column_names, 
-                                  void** ptr_arr, void** offset_arr, void* objTypes, void* datatypes,
-                                  void* segArr_sizes, int64_t colnum, int64_t numelems, int64_t rowGroupSize,
-                                  int64_t compression, char** errMsg);
 
   int c_getPrecision(const char* filename, const char* colname, char** errMsg);
   int cpp_getPrecision(const char* filename, const char* colname, char** errMsg);
@@ -183,7 +136,15 @@ extern "C" {
   
   void c_freeMapValues(void* row);
   void cpp_freeMapValues(void* row);
+
+  int c_readParquetColumnChunks(const char* filename, int64_t batchSize, int64_t numElems,
+                                int64_t readerIdx, int64_t* numRead,
+                                void** outData, bool* containsNulls, char** errMsg);
+  int cpp_readParquetColumnChunks(const char* filename, int64_t batchSize, int64_t numElems,
+                                  int64_t readerIdx, int64_t* numRead,
+                                  void** outData, bool* containsNulls, char** errMsg);
   
 #ifdef __cplusplus
+  bool check_status_ok(arrow::Status status, char** errMsg);
 }
 #endif

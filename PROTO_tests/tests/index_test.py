@@ -1,11 +1,31 @@
+import glob
+import os
+import tempfile
+
 import pandas as pd
 import pytest
 from numpy import dtype as npdtype
 
 import arkouda as ak
+from arkouda import io_util
 from arkouda.dtypes import dtype
 from arkouda.index import Index
 from arkouda.pdarrayclass import pdarray
+
+
+@pytest.fixture
+def df_test_base_tmp(request):
+    df_test_base_tmp = "{}/.series_test".format(os.getcwd())
+    io_util.get_directory(df_test_base_tmp)
+
+    # Define a finalizer function for teardown
+    def finalizer():
+        # Clean up any resources if needed
+        io_util.delete_directory(df_test_base_tmp)
+
+    # Register the finalizer to ensure cleanup
+    request.addfinalizer(finalizer)
+    return df_test_base_tmp
 
 
 class TestIndex:
@@ -383,6 +403,13 @@ class TestIndex:
         result = idx.lookup([lk, lk])
 
         assert result.to_list() == [i in truth for i in range(size)]
+
+    def test_save(self, df_test_base_tmp):
+        locale_count = ak.get_config()["numLocales"]
+        with tempfile.TemporaryDirectory(dir=df_test_base_tmp) as tmp_dirname:
+            idx = ak.Index(ak.arange(5))
+            idx.to_hdf(f"{tmp_dirname}/idx_file.h5")
+            assert len(glob.glob(f"{tmp_dirname}/idx_file_*.h5")) == locale_count
 
     def test_to_pandas(self):
         i = ak.Index([1, 2, 3])

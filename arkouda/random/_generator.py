@@ -138,6 +138,83 @@ class Generator:
         pda = create_pdarray(rep_msg)
         return pda if not ret_scalar else pda[0]
 
+    def exponential(self, scale=1.0, size=None, method="zig"):
+        r"""
+        Draw samples from an exponential distribution.
+
+        Its probability density function is
+
+        .. math::
+            f(x; \frac{1}{\beta}) = \frac{1}{\beta} \exp(-\frac{x}{\beta}),
+
+        for ``x > 0`` and 0 elsewhere. :math:`\beta` is the scale parameter,
+        which is the inverse of the rate parameter :math:`\lambda = 1/\beta`.
+        The rate parameter is an alternative, widely used parameterization
+        of the exponential distribution.
+
+        Parameters
+        ----------
+        scale: float or pdarray
+            The scale parameter, :math:`\beta = 1/\lambda`. Must be
+            non-negative. An array must have the same size as the size argument.
+        size: numeric_scalars, optional
+            Output shape. Default is None, in which case a single value is returned.
+        method : str, optional
+            Either 'inv' or 'zig'. 'inv' uses the default inverse CDF method.
+            'zig' uses the Ziggurat method.
+
+        Returns
+        -------
+        pdarray
+            Drawn samples from the parameterized exponential distribution.
+        """
+        if isinstance(scale, pdarray):
+            if (scale < 0).any():
+                raise ValueError("scale cannot be less then 0")
+        elif _val_isinstance_of_union(scale, numeric_scalars):
+            if scale < 0:
+                raise ValueError("scale cannot be less then 0")
+        else:
+            raise TypeError("scale must be either a float scalar or pdarray")
+        return scale * self.standard_exponential(size, method=method)
+
+    def standard_exponential(self, size=None, method="zig"):
+        """
+        Draw samples from the standard exponential distribution.
+
+        `standard_exponential` is identical to the exponential distribution
+        with a scale parameter of 1.
+
+        Parameters
+        ----------
+        size: numeric_scalars, optional
+            Output shape. Default is None, in which case a single value is returned.
+        method : str, optional
+            Either 'inv' or 'zig'. 'inv' uses the default inverse CDF method.
+            'zig' uses the Ziggurat method.
+
+        Returns
+        -------
+        pdarray
+            Drawn samples from the standard exponential distribution.
+        """
+        if size is None:
+            # delegate to numpy when return size is 1
+            return self._np_generator.standard_exponential(method=method)
+
+        rep_msg = generic_msg(
+            cmd="standardExponential",
+            args={
+                "name": self._name_dict[akfloat64],
+                "size": size,
+                "method": method.upper(),
+                "has_seed": self._seed is not None,
+                "state": self._state,
+            },
+        )
+        self._state += size if method.upper() == "INV" else 1
+        return create_pdarray(rep_msg)
+
     def integers(self, low, high=None, size=None, dtype=akint64, endpoint=False):
         """
         Return random integers from low (inclusive) to high (exclusive),
@@ -496,6 +573,7 @@ class Generator:
                 "lam": lam,
                 "is_single_lambda": is_single_lambda,
                 "size": size,
+                "has_seed": self._seed is not None,
                 "state": self._state,
             },
         )

@@ -3,8 +3,44 @@ import pandas as pd
 import pytest
 
 import arkouda as ak
+from arkouda import GroupBy, concatenate
+from arkouda import sort as aksort
+from arkouda import sum as aksum
 from arkouda.groupbyclass import GroupByReductionType
 from arkouda.scipy import chisquare as akchisquare
+from arkouda.dtypes import npstr
+
+#  block of variables and functions used in test_unique
+
+UNIQUE_TYPES = [ak.categorical, ak.int64, ak.float64, npstr]
+VOWELS_AND_SUCH = ["a", "e", "i", "o", "u", "AB", 47, 2, 3.14159]
+PICKS = np.array([f"base {i}" for i in range(10)])
+
+isSorted = lambda x: np.all(x[:-1] <= x[1:])  # short for is x[i] <= x[i+1] for all i
+
+#  This function (almost) guarantees both a sorted and unsorted version of
+#  a 1d array.  The only exception is an array of all identical values.
+#  The first "if" block skips the whole function in that case.  Otherwise,
+#  if the sample is already sorted, a non-sorted permutation is generated,
+#  and the two are returned.  If it isn't, a sorted version is created,
+#  and those two are returned.
+
+
+def make_sorted_and_unsorted_data(sample):
+    if np.all(sample == sample[0]):
+        return sample, sample
+    if isSorted(sample):
+        s_a = sample[:]
+        us_a = np.random.permutation(sample)
+        while isSorted(us_a):
+            us_a = np.random.permutation(us_a)
+    else:
+        s_a = np.sort(sample)
+        us_a = sample[:]
+    return s_a, us_a
+
+
+#  end of block
 
 
 def to_tuple_dict(labels, values):
@@ -625,6 +661,106 @@ class TestGroupBy:
         g = ak.GroupBy(ak.zeros(0, dtype=ak.int64))
         str(g.segments)  # passing condition, if this was deleted it will cause the test to fail
 
+    @pytest.mark.parametrize("dtype", ["bool", "str_", "int64", "float64"])
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_head_aggregation(self, size, dtype):
+
+        if np.issubdtype(dtype, np.number):
+            a = ak.arange(size, dtype=dtype) % 3
+        else:
+            a = ak.arange(size, dtype=ak.int64) % 3
+
+        if dtype is ak.str_:
+            v = ak.random_strings_uniform(size=size, minlen=1, maxlen=2)
+        elif dtype is ak.bool:
+            v = ak.full(size, False, dtype=ak.bool)
+            v[::2] = True
+        else:
+            v = ak.arange(size, dtype=dtype)
+
+        rng = ak.random.default_rng(17)
+        i = ak.arange(size)
+        rng.shuffle(i)
+        a = a[i]
+
+        rng.shuffle(i)
+        v = v[i]
+
+        g = GroupBy(a)
+
+        size_range = ak.arange(size)
+        zeros_idx = size_range[a == 0][0:2]
+        ones_idx = size_range[a == 1][0:2]
+        twos_idx = size_range[a == 2][0:2]
+        expected_idx = concatenate([zeros_idx, ones_idx, twos_idx])
+
+        unique_keys, idx = g.head(v, 2, return_indices=True)
+        assert ak.all(unique_keys == ak.array([0, 1, 2]))
+        assert ak.all(aksort(idx) == aksort(expected_idx))
+
+        zeros_values = v[a == 0][0:2]
+        ones_values = v[a == 1][0:2]
+        twos_values = v[a == 2][0:2]
+        expected_values = concatenate([zeros_values, ones_values, twos_values])
+
+        unique_keys, values = g.head(v, 2, return_indices=False)
+        assert len(values) == len(expected_values)
+        assert ak.all(unique_keys == ak.array([0, 1, 2]))
+        if dtype == ak.bool:
+            assert aksum(values) == aksum(expected_values)
+        else:
+            assert set(values.to_list()) == set(expected_values.to_list())
+
+    @pytest.mark.parametrize("dtype", ["bool", "str_", "int64", "float64"])
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_tail_aggregation(self, size, dtype):
+
+        if np.issubdtype(dtype, np.number):
+            a = ak.arange(size, dtype=dtype) % 3
+        else:
+            a = ak.arange(size, dtype=ak.int64) % 3
+
+        if dtype is ak.str_:
+            v = ak.random_strings_uniform(size=size, minlen=1, maxlen=2)
+        elif dtype is ak.bool:
+            v = ak.full(size, False, dtype=ak.bool)
+            v[::2] = True
+        else:
+            v = ak.arange(size, dtype=dtype)
+
+        rng = ak.random.default_rng(17)
+        i = ak.arange(size)
+        rng.shuffle(i)
+        a = a[i]
+
+        rng.shuffle(i)
+        v = v[i]
+
+        g = GroupBy(a)
+
+        size_range = ak.arange(size)
+        zeros_idx = size_range[a == 0][-2:]
+        ones_idx = size_range[a == 1][-2:]
+        twos_idx = size_range[a == 2][-2:]
+        expected_idx = concatenate([zeros_idx, ones_idx, twos_idx])
+
+        unique_keys, idx = g.tail(v, 2, return_indices=True)
+        assert ak.all(unique_keys == ak.array([0, 1, 2]))
+        assert ak.all(aksort(idx) == aksort(expected_idx))
+
+        zeros_values = v[a == 0][-2:]
+        ones_values = v[a == 1][-2:]
+        twos_values = v[a == 2][-2:]
+        expected_values = concatenate([zeros_values, ones_values, twos_values])
+
+        unique_keys, values = g.tail(v, 2, return_indices=False)
+        assert len(values) == len(expected_values)
+        assert ak.all(unique_keys == ak.array([0, 1, 2]))
+        if dtype == ak.bool:
+            assert aksum(values) == aksum(expected_values)
+        else:
+            assert set(values.to_list()) == set(expected_values.to_list())
+
     def test_first_aggregation(self):
         keys = ak.array([0, 1, 0, 1, 0, 1])
         vals = ak.array([9, 8, 7, 6, 5, 4])
@@ -653,6 +789,73 @@ class TestGroupBy:
         _, means = ak.GroupBy(ak.arange(10) % 3).mean(a)
         for m in means.to_list():
             assert np.isclose(float(a[0]), m)
+
+    #   ak.unique takes 1 pda argument and 3 booleans
+    #      However, not all 8 combinations of the booleans are needed to
+    #      cover the test space.
+    #      Combinations TTF and TFF are supersets of all other possible
+    #      combinations, so only those are tested below.
+
+    @pytest.mark.parametrize("data_type", UNIQUE_TYPES)
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_unique(self, data_type, prob_size):
+        Jenny = pytest.seed if pytest.seed is not None else 8675309
+        T = True
+        F = False
+        np.random.seed(Jenny)
+        arrays = {
+            npstr: np.random.choice(VOWELS_AND_SUCH, prob_size),
+            ak.int64: np.random.randint(0, prob_size // 3, prob_size),
+            ak.float64: np.random.uniform(0, prob_size // 3, prob_size),
+            ak.categorical: np.random.choice(PICKS, prob_size),
+        }
+        nda = arrays[data_type]
+        np_unique = np.unique(nda)  # get unique keys from np for comparison
+        s_nda, us_nda = make_sorted_and_unsorted_data(nda)
+        s_pda = ak.array(s_nda)
+        us_pda = ak.array(us_nda)
+
+        # Categorical requires another step to make the pdarrays categorical
+
+        if data_type == "categorical":
+            s_pda = ak.Categorical(s_pda)
+            us_pda = ak.Categorical(us_pda)
+
+        # Call ak.unique with TTF and TFF
+
+        ak_TTF = ak.unique(s_pda, T, T, F)
+        ak_TFF = ak.unique(us_pda, T, F, F)
+
+        # Check for correct unique keys.
+
+        assert np.all(np_unique == np.sort(ak_TFF[0].to_ndarray()))
+        assert np.all(np_unique == np.sort(ak_TTF[0].to_ndarray()))
+
+        # Check groups and indices.  If data was sorted, the group ndarray
+        # should just be list(range(len(nda))).  
+        # For unsorted data, a reordered copy of the pdarray is created
+        # based on the returned permutation.
+        # In both cases, broadcasting the unique values using the returned
+        # indices should create the sorted/reordered array.
+
+        # keys should always be returned sorted if data is int64
+
+        # sorted
+
+        if data_type == ak.int64 : assert isSorted(ak_TFF[0].to_ndarray())
+        srange = np.arange(len(nda))
+        assert np.all(srange == ak_TTF[1].to_ndarray())
+        indices = ak_TTF[2]
+        assert ak.all(s_pda == ak.broadcast(indices, ak_TTF[0], len(s_nda)))
+
+        # unsorted
+
+        aku = ak.unique(us_pda).to_ndarray()
+        if data_type == ak.int64 : assert isSorted(aku)
+        reordering = ak_TFF[1]
+        reordered = us_pda[reordering]
+        indices = ak_TFF[2]
+        assert ak.all(reordered == ak.broadcast(indices, ak_TFF[0], len(us_nda)))
 
     def test_unique_aggregation(self):
         keys = ak.array([0, 1, 0, 1, 0, 1, 0, 1])
