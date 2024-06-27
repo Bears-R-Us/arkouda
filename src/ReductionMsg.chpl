@@ -960,8 +960,10 @@ module ReductionMsg
       const dom = makeDistDom(newSize);
       var ret = makeDistArray(dom, intype);
 
-      forall (oldSegStart, newSegStart, newLength) in zip(segments, newSegs, newSegLengths) with (var agg = newSrcAggregator(intype)){
-          agg.copy(ret[newSegStart..#newLength], values[oldSegStart..#newLength]);
+      forall (oldSegStart, newSegStart, newLength) in zip(segments, newSegs, newSegLengths) with (const ref values, ref ret){
+        forall (r,v) in zip(ret[newSegStart..#newLength], values[oldSegStart..#newLength]) with (var agg = newSrcAggregator(intype)){
+          agg.copy(r, v);
+        }
       }
       return ret;
     }
@@ -978,8 +980,10 @@ module ReductionMsg
       const dom = makeDistDom(newSize);
       var ret = makeDistArray(dom, intype);
 
-      forall (oldSegEnd, newSegEnd, newLength) in zip(oldSegEnds, newSegEnds, newSegLengths) with (var agg = newSrcAggregator(intype)){
-          agg.copy(ret[(newSegEnd - newLength)..#newLength], values[(oldSegEnd - newLength)..#newLength]);
+      forall (oldSegEnd, newSegEnd, newLength) in zip(oldSegEnds, newSegEnds, newSegLengths) with (const ref values, ref ret){
+        forall (r,v) in zip(ret[(newSegEnd - newLength)..#newLength], values[(oldSegEnd - newLength)..#newLength]) with (var agg = newSrcAggregator(intype)){
+          agg.copy(r, v);
+        }
       }
       return ret;
     }
