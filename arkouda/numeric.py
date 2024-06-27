@@ -67,6 +67,7 @@ __all__ = [
     "rad2deg",
     "deg2rad",
     "hash",
+    "putmask",
     "where",
     "histogram",
     "histogram2d",
@@ -2182,3 +2183,58 @@ def count_nonzero(pda):
         return sum((pda).astype(np.int64))
     elif pda.dtype == str:
         return sum((pda != "").astype(np.int64))
+
+def putmask(pda: pdarray, mask: Union[bool, pdarray], values: pdarray):
+    """
+    Copy a pdarray to another, subject to a mask
+
+    Parameters
+    ----------
+    pda    : pdarray, source data
+    mask   : a scalar boolean, or a pdarray of booleans
+    values : pdarray, replacement data
+
+    Returns
+    -------
+    pdarray
+        where mask is False, result = a
+        where mask is True,  result = values
+
+    Notes
+    -----
+    If values.size != a.size, values is repeated and/or pruned as needed to
+    make sizes match, because ak.where requires matching sizes.
+
+    Examples
+    -------
+    >>> a = ak.array(np.arange(10))
+    >>> ak.putmask (a,a>2,a**2)
+    array ([0,1,2,9,16,25,36,49,64,81])
+
+    >>> values = ak.array([3,2])
+    >>> ak.putmask (a,a>2,values)
+    array ([0,1,2,2,3,2,3,2,3,2])
+
+    Raises
+    ------
+    TypeError
+        Raised if a and values are not the same type
+
+    """
+
+    from arkouda.pdarraysetops import concatenate
+
+    # check for matching types
+
+    if values.dtype != pda.dtype :
+        raise TypeError("ak.putmask requires arrays of matching type")
+
+    # if values is not the same size as pda, repeat it and/or prune it as needed
+
+    growth = pda.size // values.size + (0 if pda.size % values.size == 0 else 1)
+    result = concatenate(growth * [values])
+    if result.size > pda.size:
+        reduction = result.size % pda.size
+        result = result[:-(reduction)]
+
+    return where(mask, result, pda)

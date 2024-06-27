@@ -744,3 +744,113 @@ class TestNumeric:
                     assert np.allclose(
                         np.clip(nd_arry, lo, None), ak.clip(ak_arry, aklo, None).to_ndarray()
                     )
+
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_putmask(self, prob_size):
+
+        for data_type in INT_FLOAT:
+
+            #  three things to test: values same size as data
+
+            nda = np.random.randint(0, 10, prob_size).astype(data_type)
+            result = nda.copy()
+            np.putmask(result, result > 5, result**2)
+            pda = ak.array(nda)
+            pdresult = ak.putmask(pda, pda > 5, pda**2)
+            assert (
+                np.all(result == pdresult.to_ndarray())
+                if data_type == ak.int64
+                else np.allclose(result, pdresult.to_ndarray())
+            )
+
+            # values shorter than data
+
+            result = nda.copy()
+            values = np.arange(3).astype(data_type)
+            np.putmask(result, result > 5, values)
+            pdresult = ak.putmask(pda, pda > 5, ak.array(values))
+            assert (
+                np.all(result == pdresult.to_ndarray())
+                if data_type == ak.int64
+                else np.allclose(result, pdresult.to_ndarray())
+            )
+
+            # values longer than data
+
+            result = nda.copy()
+            values = np.arange(prob_size + 1).astype(data_type)
+            np.putmask(result, result > 5, values)
+            pdresult = ak.putmask(pda, pda > 5, ak.array(values))
+            assert (
+                np.all(result == pdresult.to_ndarray())
+                if data_type == ak.int64
+                else np.allclose(result, pdresult.to_ndarray())
+            )
+
+            # finally try to raise the error
+
+            pda = ak.random.randint(0, 10, 10).astype(ak.float64)
+            values = np.arange(10)
+            with pytest.raises(TypeError):
+                ak.putmask(pda, pda > 3, values)
+
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_clip(self, prob_size):
+        seed = pytest.seed if pytest.seed is not None else 8675309
+        np.random.seed(seed)
+        ia = np.random.randint(1, 100, prob_size)
+        ilo = 25
+        ihi = 75
+
+        dtypes = ["int64", "float64"]
+
+        # test clip.
+        # array to be clipped can be integer or float
+        # range limits can be integer, float, or none, and can be scalars or arrays
+
+        # Looping over all data types, the interior loop tests using lo, hi as:
+
+        #   None, Scalar
+        #   None, Array
+        #   Scalar, Scalar
+        #   Scalar, Array
+        #   Scalar, None
+        #   Array, Scalar
+        #   Array, Array
+        #   Array, None
+
+        # There is no test with lo and hi both equal to None, because that's not allowed
+
+        for dtype1 in dtypes:
+            hi = np.full(ia.shape, ihi, dtype=dtype1)
+            akhi = ak.array(hi)
+            for dtype2 in dtypes:
+                lo = np.full(ia.shape, ilo, dtype=dtype2)
+                aklo = ak.array(lo)
+                for dtype3 in dtypes:
+                    nd_arry = ia.astype(dtype3)
+                    ak_arry = ak.array(nd_arry)
+                    assert np.allclose(
+                        np.clip(nd_arry, None, hi[0]), ak.clip(ak_arry, None, hi[0]).to_ndarray()
+                    )
+                    assert np.allclose(
+                        np.clip(nd_arry, None, hi), ak.clip(ak_arry, None, akhi).to_ndarray()
+                    )
+                    assert np.allclose(
+                        np.clip(nd_arry, lo[0], hi[0]), ak.clip(ak_arry, lo[0], hi[0]).to_ndarray()
+                    )
+                    assert np.allclose(
+                        np.clip(nd_arry, lo[0], hi), ak.clip(ak_arry, lo[0], akhi).to_ndarray()
+                    )
+                    assert np.allclose(
+                        np.clip(nd_arry, lo[0], None), ak.clip(ak_arry, lo[0], None).to_ndarray()
+                    )
+                    assert np.allclose(
+                        np.clip(nd_arry, lo, hi[0]), ak.clip(ak_arry, aklo, hi[0]).to_ndarray()
+                    )
+                    assert np.allclose(
+                        np.clip(nd_arry, lo, hi), ak.clip(ak_arry, aklo, akhi).to_ndarray()
+                    )
+                    assert np.allclose(
+                        np.clip(nd_arry, lo, None), ak.clip(ak_arry, aklo, None).to_ndarray()
+                    )
