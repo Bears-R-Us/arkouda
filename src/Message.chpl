@@ -220,7 +220,6 @@ module Message {
                     if t == bool {
                         return this.val.toLower():bool;
                     }
-
                     return this.val: t;
                 }
             } catch {
@@ -256,24 +255,20 @@ module Message {
                 );
             }
 
-            writeln("parsing tuple of size: ", size, " with type: ", t:string, " from: ", this.val);
-
             if size == 1 {
                 // special case to support parsing a scalar as a 1-tuple
                 try {
                     return (this.toScalar(t),);
                 } catch {
-
                     try {
-                        return parseJson(this.val, 1*t);
+                        return parseJson(this.val, 1, t);
                     } catch {
                         throw err();
                     }
                 }
             } else {
-
                 try {
-                    return parseJson(this.val, size*t);
+                    return parseJson(this.val, size, t);
                 } catch {
                     throw err();
                 }

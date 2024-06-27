@@ -406,16 +406,18 @@ class GroupBy:
 
         # access the names of the key or names of properties for categorical
         gb_keys = [
-            k.name
-            if not isinstance(k, Categorical_)
-            else json.dumps(
-                {
-                    "codes": k.codes.name,
-                    "categories": k.categories.name,
-                    "NA_codes": k._akNAcode.name,
-                    **({"permutation": k.permutation.name} if k.permutation is not None else {}),
-                    **({"segments": k.segments.name} if k.segments is not None else {}),
-                }
+            (
+                k.name
+                if not isinstance(k, Categorical_)
+                else json.dumps(
+                    {
+                        "codes": k.codes.name,
+                        "categories": k.categories.name,
+                        "NA_codes": k._akNAcode.name,
+                        **({"permutation": k.permutation.name} if k.permutation is not None else {}),
+                        **({"segments": k.segments.name} if k.segments is not None else {}),
+                    }
+                )
             )
             for k in keys
         ]
@@ -465,16 +467,18 @@ class GroupBy:
 
         # access the names of the key or names of properties for categorical
         gb_keys = [
-            k.name
-            if not isinstance(k, Categorical_)
-            else json.dumps(
-                {
-                    "codes": k.codes.name,
-                    "categories": k.categories.name,
-                    "NA_codes": k._akNAcode.name,
-                    **({"permutation": k.permutation.name} if k.permutation is not None else {}),
-                    **({"segments": k.segments.name} if k.segments is not None else {}),
-                }
+            (
+                k.name
+                if not isinstance(k, Categorical_)
+                else json.dumps(
+                    {
+                        "codes": k.codes.name,
+                        "categories": k.categories.name,
+                        "NA_codes": k._akNAcode.name,
+                        **({"permutation": k.permutation.name} if k.permutation is not None else {}),
+                        **({"segments": k.segments.name} if k.segments is not None else {}),
+                    }
+                )
             )
             for k in keys
         ]
@@ -1451,6 +1455,164 @@ class GroupBy:
 
         return self.aggregate(values, "xor")  # type: ignore
 
+    def head(
+        self,
+        values: groupable_element_type,
+        n: int = 5,
+        return_indices: bool = True,
+    ) -> Tuple[groupable, groupable_element_type]:
+        """
+        Return the first n values from each group.
+
+        Parameters
+        ----------
+        values : (list of) pdarray-like
+            The values from which to select, according to their group membership.
+        n: int, optional, default = 5
+            Maximum number of items to return for each group.
+            If the number of values in a group is less than n,
+            all the values from that group will be returned.
+        return_indices: bool, default False
+            If True, return the indices of the sampled values.
+            Otherwise, return the selected values.
+
+        Returns
+        -------
+        unique_keys : (list of) pdarray-like
+            The unique keys, in grouped order
+        result : pdarray-like
+            The first n items of each group.
+            If return_indices is True, the result are indices.
+            O.W. the result are values.
+
+        Examples
+        --------
+        >>> a = ak.arange(10) %3
+        >>> a
+        array([0 1 2 0 1 2 0 1 2 0])
+        >>> v = ak.arange(10)
+        >>> v
+        array([0 1 2 3 4 5 6 7 8 9])
+        >>> g = GroupBy(a)
+        >>> unique_keys, idx = g.head(v, 2, return_indices=True)
+        >>> _, values = g.head(v, 2, return_indices=False)
+        >>> unique_keys
+        array([0 1 2])
+        >>> idx
+        array([0 3 1 4 2 5])
+        >>> values
+        array([0 3 1 4 2 5])
+
+        >>> v2 =  -2 * ak.arange(10)
+        >>> v2
+        array([0 -2 -4 -6 -8 -10 -12 -14 -16 -18])
+        >>> _, idx2 = g.head(v2, 2, return_indices=True)
+        >>> _, values2 = g.head(v2, 2, return_indices=False)
+        >>> idx2
+        array([0 3 1 4 2 5])
+        >>> values2
+        array([0 -6 -2 -8 -4 -10])
+
+        """
+
+        repMsg = generic_msg(
+            cmd="segmentedReduction",
+            args={
+                "values": self.permutation,
+                "segments": self.segments,
+                "op": "head",
+                "n": n,
+                "skip_nan": False,
+                "ddof": 1,
+            },
+        )
+        self.logger.debug(repMsg)
+
+        ret_indices = create_pdarray(repMsg)
+        if return_indices is True:
+            return self.unique_keys, ret_indices
+        else:
+            return self.unique_keys, values[ret_indices]
+
+    def tail(
+        self,
+        values: groupable_element_type,
+        n: int = 5,
+        return_indices: bool = True,
+    ) -> Tuple[groupable, groupable_element_type]:
+        """
+        Return the last n values from each group.
+
+        Parameters
+        ----------
+        values : (list of) pdarray-like
+            The values from which to select, according to their group membership.
+        n: int, optional, default = 5
+            Maximum number of items to return for each group.
+            If the number of values in a group is less than n,
+            all the values from that group will be returned.
+        return_indices: bool, default False
+            If True, return the indices of the sampled values.
+            Otherwise, return the selected values.
+
+        Returns
+        -------
+        unique_keys : (list of) pdarray-like
+            The unique keys, in grouped order
+        result : pdarray-like
+            The last n items of each group.
+            If return_indices is True, the result are indices.
+            O.W. the result are values.
+
+        Examples
+        --------
+        >>> a = ak.arange(10) %3
+        >>> a
+        array([0 1 2 0 1 2 0 1 2 0])
+        >>> v = ak.arange(10)
+        >>> v
+        array([0 1 2 3 4 5 6 7 8 9])
+        >>> g = GroupBy(a)
+        >>> unique_keys, idx = g.tail(v, 2, return_indices=True)
+        >>> _, values = g.tail(v, 2, return_indices=False)
+        >>> unique_keys
+        array([0 1 2])
+        >>> idx
+        array([6 9 4 7 5 8])
+        >>> values
+        array([6 9 4 7 5 8])
+
+        >>> v2 =  -2 * ak.arange(10)
+        >>> v2
+        array([0 -2 -4 -6 -8 -10 -12 -14 -16 -18])
+        >>> _, idx2 = g.tail(v2, 2, return_indices=True)
+        >>> _, values2 = g.tail(v2, 2, return_indices=False)
+        >>> idx2
+        array([6 9 4 7 5 8])
+        >>> values2
+        array([-12 -18 -8 -14 -10 -16])
+
+        """
+
+        repMsg = generic_msg(
+            cmd="segmentedReduction",
+            args={
+                "values": self.permutation,
+                "segments": self.segments,
+                "op": "tail",
+                "n": n,
+                "skip_nan": False,
+                "ddof": 1,
+            },
+        )
+        self.logger.debug(repMsg)
+
+        ret_indices = create_pdarray(repMsg)
+        if return_indices is True:
+            return self.unique_keys, ret_indices
+        else:
+            return self.unique_keys, values[ret_indices]
+
     def first(self, values: groupable_element_type) -> Tuple[groupable, groupable_element_type]:
         """
         First value in each group.
@@ -1908,38 +2070,42 @@ class GroupBy:
 
         if isinstance(self.keys, (pdarray, Strings, Categorical)):
             key_data = [
-                self.keys
-                if not isinstance(self.keys, Categorical)
-                else json.dumps(
-                    {
-                        "codes": self.keys.codes.name,
-                        "categories": self.keys.categories.name,
-                        "NA_codes": self.keys._akNAcode.name,
-                        **(
-                            {"permutation": self.keys.permutation.name}
-                            if self.keys.permutation is not None
-                            else {}
-                        ),
-                        **(
-                            {"segments": self.keys.segments.name}
-                            if self.keys.segments is not None
-                            else {}
-                        ),
-                    }
+                (
+                    self.keys
+                    if not isinstance(self.keys, Categorical)
+                    else json.dumps(
+                        {
+                            "codes": self.keys.codes.name,
+                            "categories": self.keys.categories.name,
+                            "NA_codes": self.keys._akNAcode.name,
+                            **(
+                                {"permutation": self.keys.permutation.name}
+                                if self.keys.permutation is not None
+                                else {}
+                            ),
+                            **(
+                                {"segments": self.keys.segments.name}
+                                if self.keys.segments is not None
+                                else {}
+                            ),
+                        }
+                    )
                 )
             ]
         else:
             key_data = [
-                k.name
-                if not isinstance(k, Categorical)
-                else json.dumps(
-                    {
-                        "codes": k.codes.name,
-                        "categories": k.categories.name,
-                        "NA_codes": k._akNAcode.name,
-                        **({"permutation": k.permutation.name} if k.permutation is not None else {}),
-                        **({"segments": k.segments.name} if k.segments is not None else {}),
-                    }
+                (
+                    k.name
+                    if not isinstance(k, Categorical)
+                    else json.dumps(
+                        {
+                            "codes": k.codes.name,
+                            "categories": k.categories.name,
+                            "NA_codes": k._akNAcode.name,
+                            **({"permutation": k.permutation.name} if k.permutation is not None else {}),
+                            **({"segments": k.segments.name} if k.segments is not None else {}),
+                        }
+                    )
                 )
                 for k in self.keys
             ]
@@ -1954,9 +2120,11 @@ class GroupBy:
                 "uki": self._uki,
                 "num_keys": len(self.keys) if isinstance(self.keys, Sequence) else 1,
                 "keys": key_data,
-                "key_objTypes": [key.objType for key in self.keys]
-                if isinstance(self.keys, Sequence)
-                else [self.keys.objType],
+                "key_objTypes": (
+                    [key.objType for key in self.keys]
+                    if isinstance(self.keys, Sequence)
+                    else [self.keys.objType]
+                ),
             },
         )
         self.registered_name = user_defined_name

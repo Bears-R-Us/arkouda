@@ -745,7 +745,7 @@ module AryUtil
       // ranges of flat indices owned by each locale
       const flatLocRanges = [loc in Locales] d.localSubdomain(loc).dim(0);
 
-      coforall loc in Locales do on loc {
+      coforall loc in Locales with (ref unflat) do on loc {
         const lduf = unflat.domain.localSubdomain(),
               lastRank = lduf.dim(N-1);
 
@@ -807,7 +807,7 @@ module AryUtil
       // ranges of flat indices owned by each locale
       const flatLocRanges = [loc in Locales] flat.domain.localSubdomain(loc).dim(0);
 
-      coforall loc in Locales do on loc {
+      coforall loc in Locales with (ref flat) do on loc {
         const ld = d.localSubdomain(),
               lastRank = ld.dim(d.rank-1);
 

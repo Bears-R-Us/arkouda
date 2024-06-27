@@ -12,6 +12,7 @@ module RandMsg
     use RandArray;
     use RandUtil;
     use CommAggregation;
+    use ZigguratConstants;
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -333,6 +334,112 @@ module RandMsg
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
+    /*
+        Use the ziggurat method (https://en.wikipedia.org/wiki/Ziggurat_algorithm#Theory_of_operation)
+        to generate exponentially distributed numbers using n (num of rectangles) = 256.
+        The number of rectangles only impacts how quick the algorithm is, not it's accuracy.
+        This is relatively fast because the common case is not computationally expensive
+
+        In this algorithm we choose uniformly and then decide whether to accept the candidate or not
+        depending on whether it falls under the pdf of our distribution
+
+        A good explaination of the ziggurat algorithm is:
+        https://blogs.mathworks.com/cleve/2015/05/18/the-ziggurat-random-normal-generator/
+
+        This implementation based on numpy's:
+        https://github.com/numpy/numpy/blob/main/numpy/random/src/distributions/distributions.c
+
+        Uses constants from lists of size 256 (number of rectangles) found in ZigguratConstants.chpl
+    */
+    inline proc standardExponentialZig(ref realRng, ref uintRng): real {
+        // modified from numpy to use while loop instead of recusrsion so we can inline the proc
+        var count = 0;
+        // to guarantee completion this should be while true, but limiting to 100 tries will make the chance
+        // of failure near zero while avoiding the possibility of an infinite loop
+        // the odds of failing 100 times in a row is (1 - .989)**100 = 1.3781e-196
+        while count <= 100 {
+            var ri = uintRng.next();
+            ri >>= 3;
+
+            // AND with 0xFF (255) to get our index into our 256 long const arrays
+            var idx = ri & 0xFF;
+            ri >>= 8;
+            var x = ri * we_double[idx];
+            if ri < ke_double[idx] {
+                // the point fell in the core of one of our rectangular slices, so we're guaranteed
+                // it falls under the pdf curve. We can return it as a sample from our distribution.
+                // We will return here 98.9% of the time on the 1st try
+                return x;
+            }
+
+            // The fall back algorithm for calculating if the sample point lies under the pdf.
+            // Either in the tip of one of the rectangles or in the tail of the distribution.
+            // See https://blogs.mathworks.com/cleve/2015/05/18/the-ziggurat-random-normal-generator/
+            // the tip calculation is based on standardExponentialUnlikely from numpy defined here:
+            // https://github.com/numpy/numpy/blob/main/numpy/random/src/distributions/distributions.c
+
+            // candidate point did not fall in the core of any rectangular slices. Either it lies in the
+            // first slice (which doesn't have a core), in the tail of the distribution, or in the tip of one of slices.
+            if idx == 0 {
+                // first rectangular slice; let x = x1 − ln(U1)
+                return ziggurat_exp_r - log1p(-realRng.next());
+            }
+            else if (fe_double[idx-1] - fe_double[idx]) * realRng.next() + fe_double[idx] < exp(-x) {
+                // tip calculation
+                return x;
+            }
+            // reject sample and retry
+        }
+        return -1.0;  // we failed 100 times in a row which should practically never happen
+    }
+
+    proc standardExponentialMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        const pn = Reflection.getRoutineName(),
+              name = msgArgs.getValueOf("name"),                // generator name
+              size = msgArgs.get("size").getIntValue(),         // population size
+              method = msgArgs.getValueOf("method"),            // method to use to generate exponential samples
+              hasSeed = msgArgs.get("has_seed").getBoolValue(), // boolean indicating if the generator has a seed
+              state = msgArgs.get("state").getIntValue(),       // rng state
+              rname = st.nextName();
+
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "name: %? size %i method %s state %i".format(name, size, method, state));
+
+        st.checkTable(name);
+
+        var generatorEntry: borrowed GeneratorSymEntry(real) = toGeneratorSymEntry(st.lookup(name), real);
+        ref rng = generatorEntry.generator;
+        if state != 1 {
+            // you have to skip to one before where you want to be
+            rng.skipTo(state-1);
+        }
+
+        select method {
+            when "ZIG" {
+                var exponentialArr = makeDistArray(size, real);
+                uniformStreamPerElem(exponentialArr, rng, GenerationFunction.ExponentialGenerator, hasSeed);
+                st.addEntry(rname, createSymEntry(exponentialArr));
+            }
+            when "INV" {
+                var u1 = makeDistArray(size, real);
+                rng.fill(u1);
+
+                // calculate the exponential by doing the inverse of the cdf
+                var exponentialArr = -log1p(-u1);
+                st.addEntry(rname, createSymEntry(exponentialArr));
+            }
+            otherwise {
+                var errorMsg = "Only ZIG and INV are supported for method. Recieved: %s".format(method);
+                randLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
+            }
+        }
+
+        var repMsg = "created " + st.attrib(rname);
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
     proc segmentedSampleMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         const pn = Reflection.getRoutineName(),
               genName = msgArgs.getValueOf("genName"),                          // generator name
@@ -588,7 +695,7 @@ module RandMsg
         var poissonArr = makeDistArray(size, int);
         const lam = new scalarOrArray(lamStr, !isSingleLam, st);
 
-        uniformStreamPerElem(poissonArr, GenerationFunction.PoissonGenerator, hasSeed, lam, rng);
+        uniformStreamPerElem(poissonArr, rng, GenerationFunction.PoissonGenerator, hasSeed, lam);
         st.addEntry(rname, createSymEntry(poissonArr));
 
         const repMsg = "created " + st.attrib(rname);
@@ -652,6 +759,7 @@ module RandMsg
     registerFunction("createGenerator", createGeneratorMsg, getModuleName());
     registerFunction("uniformGenerator", uniformGeneratorMsg, getModuleName());
     registerFunction("standardNormalGenerator", standardNormalGeneratorMsg, getModuleName());
+    registerFunction("standardExponential", standardExponentialMsg, getModuleName());
     registerFunction("segmentedSample", segmentedSampleMsg, getModuleName());
     registerFunction("choice", choiceMsg, getModuleName());
     registerFunction("permutation", permutationMsg, getModuleName());

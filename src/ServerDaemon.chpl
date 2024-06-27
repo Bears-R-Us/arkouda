@@ -614,11 +614,11 @@ module ServerDaemon {
                     }
                 }
 
-                // If cmd is shutdown, don't bother generating a repMsg
-                if cmd == "shutdown" {
-                    sendShutdownRequest(user=user);
-                    break;
-                }
+                    // If cmd is shutdown, don't bother generating a repMsg
+                    if cmd == "shutdown" {
+                        sendShutdownRequest(user=user);
+                        break;
+                    }
 
                 /*
                 * If logCommands is true, log incoming request to the .arkouda/commands.log file
@@ -690,7 +690,7 @@ module ServerDaemon {
                 // send response message
                 sendRepMsg(repMsg, user);
 
-                var elapsedTime = timeSinceEpoch().totalSeconds() - s0;
+                    var elapsedTime = timeSinceEpoch().totalSeconds() - s0;
 
                 /*
                 * log that the request message has been handled and reply message has been sent 
@@ -727,9 +727,16 @@ module ServerDaemon {
             }
 
             var elapsed = timeSinceEpoch().totalSeconds() - startTime;
+            var elapsed = timeSinceEpoch().totalSeconds() - startTime;
 
             deleteServerConnectionInfo();
+            deleteServerConnectionInfo();
 
+            sdLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
+                "requests = %i responseCount = %i elapsed sec = %i".format(reqCount,
+                                                                            repCount,
+                                                                            elapsed));
+            this.shutdown(); 
             sdLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
                 "requests = %i responseCount = %i elapsed sec = %i".format(reqCount,
                                                                             repCount,
@@ -770,9 +777,11 @@ module ServerDaemon {
             this.port = try! getEnv('METRICS_SERVER_PORT','5556'):int;
 
             try! this.socket.bind("tcp://*:%?".format(this.port));
+            try! this.socket.bind("tcp://*:%?".format(this.port));
             try! sdLogger.debug(getModuleName(), 
                                 getRoutineName(), 
                                 getLineNumber(),
+                                "initialized and listening in port %i".format(
                                 "initialized and listening in port %i".format(
                                 this.port));
         }
@@ -780,6 +789,7 @@ module ServerDaemon {
         override proc run() throws {
             while !this.shutdownDaemon {
                 sdLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
+                               "awaiting message on port %i".format(this.port));
                                "awaiting message on port %i".format(this.port));
                 var req = this.socket.recv(bytes).decode();
 
@@ -807,7 +817,9 @@ module ServerDaemon {
                         if authenticate {
                             repTuple = new MsgTuple("connected to arkouda metrics server tcp://*:%i as user " +
                                                 "%s with token %s".format(this.port,user,token), MsgType.NORMAL);
+                                                "%s with token %s".format(this.port,user,token), MsgType.NORMAL);
                         } else {
+                            repTuple = new MsgTuple("connected to arkouda metrics server tcp://*:%i".format(this.port), 
                             repTuple = new MsgTuple("connected to arkouda metrics server tcp://*:%i".format(this.port), 
                                                                                     MsgType.NORMAL);
                         }
