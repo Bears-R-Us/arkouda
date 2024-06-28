@@ -39,7 +39,7 @@ def broadcast_to(x: Array, /, shape: Tuple[int, ...]) -> Array:
                 cast(
                     str,
                     generic_msg(
-                        cmd=f"broadcastTo{x.ndim}Dx{len(shape)}D",
+                        cmd=f"broadcast<{x.dtype},{x.ndim},{len(shape)}>",
                         args={
                             "name": x._array,
                             "shape": shape,

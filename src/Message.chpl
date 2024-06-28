@@ -64,7 +64,7 @@ module Message {
         this.payload = payload;
     }
 
-    proc type MsgTuple.success(msg: string): MsgTuple {
+    proc type MsgTuple.success(msg: string = ""): MsgTuple {
         return new MsgTuple(
             msg = msg,
             msgType = MsgType.NORMAL,
@@ -112,6 +112,16 @@ module Message {
 
         return new MsgTuple(
             msg = formatJson(msgs),
+            msgType = MsgType.NORMAL,
+            msgFormat = MsgFormat.STRING,
+            payload = b""
+        );
+    }
+
+    proc type MsgTuple.fromScalar(scalar: ?t): MsgTuple throws {
+        import NumPyDType;
+        return new MsgTuple(
+            msg = "%s %s".format(t:string, NumPyDType.type2fmt(t)).format(scalar),
             msgType = MsgType.NORMAL,
             msgFormat = MsgFormat.STRING,
             payload = b""

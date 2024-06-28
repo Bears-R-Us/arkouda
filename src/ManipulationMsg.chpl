@@ -58,87 +58,84 @@ module ManipulationMsg {
 
     https://data-apis.org/array-api/latest/API_specification/generated/array_api.broadcast_to.html#array_api.broadcast_to
   */
-  @arkouda.registerNDPermInc
+  @arkouda.instantiateAndRegister(prefix='broadcast')
   proc broadcastToMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
-    param ndIn: int, // rank of the array to be broadcast
-    param ndOut: int // rank of the result array
+    type array_dtype,
+    param array_nd_in: int,
+    param array_nd_out: int
   ): MsgTuple throws {
     const name = msgArgs["name"],
-          shapeOut = msgArgs["shape"].toScalarTuple(int, ndOut);
+          shapeOut = msgArgs["shape"].toScalarTuple(int, array_nd_out);
 
-    var gEnt = st[name]: borrowed GenSymEntry;
+    var eIn = toSymEntry(st[name]: borrowed GenSymEntry, array_dtype, array_nd_in),
+        eOut = createSymEntry((...shapeOut), array_dtype);
 
-    proc doBroadcast(type t): MsgTuple throws {
-      var eIn = toSymEntry(gEnt, t, ndIn),
-          eOut = createSymEntry((...shapeOut), t);
+    if array_nd_in == array_nd_out && eIn.tupShape == shapeOut {
+      // no broadcast necessary, copy the array
+      eOut.a = eIn.a;
+    } else {
+      // ensure that 'shapeOut' is a valid broadcast of 'eIn.tupShape'
+      //   and determine which dimensions will require promoted assignment
+      var (valid, bcDims) = checkValidBroadcast(eIn.tupShape, shapeOut);
 
-      if ndIn == ndOut && eIn.tupShape == shapeOut {
-        // no broadcast necessary, copy the array
-        eOut.a = eIn.a;
+      if !valid {
+        const errorMsg = "Invalid broadcast: " + eIn.tupShape:string + " -> " + shapeOut:string;
+        mLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+        return new MsgTuple(errorMsg, MsgType.ERROR);
       } else {
-        // ensure that 'shapeOut' is a valid broadcast of 'eIn.tupShape'
-        //   and determine which dimensions will require promoted assignment
-        var (valid, bcDims) = checkValidBroadcast(eIn.tupShape, shapeOut);
+        // use List;
+        // var bcDimsList = new list(int);
+        // for i in 0..<ndIn do if bcDims[i] then bcDimsList.pushBack(i);
 
-        if !valid {
-          const errorMsg = "Invalid broadcast: " + eIn.tupShape:string + " -> " + shapeOut:string;
-          mLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-          return new MsgTuple(errorMsg, MsgType.ERROR);
-        } else {
-          // use List;
-          // var bcDimsList = new list(int);
-          // for i in 0..<ndIn do if bcDims[i] then bcDimsList.pushBack(i);
-
-          // // iterate over each slice of the output array corresponding to one
-          // // copy of the input array and perform the copy
-          // /* Example:
-          //   broadcast 5x1x3 array into 5x4x3 array:
-          //   - the 5x1x3 array is copied into the 5x4x3 array 4 times
-          //   - domOffAxis => {0..0, 0..<4, 0..0}
-          //   - for 'nonBCIndex' = (0, 0, 0), outSliceIdx = (0..<5, 0..0, 0..<3)
-          //   - for 'nonBCIndex' = (0, 1, 0), outSliceIdx = (0..<5, 1..1, 0..<3)
-          //   - etc.
-          // */
-          // forall nonBCIndex in domOffAxis(eOut.a.domain, bcDimsList.toArray()) {
-          //   const nbcT = if ndOut == 1 then (nonBCIndex,) else nonBCIndex;
+        // // iterate over each slice of the output array corresponding to one
+        // // copy of the input array and perform the copy
+        // /* Example:
+        //   broadcast 5x1x3 array into 5x4x3 array:
+        //   - the 5x1x3 array is copied into the 5x4x3 array 4 times
+        //   - domOffAxis => {0..0, 0..<4, 0..0}
+        //   - for 'nonBCIndex' = (0, 0, 0), outSliceIdx = (0..<5, 0..0, 0..<3)
+        //   - for 'nonBCIndex' = (0, 1, 0), outSliceIdx = (0..<5, 1..1, 0..<3)
+        //   - etc.
+        // */
+        // forall nonBCIndex in domOffAxis(eOut.a.domain, bcDimsList.toArray()) {
+        //   const nbcT = if ndOut == 1 then (nonBCIndex,) else nonBCIndex;
 
 
-          //   var outSliceIdx: ndOut*range;
-          //   for i in 0..<ndOut do outSliceIdx[i] = 0..<shapeOut[i];
-          //   for i in 0..<ndIn do if bcDims[i] then outSliceIdx[i] = nbcT[i];
+        //   var outSliceIdx: ndOut*range;
+        //   for i in 0..<ndOut do outSliceIdx[i] = 0..<shapeOut[i];
+        //   for i in 0..<ndIn do if bcDims[i] then outSliceIdx[i] = nbcT[i];
 
-          //   eOut.a[(...outSliceIdx)] = eIn.a; // !!! Doesn't work because of rank mismatch !!!
-          // }
+        //   eOut.a[(...outSliceIdx)] = eIn.a; // !!! Doesn't work because of rank mismatch !!!
+        // }
 
-          inline proc imap(idx: ndOut*int, bc: ndIn*int): ndIn*int {
-            var ret: ndIn*int;
-            for param i in 0..<ndIn do ret[i] = if bc[i] then 0 else idx[i + (ndOut - ndIn)];
-            return ret;
-          }
+        inline proc imap(idx: array_nd_out*int, bc: array_nd_in*int): array_nd_in*int {
+          var ret: array_nd_in*int;
+          for param i in 0..<array_nd_in do ret[i] = if bc[i] then 0 else idx[i + (array_nd_out - array_nd_in)];
+          return ret;
+        }
 
-          // copy values from the input array into the output array
-          forall idx in eOut.a.domain with (var agg = newSrcAggregator(t), in bcDims) {
-            const idxIn = imap(if ndOut==1 then (idx,) else idx, bcDims);
-            agg.copy(eOut.a[idx], eIn.a[idxIn]);
-          }
+        // copy values from the input array into the output array
+        forall idx in eOut.a.domain with (var agg = newSrcAggregator(array_dtype), in bcDims) {
+          const idxIn = imap(if array_nd_out==1 then (idx,) else idx, bcDims);
+          agg.copy(eOut.a[idx], eIn.a[idxIn]);
         }
       }
-
-      return st.insert(eOut);
     }
 
-    select gEnt.dtype {
-      when DType.Int64 do return doBroadcast(int);
-      when DType.UInt8 do return doBroadcast(uint(8));
-      when DType.UInt64 do return doBroadcast(uint);
-      when DType.Float64 do return doBroadcast(real);
-      when DType.Bool do return doBroadcast(bool);
-      otherwise {
-        var errorMsg = notImplementedError(getRoutineName(),gEnt.dtype);
-        mLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-        return MsgTuple.error(errorMsg);
-      }
-    }
+    return st.insert(eOut);
+  }
+
+  proc broadcastToMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+    type array_dtype,
+    param array_nd_in: int,
+    param array_nd_out: int
+  ): MsgTuple throws
+    where array_nd_in > array_nd_out
+  {
+    return MsgTuple.error(
+      "Cannot broadcast from higher (%i) dimensional to lower (%i) dimensional array"
+      .format(array_nd_in, array_nd_out)
+    );
   }
 
   proc checkValidBroadcast(from: ?Nf*int, to: ?Nt*int): (bool, Nf*bool) {
@@ -1018,7 +1015,7 @@ module ManipulationMsg {
     if nd == 1 {
       const errMsg = "Cannot unstack a 1D array";
       mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
-      return new MsgTuple(errMsg,MsgType.ERROR);
+      return MsgTuple.error(errMsg);
     }
 
     const name = msgArgs["name"],

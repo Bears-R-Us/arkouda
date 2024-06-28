@@ -368,7 +368,6 @@ module ServerDaemon {
             // For a few specialized cmds we're going to add dummy functions, so they
             // get added to the client listing of available commands. They will be
             // intercepted in the cmd processing select statement and processed specially
-            registerFunction("array", akMsgSign);
             registerFunction("connect", akMsgSign);
             registerFunction("disconnect", akMsgSign);
             registerFunction("noop", akMsgSign);
