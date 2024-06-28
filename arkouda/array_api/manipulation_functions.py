@@ -4,7 +4,7 @@ from .array_object import Array, implements_numpy
 
 from typing import List, Optional, Tuple, Union, cast
 from arkouda.client import generic_msg
-from arkouda.pdarrayclass import create_pdarray
+from arkouda.pdarrayclass import create_pdarray, create_pdarrays
 from arkouda.pdarraycreation import scalar_array
 from arkouda.util import broadcast_dims
 
@@ -462,16 +462,20 @@ def unstack(x: Array, /, *, axis: int = 0) -> Tuple[Array, ...]:
     axis : int, optional
         The axis along which to unstack the array. The default is 0.
     """
-    resp = cast(
-                str,
-                generic_msg(
-                    cmd=f"unstack{x.ndim}D",
-                    args={
-                        "name": x._array,
-                        "axis": axis,
-                        "numReturnArrays": x.shape[axis],
-                    },
-                ),
+    return tuple(
+        Array._new(
+            create_pdarrays(
+                cast(
+                        str,
+                        generic_msg(
+                            cmd=f"unstack{x.ndim}D",
+                            args={
+                                "name": x._array,
+                                "axis": axis,
+                                "numReturnArrays": x.shape[axis],
+                            },
+                        ),
+                    )
+                )
             )
-
-    return tuple([Array._new(create_pdarray(a)) for a in resp.split("+")])
+        )
