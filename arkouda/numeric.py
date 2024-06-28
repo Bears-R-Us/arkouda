@@ -2184,6 +2184,7 @@ def count_nonzero(pda):
     elif pda.dtype == str:
         return sum((pda != "").astype(np.int64))
 
+
 def putmask(pda: pdarray, mask: Union[bool, pdarray], values: pdarray):
     """
     Copy a pdarray to another, subject to a mask
@@ -2226,7 +2227,7 @@ def putmask(pda: pdarray, mask: Union[bool, pdarray], values: pdarray):
 
     # check for matching types
 
-    if values.dtype != pda.dtype :
+    if values.dtype != pda.dtype:
         raise TypeError("ak.putmask requires arrays of matching type")
 
     # if values is not the same size as pda, repeat it and/or prune it as needed
