@@ -596,6 +596,8 @@ def register_commands(config, source_files):
         "use CommandMap, Message, MultiTypeSymbolTable, MultiTypeSymEntry;",
     ]
 
+    count = 0
+
     for filename, ctx in chapel.files_with_contexts(source_files):
         root = ctx.parse(filename)[0]
         mod_name = filename.split("/")[-1].split(".")[0]
@@ -631,6 +633,7 @@ def register_commands(config, source_files):
                 name, fn.return_type(), con_formals, mod_name
             )
             stamps.append(cmd_proc)
+            count += 1;
 
             if is_generic_cmd > 0:
                 try:
@@ -681,19 +684,35 @@ def register_commands(config, source_files):
                     config, gen_formals, name, command_prefix, mod_name, line_num
                 ):
                     stamps.append(stamp)
+                    count += 1
             except ValueError as e:
                 error_message(f"registering '{name}'", e, fn.location())
                 continue
 
     stamps.append("}")
-    with open("Commands.chpl", "w") as f:
-        f.write("\n\n".join(stamps))
+
+    return ("\n\n".join(stamps), count)
+
+
+def getModuleFiles(config, src_dir):
+    with open(config, 'r') as cfg_file:
+        mods = []
+        for line in cfg_file.readlines():
+            mod = line.split("#")[0].strip()
+            if mod != "":
+                mods.append(f"{mod}.chpl" if mod[0] == '/' else f"{src_dir}/{mod}.chpl")
+        return mods
 
 
 def main():
     config = json.load(open(sys.argv[1]))
-    source_files = list(sys.argv[2:])
-    register_commands(config, source_files)
+    source_files = getModuleFiles(sys.argv[2], sys.argv[3])
+    (chpl_src, n) = register_commands(config, source_files)
+
+    with open(sys.argv[3] + "/registry/Commands.chpl", "w") as f:
+        f.write(chpl_src)
+
+    print("registered ", n, " commands from ", len(source_files), " modules")
 
 
 if __name__ == "__main__":

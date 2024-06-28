@@ -1,5 +1,13 @@
 {
-    "max_array_dims": 1,
+    "parameter_classes": {
+        "array": {
+            "nd": [1],
+            "dtype": [
+                "int",
+                "real"
+            ]
+        }
+    },
     "supported_scalar_types": {
         "uint8": true,
         "uint16": false,
