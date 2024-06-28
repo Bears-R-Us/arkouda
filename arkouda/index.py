@@ -17,7 +17,7 @@ from arkouda.dtypes import int64 as akint64
 from arkouda.groupbyclass import GroupBy, unique
 from arkouda.numeric import cast as akcast
 from arkouda.pdarrayclass import RegistrationError, pdarray
-from arkouda.pdarraycreation import arange, array, create_pdarray, ones
+from arkouda.pdarraycreation import array, create_pdarray, ones
 from arkouda.pdarraysetops import argsort, in1d
 from arkouda.sorting import coargsort
 from arkouda.util import convert_if_categorical, generic_concat, get_callback
@@ -412,26 +412,26 @@ class Index:
 
         if isinstance(self.values, pdarray) and is_float(self.values):
             from arkouda import concatenate
-
             from arkouda import isnan as ak_isnan
 
-            is_nan = ak_isnan(self.values)
+            is_nan = ak_isnan(self.values)[perm]
             if na_position == "last":
                 perm = concatenate([perm[~is_nan], perm[is_nan]])
-            elif na_position == "first":
+            else:
                 perm = concatenate([perm[is_nan], perm[~is_nan]])
 
         elif isinstance(self.values, list):
             from numpy import isnan as np_isnan
 
-            is_nan = np_isnan(self.values)
-            nan_vals = [i for (i, b) in zip(perm, is_nan) if b]
-            not_nan_vals = [i for (i, b) in zip(perm, is_nan) if not b]
+            is_nan = np_isnan(self.values)[perm]
+            perm = np.array(perm)
 
             if na_position == "last":
-                perm = [*not_nan_vals, *nan_vals]  # type: ignore
-            elif na_position == "first":
-                perm = [*nan_vals, *not_nan_vals]  # type: ignore
+                perm = np.concatenate([perm[~is_nan], perm[is_nan]])
+            else:
+                perm = np.concatenate([perm[is_nan], perm[~is_nan]])
+
+            perm = perm.tolist()
 
         if return_indexer:
             return self._reindex(perm), perm
@@ -551,25 +551,27 @@ class Index:
                 "objType": self.objType,
                 "num_idxs": 1,
                 "idx_names": [
-                    json.dumps(
-                        {
-                            "codes": self.values.codes.name,
-                            "categories": self.values.categories.name,
-                            "NA_codes": self.values._akNAcode.name,
-                            **(
-                                {"permutation": self.values.permutation.name}
-                                if self.values.permutation is not None
-                                else {}
-                            ),
-                            **(
-                                {"segments": self.values.segments.name}
-                                if self.values.segments is not None
-                                else {}
-                            ),
-                        }
+                    (
+                        json.dumps(
+                            {
+                                "codes": self.values.codes.name,
+                                "categories": self.values.categories.name,
+                                "NA_codes": self.values._akNAcode.name,
+                                **(
+                                    {"permutation": self.values.permutation.name}
+                                    if self.values.permutation is not None
+                                    else {}
+                                ),
+                                **(
+                                    {"segments": self.values.segments.name}
+                                    if self.values.segments is not None
+                                    else {}
+                                ),
+                            }
+                        )
+                        if isinstance(self.values, Categorical)
+                        else self.values.name
                     )
-                    if isinstance(self.values, Categorical)
-                    else self.values.name
                 ],
                 "idx_types": [self.values.objType],
             },
@@ -806,24 +808,26 @@ class Index:
             raise TypeError("Unable to write Index to hdf when values are a list.")
 
         index_data = [
-            self.values.name
-            if not isinstance(self.values, (Categorical_))
-            else json.dumps(
-                {
-                    "codes": self.values.codes.name,
-                    "categories": self.values.categories.name,
-                    "NA_codes": self.values._akNAcode.name,
-                    **(
-                        {"permutation": self.values.permutation.name}
-                        if self.values.permutation is not None
-                        else {}
-                    ),
-                    **(
-                        {"segments": self.values.segments.name}
-                        if self.values.segments is not None
-                        else {}
-                    ),
-                }
+            (
+                self.values.name
+                if not isinstance(self.values, (Categorical_))
+                else json.dumps(
+                    {
+                        "codes": self.values.codes.name,
+                        "categories": self.values.categories.name,
+                        "NA_codes": self.values._akNAcode.name,
+                        **(
+                            {"permutation": self.values.permutation.name}
+                            if self.values.permutation is not None
+                            else {}
+                        ),
+                        **(
+                            {"segments": self.values.segments.name}
+                            if self.values.segments is not None
+                            else {}
+                        ),
+                    }
+                )
             )
         ]
         return typecast(
@@ -897,24 +901,26 @@ class Index:
         file_type = _get_hdf_filetype(prefix_path + "*")
 
         index_data = [
-            self.values.name
-            if not isinstance(self.values, (Categorical_))
-            else json.dumps(
-                {
-                    "codes": self.values.codes.name,
-                    "categories": self.values.categories.name,
-                    "NA_codes": self.values._akNAcode.name,
-                    **(
-                        {"permutation": self.values.permutation.name}
-                        if self.values.permutation is not None
-                        else {}
-                    ),
-                    **(
-                        {"segments": self.values.segments.name}
-                        if self.values.segments is not None
-                        else {}
-                    ),
-                }
+            (
+                self.values.name
+                if not isinstance(self.values, (Categorical_))
+                else json.dumps(
+                    {
+                        "codes": self.values.codes.name,
+                        "categories": self.values.categories.name,
+                        "NA_codes": self.values._akNAcode.name,
+                        **(
+                            {"permutation": self.values.permutation.name}
+                            if self.values.permutation is not None
+                            else {}
+                        ),
+                        **(
+                            {"segments": self.values.segments.name}
+                            if self.values.segments is not None
+                            else {}
+                        ),
+                    }
+                )
             )
         ]
 
@@ -1372,17 +1378,23 @@ class MultiIndex(Index):
                 "objType": self.objType,
                 "num_idxs": len(self.levels),
                 "idx_names": [
-                    json.dumps(
-                        {
-                            "codes": v.codes.name,
-                            "categories": v.categories.name,
-                            "NA_codes": v._akNAcode.name,
-                            **({"permutation": v.permutation.name} if v.permutation is not None else {}),
-                            **({"segments": v.segments.name} if v.segments is not None else {}),
-                        }
+                    (
+                        json.dumps(
+                            {
+                                "codes": v.codes.name,
+                                "categories": v.categories.name,
+                                "NA_codes": v._akNAcode.name,
+                                **(
+                                    {"permutation": v.permutation.name}
+                                    if v.permutation is not None
+                                    else {}
+                                ),
+                                **({"segments": v.segments.name} if v.segments is not None else {}),
+                            }
+                        )
+                        if isinstance(v, Categorical)
+                        else v.name
                     )
-                    if isinstance(v, Categorical)
-                    else v.name
                     for v in self.levels
                 ],
                 "idx_types": [v.objType for v in self.levels],
@@ -1502,16 +1514,18 @@ class MultiIndex(Index):
         from arkouda.io import _file_type_to_int, _mode_str_to_int
 
         index_data = [
-            obj.name
-            if not isinstance(obj, (Categorical_))
-            else json.dumps(
-                {
-                    "codes": obj.codes.name,
-                    "categories": obj.categories.name,
-                    "NA_codes": obj._akNAcode.name,
-                    **({"permutation": obj.permutation.name} if obj.permutation is not None else {}),
-                    **({"segments": obj.segments.name} if obj.segments is not None else {}),
-                }
+            (
+                obj.name
+                if not isinstance(obj, (Categorical_))
+                else json.dumps(
+                    {
+                        "codes": obj.codes.name,
+                        "categories": obj.categories.name,
+                        "NA_codes": obj._akNAcode.name,
+                        **({"permutation": obj.permutation.name} if obj.permutation is not None else {}),
+                        **({"segments": obj.segments.name} if obj.segments is not None else {}),
+                    }
+                )
             )
             for obj in self.levels
         ]
@@ -1591,16 +1605,18 @@ class MultiIndex(Index):
         file_type = _get_hdf_filetype(prefix_path + "*")
 
         index_data = [
-            obj.name
-            if not isinstance(obj, (Categorical_))
-            else json.dumps(
-                {
-                    "codes": obj.codes.name,
-                    "categories": obj.categories.name,
-                    "NA_codes": obj._akNAcode.name,
-                    **({"permutation": obj.permutation.name} if obj.permutation is not None else {}),
-                    **({"segments": obj.segments.name} if obj.segments is not None else {}),
-                }
+            (
+                obj.name
+                if not isinstance(obj, (Categorical_))
+                else json.dumps(
+                    {
+                        "codes": obj.codes.name,
+                        "categories": obj.categories.name,
+                        "NA_codes": obj._akNAcode.name,
+                        **({"permutation": obj.permutation.name} if obj.permutation is not None else {}),
+                        **({"segments": obj.segments.name} if obj.segments is not None else {}),
+                    }
+                )
             )
             for obj in self.levels
         ]

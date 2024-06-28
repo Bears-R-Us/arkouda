@@ -88,8 +88,6 @@ def argsort(
     if ascending is True or (hasattr(pda, "ndim") and pda.ndim != 1):
         return sorted_array
     else:
-        from arkouda import arange
-
         return sorted_array[::-1]
 
 
@@ -161,6 +159,7 @@ def coargsort(
     for a in arrays:
         if hasattr(a, "ndim"):
             from numpy import maximum
+
             max_dim = maximum(a.ndim, max_dim)
         if not isinstance(a, pdarray) or a.dtype not in [bigint, bool]:
             expanded_arrays.append(a)
@@ -203,8 +202,6 @@ def coargsort(
     if ascending is True or max_dim > 1:
         return sorted_array
     else:
-        from arkouda import arange
-
         return sorted_array[::-1]
 
 
