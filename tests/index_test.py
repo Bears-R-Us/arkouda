@@ -601,6 +601,55 @@ class TestIndex:
             4,
         ]
 
+    def test_index_sort_values_additional_example(self):
+        from numpy import nan
+
+        vals = [4, nan, 1, nan, 0, nan, 3, nan, 2]
+        idx = Index(vals)
+        idx_list = Index(vals, allow_list=True)
+
+        expected_first = np.array(
+            [
+                nan,
+                nan,
+                nan,
+                nan,
+                0.0,
+                1.0,
+                2.0,
+                3.0,
+                4.0,
+            ]
+        )
+
+        expected_last = np.array(
+            [
+                0.0,
+                1.0,
+                2.0,
+                3.0,
+                4.0,
+                nan,
+                nan,
+                nan,
+                nan,
+            ]
+        )
+
+        assert np.allclose(
+            idx.sort_values(na_position="first").values.to_ndarray(), expected_first, equal_nan=True
+        )
+        assert np.allclose(
+            idx.sort_values(na_position="last").values.to_ndarray(), expected_last, equal_nan=True
+        )
+
+        assert np.allclose(
+            np.array(idx_list.sort_values(na_position="first").values), expected_first, equal_nan=True
+        )
+        assert np.allclose(
+            np.array(idx_list.sort_values(na_position="last").values), expected_last, equal_nan=True
+        )
+
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_memory_usage(self, size):
         from arkouda.numpy.dtypes import bigint

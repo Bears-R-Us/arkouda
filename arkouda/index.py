@@ -17,7 +17,7 @@ from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import float64 as akfloat64
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.pdarrayclass import RegistrationError, pdarray
-from arkouda.pdarraycreation import arange, array, create_pdarray, ones
+from arkouda.pdarraycreation import array, create_pdarray, ones
 from arkouda.pdarraysetops import argsort, in1d
 from arkouda.sorting import coargsort
 from arkouda.util import convert_if_categorical, generic_concat, get_callback
@@ -420,26 +420,26 @@ class Index:
 
         if isinstance(self.values, pdarray) and is_float(self.values):
             from arkouda import concatenate
-
             from arkouda import isnan as ak_isnan
 
-            is_nan = ak_isnan(self.values)
+            is_nan = ak_isnan(self.values)[perm]
             if na_position == "last":
                 perm = concatenate([perm[~is_nan], perm[is_nan]])
-            elif na_position == "first":
+            else:
                 perm = concatenate([perm[is_nan], perm[~is_nan]])
 
         elif isinstance(self.values, list):
             from numpy import isnan as np_isnan
 
-            is_nan = np_isnan(self.values)
-            nan_vals = [i for (i, b) in zip(perm, is_nan) if b]
-            not_nan_vals = [i for (i, b) in zip(perm, is_nan) if not b]
+            is_nan = np_isnan(self.values)[perm]
+            perm = np.array(perm)
 
             if na_position == "last":
-                perm = [*not_nan_vals, *nan_vals]  # type: ignore
-            elif na_position == "first":
-                perm = [*nan_vals, *not_nan_vals]  # type: ignore
+                perm = np.concatenate([perm[~is_nan], perm[is_nan]])
+            else:
+                perm = np.concatenate([perm[is_nan], perm[~is_nan]])
+
+            perm = perm.tolist()
 
         if return_indexer:
             return self._reindex(perm), perm
