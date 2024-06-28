@@ -960,8 +960,12 @@ module ReductionMsg
       const dom = makeDistDom(newSize);
       var ret = makeDistArray(dom, intype);
 
-      forall (oldSegStart, newSegStart, newLength) in zip(segments, newSegs, newSegLengths) with (var agg = newSrcAggregator(intype)){
-          agg.copy(ret[newSegStart..#newLength], values[oldSegStart..#newLength]);
+      forall (oldSegStart, newSegStart, newLength) in zip(segments, newSegs, newSegLengths) with (ref values,
+                                                                                            var agg = newDstAggregator(intype)){
+        var v = new lowLevelLocalizingSlice(values, oldSegStart..#newLength);
+        for i in 0..#newLength {
+          agg.copy(ret[newSegStart+i], v.ptr[i]);
+        }
       }
       return ret;
     }
@@ -978,8 +982,12 @@ module ReductionMsg
       const dom = makeDistDom(newSize);
       var ret = makeDistArray(dom, intype);
 
-      forall (oldSegEnd, newSegEnd, newLength) in zip(oldSegEnds, newSegEnds, newSegLengths) with (var agg = newSrcAggregator(intype)){
-          agg.copy(ret[(newSegEnd - newLength)..#newLength], values[(oldSegEnd - newLength)..#newLength]);
+      forall (oldSegEnd, newSegEnd, newLength) in zip(oldSegEnds, newSegEnds, newSegLengths) with (ref values,
+                                                                                            var agg = newDstAggregator(intype)){
+        var v = new lowLevelLocalizingSlice(values, (oldSegEnd - newLength)..#newLength);
+        for i in 0..#newLength {
+          agg.copy(ret[(newSegEnd - newLength)+i], v.ptr[i]);
+        }
       }
       return ret;
     }
