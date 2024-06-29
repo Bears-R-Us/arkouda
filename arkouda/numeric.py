@@ -2187,19 +2187,18 @@ def count_nonzero(pda):
 
 def putmask(pda: pdarray, mask: Union[bool, pdarray], values: pdarray):
     """
-    Copy a pdarray to another, subject to a mask
+    Overwrite elements of a pdarray at indices where mask is True
 
     Parameters
     ----------
-    pda    : pdarray, source data
+    pda    : pdarray, source data, also output data
+        pda = input where mask is False, = values where mask is True
     mask   : a scalar boolean, or a pdarray of booleans
     values : pdarray, replacement data
 
     Returns
     -------
-    pdarray
-        where mask is False, result = a
-        where mask is True,  result = values
+    None - pda is modified in-place
 
     Notes
     -----
@@ -2238,4 +2237,5 @@ def putmask(pda: pdarray, mask: Union[bool, pdarray], values: pdarray):
         reduction = result.size % pda.size
         result = result[:-(reduction)]
 
-    return where(mask, result, pda)
+    pda[:] = where(mask, result, pda) # pda[:] = is required rather than pda = in order to
+                                      # return the modified value

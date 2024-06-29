@@ -756,35 +756,37 @@ class TestNumeric:
             result = nda.copy()
             np.putmask(result, result > 5, result**2)
             pda = ak.array(nda)
-            pdresult = ak.putmask(pda, pda > 5, pda**2)
+            ak.putmask(pda, pda > 5, pda**2)
             assert (
-                np.all(result == pdresult.to_ndarray())
+                np.all(result == pda.to_ndarray())
                 if data_type == ak.int64
-                else np.allclose(result, pdresult.to_ndarray())
+                else np.allclose(result, pda.to_ndarray())
             )
 
             # values shorter than data
 
             result = nda.copy()
+            pda = ak.array(nda)
             values = np.arange(3).astype(data_type)
             np.putmask(result, result > 5, values)
-            pdresult = ak.putmask(pda, pda > 5, ak.array(values))
+            ak.putmask(pda, pda > 5, ak.array(values))
             assert (
-                np.all(result == pdresult.to_ndarray())
+                np.all(result == pda.to_ndarray())
                 if data_type == ak.int64
-                else np.allclose(result, pdresult.to_ndarray())
+                else np.allclose(result, pda.to_ndarray())
             )
 
             # values longer than data
 
             result = nda.copy()
+            pda = ak.array(nda)
             values = np.arange(prob_size + 1).astype(data_type)
             np.putmask(result, result > 5, values)
-            pdresult = ak.putmask(pda, pda > 5, ak.array(values))
+            ak.putmask(pda, pda > 5, ak.array(values))
             assert (
-                np.all(result == pdresult.to_ndarray())
+                np.all(result == pda.to_ndarray())
                 if data_type == ak.int64
-                else np.allclose(result, pdresult.to_ndarray())
+                else np.allclose(result, pda.to_ndarray())
             )
 
             # finally try to raise the error
