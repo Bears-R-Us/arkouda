@@ -2237,5 +2237,4 @@ def putmask(pda: pdarray, mask: Union[bool, pdarray], values: pdarray):
         reduction = result.size % pda.size
         result = result[:-(reduction)]
 
-    pda[:] = where(mask, result, pda) # pda[:] = is required rather than pda = in order to
-                                      # return the modified value
+    pda[:] = where(mask, result, pda)  # pda[:] = allows us to return modified value
