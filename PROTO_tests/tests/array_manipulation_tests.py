@@ -36,10 +36,6 @@ class TestManipulationFunctions:
         n_delete = np.delete(n, np.array([1, 3, 5]), axis=0)
         a_delete = ak.delete(a, ak.array([1, 3, 5]), axis=0)
 
-        print(a)
-        print(n_delete)
-        print(a_delete)
-
         assert n_delete.tolist() == a_delete.to_list()
 
         n_delete = np.delete(n, np.array([1, 3, 5]))
