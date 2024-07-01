@@ -283,12 +283,6 @@ def indexof1d(query: groupable, space: groupable) -> pdarray:
         elif isinstance(query, pdarray) and not isinstance(space, pdarray):
             raise TypeError("If keys is pdarray, arr must also be pdarray")
 
-    # repMsg = generic_msg(
-    #     cmd="indexof1d",
-    #     args={"keys": query, "arr": space},
-    # )
-    # return create_pdarray(cast(str, repMsg))
-
     from arkouda.alignment import find as akfind
 
     found = akfind(query, space, all_occurrences=True, remove_missing=True)
