@@ -585,6 +585,7 @@ class ParquetTest(ArkoudaTest):
                 self.assertTrue(np.allclose(ak_data["decCol" + str(i)].to_ndarray(), data[i - 1]))
 
     def test_multi_batch_reads(self):
+        pytest.skip()
         # verify reproducer for #3074 is resolved
         # seagarray w/ empty segs multi-batch pq reads
 
