@@ -25,6 +25,7 @@ from arkouda.pdarrayclass import argmax, create_pdarray, pdarray, sum
 from arkouda.pdarraycreation import array, linspace, scalar_array
 from arkouda.sorting import sort
 from arkouda.strings import Strings
+from arkouda.dtypes import npstr
 
 Categorical = ForwardRef("Categorical")
 SegArray = ForwardRef("SegArray")
@@ -73,6 +74,8 @@ __all__ = [
     "histogramdd",
     "median",
     "value_counts",
+    "matching_shapes",
+    "array_equal",
     "ErrorMode",
 ]
 
@@ -1720,6 +1723,84 @@ def where(
             },
         )
     return create_pdarray(type_cast(str, repMsg))
+
+
+def matching_shapes(pda_a: pdarray, pda_b: pdarray):
+    """
+    For now, this will only check that two pdarrays have matching sizes.
+    It's included so that we can put placeholders in for the check as
+    we implement n-dimensional array computation.
+
+    Parameters:
+        pda_a : pdarray
+        pda_b : pdarray
+
+    Returns:
+        True if pda_a.size == pda_b.size, else False
+
+    Examples
+    --------
+    >>> a = ak.randint(0,10,10)
+    >>> b = ak.randint(0,3,10)
+    >>> ak.matching_shapes(a,b)
+    True
+    >>> b = ak.randint(0,10,5000)
+    >>> ak.matching_shapes(a,b)
+    False
+
+    """
+
+    return pda_a.size == pda_b.size
+
+
+def array_equal(pda_a: pdarray, pda_b: pdarray, equal_nan: bool = False):
+    """
+    Compares two pdarrays for equality.
+    If neither array has any nan elements, then if all elements are pairwise equal,
+    it returns True.
+    If equal_Nan is False, then any nan element in either array gives a False return.
+    If equal_Nan is True, then pairwise-corresponding nans are considered equal.
+
+    Parameters:
+        pda_a : pdarray
+        pda_b : pdarray
+        equal_nan : boolean to determine how to handle nans, default False
+
+    Returns:
+        boolean
+
+        With string data: False if one array is of type npstr and the other isn't,
+                            True is both are npstr and they match.
+        With numeric data: True if neither array has any nan elements, and all elements pairwise equal.
+                            False if equal_Nan is False, and either array has any nan element.
+                            True if equal_Nan is True, all non-nan elements are pairwise equal,
+                                            and all nans in pda_a correspond to nans in pda_b
+
+    Examples
+    --------
+    >>> a = ak.randint(0,10,10,dtype=ak.float64)
+    >>> b = a
+    >>> ak.array_equal(a,b)
+    True
+    >>> b[9] = np.nan
+    >>> ak.array_equal(a,b)
+    False
+    >>> a[9] = np.nan
+    >>> array_equal(a,b)
+    False
+    >>> ak.array_equal(a,b,True)
+    True
+    """
+    if not matching_shapes(pda_a, pda_b):
+        return False
+    elif (pda_a.dtype is npstr and not (pda_b.dtype is npstr)) or (
+        pda_b.dtype is npstr and not (pda_a.dtype is npstr)
+    ):
+        return False
+    elif equal_nan:
+        return ak_all(where(isnan(pda_a), isnan(pda_b), pda_a == pda_b))
+    else:
+        return ak_all(pda_a == pda_b)
 
 
 @typechecked
