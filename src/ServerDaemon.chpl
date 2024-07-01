@@ -775,7 +775,6 @@ module ServerDaemon {
             this.port = try! getEnv('METRICS_SERVER_PORT','5556'):int;
 
             try! this.socket.bind("tcp://*:%?".format(this.port));
-            try! this.socket.bind("tcp://*:%?".format(this.port));
             try! sdLogger.debug(getModuleName(), 
                                 getRoutineName(), 
                                 getLineNumber(),
