@@ -5,7 +5,7 @@ from .array_object import Array, implements_numpy
 from typing import List, Optional, Tuple, Union, cast
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import create_pdarray, create_pdarrays
-from arkouda.pdarraycreation import scalar_array
+from arkouda.pdarraycreation import scalar_array, promote_to_common_dtype
 from arkouda.util import broadcast_dims
 
 import numpy as np
@@ -67,19 +67,24 @@ def concat(
         flattened before concatenation.
     """
 
-    # TODO: type promotion across input arrays
+    ndim = arrays[0].ndim
+    for a in arrays:
+        if a.ndim != ndim:
+            raise ValueError("all input arrays must have the same number of dimensions to concatenate")
+
+    (common_dt, _arrays) = promote_to_common_dtype([a._array for a in arrays])
 
     return Array._new(
         create_pdarray(
             cast(
                 str,
                 generic_msg(
-                    cmd=f"concat{arrays[0].ndim}D"
+                    cmd=f"concat<{common_dt},{ndim}>"
                     if axis is not None
-                    else f"concatFlat{arrays[0].ndim}D",
+                    else f"concatFlat<{common_dt},{ndim}>",
                     args={
                         "n": len(arrays),
-                        "names": [a._array for a in arrays],
+                        "names": _arrays,
                         "axis": axis,
                     },
                 ),
@@ -106,7 +111,7 @@ def expand_dims(x: Array, /, *, axis: int) -> Array:
                 cast(
                     str,
                     generic_msg(
-                        cmd=f"expandDims{x.ndim}D",
+                        cmd=f"expandDims<{x.dtype},{x.ndim}>",
                         args={
                             "name": x._array,
                             "axis": axis,
@@ -139,7 +144,7 @@ def flip(x: Array, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> 
                 cast(
                     str,
                     generic_msg(
-                        cmd=f"flipAll{x.ndim}D" if axis is None else f"flip{x.ndim}D",
+                        cmd=f"flipAll<{x.dtype},{x.ndim}>" if axis is None else f"flip{x.ndim}D",
                         args={
                             "name": x._array,
                             "nAxes": len(axisList),
@@ -202,7 +207,7 @@ def permute_dims(x: Array, /, axes: Tuple[int, ...]) -> Array:
                 cast(
                     str,
                     generic_msg(
-                        cmd=f"permuteDims{x.ndim}D",
+                        cmd=f"permuteDims<{x.dtype},{x.ndim}>",
                         args={
                             "name": x._array,
                             "axes": axes,
@@ -242,7 +247,7 @@ def repeat(x: Array, repeats: Union[int, Array], /, *, axis: Optional[int] = Non
                 cast(
                     str,
                     generic_msg(
-                        cmd=f"repeatFlat{x.ndim}D",
+                        cmd=f"repeatFlat<{x.dype},{x.ndim}>",
                         args={
                             "name": x._array,
                             "repeats": reps._array,
@@ -279,7 +284,7 @@ def reshape(
                 cast(
                     str,
                     generic_msg(
-                        cmd=f"reshape{x.ndim}Dx{len(shape)}D",
+                        cmd=f"reshape<{x.dtype},{x.ndim},{len(shape)}>",
                         args={
                             "name": x._array,
                             "shape": shape,
@@ -325,9 +330,9 @@ def roll(
                 cast(
                     str,
                     generic_msg(
-                        cmd=f"rollFlattened{x.ndim}D"
+                        cmd=f"rollFlattened<{x.dtype},{x.ndim}>"
                         if axis is None
-                        else f"roll{x.ndim}D",
+                        else f"roll<{x.dtype},{x.ndim}>",
                         args={
                             "name": x._array,
                             "nShifts": len(shift) if isinstance(shift, tuple) else 1,
@@ -363,7 +368,7 @@ def squeeze(x: Array, /, axis: Union[int, Tuple[int, ...]]) -> Array:
                 cast(
                     str,
                     generic_msg(
-                        cmd=f"squeeze{x.ndim}Dx{x.ndim - nAxes}D",
+                        cmd=f"squeeze<{x.dtype},{x.ndim},{x.ndim - nAxes}>",
                         args={
                             "name": x._array,
                             "nAxes": nAxes,
@@ -393,15 +398,22 @@ def stack(arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: int = 0) ->
         of dimensions in the input arrays. The default is 0.
     """
 
+    ndim = arrays[0].ndim
+    for a in arrays:
+        if a.ndim != ndim:
+            raise ValueError("all input arrays must have the same number of dimensions to stack")
+
+    (common_dt, _arrays) = promote_to_common_dtype([a._array for a in arrays])
+
     # TODO: type promotion across input arrays
     return Array._new(
         create_pdarray(
             cast(
                 str,
                 generic_msg(
-                    cmd=f"stack{arrays[0].ndim}D",
+                    cmd=f"stack<{common_dt},{ndim}>",
                     args={
-                        "names": [a._array for a in arrays],
+                        "names": _arrays,
                         "n": len(arrays),
                         "axis": axis,
                     },
@@ -440,7 +452,7 @@ def tile(x: Array, repetitions: Tuple[int, ...], /) -> Array:
             cast(
                 str,
                 generic_msg(
-                    cmd=f"tile{xr.ndim}D",
+                    cmd=f"tile<{xr.dtype},{xr.ndim}>",
                     args={
                         "name": xr._array,
                         "reps": reps,
@@ -468,7 +480,7 @@ def unstack(x: Array, /, *, axis: int = 0) -> Tuple[Array, ...]:
                 cast(
                         str,
                         generic_msg(
-                            cmd=f"unstack{x.ndim}D",
+                            cmd=f"unstack<{x.dtype},{x.ndim}>",
                             args={
                                 "name": x._array,
                                 "axis": axis,

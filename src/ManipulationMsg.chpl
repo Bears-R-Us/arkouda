@@ -162,18 +162,7 @@ module ManipulationMsg {
           names = msgArgs["names"].toScalarArray(string, nArrays),
           axis = msgArgs["axis"].getPositiveIntValue(array_nd);
 
-    var gEnts = getGenericEntries(names, st);
-
-    // confirm that all arrays have the same dtype
-    // (type promotion needs to be completed before calling 'concat')
-    const dt = gEnts[0].dtype;
-    for i in 1..<nArrays do if gEnts[i].dtype != dt {
-      const errMsg = "All arrays must have the same dtype to concatenate";
-      mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
-      return MsgTuple.error(errMsg);
-    }
-
-    const eIns = [i in 0..<nArrays] toSymEntry(gEnts[i], array_dtype, array_nd),
+    const eIns = [n in names] st[n]: borrowed SymEntry(array_dtype, array_nd),
           shapes = [i in 0..<nArrays] eIns[i].tupShape,
           (valid, shapeOut, startOffsets) = concatenatedShape(array_nd, shapes, axis);
 
@@ -186,6 +175,7 @@ module ManipulationMsg {
       var eOut = createSymEntry((...shapeOut), array_dtype);
 
       // copy the data from the input arrays to the output array
+      // TODO: Are nested foralls with aggregators a good idea?
       forall (arrIdx, arr) in zip(eIns.domain, eIns) with (in startOffsets) {
         forall idx in arr.a.domain with (var agg = newDstAggregator(array_dtype)) {
           var outIdx = if array_nd == 1 then (idx,) else idx;
@@ -227,18 +217,7 @@ module ManipulationMsg {
     const nArrays = msgArgs["n"].toScalar(int),
           names = msgArgs["names"].toScalarArray(string, nArrays);
 
-    var gEnts = getGenericEntries(names, st);
-
-    // confirm that all arrays have the same dtype
-    // (type promotion needs to be completed before calling 'concat')
-    const dt = gEnts[0].dtype;
-    for i in 1..<nArrays do if gEnts[i].dtype != dt {
-      const errMsg = "All arrays must have the same dtype to concatenate";
-      mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
-      return MsgTuple.error(errMsg);
-    }
-
-    const eIns = [i in 0..<nArrays] toSymEntry(gEnts[i], array_dtype, array_nd),
+    const eIns = [n in names] st[n]: borrowed SymEntry(array_dtype, array_nd),
           sizes = [i in 0..<nArrays] eIns[i].a.size,
           starts = (+ scan sizes) - sizes;
 
@@ -720,34 +699,29 @@ module ManipulationMsg {
           names = msgArgs["names"].toScalarArray(string, nArrays),
           axis = msgArgs["axis"].getPositiveIntValue(array_nd+1);
 
-    var gEnts = getGenericEntries(names, st);
-
-    // confirm that all arrays have the same dtype and shape
-    // (type promotion needs to be completed before calling 'stack')
-    const dt = gEnts[0]!.dtype,
-          sh = gEnts[0]!.shape;
-    for i in 1..<nArrays do if gEnts[i]!.dtype != dt || gEnts[i]!.shape != sh {
-        const errMsg = "All arrays must have the same dtype and shape to stack";
-        mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
-        return MsgTuple.error(errMsg);
-    }
-
-    const eIns = [i in 0..#nArrays] toSymEntry(gEnts[i]!, array_dtype, array_nd),
-          (shapeOut, mapping) = stackedShape(eIns[0].tupShape, axis, nArrays);
+    const eIns = [n in names] st[n]: borrowed SymEntry(array_dtype, array_nd),
+          shapes = [e in eIns] e.tupShape,
+          (valid, shapeOut, mapping) = stackedShape(shapes, axis, array_nd);
     var eOut = createSymEntry((...shapeOut), array_dtype);
 
-    // copy the data from the input arrays to the output array
-    // TODO: does a nested forall with aggregators use too much memory for agg buffers?
-    //       (maybe make outer loop be a 'for' or switch inner/outer loops?)
-    forall (arrIdx, arr) in zip(eIns.domain, eIns) {
-      forall idx in arr.a.domain with (
-        var agg = newDstAggregator(array_dtype),
-        const imap = new stackIndexMapper(array_nd+1, axis, arrIdx, mapping)
-      ) do
-        agg.copy(eOut.a[imap(if array_nd==1 then (idx,) else idx)], arr.a[idx]);
-    }
+    if !valid {
+      const errMsg = "All arrays must have the same shape to stack";
+      mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
+      return MsgTuple.error(errMsg);
+    } else {
+      // copy the data from the input arrays to the output array
+      // TODO: does a nested forall with aggregators use too much memory for agg buffers?
+      //       (maybe make outer loop be a 'for' or switch inner/outer loops?)
+      forall (arrIdx, arr) in zip(eIns.domain, eIns) {
+        forall idx in arr.a.domain with (
+          var agg = newDstAggregator(array_dtype),
+          const imap = new stackIndexMapper(array_nd+1, axis, arrIdx, mapping)
+        ) do
+          agg.copy(eOut.a[imap(if array_nd==1 then (idx,) else idx)], arr.a[idx]);
+      }
 
-    return st.insert(eOut);
+      return st.insert(eOut);
+    }
   }
 
   record stackIndexMapper {
@@ -764,21 +738,34 @@ module ManipulationMsg {
     }
   }
 
-  private proc stackedShape(shape: ?N*int, axis: int, nArrays: int): ((N+1)*int, (N+1)*int) {
+  private proc stackedShape(shapes: [?d] ?t, axis: int, param N: int): (bool, (N+1)*int, (N+1)*int)
+    where isHomogeneousTuple(t)
+  {
     var shapeOut: (N+1)*int,
         mapping: (N+1)*int,
         ii = 0;
 
+    // confirm all arrays have the same shape in the non-axis dimensions
+    const shape: N*int = shapes[0];
+    for i in 1..d.last {
+      for param j in 0..<N {
+        if j != axis && shapes[i][j] != shape[j] {
+          return (false, shapeOut, mapping);
+        }
+      }
+    }
+
+    // compute the shape of the output array
     for param i in 0..N {
       if i == axis {
-        shapeOut[i] = nArrays;
+        shapeOut[i] = d.size;
       } else {
         shapeOut[i] = shape[ii];
         mapping[i] = ii;
         ii += 1;
       }
     }
-    return (shapeOut, mapping);
+    return (true, shapeOut, mapping);
   }
 
 
@@ -993,15 +980,5 @@ module ManipulationMsg {
       mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
       return MsgTuple.error(errMsg);
     }
-  }
-
-  // Get an array of generic symbol table entries from an array of names
-  // should replace calls to this proc with: 'var gEnts = [i in 0..<nArrays] st[names[i]]: borrowed GenSymEntry;'
-  // after 2.1 is the oldest supported version (relevant bug was fixed here https://github.com/chapel-lang/chapel/pull/24693)
-  proc getGenericEntries(names: [?d] string, st: borrowed SymTab): [] borrowed GenSymEntry throws {
-    var gEnts: [d] borrowed GenSymEntry?;
-    for (i, name) in zip(d, names) do gEnts[i] = st[name]: borrowed GenSymEntry?;
-    const ret = [i in d] gEnts[i]!;
-    return ret;
   }
 }
