@@ -1,5 +1,5 @@
 import itertools
-from typing import Iterable, List, Optional, Tuple, Union, cast
+from typing import Iterable, List, Optional, Tuple, Union, cast, Any
 
 import numpy as np
 import pandas as pd
@@ -305,7 +305,7 @@ def array(
         return create_pdarray(rep_msg) if dtype is None else akcast(create_pdarray(rep_msg), dtype)
 
 
-def promote_to_common_dtype(arrays: List[pdarray]) -> Tuple[any, List[pdarray]]:
+def promote_to_common_dtype(arrays: List[pdarray]) -> Tuple[Any, List[pdarray]]:
     """
     Promote a list of pdarrays to a common dtype.
 
