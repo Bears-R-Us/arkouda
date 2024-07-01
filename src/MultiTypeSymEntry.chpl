@@ -198,6 +198,10 @@ module MultiTypeSymEntry
             var s = "DType: %s, itemsize: %?, size: %?".format(this.dtype, this.itemsize, this.size);
             return prefix + s + suffix;
         }
+
+        proc attrib(): string throws {
+            return "%s %? %? %s %?".format(dtype2str(this.dtype), this.size, this.ndim, this.shape, this.itemsize);
+        }
     }
 
     /* Symbol table entry */
@@ -428,6 +432,9 @@ module MultiTypeSymEntry
             this.size = len;
         }
 
+        proc attrib(): string throws {
+            return "%? %?".format(this.size, this.ndim);
+        }
     }
 
     /**

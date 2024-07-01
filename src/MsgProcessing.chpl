@@ -412,7 +412,7 @@ module MsgProcessing
             var blockSizes: [0..<nd] [0..<numLocales] int;
             const e = toSymEntry(gEnt, t, nd);
 
-            coforall loc in Locales do on loc {
+            coforall loc in Locales with (ref blockSizes) do on loc {
                 const locDom = e.a.localSubdomain();
                 for i in 0..<nd do
                     blockSizes[i][loc.id] = locDom.dim(i).low;

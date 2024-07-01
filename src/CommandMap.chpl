@@ -72,15 +72,18 @@ module CommandMap {
     return formatJson(commandMap);
   }
 
-  proc executeCommand(cmd: string, msgArgs, st) throws {
-    var repTuple: MsgTuple;
+  proc executeCommand(cmd: string, msgArgs, st): MsgTuple throws {
+    var response: MsgTuple;
     if commandMap.contains(cmd) {
-      usedModules.add(moduleMap[cmd]);
-      repTuple = commandMap[cmd](cmd, msgArgs, st);
+      if moduleMap.contains(cmd) then usedModules.add(moduleMap[cmd]);
+      try {
+        response = commandMap[cmd](cmd, msgArgs, st);
+      } catch e {
+        response = MsgTuple.error("Error executing command: %s".format(e.message()));
+      }
     } else {
-      repTuple = new MsgTuple("Unrecognized command: %s".format(cmd), MsgType.ERROR);
+      response = MsgTuple.error("Unrecognized command: %s".format(cmd));
     }
-    return repTuple;
+    return response;
   }
-
 }

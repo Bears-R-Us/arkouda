@@ -8,6 +8,7 @@ module Message {
     use NumPyDType;
     use List;
     use BigInteger;
+    use MultiTypeSymEntry;
 
     use Map;
     use ArkoudaIOCompat;
@@ -46,6 +47,7 @@ module Message {
         this.payload = b"";
     }
 
+    // deprecated in favor of type-method factories below
     proc MsgTuple.init(msg: string, msgType: MsgType) {
         this.msg = msg;
         this.msgType = msgType;
@@ -65,6 +67,51 @@ module Message {
     proc type MsgTuple.success(msg: string): MsgTuple {
         return new MsgTuple(
             msg = msg,
+            msgType = MsgType.NORMAL,
+            msgFormat = MsgFormat.STRING,
+            payload = b""
+        );
+    }
+
+    /*
+        Create a MsgTuple indicating to the client that a new symbol was created
+    */
+    proc type MsgTuple.newSymbol(name: string, sym: borrowed AbstractSymEntry): MsgTuple throws {
+        var msg = "created " + name + " ";
+
+        if sym.isAssignableTo(SymbolEntryType.TypedArraySymEntry) {
+            msg += (sym: borrowed GenSymEntry).attrib();
+        } else if sym.isAssignableTo(SymbolEntryType.CompositeSymEntry) {
+            msg += (sym: borrowed CompositeSymEntry).attrib();
+        }
+
+        return new MsgTuple(
+            msg = msg,
+            msgType = MsgType.NORMAL,
+            msgFormat = MsgFormat.STRING,
+            payload = b""
+        );
+    }
+
+    /*
+        Create a MsgTuple from a group of responses (useful for returning multiple
+        symbols from one command, see: 'unstack' in 'ManipulationMsg')
+
+        If any of the responses are errors, return the first error message.
+        Otherwise, return a success message, where each of the 'msg' fields
+        are composed into a JSON list.
+    */
+    proc type MsgTuple.fromResponses(responses: [] MsgTuple): MsgTuple throws {
+        for res in responses {
+            if res.msgType == MsgType.ERROR {
+                return res;
+            }
+        }
+
+        var msgs = new list([res in responses] res.msg);
+
+        return new MsgTuple(
+            msg = formatJson(msgs),
             msgType = MsgType.NORMAL,
             msgFormat = MsgFormat.STRING,
             payload = b""
