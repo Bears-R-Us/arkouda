@@ -86,7 +86,7 @@ ARKOUDA_CONFIG_FILE := $(ARKOUDA_PROJECT_DIR)/ServerModules.cfg
 endif
 
 ifndef ARKOUDA_REGISTRATION_CONFIG
-ARKOUDA_REGISTRATION_CONFIG := $(ARKOUDA_PROJECT_DIR)/registration-config.json.json
+ARKOUDA_REGISTRATION_CONFIG := $(ARKOUDA_PROJECT_DIR)/registration-config.json
 endif
 
 CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq -liconv -lidn2 -lparquet -larrow

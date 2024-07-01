@@ -4,7 +4,9 @@
             "nd": [1],
             "dtype": [
                 "int",
-                "real"
+                "uint",
+                "real",
+                "bool"
             ]
         }
     },
