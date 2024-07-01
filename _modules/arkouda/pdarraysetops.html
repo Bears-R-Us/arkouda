@@ -650,12 +650,6 @@
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;If keys is pdarray, arr must also be pdarray&quot;</span><span class="p">)</span>
 
-    <span class="c1"># repMsg = generic_msg(</span>
-    <span class="c1">#     cmd=&quot;indexof1d&quot;,</span>
-    <span class="c1">#     args={&quot;keys&quot;: query, &quot;arr&quot;: space},</span>
-    <span class="c1"># )</span>
-    <span class="c1"># return create_pdarray(cast(str, repMsg))</span>
-
     <span class="kn">from</span> <span class="nn">arkouda.alignment</span> <span class="kn">import</span> <span class="n">find</span> <span class="k">as</span> <span class="n">akfind</span>
 
     <span class="n">found</span> <span class="o">=</span> <span class="n">akfind</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">all_occurrences</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">remove_missing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
