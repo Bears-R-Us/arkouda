@@ -52,5 +52,5 @@ or
    * Dump the combined contents of the command maps as a single json encoded string
    
 
-.. function:: proc executeCommand(cmd: string, msgArgs, st) throws
+.. function:: proc executeCommand(cmd: string, msgArgs, st): MsgTuple throws
 

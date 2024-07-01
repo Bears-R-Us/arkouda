@@ -45,6 +45,14 @@ or
       Gives out symbol names.
       
 
+   .. method:: proc insert(in symbol: shared AbstractSymEntry): MsgTuple throws
+
+      
+      Insert a symbol into the table.
+      
+      Returns a symbol-creation message with the symbol's attributes
+      
+
    .. method:: proc addEntry(name: string, shape: int ...?N, type t): borrowed SymEntry(t, N) throws where isSupportedType(t)
 
       
@@ -116,14 +124,13 @@ or
 
    .. method:: proc lookup(name: string): borrowed AbstractSymEntry throws
 
-      *
-      * Returns the AbstractSymEntry associated with the provided name, if the AbstractSymEntry exists
-      * :arg name: string to index/query in the sym table
-      * :type name: string
+   .. method:: proc this(name: string): borrowed AbstractSymEntry throws
+
       
-      * :returns: AbstractSymEntry or throws on error
-      * :throws: `unkownSymbolError(name)`
+      Get a symbol from the table. Throw an error if the symbol is not found.
       
+
+   .. method:: proc this(name: ParameterObj): borrowed AbstractSymEntry throws
 
    .. method:: proc checkTable(name: string, calling_func = "check") throws
 
@@ -216,16 +223,6 @@ or
       
 
    .. method:: proc attrib(name: string): string throws
-
-      
-      Returns raw attributes of the sym entry at the given string, if the string maps to an entry.
-      Returns: name, dtype, size, ndim, shape, and item size
-      
-      :arg name: name of entry to be processed
-      :type name: string
-      
-      :returns: s (string) containing info
-      
 
    .. method:: proc datastr(name: string, thresh: int): string throws
 

@@ -183,6 +183,8 @@ or
         :returns: s (string) containing the array data
       
 
+   .. method:: proc attrib(): string throws
+
 .. class:: SymEntry : GenSymEntry
 
    Symbol table entry 
@@ -296,6 +298,8 @@ or
    .. attribute:: var size: int = 0
 
    .. method:: proc init(len: int = 0)
+
+   .. method:: proc attrib(): string throws
 
 .. function:: proc createTypedSymEntry(len: int, type t) throws
 

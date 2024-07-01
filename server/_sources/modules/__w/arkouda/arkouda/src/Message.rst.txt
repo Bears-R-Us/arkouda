@@ -73,6 +73,23 @@ or
 
 .. method:: proc type MsgTuple.success(msg: string): MsgTuple
 
+.. method:: proc type MsgTuple.newSymbol(name: string, sym: borrowed AbstractSymEntry): MsgTuple throws
+
+   
+   Create a MsgTuple indicating to the client that a new symbol was created
+   
+
+.. method:: proc type MsgTuple.fromResponses(responses: [] MsgTuple): MsgTuple throws
+
+   
+   Create a MsgTuple from a group of responses (useful for returning multiple
+   symbols from one command, see: 'unstack' in 'ManipulationMsg')
+   
+   If any of the responses are errors, return the first error message.
+   Otherwise, return a success message, where each of the 'msg' fields
+   are composed into a JSON list.
+   
+
 .. method:: proc type MsgTuple.error(msg: string): MsgTuple
 
 .. method:: proc type MsgTuple.payload(data: bytes): MsgTuple

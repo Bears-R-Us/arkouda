@@ -246,6 +246,22 @@
 <dd></dd></dl>
 
 <dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.MsgTuple.newSymbol">
+<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">MsgTuple.</span></span><span class="sig-name descname"><span class="pre">newSymbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">sym:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#Message.MsgTuple.newSymbol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a MsgTuple indicating to the client that a new symbol was created</p>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.MsgTuple.fromResponses">
+<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">MsgTuple.</span></span><span class="sig-name descname"><span class="pre">fromResponses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">responses:</span> <span class="pre">[]</span> <span class="pre">MsgTuple</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#Message.MsgTuple.fromResponses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a MsgTuple from a group of responses (useful for returning multiple
+symbols from one command, see: ‘unstack’ in ‘ManipulationMsg’)</p>
+<p>If any of the responses are errors, return the first error message.
+Otherwise, return a success message, where each of the ‘msg’ fields
+are composed into a JSON list.</p>
+</dd></dl>
+
+<dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.MsgTuple.error">
 <em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">MsgTuple.</span></span><span class="sig-name descname"><span class="pre">error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span><a class="headerlink" href="#Message.MsgTuple.error" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
