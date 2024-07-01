@@ -234,51 +234,51 @@ registerFunction('stack<bool,1>', ark_stack_bool_1, 'ManipulationMsg', 687);
 
 proc ark_tile_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ManipulationMsg.tileMsg(cmd, msgArgs, st, array_dtype=int, array_nd=1);
-registerFunction('tile<int64,1>', ark_tile_int_1, 'ManipulationMsg', 776);
+registerFunction('tile<int64,1>', ark_tile_int_1, 'ManipulationMsg', 778);
 
 proc ark_tile_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ManipulationMsg.tileMsg(cmd, msgArgs, st, array_dtype=uint, array_nd=1);
-registerFunction('tile<uint64,1>', ark_tile_uint_1, 'ManipulationMsg', 776);
+registerFunction('tile<uint64,1>', ark_tile_uint_1, 'ManipulationMsg', 778);
 
 proc ark_tile_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ManipulationMsg.tileMsg(cmd, msgArgs, st, array_dtype=real, array_nd=1);
-registerFunction('tile<float64,1>', ark_tile_real_1, 'ManipulationMsg', 776);
+registerFunction('tile<float64,1>', ark_tile_real_1, 'ManipulationMsg', 778);
 
 proc ark_tile_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ManipulationMsg.tileMsg(cmd, msgArgs, st, array_dtype=bool, array_nd=1);
-registerFunction('tile<bool,1>', ark_tile_bool_1, 'ManipulationMsg', 776);
+registerFunction('tile<bool,1>', ark_tile_bool_1, 'ManipulationMsg', 778);
 
 proc ark_unstack_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ManipulationMsg.unstackMsg(cmd, msgArgs, st, array_dtype=int, array_nd=1);
-registerFunction('unstack<int64,1>', ark_unstack_int_1, 'ManipulationMsg', 817);
+registerFunction('unstack<int64,1>', ark_unstack_int_1, 'ManipulationMsg', 819);
 
 proc ark_unstack_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ManipulationMsg.unstackMsg(cmd, msgArgs, st, array_dtype=uint, array_nd=1);
-registerFunction('unstack<uint64,1>', ark_unstack_uint_1, 'ManipulationMsg', 817);
+registerFunction('unstack<uint64,1>', ark_unstack_uint_1, 'ManipulationMsg', 819);
 
 proc ark_unstack_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ManipulationMsg.unstackMsg(cmd, msgArgs, st, array_dtype=real, array_nd=1);
-registerFunction('unstack<float64,1>', ark_unstack_real_1, 'ManipulationMsg', 817);
+registerFunction('unstack<float64,1>', ark_unstack_real_1, 'ManipulationMsg', 819);
 
 proc ark_unstack_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ManipulationMsg.unstackMsg(cmd, msgArgs, st, array_dtype=bool, array_nd=1);
-registerFunction('unstack<bool,1>', ark_unstack_bool_1, 'ManipulationMsg', 817);
+registerFunction('unstack<bool,1>', ark_unstack_bool_1, 'ManipulationMsg', 819);
 
 proc ark_repeatFlat_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ManipulationMsg.repeatFlatMsg(cmd, msgArgs, st, array_dtype=int, array_nd=1);
-registerFunction('repeatFlat<int64,1>', ark_repeatFlat_int_1, 'ManipulationMsg', 901);
+registerFunction('repeatFlat<int64,1>', ark_repeatFlat_int_1, 'ManipulationMsg', 903);
 
 proc ark_repeatFlat_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ManipulationMsg.repeatFlatMsg(cmd, msgArgs, st, array_dtype=uint, array_nd=1);
-registerFunction('repeatFlat<uint64,1>', ark_repeatFlat_uint_1, 'ManipulationMsg', 901);
+registerFunction('repeatFlat<uint64,1>', ark_repeatFlat_uint_1, 'ManipulationMsg', 903);
 
 proc ark_repeatFlat_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ManipulationMsg.repeatFlatMsg(cmd, msgArgs, st, array_dtype=real, array_nd=1);
-registerFunction('repeatFlat<float64,1>', ark_repeatFlat_real_1, 'ManipulationMsg', 901);
+registerFunction('repeatFlat<float64,1>', ark_repeatFlat_real_1, 'ManipulationMsg', 903);
 
 proc ark_repeatFlat_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ManipulationMsg.repeatFlatMsg(cmd, msgArgs, st, array_dtype=bool, array_nd=1);
-registerFunction('repeatFlat<bool,1>', ark_repeatFlat_bool_1, 'ManipulationMsg', 901);
+registerFunction('repeatFlat<bool,1>', ark_repeatFlat_bool_1, 'ManipulationMsg', 903);
 
 import OperatorMsg;
 
@@ -297,6 +297,58 @@ import SequenceMsg;
 import SortMsg;
 
 import StatsMsg;
+
+proc ark_reg_mean_generic(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype_0, param array_nd_0: int): MsgTuple throws {
+	var x_array_sym = st[msgArgs['x']]: SymEntry(array_dtype_0, array_nd_0);
+	ref x = x_array_sym.a;
+	var skipNan = msgArgs['skipNan'].toScalar(bool);
+	var ark_result = StatsMsg.mean(x,skipNan);
+
+	return MsgTuple.fromScalar(ark_result);
+}
+
+proc ark_mean_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_mean_generic(cmd, msgArgs, st, array_dtype_0=int, array_nd_0=1);
+registerFunction('mean<int64,1>', ark_mean_int_1, 'StatsMsg', 24);
+
+proc ark_mean_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_mean_generic(cmd, msgArgs, st, array_dtype_0=uint, array_nd_0=1);
+registerFunction('mean<uint64,1>', ark_mean_uint_1, 'StatsMsg', 24);
+
+proc ark_mean_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_mean_generic(cmd, msgArgs, st, array_dtype_0=real, array_nd_0=1);
+registerFunction('mean<float64,1>', ark_mean_real_1, 'StatsMsg', 24);
+
+proc ark_mean_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_mean_generic(cmd, msgArgs, st, array_dtype_0=bool, array_nd_0=1);
+registerFunction('mean<bool,1>', ark_mean_bool_1, 'StatsMsg', 24);
+
+proc ark_reg_meanReduce_generic(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype_0, param array_nd_0: int): MsgTuple throws {
+	var x_array_sym = st[msgArgs['x']]: SymEntry(array_dtype_0, array_nd_0);
+	ref x = x_array_sym.a;
+	var skipNan = msgArgs['skipNan'].toScalar(bool);
+	var axes = msgArgs['axes'].toScalarList(int);
+	var ark_result = StatsMsg.meanReduce(x,skipNan,axes);
+	var ark_result_symbol = new shared SymEntry(ark_result);
+
+	return st.insert(ark_result_symbol);
+}
+
+proc ark_meanReduce_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_meanReduce_generic(cmd, msgArgs, st, array_dtype_0=int, array_nd_0=1);
+registerFunction('meanReduce<int64,1>', ark_meanReduce_int_1, 'StatsMsg', 31);
+
+proc ark_meanReduce_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_meanReduce_generic(cmd, msgArgs, st, array_dtype_0=uint, array_nd_0=1);
+registerFunction('meanReduce<uint64,1>', ark_meanReduce_uint_1, 'StatsMsg', 31);
+
+proc ark_meanReduce_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_meanReduce_generic(cmd, msgArgs, st, array_dtype_0=real, array_nd_0=1);
+registerFunction('meanReduce<float64,1>', ark_meanReduce_real_1, 'StatsMsg', 31);
+
+proc ark_meanReduce_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_meanReduce_generic(cmd, msgArgs, st, array_dtype_0=bool, array_nd_0=1);
+registerFunction('meanReduce<bool,1>', ark_meanReduce_bool_1, 'StatsMsg', 31);
 
 import TimeClassMsg;
 

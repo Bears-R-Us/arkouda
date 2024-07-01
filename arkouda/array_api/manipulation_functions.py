@@ -247,7 +247,7 @@ def repeat(x: Array, repeats: Union[int, Array], /, *, axis: Optional[int] = Non
                 cast(
                     str,
                     generic_msg(
-                        cmd=f"repeatFlat<{x.dype},{x.ndim}>",
+                        cmd=f"repeatFlat<{x.dtype},{x.ndim}>",
                         args={
                             "name": x._array,
                             "repeats": reps._array,

@@ -1,4 +1,6 @@
 module ArkoudaAryUtilCompat {
+  use List;
+
   /*
     Get a domain that selects out the idx'th set of indices along the specified axes
 
@@ -92,6 +94,10 @@ module ArkoudaAryUtilCompat {
       outDims[i] = D.dim(i);
     }
     return D[{(...outDims)}];
+  }
+
+  proc domOffAxis(D: domain(?), axes: list(int)): domain throws {
+    return domOffAxis(D, axes.toArray());
   }
 
   /*

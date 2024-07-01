@@ -136,7 +136,7 @@ def get_formals(fn):
     return con_formals, gen_formals
 
 
-def stamp_generic_command(generic_proc_name, prefix, module_name, formals, line_num):
+def stamp_generic_command(generic_proc_name, prefix, module_name, formals, line_num, is_user_proc):
     """
     Create code to stamp out and register a generic command using a generic
     procedure, and a set values for its generic formals.
@@ -165,9 +165,12 @@ def stamp_generic_command(generic_proc_name, prefix, module_name, formals, line_
 
     stamp_formal_args = ", ".join([f"{k}={v}" for k, v in formals.items()])
 
+    # use qualified naming if generic_proc belongs in a use defined module to avoid name conflicts
+    call = f"{module_name}.{generic_proc_name}" if is_user_proc else generic_proc_name
+
     proc = (
         f"proc {stamp_name}(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): {RESPONSE_TYPE_NAME} throws do\n"
-        + f"  return {module_name}.{generic_proc_name}(cmd, msgArgs, st, {stamp_formal_args});\n"
+        + f"  return {call}(cmd, msgArgs, st, {stamp_formal_args});\n"
         + f"registerFunction('{command_name}', {stamp_name}, '{module_name}', {line_num});"
     )
     return proc
@@ -395,7 +398,7 @@ def gen_signature(user_proc_name, generic_args=None):
 
     For a generic command procedure:
     ```
-    proc ark_reg_<user_proc_name>_generic(const ref args: msgArgs, ref symbols: genSymTable, <generic args>): msgResponse throws {
+    proc ark_reg_<user_proc_name>_generic(cmd: string, msgArgs: borrowed MessageArgs, , st: borrowed SymTab, <generic args>): MsgTuple throws {
     ```
 
     Return the signature and the name of the procedure
@@ -406,10 +409,10 @@ def gen_signature(user_proc_name, generic_args=None):
             f"{kind} {name}: {ft}" if ft else f"{kind} {name}"
             for (name, kind, ft) in generic_args
         ]
-        proc = f"proc {name}(const ref args: msgArgs, ref symbols: genSymTable, {', '.join(arg_strings)}): msgResponse throws {'{'}"
+        proc = f"proc {name}(cmd: string, {ARGS_FORMAL_NAME}: {ARGS_FORMAL_TYPE}, {SYMTAB_FORMAL_NAME}: {SYMTAB_FORMAL_TYPE}, {', '.join(arg_strings)}): {RESPONSE_TYPE_NAME} throws {'{'}"
     else:
         name = "ark_reg_" + user_proc_name
-        proc = f"proc {name}(cmd: string, {ARGS_FORMAL_INTENT} {ARGS_FORMAL_NAME}: {ARGS_FORMAL_TYPE}, {SYMTAB_FORMAL_INTENT} {SYMTAB_FORMAL_NAME}: {SYMTAB_FORMAL_TYPE}): {RESPONSE_TYPE_NAME} throws {'{'}"
+        proc = f"proc {name}(cmd: string, {ARGS_FORMAL_NAME}: {ARGS_FORMAL_TYPE}, {SYMTAB_FORMAL_NAME}: {SYMTAB_FORMAL_TYPE}): {RESPONSE_TYPE_NAME} throws {'{'}"
     return (proc, name)
 
 
@@ -560,7 +563,7 @@ def gen_command_proc(name, return_type, formals, mod_name):
     return (command_proc, cmd_name, is_generic_command, command_formals)
 
 
-def stamp_out_command(config, formals, name, cmd_prefix, mod_name, line_num):
+def stamp_out_command(config, formals, name, cmd_prefix, mod_name, line_num, is_user_proc):
     """
     Yield instantiations of a generic command with using the
     values from the configuration file
@@ -582,7 +585,7 @@ def stamp_out_command(config, formals, name, cmd_prefix, mod_name, line_num):
     formal_perms = generic_permutations(config, formals)
 
     for fp in formal_perms:
-        stamp = stamp_generic_command(name, cmd_prefix, mod_name, fp, line_num)
+        stamp = stamp_generic_command(name, cmd_prefix, mod_name, fp, line_num, is_user_proc)
         yield stamp
 
 
@@ -644,6 +647,7 @@ def register_commands(config, source_files):
                         command_prefix,
                         mod_name,
                         line_num,
+                        False,
                     ):
                         stamps.append(stamp)
                 except ValueError as e:
@@ -681,7 +685,7 @@ def register_commands(config, source_files):
 
             try:
                 for stamp in stamp_out_command(
-                    config, gen_formals, name, command_prefix, mod_name, line_num
+                    config, gen_formals, name, command_prefix, mod_name, line_num, True
                 ):
                     stamps.append(stamp)
                     count += 1

@@ -4,7 +4,7 @@ module Stats {
     // TODO: cast to real(32) instead of real(64) for arrays of
     // real(32) or smaller integer types
 
-    private proc isArgandType(type t) param: bool do
+    proc canBeNan(type t) param: bool do
         return isRealType(t) || isImagType(t) || isComplexType(t);
 
     proc mean(ref ar: [?aD] ?t): real throws {
@@ -46,15 +46,15 @@ module Stats {
         return sqrt(varianceOver(ar, slice, ddof));
     }
 
-    proc meanSkipNan(ref arr: [?d] ?t): real throws {
+    proc meanSkipNan(const ref arr: [?d] ?t): real throws {
         return meanSkipNan(arr, d);
     }
 
-    proc meanSkipNan(ref arr: [?aD] ?t, slice): real throws {
+    proc meanSkipNan(const ref arr: [?aD] ?t, slice): real throws {
         var sum = 0.0,
             count = 0;
         forall i in slice with(+ reduce sum, + reduce count) {
-            if isArgandType(t) { if isNan(arr[i]) then continue; }
+            if canBeNan(t) { if isNan(arr[i]) then continue; }
             sum += arr[i]:real;
             count += 1;
         }
@@ -70,7 +70,7 @@ module Stats {
         var sum = 0.0,
             count = 0;
         forall i in slice with(+ reduce sum, + reduce count) {
-            if isArgandType(t) { if isNan(arr[i]) then continue; }
+            if canBeNan(t) { if isNan(arr[i]) then continue; }
             sum += (arr[i]:real - mean) ** 2;
             count += 1;
         }

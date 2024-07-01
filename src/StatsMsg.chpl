@@ -11,6 +11,7 @@ module StatsMsg {
     use ServerErrorStrings;
     use Stats;
     use IOUtils;
+    use List;
 
     use Map;
     use ArkoudaIOCompat;
@@ -19,6 +20,24 @@ module StatsMsg {
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const sLogger = new Logger(logLevel, logChannel);
+
+    @arkouda.registerCommand()
+    proc mean(const ref x: [?d] ?t, skipNan: bool): real throws {
+      if canBeNan(t) && skipNan
+          then return meanSkipNan(x, d);
+          else return (+ reduce x:real) / x.size:real;
+    }
+
+    @arkouda.registerCommand()
+    proc meanReduce(const ref x: [?d] ?t, skipNan: bool, axes: list(int)): [] real throws {
+      var meanArr = makeDistArray(domOffAxis(d, axes), real);
+      forall (slice, sliceIdx) in axisSlices(d, axes) {
+        if canBeNan(t) && skipNan
+          then meanArr[sliceIdx] = meanSkipNan(x, slice);
+          else meanArr[sliceIdx] = (+ reduce x[slice]:real) / slice.size:real;
+      }
+      return meanArr;
+    }
 
     @chpldoc.nodoc
     const computations = {"mean", "var", "std"};
