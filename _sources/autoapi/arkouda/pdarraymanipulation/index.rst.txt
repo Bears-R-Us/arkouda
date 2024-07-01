@@ -9,11 +9,29 @@ Functions
 
 .. autoapisummary::
 
+   arkouda.pdarraymanipulation.delete
    arkouda.pdarraymanipulation.vstack
 
 
 Module Contents
 ---------------
+
+.. py:function:: delete(arr: arkouda.pdarrayclass.pdarray, obj: Union[arkouda.pdarrayclass.pdarray, slice, int], axis: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
+
+   Return a copy of 'arr' with elements along the specified axis removed.
+
+   :param arr: The array to remove elements from
+   :type arr: pdarray
+   :param obj: The indices to remove from 'arr'. If obj is a pdarray, it must
+               have an integer dtype.
+   :type obj: Union[pdarray, slice, int]
+   :param axis: The axis along which to remove elements. If None, the array will
+                be flattened before removing elements. Defaults to None.
+   :type axis: Optional[int], optional
+
+   :returns: A copy of 'arr' with elements removed
+   :rtype: pdarray
+
 
 .. py:function:: vstack(tup: Union[Tuple[arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], *, dtype: Optional[Union[type, str]] = None, casting: Literal['no', 'equiv', 'safe', 'same_kind', 'unsafe'] = 'same_kind') -> arkouda.pdarrayclass.pdarray
 
