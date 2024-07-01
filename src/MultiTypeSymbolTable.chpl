@@ -11,6 +11,7 @@ module MultiTypeSymbolTable
     use MultiTypeSymEntry;
     use IO;
     use IOUtils;
+    use Message;
 
     use Map;
     use Registry;
@@ -43,6 +44,19 @@ module MultiTypeSymbolTable
         proc nextName():string {
             nid += 1;
             return serverid + nid:string;
+        }
+
+        /*
+            Insert a symbol into the table.
+
+            Returns a symbol-creation message with the symbol's attributes
+        */
+        proc insert(in symbol: shared AbstractSymEntry): MsgTuple throws {
+            const name = nextName(),
+                  response = MsgTuple.newSymbol(name, symbol.borrow());
+            tab.addOrReplace(name, symbol);
+            mtLogger.info(getModuleName(),getRoutineName(),getLineNumber(),response.msg);
+            return response;
         }
 
         /*
@@ -205,7 +219,7 @@ module MultiTypeSymbolTable
             for n in tab.keysToArray() { deleteEntry(n); }
         }
 
-        
+
         /**
          * Returns the AbstractSymEntry associated with the provided name, if the AbstractSymEntry exists
          * :arg name: string to index/query in the sym table
@@ -214,16 +228,28 @@ module MultiTypeSymbolTable
          * :returns: AbstractSymEntry or throws on error
          * :throws: `unkownSymbolError(name)`
          */
+        // deprecated
         proc lookup(name: string): borrowed AbstractSymEntry throws {
-            checkTable(name, "lookup");
+            return this[name];
+        }
+
+        /*
+          Get a symbol from the table. Throw an error if the symbol is not found.
+        */
+        proc this(name: string): borrowed AbstractSymEntry throws {
+            checkTable(name);
             return tab[name];
+        }
+
+        proc this(name: ParameterObj): borrowed AbstractSymEntry throws {
+            return this[name.toScalar(string)];
         }
 
         /**
          * checks to see if a symbol is defined if it is not it throws an exception 
         */
-        proc checkTable(name: string, calling_func="check") throws { 
-            if (!tab.contains(name)) { 
+        proc checkTable(name: string, calling_func="check") throws {
+            if !tab.contains(name) {
                 mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
                                                 "undefined symbol: %s".format(name));
                 throw getErrorWithContext(
@@ -237,7 +263,7 @@ module MultiTypeSymbolTable
                                                 "found symbol: %s".format(name));
             }
         }
-        
+
         /**
          * Prints the SymTable in a pretty format (name,SymTable[name])
          */
@@ -390,6 +416,7 @@ module MultiTypeSymbolTable
 
         :returns: s (string) containing info
         */
+        // deprecated in favor of using st.insert(sym)
         proc attrib(name:string):string throws {
             checkTable(name, "attrib");
 

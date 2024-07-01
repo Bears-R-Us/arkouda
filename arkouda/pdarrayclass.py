@@ -2569,6 +2569,42 @@ def create_pdarray(repMsg: str, max_bits=None) -> pdarray:
     return pdarray(name, dtype(mydtype), size, ndim, shape, itemsize, max_bits)
 
 
+@typechecked
+def create_pdarrays(repMsg: str) -> List[pdarray]:
+    """
+    Return a list of pdarray instances pointing to arrays created by the
+    arkouda server.
+
+    Parameters
+    ----------
+    repMsg : str
+        A JSON list of space delimited strings, each containing the pdarray
+        name, datatype, size,
+
+    Returns
+    -------
+    List[pdarray]
+        A list of pdarrays with the same attributes and data as the pdarrays
+
+    Raises
+    ------
+    ValueError
+        If there's an error in parsing the repMsg parameter into the six
+        values needed to create the pdarray instance
+    RuntimeError
+        Raised if a server-side error is thrown in the process of creating
+        the pdarray instance
+    """
+
+    # TODO: maybe add more robust json parsing here
+    try:
+        repMsg = repMsg.strip("[]")
+        responses = [r.strip().strip('\"') for r in repMsg.split("\",")]
+        return [create_pdarray(response) for response in responses]
+    except Exception as e:
+        raise ValueError(e)
+
+
 def clear() -> None:
     """
     Send a clear message to clear all unregistered data from the server symbol table
@@ -3942,7 +3978,7 @@ def broadcast_to_shape(pda: pdarray, shape: Tuple[int, ...]) -> pdarray:
         cast(
             str,
             generic_msg(
-                cmd=f"broadcastTo{pda.ndim}Dx{len(shape)}D",
+                cmd=f"broadcast<{pda.dtype},{pda.ndim},{len(shape)}>",
                 args={
                     "name": pda,
                     "shape": shape,
