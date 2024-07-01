@@ -1220,4 +1220,174 @@ module ManipulationMsg {
     const ret = [i in d] gEnts[i]!;
     return ret;
   }
+
+  // https://numpy.org/doc/stable/reference/generated/numpy.delete.html
+  @arkouda.registerND
+  proc deleteMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
+    param pn = Reflection.getRoutineName();
+    const arr = msgArgs.getValueOf("arr"),
+          obj = msgArgs.getValueOf("obj"),
+          objSorted = msgArgs.get("obj_sorted").getBoolValue(),
+          axis = msgArgs.get("axis").getPositiveIntValue(nd),
+          rname = st.nextName();
+
+    var gArr: borrowed GenSymEntry = getGenericTypedArrayEntry(arr, st),
+        gObj: borrowed GenSymEntry = getGenericTypedArrayEntry(obj, st);
+
+    proc doDelete(type t): MsgTuple throws
+      where nd == 1
+    {
+      const eIn = toSymEntry(gArr, t, 1),
+            eObj = toSymEntry(gObj, int, 1);
+
+      var eOut = st.addEntry(rname, eIn.a.size - eObj.a.size, t);
+
+      // copy the data from the input array to the output array, excluding the indices in 'obj'
+      // TODO: fold this loop into 'parSearch' (avoid repeatedly spawning tasks by kicking
+      //       off coforall loops for each array element)
+      var ii = 0;
+      for i in 0..<eIn.a.size {
+        if !parSearch(eObj.a, i, objSorted) {
+          eOut.a[ii] = eIn.a[i];
+          ii += 1;
+        }
+      }
+
+      const repMsg = "created " + st.attrib(rname);
+      mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
+    proc doDelete(type t): MsgTuple throws
+      where nd > 1
+    {
+      const eIn = toSymEntry(gArr, t, nd),
+            eObj = toSymEntry(gObj, int, 1);
+
+      var shapeOut: nd*int;
+      for i in 0..<nd do shapeOut[i] =
+        if i == axis
+          then eIn.tupShape[i] - eObj.a.size
+          else eIn.tupShape[i];
+
+      var eOut = st.addEntry(rname, (...shapeOut), t);
+
+      // create an array of indices to keep
+      var indexer = makeDistArray(eOut.tupShape[axis], int),
+          ii = 0;
+      const firstSliceIdx: nd*int;
+      for i in domOnAxis(eIn.a.domain, firstSliceIdx, axis) {
+        if !parSearch(eObj.a, i[axis], objSorted) {
+          indexer[ii] = i[axis];
+          ii += 1;
+        }
+      }
+
+      // copy the selected indices from the input array to the output array
+      forall array1DSliceIdx in domOffAxis(eIn.a.domain, axis) {
+        forall ii in domOnAxis(eOut.a.domain, array1DSliceIdx, axis) {
+          var i: nd*int = ii;
+          i[axis] = indexer[ii[axis]];
+          eOut.a[ii] = eIn.a[i];
+        }
+      }
+
+      const repMsg = "created " + st.attrib(rname);
+      mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
+    select gArr.dtype {
+      when DType.Int64 do return doDelete(int);
+      when DType.UInt64 do return doDelete(uint);
+      when DType.Float64 do return doDelete(real);
+      when DType.Bool do return doDelete(bool);
+      otherwise {
+        var errorMsg = notImplementedError(pn,dtype2str(gArr.dtype));
+        mLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+        return new MsgTuple(errorMsg,MsgType.ERROR);
+      }
+    }
+  }
+
+  @arkouda.registerND
+  proc deleteSlice(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
+    import IndexingMsg.convertSlice;
+
+    param pn = Reflection.getRoutineName();
+    const arr = msgArgs.getValueOf("arr"),
+          start = msgArgs.get("start").getIntValue(),
+          stop = msgArgs.get("stop").getIntValue(),
+          stride = msgArgs.get("stride").getIntValue(),
+          axis = msgArgs.get("axis").getPositiveIntValue(nd),
+          rname = st.nextName();
+
+    const slice: range(strides=strideKind.any) = convertSlice(start, stop, stride);
+    var gArr: borrowed GenSymEntry = getGenericTypedArrayEntry(arr, st);
+
+    proc doDelete(type t): MsgTuple throws {
+      const eIn = toSymEntry(gArr, t, nd);
+
+      var shapeOut: nd*int;
+      for i in 0..<nd do shapeOut[i] =
+        if i == axis
+          then eIn.tupShape[i] - slice.size
+          else eIn.tupShape[i];
+
+      var eOut = st.addEntry(rname, (...shapeOut), t);
+
+      // copy the indices not contained in the slice from the input array to the output array
+      // note: the 1D array slices created from dom[on|off]Axis are conceptually distinct from the slice indices in 'slice'
+      forall array1DSliceIdx in domOffAxis(eIn.a.domain, axis) {
+        var ii: nd*int = if nd == 1 then (array1DSliceIdx, ) else array1DSliceIdx;
+        for i in domOnAxis(eIn.a.domain, ii, axis) {
+          if !slice.contains(if nd == 1 then i else i[axis]) {
+            eOut.a[ii] = eIn.a[i];
+            ii[axis] += 1;
+          }
+        }
+      }
+
+      const repMsg = "created " + st.attrib(rname);
+      mLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
+    select gArr.dtype {
+      when DType.Int64 do return doDelete(int);
+      when DType.UInt64 do return doDelete(uint);
+      when DType.Float64 do return doDelete(real);
+      when DType.Bool do return doDelete(bool);
+      otherwise {
+        var errorMsg = notImplementedError(pn,dtype2str(gArr.dtype));
+        mLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
+        return new MsgTuple(errorMsg,MsgType.ERROR);
+      }
+    }
+  }
+
+  proc parSearch(a: [?d] ?t, x: t, sorted: bool): bool {
+    use Search;
+    var found = false;
+
+    const nTasks=here.maxTaskPar;
+    coforall loc in Locales with (|| reduce found) do on loc {
+      const locDom = a.localSubdomain(),
+            nPerTask = locDom.size / nTasks;
+
+      coforall tid in 0..<nTasks with (|| reduce found) {
+        const (lf, _) = search(
+          a, x, sorted=sorted,
+          lo = locDom.low + nPerTask*tid,
+          hi = if tid == nTasks-1
+            then locDom.high
+            else locDom.low + nPerTask*(tid+1)
+        );
+
+        found ||= lf;
+      }
+    }
+    return found;
+  }
+
 }
