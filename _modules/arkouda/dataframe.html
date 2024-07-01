@@ -416,6 +416,23 @@
 <span class="p">]</span>
 
 
+<span class="k">def</span> <span class="nf">apply_if_callable</span><span class="p">(</span><span class="n">maybe_callable</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Evaluate possibly callable input using obj and kwargs if it is callable,</span>
+<span class="sd">    otherwise return as it is.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    maybe_callable : possibly a callable</span>
+<span class="sd">    obj : NDFrame</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">maybe_callable</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">maybe_callable</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">maybe_callable</span>
+
+
 <span class="k">def</span> <span class="nf">groupby_operators</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">GROUPBY_REDUCTION_TYPES</span><span class="p">:</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_make_aggop</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
@@ -1461,6 +1478,9 @@
 
         <span class="c1"># Set a single column in the dataframe using a an arkouda array</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Series</span><span class="p">):</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">values</span>
+
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_COLUMN_CLASSES</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Column must be one of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_COLUMN_CLASSES</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nrows</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nrows</span> <span class="o">!=</span> <span class="n">value</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
@@ -6019,6 +6039,77 @@
                     <span class="n">columns</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">BitVector</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">comps</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataFrame.assign">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.assign">[docs]</a>
+    <span class="k">def</span> <span class="nf">assign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assign new columns to a DataFrame.</span>
+
+<span class="sd">        Returns a new object with all original columns in addition to new ones.</span>
+<span class="sd">        Existing columns that are re-assigned will be overwritten.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        **kwargs : dict of {str: callable or Series}</span>
+<span class="sd">            The column names are keywords. If the values are</span>
+<span class="sd">            callable, they are computed on the DataFrame and</span>
+<span class="sd">            assigned to the new columns. The callable must not</span>
+<span class="sd">            change input DataFrame (though pandas doesn&#39;t check it).</span>
+<span class="sd">            If the values are not callable, (e.g. a Series, scalar, or array),</span>
+<span class="sd">            they are simply assigned.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        DataFrame</span>
+<span class="sd">            A new DataFrame with the new columns in addition to</span>
+<span class="sd">            all the existing columns.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Assigning multiple columns within the same ``assign`` is possible.</span>
+<span class="sd">        Later items in &#39;\*\*kwargs&#39; may refer to newly created or modified</span>
+<span class="sd">        columns in &#39;df&#39;; items are computed and assigned into &#39;df&#39; in order.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; df = ak.DataFrame({&#39;temp_c&#39;: [17.0, 25.0]},</span>
+<span class="sd">        ...                   index=[&#39;Portland&#39;, &#39;Berkeley&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; df</span>
+<span class="sd">                  temp_c</span>
+<span class="sd">        Portland    17.0</span>
+<span class="sd">        Berkeley    25.0</span>
+
+<span class="sd">        Where the value is a callable, evaluated on `df`:</span>
+
+<span class="sd">        &gt;&gt;&gt; df.assign(temp_f=lambda x: x.temp_c * 9 / 5 + 32)</span>
+<span class="sd">                  temp_c  temp_f</span>
+<span class="sd">        Portland    17.0    62.6</span>
+<span class="sd">        Berkeley    25.0    77.0</span>
+
+<span class="sd">        Alternatively, the same behavior can be achieved by directly</span>
+<span class="sd">        referencing an existing Series or sequence:</span>
+
+<span class="sd">        &gt;&gt;&gt; df.assign(temp_f=df[&#39;temp_c&#39;] * 9 / 5 + 32)</span>
+<span class="sd">                  temp_c  temp_f</span>
+<span class="sd">        Portland    17.0    62.6</span>
+<span class="sd">        Berkeley    25.0    77.0</span>
+
+<span class="sd">        You can create multiple columns within the same assign where one</span>
+<span class="sd">        of the columns depends on another one defined within the same assign:</span>
+
+<span class="sd">        &gt;&gt;&gt; df.assign(temp_f=lambda x: x[&#39;temp_c&#39;] * 9 / 5 + 32,</span>
+<span class="sd">        ...           temp_k=lambda x: (x[&#39;temp_f&#39;] + 459.67) * 5 / 9)</span>
+<span class="sd">                  temp_c  temp_f  temp_k</span>
+<span class="sd">        Portland    17.0    62.6  290.15</span>
+<span class="sd">        Berkeley    25.0    77.0  298.15</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">apply_if_callable</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span></div>
 </div>
 
 
