@@ -36,19 +36,27 @@ module ZarrMsg {
     select dtype {
       when DType.Float64 {
         var ar1 = readZarrArray(storePath, real, nd);
-        st.addEntry(rname, createSymEntry(ar1));
+        var ar2 = makeDistArray((...ar1.shape), real);
+        ar2 = ar1;
+        st.addEntry(rname, createSymEntry(ar2));
       }
       when DType.Float32 {
         var ar1 = readZarrArray(storePath, real(32), nd);
-        st.addEntry(rname, createSymEntry(ar1));
+        var ar2 = makeDistArray((...ar1.shape), real(32));
+        ar2 = ar1;
+        st.addEntry(rname, createSymEntry(ar2));
       }
       when DType.Int64 {
-        var ar1 = readZarrArray(storePath, int, nd);
-        st.addEntry(rname, createSymEntry(ar1));
+        var ar1 = readZarrArray(storePath, int(64), nd);
+        var ar2 = makeDistArray((...ar1.shape), int(64));
+        ar2 = ar1;
+        st.addEntry(rname, createSymEntry(ar2));
       }
       when DType.Int32 {
         var ar1 = readZarrArray(storePath, int(32), nd);
-        st.addEntry(rname, createSymEntry(ar1));
+        var ar2 = makeDistArray((...ar1.shape), int(32));
+        ar2 = ar1;
+        st.addEntry(rname, createSymEntry(ar2));
       }
     }
 

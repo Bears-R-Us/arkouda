@@ -277,7 +277,6 @@ check-idn2: $(IDN2_CHECK)
 	$(DEP_INSTALL_DIR)/$@ -nl 1
 	@rm -f $(DEP_INSTALL_DIR)/$@ $(DEP_INSTALL_DIR)/$@_real
 
-
 ALL_TARGETS := $(ARKOUDA_MAIN_MODULE)
 .PHONY: all
 all: $(ALL_TARGETS)
