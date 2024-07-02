@@ -6,10 +6,10 @@ from pandas.testing import assert_frame_equal, assert_series_equal
 import arkouda as ak
 from arkouda.series import Series
 
-DTYPES = [ak.int64, ak.uint64, ak.bool, ak.float64, ak.bigint, ak.str_]
-NO_STRING = [ak.int64, ak.uint64, ak.bool, ak.float64, ak.bigint]
+DTYPES = [ak.int64, ak.uint64, ak.bool_, ak.float64, ak.bigint, ak.str_]
+NO_STRING = [ak.int64, ak.uint64, ak.bool_, ak.float64, ak.bigint]
 NUMERICAL_TYPES = [ak.int64, ak.uint64, ak.float64, ak.bigint]
-INTEGRAL_TYPES = [ak.int64, ak.uint64, ak.bool, ak.bigint]
+INTEGRAL_TYPES = [ak.int64, ak.uint64, ak.bool_, ak.bigint]
 
 
 class TestSeries:
@@ -92,7 +92,7 @@ class TestSeries:
             )
         )
         assert (added.index == ak.arange(size)).all()
-        if dtype != ak.bool:
+        if dtype != ak.bool_:
             assert all(i in added.values.to_list() for i in range(size))
         else:
             # we have exactly one False

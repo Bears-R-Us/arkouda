@@ -92,7 +92,7 @@ class TestJSONArgs:
     SCALAR_TYPES = [int, float, bool, str]
 #   The types below are support in arkouda, as noted in serverConfig.json.  This may be
 #   the same issue noted in the above comment.
-    SUPPORTED_TYPES = [ak.bool, ak.uint64, ak.int64, ak.bigint, ak.uint8, ak.float64]
+    SUPPORTED_TYPES = [ak.bool_, ak.uint64, ak.int64, ak.bigint, ak.uint8, ak.float64]
 
     @pytest.mark.parametrize("dtype", SCALAR_TYPES)
     def test_scalar_args(self, dtype):

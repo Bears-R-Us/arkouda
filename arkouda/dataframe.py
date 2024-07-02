@@ -18,7 +18,8 @@ from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, maxTransferBytes
 from arkouda.client_dtypes import BitVector, Fields, IPv4
 from arkouda.dtypes import BigInt
-from arkouda.dtypes import bool as akbool
+
+from arkouda.dtypes import bool_ as akbool
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import uint64 as akuint64

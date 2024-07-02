@@ -10,7 +10,7 @@ from numpy import dtype as npdtype
 from typeguard import typechecked
 
 from arkouda import Categorical, Strings
-from arkouda.dtypes import bool as akbool
+from arkouda.dtypes import bool_ as akbool
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import int64 as akint64
 from arkouda.groupbyclass import GroupBy, unique

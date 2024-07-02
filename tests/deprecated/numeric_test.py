@@ -15,7 +15,7 @@ class NumericTest(ArkoudaTest):
     def testSeededRNG(self):
         N = 100
         seed = 8675309
-        numericdtypes = [ak.int64, ak.float64, ak.bool, ak.uint64]
+        numericdtypes = [ak.int64, ak.float64, ak.bool_, ak.uint64]
         for dt in numericdtypes:
             # Make sure unseeded runs differ
             a = ak.randint(0, 2**32, N, dtype=dt)
@@ -59,11 +59,11 @@ class NumericTest(ArkoudaTest):
         arrays = {
             ak.int64: ak.randint(-(2**48), 2**48, N),
             ak.float64: ak.randint(0, 1, N, dtype=ak.float64),
-            ak.bool: ak.randint(0, 2, N, dtype=ak.bool),
+            ak.bool_: ak.randint(0, 2, N, dtype=ak.bool_),
         }
         roundtripable = set(
             (
-                (ak.bool, ak.bool),
+                (ak.bool_, ak.bool_),
                 (ak.int64, ak.int64),
                 (ak.int64, ak.float64),
                 (ak.int64, npstr),
@@ -96,7 +96,7 @@ class NumericTest(ArkoudaTest):
         self.assertEqual(ak.cast(ak.arange(0, 5), dt=ak.float64).dtype, ak.float64)
         self.assertListEqual(
             [False, True, True, True, True],
-            ak.cast(ak.linspace(0, 4, 5), dt=ak.bool).to_list(),
+            ak.cast(ak.linspace(0, 4, 5), dt=ak.bool_).to_list(),
         )
 
     def testStrCastErrors(self):
@@ -127,7 +127,7 @@ class NumericTest(ArkoudaTest):
             (ak.int64, intstr, intans),
             (ak.uint64, uintstr, uintans),
             (ak.float64, floatstr, floatans),
-            (ak.bool, boolstr, boolans),
+            (ak.bool_, boolstr, boolans),
         ]:
             with self.assertRaises(RuntimeError):
                 ak.cast(arg, dt, errors=ak.ErrorMode.strict)

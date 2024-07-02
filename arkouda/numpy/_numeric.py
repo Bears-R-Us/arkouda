@@ -4,7 +4,12 @@ from typeguard import typechecked
 
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import create_pdarray, pdarray
-from arkouda.dtypes import int64 as ak_int64, float64 as ak_float64, bool as ak_bool, uint64 as ak_uint64
+from arkouda.dtypes import (
+    int64 as ak_int64,
+    float64 as ak_float64,
+    bool_ as ak_bool,
+    uint64 as ak_uint64,
+)
 
 NUMERIC_TYPES = [ak_int64, ak_float64, ak_bool, ak_uint64]
 

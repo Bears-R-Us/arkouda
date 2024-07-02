@@ -363,8 +363,8 @@ class TestRandom:
         test_array = ak.random.randint(0, 1, 3, dtype=ak.float64)
         assert ak.float64 == test_array.dtype
 
-        test_array = ak.random.randint(0, 1, 5, dtype=ak.bool)
-        assert ak.bool == test_array.dtype
+        test_array = ak.random.randint(0, 1, 5, dtype=ak.bool_)
+        assert ak.bool_ == test_array.dtype
 
         test_ndarray = test_array.to_ndarray()
 
@@ -423,7 +423,7 @@ class TestRandom:
             4.0337935981006172,
         ] == values.to_list()
 
-        values = ak.random.randint(1, 5, 10, dtype=ak.bool, seed=2)
+        values = ak.random.randint(1, 5, 10, dtype=ak.bool_, seed=2)
         assert [False, True, True, True, True, False, True, True, True, True] == values.to_list()
 
         values = ak.random.randint(1, 5, 10, dtype=bool, seed=2)

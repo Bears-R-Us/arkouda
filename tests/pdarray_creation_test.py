@@ -142,9 +142,9 @@ class PdarrayCreationTest(ArkoudaTest):
 
         # test correct conversion to bool
         expected_bool = [False, True, True, True, True]
-        ak_arange_bool = ak.arange(0, 10, 2, dtype=ak.bool)
+        ak_arange_bool = ak.arange(0, 10, 2, dtype=ak.bool_)
         self.assertListEqual(expected_bool, ak_arange_bool.to_list())
-        self.assertEqual(ak.bool, ak_arange_bool.dtype)
+        self.assertEqual(ak.bool_, ak_arange_bool.dtype)
 
         # test uint64 input works
         uint_input = ak.arange(3, dtype=ak.uint64)
@@ -181,8 +181,8 @@ class PdarrayCreationTest(ArkoudaTest):
         test_array = ak.randint(0, 1, 3, dtype=ak.float64)
         self.assertEqual(ak.float64, test_array.dtype)
 
-        test_array = ak.randint(0, 1, 5, dtype=ak.bool)
-        self.assertEqual(ak.bool, test_array.dtype)
+        test_array = ak.randint(0, 1, 5, dtype=ak.bool_)
+        self.assertEqual(ak.bool_, test_array.dtype)
 
         test_ndarray = test_array.to_ndarray()
 
@@ -243,7 +243,7 @@ class PdarrayCreationTest(ArkoudaTest):
             values.to_list(),
         )
 
-        values = ak.randint(1, 5, 10, dtype=ak.bool, seed=2)
+        values = ak.randint(1, 5, 10, dtype=ak.bool_, seed=2)
         self.assertListEqual(
             [False, True, True, True, True, False, True, True, True, True],
             values.to_list(),
@@ -307,8 +307,8 @@ class PdarrayCreationTest(ArkoudaTest):
         boolZeros = ak.zeros(5, dtype=bool)
         self.assertEqual(bool, boolZeros.dtype)
 
-        boolZeros = ak.zeros(5, dtype=ak.bool)
-        self.assertEqual(ak.bool, boolZeros.dtype)
+        boolZeros = ak.zeros(5, dtype=ak.bool_)
+        self.assertEqual(ak.bool_, boolZeros.dtype)
 
         bigintZeros = ak.zeros(5, dtype=ak.bigint)
         self.assertEqual(ak.bigint, bigintZeros.dtype)
@@ -345,8 +345,8 @@ class PdarrayCreationTest(ArkoudaTest):
         boolOnes = ak.ones(5, dtype=bool)
         self.assertEqual(bool, boolOnes.dtype)
 
-        boolOnes = ak.ones(5, dtype=ak.bool)
-        self.assertEqual(ak.bool, boolOnes.dtype)
+        boolOnes = ak.ones(5, dtype=ak.bool_)
+        self.assertEqual(ak.bool_, boolOnes.dtype)
 
         bigintOnes = ak.ones(5, dtype=ak.bigint)
         self.assertEqual(ak.bigint, bigintOnes.dtype)
@@ -378,10 +378,10 @@ class PdarrayCreationTest(ArkoudaTest):
 
         self.assertEqual(ak.float64, floatOnesLike.dtype)
 
-        boolOnes = ak.ones(5, dtype=ak.bool)
+        boolOnes = ak.ones(5, dtype=ak.bool_)
         boolOnesLike = ak.ones_like(boolOnes)
 
-        self.assertEqual(ak.bool, boolOnesLike.dtype)
+        self.assertEqual(ak.bool_, boolOnesLike.dtype)
 
         bigintOnes = ak.ones(5, dtype=ak.bigint)
         bigintOnesLike = ak.ones_like(bigintOnes)
@@ -413,8 +413,8 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertEqual(bool, bool_full.dtype)
         self.assertEqual(bool_full[0], True)
 
-        bool_full = ak.full(5, False, dtype=ak.bool)
-        self.assertEqual(ak.bool, bool_full.dtype)
+        bool_full = ak.full(5, False, dtype=ak.bool_)
+        self.assertEqual(ak.bool_, bool_full.dtype)
         self.assertEqual(bool_full[0], False)
 
         string_len_full = ak.full("5", 5)
@@ -448,9 +448,9 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertEqual(ak.float64, float_full_like.dtype)
         self.assertEqual(float_full_like[0], 4)
 
-        bool_full = ak.full(5, True, dtype=ak.bool)
+        bool_full = ak.full(5, True, dtype=ak.bool_)
         bool_full_like = ak.full_like(bool_full, True)
-        self.assertEqual(ak.bool, bool_full_like.dtype)
+        self.assertEqual(ak.bool_, bool_full_like.dtype)
         self.assertEqual(bool_full_like[0], True)
 
     def test_zeros_like(self):
@@ -465,10 +465,10 @@ class PdarrayCreationTest(ArkoudaTest):
 
         self.assertEqual(ak.float64, floatZerosLike.dtype)
 
-        boolZeros = ak.ones(5, dtype=ak.bool)
+        boolZeros = ak.ones(5, dtype=ak.bool_)
         boolZerosLike = ak.ones_like(boolZeros)
 
-        self.assertEqual(ak.bool, boolZerosLike.dtype)
+        self.assertEqual(ak.bool_, boolZerosLike.dtype)
 
     def test_linspace(self):
         pda = ak.linspace(0, 100, 1000)

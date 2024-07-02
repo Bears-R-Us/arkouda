@@ -672,8 +672,8 @@ class TestGroupBy:
 
         if dtype is ak.str_:
             v = ak.random_strings_uniform(size=size, minlen=1, maxlen=2)
-        elif dtype is ak.bool:
-            v = ak.full(size, False, dtype=ak.bool)
+        elif dtype is ak.bool_:
+            v = ak.full(size, False, dtype=ak.bool_)
             v[::2] = True
         else:
             v = ak.arange(size, dtype=dtype)
@@ -706,7 +706,7 @@ class TestGroupBy:
         unique_keys, values = g.head(v, 2, return_indices=False)
         assert len(values) == len(expected_values)
         assert ak.all(unique_keys == ak.array([0, 1, 2]))
-        if dtype == ak.bool:
+        if dtype == ak.bool_:
             assert aksum(values) == aksum(expected_values)
         else:
             assert set(values.to_list()) == set(expected_values.to_list())
@@ -722,8 +722,8 @@ class TestGroupBy:
 
         if dtype is ak.str_:
             v = ak.random_strings_uniform(size=size, minlen=1, maxlen=2)
-        elif dtype is ak.bool:
-            v = ak.full(size, False, dtype=ak.bool)
+        elif dtype is ak.bool_:
+            v = ak.full(size, False, dtype=ak.bool_)
             v[::2] = True
         else:
             v = ak.arange(size, dtype=dtype)
@@ -756,7 +756,7 @@ class TestGroupBy:
         unique_keys, values = g.tail(v, 2, return_indices=False)
         assert len(values) == len(expected_values)
         assert ak.all(unique_keys == ak.array([0, 1, 2]))
-        if dtype == ak.bool:
+        if dtype == ak.bool_:
             assert aksum(values) == aksum(expected_values)
         else:
             assert set(values.to_list()) == set(expected_values.to_list())

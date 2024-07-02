@@ -35,7 +35,7 @@ a[:] = b  # cast b to float64
 print(b, b.dtype)
 print(a, a.dtype)
 
-a = ak.randint(0, 2, 10, dtype=ak.bool)
+a = ak.randint(0, 2, 10, dtype=ak.bool_)
 a[1] = True
 a[2] = True
 print(a)
@@ -50,14 +50,14 @@ iv = ak.arange(0, 10, 1)[::2]
 a[iv] = 10.0
 print(a)
 
-a = ak.ones(10, dtype=ak.bool)
+a = ak.ones(10, dtype=ak.bool_)
 iv = ak.arange(0, 10, 1)[::2]
 a[iv] = False
 print(a)
 
-a = ak.ones(10, dtype=ak.bool)
+a = ak.ones(10, dtype=ak.bool_)
 iv = ak.arange(0, 5, 1)
-b = ak.zeros(iv.size, dtype=ak.bool)
+b = ak.zeros(iv.size, dtype=ak.bool_)
 a[iv] = b
 print(a)
 
@@ -103,7 +103,7 @@ print(a)
 print(h)
 
 ak.verbose = False
-a = ak.randint(0, 2, 50, dtype=ak.bool)
+a = ak.randint(0, 2, 50, dtype=ak.bool_)
 print(a)
 print(a.sum())
 
@@ -143,7 +143,7 @@ a = ak.arange(0, 10, 1)
 b = np.array(list(a))
 print(a, a.dtype, b, b.dtype)
 
-a = ak.ones(10, dtype=ak.bool)
+a = ak.ones(10, dtype=ak.bool_)
 b = np.array(list(a))
 print(a, a.dtype, b, b.dtype)
 
@@ -273,16 +273,16 @@ ak.info(d)
 
 ak.verbose = False
 
-a = ak.ones(10, dtype=ak.bool)
+a = ak.ones(10, dtype=ak.bool_)
 print(a[1])
 
 ak.verbose = False
 
-a = ak.zeros(10, dtype=ak.bool)
+a = ak.zeros(10, dtype=ak.bool_)
 print(a[1])
 
 ak.verbose = False
-a = ak.ones(10, dtype=ak.bool)
+a = ak.ones(10, dtype=ak.bool_)
 a[4] = False
 a[1] = False
 print(a)
@@ -319,13 +319,13 @@ print(ak.exp(a))
 a.fill(math.e)
 print(ak.log(a))
 
-type(bool), type(np.bool), type(ak.bool), type(True)
+type(bool), type(np.bool_), type(ak.bool_), type(True)
 
 ak.verbose = False
 a = ak.linspace(0, 9, 10)
 print(a, ak.any(a), ak.all(a), ak.all(ak.ones(10, dtype=ak.float64)))
 b = a < 5
-print(b, ak.any(b), ak.all(b), ak.all(ak.ones(10, dtype=ak.bool)))
+print(b, ak.any(b), ak.all(b), ak.all(ak.ones(10, dtype=ak.bool_)))
 c = ak.arange(0, 10, 1)
 print(c, ak.any(c), ak.all(c), ak.all(ak.ones(10, dtype=ak.int64)))
 print(a.any(), a.all(), b.any(), b.all())
