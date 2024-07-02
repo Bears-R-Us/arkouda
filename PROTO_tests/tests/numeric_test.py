@@ -281,21 +281,42 @@ class TestNumeric:
     #   log and exp tests were identical, and so have been combined.
 
     def test_histogram_multidim(self):
+        def print_failure_indices(npa, pda):
+            if not np.allclose(npa.tolist(), pda.to_list()):
+                npa = npa.reshape(npa.size)
+                pda = pda.base
+                where_fail = [
+                    i for i, (n, a) in enumerate(zip(npa.tolist(), pda.to_list())) if not np.isclose(n, a)
+                ]
+                where_fail = where_fail if len(where_fail) <= 20 else where_fail[:20]
+                print()
+                print("where fail: \n", where_fail)
+                print("\n  numpy one:\n", npa[where_fail])
+                print("\n  arkouda one:\n", pda[where_fail])
+            assert np.allclose(npa.tolist(), pda.to_list())
+
         # test 2d histogram
         seed = 1
         ak_x, ak_y = ak.randint(1, 100, 1000, seed=seed), ak.randint(1, 100, 1000, seed=seed + 1)
         np_x, np_y = ak_x.to_ndarray(), ak_y.to_ndarray()
         np_hist, np_x_edges, np_y_edges = np.histogram2d(np_x, np_y)
         ak_hist, ak_x_edges, ak_y_edges = ak.histogram2d(ak_x, ak_y)
-        assert np.allclose(np_hist.tolist(), ak_hist.to_list())
-        assert np.allclose(np_x_edges.tolist(), ak_x_edges.to_list())
-        assert np.allclose(np_y_edges.tolist(), ak_y_edges.to_list())
+
+        print_failure_indices(np_hist, ak_hist)
+        print_failure_indices(np_x_edges, ak_x_edges)
+        print_failure_indices(np_y_edges, ak_y_edges)
+        # assert np.allclose(np_hist.tolist(), ak_hist.to_list())
+        # assert np.allclose(np_x_edges.tolist(), ak_x_edges.to_list())
+        # assert np.allclose(np_y_edges.tolist(), ak_y_edges.to_list())
 
         np_hist, np_x_edges, np_y_edges = np.histogram2d(np_x, np_y, bins=(10, 20))
         ak_hist, ak_x_edges, ak_y_edges = ak.histogram2d(ak_x, ak_y, bins=(10, 20))
-        assert np.allclose(np_hist.tolist(), ak_hist.to_list())
-        assert np.allclose(np_x_edges.tolist(), ak_x_edges.to_list())
-        assert np.allclose(np_y_edges.tolist(), ak_y_edges.to_list())
+        print_failure_indices(np_hist, ak_hist)
+        print_failure_indices(np_x_edges, ak_x_edges)
+        print_failure_indices(np_y_edges, ak_y_edges)
+        # assert np.allclose(np_hist.tolist(), ak_hist.to_list())
+        # assert np.allclose(np_x_edges.tolist(), ak_x_edges.to_list())
+        # assert np.allclose(np_y_edges.tolist(), ak_y_edges.to_list())
 
         # test arbitrary dimensional histogram
         dim_list = [3, 4, 5]
