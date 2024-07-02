@@ -799,7 +799,7 @@
 <span class="sd">    &gt;&gt;&gt; ak.zeros(5, dtype=ak.float64)</span>
 <span class="sd">    array([0, 0, 0, 0, 0])</span>
 
-<span class="sd">    &gt;&gt;&gt; ak.zeros(5, dtype=ak.bool)</span>
+<span class="sd">    &gt;&gt;&gt; ak.zeros(5, dtype=ak.bool_)</span>
 <span class="sd">    array([False, False, False, False, False])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
@@ -858,7 +858,7 @@
 <span class="sd">    &gt;&gt;&gt; ak.ones(5, dtype=ak.float64)</span>
 <span class="sd">    array([1, 1, 1, 1, 1])</span>
 
-<span class="sd">    &gt;&gt;&gt; ak.ones(5, dtype=ak.bool)</span>
+<span class="sd">    &gt;&gt;&gt; ak.ones(5, dtype=ak.bool_)</span>
 <span class="sd">    array([True, True, True, True, True])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
@@ -923,7 +923,7 @@
 <span class="sd">    &gt;&gt;&gt; ak.full(5, 9, dtype=ak.float64)</span>
 <span class="sd">    array([9, 9, 9, 9, 9])</span>
 
-<span class="sd">    &gt;&gt;&gt; ak.full(5, 5, dtype=ak.bool)</span>
+<span class="sd">    &gt;&gt;&gt; ak.full(5, 5, dtype=ak.bool_)</span>
 <span class="sd">    array([True, True, True, True, True])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
@@ -1033,7 +1033,7 @@
 <span class="sd">    &gt;&gt;&gt; ak.zeros_like(zeros)</span>
 <span class="sd">    array([0, 0, 0, 0, 0])</span>
 
-<span class="sd">    &gt;&gt;&gt; zeros = ak.zeros(5, dtype=ak.bool)</span>
+<span class="sd">    &gt;&gt;&gt; zeros = ak.zeros(5, dtype=ak.bool_)</span>
 <span class="sd">    &gt;&gt;&gt; ak.zeros_like(zeros)</span>
 <span class="sd">    array([False, False, False, False, False])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1083,7 +1083,7 @@
 <span class="sd">    &gt;&gt;&gt; ak.ones_like(ones)</span>
 <span class="sd">    array([1, 1, 1, 1, 1])</span>
 
-<span class="sd">    &gt;&gt;&gt; ones = ak.ones(5, dtype=ak.bool)</span>
+<span class="sd">    &gt;&gt;&gt; ones = ak.ones(5, dtype=ak.bool_)</span>
 <span class="sd">    &gt;&gt;&gt; ak.ones_like(ones)</span>
 <span class="sd">    array([True, True, True, True, True])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1135,7 +1135,7 @@
 <span class="sd">    &gt;&gt;&gt; ak.full_like(full)</span>
 <span class="sd">    array([9, 9, 9, 9, 9])</span>
 
-<span class="sd">    &gt;&gt;&gt; full = ak.full(5, 5, dtype=ak.bool)</span>
+<span class="sd">    &gt;&gt;&gt; full = ak.full(5, 5, dtype=ak.bool_)</span>
 <span class="sd">    &gt;&gt;&gt; ak.full_like(full)</span>
 <span class="sd">    array([True, True, True, True, True])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1368,7 +1368,7 @@
 <span class="sd">    &gt;&gt;&gt; ak.randint(0, 1, 3, dtype=ak.float64)</span>
 <span class="sd">    array([0.92176432277231968, 0.083130710959903542, 0.68894208386667544])</span>
 
-<span class="sd">    &gt;&gt;&gt; ak.randint(0, 1, 5, dtype=ak.bool)</span>
+<span class="sd">    &gt;&gt;&gt; ak.randint(0, 1, 5, dtype=ak.bool_)</span>
 <span class="sd">    array([True, False, True, True, True])</span>
 
 <span class="sd">    &gt;&gt;&gt; ak.randint(1, 5, 10, seed=2)</span>

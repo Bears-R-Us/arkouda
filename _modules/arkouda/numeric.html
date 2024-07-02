@@ -498,10 +498,10 @@
 <span class="sd">    &gt;&gt;&gt; ak.cast(ak.arange(0,5), dt=ak.float64).dtype</span>
 <span class="sd">    dtype(&#39;float64&#39;)</span>
 
-<span class="sd">    &gt;&gt;&gt; ak.cast(ak.arange(0,5), dt=ak.bool)</span>
+<span class="sd">    &gt;&gt;&gt; ak.cast(ak.arange(0,5), dt=ak.bool_)</span>
 <span class="sd">    array([False, True, True, True, True])</span>
 
-<span class="sd">    &gt;&gt;&gt; ak.cast(ak.linspace(0,4,5), dt=ak.bool)</span>
+<span class="sd">    &gt;&gt;&gt; ak.cast(ak.linspace(0,4,5), dt=ak.bool_)</span>
 <span class="sd">    array([False, True, True, True, True])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">arkouda.categorical</span> <span class="kn">import</span> <span class="n">Categorical</span>  <span class="c1"># type: ignore</span>
@@ -1158,7 +1158,7 @@
 <span class="sd">    array([3.1598310770203937, 5.4110385860243131, 9.1622479306453748,</span>
 <span class="sd">           12.710615785506533, 13.945880905466208])</span>
 
-<span class="sd">    &gt;&gt;&gt; ak.cumsum(ak.randint(0, 1, 5, dtype=ak.bool))</span>
+<span class="sd">    &gt;&gt;&gt; ak.cumsum(ak.randint(0, 1, 5, dtype=ak.bool_))</span>
 <span class="sd">    array([0, 1, 1, 2, 3])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>

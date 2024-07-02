@@ -16,7 +16,7 @@ Attributes
    arkouda.dtypes.all_scalars
    arkouda.dtypes.bigint
    arkouda.dtypes.bitType
-   arkouda.dtypes.bool
+   arkouda.dtypes.bool_
    arkouda.dtypes.bool_scalars
    arkouda.dtypes.complex128
    arkouda.dtypes.complex64
@@ -72,7 +72,7 @@ Module Contents
 
 .. py:data:: bitType
 
-.. py:data:: bool
+.. py:data:: bool_
 
 .. py:data:: bool_scalars
 

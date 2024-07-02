@@ -387,7 +387,7 @@
     <span class="s2">&quot;float64&quot;</span><span class="p">,</span>
     <span class="s2">&quot;complex64&quot;</span><span class="p">,</span>
     <span class="s2">&quot;complex128&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;bool&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bool_&quot;</span><span class="p">,</span>
     <span class="s2">&quot;str_&quot;</span><span class="p">,</span>
     <span class="s2">&quot;bigint&quot;</span><span class="p">,</span>
     <span class="s2">&quot;intTypes&quot;</span><span class="p">,</span>
@@ -494,7 +494,7 @@
 <span class="n">float64</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
 <span class="n">complex64</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">complex64</span><span class="p">)</span>
 <span class="n">complex128</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
-<span class="nb">bool</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+<span class="n">bool_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
 <span class="n">str_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">)</span>
 <span class="n">bigint</span> <span class="o">=</span> <span class="n">BigInt</span><span class="p">()</span>
 <span class="n">npstr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
@@ -607,12 +607,12 @@
 <span class="c1"># missing full support for: float32, int32, int16, int8, uint32, uint16, complex64, complex128</span>
 <span class="c1"># ARKOUDA_SUPPORTED_DTYPES = frozenset([member.value for _, member in DType.__members__.items()])</span>
 <span class="n">ARKOUDA_SUPPORTED_DTYPES</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span>
-    <span class="p">[</span><span class="s2">&quot;bool&quot;</span><span class="p">,</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint8&quot;</span><span class="p">,</span> <span class="s2">&quot;bigint&quot;</span><span class="p">,</span> <span class="s2">&quot;str&quot;</span><span class="p">]</span>
+    <span class="p">[</span><span class="s2">&quot;bool_&quot;</span><span class="p">,</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint8&quot;</span><span class="p">,</span> <span class="s2">&quot;bigint&quot;</span><span class="p">,</span> <span class="s2">&quot;str&quot;</span><span class="p">]</span>
 <span class="p">)</span>
 
 <span class="n">DTypes</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="n">member</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">DType</span><span class="o">.</span><span class="n">__members__</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
-<span class="n">DTypeObjects</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">float64</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">int64</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">str_</span><span class="p">,</span> <span class="n">uint8</span><span class="p">,</span> <span class="n">uint64</span><span class="p">])</span>
-<span class="n">NumericDTypes</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="s2">&quot;bool&quot;</span><span class="p">,</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">,</span> <span class="s2">&quot;bigint&quot;</span><span class="p">])</span>
+<span class="n">DTypeObjects</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="n">bool_</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">float64</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">int64</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">str_</span><span class="p">,</span> <span class="n">uint8</span><span class="p">,</span> <span class="n">uint64</span><span class="p">])</span>
+<span class="n">NumericDTypes</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="s2">&quot;bool_&quot;</span><span class="p">,</span> <span class="s2">&quot;bool&quot;</span><span class="p">,</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">,</span> <span class="s2">&quot;bigint&quot;</span><span class="p">])</span>
 <span class="n">SeriesDTypes</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;string&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">,</span>
     <span class="s2">&quot;&lt;class &#39;str&#39;&gt;&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">,</span>
@@ -621,12 +621,12 @@
     <span class="s2">&quot;&lt;class &#39;numpy.int64&#39;&gt;&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span>
     <span class="s2">&quot;float64&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
     <span class="s2">&quot;&lt;class &#39;numpy.float64&#39;&gt;&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
-    <span class="s2">&quot;bool&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-    <span class="s2">&quot;&lt;class &#39;bool&#39;&gt;&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="s2">&quot;bool&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">,</span>
+    <span class="s2">&quot;&lt;class &#39;bool&#39;&gt;&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">,</span>
     <span class="s2">&quot;datetime64[ns]&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span>
     <span class="s2">&quot;timedelta64[ns]&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span>
 <span class="p">}</span>
-<span class="n">ScalarDTypes</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="s2">&quot;bool&quot;</span><span class="p">,</span> <span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">])</span>
+<span class="n">ScalarDTypes</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="s2">&quot;bool_&quot;</span><span class="p">,</span> <span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">])</span>
 
 
 <div class="viewcode-block" id="isSupportedInt">

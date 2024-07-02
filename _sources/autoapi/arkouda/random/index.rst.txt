@@ -371,7 +371,7 @@ Package Contents
    >>> ak.randint(0, 1, 3, dtype=ak.float64)
    array([0.92176432277231968, 0.083130710959903542, 0.68894208386667544])
 
-   >>> ak.randint(0, 1, 5, dtype=ak.bool)
+   >>> ak.randint(0, 1, 5, dtype=ak.bool_)
    array([True, False, True, True, True])
 
    >>> ak.randint(1, 5, 10, seed=2)
