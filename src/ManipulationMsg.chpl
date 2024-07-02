@@ -981,4 +981,29 @@ module ManipulationMsg {
       return MsgTuple.error(errMsg);
     }
   }
+
+  proc parSearch(a: [?d] ?t, x: t, sorted: bool): bool {
+    use Search;
+    var found = false;
+
+    const nTasks=here.maxTaskPar;
+    coforall loc in Locales with (|| reduce found) do on loc {
+      const locDom = a.localSubdomain(),
+            nPerTask = locDom.size / nTasks;
+
+      coforall tid in 0..<nTasks with (|| reduce found) {
+        const (lf, _) = search(
+          a, x, sorted=sorted,
+          lo = locDom.low + nPerTask*tid,
+          hi = if tid == nTasks-1
+            then locDom.high
+            else locDom.low + nPerTask*(tid+1)
+        );
+
+        found ||= lf;
+      }
+    }
+    return found;
+  }
+
 }

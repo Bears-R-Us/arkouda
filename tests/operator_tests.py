@@ -460,7 +460,7 @@ class OperatorsTest(ArkoudaTest):
         np_uint = np.array([maxbits, maxbits, maxbits, maxbits], dtype=np.uint64)
         ak_int = ak.array([maxbits, maxbits, maxbits, maxbits], dtype=ak.int64)
         np_int = np.array([maxbits, maxbits, maxbits, maxbits], dtype=np.int64)
-        ak_bool = ak.array([True, True, False, False], dtype=ak.bool)
+        ak_bool = ak.array([True, True, False, False], dtype=ak.bool_)
         np_bool = np.array([True, True, False, False], dtype=bool)
 
         # Shifting value arrays
@@ -468,7 +468,7 @@ class OperatorsTest(ArkoudaTest):
         np_uint_array = np.array([62, 63, 64, 65], dtype=np.uint64)
         ak_int_array = ak.array([62, 63, 64, 65], dtype=ak.int64)
         np_int_array = np.array([62, 63, 64, 65], dtype=np.int64)
-        ak_bool_array = ak.array([True, False, True, False], dtype=ak.bool)
+        ak_bool_array = ak.array([True, False, True, False], dtype=ak.bool_)
         np_bool_array = np.array([True, False, True, False], dtype=bool)
 
         # Binopvs case
@@ -900,7 +900,7 @@ class OperatorsTest(ArkoudaTest):
 
         # Test ak,histogram against unsupported dtype
         # with self.assertRaises(ValueError) as cm:
-        #    ak.histogram((ak.randint(0, 1, 100, dtype=ak.bool)))
+        #    ak.histogram((ak.randint(0, 1, 100, dtype=ak.bool_)))
 
         with self.assertRaises(TypeError):
             ak.ones(100).any([0])

@@ -66,7 +66,7 @@ Logical indexing is a powerful construct from NumPy (and Matlab). In logical ind
 .. code-block:: python
 
    >>> A = ak.arange(0, 10, 1)
-   >>> inds = ak.zeros(10, dtype=ak.bool)
+   >>> inds = ak.zeros(10, dtype=ak.bool_)
    >>> inds[2] = True
    >>> inds[5] = True
    >>> A[inds] # boolean-compression indexing yield values where inds is True

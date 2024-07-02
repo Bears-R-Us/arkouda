@@ -960,8 +960,12 @@ module ReductionMsg
       const dom = makeDistDom(newSize);
       var ret = makeDistArray(dom, intype);
 
-      forall (oldSegStart, newSegStart, newLength) in zip(segments, newSegs, newSegLengths) with (var agg = newSrcAggregator(intype)){
-          agg.copy(ret[newSegStart..#newLength], values[oldSegStart..#newLength]);
+      forall (oldSegStart, newSegStart, newLength) in zip(segments, newSegs, newSegLengths) with (ref values,
+                                                                                            var agg = newDstAggregator(intype)){
+        var v = new lowLevelLocalizingSlice(values, oldSegStart..#newLength);
+        for i in 0..#newLength {
+          agg.copy(ret[newSegStart+i], v.ptr[i]);
+        }
       }
       return ret;
     }
@@ -978,8 +982,12 @@ module ReductionMsg
       const dom = makeDistDom(newSize);
       var ret = makeDistArray(dom, intype);
 
-      forall (oldSegEnd, newSegEnd, newLength) in zip(oldSegEnds, newSegEnds, newSegLengths) with (var agg = newSrcAggregator(intype)){
-          agg.copy(ret[(newSegEnd - newLength)..#newLength], values[(oldSegEnd - newLength)..#newLength]);
+      forall (oldSegEnd, newSegEnd, newLength) in zip(oldSegEnds, newSegEnds, newSegLengths) with (ref values,
+                                                                                            var agg = newDstAggregator(intype)){
+        var v = new lowLevelLocalizingSlice(values, (oldSegEnd - newLength)..#newLength);
+        for i in 0..#newLength {
+          agg.copy(ret[(newSegEnd - newLength)+i], v.ptr[i]);
+        }
       }
       return ret;
     }
@@ -1755,65 +1763,7 @@ module ReductionMsg
       return res;
     }
 
-    proc segmentedExtremaKMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
-        const pn = Reflection.getRoutineName(),
-              valsName = msgArgs.getValueOf("vals"),          // values array name
-              segsName = msgArgs.getValueOf("segs"),          // segments array name
-              negativeName = msgArgs.getValueOf("negativeAt"),          // segments array name
-              segLensName = msgArgs.getValueOf("segLens"),    // segment lengths array name
-              kArrayName = msgArgs.getValueOf("kArray"),      // number of extrema per segment array name
-              isMin = msgArgs.get("isMin").getBoolValue(),    // whether we are getting min or max
-              removeMissing = msgArgs.get("removeMissing").getBoolValue(),    // whether we are getting min or max
-              rname = st.nextName();
-
-        st.checkTable(valsName);
-        st.checkTable(segsName);
-        st.checkTable(segLensName);
-        st.checkTable(kArrayName);
-        // TODO only handling values of type int is fine for the time being since
-        // we're using this for find but we may need to make it type generic in the future
-        const values = toSymEntry(getGenericTypedArrayEntry(valsName, st),int).a;
-        const segments = toSymEntry(getGenericTypedArrayEntry(segsName, st),int).a;
-        const segLens = toSymEntry(getGenericTypedArrayEntry(segLensName, st),int).a;
-        const kArray = toSymEntry(getGenericTypedArrayEntry(kArrayName, st),int).a;
-        if removeMissing {
-          const extremaOffset = (+ scan kArray) - kArray;
-          var extrema: [makeDistDom(+ reduce kArray)] int;
-
-          // not terribly optimized. It would likely be more efficient to do something like segMin
-          forall (segOff, segLen, extremaOff, k) in zip(segments, segLens, extremaOffset, kArray) {
-            if segLen > 0 && k > 0 {
-              extrema[extremaOff..#k] = computeExtremaValues(values[segOff..#segLen], k, isMin);
-            }
-          }
-          st.addEntry(rname, createSymEntry(extrema));
-        }
-        else {
-          st.checkTable(negativeName);
-          const negative = toSymEntry(getGenericTypedArrayEntry(negativeName, st),bool).a;
-
-          var k_with_negatives = kArray + negative;
-          const extremaOffset = (+ scan k_with_negatives) - k_with_negatives;
-          var extrema: [makeDistDom(+ reduce k_with_negatives)] int;
-
-          // not terribly optimized. I think it would prob be more efficient to do something like segMin
-          forall (segOff, segLen, extremaOff, k, n) in zip(segments, segLens, extremaOffset, kArray, negative) {
-            if segLen > 0 && k > 0 {
-              extrema[extremaOff..#k] = computeExtremaValues(values[segOff..#segLen], k, isMin);
-            }
-            else if n {
-              extrema[extremaOff] = -1;
-            }
-          }
-          st.addEntry(rname, createSymEntry(extrema));
-        }
-
-        const repMsg = "created " + st.attrib(rname);
-        return new MsgTuple(repMsg, MsgType.NORMAL);
-    }
-
     use CommandMap;
     registerFunction("segmentedReduction", segmentedReductionMsg, getModuleName());
     registerFunction("sizeReduction", sizeReductionMsg, getModuleName());
-    registerFunction("segmentedExtremaK", segmentedExtremaKMsg, getModuleName());
 }

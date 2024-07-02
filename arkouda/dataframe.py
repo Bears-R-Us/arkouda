@@ -18,7 +18,8 @@ from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, maxTransferBytes
 from arkouda.client_dtypes import BitVector, Fields, IPv4
 from arkouda.dtypes import BigInt
-from arkouda.dtypes import bool as akbool
+
+from arkouda.dtypes import bool_ as akbool
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import uint64 as akuint64
@@ -53,6 +54,23 @@ __all__ = [
     "intx",
     "merge",
 ]
+
+
+def apply_if_callable(maybe_callable, obj, **kwargs):
+    """
+    Evaluate possibly callable input using obj and kwargs if it is callable,
+    otherwise return as it is.
+
+    Parameters
+    ----------
+    maybe_callable : possibly a callable
+    obj : NDFrame
+    **kwargs
+    """
+    if callable(maybe_callable):
+        return maybe_callable(obj, **kwargs)
+
+    return maybe_callable
 
 
 def groupby_operators(cls):
@@ -1074,6 +1092,9 @@ class DataFrame(UserDict):
 
         # Set a single column in the dataframe using a an arkouda array
         elif isinstance(key, str):
+            if isinstance(value, Series):
+                value = value.values
+
             if not isinstance(value, self._COLUMN_CLASSES):
                 raise ValueError(f"Column must be one of {self._COLUMN_CLASSES}.")
             elif self._nrows is not None and self._nrows != value.size:
@@ -5495,6 +5516,74 @@ class DataFrame(UserDict):
                     columns[k] = BitVector.from_return_msg(comps[1])
 
         return cls(columns, idx)
+
+    def assign(self, **kwargs) -> DataFrame:
+        r"""
+        Assign new columns to a DataFrame.
+
+        Returns a new object with all original columns in addition to new ones.
+        Existing columns that are re-assigned will be overwritten.
+
+        Parameters
+        ----------
+        **kwargs : dict of {str: callable or Series}
+            The column names are keywords. If the values are
+            callable, they are computed on the DataFrame and
+            assigned to the new columns. The callable must not
+            change input DataFrame (though pandas doesn't check it).
+            If the values are not callable, (e.g. a Series, scalar, or array),
+            they are simply assigned.
+
+        Returns
+        -------
+        DataFrame
+            A new DataFrame with the new columns in addition to
+            all the existing columns.
+
+        Notes
+        -----
+        Assigning multiple columns within the same ``assign`` is possible.
+        Later items in '\*\*kwargs' may refer to newly created or modified
+        columns in 'df'; items are computed and assigned into 'df' in order.
+
+        Examples
+        --------
+        >>> df = ak.DataFrame({'temp_c': [17.0, 25.0]},
+        ...                   index=['Portland', 'Berkeley'])
+        >>> df
+                  temp_c
+        Portland    17.0
+        Berkeley    25.0
+
+        Where the value is a callable, evaluated on `df`:
+
+        >>> df.assign(temp_f=lambda x: x.temp_c * 9 / 5 + 32)
+                  temp_c  temp_f
+        Portland    17.0    62.6
+        Berkeley    25.0    77.0
+
+        Alternatively, the same behavior can be achieved by directly
+        referencing an existing Series or sequence:
+
+        >>> df.assign(temp_f=df['temp_c'] * 9 / 5 + 32)
+                  temp_c  temp_f
+        Portland    17.0    62.6
+        Berkeley    25.0    77.0
+
+        You can create multiple columns within the same assign where one
+        of the columns depends on another one defined within the same assign:
+
+        >>> df.assign(temp_f=lambda x: x['temp_c'] * 9 / 5 + 32,
+        ...           temp_k=lambda x: (x['temp_f'] + 459.67) * 5 / 9)
+                  temp_c  temp_f  temp_k
+        Portland    17.0    62.6  290.15
+        Berkeley    25.0    77.0  298.15
+        """
+        data = self.copy(deep=None)
+
+        for k, v in kwargs.items():
+            data[k] = apply_if_callable(v, data)
+        return data
 
 
 def intx(a, b):

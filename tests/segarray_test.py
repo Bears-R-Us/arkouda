@@ -778,7 +778,7 @@ class SegArrayTest(ArkoudaTest):
                 "c_2": ak.SegArray(
                     ak.array([0, 5, 10, 10]), ak.arange(2**63, 2**63 + 15, dtype=ak.uint64)
                 ),
-                "c_3": ak.SegArray(ak.array([0, 0, 5, 10]), ak.randint(0, 1, 15, dtype=ak.bool)),
+                "c_3": ak.SegArray(ak.array([0, 0, 5, 10]), ak.randint(0, 1, 15, dtype=ak.bool_)),
                 "c_4": ak.SegArray(
                     ak.array([0, 9, 14, 14]),
                     ak.array(

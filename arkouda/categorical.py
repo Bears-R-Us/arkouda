@@ -19,7 +19,7 @@ import numpy as np
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
-from arkouda.dtypes import bool as akbool
+from arkouda.dtypes import bool_ as akbool
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import int_scalars, npstr, resolve_scalar_dtype, str_, str_scalars
 from arkouda.groupbyclass import GroupBy, unique

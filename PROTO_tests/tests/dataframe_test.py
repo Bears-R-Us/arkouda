@@ -1168,7 +1168,7 @@ class TestDataFrame:
                         )
 
     def test_memory_usage(self):
-        dtypes = [ak.int64, ak.float64, ak.bool]
+        dtypes = [ak.int64, ak.float64, ak.bool_]
         data = dict([(str(t), ak.ones(5000, dtype=ak.int64).astype(t)) for t in dtypes])
         df = ak.DataFrame(data)
         ak_memory_usage = df.memory_usage()
@@ -1313,7 +1313,7 @@ class TestDataFrame:
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_head_tail(self, size):
 
-        bool_col = ak.full(size, False, dtype=ak.bool)
+        bool_col = ak.full(size, False, dtype=ak.bool_)
         bool_col[::2] = True
 
         df = ak.DataFrame(
@@ -1379,6 +1379,33 @@ class TestDataFrame:
         assert_frame_equal(
             tail_df_sorted.to_pandas(retain_index=True),
             df.to_pandas(retain_index=True).groupby("a").tail(n=2),
+        )
+
+    def test_assign(self):
+        ak_df = ak.DataFrame(
+            {"temp_c": ak.array([17.0, 25.0])}, index=ak.array(["Portland", "Berkeley"])
+        )
+        pd_df = ak_df.to_pandas()
+
+        assert_frame_equal(
+            ak_df.assign(temp_f=lambda x: x.temp_c * 9 / 5 + 32).to_pandas(),
+            pd_df.assign(temp_f=lambda x: x.temp_c * 9 / 5 + 32),
+        )
+
+        assert_frame_equal(
+            ak_df.assign(temp_f=ak_df["temp_c"] * 9 / 5 + 32).to_pandas(),
+            pd_df.assign(temp_f=pd_df["temp_c"] * 9 / 5 + 32),
+        )
+
+        assert_frame_equal(
+            ak_df.assign(
+                temp_f=lambda x: x["temp_c"] * 9 / 5 + 32,
+                temp_k=lambda x: (x["temp_f"] + 459.67) * 5 / 9,
+            ).to_pandas(),
+            pd_df.assign(
+                temp_f=lambda x: x["temp_c"] * 9 / 5 + 32,
+                temp_k=lambda x: (x["temp_f"] + 459.67) * 5 / 9,
+            ),
         )
 
 

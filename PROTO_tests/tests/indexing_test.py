@@ -3,7 +3,7 @@ import pytest
 
 import arkouda as ak
 
-NUM_TYPES = [ak.int64, ak.uint64, ak.float64, ak.bool, ak.bigint]
+NUM_TYPES = [ak.int64, ak.uint64, ak.float64, ak.bool_, ak.bigint]
 
 
 def key_arrays(size):
@@ -17,7 +17,7 @@ def value_array(dtype, size):
         return ak.randint(-size, size, size, dtype=dtype)
     elif dtype is ak.uint64:
         return ak.randint(0, size, size, dtype=dtype)
-    elif dtype is ak.bool:
+    elif dtype is ak.bool_:
         return (ak.randint(0, size, size) % 2) == 0
     elif dtype is ak.bigint:
         return ak.randint(0, size, size, dtype=ak.uint64) + 2**200
@@ -31,7 +31,7 @@ def value_scalar(dtype, size):
         return ak.randint(-size, 0, 1, dtype=dtype)
     elif dtype is ak.uint64:
         return ak.randint(2**63, 2**64, 1, dtype=dtype)
-    elif dtype is ak.bool:
+    elif dtype is ak.bool_:
         return (ak.randint(0, 2, 1) % 2) == 0
     elif dtype is ak.bigint:
         return ak.randint(0, size, 1, dtype=ak.uint64) + 2**200
@@ -52,7 +52,7 @@ class TestIndexing:
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_bool_indexing(self, prob_size):
         u = value_array(ak.uint64, prob_size)
-        b = value_array(ak.bool, prob_size)
+        b = value_array(ak.bool_, prob_size)
         assert u[b].to_list() == ak.cast(u, ak.int64)[b].to_list()
         assert u[b].to_list() == ak.cast(u, ak.bigint)[b].to_list()
 

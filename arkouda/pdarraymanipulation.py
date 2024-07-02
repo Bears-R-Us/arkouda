@@ -7,7 +7,7 @@ from arkouda.dtypes import dtype as akdtype
 
 import numpy as np
 
-__all__ = ["vstack"]
+__all__ = ["vstack", "delete"]
 
 
 @typechecked
@@ -71,3 +71,82 @@ def vstack(
             },
         )
     )
+
+
+@typechecked
+def delete(
+    arr: pdarray,
+    obj: Union[pdarray, slice, int],
+    axis: Optional[int] = None,
+) -> pdarray:
+    """
+    Return a copy of 'arr' with elements along the specified axis removed.
+
+    Parameters
+    ----------
+    arr : pdarray
+        The array to remove elements from
+    obj : Union[pdarray, slice, int]
+        The indices to remove from 'arr'. If obj is a pdarray, it must
+        have an integer dtype.
+    axis : Optional[int], optional
+        The axis along which to remove elements. If None, the array will
+        be flattened before removing elements. Defaults to None.
+
+    Returns
+    -------
+    pdarray
+        A copy of 'arr' with elements removed
+    """
+
+    if axis is None:
+        # flatten the array if axis is None
+        _arr = create_pdarray(
+            generic_msg(
+                cmd=f"reshape{arr.ndim}Dx1D",
+                args={
+                    "name": arr,
+                    "shape": (arr.size,),
+                },
+            )
+        )
+        _axis = 0
+    else:
+        _arr = arr
+        _axis = axis
+
+    if isinstance(obj, pdarray):
+        return create_pdarray(
+            generic_msg(
+                cmd=f"delete{_arr.ndim}D",
+                args={
+                    "arr": _arr,
+                    "obj": obj,
+                    # TODO: maybe expose this as an optional argument? Or sort the array first?
+                    "obj_sorted": False,
+                    "axis": _axis,
+                },
+            )
+        )
+    else:
+        if isinstance(obj, int):
+            start = obj
+            stop = obj + 1
+            stride = 1
+        elif isinstance(obj, slice):
+            start, stop, stride = obj.indices(_arr.shape[_axis])
+        else:
+            raise ValueError("obj must be an integer, pdarray, or slice")
+
+        return create_pdarray(
+            generic_msg(
+                cmd=f"deleteSlice{_arr.ndim}D",
+                args={
+                    "arr": _arr,
+                    "start": start,
+                    "stop": stop,
+                    "stride": stride,
+                    "axis": _axis,
+                },
+            )
+        )

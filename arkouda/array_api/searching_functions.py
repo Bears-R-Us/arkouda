@@ -139,7 +139,7 @@ def where(condition: Array, x1: Array, x2: Array, /) -> Array:
                 cmd=f"efunc3vv{broadcasted[0].ndim}D",
                 args={
                     "func": "where",
-                    "condition": akcast(broadcasted[0]._array, ak.dtypes.bool),
+                    "condition": akcast(broadcasted[0]._array, ak.dtypes.bool_),
                     "a": broadcasted[1]._array,
                     "b": broadcasted[2]._array,
                 },

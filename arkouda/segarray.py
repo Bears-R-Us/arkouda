@@ -9,7 +9,7 @@ from warnings import warn
 import numpy as np
 
 from arkouda.client import generic_msg
-from arkouda.dtypes import bool as akbool
+from arkouda.dtypes import bool_ as akbool
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import int_scalars, isSupportedInt, str_
 from arkouda.dtypes import uint64 as akuint64

@@ -25,7 +25,7 @@ __all__ = [
     "float64",
     "complex64",
     "complex128",
-    "bool",
+    "bool_",
     "str_",
     "bigint",
     "intTypes",
@@ -129,7 +129,7 @@ float32 = np.dtype(np.float32)
 float64 = np.dtype(np.float64)
 complex64 = np.dtype(np.complex64)
 complex128 = np.dtype(np.complex128)
-bool = np.dtype(bool)
+bool_ = np.dtype(bool)
 str_ = np.dtype(np.str_)
 bigint = BigInt()
 npstr = np.dtype(str)
@@ -242,12 +242,12 @@ ARKOUDA_SUPPORTED_NUMBERS = (
 # missing full support for: float32, int32, int16, int8, uint32, uint16, complex64, complex128
 # ARKOUDA_SUPPORTED_DTYPES = frozenset([member.value for _, member in DType.__members__.items()])
 ARKOUDA_SUPPORTED_DTYPES = frozenset(
-    ["bool", "float", "float64", "int", "int64", "uint", "uint64", "uint8", "bigint", "str"]
+    ["bool_", "float", "float64", "int", "int64", "uint", "uint64", "uint8", "bigint", "str"]
 )
 
 DTypes = frozenset([member.value for _, member in DType.__members__.items()])
-DTypeObjects = frozenset([bool, float, float64, int, int64, str, str_, uint8, uint64])
-NumericDTypes = frozenset(["bool", "float", "float64", "int", "int64", "uint64", "bigint"])
+DTypeObjects = frozenset([bool_, float, float64, int, int64, str, str_, uint8, uint64])
+NumericDTypes = frozenset(["bool_", "bool", "float", "float64", "int", "int64", "uint64", "bigint"])
 SeriesDTypes = {
     "string": np.str_,
     "<class 'str'>": np.str_,
@@ -256,12 +256,12 @@ SeriesDTypes = {
     "<class 'numpy.int64'>": np.int64,
     "float64": np.float64,
     "<class 'numpy.float64'>": np.float64,
-    "bool": bool,
-    "<class 'bool'>": bool,
+    "bool": np.bool_,
+    "<class 'bool'>": np.bool_,
     "datetime64[ns]": np.int64,
     "timedelta64[ns]": np.int64,
 }
-ScalarDTypes = frozenset(["bool", "float64", "int64"])
+ScalarDTypes = frozenset(["bool_", "float64", "int64"])
 
 
 def isSupportedInt(num):

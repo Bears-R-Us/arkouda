@@ -8,7 +8,7 @@ from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.client_dtypes import BitVector
 from arkouda.dtypes import bigint
-from arkouda.dtypes import bool as akbool
+from arkouda.dtypes import bool_ as akbool
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import uint64 as akuint64
 from arkouda.groupbyclass import GroupBy, groupable, groupable_element_type, unique
@@ -84,16 +84,15 @@ def _in1d_single(
     array([False, True])
     """
     from arkouda.categorical import Categorical as Categorical_
-    from arkouda.dtypes import bool as ak_bool
 
     if isinstance(pda1, pdarray) or isinstance(pda1, Strings) or isinstance(pda1, Categorical_):
         # While isinstance(thing, type) can be called on a tuple of types,
         # this causes an issue with mypy for unknown reasons.
         if pda1.size == 0:
-            return zeros(0, dtype=ak_bool)
+            return zeros(0, dtype=akbool)
     if isinstance(pda2, pdarray) or isinstance(pda2, Strings) or isinstance(pda2, Categorical_):
         if pda2.size == 0:
-            return zeros(pda1.size, dtype=ak_bool)
+            return zeros(pda1.size, dtype=akbool)
     if hasattr(pda1, "categories"):
         x = cast(Categorical_, pda1).in1d(pda2)
         return x if not invert else ~x
@@ -282,12 +281,6 @@ def indexof1d(query: groupable, space: groupable) -> pdarray:
             raise TypeError("Arguments must have compatible types, Strings/Categorical")
         elif isinstance(query, pdarray) and not isinstance(space, pdarray):
             raise TypeError("If keys is pdarray, arr must also be pdarray")
-
-    # repMsg = generic_msg(
-    #     cmd="indexof1d",
-    #     args={"keys": query, "arr": space},
-    # )
-    # return create_pdarray(cast(str, repMsg))
 
     from arkouda.alignment import find as akfind
 

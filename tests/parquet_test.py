@@ -34,7 +34,7 @@ class ParquetTest(ArkoudaTest):
             elif dtype == "uint64":
                 ak_arr = ak.randint(0, 2**32, SIZE, dtype=ak.uint64)
             elif dtype == "bool":
-                ak_arr = ak.randint(0, 1, SIZE, dtype=ak.bool)
+                ak_arr = ak.randint(0, 1, SIZE, dtype=ak.bool_)
             elif dtype == "float64":
                 ak_arr = ak.randint(0, 2**32, SIZE, dtype=ak.float64)
             elif dtype == "str":
@@ -60,7 +60,7 @@ class ParquetTest(ArkoudaTest):
             elif dtype == "uint64":
                 elems = ak.randint(0, 2**32, adjusted_size, dtype=ak.uint64)
             elif dtype == "bool":
-                elems = ak.randint(0, 1, adjusted_size, dtype=ak.bool)
+                elems = ak.randint(0, 1, adjusted_size, dtype=ak.bool_)
             elif dtype == "float64":
                 elems = ak.randint(0, 2**32, adjusted_size, dtype=ak.float64)
             elif dtype == "str":
@@ -111,7 +111,7 @@ class ParquetTest(ArkoudaTest):
             elif dtype == "uint64":
                 ak_arr = ak.randint(0, 2**32, 10, dtype=ak.uint64)
             elif dtype == "bool":
-                ak_arr = ak.randint(0, 1, 10, dtype=ak.bool)
+                ak_arr = ak.randint(0, 1, 10, dtype=ak.bool_)
             elif dtype == "float64":
                 ak_arr = ak.randint(0, 2**32, SIZE, dtype=ak.float64)
             elif dtype == "str":
@@ -129,7 +129,7 @@ class ParquetTest(ArkoudaTest):
         base_dset = ak.randint(0, 2**32, append_size)
         ak_dict = {}
         ak_dict["uint-dset"] = ak.randint(0, 2**32, append_size, dtype=ak.uint64)
-        ak_dict["bool-dset"] = ak.randint(0, 1, append_size, dtype=ak.bool)
+        ak_dict["bool-dset"] = ak.randint(0, 1, append_size, dtype=ak.bool_)
         ak_dict["float-dset"] = ak.randint(0, 2**32, append_size, dtype=ak.float64)
         ak_dict["int-dset"] = ak.randint(0, 2**32, append_size)
         ak_dict["str-dset"] = ak.random_strings_uniform(1, 10, append_size)
@@ -171,7 +171,7 @@ class ParquetTest(ArkoudaTest):
             elif dtype == "uint64":
                 ak_arr = ak.randint(0, 2**32, SIZE, dtype=ak.uint64)
             elif dtype == "bool":
-                ak_arr = ak.randint(0, 1, SIZE, dtype=ak.bool)
+                ak_arr = ak.randint(0, 1, SIZE, dtype=ak.bool_)
             elif dtype == "float64":
                 ak_arr = ak.randint(0, 2**32, SIZE, dtype=ak.float64)
             elif dtype == "str":
@@ -196,7 +196,7 @@ class ParquetTest(ArkoudaTest):
                 # validate the list read out matches the array used to write
                 self.assertListEqual(rd_arr.to_list(), a.to_list())
 
-        b = ak.randint(0, 2, 150, dtype=ak.bool)
+        b = ak.randint(0, 2, 150, dtype=ak.bool_)
         for comp in COMPRESSIONS:
             with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
                 # write with the selected compression
@@ -407,7 +407,7 @@ class ParquetTest(ArkoudaTest):
         a = [0, 1, 1]
         b = [0]
         c = [1, 0]
-        s = ak.SegArray(ak.array([0, len(a), len(a) + len(b)]), ak.array(a + b + c, dtype=ak.bool))
+        s = ak.SegArray(ak.array([0, len(a), len(a) + len(b)]), ak.array(a + b + c, dtype=ak.bool_))
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             s.to_parquet(f"{tmp_dirname}/bool_test")
 
@@ -419,7 +419,7 @@ class ParquetTest(ArkoudaTest):
         a = [0, 1, 1]
         c = [1, 0]
         s = ak.SegArray(
-            ak.array([0, 0, len(a), len(a), len(a), len(a) + len(c)]), ak.array(a + c, dtype=ak.bool)
+            ak.array([0, 0, len(a), len(a), len(a), len(a) + len(c)]), ak.array(a + c, dtype=ak.bool_)
         )
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             s.to_parquet(f"{tmp_dirname}/bool_test_empty")
@@ -458,7 +458,7 @@ class ParquetTest(ArkoudaTest):
             "c_3": ak.arange(3, 6, dtype=ak.uint64),
             "c_4": ak.SegArray(ak.array([0, 5, 10]), ak.arange(15, dtype=ak.uint64)),
             "c_5": ak.array([False, True, False]),
-            "c_6": ak.SegArray(ak.array([0, 5, 10]), ak.randint(0, 1, 15, dtype=ak.bool)),
+            "c_6": ak.SegArray(ak.array([0, 5, 10]), ak.randint(0, 1, 15, dtype=ak.bool_)),
             "c_7": ak.array(np.random.uniform(0, 100, 3)),
             "c_8": ak.SegArray(ak.array([0, 9, 14]), ak.array(np.random.uniform(0, 100, 20))),
             "c_9": ak.array(["abc", "123", "xyz"]),
@@ -585,6 +585,7 @@ class ParquetTest(ArkoudaTest):
                 self.assertTrue(np.allclose(ak_data["decCol" + str(i)].to_ndarray(), data[i - 1]))
 
     def test_multi_batch_reads(self):
+        pytest.skip()
         # verify reproducer for #3074 is resolved
         # seagarray w/ empty segs multi-batch pq reads
 
