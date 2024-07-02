@@ -22,7 +22,7 @@ class TestSetOps:
             # only used for error handling tests
             a = np.random.random(size)
             b = np.random.random(size)
-        elif dtype == bool:
+        elif dtype == ak.bool_:
             a = np.random.randint(0, 1, size=size, dtype=dtype)
             b = np.random.randint(0, 1, size=size, dtype=dtype)
         else:
@@ -697,7 +697,7 @@ class TestSetOps:
         ]
         for select_from in select_from_list:
             count += 1
-            arr1 = select_from[ak.randint(0, select_from.size, 20, seed=seeds[2]+count)]
+            arr1 = select_from[ak.randint(0, select_from.size, 20, seed=seeds[2] + count)]
 
             # test unique search space, this should be identical to find
             # be sure to test when all items are present and when there are items missing
@@ -710,7 +710,9 @@ class TestSetOps:
                 all_unique = ak.unique(arr2).size == arr2.size
                 if all_unique:
                     # ensure we match find
-                    if not are_pdarrays_equal(idx_of_first_in_second, ak.find(arr1, arr2, remove_missing=True)):
+                    if not are_pdarrays_equal(
+                        idx_of_first_in_second, ak.find(arr1, arr2, remove_missing=True)
+                    ):
                         print("failed to match find")
                         print("second array all unique: ", all_unique)
                         print(seeds)
@@ -725,7 +727,7 @@ class TestSetOps:
 
             # test duplicate items in search space, the easiest way I can think
             # of to do this is to compare against pandas series getitem
-            arr2 = select_from[ak.randint(0, select_from.size, 20, seed=seeds[3]+count)]
+            arr2 = select_from[ak.randint(0, select_from.size, 20, seed=seeds[3] + count)]
             pd_s = pd.Series(index=arr1.to_ndarray(), data=arr2.to_ndarray())
             ak_s = ak.Series(index=arr1, data=arr2)
 

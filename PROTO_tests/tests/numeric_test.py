@@ -1,9 +1,11 @@
+import subprocess
+from math import isclose
+
 import numpy as np
 import pytest
+
 import arkouda as ak
-from arkouda.dtypes import npstr
-from math import isclose
-import subprocess
+
 NUMERIC_TYPES = [ak.int64, ak.float64, ak.bool_, ak.uint64]
 NO_BOOL = [ak.int64, ak.float64, ak.uint64]
 NO_FLOAT = [ak.int64, ak.bool_, ak.uint64]
@@ -86,12 +88,12 @@ ROUNDTRIP_CAST = [
     (ak.bool_, ak.bool_),
     (ak.int64, ak.int64),
     (ak.int64, ak.float64),
-    (ak.int64, npstr),
+    (ak.int64, ak.str_),
     (ak.float64, ak.float64),
-    (ak.float64, npstr),
+    (ak.float64, ak.str_),
     (ak.uint8, ak.int64),
     (ak.uint8, ak.float64),
-    (ak.uint8, npstr),
+    (ak.uint8, ak.str_),
 ]
 
 #  Most of the trigonometric and hyperbolic tests are identical, so they are combined

@@ -235,21 +235,17 @@ class TestSeries:
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_memory_usage(self, size):
         s = ak.Series(ak.arange(size))
-        assert s.memory_usage(unit="GB", index=False) == size * ak.dtypes.int64.itemsize / (
-            1024 * 1024 * 1024
-        )
-        assert s.memory_usage(unit="MB", index=False) == size * ak.dtypes.int64.itemsize / (1024 * 1024)
-        assert s.memory_usage(unit="KB", index=False) == size * ak.dtypes.int64.itemsize / 1024
-        assert s.memory_usage(unit="B", index=False) == size * ak.dtypes.int64.itemsize
+        int64_size = ak.dtype(ak.int64).itemsize
 
-        assert s.memory_usage(unit="GB", index=True) == 2 * size * ak.dtypes.int64.itemsize / (
-            1024 * 1024 * 1024
-        )
-        assert s.memory_usage(unit="MB", index=True) == 2 * size * ak.dtypes.int64.itemsize / (
-            1024 * 1024
-        )
-        assert s.memory_usage(unit="KB", index=True) == 2 * size * ak.dtypes.int64.itemsize / 1024
-        assert s.memory_usage(unit="B", index=True) == 2 * size * ak.dtypes.int64.itemsize
+        assert s.memory_usage(unit="GB", index=False) == size * int64_size / (1024 * 1024 * 1024)
+        assert s.memory_usage(unit="MB", index=False) == size * int64_size / (1024 * 1024)
+        assert s.memory_usage(unit="KB", index=False) == size * int64_size / 1024
+        assert s.memory_usage(unit="B", index=False) == size * int64_size
+
+        assert s.memory_usage(unit="GB", index=True) == 2 * size * int64_size / (1024 * 1024 * 1024)
+        assert s.memory_usage(unit="MB", index=True) == 2 * size * int64_size / (1024 * 1024)
+        assert s.memory_usage(unit="KB", index=True) == 2 * size * int64_size / 1024
+        assert s.memory_usage(unit="B", index=True) == 2 * size * int64_size
 
     def test_map(self):
         a = ak.Series(ak.array(["1", "1", "4", "4", "4"]))

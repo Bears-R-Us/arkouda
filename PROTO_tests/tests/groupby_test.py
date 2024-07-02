@@ -8,11 +8,10 @@ from arkouda import sort as aksort
 from arkouda import sum as aksum
 from arkouda.groupbyclass import GroupByReductionType
 from arkouda.scipy import chisquare as akchisquare
-from arkouda.dtypes import npstr
 
 #  block of variables and functions used in test_unique
 
-UNIQUE_TYPES = [ak.categorical, ak.int64, ak.float64, npstr]
+UNIQUE_TYPES = [ak.categorical, ak.int64, ak.float64, ak.str_]
 VOWELS_AND_SUCH = ["a", "e", "i", "o", "u", "AB", 47, 2, 3.14159]
 PICKS = np.array([f"base {i}" for i in range(10)])
 
@@ -804,7 +803,7 @@ class TestGroupBy:
         F = False
         np.random.seed(Jenny)
         arrays = {
-            npstr: np.random.choice(VOWELS_AND_SUCH, prob_size),
+            ak.str_: np.random.choice(VOWELS_AND_SUCH, prob_size),
             ak.int64: np.random.randint(0, prob_size // 3, prob_size),
             ak.float64: np.random.uniform(0, prob_size // 3, prob_size),
             ak.categorical: np.random.choice(PICKS, prob_size),
@@ -832,7 +831,7 @@ class TestGroupBy:
         assert np.all(np_unique == np.sort(ak_TTF[0].to_ndarray()))
 
         # Check groups and indices.  If data was sorted, the group ndarray
-        # should just be list(range(len(nda))).  
+        # should just be list(range(len(nda))).
         # For unsorted data, a reordered copy of the pdarray is created
         # based on the returned permutation.
         # In both cases, broadcasting the unique values using the returned
@@ -842,7 +841,8 @@ class TestGroupBy:
 
         # sorted
 
-        if data_type == ak.int64 : assert isSorted(ak_TFF[0].to_ndarray())
+        if data_type == ak.int64:
+            assert isSorted(ak_TFF[0].to_ndarray())
         srange = np.arange(len(nda))
         assert np.all(srange == ak_TTF[1].to_ndarray())
         indices = ak_TTF[2]
@@ -851,7 +851,8 @@ class TestGroupBy:
         # unsorted
 
         aku = ak.unique(us_pda).to_ndarray()
-        if data_type == ak.int64 : assert isSorted(aku)
+        if data_type == ak.int64:
+            assert isSorted(aku)
         reordering = ak_TFF[1]
         reordered = us_pda[reordering]
         indices = ak_TFF[2]

@@ -14,6 +14,8 @@ from typing import (
     no_type_check,
 )
 
+from arkouda.dtypes import dtype as akdtype
+
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
 
@@ -22,7 +24,6 @@ from typeguard import typechecked
 
 from arkouda.client import generic_msg
 from arkouda.dtypes import _val_isinstance_of_union, bigint
-from arkouda.dtypes import dtype as to_numpy_dtype
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import float_scalars
 from arkouda.dtypes import int64 as akint64
@@ -1802,7 +1803,7 @@ class GroupBy:
             permuted_weights = ""
 
         random_state = default_rng(random_state)
-        gen_name = random_state._name_dict[to_numpy_dtype(akfloat64 if has_weights else akint64)]
+        gen_name = random_state._name_dict[akdtype(akfloat64 if has_weights else akint64)]
 
         has_seed = random_state._seed is not None
 

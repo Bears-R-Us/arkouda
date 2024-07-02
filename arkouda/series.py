@@ -266,7 +266,7 @@ class Series:
             if key.dtype == self.index.dtype:
                 if any(~in1d(key, self.index.values)):
                     raise KeyError("{} not in index".format(key[~in1d(key, self.index.values)]))
-            elif key.dtype == bool:
+            elif key.dtype == "bool_":
                 if key.size != self.index.size:
                     raise IndexError(
                         "Boolean index has wrong length: {} instead of {}".format(key.size, self.size)
@@ -314,7 +314,7 @@ class Series:
         if is_supported_scalar(key):
             return self[array([key])]
         assert isinstance(key, (pdarray, Strings))
-        if key.dtype == bool:
+        if key.dtype == "bool_":
             # boolean array indexes without sorting
             return Series(index=self.index[key], data=self.values[key])
         indices = indexof1d(key, self.index.values)
@@ -1649,7 +1649,7 @@ class _iLocIndexer:
             if key.dtype != int64 and key.dtype != bool:
                 raise TypeError(".{} requires integer keys".format(self.name))
 
-            if key.dtype == bool and key.size != self.series.size:
+            if key.dtype == "bool_" and key.size != self.series.size:
                 raise IndexError(
                     "Boolean index has wrong length: {} instead of {}".format(key.size, self.series.size)
                 )
