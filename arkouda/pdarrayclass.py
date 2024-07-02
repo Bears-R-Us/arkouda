@@ -2949,8 +2949,8 @@ def mean(pda: pdarray) -> np.float64:
     """
     return parse_single_value(
         generic_msg(
-            cmd=f"stats{pda.ndim}D",
-            args={"x": pda, "comp": "mean", "nAxes": 0, "axis": [], "ddof": 0, "skipNan": False},
+            cmd=f"mean<{pda.dtype},{pda.ndim}>",
+            args={"x": pda, "skipNan": False},
         )
     )
 
@@ -3001,8 +3001,8 @@ def var(pda: pdarray, ddof: int_scalars = 0) -> np.float64:
         raise ValueError("var: ddof must be less than number of values")
     return parse_single_value(
         generic_msg(
-            cmd=f"stats{pda.ndim}D",
-            args={"x": pda, "comp": "var", "ddof": ddof, "nAxes": 0, "axis": [], "skipNan": False},
+            cmd=f"var<{pda.dtype},{pda.ndim}>",
+            args={"x": pda, "ddof": ddof, "skipNan": False},
         )
     )
 
@@ -3057,8 +3057,8 @@ def std(pda: pdarray, ddof: int_scalars = 0) -> np.float64:
         raise ValueError("ddof must be an integer 0 or greater")
     return parse_single_value(
         generic_msg(
-            cmd=f"stats{pda.ndim}D",
-            args={"x": pda, "comp": "std", "ddof": ddof, "nAxes": 0, "axis": [], "skipNan": False},
+            cmd=f"std<{pda.dtype},{pda.ndim}>",
+            args={"x": pda, "ddof": ddof, "skipNan": False},
         )
     )
 
@@ -3096,7 +3096,12 @@ def cov(x: pdarray, y: pdarray) -> np.float64:
     The covariance is calculated by
     ``cov = ((x - x.mean()) * (y - y.mean())).sum() / (x.size - 1)``.
     """
-    return parse_single_value(generic_msg(cmd="cov", args={"x": x, "y": y}))
+    return parse_single_value(
+        generic_msg(
+            cmd=f"cov<{x.dtype},{x.ndim},{y.dtype},{y.ndim}>",
+            args={"x": x, "y": y}
+        )
+    )
 
 
 @typechecked
@@ -3132,7 +3137,12 @@ def corr(x: pdarray, y: pdarray) -> np.float64:
     The correlation is calculated by
     cov(x, y) / (x.std(ddof=1) * y.std(ddof=1))
     """
-    return parse_single_value(generic_msg(cmd="corr", args={"x": x, "y": y}))
+    return parse_single_value(
+        generic_msg(
+            cmd=f"corr<{x.dtype},{x.ndim},{y.dtype},{y.ndim}>",
+            args={"x": x, "y": y}
+        )
+    )
 
 
 @typechecked

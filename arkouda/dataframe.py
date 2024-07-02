@@ -30,6 +30,7 @@ from arkouda.join import inner_join
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import cumsum, where
 from arkouda.pdarrayclass import RegistrationError, pdarray
+from arkouda.pdarrayclass import corr as pdcorr
 from arkouda.pdarraycreation import arange, array, create_pdarray, full, zeros
 from arkouda.pdarraysetops import concatenate, in1d, intersect1d
 from arkouda.row import Row
@@ -4469,17 +4470,17 @@ class DataFrame(UserDict):
                 d = Categorical(d)
             return d if isinstance(d, pdarray) else d.codes
 
-        args = {
-            "size": len(self.columns.values),
-            "columns": self.columns.values,
-            "data_names": [numeric_help(self[c]) for c in self.columns.values],
-        }
+        corrs = {}
 
-        ret_dict = json.loads(generic_msg(cmd="corrMatrix", args=args))
-        return DataFrame(
-            {c: create_pdarray(ret_dict[c]) for c in self.columns.values},
-            index=array(self.columns.values),
-        )
+        for c1 in self.columns.values:
+            corrs[c1] = np.zeros(len(self.columns.values))
+            for i, c2 in enumerate(self.columns.values):
+                if c1 == c2:
+                    corrs[c1][i] = 1
+                else:
+                    corrs[c1][i] = pdcorr(numeric_help(c1), numeric_help(c2))
+
+        return DataFrame({c: array(v) for c, v in corrs}, index=array(self.columns.values))
 
     @typechecked
     def merge(

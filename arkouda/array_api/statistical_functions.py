@@ -111,27 +111,23 @@ def mean(
     if axis is not None:
         axis_list = list(axis) if isinstance(axis, tuple) else [axis]
 
-    resp = generic_msg(
-        cmd=f"stats{x.ndim}D",
-        args={
-            "x": x._array,
-            "comp": "mean",
-            "nAxes": len(axis_list),
-            "axis": axis_list,
-            "ddof": 0,
-            "skipNan": True,  # TODO: handle all-nan slices
-        },
+    arr = Array._new(
+        create_pdarray(
+            generic_msg(
+                cmd=f"meanReduce<{x.dtype},{x.ndim}>",
+                args={
+                    "x": x._array,
+                    "axes": axis_list,
+                    "skipNan": True,  # TODO: handle all-nan slices
+                },
+            )
+        )
     )
 
-    if axis is None or x.ndim == 1:
-        return Array._new(scalar_array(parse_single_value(resp)))
+    if keepdims:
+        return arr
     else:
-        arr = Array._new(create_pdarray(resp))
-
-        if keepdims:
-            return arr
-        else:
-            return squeeze(arr, axis)
+        return squeeze(arr, axis)
 
 
 def min(
@@ -276,27 +272,24 @@ def std(
     if axis is not None:
         axis_list = list(axis) if isinstance(axis, tuple) else [axis]
 
-    resp = generic_msg(
-        cmd=f"stats{x.ndim}D",
-        args={
-            "x": x._array,
-            "comp": "std",
-            "ddof": correction,
-            "nAxes": len(axis_list),
-            "axis": axis_list,
-            "skipNan": True,
-        },
+    arr = Array._new(
+        create_pdarray(
+            generic_msg(
+                cmd=f"stdReduce<{x.dtype},{x.ndim}>",
+                args={
+                    "x": x._array,
+                    "ddof": correction,
+                    "axes": axis_list,
+                    "skipNan": True,
+                },
+            )
+        )
     )
 
-    if axis is None or x.ndim == 1:
-        return Array._new(scalar_array(parse_single_value(resp)))
+    if keepdims:
+        return arr
     else:
-        arr = Array._new(create_pdarray(resp))
-
-        if keepdims:
-            return arr
-        else:
-            return squeeze(arr, axis)
+        return squeeze(arr, axis)
 
 
 def sum(
@@ -393,27 +386,24 @@ def var(
     if axis is not None:
         axis_list = list(axis) if isinstance(axis, tuple) else [axis]
 
-    resp = generic_msg(
-        cmd=f"stats{x.ndim}D",
-        args={
-            "x": x._array,
-            "comp": "var",
-            "ddof": correction,
-            "nAxes": len(axis_list),
-            "axis": axis_list,
-            "skipNan": True,
-        },
+    arr = Array._new(
+        create_pdarray(
+            generic_msg(
+                cmd=f"varReduce<{x.dtype},{x.ndim}>",
+                args={
+                    "x": x._array,
+                    "ddof": correction,
+                    "axes": axis_list,
+                    "skipNan": True,
+                },
+            )
+        )
     )
 
-    if axis is None or x.ndim == 1:
-        return Array._new(scalar_array(parse_single_value(resp)))
+    if keepdims:
+        return arr
     else:
-        arr = Array._new(create_pdarray(resp))
-
-        if keepdims:
-            return arr
-        else:
-            return squeeze(arr, axis)
+        return squeeze(arr, axis)
 
 
 def _prod_sum_dtype(dtype: Dtype) -> Dtype:
