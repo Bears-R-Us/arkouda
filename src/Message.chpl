@@ -121,7 +121,7 @@ module Message {
     proc type MsgTuple.fromScalar(scalar: ?t): MsgTuple throws {
         import NumPyDType;
         return new MsgTuple(
-            msg = "%s %s".format(t:string, NumPyDType.type2fmt(t)).format(scalar),
+            msg = "%s %s".format(type2str(t), NumPyDType.type2fmt(t)).format(scalar),
             msgType = MsgType.NORMAL,
             msgFormat = MsgFormat.STRING,
             payload = b""
