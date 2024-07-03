@@ -127,7 +127,7 @@ module StatsMsg {
     proc cumSum(const ref x: [?d] ?t, axis: int, includeInitial: bool): [] t throws {
       if d.rank == 1 {
         var cs = makeDistArray(if includeInitial then x.size+1 else x.size, t);
-        cs[if includeInitial then 1.. else 0..] = + scan x;
+        cs[if includeInitial then 1.. else 0..] = (+ scan x):t;
         return cs;
       } else {
         var cs = makeDistArray(if includeInitial then expandedDomain(d, axis) else d, t);

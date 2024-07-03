@@ -7,42 +7,42 @@ module Stats {
     proc canBeNan(type t) param: bool do
         return isRealType(t) || isImagType(t) || isComplexType(t);
 
-    proc mean(ref ar: [?aD] ?t): real throws {
+    proc mean(const ref ar: [?aD] ?t): real throws {
         return (+ reduce ar:real) / aD.size:real;
     }
 
-    proc variance(ref ar: [?aD] ?t, ddof: real): real throws {
+    proc variance(const ref ar: [?aD] ?t, ddof: real): real throws {
         const m = mean(ar);
         return (+ reduce ((ar:real - m) ** 2)) / (aD.size - ddof);
     }
 
-    proc std(ref ar: [?aD] ?t, ddof: real): real throws {
+    proc std(const ref ar: [?aD] ?t, ddof: real): real throws {
         return sqrt(variance(ar, ddof));
     }
 
-    proc cov(ref ar1: [?aD1] ?t1, ref ar2: [?aD2] ?t2): real throws {
+    proc cov(const ref ar1: [?aD1] ?t1, const ref ar2: [?aD2] ?t2): real throws {
         const m1 = mean(ar1), m2 = mean(ar2);
         return (+ reduce ((ar1:real - m1) * (ar2:real - m2))) / (aD1.size - 1):real;
     }
 
-    proc corr(ref ar1: [?aD1] ?t1, ref ar2: [?aD2] ?t2): real throws {
+    proc corr(const ref ar1: [?aD1] ?t1, const ref ar2: [?aD2] ?t2): real throws {
         return cov(ar1, ar2) / (std(ar1, 1) * std(ar2, 1));
     }
 
-    proc meanOver(ref ar: [], slice): real throws {
+    proc meanOver(const ref ar: [], slice): real throws {
         var sum = 0.0;
         forall i in slice with (+ reduce sum) do sum += ar[i]:real;
         return sum / slice.size;
     }
 
-    proc varianceOver(ref ar: [], slice, ddof: real): real throws {
+    proc varianceOver(const ref ar: [], slice, ddof: real): real throws {
         const mean = meanOver(ar, slice);
         var sum = 0.0;
         forall i in slice with (+ reduce sum) do sum += (ar[i]:real - mean) ** 2;
         return sum / (slice.size - ddof);
     }
 
-    proc stdOver(ref ar: [], slice, ddof: real): real throws {
+    proc stdOver(const ref ar: [], slice, ddof: real): real throws {
         return sqrt(varianceOver(ar, slice, ddof));
     }
 
@@ -59,7 +59,7 @@ module Stats {
         return sum / count;
     }
 
-    proc varianceSkipNan(ref arr: [?aD] ?t, slice = aD, ddof: real): real throws
+    proc varianceSkipNan(const ref arr: [?aD] ?t, slice = aD, ddof: real): real throws
         where canBeNan(t)
     {
         const mean = meanSkipNan(arr, slice);
@@ -73,7 +73,7 @@ module Stats {
         return sum / (count - ddof);
     }
 
-    proc stdSkipNan(ref arr: [?aD] ?t, slice = aD, ddof: real): real throws {
+    proc stdSkipNan(const ref arr: [?aD] ?t, slice = aD, ddof: real): real throws {
         return sqrt(varianceSkipNan(arr, slice, ddof));
     }
 }
