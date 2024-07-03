@@ -39,7 +39,7 @@ module StatsMsg {
       return meanArr;
     }
 
-    @arklib.registerCommand(name="var")
+    @arkouda.registerCommand(name="var")
     proc variance(const ref x: [?d] ?t, skipNan: bool, ddof: real): real throws {
       if canBeNan(t) && skipNan
         then return varianceSkipNan(x, d, ddof);
@@ -57,7 +57,7 @@ module StatsMsg {
       return varArr;
     }
 
-    @arklib.registerCommand()
+    @arkouda.registerCommand()
     proc std(const ref x: [?d] ?t, skipNan: bool, ddof: real): real throws {
       if canBeNan(t) && skipNan
         then return stdSkipNan(x, d, ddof);

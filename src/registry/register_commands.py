@@ -714,7 +714,7 @@ def main():
     (chpl_src, n) = register_commands(config, source_files)
 
     with open(sys.argv[3] + "/registry/Commands.chpl", "w") as f:
-        f.write(chpl_src)
+        f.write(chpl_src.replace("\t", "  "))
 
     print("registered ", n, " commands from ", len(source_files), " modules")
 

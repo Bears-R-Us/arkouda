@@ -124,7 +124,7 @@ def mean(
         )
     )
 
-    if keepdims:
+    if keepdims or axis is None:
         return arr
     else:
         return squeeze(arr, axis)
@@ -286,7 +286,7 @@ def std(
         )
     )
 
-    if keepdims:
+    if keepdims or axis is None:
         return arr
     else:
         return squeeze(arr, axis)
@@ -400,7 +400,7 @@ def var(
         )
     )
 
-    if keepdims:
+    if keepdims or axis is None:
         return arr
     else:
         return squeeze(arr, axis)
