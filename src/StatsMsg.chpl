@@ -132,12 +132,12 @@ module StatsMsg {
       } else {
         var cs = makeDistArray(if includeInitial then expandedDomain(d, axis) else d, t);
         forall (slice, _) in axisSlices(d, new list([axis])) {
-          const xSlice = squeeze(x[slice], 1),
+          const xSlice = removeDegenRanks(x[slice], 1),
                 csSlice = + scan xSlice;
           for idx in slice {
             var csIdx = idx;
             if includeInitial then csIdx[axis] += 1;
-            cs[csIdx] = csSlice[idx[axis]];
+            cs[csIdx] = (csSlice[idx[axis]]):t;
           }
         }
         return cs;

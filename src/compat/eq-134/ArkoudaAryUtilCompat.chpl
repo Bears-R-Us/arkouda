@@ -29,7 +29,7 @@ module ArkoudaAryUtilCompat {
   }
 
   proc domOnAxis(D: domain(?), idx: D.rank*int, axes: [?aD] int): domain(?) throws {
-    return domOnAxis(D, new list(axes));
+    return domOnAxis(D, idx, new list(axes));
   }
 
   proc domOnAxis(D: domain(?), idx: D.rank*int, const ref axes: list(int)): domain(?) throws {

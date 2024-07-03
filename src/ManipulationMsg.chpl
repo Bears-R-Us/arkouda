@@ -162,7 +162,7 @@ module ManipulationMsg {
           names = msgArgs["names"].toScalarArray(string, nArrays),
           axis = msgArgs["axis"].getPositiveIntValue(array_nd);
 
-    const eIns = [n in names] st[n]: borrowed SymEntry(array_dtype, array_nd),
+    const eIns = for n in names do st[n]: borrowed SymEntry(array_dtype, array_nd),
           shapes = [i in 0..<nArrays] eIns[i].tupShape,
           (valid, shapeOut, startOffsets) = concatenatedShape(array_nd, shapes, axis);
 
@@ -217,7 +217,7 @@ module ManipulationMsg {
     const nArrays = msgArgs["n"].toScalar(int),
           names = msgArgs["names"].toScalarArray(string, nArrays);
 
-    const eIns = [n in names] st[n]: borrowed SymEntry(array_dtype, array_nd),
+    const eIns = for n in names do st[n]: borrowed SymEntry(array_dtype, array_nd),
           sizes = [i in 0..<nArrays] eIns[i].a.size,
           starts = (+ scan sizes) - sizes;
 
@@ -699,8 +699,8 @@ module ManipulationMsg {
           names = msgArgs["names"].toScalarArray(string, nArrays),
           axis = msgArgs["axis"].getPositiveIntValue(array_nd+1);
 
-    const eIns = [n in names] st[n]: borrowed SymEntry(array_dtype, array_nd),
-          shapes = [e in eIns] e.tupShape,
+    const eIns = for n in names do st[n]: borrowed SymEntry(array_dtype, array_nd),
+          shapes = [i in 0..<nArrays] eIns[i].tupShape,
           (valid, shapeOut, mapping) = stackedShape(shapes, axis, array_nd);
     var eOut = createSymEntry((...shapeOut), array_dtype);
 
@@ -853,7 +853,7 @@ module ManipulationMsg {
 
     // TODO: does the 'in' intent on 'insert' copy the symbols here?
     // (probably not since they are each 'shared' (i.e., only the managing record is copied?))
-    const responses = [e in eOuts] st.insert(e);
+    const responses = for e in eOuts do st.insert(e);
     return MsgTuple.fromResponses(responses);
   }
 
@@ -1005,5 +1005,4 @@ module ManipulationMsg {
     }
     return found;
   }
-
 }
