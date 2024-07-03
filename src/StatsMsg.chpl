@@ -82,10 +82,10 @@ module StatsMsg {
       if dx.shape != dy.shape then
         throw new Error("x and y must have the same shape");
 
-      const mx = + reduce x:real / x.size:real;
-      const my = + reduce y:real / y.size:real;
+      const mx = mean(x),
+            my = mean(y);
 
-      return (+ reduce ((x:real - mx) * (y:real - my))) / dx.size:real;
+      return (+ reduce ((x:real - mx) * (y:real - my))) / (dx.size - 1):real;
     }
 
     // above registration will instantiate `cov` for all combinations of array ranks
@@ -104,14 +104,10 @@ module StatsMsg {
       if dx.shape != dy.shape then
         throw new Error("x and y must have the same shape");
 
-      const mx = + reduce x:real / x.size:real;
-      const my = + reduce y:real / y.size:real;
+      const mx = mean(x),
+            my = mean(y);
 
-      const covXY = (+ reduce ((x:real - mx) * (y:real - my))) / dx.size:real;
-      const stdX = sqrt((+ reduce (x:real - mx) ** 2) / (dx.size - 1));
-      const stdY = sqrt((+ reduce (y:real - my) ** 2) / (dy.size - 1));
-
-      return covXY / (stdX * stdY);
+      return cov(x, y) / (std(x, 1) * std(y, 1));
     }
 
     // above registration will instantiate `corr` for all combinations of array ranks

@@ -20,15 +20,6 @@ module Stats {
         return sqrt(variance(ar, ddof));
     }
 
-    proc cov(const ref ar1: [?aD1] ?t1, const ref ar2: [?aD2] ?t2): real throws {
-        const m1 = mean(ar1), m2 = mean(ar2);
-        return (+ reduce ((ar1:real - m1) * (ar2:real - m2))) / (aD1.size - 1):real;
-    }
-
-    proc corr(const ref ar1: [?aD1] ?t1, const ref ar2: [?aD2] ?t2): real throws {
-        return cov(ar1, ar2) / (std(ar1, 1) * std(ar2, 1));
-    }
-
     proc meanOver(const ref ar: [], slice): real throws {
         var sum = 0.0;
         forall i in slice with (+ reduce sum) do sum += ar[i]:real;
