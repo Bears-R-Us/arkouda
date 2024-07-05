@@ -85,9 +85,8 @@ module CSVMsg {
         }
 
         var col_delim: string = msgArgs.getValueOf("col_delim");
-        var column_names = if !hasHeader then line.split(col_delim).strip()
-                           else
-                             reader.readLine(stripNewline = true).split(col_delim).strip();
+        if hasHeader then line = reader.readLine(stripNewline = true);
+        var column_names = line.split(col_delim).strip();
         return new MsgTuple(formatJson(column_names), MsgType.NORMAL);
 
     }
@@ -348,10 +347,12 @@ module CSVMsg {
                 }
             }
         }
-
-        var columns = if !hasHeader then line.split(col_delim).strip()
-                      else
-                        reader.readLine(stripNewline = true).split(col_delim).strip();
+        var column_names: string;
+        if hasHeader then
+            column_names = reader.readLine(stripNewline = true);
+        else
+            column_names = line;
+        var columns = column_names.split(col_delim).strip();
         var file_dtypes: [0..#columns.size] string;
         if hasHeader {
             file_dtypes = line.split(",").strip(); // Line was already read above
