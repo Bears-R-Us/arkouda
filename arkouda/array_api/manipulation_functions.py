@@ -144,7 +144,7 @@ def flip(x: Array, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> 
                 cast(
                     str,
                     generic_msg(
-                        cmd=f"flipAll<{x.dtype},{x.ndim}>" if axis is None else f"flip{x.ndim}D",
+                        cmd=f"flipAll<{x.dtype},{x.ndim}>" if axis is None else f"flip<{x.dtype},{x.ndim}>",
                         args={
                             "name": x._array,
                             "nAxes": len(axisList),

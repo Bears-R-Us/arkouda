@@ -143,7 +143,7 @@ module StatsMsg {
     private proc expandedDomain(d: domain(?), axis: int): domain(?) {
       var rngs: d.rank*range;
       for i in 0..<d.rank do rngs[i] = if i == axis
-        then d.dim(i).low..d.dim(i).high
+        then d.dim(i).low..(d.dim(i).high + 1)
         else d.dim(i);
       return d[{(...rngs)}];
     }

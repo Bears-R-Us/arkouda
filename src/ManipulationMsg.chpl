@@ -386,7 +386,7 @@ module ManipulationMsg {
   }
 
   // https://data-apis.org/array-api/latest/API_specification/generated/array_api.permute_dims.html#array_api.permute_dims
-  @arkouda.instantiateAndRegister(prefix='permute')
+  @arkouda.instantiateAndRegister(prefix='permuteDims')
   proc permuteDims(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
     const name = msgArgs["name"],

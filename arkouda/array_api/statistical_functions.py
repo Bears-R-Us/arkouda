@@ -107,9 +107,10 @@ def mean(
     if x.dtype not in _real_floating_dtypes:
         raise TypeError("Only real floating-point dtypes are allowed in mean")
 
-    axis_list = []
     if axis is not None:
         axis_list = list(axis) if isinstance(axis, tuple) else [axis]
+    else:
+        axis_list = list(range(x.ndim))
 
     arr = Array._new(
         create_pdarray(
@@ -268,9 +269,10 @@ def std(
     if correction < 0:
         raise ValueError("Correction must be non-negative in std")
 
-    axis_list = []
     if axis is not None:
         axis_list = list(axis) if isinstance(axis, tuple) else [axis]
+    else:
+        axis_list = list(range(x.ndim))
 
     arr = Array._new(
         create_pdarray(
@@ -382,9 +384,10 @@ def var(
     if correction < 0:
         raise ValueError("Correction must be non-negative in std")
 
-    axis_list = []
     if axis is not None:
         axis_list = list(axis) if isinstance(axis, tuple) else [axis]
+    else:
+        axis_list = list(range(x.ndim))
 
     arr = Array._new(
         create_pdarray(
@@ -440,12 +443,18 @@ def cumulative_sum(
     include_initial : bool, optional
         Whether to include the initial value as the first element of the output.
     """
+
+    if dtype is None:
+        x_ = x
+    else:
+        x_ = akcast(x, dtype)
+
     resp = generic_msg(
-        cmd=f"cumSum{x.ndim}D",
+        cmd=f"cumSum<{x_.dtype},{x.ndim}>",
         args={
-            "x": x._array,
+            "x": x_._array,
             "axis": axis if axis is not None else 0,
-            "include_initial": include_initial,
+            "includeInitial": include_initial,
         },
     )
 

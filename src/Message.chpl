@@ -305,7 +305,10 @@ module Message {
             }
 
             try {
-                return parseJson(this.val, list(t));
+                const sl = parseJson(this.val, list(string));
+                var l = new list(t);
+                for s in sl do l.pushBack(s: t);
+                return l;
             } catch {
                 throw err();
             }

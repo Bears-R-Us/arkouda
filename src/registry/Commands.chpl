@@ -136,21 +136,21 @@ proc ark_flipAll_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed
   return ManipulationMsg.flipAllMsg(cmd, msgArgs, st, array_dtype=bool, array_nd=1);
 registerFunction('flipAll<bool,1>', ark_flipAll_bool_1, 'ManipulationMsg', 359);
 
-proc ark_permute_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+proc ark_permuteDims_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ManipulationMsg.permuteDims(cmd, msgArgs, st, array_dtype=int, array_nd=1);
-registerFunction('permute<int64,1>', ark_permute_int_1, 'ManipulationMsg', 390);
+registerFunction('permuteDims<int64,1>', ark_permuteDims_int_1, 'ManipulationMsg', 390);
 
-proc ark_permute_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+proc ark_permuteDims_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ManipulationMsg.permuteDims(cmd, msgArgs, st, array_dtype=uint, array_nd=1);
-registerFunction('permute<uint64,1>', ark_permute_uint_1, 'ManipulationMsg', 390);
+registerFunction('permuteDims<uint64,1>', ark_permuteDims_uint_1, 'ManipulationMsg', 390);
 
-proc ark_permute_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+proc ark_permuteDims_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ManipulationMsg.permuteDims(cmd, msgArgs, st, array_dtype=real, array_nd=1);
-registerFunction('permute<float64,1>', ark_permute_real_1, 'ManipulationMsg', 390);
+registerFunction('permuteDims<float64,1>', ark_permuteDims_real_1, 'ManipulationMsg', 390);
 
-proc ark_permute_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+proc ark_permuteDims_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ManipulationMsg.permuteDims(cmd, msgArgs, st, array_dtype=bool, array_nd=1);
-registerFunction('permute<bool,1>', ark_permute_bool_1, 'ManipulationMsg', 390);
+registerFunction('permuteDims<bool,1>', ark_permuteDims_bool_1, 'ManipulationMsg', 390);
 
 proc ark_reshape_int_1_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ManipulationMsg.reshapeMsg(cmd, msgArgs, st, array_dtype=int, array_nd_in=1, array_nd_out=1);
@@ -619,19 +619,19 @@ proc ark_reg_cumSum_generic(cmd: string, msgArgs: borrowed MessageArgs, st: borr
 
 proc ark_cumSum_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ark_reg_cumSum_generic(cmd, msgArgs, st, array_dtype_0=int, array_nd_0=1);
-registerFunction('cumSum<int64,1>', ark_cumSum_int_1, 'StatsMsg', 127);
+registerFunction('cumSum<int64,1>', ark_cumSum_int_1, 'StatsMsg', 123);
 
 proc ark_cumSum_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ark_reg_cumSum_generic(cmd, msgArgs, st, array_dtype_0=uint, array_nd_0=1);
-registerFunction('cumSum<uint64,1>', ark_cumSum_uint_1, 'StatsMsg', 127);
+registerFunction('cumSum<uint64,1>', ark_cumSum_uint_1, 'StatsMsg', 123);
 
 proc ark_cumSum_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ark_reg_cumSum_generic(cmd, msgArgs, st, array_dtype_0=real, array_nd_0=1);
-registerFunction('cumSum<float64,1>', ark_cumSum_real_1, 'StatsMsg', 127);
+registerFunction('cumSum<float64,1>', ark_cumSum_real_1, 'StatsMsg', 123);
 
 proc ark_cumSum_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ark_reg_cumSum_generic(cmd, msgArgs, st, array_dtype_0=bool, array_nd_0=1);
-registerFunction('cumSum<bool,1>', ark_cumSum_bool_1, 'StatsMsg', 127);
+registerFunction('cumSum<bool,1>', ark_cumSum_bool_1, 'StatsMsg', 123);
 
 import TimeClassMsg;
 

@@ -344,7 +344,7 @@ def promote_to_common_dtype(arrays: List[pdarray]) -> Tuple[Any, List[pdarray]]:
     # cast the input arrays to the output dtype if necessary
     arrays = [a.astype(dt) if a.dtype != dt else a for a in arrays]
 
-    return (dt, arrays)
+    return (akdtype(dt), arrays)
 
 
 def _array_memview(a) -> memoryview:

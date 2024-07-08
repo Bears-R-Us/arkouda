@@ -398,7 +398,7 @@ def gen_signature(user_proc_name, generic_args=None):
 
     For a generic command procedure:
     ```
-    proc ark_reg_<user_proc_name>_generic(cmd: string, msgArgs: borrowed MessageArgs, , st: borrowed SymTab, <generic args>): MsgTuple throws {
+    proc ark_reg_<user_proc_name>_generic(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, <generic args>): MsgTuple throws {
     ```
 
     Return the signature and the name of the procedure

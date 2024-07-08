@@ -150,7 +150,7 @@ def _reshape(array: pdarray, shape: Tuple[int, ...]):
     """
     return create_pdarray(
         generic_msg(
-            cmd=f"reshape{array.ndim}Dx{len(shape)}D",
+            cmd=f"reshape<{array.dtype},{array.ndim},{len(shape)}>",
             args={
                 "name": array,
                 "shape": shape,
@@ -167,7 +167,7 @@ def _squeeze(array: pdarray, degen_axes: List[int]):
     """
     return create_pdarray(
         generic_msg(
-            cmd=f"squeeze{array.ndim}Dx{array.ndim-len(degen_axes)}D",
+            cmd=f"squeeze<{array.dtype},{array.ndim},{array.ndim-len(degen_axes)}>",
             args={
                 "name": array,
                 "nAxes": len(degen_axes),
