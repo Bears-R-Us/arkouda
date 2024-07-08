@@ -206,6 +206,10 @@ class TestPdarrayCreation:
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_randint_misc(self, size):
+
+        # Test that int_scalars covers uint8, uint16, uint32
+        ak.randint(low=np.uint8(1), high=np.uint16(100), size=np.uint32(100))
+
         # test resolution of modulus overflow - issue #1174
         assert (ak.randint(-(2**63), 2**63 - 1, size) != ak.full(size, -(2**63))).any()
 
@@ -343,11 +347,12 @@ class TestPdarrayCreation:
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [ak.int64, ak.float64, ak.bool_, ak.bigint])
     def test_ones_like(self, size, dtype):
-        ones_arr = ak.ones(size, dtype)
-        ones_like_arr = ak.ones_like(ones_arr)
+        ran_arr = ak.array(np.arange(size), dtype=dtype)
+        ones_like_arr = ak.ones_like(ran_arr)
         assert isinstance(ones_like_arr, ak.pdarray)
         assert dtype == ones_like_arr.dtype
         assert (1 == ones_like_arr).all()
+        assert ones_like_arr.size == ran_arr.size
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
@@ -389,20 +394,22 @@ class TestPdarrayCreation:
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
     def test_full_like(self, size, dtype):
-        full_arr = ak.full(size, 1, dtype)
-        full_like_arr = ak.full_like(full_arr, 1)
+        ran_arr = ak.full(size, 5, dtype)
+        full_like_arr = ak.full_like(ran_arr, 1)
         assert isinstance(full_like_arr, ak.pdarray)
         assert dtype == full_like_arr.dtype
         assert (full_like_arr == 1).all()
+        assert full_like_arr.size == ran_arr.size
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
     def test_zeros_like(self, size, dtype):
-        zeros_arr = ak.zeros(size, dtype)
-        zeros_like_arr = ak.zeros_like(zeros_arr)
+        ran_arr = ak.array(np.arange(size), dtype=dtype)
+        zeros_like_arr = ak.zeros_like(ran_arr)
         assert isinstance(zeros_like_arr, ak.pdarray)
         assert dtype == zeros_like_arr.dtype
         assert (zeros_like_arr == 0).all()
+        assert zeros_like_arr.size == ran_arr.size
 
     def test_linspace(self):
         pda = ak.linspace(0, 100, 1000)
@@ -560,6 +567,9 @@ class TestPdarrayCreation:
         with pytest.raises(TypeError):
             ak.random_strings_lognormal(2, 0.25, 100, 1000000)
 
+        # Test that int_scalars covers uint8, uint16, uint32
+        ak.random_strings_lognormal(np.uint8(2), 0.25, np.uint16(100))
+
     def test_random_strings_lognormal_with_seed(self):
         randoms = [
             "VWHJEX",
@@ -612,11 +622,11 @@ class TestPdarrayCreation:
         assert isinstance(p_array, ak.pdarray if dtype != str else ak.Strings)
         assert dtype == p_array.dtype
 
-        p_i_objects_array = ak.from_series(
+        p_objects_array = ak.from_series(
             pd.Series(np.random.randint(0, 10, size), dtype="object"), dtype=dtype
         )
-        assert isinstance(p_i_objects_array, ak.pdarray if dtype != str else ak.Strings)
-        assert dtype == p_i_objects_array.dtype
+        assert isinstance(p_objects_array, ak.pdarray if dtype != str else ak.Strings)
+        assert dtype == p_objects_array.dtype
 
     def test_from_series_misc(self):
         p_array = ak.from_series(pd.Series(["a", "b", "c", "d", "e"]))
@@ -657,6 +667,10 @@ class TestPdarrayCreation:
         ones = ak.ones(size)
         ones.fill(dtype(2))
         assert (dtype(2) == ones).all()
+        # Test that int_scalars covers uint8, uint16, uint32
+        ones.fill(np.uint8(2))
+        ones.fill(np.uint16(2))
+        ones.fill(np.uint32(2))
 
     def test_endian(self):
         a = np.random.randint(1, 100, 100)
