@@ -119,7 +119,7 @@ class TestRandom:
         rnfunc = rng.integers if data_type is ak.int64 else rng.uniform
         pda_p = rnfunc(-(2**32), 2**32, 10)
         permuted_p = rng.permutation(pda_p)
-        assert check(ak.sort(pda), ak.sort(permuted), data_type)
+        assert check(ak.sort(pda_p), ak.sort(permuted_p), data_type)
 
     def test_uniform(self):
         # verify same seed gives different but reproducible arrays
