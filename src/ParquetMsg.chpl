@@ -171,8 +171,8 @@ module ParquetMsg {
     }
   }
 
-  proc readStrFilesByName(A: [] ?t, ref whereNull: [] bool, filenames: [] string, sizes: [] int, dsetname: string, ty) throws {
-    extern proc c_readColumnByName(filename, arr_chpl, where_null_chpl, colNum, numElems, startIdx, batchSize, byteLength, hasNonFloatNulls, errMsg): int;
+  proc readStrFilesByName(ref A: [] ?t, filenames: [] string, sizes: [] int, dsetname: string) throws {
+    extern proc c_readStrColumnByName(filename, arr_chpl, colname, batchSize, errMsg): int;
     var (subdoms, length) = getSubdomains(sizes);
     
     coforall loc in A.targetLocales() do on loc {
@@ -187,9 +187,9 @@ module ParquetMsg {
             var pqErr = new parquetErrorMsg();
             var col: [filedom] t;
 
-            if c_readColumnByName(filename.localize().c_str(), c_ptrTo(col), c_ptrTo(whereNull[intersection.low]),
-                                  dsetname.localize().c_str(), intersection.size, 0,
-                                  batchSize, -1, false, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
+            if c_readStrColumnByName(filename.localize().c_str(), c_ptrTo(col),
+                                     dsetname.localize().c_str(),
+                                     batchSize, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
               pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
             }
             A[filedom] = col;
@@ -997,7 +997,7 @@ module ParquetMsg {
 
           // Read into distributed array
           var entryVal = new shared SymEntry((+ reduce byteSizes), uint(8));
-          readStrFilesByName(entryVal.a, whereNull, filenames, byteSizes, dsetname, ty);
+          readStrFilesByName(entryVal.a, filenames, byteSizes, dsetname);
           
           var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
           rnames.pushBack((dsetname, ObjType.STRINGS, "%s+%?".format(stringsEntry.name, stringsEntry.nBytes)));
