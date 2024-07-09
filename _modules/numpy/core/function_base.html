@@ -1,0 +1,955 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
+
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
+        <title>numpy.core.function_base - arkouda documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=387cc868" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=36a5483c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" /
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">arkouda  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
+  
+  
+  <span class="sidebar-brand-text">arkouda  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/REQUIREMENTS.html">Requirements</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../setup/install_menu.html">Installation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Installation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../setup/LINUX_INSTALL.html">Linux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../setup/WINDOWS_INSTALL.html">Windows (WSL2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../setup/MAC_INSTALL.html">MacOS</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/BUILD.html">Building the Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/MODULAR.html">Modular Server Builds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/testing.html">Performance Testing</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../file_io/io_menu.html">File I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of File I/O</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../file_io/HDF5.html">HDF5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../file_io/PARQUET.html">Parquet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../file_io/CSV.html">CSV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../file_io/IMPORT_EXPORT.html">Import/Export</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../usage.html">Usage Guide</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Usage Guide</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/startup.html">Startup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/creation.html">Creating Arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/arithmetic.html">Arithmetic and Numeric Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/indexing.html">Indexing and Assignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/histogram.html">Summarizing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/argsort.html">Sorting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/setops.html">Array Set Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/groupby.html">GroupBy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/strings.html">Strings in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/categorical.html">Categoricals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/random.html">Random in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/segarray.html">SegArrays in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/arrayview.html">ArrayView in Arkouda</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../CONTRIBUTING_LINK.html">Contributing</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/arkouda/index.html">arkouda</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of arkouda</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/array_api/index.html">arkouda.array_api</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of arkouda.array_api</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/array_object/index.html">arkouda.array_api.array_object</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/creation_functions/index.html">arkouda.array_api.creation_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/data_type_functions/index.html">arkouda.array_api.data_type_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html">arkouda.array_api.elementwise_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/indexing_functions/index.html">arkouda.array_api.indexing_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/linalg/index.html">arkouda.array_api.linalg</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/manipulation_functions/index.html">arkouda.array_api.manipulation_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/searching_functions/index.html">arkouda.array_api.searching_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/set_functions/index.html">arkouda.array_api.set_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/sorting_functions/index.html">arkouda.array_api.sorting_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/statistical_functions/index.html">arkouda.array_api.statistical_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/utility_functions/index.html">arkouda.array_api.utility_functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/random/index.html">arkouda.random</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/testing/index.html">arkouda.testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/accessor/index.html">arkouda.accessor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/alignment/index.html">arkouda.alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/array_view/index.html">arkouda.array_view</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/categorical/index.html">arkouda.categorical</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/client/index.html">arkouda.client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/client_dtypes/index.html">arkouda.client_dtypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/dataframe/index.html">arkouda.dataframe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/dtypes/index.html">arkouda.dtypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/groupbyclass/index.html">arkouda.groupbyclass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/history/index.html">arkouda.history</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/index/index.html">arkouda.index</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/infoclass/index.html">arkouda.infoclass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/io/index.html">arkouda.io</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/io_util/index.html">arkouda.io_util</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/join/index.html">arkouda.join</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/logger/index.html">arkouda.logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/match/index.html">arkouda.match</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/matcher/index.html">arkouda.matcher</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/numeric/index.html">arkouda.numeric</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/numpy/index.html">arkouda.numpy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/pdarrayclass/index.html">arkouda.pdarrayclass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/pdarraycreation/index.html">arkouda.pdarraycreation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/pdarraymanipulation/index.html">arkouda.pdarraymanipulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/pdarraysetops/index.html">arkouda.pdarraysetops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/plotting/index.html">arkouda.plotting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/row/index.html">arkouda.row</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/scipy/index.html">arkouda.scipy</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.scipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/special/index.html">arkouda.scipy.special</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/stats/index.html">arkouda.scipy.stats</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/security/index.html">arkouda.security</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/segarray/index.html">arkouda.segarray</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/series/index.html">arkouda.series</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/sorting/index.html">arkouda.sorting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/strings/index.html">arkouda.strings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/timeclass/index.html">arkouda.timeclass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/util/index.html">arkouda.util</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../server/index.html">Chapel API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/GASNET.html">GASNet Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/RELEASE_PROCESS.html">Release Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/BENCHMARK.html">PyTest Benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/ADDING_FEATURES.html">Adding Your First Feature</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <h1>Source code for numpy.core.function_base</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">operator</span>
+<span class="kn">import</span> <span class="nn">types</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">numeric</span> <span class="k">as</span> <span class="n">_nx</span>
+<span class="kn">from</span> <span class="nn">.numeric</span> <span class="kn">import</span> <span class="n">result_type</span><span class="p">,</span> <span class="n">NaN</span><span class="p">,</span> <span class="n">asanyarray</span><span class="p">,</span> <span class="n">ndim</span>
+<span class="kn">from</span> <span class="nn">numpy.core.multiarray</span> <span class="kn">import</span> <span class="n">add_docstring</span>
+<span class="kn">from</span> <span class="nn">numpy.core</span> <span class="kn">import</span> <span class="n">overrides</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;logspace&#39;</span><span class="p">,</span> <span class="s1">&#39;linspace&#39;</span><span class="p">,</span> <span class="s1">&#39;geomspace&#39;</span><span class="p">]</span>
+
+
+<span class="n">array_function_dispatch</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span>
+    <span class="n">overrides</span><span class="o">.</span><span class="n">array_function_dispatch</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_linspace_dispatcher</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">retstep</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                         <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">)</span>
+
+
+<span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_linspace_dispatcher</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">linspace</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">retstep</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return evenly spaced numbers over a specified interval.</span>
+
+<span class="sd">    Returns `num` evenly spaced samples, calculated over the</span>
+<span class="sd">    interval [`start`, `stop`].</span>
+
+<span class="sd">    The endpoint of the interval can optionally be excluded.</span>
+
+<span class="sd">    .. versionchanged:: 1.16.0</span>
+<span class="sd">        Non-scalar `start` and `stop` are now supported.</span>
+
+<span class="sd">    .. versionchanged:: 1.20.0</span>
+<span class="sd">        Values are rounded towards ``-inf`` instead of ``0`` when an</span>
+<span class="sd">        integer ``dtype`` is specified. The old behavior can</span>
+<span class="sd">        still be obtained with ``np.linspace(start, stop, num).astype(int)``</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    start : array_like</span>
+<span class="sd">        The starting value of the sequence.</span>
+<span class="sd">    stop : array_like</span>
+<span class="sd">        The end value of the sequence, unless `endpoint` is set to False.</span>
+<span class="sd">        In that case, the sequence consists of all but the last of ``num + 1``</span>
+<span class="sd">        evenly spaced samples, so that `stop` is excluded.  Note that the step</span>
+<span class="sd">        size changes when `endpoint` is False.</span>
+<span class="sd">    num : int, optional</span>
+<span class="sd">        Number of samples to generate. Default is 50. Must be non-negative.</span>
+<span class="sd">    endpoint : bool, optional</span>
+<span class="sd">        If True, `stop` is the last sample. Otherwise, it is not included.</span>
+<span class="sd">        Default is True.</span>
+<span class="sd">    retstep : bool, optional</span>
+<span class="sd">        If True, return (`samples`, `step`), where `step` is the spacing</span>
+<span class="sd">        between samples.</span>
+<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">        The type of the output array.  If `dtype` is not given, the data type</span>
+<span class="sd">        is inferred from `start` and `stop`. The inferred dtype will never be</span>
+<span class="sd">        an integer; `float` is chosen even if the arguments would produce an</span>
+<span class="sd">        array of integers.</span>
+
+<span class="sd">        .. versionadded:: 1.9.0</span>
+
+<span class="sd">    axis : int, optional</span>
+<span class="sd">        The axis in the result to store the samples.  Relevant only if start</span>
+<span class="sd">        or stop are array-like.  By default (0), the samples will be along a</span>
+<span class="sd">        new axis inserted at the beginning. Use -1 to get an axis at the end.</span>
+
+<span class="sd">        .. versionadded:: 1.16.0</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    samples : ndarray</span>
+<span class="sd">        There are `num` equally spaced samples in the closed interval</span>
+<span class="sd">        ``[start, stop]`` or the half-open interval ``[start, stop)``</span>
+<span class="sd">        (depending on whether `endpoint` is True or False).</span>
+<span class="sd">    step : float, optional</span>
+<span class="sd">        Only returned if `retstep` is True</span>
+
+<span class="sd">        Size of spacing between samples.</span>
+
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    arange : Similar to `linspace`, but uses a step size (instead of the</span>
+<span class="sd">             number of samples).</span>
+<span class="sd">    geomspace : Similar to `linspace`, but with numbers spaced evenly on a log</span>
+<span class="sd">                scale (a geometric progression).</span>
+<span class="sd">    logspace : Similar to `geomspace`, but with the end points specified as</span>
+<span class="sd">               logarithms.</span>
+<span class="sd">    :ref:`how-to-partition`</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; np.linspace(2.0, 3.0, num=5)</span>
+<span class="sd">    array([2.  , 2.25, 2.5 , 2.75, 3.  ])</span>
+<span class="sd">    &gt;&gt;&gt; np.linspace(2.0, 3.0, num=5, endpoint=False)</span>
+<span class="sd">    array([2. ,  2.2,  2.4,  2.6,  2.8])</span>
+<span class="sd">    &gt;&gt;&gt; np.linspace(2.0, 3.0, num=5, retstep=True)</span>
+<span class="sd">    (array([2.  ,  2.25,  2.5 ,  2.75,  3.  ]), 0.25)</span>
+
+<span class="sd">    Graphical illustration:</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; N = 8</span>
+<span class="sd">    &gt;&gt;&gt; y = np.zeros(N)</span>
+<span class="sd">    &gt;&gt;&gt; x1 = np.linspace(0, 10, N, endpoint=True)</span>
+<span class="sd">    &gt;&gt;&gt; x2 = np.linspace(0, 10, N, endpoint=False)</span>
+<span class="sd">    &gt;&gt;&gt; plt.plot(x1, y, &#39;o&#39;)</span>
+<span class="sd">    [&lt;matplotlib.lines.Line2D object at 0x...&gt;]</span>
+<span class="sd">    &gt;&gt;&gt; plt.plot(x2, y + 0.5, &#39;o&#39;)</span>
+<span class="sd">    [&lt;matplotlib.lines.Line2D object at 0x...&gt;]</span>
+<span class="sd">    &gt;&gt;&gt; plt.ylim([-0.5, 1])</span>
+<span class="sd">    (-0.5, 1)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">num</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">num</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number of samples, </span><span class="si">%s</span><span class="s2">, must be non-negative.&quot;</span> <span class="o">%</span> <span class="n">num</span><span class="p">)</span>
+    <span class="n">div</span> <span class="o">=</span> <span class="p">(</span><span class="n">num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">endpoint</span> <span class="k">else</span> <span class="n">num</span>
+
+    <span class="c1"># Convert float/complex array scalars to float, gh-3504</span>
+    <span class="c1"># and make sure one can use variables that have an __array_interface__, gh-6634</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">asanyarray</span><span class="p">(</span><span class="n">start</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.0</span>
+    <span class="n">stop</span>  <span class="o">=</span> <span class="n">asanyarray</span><span class="p">(</span><span class="n">stop</span><span class="p">)</span>  <span class="o">*</span> <span class="mf">1.0</span>
+
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">result_type</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">num</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">dt</span>
+        <span class="n">integer_dtype</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">integer_dtype</span> <span class="o">=</span> <span class="n">_nx</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">_nx</span><span class="o">.</span><span class="n">integer</span><span class="p">)</span>
+
+    <span class="n">delta</span> <span class="o">=</span> <span class="n">stop</span> <span class="o">-</span> <span class="n">start</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">_nx</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="n">ndim</span><span class="p">(</span><span class="n">delta</span><span class="p">))</span>
+    <span class="c1"># In-place multiplication y *= delta/div is faster, but prevents the multiplicant</span>
+    <span class="c1"># from overriding what class is produced, and thus prevents, e.g. use of Quantities,</span>
+    <span class="c1"># see gh-7142. Hence, we multiply in place only for standard scalar types.</span>
+    <span class="k">if</span> <span class="n">div</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">_mult_inplace</span> <span class="o">=</span> <span class="n">_nx</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="n">delta</span> <span class="o">/</span> <span class="n">div</span>
+        <span class="n">any_step_zero</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">step</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">_mult_inplace</span> <span class="k">else</span> <span class="n">_nx</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">step</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">any_step_zero</span><span class="p">:</span>
+            <span class="c1"># Special handling for denormal numbers, gh-5437</span>
+            <span class="n">y</span> <span class="o">/=</span> <span class="n">div</span>
+            <span class="k">if</span> <span class="n">_mult_inplace</span><span class="p">:</span>
+                <span class="n">y</span> <span class="o">*=</span> <span class="n">delta</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="n">delta</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">_mult_inplace</span><span class="p">:</span>
+                <span class="n">y</span> <span class="o">*=</span> <span class="n">step</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="n">step</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># sequences with 0 items or 1 item with endpoint=True (i.e. div &lt;= 0)</span>
+        <span class="c1"># have an undefined step</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="n">NaN</span>
+        <span class="c1"># Multiply with delta to allow possible override of output class.</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="n">delta</span>
+
+    <span class="n">y</span> <span class="o">+=</span> <span class="n">start</span>
+
+    <span class="k">if</span> <span class="n">endpoint</span> <span class="ow">and</span> <span class="n">num</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">stop</span>
+
+    <span class="k">if</span> <span class="n">axis</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">_nx</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">integer_dtype</span><span class="p">:</span>
+        <span class="n">_nx</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">retstep</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">y</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="n">step</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">y</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_logspace_dispatcher</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                         <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">base</span><span class="p">)</span>
+
+
+<span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_logspace_dispatcher</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">logspace</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return numbers spaced evenly on a log scale.</span>
+
+<span class="sd">    In linear space, the sequence starts at ``base ** start``</span>
+<span class="sd">    (`base` to the power of `start`) and ends with ``base ** stop``</span>
+<span class="sd">    (see `endpoint` below).</span>
+
+<span class="sd">    .. versionchanged:: 1.16.0</span>
+<span class="sd">        Non-scalar `start` and `stop` are now supported.</span>
+
+<span class="sd">    .. versionchanged:: 1.25.0</span>
+<span class="sd">        Non-scalar &#39;base` is now supported</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    start : array_like</span>
+<span class="sd">        ``base ** start`` is the starting value of the sequence.</span>
+<span class="sd">    stop : array_like</span>
+<span class="sd">        ``base ** stop`` is the final value of the sequence, unless `endpoint`</span>
+<span class="sd">        is False.  In that case, ``num + 1`` values are spaced over the</span>
+<span class="sd">        interval in log-space, of which all but the last (a sequence of</span>
+<span class="sd">        length `num`) are returned.</span>
+<span class="sd">    num : integer, optional</span>
+<span class="sd">        Number of samples to generate.  Default is 50.</span>
+<span class="sd">    endpoint : boolean, optional</span>
+<span class="sd">        If true, `stop` is the last sample. Otherwise, it is not included.</span>
+<span class="sd">        Default is True.</span>
+<span class="sd">    base : array_like, optional</span>
+<span class="sd">        The base of the log space. The step size between the elements in</span>
+<span class="sd">        ``ln(samples) / ln(base)`` (or ``log_base(samples)``) is uniform.</span>
+<span class="sd">        Default is 10.0.</span>
+<span class="sd">    dtype : dtype</span>
+<span class="sd">        The type of the output array.  If `dtype` is not given, the data type</span>
+<span class="sd">        is inferred from `start` and `stop`. The inferred type will never be</span>
+<span class="sd">        an integer; `float` is chosen even if the arguments would produce an</span>
+<span class="sd">        array of integers.</span>
+<span class="sd">    axis : int, optional</span>
+<span class="sd">        The axis in the result to store the samples.  Relevant only if start,</span>
+<span class="sd">        stop, or base are array-like.  By default (0), the samples will be</span>
+<span class="sd">        along a new axis inserted at the beginning. Use -1 to get an axis at</span>
+<span class="sd">        the end.</span>
+
+<span class="sd">        .. versionadded:: 1.16.0</span>
+
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    samples : ndarray</span>
+<span class="sd">        `num` samples, equally spaced on a log scale.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    arange : Similar to linspace, with the step size specified instead of the</span>
+<span class="sd">             number of samples. Note that, when used with a float endpoint, the</span>
+<span class="sd">             endpoint may or may not be included.</span>
+<span class="sd">    linspace : Similar to logspace, but with the samples uniformly distributed</span>
+<span class="sd">               in linear space, instead of log space.</span>
+<span class="sd">    geomspace : Similar to logspace, but with endpoints specified directly.</span>
+<span class="sd">    :ref:`how-to-partition`</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    If base is a scalar, logspace is equivalent to the code</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.linspace(start, stop, num=num, endpoint=endpoint)</span>
+<span class="sd">    ... # doctest: +SKIP</span>
+<span class="sd">    &gt;&gt;&gt; power(base, y).astype(dtype)</span>
+<span class="sd">    ... # doctest: +SKIP</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; np.logspace(2.0, 3.0, num=4)</span>
+<span class="sd">    array([ 100.        ,  215.443469  ,  464.15888336, 1000.        ])</span>
+<span class="sd">    &gt;&gt;&gt; np.logspace(2.0, 3.0, num=4, endpoint=False)</span>
+<span class="sd">    array([100.        ,  177.827941  ,  316.22776602,  562.34132519])</span>
+<span class="sd">    &gt;&gt;&gt; np.logspace(2.0, 3.0, num=4, base=2.0)</span>
+<span class="sd">    array([4.        ,  5.0396842 ,  6.34960421,  8.        ])</span>
+<span class="sd">    &gt;&gt;&gt; np.logspace(2.0, 3.0, num=4, base=[2.0, 3.0], axis=-1)</span>
+<span class="sd">    array([[ 4.        ,  5.0396842 ,  6.34960421,  8.        ],</span>
+<span class="sd">           [ 9.        , 12.98024613, 18.72075441, 27.        ]])</span>
+
+<span class="sd">    Graphical illustration:</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; N = 10</span>
+<span class="sd">    &gt;&gt;&gt; x1 = np.logspace(0.1, 1, N, endpoint=True)</span>
+<span class="sd">    &gt;&gt;&gt; x2 = np.logspace(0.1, 1, N, endpoint=False)</span>
+<span class="sd">    &gt;&gt;&gt; y = np.zeros(N)</span>
+<span class="sd">    &gt;&gt;&gt; plt.plot(x1, y, &#39;o&#39;)</span>
+<span class="sd">    [&lt;matplotlib.lines.Line2D object at 0x...&gt;]</span>
+<span class="sd">    &gt;&gt;&gt; plt.plot(x2, y + 0.5, &#39;o&#39;)</span>
+<span class="sd">    [&lt;matplotlib.lines.Line2D object at 0x...&gt;]</span>
+<span class="sd">    &gt;&gt;&gt; plt.ylim([-0.5, 1])</span>
+<span class="sd">    (-0.5, 1)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ndmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">base</span><span class="p">)</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">base</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="n">ndmax</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">base</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">num</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+    <span class="n">base</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_nx</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_nx</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_geomspace_dispatcher</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                          <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">)</span>
+
+
+<span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_geomspace_dispatcher</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">geomspace</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return numbers spaced evenly on a log scale (a geometric progression).</span>
+
+<span class="sd">    This is similar to `logspace`, but with endpoints specified directly.</span>
+<span class="sd">    Each output sample is a constant multiple of the previous.</span>
+
+<span class="sd">    .. versionchanged:: 1.16.0</span>
+<span class="sd">        Non-scalar `start` and `stop` are now supported.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    start : array_like</span>
+<span class="sd">        The starting value of the sequence.</span>
+<span class="sd">    stop : array_like</span>
+<span class="sd">        The final value of the sequence, unless `endpoint` is False.</span>
+<span class="sd">        In that case, ``num + 1`` values are spaced over the</span>
+<span class="sd">        interval in log-space, of which all but the last (a sequence of</span>
+<span class="sd">        length `num`) are returned.</span>
+<span class="sd">    num : integer, optional</span>
+<span class="sd">        Number of samples to generate.  Default is 50.</span>
+<span class="sd">    endpoint : boolean, optional</span>
+<span class="sd">        If true, `stop` is the last sample. Otherwise, it is not included.</span>
+<span class="sd">        Default is True.</span>
+<span class="sd">    dtype : dtype</span>
+<span class="sd">        The type of the output array.  If `dtype` is not given, the data type</span>
+<span class="sd">        is inferred from `start` and `stop`. The inferred dtype will never be</span>
+<span class="sd">        an integer; `float` is chosen even if the arguments would produce an</span>
+<span class="sd">        array of integers.</span>
+<span class="sd">    axis : int, optional</span>
+<span class="sd">        The axis in the result to store the samples.  Relevant only if start</span>
+<span class="sd">        or stop are array-like.  By default (0), the samples will be along a</span>
+<span class="sd">        new axis inserted at the beginning. Use -1 to get an axis at the end.</span>
+
+<span class="sd">        .. versionadded:: 1.16.0</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    samples : ndarray</span>
+<span class="sd">        `num` samples, equally spaced on a log scale.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    logspace : Similar to geomspace, but with endpoints specified using log</span>
+<span class="sd">               and base.</span>
+<span class="sd">    linspace : Similar to geomspace, but with arithmetic instead of geometric</span>
+<span class="sd">               progression.</span>
+<span class="sd">    arange : Similar to linspace, with the step size specified instead of the</span>
+<span class="sd">             number of samples.</span>
+<span class="sd">    :ref:`how-to-partition`</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    If the inputs or dtype are complex, the output will follow a logarithmic</span>
+<span class="sd">    spiral in the complex plane.  (There are an infinite number of spirals</span>
+<span class="sd">    passing through two points; the output will follow the shortest such path.)</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; np.geomspace(1, 1000, num=4)</span>
+<span class="sd">    array([    1.,    10.,   100.,  1000.])</span>
+<span class="sd">    &gt;&gt;&gt; np.geomspace(1, 1000, num=3, endpoint=False)</span>
+<span class="sd">    array([   1.,   10.,  100.])</span>
+<span class="sd">    &gt;&gt;&gt; np.geomspace(1, 1000, num=4, endpoint=False)</span>
+<span class="sd">    array([   1.        ,    5.62341325,   31.6227766 ,  177.827941  ])</span>
+<span class="sd">    &gt;&gt;&gt; np.geomspace(1, 256, num=9)</span>
+<span class="sd">    array([   1.,    2.,    4.,    8.,   16.,   32.,   64.,  128.,  256.])</span>
+
+<span class="sd">    Note that the above may not produce exact integers:</span>
+
+<span class="sd">    &gt;&gt;&gt; np.geomspace(1, 256, num=9, dtype=int)</span>
+<span class="sd">    array([  1,   2,   4,   7,  16,  32,  63, 127, 256])</span>
+<span class="sd">    &gt;&gt;&gt; np.around(np.geomspace(1, 256, num=9)).astype(int)</span>
+<span class="sd">    array([  1,   2,   4,   8,  16,  32,  64, 128, 256])</span>
+
+<span class="sd">    Negative, decreasing, and complex inputs are allowed:</span>
+
+<span class="sd">    &gt;&gt;&gt; np.geomspace(1000, 1, num=4)</span>
+<span class="sd">    array([1000.,  100.,   10.,    1.])</span>
+<span class="sd">    &gt;&gt;&gt; np.geomspace(-1000, -1, num=4)</span>
+<span class="sd">    array([-1000.,  -100.,   -10.,    -1.])</span>
+<span class="sd">    &gt;&gt;&gt; np.geomspace(1j, 1000j, num=4)  # Straight line</span>
+<span class="sd">    array([0.   +1.j, 0.  +10.j, 0. +100.j, 0.+1000.j])</span>
+<span class="sd">    &gt;&gt;&gt; np.geomspace(-1+0j, 1+0j, num=5)  # Circle</span>
+<span class="sd">    array([-1.00000000e+00+1.22464680e-16j, -7.07106781e-01+7.07106781e-01j,</span>
+<span class="sd">            6.12323400e-17+1.00000000e+00j,  7.07106781e-01+7.07106781e-01j,</span>
+<span class="sd">            1.00000000e+00+0.00000000e+00j])</span>
+
+<span class="sd">    Graphical illustration of `endpoint` parameter:</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; N = 10</span>
+<span class="sd">    &gt;&gt;&gt; y = np.zeros(N)</span>
+<span class="sd">    &gt;&gt;&gt; plt.semilogx(np.geomspace(1, 1000, N, endpoint=True), y + 1, &#39;o&#39;)</span>
+<span class="sd">    [&lt;matplotlib.lines.Line2D object at 0x...&gt;]</span>
+<span class="sd">    &gt;&gt;&gt; plt.semilogx(np.geomspace(1, 1000, N, endpoint=False), y + 2, &#39;o&#39;)</span>
+<span class="sd">    [&lt;matplotlib.lines.Line2D object at 0x...&gt;]</span>
+<span class="sd">    &gt;&gt;&gt; plt.axis([0.5, 2000, 0, 3])</span>
+<span class="sd">    [0.5, 2000, 0, 3]</span>
+<span class="sd">    &gt;&gt;&gt; plt.grid(True, color=&#39;0.7&#39;, linestyle=&#39;-&#39;, which=&#39;both&#39;, axis=&#39;both&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">asanyarray</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+    <span class="n">stop</span> <span class="o">=</span> <span class="n">asanyarray</span><span class="p">(</span><span class="n">stop</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">_nx</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">start</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="n">_nx</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">stop</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Geometric sequence cannot include zero&#39;</span><span class="p">)</span>
+
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">result_type</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">num</span><span class="p">),</span> <span class="n">_nx</span><span class="o">.</span><span class="n">zeros</span><span class="p">((),</span> <span class="n">dtype</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">dt</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># complex to dtype(&#39;complex128&#39;), for instance</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">_nx</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+
+    <span class="c1"># Promote both arguments to the same dtype in case, for instance, one is</span>
+    <span class="c1"># complex and another is negative and log would produce NaN otherwise.</span>
+    <span class="c1"># Copy since we may change things in-place further down.</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">start</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">stop</span> <span class="o">=</span> <span class="n">stop</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">out_sign</span> <span class="o">=</span> <span class="n">_nx</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">_nx</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+    <span class="c1"># Avoid negligible real or imaginary parts in output by rotating to</span>
+    <span class="c1"># positive real, calculating, then undoing rotation</span>
+    <span class="k">if</span> <span class="n">_nx</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">_nx</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
+        <span class="n">all_imag</span> <span class="o">=</span> <span class="p">(</span><span class="n">start</span><span class="o">.</span><span class="n">real</span> <span class="o">==</span> <span class="mf">0.</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">stop</span><span class="o">.</span><span class="n">real</span> <span class="o">==</span> <span class="mf">0.</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">_nx</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">all_imag</span><span class="p">):</span>
+            <span class="n">start</span><span class="p">[</span><span class="n">all_imag</span><span class="p">]</span> <span class="o">=</span> <span class="n">start</span><span class="p">[</span><span class="n">all_imag</span><span class="p">]</span><span class="o">.</span><span class="n">imag</span>
+            <span class="n">stop</span><span class="p">[</span><span class="n">all_imag</span><span class="p">]</span> <span class="o">=</span> <span class="n">stop</span><span class="p">[</span><span class="n">all_imag</span><span class="p">]</span><span class="o">.</span><span class="n">imag</span>
+            <span class="n">out_sign</span><span class="p">[</span><span class="n">all_imag</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="n">j</span>
+
+    <span class="n">both_negative</span> <span class="o">=</span> <span class="p">(</span><span class="n">_nx</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">start</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">_nx</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">stop</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">_nx</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">both_negative</span><span class="p">):</span>
+        <span class="n">_nx</span><span class="o">.</span><span class="n">negative</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">both_negative</span><span class="p">)</span>
+        <span class="n">_nx</span><span class="o">.</span><span class="n">negative</span><span class="p">(</span><span class="n">stop</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">stop</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">both_negative</span><span class="p">)</span>
+        <span class="n">_nx</span><span class="o">.</span><span class="n">negative</span><span class="p">(</span><span class="n">out_sign</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out_sign</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">both_negative</span><span class="p">)</span>
+
+    <span class="n">log_start</span> <span class="o">=</span> <span class="n">_nx</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+    <span class="n">log_stop</span> <span class="o">=</span> <span class="n">_nx</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">stop</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">logspace</span><span class="p">(</span><span class="n">log_start</span><span class="p">,</span> <span class="n">log_stop</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">num</span><span class="p">,</span>
+                      <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+
+    <span class="c1"># Make sure the endpoints match the start and stop arguments. This is</span>
+    <span class="c1"># necessary because np.exp(np.log(x)) is not necessarily equal to x.</span>
+    <span class="k">if</span> <span class="n">num</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">start</span>
+        <span class="k">if</span> <span class="n">num</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">endpoint</span><span class="p">:</span>
+            <span class="n">result</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">stop</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">out_sign</span> <span class="o">*</span> <span class="n">result</span>
+
+    <span class="k">if</span> <span class="n">axis</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">_nx</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_needs_add_docstring</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns true if the only way to set the docstring of `obj` from python is</span>
+<span class="sd">    via add_docstring.</span>
+
+<span class="sd">    This function errs on the side of being overly conservative.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Py_TPFLAGS_HEAPTYPE</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">9</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="n">types</span><span class="o">.</span><span class="n">FunctionType</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">,</span> <span class="nb">property</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">__flags__</span> <span class="o">&amp;</span> <span class="n">Py_TPFLAGS_HEAPTYPE</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">return</span> <span class="kc">True</span>
+
+
+<span class="k">def</span> <span class="nf">_add_docstring</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">warn_on_python</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">warn_on_python</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">_needs_add_docstring</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;add_newdoc was used on a pure-python object </span><span class="si">{}</span><span class="s2">. &quot;</span>
+            <span class="s2">&quot;Prefer to attach it directly to the source.&quot;</span>
+            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span>
+            <span class="ne">UserWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">add_docstring</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+
+<div class="viewcode-block" id="add_newdoc">
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.add_newdoc">[docs]</a>
+<span class="k">def</span> <span class="nf">add_newdoc</span><span class="p">(</span><span class="n">place</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">warn_on_python</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add documentation to an existing object, typically one defined in C</span>
+
+<span class="sd">    The purpose is to allow easier editing of the docstrings without requiring</span>
+<span class="sd">    a re-compile. This exists primarily for internal use within numpy itself.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    place : str</span>
+<span class="sd">        The absolute name of the module to import from</span>
+<span class="sd">    obj : str</span>
+<span class="sd">        The name of the object to add documentation to, typically a class or</span>
+<span class="sd">        function name</span>
+<span class="sd">    doc : {str, Tuple[str, str], List[Tuple[str, str]]}</span>
+<span class="sd">        If a string, the documentation to apply to `obj`</span>
+
+<span class="sd">        If a tuple, then the first element is interpreted as an attribute of</span>
+<span class="sd">        `obj` and the second as the docstring to apply - ``(method, docstring)``</span>
+
+<span class="sd">        If a list, then each element of the list should be a tuple of length</span>
+<span class="sd">        two - ``[(method1, docstring1), (method2, docstring2), ...]``</span>
+<span class="sd">    warn_on_python : bool</span>
+<span class="sd">        If True, the default, emit `UserWarning` if this is used to attach</span>
+<span class="sd">        documentation to a pure-python object.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This routine never raises an error if the docstring can&#39;t be written, but</span>
+<span class="sd">    will raise an error if the object being documented does not exist.</span>
+
+<span class="sd">    This routine cannot modify read-only docstrings, as appear</span>
+<span class="sd">    in new-style classes or built-in functions. Because this</span>
+<span class="sd">    routine never raises an error the caller must check manually</span>
+<span class="sd">    that the docstrings were changed.</span>
+
+<span class="sd">    Since this function grabs the ``char *`` from a c-level str object and puts</span>
+<span class="sd">    it into the ``tp_doc`` slot of the type of `obj`, it violates a number of</span>
+<span class="sd">    C-API best-practices, by:</span>
+
+<span class="sd">    - modifying a `PyTypeObject` after calling `PyType_Ready`</span>
+<span class="sd">    - calling `Py_INCREF` on the str and losing the reference, so the str</span>
+<span class="sd">      will never be released</span>
+
+<span class="sd">    If possible it should be avoided.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">new</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="nb">__import__</span><span class="p">(</span><span class="n">place</span><span class="p">,</span> <span class="nb">globals</span><span class="p">(),</span> <span class="p">{},</span> <span class="p">[</span><span class="n">obj</span><span class="p">]),</span> <span class="n">obj</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">_add_docstring</span><span class="p">(</span><span class="n">new</span><span class="p">,</span> <span class="n">doc</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">warn_on_python</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="n">attr</span><span class="p">,</span> <span class="n">docstring</span> <span class="o">=</span> <span class="n">doc</span>
+        <span class="n">_add_docstring</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">new</span><span class="p">,</span> <span class="n">attr</span><span class="p">),</span> <span class="n">docstring</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">warn_on_python</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">docstring</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+            <span class="n">_add_docstring</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">new</span><span class="p">,</span> <span class="n">attr</span><span class="p">),</span> <span class="n">docstring</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">warn_on_python</span><span class="p">)</span></div>
+
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2020, Michael Merrill and William Reus
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/furo.js?v=4e2eecee"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    </body>
+</html>

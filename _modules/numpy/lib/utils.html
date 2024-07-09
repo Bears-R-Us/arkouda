@@ -1,0 +1,1618 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
+
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
+        <title>numpy.lib.utils - arkouda documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=387cc868" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=36a5483c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" /
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">arkouda  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
+  
+  
+  <span class="sidebar-brand-text">arkouda  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/REQUIREMENTS.html">Requirements</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../setup/install_menu.html">Installation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Installation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../setup/LINUX_INSTALL.html">Linux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../setup/WINDOWS_INSTALL.html">Windows (WSL2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../setup/MAC_INSTALL.html">MacOS</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/BUILD.html">Building the Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/MODULAR.html">Modular Server Builds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/testing.html">Performance Testing</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../file_io/io_menu.html">File I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of File I/O</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../file_io/HDF5.html">HDF5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../file_io/PARQUET.html">Parquet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../file_io/CSV.html">CSV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../file_io/IMPORT_EXPORT.html">Import/Export</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../usage.html">Usage Guide</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Usage Guide</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/startup.html">Startup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/creation.html">Creating Arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/arithmetic.html">Arithmetic and Numeric Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/indexing.html">Indexing and Assignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/histogram.html">Summarizing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/argsort.html">Sorting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/setops.html">Array Set Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/groupby.html">GroupBy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/strings.html">Strings in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/categorical.html">Categoricals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/random.html">Random in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/segarray.html">SegArrays in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/arrayview.html">ArrayView in Arkouda</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../CONTRIBUTING_LINK.html">Contributing</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/arkouda/index.html">arkouda</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of arkouda</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/array_api/index.html">arkouda.array_api</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of arkouda.array_api</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/array_object/index.html">arkouda.array_api.array_object</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/creation_functions/index.html">arkouda.array_api.creation_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/data_type_functions/index.html">arkouda.array_api.data_type_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html">arkouda.array_api.elementwise_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/indexing_functions/index.html">arkouda.array_api.indexing_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/linalg/index.html">arkouda.array_api.linalg</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/manipulation_functions/index.html">arkouda.array_api.manipulation_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/searching_functions/index.html">arkouda.array_api.searching_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/set_functions/index.html">arkouda.array_api.set_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/sorting_functions/index.html">arkouda.array_api.sorting_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/statistical_functions/index.html">arkouda.array_api.statistical_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/utility_functions/index.html">arkouda.array_api.utility_functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/random/index.html">arkouda.random</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/testing/index.html">arkouda.testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/accessor/index.html">arkouda.accessor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/alignment/index.html">arkouda.alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/array_view/index.html">arkouda.array_view</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/categorical/index.html">arkouda.categorical</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/client/index.html">arkouda.client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/client_dtypes/index.html">arkouda.client_dtypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/dataframe/index.html">arkouda.dataframe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/dtypes/index.html">arkouda.dtypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/groupbyclass/index.html">arkouda.groupbyclass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/history/index.html">arkouda.history</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/index/index.html">arkouda.index</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/infoclass/index.html">arkouda.infoclass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/io/index.html">arkouda.io</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/io_util/index.html">arkouda.io_util</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/join/index.html">arkouda.join</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/logger/index.html">arkouda.logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/match/index.html">arkouda.match</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/matcher/index.html">arkouda.matcher</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/numeric/index.html">arkouda.numeric</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/numpy/index.html">arkouda.numpy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/pdarrayclass/index.html">arkouda.pdarrayclass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/pdarraycreation/index.html">arkouda.pdarraycreation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/pdarraymanipulation/index.html">arkouda.pdarraymanipulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/pdarraysetops/index.html">arkouda.pdarraysetops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/plotting/index.html">arkouda.plotting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/row/index.html">arkouda.row</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/scipy/index.html">arkouda.scipy</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.scipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/special/index.html">arkouda.scipy.special</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/stats/index.html">arkouda.scipy.stats</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/security/index.html">arkouda.security</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/segarray/index.html">arkouda.segarray</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/series/index.html">arkouda.series</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/sorting/index.html">arkouda.sorting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/strings/index.html">arkouda.strings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/timeclass/index.html">arkouda.timeclass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/util/index.html">arkouda.util</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../server/index.html">Chapel API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/GASNET.html">GASNet Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/RELEASE_PROCESS.html">Release Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/BENCHMARK.html">PyTest Benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/ADDING_FEATURES.html">Adding Your First Feature</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <h1>Source code for numpy.lib.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">textwrap</span>
+<span class="kn">import</span> <span class="nn">types</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">platform</span>
+
+<span class="kn">from</span> <span class="nn">.._utils</span> <span class="kn">import</span> <span class="n">set_module</span>
+<span class="kn">from</span> <span class="nn">numpy.core.numerictypes</span> <span class="kn">import</span> <span class="n">issubclass_</span><span class="p">,</span> <span class="n">issubsctype</span><span class="p">,</span> <span class="n">issubdtype</span>
+<span class="kn">from</span> <span class="nn">numpy.core</span> <span class="kn">import</span> <span class="n">ndarray</span><span class="p">,</span> <span class="n">ufunc</span><span class="p">,</span> <span class="n">asarray</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;issubclass_&#39;</span><span class="p">,</span> <span class="s1">&#39;issubsctype&#39;</span><span class="p">,</span> <span class="s1">&#39;issubdtype&#39;</span><span class="p">,</span> <span class="s1">&#39;deprecate&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;deprecate_with_doc&#39;</span><span class="p">,</span> <span class="s1">&#39;get_include&#39;</span><span class="p">,</span> <span class="s1">&#39;info&#39;</span><span class="p">,</span> <span class="s1">&#39;source&#39;</span><span class="p">,</span> <span class="s1">&#39;who&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;lookfor&#39;</span><span class="p">,</span> <span class="s1">&#39;byte_bounds&#39;</span><span class="p">,</span> <span class="s1">&#39;safe_eval&#39;</span><span class="p">,</span> <span class="s1">&#39;show_runtime&#39;</span>
+    <span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">show_runtime</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Print information about various resources in the system</span>
+<span class="sd">    including available intrinsic support and BLAS/LAPACK library</span>
+<span class="sd">    in use</span>
+
+<span class="sd">    .. versionadded:: 1.24.0</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    show_config : Show libraries in the system on which NumPy was built.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    1. Information is derived with the help of `threadpoolctl &lt;https://pypi.org/project/threadpoolctl/&gt;`_</span>
+<span class="sd">       library if available.</span>
+<span class="sd">    2. SIMD related information is derived from ``__cpu_features__``,</span>
+<span class="sd">       ``__cpu_baseline__`` and ``__cpu_dispatch__``</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">numpy.core._multiarray_umath</span> <span class="kn">import</span> <span class="p">(</span>
+        <span class="n">__cpu_features__</span><span class="p">,</span> <span class="n">__cpu_baseline__</span><span class="p">,</span> <span class="n">__cpu_dispatch__</span>
+    <span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
+    <span class="n">config_found</span> <span class="o">=</span> <span class="p">[{</span>
+        <span class="s2">&quot;numpy_version&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">__version__</span><span class="p">,</span>
+        <span class="s2">&quot;python&quot;</span><span class="p">:</span> <span class="n">sys</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
+        <span class="s2">&quot;uname&quot;</span><span class="p">:</span> <span class="n">platform</span><span class="o">.</span><span class="n">uname</span><span class="p">(),</span>
+        <span class="p">}]</span>
+    <span class="n">features_found</span><span class="p">,</span> <span class="n">features_not_found</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">__cpu_dispatch__</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">__cpu_features__</span><span class="p">[</span><span class="n">feature</span><span class="p">]:</span>
+            <span class="n">features_found</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">features_not_found</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+    <span class="n">config_found</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+        <span class="s2">&quot;simd_extensions&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;baseline&quot;</span><span class="p">:</span> <span class="n">__cpu_baseline__</span><span class="p">,</span>
+            <span class="s2">&quot;found&quot;</span><span class="p">:</span> <span class="n">features_found</span><span class="p">,</span>
+            <span class="s2">&quot;not_found&quot;</span><span class="p">:</span> <span class="n">features_not_found</span>
+        <span class="p">}</span>
+    <span class="p">})</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">threadpoolctl</span> <span class="kn">import</span> <span class="n">threadpool_info</span>
+        <span class="n">config_found</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">threadpool_info</span><span class="p">())</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: `threadpoolctl` not found in system!&quot;</span>
+              <span class="s2">&quot; Install it by `pip install threadpoolctl`.&quot;</span>
+              <span class="s2">&quot; Once installed, try `np.show_runtime` again&quot;</span>
+              <span class="s2">&quot; for more detailed build information&quot;</span><span class="p">)</span>
+    <span class="n">pprint</span><span class="p">(</span><span class="n">config_found</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">get_include</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the directory that contains the NumPy \\*.h header files.</span>
+
+<span class="sd">    Extension modules that need to compile against NumPy should use this</span>
+<span class="sd">    function to locate the appropriate include directory.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    When using ``distutils``, for example in ``setup.py``::</span>
+
+<span class="sd">        import numpy as np</span>
+<span class="sd">        ...</span>
+<span class="sd">        Extension(&#39;extension_name&#39;, ...</span>
+<span class="sd">                include_dirs=[np.get_include()])</span>
+<span class="sd">        ...</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">numpy</span>
+    <span class="k">if</span> <span class="n">numpy</span><span class="o">.</span><span class="n">show_config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># running from numpy source directory</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;core&#39;</span><span class="p">,</span> <span class="s1">&#39;include&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># using installed numpy core headers</span>
+        <span class="kn">import</span> <span class="nn">numpy.core</span> <span class="k">as</span> <span class="nn">core</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">core</span><span class="o">.</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;include&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">d</span>
+
+
+<span class="k">class</span> <span class="nc">_Deprecate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decorator class to deprecate old functions.</span>
+
+<span class="sd">    Refer to `deprecate` for details.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    deprecate</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">new_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">old_name</span> <span class="o">=</span> <span class="n">old_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">new_name</span> <span class="o">=</span> <span class="n">new_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Decorator call.  Refer to ``decorate``.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">old_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">old_name</span>
+        <span class="n">new_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_name</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span>
+
+        <span class="k">if</span> <span class="n">old_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">old_name</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="k">if</span> <span class="n">new_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">depdoc</span> <span class="o">=</span> <span class="s2">&quot;`</span><span class="si">%s</span><span class="s2">` is deprecated!&quot;</span> <span class="o">%</span> <span class="n">old_name</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">depdoc</span> <span class="o">=</span> <span class="s2">&quot;`</span><span class="si">%s</span><span class="s2">` is deprecated, use `</span><span class="si">%s</span><span class="s2">` instead!&quot;</span> <span class="o">%</span> \
+                     <span class="p">(</span><span class="n">old_name</span><span class="p">,</span> <span class="n">new_name</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">message</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">depdoc</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">message</span>
+
+        <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">newfunc</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">depdoc</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
+
+        <span class="n">newfunc</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">old_name</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__doc__</span>
+        <span class="k">if</span> <span class="n">doc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">doc</span> <span class="o">=</span> <span class="n">depdoc</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">expandtabs</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">indent</span> <span class="o">=</span> <span class="n">_get_indent</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+            <span class="k">if</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lstrip</span><span class="p">():</span>
+                <span class="c1"># Indent the original first line to let inspect.cleandoc()</span>
+                <span class="c1"># dedent the docstring despite the deprecation notice.</span>
+                <span class="n">doc</span> <span class="o">=</span> <span class="n">indent</span> <span class="o">*</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">doc</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Remove the same leading blank lines as cleandoc() would.</span>
+                <span class="n">skip</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">indent</span><span class="p">:</span>
+                        <span class="k">break</span>
+                    <span class="n">skip</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">doc</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">skip</span><span class="p">:]</span>
+            <span class="n">depdoc</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span><span class="n">depdoc</span><span class="p">,</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="n">indent</span><span class="p">)</span>
+            <span class="n">doc</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">depdoc</span><span class="p">,</span> <span class="n">doc</span><span class="p">])</span>
+        <span class="n">newfunc</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">doc</span>
+
+        <span class="k">return</span> <span class="n">newfunc</span>
+
+
+<span class="k">def</span> <span class="nf">_get_indent</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determines the leading whitespace that could be removed from all the lines.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">indent</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">maxsize</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">lstrip</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">content</span><span class="p">:</span>
+            <span class="n">indent</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">indent</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">-</span> <span class="n">content</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">indent</span> <span class="o">==</span> <span class="n">sys</span><span class="o">.</span><span class="n">maxsize</span><span class="p">:</span>
+        <span class="n">indent</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="n">indent</span>
+
+
+<div class="viewcode-block" id="deprecate">
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.deprecate">[docs]</a>
+<span class="k">def</span> <span class="nf">deprecate</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Issues a DeprecationWarning, adds warning to `old_name`&#39;s</span>
+<span class="sd">    docstring, rebinds ``old_name.__name__`` and returns the new</span>
+<span class="sd">    function object.</span>
+
+<span class="sd">    This function may also be used as a decorator.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    func : function</span>
+<span class="sd">        The function to be deprecated.</span>
+<span class="sd">    old_name : str, optional</span>
+<span class="sd">        The name of the function to be deprecated. Default is None, in</span>
+<span class="sd">        which case the name of `func` is used.</span>
+<span class="sd">    new_name : str, optional</span>
+<span class="sd">        The new name for the function. Default is None, in which case the</span>
+<span class="sd">        deprecation message is that `old_name` is deprecated. If given, the</span>
+<span class="sd">        deprecation message is that `old_name` is deprecated and `new_name`</span>
+<span class="sd">        should be used instead.</span>
+<span class="sd">    message : str, optional</span>
+<span class="sd">        Additional explanation of the deprecation.  Displayed in the</span>
+<span class="sd">        docstring after the warning.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    old_func : function</span>
+<span class="sd">        The deprecated function.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Note that ``olduint`` returns a value after printing Deprecation</span>
+<span class="sd">    Warning:</span>
+
+<span class="sd">    &gt;&gt;&gt; olduint = np.deprecate(np.uint)</span>
+<span class="sd">    DeprecationWarning: `uint64` is deprecated! # may vary</span>
+<span class="sd">    &gt;&gt;&gt; olduint(6)</span>
+<span class="sd">    6</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Deprecate may be run as a function or as a decorator</span>
+    <span class="c1"># If run as a function, we initialise the decorator class</span>
+    <span class="c1"># and execute its __call__ method.</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="p">:</span>
+        <span class="n">fn</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+        <span class="k">return</span> <span class="n">_Deprecate</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)(</span><span class="n">fn</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_Deprecate</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="deprecate_with_doc">
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.deprecate_with_doc">[docs]</a>
+<span class="k">def</span> <span class="nf">deprecate_with_doc</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Deprecates a function and includes the deprecation in its docstring.</span>
+
+<span class="sd">    This function is used as a decorator. It returns an object that can be</span>
+<span class="sd">    used to issue a DeprecationWarning, by passing the to-be decorated</span>
+<span class="sd">    function as argument, this adds warning to the to-be decorated function&#39;s</span>
+<span class="sd">    docstring and returns the new function object.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    deprecate : Decorate a function such that it issues a `DeprecationWarning`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    msg : str</span>
+<span class="sd">        Additional explanation of the deprecation. Displayed in the</span>
+<span class="sd">        docstring after the warning.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    obj : object</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_Deprecate</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">msg</span><span class="p">)</span></div>
+
+
+
+<span class="c1">#--------------------------------------------</span>
+<span class="c1"># Determine if two arrays can share memory</span>
+<span class="c1">#--------------------------------------------</span>
+
+<span class="k">def</span> <span class="nf">byte_bounds</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns pointers to the end-points of an array.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : ndarray</span>
+<span class="sd">        Input array. It must conform to the Python-side of the array</span>
+<span class="sd">        interface.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    (low, high) : tuple of 2 integers</span>
+<span class="sd">        The first integer is the first byte of the array, the second</span>
+<span class="sd">        integer is just past the last byte of the array.  If `a` is not</span>
+<span class="sd">        contiguous it will not use every byte between the (`low`, `high`)</span>
+<span class="sd">        values.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; I = np.eye(2, dtype=&#39;f&#39;); I.dtype</span>
+<span class="sd">    dtype(&#39;float32&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; low, high = np.byte_bounds(I)</span>
+<span class="sd">    &gt;&gt;&gt; high - low == I.size*I.itemsize</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; I = np.eye(2); I.dtype</span>
+<span class="sd">    dtype(&#39;float64&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; low, high = np.byte_bounds(I)</span>
+<span class="sd">    &gt;&gt;&gt; high - low == I.size*I.itemsize</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ai</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">__array_interface__</span>
+    <span class="n">a_data</span> <span class="o">=</span> <span class="n">ai</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">astrides</span> <span class="o">=</span> <span class="n">ai</span><span class="p">[</span><span class="s1">&#39;strides&#39;</span><span class="p">]</span>
+    <span class="n">ashape</span> <span class="o">=</span> <span class="n">ai</span><span class="p">[</span><span class="s1">&#39;shape&#39;</span><span class="p">]</span>
+    <span class="n">bytes_a</span> <span class="o">=</span> <span class="n">asarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span>
+
+    <span class="n">a_low</span> <span class="o">=</span> <span class="n">a_high</span> <span class="o">=</span> <span class="n">a_data</span>
+    <span class="k">if</span> <span class="n">astrides</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># contiguous case</span>
+        <span class="n">a_high</span> <span class="o">+=</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">*</span> <span class="n">bytes_a</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">shape</span><span class="p">,</span> <span class="n">stride</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ashape</span><span class="p">,</span> <span class="n">astrides</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">stride</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">a_low</span> <span class="o">+=</span> <span class="p">(</span><span class="n">shape</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">stride</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">a_high</span> <span class="o">+=</span> <span class="p">(</span><span class="n">shape</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">stride</span>
+        <span class="n">a_high</span> <span class="o">+=</span> <span class="n">bytes_a</span>
+    <span class="k">return</span> <span class="n">a_low</span><span class="p">,</span> <span class="n">a_high</span>
+
+
+<span class="c1">#-----------------------------------------------------------------------------</span>
+<span class="c1"># Function for output and information on the variables used.</span>
+<span class="c1">#-----------------------------------------------------------------------------</span>
+
+
+<span class="k">def</span> <span class="nf">who</span><span class="p">(</span><span class="n">vardict</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Print the NumPy arrays in the given dictionary.</span>
+
+<span class="sd">    If there is no dictionary passed in or `vardict` is None then returns</span>
+<span class="sd">    NumPy arrays in the globals() dictionary (all NumPy arrays in the</span>
+<span class="sd">    namespace).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    vardict : dict, optional</span>
+<span class="sd">        A dictionary possibly containing ndarrays.  Default is globals().</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : None</span>
+<span class="sd">        Returns &#39;None&#39;.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Prints out the name, shape, bytes and type of all of the ndarrays</span>
+<span class="sd">    present in `vardict`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; a = np.arange(10)</span>
+<span class="sd">    &gt;&gt;&gt; b = np.ones(20)</span>
+<span class="sd">    &gt;&gt;&gt; np.who()</span>
+<span class="sd">    Name            Shape            Bytes            Type</span>
+<span class="sd">    ===========================================================</span>
+<span class="sd">    a               10               80               int64</span>
+<span class="sd">    b               20               160              float64</span>
+<span class="sd">    Upper bound on total bytes  =       240</span>
+
+<span class="sd">    &gt;&gt;&gt; d = {&#39;x&#39;: np.arange(2.0), &#39;y&#39;: np.arange(3.0), &#39;txt&#39;: &#39;Some str&#39;,</span>
+<span class="sd">    ... &#39;idx&#39;:5}</span>
+<span class="sd">    &gt;&gt;&gt; np.who(d)</span>
+<span class="sd">    Name            Shape            Bytes            Type</span>
+<span class="sd">    ===========================================================</span>
+<span class="sd">    x               2                16               float64</span>
+<span class="sd">    y               3                24               float64</span>
+<span class="sd">    Upper bound on total bytes  =       40</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">vardict</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_back</span>
+        <span class="n">vardict</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_globals</span>
+    <span class="n">sta</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">cache</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">vardict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vardict</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="n">ndarray</span><span class="p">):</span>
+            <span class="n">var</span> <span class="o">=</span> <span class="n">vardict</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+            <span class="n">idv</span> <span class="o">=</span> <span class="nb">id</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">idv</span> <span class="ow">in</span> <span class="n">cache</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">namestr</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&quot; (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">cache</span><span class="p">[</span><span class="n">idv</span><span class="p">]</span>
+                <span class="n">original</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cache</span><span class="p">[</span><span class="n">idv</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
+                <span class="n">namestr</span> <span class="o">=</span> <span class="n">name</span>
+                <span class="n">original</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">shapestr</span> <span class="o">=</span> <span class="s2">&quot; x &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">var</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+            <span class="n">bytestr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">nbytes</span><span class="p">)</span>
+            <span class="n">sta</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">namestr</span><span class="p">,</span> <span class="n">shapestr</span><span class="p">,</span> <span class="n">bytestr</span><span class="p">,</span> <span class="n">var</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                        <span class="n">original</span><span class="p">])</span>
+
+    <span class="n">maxname</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">maxshape</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">maxbyte</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">totalbytes</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">sta</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">maxname</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">maxname</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">maxshape</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">maxshape</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">maxbyte</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="mi">2</span><span class="p">]):</span>
+            <span class="n">maxbyte</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">val</span><span class="p">[</span><span class="mi">4</span><span class="p">]:</span>
+            <span class="n">totalbytes</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sta</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">sp1</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">maxname</span><span class="p">)</span>
+        <span class="n">sp2</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">maxshape</span><span class="p">)</span>
+        <span class="n">sp3</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">maxbyte</span><span class="p">)</span>
+        <span class="n">prval</span> <span class="o">=</span> <span class="s2">&quot;Name </span><span class="si">%s</span><span class="s2"> Shape </span><span class="si">%s</span><span class="s2"> Bytes </span><span class="si">%s</span><span class="s2"> Type&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sp1</span><span class="o">*</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">sp2</span><span class="o">*</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">sp3</span><span class="o">*</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">prval</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">prval</span><span class="p">)</span><span class="o">+</span><span class="mi">5</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">sta</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39; &#39;</span><span class="o">*</span><span class="p">(</span><span class="n">sp1</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="mi">4</span><span class="p">),</span>
+                                        <span class="n">val</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39; &#39;</span><span class="o">*</span><span class="p">(</span><span class="n">sp2</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">+</span><span class="mi">5</span><span class="p">),</span>
+                                        <span class="n">val</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s1">&#39; &#39;</span><span class="o">*</span><span class="p">(</span><span class="n">sp3</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="o">+</span><span class="mi">5</span><span class="p">),</span>
+                                        <span class="n">val</span><span class="p">[</span><span class="mi">3</span><span class="p">]))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Upper bound on total bytes  =       </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">totalbytes</span><span class="p">)</span>
+    <span class="k">return</span>
+
+<span class="c1">#-----------------------------------------------------------------------------</span>
+
+
+<span class="c1"># NOTE:  pydoc defines a help function which works similarly to this</span>
+<span class="c1">#  except it uses a pager to take over the screen.</span>
+
+<span class="c1"># combine name and arguments and split to multiple lines of width</span>
+<span class="c1"># characters.  End lines on a comma and begin argument list indented with</span>
+<span class="c1"># the rest of the arguments.</span>
+<span class="k">def</span> <span class="nf">_split_line</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">arguments</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
+    <span class="n">firstwidth</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">firstwidth</span>
+    <span class="n">newstr</span> <span class="o">=</span> <span class="n">name</span>
+    <span class="n">sepstr</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span>
+    <span class="n">arglist</span> <span class="o">=</span> <span class="n">arguments</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">sepstr</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">argument</span> <span class="ow">in</span> <span class="n">arglist</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="n">firstwidth</span><span class="p">:</span>
+            <span class="n">addstr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">addstr</span> <span class="o">=</span> <span class="n">sepstr</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">k</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">argument</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">addstr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="o">&gt;</span> <span class="n">width</span><span class="p">:</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="n">firstwidth</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">argument</span><span class="p">)</span>
+            <span class="n">newstr</span> <span class="o">=</span> <span class="n">newstr</span> <span class="o">+</span> <span class="s2">&quot;,</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">*</span><span class="p">(</span><span class="n">firstwidth</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">argument</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">newstr</span> <span class="o">=</span> <span class="n">newstr</span> <span class="o">+</span> <span class="n">addstr</span> <span class="o">+</span> <span class="n">argument</span>
+    <span class="k">return</span> <span class="n">newstr</span>
+
+<span class="n">_namedict</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">_dictlist</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="c1"># Traverse all module directories underneath globals</span>
+<span class="c1"># to see if something is defined</span>
+<span class="k">def</span> <span class="nf">_makenamedict</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="s1">&#39;numpy&#39;</span><span class="p">):</span>
+    <span class="n">module</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="nb">globals</span><span class="p">(),</span> <span class="nb">locals</span><span class="p">(),</span> <span class="p">[])</span>
+    <span class="n">thedict</span> <span class="o">=</span> <span class="p">{</span><span class="n">module</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span><span class="n">module</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">}</span>
+    <span class="n">dictlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">module</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]</span>
+    <span class="n">totraverse</span> <span class="o">=</span> <span class="p">[</span><span class="n">module</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">]</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">totraverse</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">thisdict</span> <span class="o">=</span> <span class="n">totraverse</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">thisdict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">thisdict</span><span class="p">[</span><span class="n">x</span><span class="p">],</span> <span class="n">types</span><span class="o">.</span><span class="n">ModuleType</span><span class="p">):</span>
+                <span class="n">modname</span> <span class="o">=</span> <span class="n">thisdict</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="vm">__name__</span>
+                <span class="k">if</span> <span class="n">modname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dictlist</span><span class="p">:</span>
+                    <span class="n">moddict</span> <span class="o">=</span> <span class="n">thisdict</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="vm">__dict__</span>
+                    <span class="n">dictlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">modname</span><span class="p">)</span>
+                    <span class="n">totraverse</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">moddict</span><span class="p">)</span>
+                    <span class="n">thedict</span><span class="p">[</span><span class="n">modname</span><span class="p">]</span> <span class="o">=</span> <span class="n">moddict</span>
+    <span class="k">return</span> <span class="n">thedict</span><span class="p">,</span> <span class="n">dictlist</span>
+
+
+<span class="k">def</span> <span class="nf">_info</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Provide information about ndarray obj.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    obj : ndarray</span>
+<span class="sd">        Must be ndarray, not checked.</span>
+<span class="sd">    output</span>
+<span class="sd">        Where printed output goes.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Copied over from the numarray module prior to its removal.</span>
+<span class="sd">    Adapted somewhat as only numpy is an option now.</span>
+
+<span class="sd">    Called by info.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">extra</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">tic</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">bp</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span>
+    <span class="bp">cls</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+    <span class="n">nm</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s1">&#39;__name__&#39;</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span>
+    <span class="n">strides</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">strides</span>
+    <span class="n">endian</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">byteorder</span>
+
+    <span class="k">if</span> <span class="n">output</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;class: &quot;</span><span class="p">,</span> <span class="n">nm</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;shape: &quot;</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;strides: &quot;</span><span class="p">,</span> <span class="n">strides</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;itemsize: &quot;</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">itemsize</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;aligned: &quot;</span><span class="p">,</span> <span class="n">bp</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">aligned</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;contiguous: &quot;</span><span class="p">,</span> <span class="n">bp</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">contiguous</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;fortran: &quot;</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">fortran</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="s2">&quot;data pointer: </span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">hex</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">_as_parameter_</span><span class="o">.</span><span class="n">value</span><span class="p">),</span> <span class="n">extra</span><span class="p">),</span>
+        <span class="n">file</span><span class="o">=</span><span class="n">output</span>
+        <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;byteorder: &quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">endian</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;|&#39;</span><span class="p">,</span> <span class="s1">&#39;=&#39;</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">tic</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">byteorder</span><span class="p">,</span> <span class="n">tic</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+        <span class="n">byteswap</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">elif</span> <span class="n">endian</span> <span class="o">==</span> <span class="s1">&#39;&gt;&#39;</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">big</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">tic</span><span class="p">,</span> <span class="n">tic</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+        <span class="n">byteswap</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">byteorder</span> <span class="o">!=</span> <span class="s2">&quot;big&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">little</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">tic</span><span class="p">,</span> <span class="n">tic</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+        <span class="n">byteswap</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">byteorder</span> <span class="o">!=</span> <span class="s2">&quot;little&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;byteswap: &quot;</span><span class="p">,</span> <span class="n">bp</span><span class="p">(</span><span class="n">byteswap</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;type: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+
+
+<span class="nd">@set_module</span><span class="p">(</span><span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="nb">object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">maxwidth</span><span class="o">=</span><span class="mi">76</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">toplevel</span><span class="o">=</span><span class="s1">&#39;numpy&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get help information for an array, function, class, or module.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    object : object or str, optional</span>
+<span class="sd">        Input object or name to get information about. If `object` is</span>
+<span class="sd">        an `ndarray` instance, information about the array is printed.</span>
+<span class="sd">        If `object` is a numpy object, its docstring is given. If it is</span>
+<span class="sd">        a string, available modules are searched for matching objects.</span>
+<span class="sd">        If None, information about `info` itself is returned.</span>
+<span class="sd">    maxwidth : int, optional</span>
+<span class="sd">        Printing width.</span>
+<span class="sd">    output : file like object, optional</span>
+<span class="sd">        File like object that the output is written to, default is</span>
+<span class="sd">        ``None``, in which case ``sys.stdout`` will be used.</span>
+<span class="sd">        The object has to be opened in &#39;w&#39; or &#39;a&#39; mode.</span>
+<span class="sd">    toplevel : str, optional</span>
+<span class="sd">        Start search at this level.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    source, lookfor</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    When used interactively with an object, ``np.info(obj)`` is equivalent</span>
+<span class="sd">    to ``help(obj)`` on the Python prompt or ``obj?`` on the IPython</span>
+<span class="sd">    prompt.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; np.info(np.polyval) # doctest: +SKIP</span>
+<span class="sd">       polyval(p, x)</span>
+<span class="sd">         Evaluate the polynomial p at x.</span>
+<span class="sd">         ...</span>
+
+<span class="sd">    When using a string for `object` it is possible to get multiple results.</span>
+
+<span class="sd">    &gt;&gt;&gt; np.info(&#39;fft&#39;) # doctest: +SKIP</span>
+<span class="sd">         *** Found in numpy ***</span>
+<span class="sd">    Core FFT routines</span>
+<span class="sd">    ...</span>
+<span class="sd">         *** Found in numpy.fft ***</span>
+<span class="sd">     fft(a, n=None, axis=-1)</span>
+<span class="sd">    ...</span>
+<span class="sd">         *** Repeat reference found in numpy.fft.fftpack ***</span>
+<span class="sd">         *** Total of 3 references found. ***</span>
+
+<span class="sd">    When the argument is an array, information about the array is printed.</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([[1 + 2j, 3, -4], [-5j, 6, 0]], dtype=np.complex64)</span>
+<span class="sd">    &gt;&gt;&gt; np.info(a)</span>
+<span class="sd">    class:  ndarray</span>
+<span class="sd">    shape:  (2, 3)</span>
+<span class="sd">    strides:  (24, 8)</span>
+<span class="sd">    itemsize:  8</span>
+<span class="sd">    aligned:  True</span>
+<span class="sd">    contiguous:  True</span>
+<span class="sd">    fortran:  False</span>
+<span class="sd">    data pointer: 0x562b6e0d2860  # may vary</span>
+<span class="sd">    byteorder:  little</span>
+<span class="sd">    byteswap:  False</span>
+<span class="sd">    type: complex64</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_namedict</span><span class="p">,</span> <span class="n">_dictlist</span>
+    <span class="c1"># Local import to speed up numpy&#39;s import time.</span>
+    <span class="kn">import</span> <span class="nn">pydoc</span>
+    <span class="kn">import</span> <span class="nn">inspect</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="s1">&#39;_ppimport_importer&#39;</span><span class="p">)</span> <span class="ow">or</span>
+           <span class="nb">hasattr</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="s1">&#39;_ppimport_module&#39;</span><span class="p">)):</span>
+        <span class="nb">object</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="n">_ppimport_module</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="s1">&#39;_ppimport_attr&#39;</span><span class="p">):</span>
+        <span class="nb">object</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="n">_ppimport_attr</span>
+
+    <span class="k">if</span> <span class="n">output</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
+
+    <span class="k">if</span> <span class="nb">object</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">info</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">ndarray</span><span class="p">):</span>
+        <span class="n">_info</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">_namedict</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_namedict</span><span class="p">,</span> <span class="n">_dictlist</span> <span class="o">=</span> <span class="n">_makenamedict</span><span class="p">(</span><span class="n">toplevel</span><span class="p">)</span>
+        <span class="n">numfound</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">objlist</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">namestr</span> <span class="ow">in</span> <span class="n">_dictlist</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">obj</span> <span class="o">=</span> <span class="n">_namedict</span><span class="p">[</span><span class="n">namestr</span><span class="p">][</span><span class="nb">object</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">id</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="ow">in</span> <span class="n">objlist</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">     &quot;</span>
+                          <span class="s2">&quot;*** Repeat reference found in </span><span class="si">%s</span><span class="s2"> *** &quot;</span> <span class="o">%</span> <span class="n">namestr</span><span class="p">,</span>
+                          <span class="n">file</span><span class="o">=</span><span class="n">output</span>
+                          <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">objlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;     *** Found in </span><span class="si">%s</span><span class="s2"> ***&quot;</span> <span class="o">%</span> <span class="n">namestr</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+                    <span class="n">info</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="o">*</span><span class="n">maxwidth</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+                <span class="n">numfound</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">if</span> <span class="n">numfound</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Help for </span><span class="si">%s</span><span class="s2"> not found.&quot;</span> <span class="o">%</span> <span class="nb">object</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">     &quot;</span>
+                  <span class="s2">&quot;*** Total of </span><span class="si">%d</span><span class="s2"> references found. ***&quot;</span> <span class="o">%</span> <span class="n">numfound</span><span class="p">,</span>
+                  <span class="n">file</span><span class="o">=</span><span class="n">output</span>
+                  <span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isfunction</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span> <span class="ow">or</span> <span class="n">inspect</span><span class="o">.</span><span class="n">ismethod</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">arguments</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="nb">object</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">arguments</span> <span class="o">=</span> <span class="s2">&quot;()&quot;</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="o">+</span><span class="n">arguments</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">maxwidth</span><span class="p">:</span>
+            <span class="n">argstr</span> <span class="o">=</span> <span class="n">_split_line</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">arguments</span><span class="p">,</span> <span class="n">maxwidth</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">argstr</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="n">arguments</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">argstr</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getdoc</span><span class="p">(</span><span class="nb">object</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isclass</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">arguments</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="nb">object</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">arguments</span> <span class="o">=</span> <span class="s2">&quot;()&quot;</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="o">+</span><span class="n">arguments</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">maxwidth</span><span class="p">:</span>
+            <span class="n">argstr</span> <span class="o">=</span> <span class="n">_split_line</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">arguments</span><span class="p">,</span> <span class="n">maxwidth</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">argstr</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="n">arguments</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">argstr</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+        <span class="n">doc1</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getdoc</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">doc1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="s1">&#39;__init__&#39;</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getdoc</span><span class="p">(</span><span class="nb">object</span><span class="o">.</span><span class="fm">__init__</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getdoc</span><span class="p">(</span><span class="nb">object</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+
+        <span class="n">methods</span> <span class="o">=</span> <span class="n">pydoc</span><span class="o">.</span><span class="n">allmethods</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
+
+        <span class="n">public_methods</span> <span class="o">=</span> <span class="p">[</span><span class="n">meth</span> <span class="k">for</span> <span class="n">meth</span> <span class="ow">in</span> <span class="n">methods</span> <span class="k">if</span> <span class="n">meth</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;_&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">public_methods</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">Methods:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">meth</span> <span class="ow">in</span> <span class="n">public_methods</span><span class="p">:</span>
+                <span class="n">thisobj</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">meth</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">thisobj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">methstr</span><span class="p">,</span> <span class="n">other</span> <span class="o">=</span> <span class="n">pydoc</span><span class="o">.</span><span class="n">splitdoc</span><span class="p">(</span>
+                            <span class="n">inspect</span><span class="o">.</span><span class="n">getdoc</span><span class="p">(</span><span class="n">thisobj</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;None&quot;</span>
+                            <span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  </span><span class="si">%s</span><span class="s2">  --  </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">meth</span><span class="p">,</span> <span class="n">methstr</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="s1">&#39;__doc__&#39;</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getdoc</span><span class="p">(</span><span class="nb">object</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+
+
+<span class="nd">@set_module</span><span class="p">(</span><span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">source</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Print or write to a file the source code for a NumPy object.</span>
+
+<span class="sd">    The source code is only returned for objects written in Python. Many</span>
+<span class="sd">    functions and classes are defined in C and will therefore not return</span>
+<span class="sd">    useful information.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    object : numpy object</span>
+<span class="sd">        Input object. This can be any object (function, class, module,</span>
+<span class="sd">        ...).</span>
+<span class="sd">    output : file object, optional</span>
+<span class="sd">        If `output` not supplied then source code is printed to screen</span>
+<span class="sd">        (sys.stdout).  File object must be created with either write &#39;w&#39; or</span>
+<span class="sd">        append &#39;a&#39; modes.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    lookfor, info</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; np.source(np.interp)                        #doctest: +SKIP</span>
+<span class="sd">    In file: /usr/lib/python2.6/dist-packages/numpy/lib/function_base.py</span>
+<span class="sd">    def interp(x, xp, fp, left=None, right=None):</span>
+<span class="sd">        \&quot;\&quot;\&quot;.... (full docstring printed)\&quot;\&quot;\&quot;</span>
+<span class="sd">        if isinstance(x, (float, int, number)):</span>
+<span class="sd">            return compiled_interp([x], xp, fp, left, right).item()</span>
+<span class="sd">        else:</span>
+<span class="sd">            return compiled_interp(x, xp, fp, left, right)</span>
+
+<span class="sd">    The source code is only returned for objects written in Python.</span>
+
+<span class="sd">    &gt;&gt;&gt; np.source(np.array)                         #doctest: +SKIP</span>
+<span class="sd">    Not available for this object.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Local import to speed up numpy&#39;s import time.</span>
+    <span class="kn">import</span> <span class="nn">inspect</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;In file: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getsourcefile</span><span class="p">(</span><span class="nb">object</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getsource</span><span class="p">(</span><span class="nb">object</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Not available for this object.&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+
+
+<span class="c1"># Cache for lookfor: {id(module): {name: (docstring, kind, index), ...}...}</span>
+<span class="c1"># where kind: &quot;func&quot;, &quot;class&quot;, &quot;module&quot;, &quot;object&quot;</span>
+<span class="c1"># and index: index in breadth-first namespace traversal</span>
+<span class="n">_lookfor_caches</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="c1"># regexp whose match indicates that the string may contain a function</span>
+<span class="c1"># signature</span>
+<span class="n">_function_signature_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[a-z0-9_]+\(.*[,=].*\)&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
+
+
+<span class="nd">@set_module</span><span class="p">(</span><span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">lookfor</span><span class="p">(</span><span class="n">what</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">import_modules</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">regenerate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">output</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Do a keyword search on docstrings.</span>
+
+<span class="sd">    A list of objects that matched the search is displayed,</span>
+<span class="sd">    sorted by relevance. All given keywords need to be found in the</span>
+<span class="sd">    docstring for it to be returned as a result, but the order does</span>
+<span class="sd">    not matter.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    what : str</span>
+<span class="sd">        String containing words to look for.</span>
+<span class="sd">    module : str or list, optional</span>
+<span class="sd">        Name of module(s) whose docstrings to go through.</span>
+<span class="sd">    import_modules : bool, optional</span>
+<span class="sd">        Whether to import sub-modules in packages. Default is True.</span>
+<span class="sd">    regenerate : bool, optional</span>
+<span class="sd">        Whether to re-generate the docstring cache. Default is False.</span>
+<span class="sd">    output : file-like, optional</span>
+<span class="sd">        File-like object to write the output to. If omitted, use a pager.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    source, info</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Relevance is determined only roughly, by checking if the keywords occur</span>
+<span class="sd">    in the function name, at the start of a docstring, etc.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; np.lookfor(&#39;binary representation&#39;) # doctest: +SKIP</span>
+<span class="sd">    Search results for &#39;binary representation&#39;</span>
+<span class="sd">    ------------------------------------------</span>
+<span class="sd">    numpy.binary_repr</span>
+<span class="sd">        Return the binary representation of the input number as a string.</span>
+<span class="sd">    numpy.core.setup_common.long_double_representation</span>
+<span class="sd">        Given a binary dump as given by GNU od -b, look for long double</span>
+<span class="sd">    numpy.base_repr</span>
+<span class="sd">        Return a string representation of a number in the given base system.</span>
+<span class="sd">    ...</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pydoc</span>
+
+    <span class="c1"># Cache</span>
+    <span class="n">cache</span> <span class="o">=</span> <span class="n">_lookfor_generate_cache</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">import_modules</span><span class="p">,</span> <span class="n">regenerate</span><span class="p">)</span>
+
+    <span class="c1"># Search</span>
+    <span class="c1"># XXX: maybe using a real stemming search engine would be better?</span>
+    <span class="n">found</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">whats</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">what</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">whats</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">docstring</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span> <span class="ow">in</span> <span class="n">cache</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">kind</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;module&#39;</span><span class="p">,</span> <span class="s1">&#39;object&#39;</span><span class="p">):</span>
+            <span class="c1"># don&#39;t show modules or objects</span>
+            <span class="k">continue</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">docstring</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">w</span> <span class="ow">in</span> <span class="n">doc</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">whats</span><span class="p">):</span>
+            <span class="n">found</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="c1"># Relevance sort</span>
+    <span class="c1"># XXX: this is full Harrison-Stetson heuristics now,</span>
+    <span class="c1"># XXX: it probably could be improved</span>
+
+    <span class="n">kind_relevance</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;func&#39;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span> <span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+                      <span class="s1">&#39;module&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1000</span><span class="p">,</span> <span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1000</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">relevance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">docstr</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># do the keywords occur within the start of the docstring?</span>
+        <span class="n">first_doc</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">docstr</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[:</span><span class="mi">3</span><span class="p">])</span>
+        <span class="n">r</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">([</span><span class="mi">200</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">whats</span> <span class="k">if</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">first_doc</span><span class="p">])</span>
+        <span class="c1"># do the keywords occur in the function name?</span>
+        <span class="n">r</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">([</span><span class="mi">30</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">whats</span> <span class="k">if</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">name</span><span class="p">])</span>
+        <span class="c1"># is the full name long?</span>
+        <span class="n">r</span> <span class="o">+=</span> <span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">*</span> <span class="mi">5</span>
+        <span class="c1"># is the object of bad type?</span>
+        <span class="n">r</span> <span class="o">+=</span> <span class="n">kind_relevance</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="o">-</span><span class="mi">1000</span><span class="p">)</span>
+        <span class="c1"># is the object deep in namespace hierarchy?</span>
+        <span class="n">r</span> <span class="o">+=</span> <span class="o">-</span><span class="n">name</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span>
+        <span class="n">r</span> <span class="o">+=</span> <span class="nb">max</span><span class="p">(</span><span class="o">-</span><span class="n">index</span> <span class="o">/</span> <span class="mi">100</span><span class="p">,</span> <span class="o">-</span><span class="mi">100</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">r</span>
+
+    <span class="k">def</span> <span class="nf">relevance_value</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">relevance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">*</span><span class="n">cache</span><span class="p">[</span><span class="n">a</span><span class="p">])</span>
+    <span class="n">found</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">relevance_value</span><span class="p">)</span>
+
+    <span class="c1"># Pretty-print</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;Search results for &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">whats</span><span class="p">))</span>
+    <span class="n">help_text</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">found</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">doc</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">ix</span> <span class="o">=</span> <span class="n">cache</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+
+        <span class="n">doclines</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
+
+        <span class="c1"># find a suitable short description</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">first_doc</span> <span class="o">=</span> <span class="n">doclines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">_function_signature_re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">first_doc</span><span class="p">):</span>
+                <span class="n">first_doc</span> <span class="o">=</span> <span class="n">doclines</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="n">first_doc</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">help_text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="se">\n</span><span class="s2">    </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">first_doc</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
+        <span class="n">help_text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Nothing found.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Output</span>
+    <span class="k">if</span> <span class="n">output</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">help_text</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">help_text</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
+        <span class="n">pager</span> <span class="o">=</span> <span class="n">pydoc</span><span class="o">.</span><span class="n">getpager</span><span class="p">()</span>
+        <span class="n">pager</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">help_text</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">help_text</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">_lookfor_generate_cache</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">import_modules</span><span class="p">,</span> <span class="n">regenerate</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate docstring cache for given module.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    module : str, None, module</span>
+<span class="sd">        Module for which to generate docstring cache</span>
+<span class="sd">    import_modules : bool</span>
+<span class="sd">        Whether to import sub-modules in packages.</span>
+<span class="sd">    regenerate : bool</span>
+<span class="sd">        Re-generate the docstring cache</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    cache : dict {obj_full_name: (docstring, kind, index), ...}</span>
+<span class="sd">        Docstring cache for the module, either cached one (regenerate=False)</span>
+<span class="sd">        or newly generated.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Local import to speed up numpy&#39;s import time.</span>
+    <span class="kn">import</span> <span class="nn">inspect</span>
+
+    <span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
+
+    <span class="k">if</span> <span class="n">module</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="s2">&quot;numpy&quot;</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">__import__</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{}</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">module</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="n">cache</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">module</span><span class="p">:</span>
+            <span class="n">cache</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_lookfor_generate_cache</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="n">import_modules</span><span class="p">,</span>
+                                                 <span class="n">regenerate</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">cache</span>
+
+    <span class="k">if</span> <span class="nb">id</span><span class="p">(</span><span class="n">module</span><span class="p">)</span> <span class="ow">in</span> <span class="n">_lookfor_caches</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">regenerate</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_lookfor_caches</span><span class="p">[</span><span class="nb">id</span><span class="p">(</span><span class="n">module</span><span class="p">)]</span>
+
+    <span class="c1"># walk items and collect docstrings</span>
+    <span class="n">cache</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">_lookfor_caches</span><span class="p">[</span><span class="nb">id</span><span class="p">(</span><span class="n">module</span><span class="p">)]</span> <span class="o">=</span> <span class="n">cache</span>
+    <span class="n">seen</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">stack</span> <span class="o">=</span> <span class="p">[(</span><span class="n">module</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">module</span><span class="p">)]</span>
+    <span class="k">while</span> <span class="n">stack</span><span class="p">:</span>
+        <span class="n">name</span><span class="p">,</span> <span class="n">item</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">id</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">seen</span><span class="p">[</span><span class="nb">id</span><span class="p">(</span><span class="n">item</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;object&quot;</span>
+
+        <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">ismodule</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;module&quot;</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">_all</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">__all__</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="n">_all</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="c1"># import sub-packages</span>
+            <span class="k">if</span> <span class="n">import_modules</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s1">&#39;__path__&#39;</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">pth</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">__path__</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">mod_path</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">pth</span><span class="p">):</span>
+                        <span class="n">this_py</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pth</span><span class="p">,</span> <span class="n">mod_path</span><span class="p">)</span>
+                        <span class="n">init_py</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pth</span><span class="p">,</span> <span class="n">mod_path</span><span class="p">,</span> <span class="s1">&#39;__init__.py&#39;</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">this_py</span><span class="p">)</span> <span class="ow">and</span>
+                                <span class="n">mod_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.py&#39;</span><span class="p">)):</span>
+                            <span class="n">to_import</span> <span class="o">=</span> <span class="n">mod_path</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span>
+                        <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">init_py</span><span class="p">):</span>
+                            <span class="n">to_import</span> <span class="o">=</span> <span class="n">mod_path</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">continue</span>
+                        <span class="k">if</span> <span class="n">to_import</span> <span class="o">==</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span>
+                            <span class="k">continue</span>
+
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">old_stdout</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
+                            <span class="n">old_stderr</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span>
+                            <span class="k">try</span><span class="p">:</span>
+                                <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+                                <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+                                <span class="nb">__import__</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">to_import</span><span class="p">))</span>
+                            <span class="k">finally</span><span class="p">:</span>
+                                <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">old_stdout</span>
+                                <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">old_stderr</span>
+                        <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+                            <span class="c1"># Assume keyboard interrupt came from a user</span>
+                            <span class="k">raise</span>
+                        <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
+                            <span class="c1"># Ignore also SystemExit and pytests.importorskip</span>
+                            <span class="c1"># `Skipped` (these are BaseExceptions; gh-22345)</span>
+                            <span class="k">continue</span>
+
+            <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">_getmembers</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">item_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s1">&#39;__name__&#39;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+                    <span class="n">mod_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s1">&#39;__module__&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+                    <span class="c1"># ref. SWIG&#39;s global cvars</span>
+                    <span class="c1">#    NameError: Unknown C global variable</span>
+                    <span class="n">item_name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+                    <span class="n">mod_name</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">if</span> <span class="s1">&#39;.&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">item_name</span> <span class="ow">and</span> <span class="n">mod_name</span><span class="p">:</span>
+                    <span class="n">item_name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">mod_name</span><span class="p">,</span> <span class="n">item_name</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">item_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span><span class="p">):</span>
+                    <span class="c1"># don&#39;t crawl &quot;foreign&quot; objects</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">ufunc</span><span class="p">):</span>
+                        <span class="c1"># ... unless they are ufuncs</span>
+                        <span class="k">pass</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                <span class="k">elif</span> <span class="ow">not</span> <span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">ismodule</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="ow">or</span> <span class="n">_all</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">_all</span><span class="p">):</span>
+                    <span class="k">continue</span>
+                <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">v</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isclass</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;class&quot;</span>
+            <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">_getmembers</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+                <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">v</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s2">&quot;__call__&quot;</span><span class="p">):</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;func&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">doc</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getdoc</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+            <span class="c1"># ref SWIG&#39;s NameError: Unknown C global variable</span>
+            <span class="n">doc</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">doc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cache</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">cache</span>
+
+<span class="k">def</span> <span class="nf">_getmembers</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">inspect</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">members</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmembers</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="n">members</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                   <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">x</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">members</span>
+
+
+<span class="k">def</span> <span class="nf">safe_eval</span><span class="p">(</span><span class="n">source</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Protected string evaluation.</span>
+
+<span class="sd">    Evaluate a string containing a Python literal expression without</span>
+<span class="sd">    allowing the execution of arbitrary non-literal code.</span>
+
+<span class="sd">    .. warning::</span>
+
+<span class="sd">        This function is identical to :py:meth:`ast.literal_eval` and</span>
+<span class="sd">        has the same security implications.  It may not always be safe</span>
+<span class="sd">        to evaluate large input strings.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source : str</span>
+<span class="sd">        The string to evaluate.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    obj : object</span>
+<span class="sd">       The result of evaluating `source`.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    SyntaxError</span>
+<span class="sd">        If the code has invalid Python syntax, or if it contains</span>
+<span class="sd">        non-literal code.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; np.safe_eval(&#39;1&#39;)</span>
+<span class="sd">    1</span>
+<span class="sd">    &gt;&gt;&gt; np.safe_eval(&#39;[1, 2, 3]&#39;)</span>
+<span class="sd">    [1, 2, 3]</span>
+<span class="sd">    &gt;&gt;&gt; np.safe_eval(&#39;{&quot;foo&quot;: (&quot;bar&quot;, 10.0)}&#39;)</span>
+<span class="sd">    {&#39;foo&#39;: (&#39;bar&#39;, 10.0)}</span>
+
+<span class="sd">    &gt;&gt;&gt; np.safe_eval(&#39;import os&#39;)</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">      ...</span>
+<span class="sd">    SyntaxError: invalid syntax</span>
+
+<span class="sd">    &gt;&gt;&gt; np.safe_eval(&#39;open(&quot;/home/user/.ssh/id_dsa&quot;).read()&#39;)</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">      ...</span>
+<span class="sd">    ValueError: malformed node or string: &lt;_ast.Call object at 0x...&gt;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Local import to speed up numpy&#39;s import time.</span>
+    <span class="kn">import</span> <span class="nn">ast</span>
+    <span class="k">return</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_median_nancheck</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Utility function to check median result from data for NaN values at the end</span>
+<span class="sd">    and return NaN in that case. Input result can also be a MaskedArray.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : array</span>
+<span class="sd">        Sorted input data to median function</span>
+<span class="sd">    result : Array or MaskedArray</span>
+<span class="sd">        Result of median function.</span>
+<span class="sd">    axis : int</span>
+<span class="sd">        Axis along which the median was computed.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    result : scalar or ndarray</span>
+<span class="sd">        Median or NaN in axes which contained NaN in the input.  If the input</span>
+<span class="sd">        was an array, NaN will be inserted in-place.  If a scalar, either the</span>
+<span class="sd">        input itself or a scalar NaN.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">result</span>
+    <span class="n">potential_nans</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">potential_nans</span><span class="p">)</span>
+    <span class="c1"># masked NaN values are ok, although for masked the copyto may fail for</span>
+    <span class="c1"># unmasked ones (this was always broken) when the result is a scalar.</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">isMaskedArray</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">n</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="c1"># Without given output, it is possible that the current result is a</span>
+    <span class="c1"># numpy scalar, which is not writeable.  If so, just return nan.</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">generic</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">potential_nans</span>
+
+    <span class="c1"># Otherwise copy NaNs (if there are any)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">copyto</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">potential_nans</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
+
+<span class="k">def</span> <span class="nf">_opt_info</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a string contains the supported CPU features by the current build.</span>
+
+<span class="sd">    The string format can be explained as follows:</span>
+<span class="sd">        - dispatched features that are supported by the running machine</span>
+<span class="sd">          end with `*`.</span>
+<span class="sd">        - dispatched features that are &quot;not&quot; supported by the running machine</span>
+<span class="sd">          end with `?`.</span>
+<span class="sd">        - remained features are representing the baseline.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">numpy.core._multiarray_umath</span> <span class="kn">import</span> <span class="p">(</span>
+        <span class="n">__cpu_features__</span><span class="p">,</span> <span class="n">__cpu_baseline__</span><span class="p">,</span> <span class="n">__cpu_dispatch__</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">__cpu_baseline__</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">__cpu_dispatch__</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="n">enabled_features</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__cpu_baseline__</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">__cpu_dispatch__</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">__cpu_features__</span><span class="p">[</span><span class="n">feature</span><span class="p">]:</span>
+            <span class="n">enabled_features</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s2">*&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">enabled_features</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s2">?&quot;</span>
+
+    <span class="k">return</span> <span class="n">enabled_features</span>
+
+
+<span class="k">def</span> <span class="nf">drop_metadata</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the dtype unchanged if it contained no metadata or a copy of the</span>
+<span class="sd">    dtype if it (or any of its structure dtypes) contained metadata.</span>
+
+<span class="sd">    This utility is used by `np.save` and `np.savez` to drop metadata before</span>
+<span class="sd">    saving.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        Due to its limitation this function may move to a more appropriate</span>
+<span class="sd">        home or change in the future and is considered semi-public API only.</span>
+
+<span class="sd">    .. warning::</span>
+
+<span class="sd">        This function does not preserve more strange things like record dtypes</span>
+<span class="sd">        and user dtypes may simply return the wrong thing.  If you need to be</span>
+<span class="sd">        sure about the latter, check the result with:</span>
+<span class="sd">        ``np.can_cast(new_dtype, dtype, casting=&quot;no&quot;)``.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">dtype</span><span class="o">.</span><span class="n">fields</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">found_metadata</span> <span class="o">=</span> <span class="n">dtype</span><span class="o">.</span><span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+        <span class="n">names</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">formats</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">offsets</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">titles</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">dtype</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">field_dt</span> <span class="o">=</span> <span class="n">drop_metadata</span><span class="p">(</span><span class="n">field</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">field_dt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">field</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">found_metadata</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">formats</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">field_dt</span><span class="p">)</span>
+            <span class="n">offsets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">field</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">titles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">field</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span> <span class="k">else</span> <span class="n">field</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">found_metadata</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dtype</span>
+
+        <span class="n">structure</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">formats</span><span class="o">=</span><span class="n">formats</span><span class="p">,</span> <span class="n">offsets</span><span class="o">=</span><span class="n">offsets</span><span class="p">,</span> <span class="n">titles</span><span class="o">=</span><span class="n">titles</span><span class="p">,</span>
+            <span class="n">itemsize</span><span class="o">=</span><span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span><span class="p">)</span>
+
+        <span class="c1"># NOTE: Could pass (dtype.type, structure) to preserve record dtypes...</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="n">dtype</span><span class="o">.</span><span class="n">isalignedstruct</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">dtype</span><span class="o">.</span><span class="n">subdtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># subarray dtype</span>
+        <span class="n">subdtype</span><span class="p">,</span> <span class="n">shape</span> <span class="o">=</span> <span class="n">dtype</span><span class="o">.</span><span class="n">subdtype</span>
+        <span class="n">new_subdtype</span> <span class="o">=</span> <span class="n">drop_metadata</span><span class="p">(</span><span class="n">subdtype</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dtype</span><span class="o">.</span><span class="n">metadata</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">new_subdtype</span> <span class="ow">is</span> <span class="n">subdtype</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dtype</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">((</span><span class="n">new_subdtype</span><span class="p">,</span> <span class="n">shape</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Normal unstructured dtype</span>
+        <span class="k">if</span> <span class="n">dtype</span><span class="o">.</span><span class="n">metadata</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dtype</span>
+        <span class="c1"># Note that `dt.str` doesn&#39;t round-trip e.g. for user-dtypes.</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="o">.</span><span class="n">str</span><span class="p">)</span>
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2020, Michael Merrill and William Reus
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/furo.js?v=4e2eecee"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    </body>
+</html>

@@ -22,7 +22,6 @@ Attributes
    arkouda.numpy.inf
    arkouda.numpy.infty
    arkouda.numpy.nan
-   arkouda.numpy.newaxis
    arkouda.numpy.pi
 
 
@@ -31,18 +30,31 @@ Classes
 
 .. autoapisummary::
 
+   arkouda.numpy.DataSource
+   arkouda.numpy.False_
+   arkouda.numpy.RankWarning
+   arkouda.numpy.ScalarType
+   arkouda.numpy.TooHardError
+   arkouda.numpy.True_
    arkouda.numpy.bool_
    arkouda.numpy.byte
    arkouda.numpy.cdouble
+   arkouda.numpy.cfloat
+   arkouda.numpy.character
    arkouda.numpy.clongdouble
+   arkouda.numpy.clongfloat
    arkouda.numpy.csingle
    arkouda.numpy.double
    arkouda.numpy.finfo
+   arkouda.numpy.flexible
    arkouda.numpy.float32
    arkouda.numpy.float64
+   arkouda.numpy.float_
    arkouda.numpy.floating
+   arkouda.numpy.format_parser
    arkouda.numpy.half
    arkouda.numpy.iinfo
+   arkouda.numpy.inexact
    arkouda.numpy.int16
    arkouda.numpy.int32
    arkouda.numpy.int64
@@ -52,11 +64,16 @@ Classes
    arkouda.numpy.integer
    arkouda.numpy.intp
    arkouda.numpy.longdouble
+   arkouda.numpy.longfloat
    arkouda.numpy.longlong
    arkouda.numpy.number
+   arkouda.numpy.object_
+   arkouda.numpy.sctypeDict
+   arkouda.numpy.sctypes
    arkouda.numpy.short
    arkouda.numpy.signedinteger
    arkouda.numpy.single
+   arkouda.numpy.str_
    arkouda.numpy.ubyte
    arkouda.numpy.uint
    arkouda.numpy.uint16
@@ -64,7 +81,9 @@ Classes
    arkouda.numpy.uint64
    arkouda.numpy.uint8
    arkouda.numpy.uintc
+   arkouda.numpy.uintp
    arkouda.numpy.ulonglong
+   arkouda.numpy.unsignedinteger
    arkouda.numpy.ushort
 
 
@@ -73,13 +92,160 @@ Functions
 
 .. autoapisummary::
 
+   arkouda.numpy.add_newdoc
+   arkouda.numpy.base_repr
+   arkouda.numpy.binary_repr
+   arkouda.numpy.deprecate
+   arkouda.numpy.deprecate_with_doc
+   arkouda.numpy.disp
    arkouda.numpy.floor
+   arkouda.numpy.format_float_positional
+   arkouda.numpy.format_float_scientific
    arkouda.numpy.isscalar
+   arkouda.numpy.issctype
+   arkouda.numpy.issubclass_
    arkouda.numpy.issubdtype
+   arkouda.numpy.maximum_sctype
+   arkouda.numpy.typename
 
 
 Module Contents
 ---------------
+
+.. py:class:: DataSource
+
+   DataSource(destpath='.')
+
+   A generic data source file (file, http, ftp, ...).
+
+   DataSources can be local files or remote files/URLs.  The files may
+   also be compressed or uncompressed. DataSource hides some of the
+   low-level details of downloading the file, allowing you to simply pass
+   in a valid file path (or URL) and obtain a file object.
+
+   :param destpath: Path to the directory where the source file gets downloaded to for
+                    use.  If `destpath` is None, a temporary directory will be created.
+                    The default path is the current directory.
+   :type destpath: str or None, optional
+
+   .. rubric:: Notes
+
+   URLs require a scheme string (``http://``) to be used, without it they
+   will fail::
+
+       >>> repos = np.DataSource()
+       >>> repos.exists('www.google.com/index.html')
+       False
+       >>> repos.exists('http://www.google.com/index.html')
+       True
+
+   Temporary directories are deleted when the DataSource is deleted.
+
+   .. rubric:: Examples
+
+   ::
+
+       >>> ds = np.DataSource('/home/guido')
+       >>> urlname = 'http://www.google.com/'
+       >>> gfile = ds.open('http://www.google.com/')
+       >>> ds.abspath(urlname)
+       '/home/guido/www.google.com/index.html'
+
+       >>> ds = np.DataSource(None)  # use with temporary file
+       >>> ds.open('/home/guido/foobar.txt')
+       <open file '/home/guido.foobar.txt', mode 'r' at 0x91d4430>
+       >>> ds.abspath('/home/guido/foobar.txt')
+       '/tmp/.../home/guido/foobar.txt'
+
+
+   .. py:method:: abspath(path)
+
+      Return absolute path of file in the DataSource directory.
+
+      If `path` is an URL, then `abspath` will return either the location
+      the file exists locally or the location it would exist when opened
+      using the `open` method.
+
+      :param path: Can be a local file or a remote URL.
+      :type path: str
+
+      :returns: **out** -- Complete path, including the `DataSource` destination directory.
+      :rtype: str
+
+      .. rubric:: Notes
+
+      The functionality is based on `os.path.abspath`.
+
+
+
+   .. py:method:: exists(path)
+
+      Test if path exists.
+
+      Test if `path` exists as (and in this order):
+
+      - a local file.
+      - a remote URL that has been downloaded and stored locally in the
+        `DataSource` directory.
+      - a remote URL that has not been downloaded, but is valid and
+        accessible.
+
+      :param path: Can be a local file or a remote URL.
+      :type path: str
+
+      :returns: **out** -- True if `path` exists.
+      :rtype: bool
+
+      .. rubric:: Notes
+
+      When `path` is an URL, `exists` will return True if it's either
+      stored locally in the `DataSource` directory, or is a valid remote
+      URL.  `DataSource` does not discriminate between the two, the file
+      is accessible if it exists in either location.
+
+
+
+   .. py:method:: open(path, mode='r', encoding=None, newline=None)
+
+      Open and return file-like object.
+
+      If `path` is an URL, it will be downloaded, stored in the
+      `DataSource` directory and opened from there.
+
+      :param path: Local file path or URL to open.
+      :type path: str
+      :param mode: Mode to open `path`.  Mode 'r' for reading, 'w' for writing,
+                   'a' to append. Available modes depend on the type of object
+                   specified by `path`. Default is 'r'.
+      :type mode: {'r', 'w', 'a'}, optional
+      :param encoding: Open text file with given encoding. The default encoding will be
+                       what `io.open` uses.
+      :type encoding: {None, str}, optional
+      :param newline: Newline to use when reading text file.
+      :type newline: {None, str}, optional
+
+      :returns: **out** -- File object.
+      :rtype: file object
+
+
+
+.. py:class:: False_(value)
+
+   Bases: :py:obj:`numpy.generic`
+
+
+   Boolean type (True or False), stored as a byte.
+
+       .. warning::
+
+          The :class:`bool_` type is not a subclass of the :class:`int_` type
+          (the :class:`bool_` is not even a number type). This is different
+          than Python's default implementation of :class:`bool` as a
+          sub-class of :class:`int`.
+
+       :Character code: ``'?'``
+
+
 
 .. py:data:: Inf
    :type:  float
@@ -104,6 +270,223 @@ Module Contents
 
 .. py:data:: PZERO
    :type:  float
+
+.. py:class:: RankWarning
+
+   Issued by `polyfit` when the Vandermonde matrix is rank deficient.
+
+   For more information, a way to suppress the warning, and an example of
+   `RankWarning` being issued, see `polyfit`.
+
+
+
+
+.. py:class:: ScalarType
+
+   Built-in immutable sequence.
+
+   If no argument is given, the constructor returns an empty tuple.
+   If iterable is specified the tuple is initialized from iterable's items.
+
+   If the argument is a tuple, the return value is the same object.
+
+
+
+   .. py:method:: count(value, /)
+
+      Return number of occurrences of value.
+
+
+
+
+   .. py:method:: index(value, start=0, stop=9223372036854775807, /)
+
+      Return first index of value.
+
+      Raises ValueError if the value is not present.
+
+
+
+
+.. py:class:: TooHardError
+
+   max_work was exceeded.
+
+       This is raised whenever the maximum number of candidate solutions
+       to consider specified by the ``max_work`` parameter is exceeded.
+       Assigning a finite number to max_work may have caused the operation
+       to fail.
+
+
+
+
+
+.. py:class:: True_(value)
+
+   Bases: :py:obj:`numpy.generic`
+
+
+   Boolean type (True or False), stored as a byte.
+
+       .. warning::
+
+          The :class:`bool_` type is not a subclass of the :class:`int_` type
+          (the :class:`bool_` is not even a number type). This is different
+          than Python's default implementation of :class:`bool` as a
+          sub-class of :class:`int`.
+
+       :Character code: ``'?'``
+
+
+
+.. py:function:: add_newdoc(place, obj, doc, warn_on_python=True)
+
+   Add documentation to an existing object, typically one defined in C
+
+   The purpose is to allow easier editing of the docstrings without requiring
+   a re-compile. This exists primarily for internal use within numpy itself.
+
+   :param place: The absolute name of the module to import from
+   :type place: str
+   :param obj: The name of the object to add documentation to, typically a class or
+               function name
+   :type obj: str
+   :param doc: If a string, the documentation to apply to `obj`
+
+               If a tuple, then the first element is interpreted as an attribute of
+               `obj` and the second as the docstring to apply - ``(method, docstring)``
+
+               If a list, then each element of the list should be a tuple of length
+               two - ``[(method1, docstring1), (method2, docstring2), ...]``
+   :type doc: {str, Tuple[str, str], List[Tuple[str, str]]}
+   :param warn_on_python: If True, the default, emit `UserWarning` if this is used to attach
+                          documentation to a pure-python object.
+   :type warn_on_python: bool
+
+   .. rubric:: Notes
+
+   This routine never raises an error if the docstring can't be written, but
+   will raise an error if the object being documented does not exist.
+
+   This routine cannot modify read-only docstrings, as appear
+   in new-style classes or built-in functions. Because this
+   routine never raises an error the caller must check manually
+   that the docstrings were changed.
+
+   Since this function grabs the ``char *`` from a c-level str object and puts
+   it into the ``tp_doc`` slot of the type of `obj`, it violates a number of
+   C-API best-practices, by:
+
+   - modifying a `PyTypeObject` after calling `PyType_Ready`
+   - calling `Py_INCREF` on the str and losing the reference, so the str
+     will never be released
+
+   If possible it should be avoided.
+
+
+.. py:function:: base_repr(number, base=2, padding=0)
+
+   Return a string representation of a number in the given base system.
+
+   :param number: The value to convert. Positive and negative values are handled.
+   :type number: int
+   :param base: Convert `number` to the `base` number system. The valid range is 2-36,
+                the default value is 2.
+   :type base: int, optional
+   :param padding: Number of zeros padded on the left. Default is 0 (no padding).
+   :type padding: int, optional
+
+   :returns: **out** -- String representation of `number` in `base` system.
+   :rtype: str
+
+   .. seealso::
+
+      :obj:`binary_repr`
+          Faster version of `base_repr` for base 2.
+
+   .. rubric:: Examples
+
+   >>> np.base_repr(5)
+   '101'
+   >>> np.base_repr(6, 5)
+   '11'
+   >>> np.base_repr(7, base=5, padding=3)
+   '00012'
+
+   >>> np.base_repr(10, base=16)
+   'A'
+   >>> np.base_repr(32, base=16)
+   '20'
+
+
+.. py:function:: binary_repr(num, width=None)
+
+   Return the binary representation of the input number as a string.
+
+   For negative numbers, if width is not given, a minus sign is added to the
+   front. If width is given, the two's complement of the number is
+   returned, with respect to that width.
+
+   In a two's-complement system negative numbers are represented by the two's
+   complement of the absolute value. This is the most common method of
+   representing signed integers on computers [1]_. A N-bit two's-complement
+   system can represent every integer in the range
+   :math:`-2^{N-1}` to :math:`+2^{N-1}-1`.
+
+   :param num: Only an integer decimal number can be used.
+   :type num: int
+   :param width: The length of the returned string if `num` is positive, or the length
+                 of the two's complement if `num` is negative, provided that `width` is
+                 at least a sufficient number of bits for `num` to be represented in the
+                 designated form.
+
+                 If the `width` value is insufficient, it will be ignored, and `num` will
+                 be returned in binary (`num` > 0) or two's complement (`num` < 0) form
+                 with its width equal to the minimum number of bits needed to represent
+                 the number in the designated form. This behavior is deprecated and will
+                 later raise an error.
+
+                 .. deprecated:: 1.12.0
+   :type width: int, optional
+
+   :returns: **bin** -- Binary representation of `num` or two's complement of `num`.
+   :rtype: str
+
+   .. seealso::
+
+      :obj:`base_repr`
+          Return a string representation of a number in the given base system.
+
+      :obj:`bin`
+          Python's built-in binary representation generator of an integer.
+
+   .. rubric:: Notes
+
+   `binary_repr` is equivalent to using `base_repr` with base 2, but about 25x
+   faster.
+
+   .. rubric:: References
+
+   .. [1] Wikipedia, "Two's complement",
+       https://en.wikipedia.org/wiki/Two's_complement
+
+   .. rubric:: Examples
+
+   >>> np.binary_repr(3)
+   '11'
+   >>> np.binary_repr(-3)
+   '-11'
+   >>> np.binary_repr(3, width=4)
+   '0011'
+
+   The two's complement is returned when the input number is negative and
+   width is specified:
+
+   >>> np.binary_repr(-3, width=3)
+   '101'
+   >>> np.binary_repr(-3, width=5)
+   '11101'
+
 
 .. py:class:: bool_(value)
 
@@ -169,7 +552,47 @@ Module Contents
 
 
 
+.. py:class:: cfloat(value)
+
+   Bases: :py:obj:`numpy.complexfloating`
+
+
+   Complex number type composed of two double-precision floating-point
+       numbers, compatible with Python `complex`.
+
+       :Character code: ``'D'``
+       :Canonical name: `numpy.cdouble`
+       :Alias: `numpy.cfloat`
+       :Alias: `numpy.complex_`
+       :Alias on this platform (Linux x86_64): `numpy.complex128`: Complex number type composed of 2 64-bit-precision floating-point numbers.
+
+
+
+.. py:class:: character(value)
+
+   Bases: :py:obj:`numpy.flexible`
+
+
+   Abstract base class of all character string scalar types.
+
+
+
 .. py:class:: clongdouble(value)
+
+   Bases: :py:obj:`numpy.complexfloating`
+
+
+   Complex number type composed of two extended-precision floating-point
+       numbers.
+
+       :Character code: ``'G'``
+       :Alias: `numpy.clongfloat`
+       :Alias: `numpy.longcomplex`
+       :Alias on this platform (Linux x86_64): `numpy.complex256`: Complex number type composed of 2 128-bit extended-precision floating-point numbers.
+
+
+
+.. py:class:: clongfloat(value)
 
    Bases: :py:obj:`numpy.complexfloating`
 
@@ -197,6 +620,91 @@ Module Contents
        :Alias: `numpy.singlecomplex`
        :Alias on this platform (Linux x86_64): `numpy.complex64`: Complex number type composed of 2 32-bit-precision floating-point numbers.
 
+
+
+.. py:function:: deprecate(*args, **kwargs)
+
+   Issues a DeprecationWarning, adds warning to `old_name`'s
+   docstring, rebinds ``old_name.__name__`` and returns the new
+   function object.
+
+   This function may also be used as a decorator.
+
+   :param func: The function to be deprecated.
+   :type func: function
+   :param old_name: The name of the function to be deprecated. Default is None, in
+                    which case the name of `func` is used.
+   :type old_name: str, optional
+   :param new_name: The new name for the function. Default is None, in which case the
+                    deprecation message is that `old_name` is deprecated. If given, the
+                    deprecation message is that `old_name` is deprecated and `new_name`
+                    should be used instead.
+   :type new_name: str, optional
+   :param message: Additional explanation of the deprecation.  Displayed in the
+                   docstring after the warning.
+   :type message: str, optional
+
+   :returns: **old_func** -- The deprecated function.
+   :rtype: function
+
+   .. rubric:: Examples
+
+   Note that ``olduint`` returns a value after printing Deprecation
+   Warning:
+
+   >>> olduint = np.deprecate(np.uint)
+   DeprecationWarning: `uint64` is deprecated! # may vary
+   >>> olduint(6)
+   6
+
+
+.. py:function:: deprecate_with_doc(msg)
+
+   Deprecates a function and includes the deprecation in its docstring.
+
+   This function is used as a decorator. It returns an object that can be
+   used to issue a DeprecationWarning, by passing the to-be decorated
+   function as argument, this adds warning to the to-be decorated function's
+   docstring and returns the new function object.
+
+   .. seealso::
+
+      :obj:`deprecate`
+          Decorate a function such that it issues a `DeprecationWarning`
+
+   :param msg: Additional explanation of the deprecation. Displayed in the
+               docstring after the warning.
+   :type msg: str
+
+   :returns: **obj**
+   :rtype: object
+
+
+.. py:function:: disp(mesg, device=None, linefeed=True)
+
+   Display a message on a device.
+
+   :param mesg: Message to display.
+   :type mesg: str
+   :param device: Device to write message. If None, defaults to ``sys.stdout`` which is
+                  very similar to ``print``. `device` needs to have ``write()`` and
+                  ``flush()`` methods.
+   :type device: object
+   :param linefeed: Option whether to print a line feed or not. Defaults to True.
+   :type linefeed: bool, optional
+
+   :raises AttributeError: If `device` does not have a ``write()`` or ``flush()`` method.
+
+   .. rubric:: Examples
+
+   Besides ``sys.stdout``, a file-like object can also be used as it has
+   both required methods:
+
+   >>> from io import StringIO
+   >>> buf = StringIO()
+   >>> np.disp(u'"Display" in a file', device=buf)
+   >>> buf.getvalue()
+   '"Display" in a file\n'
 
 
 .. py:class:: double(value)
@@ -475,6 +983,17 @@ Module Contents
               double-double.
 
 
+.. py:class:: flexible(value)
+
+   Bases: :py:obj:`numpy.generic`
+
+
+   Abstract base class of all scalar types without predefined length.
+       The actual size of these types depends on the specific `np.dtype`
+       instantiation.
+
+
+
 .. py:class:: float32(value)
 
    Bases: :py:obj:`numpy.floating`
@@ -601,6 +1120,82 @@ Module Contents
 
 
 
+.. py:class:: float_(value)
+
+   Bases: :py:obj:`numpy.floating`
+
+
+   Double-precision floating-point number type, compatible with Python `float`
+       and C ``double``.
+
+       :Character code: ``'d'``
+       :Canonical name: `numpy.double`
+       :Alias: `numpy.float_`
+       :Alias on this platform (Linux x86_64): `numpy.float64`: 64-bit precision floating-point number type: sign bit, 11 bits exponent, 52 bits mantissa.
+
+
+
+   .. py:method:: as_integer_ratio(*args, **kwargs)
+
+      double.as_integer_ratio() -> (int, int)
+
+              Return a pair of integers, whose ratio is exactly equal to the original
+              floating point number, and with a positive denominator.
+              Raise `OverflowError` on infinities and a `ValueError` on NaNs.
+
+              >>> np.double(10.0).as_integer_ratio()
+              (10, 1)
+              >>> np.double(0.0).as_integer_ratio()
+              (0, 1)
+              >>> np.double(-.25).as_integer_ratio()
+              (-1, 4)
+
+
+
+
+   .. py:method:: fromhex(string, /)
+
+      Create a floating-point number from a hexadecimal string.
+
+      >>> float.fromhex('0x1.ffffp10')
+      2047.984375
+      >>> float.fromhex('-0x1p-1074')
+      -5e-324
+
+
+
+
+   .. py:method:: hex(/)
+
+      Return a hexadecimal representation of a floating-point number.
+
+      >>> (-0.1).hex()
+      '-0x1.999999999999ap-4'
+      >>> 3.14159.hex()
+      '0x1.921f9f01b866ep+1'
+
+
+
+
+   .. py:method:: is_integer(*args, **kwargs)
+
+      double.is_integer() -> bool
+
+              Return ``True`` if the floating point number is finite with integral
+              value, and ``False`` otherwise.
+
+              .. versionadded:: 1.22
+
+              Examples
+              --------
+              >>> np.double(-2.0).is_integer()
+              True
+              >>> np.double(3.2).is_integer()
+              False
+
+
+
+
 .. py:class:: floating(value)
 
    Bases: :py:obj:`numpy.inexact`
@@ -626,6 +1221,191 @@ Module Contents
 
    >>> ak.floor(ak.linspace(1.1,5.5,5))
    array([1, 2, 3, 4, 5])
+
+
+.. py:function:: format_float_positional(x, precision=None, unique=True, fractional=True, trim='k', sign=False, pad_left=None, pad_right=None, min_digits=None)
+
+   Format a floating-point scalar as a decimal string in positional notation.
+
+   Provides control over rounding, trimming and padding. Uses and assumes
+   IEEE unbiased rounding. Uses the "Dragon4" algorithm.
+
+   :param x: Value to format.
+   :type x: python float or numpy floating scalar
+   :param precision: Maximum number of digits to print. May be None if `unique` is
+                     `True`, but must be an integer if unique is `False`.
+   :type precision: non-negative integer or None, optional
+   :param unique: If `True`, use a digit-generation strategy which gives the shortest
+                  representation which uniquely identifies the floating-point number from
+                  other values of the same type, by judicious rounding. If `precision`
+                  is given fewer digits than necessary can be printed, or if `min_digits`
+                  is given more can be printed, in which cases the last digit is rounded
+                  with unbiased rounding.
+                  If `False`, digits are generated as if printing an infinite-precision
+                  value and stopping after `precision` digits, rounding the remaining
+                  value with unbiased rounding
+   :type unique: boolean, optional
+   :param fractional: If `True`, the cutoffs of `precision` and `min_digits` refer to the
+                      total number of digits after the decimal point, including leading
+                      zeros.
+                      If `False`, `precision` and `min_digits` refer to the total number of
+                      significant digits, before or after the decimal point, ignoring leading
+                      zeros.
+   :type fractional: boolean, optional
+   :param trim: Controls post-processing trimming of trailing digits, as follows:
+
+                * 'k' : keep trailing zeros, keep decimal point (no trimming)
+                * '.' : trim all trailing zeros, leave decimal point
+                * '0' : trim all but the zero before the decimal point. Insert the
+                  zero if it is missing.
+                * '-' : trim trailing zeros and any trailing decimal point
+   :type trim: one of 'k', '.', '0', '-', optional
+   :param sign: Whether to show the sign for positive values.
+   :type sign: boolean, optional
+   :param pad_left: Pad the left side of the string with whitespace until at least that
+                    many characters are to the left of the decimal point.
+   :type pad_left: non-negative integer, optional
+   :param pad_right: Pad the right side of the string with whitespace until at least that
+                     many characters are to the right of the decimal point.
+   :type pad_right: non-negative integer, optional
+   :param min_digits: Minimum number of digits to print. Only has an effect if `unique=True`
+                      in which case additional digits past those necessary to uniquely
+                      identify the value may be printed, rounding the last additional digit.
+
+                      -- versionadded:: 1.21.0
+   :type min_digits: non-negative integer or None, optional
+
+   :returns: **rep** -- The string representation of the floating point value
+   :rtype: string
+
+   .. seealso:: :obj:`format_float_scientific`
+
+   .. rubric:: Examples
+
+   >>> np.format_float_positional(np.float32(np.pi))
+   '3.1415927'
+   >>> np.format_float_positional(np.float16(np.pi))
+   '3.14'
+   >>> np.format_float_positional(np.float16(0.3))
+   '0.3'
+   >>> np.format_float_positional(np.float16(0.3), unique=False, precision=10)
+   '0.3000488281'
+
+
+.. py:function:: format_float_scientific(x, precision=None, unique=True, trim='k', sign=False, pad_left=None, exp_digits=None, min_digits=None)
+
+   Format a floating-point scalar as a decimal string in scientific notation.
+
+   Provides control over rounding, trimming and padding. Uses and assumes
+   IEEE unbiased rounding. Uses the "Dragon4" algorithm.
+
+   :param x: Value to format.
+   :type x: python float or numpy floating scalar
+   :param precision: Maximum number of digits to print. May be None if `unique` is
+                     `True`, but must be an integer if unique is `False`.
+   :type precision: non-negative integer or None, optional
+   :param unique: If `True`, use a digit-generation strategy which gives the shortest
+                  representation which uniquely identifies the floating-point number from
+                  other values of the same type, by judicious rounding. If `precision`
+                  is given fewer digits than necessary can be printed. If `min_digits`
+                  is given more can be printed, in which cases the last digit is rounded
+                  with unbiased rounding.
+                  If `False`, digits are generated as if printing an infinite-precision
+                  value and stopping after `precision` digits, rounding the remaining
+                  value with unbiased rounding
+   :type unique: boolean, optional
+   :param trim: Controls post-processing trimming of trailing digits, as follows:
+
+                * 'k' : keep trailing zeros, keep decimal point (no trimming)
+                * '.' : trim all trailing zeros, leave decimal point
+                * '0' : trim all but the zero before the decimal point. Insert the
+                  zero if it is missing.
+                * '-' : trim trailing zeros and any trailing decimal point
+   :type trim: one of 'k', '.', '0', '-', optional
+   :param sign: Whether to show the sign for positive values.
+   :type sign: boolean, optional
+   :param pad_left: Pad the left side of the string with whitespace until at least that
+                    many characters are to the left of the decimal point.
+   :type pad_left: non-negative integer, optional
+   :param exp_digits: Pad the exponent with zeros until it contains at least this many digits.
+                      If omitted, the exponent will be at least 2 digits.
+   :type exp_digits: non-negative integer, optional
+   :param min_digits: Minimum number of digits to print. This only has an effect for
+                      `unique=True`. In that case more digits than necessary to uniquely
+                      identify the value may be printed and rounded unbiased.
+
+                      -- versionadded:: 1.21.0
+   :type min_digits: non-negative integer or None, optional
+
+   :returns: **rep** -- The string representation of the floating point value
+   :rtype: string
+
+   .. seealso:: :obj:`format_float_positional`
+
+   .. rubric:: Examples
+
+   >>> np.format_float_scientific(np.float32(np.pi))
+   '3.1415927e+00'
+   >>> s = np.float32(1.23e24)
+   >>> np.format_float_scientific(s, unique=False, precision=15)
+   '1.230000071797338e+24'
+   >>> np.format_float_scientific(s, exp_digits=4)
+   '1.23e+0024'
+
+
+.. py:class:: format_parser
+
+   Class to convert formats, names, titles description to a dtype.
+
+   After constructing the format_parser object, the dtype attribute is
+   the converted data-type:
+   ``dtype = format_parser(formats, names, titles).dtype``
+
+   .. attribute:: dtype
+
+      The converted data-type.
+
+      :type: dtype
+
+   :param formats: The format description, either specified as a string with
+                   comma-separated format descriptions in the form ``'f8, i4, a5'``, or
+                   a list of format description strings  in the form
+                   ``['f8', 'i4', 'a5']``.
+   :type formats: str or list of str
+   :param names: The field names, either specified as a comma-separated string in the
+                 form ``'col1, col2, col3'``, or as a list or tuple of strings in the
+                 form ``['col1', 'col2', 'col3']``.
+                 An empty list can be used, in that case default field names
+                 ('f0', 'f1', ...) are used.
+   :type names: str or list/tuple of str
+   :param titles: Sequence of title strings. An empty list can be used to leave titles
+                  out.
+   :type titles: sequence
+   :param aligned: If True, align the fields by padding as the C-compiler would.
+                   Default is False.
+   :type aligned: bool, optional
+   :param byteorder: If specified, all the fields will be changed to the
+                     provided byte-order.  Otherwise, the default byte-order is
+                     used. For all available string specifiers, see `dtype.newbyteorder`.
+   :type byteorder: str, optional
+
+   .. seealso:: :obj:`dtype`, :obj:`typename`, :obj:`sctype2char`
+
+   .. rubric:: Examples
+
+   >>> np.format_parser(['<f8', '<i4', '<a5'], ['col1', 'col2', 'col3'],
+   ...                  ['T1', 'T2', 'T3']).dtype
+   dtype([(('T1', 'col1'), '<f8'), (('T2', 'col2'), '<i4'), (('T3', 'col3'), 'S5')])
+
+   `names` and/or `titles` can be empty lists. If `titles` is an empty list,
+   titles will simply not appear. If `names` is empty, default field names
+   will be used.
+
+   >>> np.format_parser(['f8', 'i4', 'a5'], ['col1', 'col2', 'col3'],
+   ...                  []).dtype
+   dtype([('col1', '<f8'), ('col2', '<i4'), ('col3', '<S5')])
+   >>> np.format_parser(['<f8', '<i4', '<a5'], [], []).dtype
+   dtype([('f0', '<f8'), ('f1', '<i4'), ('f2', 'S5')])
 
 
 .. py:class:: half(value)
@@ -746,6 +1526,17 @@ Module Contents
 
    .. py:property:: min
       Minimum value of given dtype.
+
+
+.. py:class:: inexact(value)
+
+   Bases: :py:obj:`numpy.number`
+
+
+   Abstract base class of all numeric scalar types with a (potentially)
+       inexact representation of the values in its range, such as
+       floating-point numbers.
+
 
 
 .. py:data:: inf
@@ -1080,6 +1871,63 @@ Module Contents
    True
 
 
+.. py:function:: issctype(rep)
+
+   Determines whether the given object represents a scalar data-type.
+
+   :param rep: If `rep` is an instance of a scalar dtype, True is returned. If not,
+               False is returned.
+   :type rep: any
+
+   :returns: **out** -- Boolean result of check whether `rep` is a scalar dtype.
+   :rtype: bool
+
+   .. seealso:: :obj:`issubsctype`, :obj:`issubdtype`, :obj:`obj2sctype`, :obj:`sctype2char`
+
+   .. rubric:: Examples
+
+   >>> np.issctype(np.int32)
+   True
+   >>> np.issctype(list)
+   False
+   >>> np.issctype(1.1)
+   False
+
+   Strings are also a scalar type:
+
+   >>> np.issctype(np.dtype('str'))
+   True
+
+
+.. py:function:: issubclass_(arg1, arg2)
+
+   Determine if a class is a subclass of a second class.
+
+   `issubclass_` is equivalent to the Python built-in ``issubclass``,
+   except that it returns False instead of raising a TypeError if one
+   of the arguments is not a class.
+
+   :param arg1: Input class. True is returned if `arg1` is a subclass of `arg2`.
+   :type arg1: class
+   :param arg2: Input class. If a tuple of classes, True is returned if `arg1` is a
+                subclass of any of the tuple elements.
+   :type arg2: class or tuple of classes.
+
+   :returns: **out** -- Whether `arg1` is a subclass of `arg2` or not.
+   :rtype: bool
+
+   .. seealso:: :obj:`issubsctype`, :obj:`issubdtype`, :obj:`issctype`
+
+   .. rubric:: Examples
+
+   >>> np.issubclass_(np.int32, int)
+   False
+   >>> np.issubclass_(np.int32, float)
+   False
+   >>> np.issubclass_(np.float64, float)
+   True
+
+
 .. py:function:: issubdtype(arg1, arg2)
 
    Returns True if first argument is a typecode lower/equal in type hierarchy.
@@ -1190,6 +2038,57 @@ Module Contents
 
 
 
+.. py:class:: longfloat(value)
+
+   Bases: :py:obj:`numpy.floating`
+
+
+   Extended-precision floating-point number type, compatible with C
+       ``long double`` but not necessarily with IEEE 754 quadruple-precision.
+
+       :Character code: ``'g'``
+       :Alias: `numpy.longfloat`
+       :Alias on this platform (Linux x86_64): `numpy.float128`: 128-bit extended-precision floating-point number type.
+
+
+
+   .. py:method:: as_integer_ratio(*args, **kwargs)
+
+      longdouble.as_integer_ratio() -> (int, int)
+
+              Return a pair of integers, whose ratio is exactly equal to the original
+              floating point number, and with a positive denominator.
+              Raise `OverflowError` on infinities and a `ValueError` on NaNs.
+
+              >>> np.longdouble(10.0).as_integer_ratio()
+              (10, 1)
+              >>> np.longdouble(0.0).as_integer_ratio()
+              (0, 1)
+              >>> np.longdouble(-.25).as_integer_ratio()
+              (-1, 4)
+
+
+
+
+   .. py:method:: is_integer(*args, **kwargs)
+
+      longdouble.is_integer() -> bool
+
+              Return ``True`` if the floating point number is finite with integral
+              value, and ``False`` otherwise.
+
+              .. versionadded:: 1.22
+
+              Examples
+              --------
+              >>> np.longdouble(-2.0).is_integer()
+              True
+              >>> np.longdouble(3.2).is_integer()
+              False
+
+
+
+
 .. py:class:: longlong(value)
 
    Bases: :py:obj:`numpy.signedinteger`
@@ -1204,11 +2103,39 @@ Module Contents
    .. py:method:: bit_count(*args, **kwargs)
 
 
+.. py:function:: maximum_sctype(t)
+
+   Return the scalar type of highest precision of the same kind as the input.
+
+   :param t: The input data type. This can be a `dtype` object or an object that
+             is convertible to a `dtype`.
+   :type t: dtype or dtype specifier
+
+   :returns: **out** -- The highest precision data type of the same kind (`dtype.kind`) as `t`.
+   :rtype: dtype
+
+   .. seealso:: :obj:`obj2sctype`, :obj:`mintypecode`, :obj:`sctype2char`, :obj:`dtype`
+
+   .. rubric:: Examples
+
+   >>> np.maximum_sctype(int)
+   <class 'numpy.int64'>
+   >>> np.maximum_sctype(np.uint8)
+   <class 'numpy.uint64'>
+   >>> np.maximum_sctype(complex)
+   <class 'numpy.complex256'> # may vary
+
+   >>> np.maximum_sctype(str)
+   <class 'numpy.str_'>
+
+   >>> np.maximum_sctype('i2')
+   <class 'numpy.int64'>
+   >>> np.maximum_sctype('f4')
+   <class 'numpy.float128'> # may vary
+
+
 .. py:data:: nan
    :type:  float
-
-.. py:data:: newaxis
-   :type:  None
 
 .. py:class:: number(value)
 
@@ -1219,8 +2146,221 @@ Module Contents
 
 
 
+.. py:class:: object_(value)
+
+   Bases: :py:obj:`numpy.generic`
+
+
+   Any Python object.
+
+       :Character code: ``'O'``
+
+
+
 .. py:data:: pi
    :type:  float
+
+.. py:class:: sctypeDict
+
+   dict() -> new empty dictionary
+   dict(mapping) -> new dictionary initialized from a mapping object's
+       (key, value) pairs
+   dict(iterable) -> new dictionary initialized as if via:
+       d = {}
+       for k, v in iterable:
+           d[k] = v
+   dict(**kwargs) -> new dictionary initialized with the name=value pairs
+       in the keyword argument list.  For example:  dict(one=1, two=2)
+
+
+
+   .. py:method:: clear(*args, **kwargs)
+
+      D.clear() -> None.  Remove all items from D.
+
+
+
+
+   .. py:method:: copy(*args, **kwargs)
+
+      D.copy() -> a shallow copy of D
+
+
+
+
+   .. py:method:: fromkeys(iterable, value=None, /)
+
+      Create a new dictionary with keys from iterable and values set to value.
+
+
+
+
+   .. py:method:: get(key, default=None, /)
+
+      Return the value for key if key is in the dictionary, else default.
+
+
+
+
+   .. py:method:: items(*args, **kwargs)
+
+      D.items() -> a set-like object providing a view on D's items
+
+
+
+
+   .. py:method:: keys(*args, **kwargs)
+
+      D.keys() -> a set-like object providing a view on D's keys
+
+
+
+
+   .. py:method:: pop(*args, **kwargs)
+
+      D.pop(k[,d]) -> v, remove specified key and return the corresponding value.
+
+      If key is not found, default is returned if given, otherwise KeyError is raised
+
+
+
+
+   .. py:method:: popitem()
+
+      Remove and return a (key, value) pair as a 2-tuple.
+
+      Pairs are returned in LIFO (last-in, first-out) order.
+      Raises KeyError if the dict is empty.
+
+
+
+
+   .. py:method:: setdefault(key, default=None, /)
+
+      Insert key with a value of default if key is not in the dictionary.
+
+      Return the value for key if key is in the dictionary, else default.
+
+
+
+
+   .. py:method:: update(*args, **kwargs)
+
+      D.update([E, ]**F) -> None.  Update D from dict/iterable E and F.
+      If E is present and has a .keys() method, then does:  for k in E: D[k] = E[k]
+      If E is present and lacks a .keys() method, then does:  for k, v in E: D[k] = v
+      In either case, this is followed by: for k in F:  D[k] = F[k]
+
+
+
+
+   .. py:method:: values(*args, **kwargs)
+
+      D.values() -> an object providing a view on D's values
+
+
+
+
+.. py:class:: sctypes
+
+   dict() -> new empty dictionary
+   dict(mapping) -> new dictionary initialized from a mapping object's
+       (key, value) pairs
+   dict(iterable) -> new dictionary initialized as if via:
+       d = {}
+       for k, v in iterable:
+           d[k] = v
+   dict(**kwargs) -> new dictionary initialized with the name=value pairs
+       in the keyword argument list.  For example:  dict(one=1, two=2)
+
+
+
+   .. py:method:: clear(*args, **kwargs)
+
+      D.clear() -> None.  Remove all items from D.
+
+
+
+
+   .. py:method:: copy(*args, **kwargs)
+
+      D.copy() -> a shallow copy of D
+
+
+
+
+   .. py:method:: fromkeys(iterable, value=None, /)
+
+      Create a new dictionary with keys from iterable and values set to value.
+
+
+
+
+   .. py:method:: get(key, default=None, /)
+
+      Return the value for key if key is in the dictionary, else default.
+
+
+
+
+   .. py:method:: items(*args, **kwargs)
+
+      D.items() -> a set-like object providing a view on D's items
+
+
+
+
+   .. py:method:: keys(*args, **kwargs)
+
+      D.keys() -> a set-like object providing a view on D's keys
+
+
+
+
+   .. py:method:: pop(*args, **kwargs)
+
+      D.pop(k[,d]) -> v, remove specified key and return the corresponding value.
+
+      If key is not found, default is returned if given, otherwise KeyError is raised
+
+
+
+
+   .. py:method:: popitem()
+
+      Remove and return a (key, value) pair as a 2-tuple.
+
+      Pairs are returned in LIFO (last-in, first-out) order.
+      Raises KeyError if the dict is empty.
+
+
+
+
+   .. py:method:: setdefault(key, default=None, /)
+
+      Insert key with a value of default if key is not in the dictionary.
+
+      Return the value for key if key is in the dictionary, else default.
+
+
+
+
+   .. py:method:: update(*args, **kwargs)
+
+      D.update([E, ]**F) -> None.  Update D from dict/iterable E and F.
+      If E is present and has a .keys() method, then does:  for k in E: D[k] = E[k]
+      If E is present and lacks a .keys() method, then does:  for k, v in E: D[k] = v
+      In either case, this is followed by: for k in F:  D[k] = F[k]
+
+
+
+
+   .. py:method:: values(*args, **kwargs)
+
+      D.values() -> an object providing a view on D's values
+
+
+
 
 .. py:class:: short(value)
 
@@ -1309,6 +2449,663 @@ Module Contents
               False
 
 
+
+
+.. py:class:: str_
+
+   A unicode string.
+
+       This type strips trailing null codepoints.
+
+       >>> s = np.str_("abc\x00")
+       >>> s
+       'abc'
+
+       Unlike the builtin `str`, this supports the :ref:`python:bufferobjects`, exposing its
+       contents as UCS4:
+
+       >>> m = memoryview(np.str_("abc"))
+       >>> m.format
+       '3w'
+       >>> m.tobytes()
+       b'a\x00\x00\x00b\x00\x00\x00c\x00\x00\x00'
+
+       :Character code: ``'U'``
+       :Alias: `numpy.unicode_`
+
+
+
+   .. py:method:: T(*args, **kwargs)
+
+      Scalar attribute identical to the corresponding array attribute.
+
+          Please see `ndarray.T`.
+
+
+
+
+   .. py:method:: all(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.all`.
+
+
+
+
+   .. py:method:: any(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.any`.
+
+
+
+
+   .. py:method:: argmax(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.argmax`.
+
+
+
+
+   .. py:method:: argmin(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.argmin`.
+
+
+
+
+   .. py:method:: argsort(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.argsort`.
+
+
+
+
+   .. py:method:: astype(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.astype`.
+
+
+
+
+   .. py:method:: base(*args, **kwargs)
+
+      Scalar attribute identical to the corresponding array attribute.
+
+          Please see `ndarray.base`.
+
+
+
+
+   .. py:method:: byteswap(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.byteswap`.
+
+
+
+
+   .. py:method:: choose(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.choose`.
+
+
+
+
+   .. py:method:: clip(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.clip`.
+
+
+
+
+   .. py:method:: compress(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.compress`.
+
+
+
+
+   .. py:method:: conj(*args, **kwargs)
+
+
+   .. py:method:: conjugate(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.conjugate`.
+
+
+
+
+   .. py:method:: copy(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.copy`.
+
+
+
+
+   .. py:method:: cumprod(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.cumprod`.
+
+
+
+
+   .. py:method:: cumsum(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.cumsum`.
+
+
+
+
+   .. py:method:: data(*args, **kwargs)
+
+      Pointer to start of data.
+
+
+
+
+   .. py:method:: diagonal(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.diagonal`.
+
+
+
+
+   .. py:method:: dtype(*args, **kwargs)
+
+      Get array data-descriptor.
+
+
+
+
+   .. py:method:: dump(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.dump`.
+
+
+
+
+   .. py:method:: dumps(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.dumps`.
+
+
+
+
+   .. py:method:: fill(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.fill`.
+
+
+
+
+   .. py:method:: flags(*args, **kwargs)
+
+      The integer value of flags.
+
+
+
+
+   .. py:method:: flat(*args, **kwargs)
+
+      A 1-D view of the scalar.
+
+
+
+
+   .. py:method:: flatten(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.flatten`.
+
+
+
+
+   .. py:method:: getfield(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.getfield`.
+
+
+
+
+   .. py:method:: imag(*args, **kwargs)
+
+      The imaginary part of the scalar.
+
+
+
+
+   .. py:method:: item(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.item`.
+
+
+
+
+   .. py:method:: itemset(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.itemset`.
+
+
+
+
+   .. py:method:: itemsize(*args, **kwargs)
+
+      The length of one element in bytes.
+
+
+
+
+   .. py:method:: max(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.max`.
+
+
+
+
+   .. py:method:: mean(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.mean`.
+
+
+
+
+   .. py:method:: min(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.min`.
+
+
+
+
+   .. py:method:: nbytes(*args, **kwargs)
+
+      The length of the scalar in bytes.
+
+
+
+
+   .. py:method:: ndim(*args, **kwargs)
+
+      The number of array dimensions.
+
+
+
+
+   .. py:method:: newbyteorder(*args, **kwargs)
+
+      newbyteorder(new_order='S', /)
+
+          Return a new `dtype` with a different byte order.
+
+          Changes are also made in all fields and sub-arrays of the data type.
+
+          The `new_order` code can be any from the following:
+
+          * 'S' - swap dtype from current to opposite endian
+          * {'<', 'little'} - little endian
+          * {'>', 'big'} - big endian
+          * {'=', 'native'} - native order
+          * {'|', 'I'} - ignore (no change to byte order)
+
+          Parameters
+          ----------
+          new_order : str, optional
+              Byte order to force; a value from the byte order specifications
+              above.  The default value ('S') results in swapping the current
+              byte order.
+
+
+          Returns
+          -------
+          new_dtype : dtype
+              New `dtype` object with the given change to the byte order.
+
+
+
+
+   .. py:method:: nonzero(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.nonzero`.
+
+
+
+
+   .. py:method:: prod(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.prod`.
+
+
+
+
+   .. py:method:: ptp(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.ptp`.
+
+
+
+
+   .. py:method:: put(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.put`.
+
+
+
+
+   .. py:method:: ravel(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.ravel`.
+
+
+
+
+   .. py:method:: real(*args, **kwargs)
+
+      The real part of the scalar.
+
+
+
+
+   .. py:method:: repeat(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.repeat`.
+
+
+
+
+   .. py:method:: reshape(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.reshape`.
+
+
+
+
+   .. py:method:: resize(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.resize`.
+
+
+
+
+   .. py:method:: round(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.round`.
+
+
+
+
+   .. py:method:: searchsorted(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.searchsorted`.
+
+
+
+
+   .. py:method:: setfield(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.setfield`.
+
+
+
+
+   .. py:method:: setflags(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.setflags`.
+
+
+
+
+   .. py:method:: shape(*args, **kwargs)
+
+      Tuple of array dimensions.
+
+
+
+
+   .. py:method:: size(*args, **kwargs)
+
+      The number of elements in the gentype.
+
+
+
+
+   .. py:method:: sort(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.sort`.
+
+
+
+
+   .. py:method:: squeeze(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.squeeze`.
+
+
+
+
+   .. py:method:: std(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.std`.
+
+
+
+
+   .. py:method:: strides(*args, **kwargs)
+
+      Tuple of bytes steps in each dimension.
+
+
+
+
+   .. py:method:: sum(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.sum`.
+
+
+
+
+   .. py:method:: swapaxes(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.swapaxes`.
+
+
+
+
+   .. py:method:: take(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.take`.
+
+
+
+
+   .. py:method:: tobytes(*args, **kwargs)
+
+
+   .. py:method:: tofile(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.tofile`.
+
+
+
+
+   .. py:method:: tolist(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.tolist`.
+
+
+
+
+   .. py:method:: tostring(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.tostring`.
+
+
+
+
+   .. py:method:: trace(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.trace`.
+
+
+
+
+   .. py:method:: transpose(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.transpose`.
+
+
+
+
+   .. py:method:: var(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.var`.
+
+
+
+
+   .. py:method:: view(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.view`.
+
+
+
+
+.. py:function:: typename(char)
+
+   Return a description for the given data type code.
+
+   :param char: Data type code.
+   :type char: str
+
+   :returns: **out** -- Description of the input data type code.
+   :rtype: str
+
+   .. seealso:: :obj:`dtype`, :obj:`typecodes`
+
+   .. rubric:: Examples
+
+   >>> typechars = ['S1', '?', 'B', 'D', 'G', 'F', 'I', 'H', 'L', 'O', 'Q',
+   ...              'S', 'U', 'V', 'b', 'd', 'g', 'f', 'i', 'h', 'l', 'q']
+   >>> for typechar in typechars:
+   ...     print(typechar, ' : ', np.typename(typechar))
+   ...
+   S1  :  character
+   ?  :  bool
+   B  :  unsigned char
+   D  :  complex double precision
+   G  :  complex long double precision
+   F  :  complex single precision
+   I  :  unsigned integer
+   H  :  unsigned short
+   L  :  unsigned long integer
+   O  :  object
+   Q  :  unsigned long long integer
+   S  :  string
+   U  :  unicode
+   V  :  void
+   b  :  signed char
+   d  :  double precision
+   g  :  long precision
+   f  :  single precision
+   i  :  integer
+   h  :  short
+   l  :  long integer
+   q  :  long long integer
 
 
 .. py:class:: ubyte(value)
@@ -1509,6 +3306,35 @@ Module Contents
 
 
 
+.. py:class:: uintp(value)
+
+   Bases: :py:obj:`numpy.unsignedinteger`
+
+
+   Unsigned integer type, compatible with C ``unsigned long``.
+
+       :Character code: ``'L'``
+       :Canonical name: `numpy.uint`
+       :Alias on this platform (Linux x86_64): `numpy.uint64`: 64-bit unsigned integer (``0`` to ``18_446_744_073_709_551_615``).
+       :Alias on this platform (Linux x86_64): `numpy.uintp`: Unsigned integer large enough to fit pointer, compatible with C ``uintptr_t``.
+
+
+
+   .. py:method:: bit_count(*args, **kwargs)
+
+      uint64.bit_count() -> int
+
+              Computes the number of 1-bits in the absolute value of the input.
+              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+
+              Examples
+              --------
+              >>> np.uint64(127).bit_count()
+              7
+
+
+
+
 .. py:class:: ulonglong(value)
 
    Bases: :py:obj:`numpy.unsignedinteger`
@@ -1521,6 +3347,15 @@ Module Contents
 
 
    .. py:method:: bit_count(*args, **kwargs)
+
+
+.. py:class:: unsignedinteger(value)
+
+   Bases: :py:obj:`numpy.integer`
+
+
+   Abstract base class of all unsigned integer scalar types.
+
 
 
 .. py:class:: ushort(value)
