@@ -667,6 +667,7 @@ class TestPdarrayCreation:
         ones = ak.ones(size)
         ones.fill(dtype(2))
         assert (dtype(2) == ones).all()
+
         # Test that int_scalars covers uint8, uint16, uint32
         ones.fill(np.uint8(2))
         ones.fill(np.uint16(2))
