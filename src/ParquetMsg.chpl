@@ -276,6 +276,29 @@ module ParquetMsg {
     return byteSizes;
   }
 
+  proc calcStrListSizesAndOffset(offsets: [] ?t, filenames: [] string, sizes: [] int, dsetname: string) throws {
+    var (subdoms, length) = getSubdomains(sizes);
+
+    var byteSizes: [filenames.domain] int;
+
+    coforall loc in offsets.targetLocales() with (ref byteSizes) do on loc {
+        var locFiles = filenames;
+        var locFiledoms = subdoms;
+      
+        forall (i, filedom, filename) in zip(sizes.domain, locFiledoms, locFiles) {
+          for locdom in offsets.localSubdomains() {
+            const intersection = domain_intersection(locdom, filedom);
+            if intersection.size > 0 {
+              var col: [filedom] t;
+              byteSizes[i] = getStrColSize(filename, dsetname, col);
+              offsets[filedom] = col;
+            }
+          }
+        }
+      }
+    return byteSizes;
+  }
+
   proc getNullIndices(A: [] ?t, filenames: [] string, sizes: [] int, dsetname: string, ty) throws {
     extern proc c_getStringColumnNullIndices(filename, colname, nulls_chpl, errMsg): int;
     var (subdoms, length) = getSubdomains(sizes);
@@ -307,6 +330,21 @@ module ParquetMsg {
     var pqErr = new parquetErrorMsg();
 
     var byteSize = c_getStringColumnNumBytes(filename.localize().c_str(),
+                                             dsetname.localize().c_str(),
+                                             c_ptrTo(offsets),
+                                             offsets.size, 0, 256,
+                                             c_ptrTo(pqErr.errMsg));
+    
+    if byteSize == ARROWERROR then
+      pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+    return byteSize;
+  }
+
+  proc getStrListColSize(filename: string, dsetname: string, ref offsets: [] int) throws {
+    extern proc c_getStringListColumnNumBytes(filename, colname, offsets, numElems, startIdx, batchSize, errMsg): int;
+    var pqErr = new parquetErrorMsg();
+
+    var byteSize = c_getStringListColumnNumBytes(filename.localize().c_str(),
                                              dsetname.localize().c_str(),
                                              c_ptrTo(offsets),
                                              offsets.size, 0, 256,
@@ -669,7 +707,7 @@ module ParquetMsg {
     }
     else if ty == ArrowTypes.stringArr {
       var entrySeg = createSymEntry((+ reduce listSizes), int);
-      var byteSizes = calcStrSizesAndOffset(entrySeg.a, filenames, listSizes, dsetname);
+      var byteSizes = calcStrListSizesAndOffset(entrySeg.a, filenames, listSizes, dsetname);
       entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
 
       var entryVal = createSymEntry((+ reduce byteSizes), uint(8));
