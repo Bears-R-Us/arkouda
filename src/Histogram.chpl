@@ -200,8 +200,9 @@ module Histogram
         var gHist: [0..#totNumBins] int;
 
         // count into per-task/per-locale histogram and then reduce as tasks complete
-        var zero_bucket = "";
-        forall (xi, yi, count) in zip(x, y, 1..) with (+ reduce gHist, + reduce zero_bucket) {
+        writeln("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+        writeln("the zero bucket indices:");
+        forall (xi, yi, count) in zip(x, y, 1..) with (+ reduce gHist) {
             var xiBin = ((xi - xMin) / xBinWidth):int;
             var yiBin = ((yi - yMin) / yBinWidth):int;
             if xi == xMax {xiBin = numXBins-1;}
@@ -209,19 +210,10 @@ module Histogram
             var bucket_idx = (xiBin * numYBins) + yiBin;
             gHist[bucket_idx] += 1;
 
-            if count < 10 {
-                writeln("xiBin: ", xiBin, "\nyiBin: ", yiBin, "\nbucket_idx: ", bucket_idx, "\n");
-            }
-
             if (xiBin * numYBins) + yiBin == 0 {
-                zero_bucket += count:string + ", ";
+                writeln("\n", count:string);
             }
         }
-        writeln();
-        writeln("the zero bucket indices:");
-        writeln(zero_bucket);
-        writeln();
-        writeln();
         writeln();
 
         var hist = makeDistArray(totNumBins,int);
