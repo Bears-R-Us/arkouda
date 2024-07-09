@@ -63,9 +63,11 @@ Attributes
 .. autoapisummary::
 
    arkouda.ARKOUDA_SUPPORTED_DTYPES
+   arkouda.AllSymbols
    arkouda.DTypeObjects
    arkouda.DTypes
    arkouda.LEN_SUFFIX
+   arkouda.RegisteredSymbols
    arkouda.SEG_SUFFIX
    arkouda.ScalarDTypes
    arkouda.VAL_SUFFIX
@@ -210,9 +212,6 @@ Functions
    arkouda.argmaxk
    arkouda.argmin
    arkouda.argmink
-   arkouda.argsort
-   arkouda.argsort
-   arkouda.argsort
    arkouda.array
    arkouda.array
    arkouda.array
@@ -251,9 +250,6 @@ Functions
    arkouda.clear
    arkouda.clip
    arkouda.clz
-   arkouda.coargsort
-   arkouda.coargsort
-   arkouda.coargsort
    arkouda.compute_join_size
    arkouda.concatenate
    arkouda.concatenate
@@ -318,6 +314,7 @@ Functions
    arkouda.in1d
    arkouda.in1d_intervals
    arkouda.indexof1d
+   arkouda.information
    arkouda.intersect
    arkouda.intersect1d
    arkouda.interval_lookup
@@ -341,6 +338,8 @@ Functions
    arkouda.join_on_eq_with_dt
    arkouda.left_align
    arkouda.linspace
+   arkouda.list_registry
+   arkouda.list_symbol_table
    arkouda.load
    arkouda.load_all
    arkouda.log
@@ -368,6 +367,7 @@ Functions
    arkouda.popcount
    arkouda.power
    arkouda.power_divergence
+   arkouda.pretty_print_information
    arkouda.prod
    arkouda.rad2deg
    arkouda.randint
@@ -398,7 +398,6 @@ Functions
    arkouda.sinh
    arkouda.skew
    arkouda.snapshot
-   arkouda.sort
    arkouda.sqrt
    arkouda.square
    arkouda.standard_normal
@@ -446,6 +445,10 @@ Package Contents
 ----------------
 
 .. py:data:: ARKOUDA_SUPPORTED_DTYPES
+
+.. py:data:: AllSymbols
+   :value: '__AllSymbols__'
+
 
 .. py:class:: ArrayView(base: arkouda.pdarrayclass.pdarray, shape, order='row_major')
 
@@ -18011,6 +18014,10 @@ Package Contents
 
 .. py:class:: Properties
 
+.. py:data:: RegisteredSymbols
+   :value: '__RegisteredSymbols__'
+
+
 .. py:exception:: RegistrationError
 
    Bases: :py:obj:`Exception`
@@ -28951,87 +28958,6 @@ Package Contents
    array([7, 2, 5, 3])
 
 
-.. py:function:: argsort(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, axis: arkouda.dtypes.int_scalars = 0) -> arkouda.pdarrayclass.pdarray
-
-   Return the permutation that sorts the array.
-
-   :param pda: The array to sort (int64, uint64, or float64)
-   :type pda: pdarray or Strings or Categorical
-
-   :returns: The indices such that ``pda[indices]`` is sorted
-   :rtype: pdarray, int64
-
-   :raises TypeError: Raised if the parameter is other than a pdarray or Strings
-
-   .. seealso:: :obj:`coargsort`
-
-   .. rubric:: Notes
-
-   Uses a least-significant-digit radix sort, which is stable and
-   resilient to non-uniformity in data but communication intensive.
-
-   .. rubric:: Examples
-
-   >>> a = ak.randint(0, 10, 10)
-   >>> perm = ak.argsort(a)
-   >>> a[perm]
-   array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
-
-
-.. py:function:: argsort(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, axis: arkouda.dtypes.int_scalars = 0) -> arkouda.pdarrayclass.pdarray
-
-   Return the permutation that sorts the array.
-
-   :param pda: The array to sort (int64, uint64, or float64)
-   :type pda: pdarray or Strings or Categorical
-
-   :returns: The indices such that ``pda[indices]`` is sorted
-   :rtype: pdarray, int64
-
-   :raises TypeError: Raised if the parameter is other than a pdarray or Strings
-
-   .. seealso:: :obj:`coargsort`
-
-   .. rubric:: Notes
-
-   Uses a least-significant-digit radix sort, which is stable and
-   resilient to non-uniformity in data but communication intensive.
-
-   .. rubric:: Examples
-
-   >>> a = ak.randint(0, 10, 10)
-   >>> perm = ak.argsort(a)
-   >>> a[perm]
-   array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
-
-
-.. py:function:: argsort(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, axis: arkouda.dtypes.int_scalars = 0) -> arkouda.pdarrayclass.pdarray
-
-   Return the permutation that sorts the array.
-
-   :param pda: The array to sort (int64, uint64, or float64)
-   :type pda: pdarray or Strings or Categorical
-
-   :returns: The indices such that ``pda[indices]`` is sorted
-   :rtype: pdarray, int64
-
-   :raises TypeError: Raised if the parameter is other than a pdarray or Strings
-
-   .. seealso:: :obj:`coargsort`
-
-   .. rubric:: Notes
-
-   Uses a least-significant-digit radix sort, which is stable and
-   resilient to non-uniformity in data but communication intensive.
-
-   .. rubric:: Examples
-
-   >>> a = ak.randint(0, 10, 10)
-   >>> perm = ak.argsort(a)
-   >>> a[perm]
-   array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
-
-
 .. py:function:: array(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str, None] = None, max_bits: int = -1) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
 
    Convert a Python or Numpy Iterable to a pdarray or Strings object, sending
@@ -30094,126 +30020,6 @@ Package Contents
    >>> A = ak.arange(10)
    >>> ak.clz(A)
    array([64, 63, 62, 62, 61, 61, 61, 61, 60, 60])
-
-
-.. py:function:: coargsort(arrays: Sequence[Union[arkouda.strings.Strings, arkouda.pdarrayclass.pdarray, arkouda.categorical.Categorical]], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD) -> arkouda.pdarrayclass.pdarray
-
-   Return the permutation that groups the rows (left-to-right), if the
-   input arrays are treated as columns. The permutation sorts numeric
-   columns, but not strings/Categoricals -- strings/Categoricals are grouped, but not ordered.
-
-   :param arrays: The columns (int64, uint64, float64, Strings, or Categorical) to sort by row
-   :type arrays: Sequence[Union[Strings, pdarray, Categorical]]
-
-   :returns: The indices that permute the rows to grouped order
-   :rtype: pdarray, int64
-
-   :raises ValueError: Raised if the pdarrays are not of the same size or if the parameter
-       is not an Iterable containing pdarrays, Strings, or Categoricals
-
-   .. seealso:: :obj:`argsort`
-
-   .. rubric:: Notes
-
-   Uses a least-significant-digit radix sort, which is stable and resilient
-   to non-uniformity in data but communication intensive. Starts with the
-   last array and moves forward. This sort operates directly on numeric types,
-   but for Strings, it operates on a hash. Thus, while grouping of equivalent
-   strings is guaranteed, lexicographic ordering of the groups is not. For Categoricals,
-   coargsort sorts based on Categorical.codes which guarantees grouping of equivalent categories
-   but not lexicographic ordering of those groups.
-
-   .. rubric:: Examples
-
-   >>> a = ak.array([0, 1, 0, 1])
-   >>> b = ak.array([1, 1, 0, 0])
-   >>> perm = ak.coargsort([a, b])
-   >>> perm
-   array([2, 0, 3, 1])
-   >>> a[perm]
-   array([0, 0, 1, 1])
-   >>> b[perm]
-   array([0, 1, 0, 1])
-
-
-.. py:function:: coargsort(arrays: Sequence[Union[arkouda.strings.Strings, arkouda.pdarrayclass.pdarray, arkouda.categorical.Categorical]], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD) -> arkouda.pdarrayclass.pdarray
-
-   Return the permutation that groups the rows (left-to-right), if the
-   input arrays are treated as columns. The permutation sorts numeric
-   columns, but not strings/Categoricals -- strings/Categoricals are grouped, but not ordered.
-
-   :param arrays: The columns (int64, uint64, float64, Strings, or Categorical) to sort by row
-   :type arrays: Sequence[Union[Strings, pdarray, Categorical]]
-
-   :returns: The indices that permute the rows to grouped order
-   :rtype: pdarray, int64
-
-   :raises ValueError: Raised if the pdarrays are not of the same size or if the parameter
-       is not an Iterable containing pdarrays, Strings, or Categoricals
-
-   .. seealso:: :obj:`argsort`
-
-   .. rubric:: Notes
-
-   Uses a least-significant-digit radix sort, which is stable and resilient
-   to non-uniformity in data but communication intensive. Starts with the
-   last array and moves forward. This sort operates directly on numeric types,
-   but for Strings, it operates on a hash. Thus, while grouping of equivalent
-   strings is guaranteed, lexicographic ordering of the groups is not. For Categoricals,
-   coargsort sorts based on Categorical.codes which guarantees grouping of equivalent categories
-   but not lexicographic ordering of those groups.
-
-   .. rubric:: Examples
-
-   >>> a = ak.array([0, 1, 0, 1])
-   >>> b = ak.array([1, 1, 0, 0])
-   >>> perm = ak.coargsort([a, b])
-   >>> perm
-   array([2, 0, 3, 1])
-   >>> a[perm]
-   array([0, 0, 1, 1])
-   >>> b[perm]
-   array([0, 1, 0, 1])
-
-
-.. py:function:: coargsort(arrays: Sequence[Union[arkouda.strings.Strings, arkouda.pdarrayclass.pdarray, arkouda.categorical.Categorical]], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD) -> arkouda.pdarrayclass.pdarray
-
-   Return the permutation that groups the rows (left-to-right), if the
-   input arrays are treated as columns. The permutation sorts numeric
-   columns, but not strings/Categoricals -- strings/Categoricals are grouped, but not ordered.
-
-   :param arrays: The columns (int64, uint64, float64, Strings, or Categorical) to sort by row
-   :type arrays: Sequence[Union[Strings, pdarray, Categorical]]
-
-   :returns: The indices that permute the rows to grouped order
-   :rtype: pdarray, int64
-
-   :raises ValueError: Raised if the pdarrays are not of the same size or if the parameter
-       is not an Iterable containing pdarrays, Strings, or Categoricals
-
-   .. seealso:: :obj:`argsort`
-
-   .. rubric:: Notes
-
-   Uses a least-significant-digit radix sort, which is stable and resilient
-   to non-uniformity in data but communication intensive. Starts with the
-   last array and moves forward. This sort operates directly on numeric types,
-   but for Strings, it operates on a hash. Thus, while grouping of equivalent
-   strings is guaranteed, lexicographic ordering of the groups is not. For Categoricals,
-   coargsort sorts based on Categorical.codes which guarantees grouping of equivalent categories
-   but not lexicographic ordering of those groups.
-
-   .. rubric:: Examples
-
-   >>> a = ak.array([0, 1, 0, 1])
-   >>> b = ak.array([1, 1, 0, 0])
-   >>> perm = ak.coargsort([a, b])
-   >>> perm
-   array([2, 0, 3, 1])
-   >>> a[perm]
-   array([0, 0, 1, 1])
-   >>> b[perm]
-   array([0, 1, 0, 1])
 
 
 .. py:data:: complex128
@@ -31861,6 +31667,22 @@ Package Contents
    :raises RuntimeError: Raised if the dtype of either array is not supported
 
 
+.. py:function:: information(names: Union[List[str], str] = RegisteredSymbols) -> str
+
+   Returns JSON formatted string containing information about the objects in names
+
+   :param names: names is either the name of an object or list of names of objects to retrieve info
+                 if names is ak.AllSymbols, retrieves info for all symbols in the symbol table
+                 if names is ak.RegisteredSymbols, retrieves info for all symbols in the registry
+   :type names: Union[List[str], str]
+
+   :returns: JSON formatted string containing a list of information for each object in names
+   :rtype: str
+
+   :raises RuntimeError: Raised if a server-side error is thrown in the process of
+       retrieving information about the objects in names
+
+
 .. py:data:: int16
 
 .. py:data:: int32
@@ -32339,6 +32161,32 @@ Package Contents
 
    >>> ak.linspace(start=-5, stop=0, length=5)
    array([-5, -3.75, -2.5, -1.25, 0])
+
+
+.. py:function:: list_registry(detailed: bool = False)
+
+   Return a list containing the names of all registered objects
+
+   :param detailed: Default = False
+                    Return details of registry objects. Currently includes object type for any objects
+   :type detailed: bool
+
+   :returns: Dict containing keys "Components" and "Objects".
+   :rtype: dict
+
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+.. py:function:: list_symbol_table() -> List[str]
+
+   Return a list containing the names of all objects in the symbol table
+
+   :param None:
+
+   :returns: List of all object names in the symbol table
+   :rtype: list
+
+   :raises RuntimeError: Raised if there's a server-side error thrown
 
 
 .. py:function:: load(path_prefix: str, file_format: str = 'INFER', dataset: str = 'array', calc_string_offsets: bool = False, column_delim: str = ',') -> Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index]]]
@@ -39058,6 +38906,21 @@ Package Contents
    https://github.com/scipy/scipy
 
 
+.. py:function:: pretty_print_information(names: Union[List[str], str] = RegisteredSymbols) -> None
+
+   Prints verbose information for each object in names in a human readable format
+
+   :param names: names is either the name of an object or list of names of objects to retrieve info
+                 if names is ak.AllSymbols, retrieves info for all symbols in the symbol table
+                 if names is ak.RegisteredSymbols, retrieves info for all symbols in the registry
+   :type names: Union[List[str], str]
+
+   :rtype: None
+
+   :raises RuntimeError: Raised if a server-side error is thrown in the process of
+       retrieving information about the objects in names
+
+
 .. py:function:: prod(pda: pdarray) -> numpy.float64
 
    Return the product of all elements in the array. Return value is
@@ -40029,36 +39892,6 @@ Package Contents
    :rtype: None
 
    .. seealso:: :obj:`ak.restore`
-
-
-.. py:function:: sort(pda: arkouda.pdarrayclass.pdarray, algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, axis=-1) -> arkouda.pdarrayclass.pdarray
-
-   Return a sorted copy of the array. Only sorts numeric arrays;
-   for Strings, use argsort.
-
-   :param pda: The array to sort (int64, uint64, or float64)
-   :type pda: pdarray or Categorical
-
-   :returns: The sorted copy of pda
-   :rtype: pdarray, int64, uint64, or float64
-
-   :raises TypeError: Raised if the parameter is not a pdarray
-   :raises ValueError: Raised if sort attempted on a pdarray with an unsupported dtype
-       such as bool
-
-   .. seealso:: :obj:`argsort`
-
-   .. rubric:: Notes
-
-   Uses a least-significant-digit radix sort, which is stable and resilient
-   to non-uniformity in data but communication intensive.
-
-   .. rubric:: Examples
-
-   >>> a = ak.randint(0, 10, 10)
-   >>> sorted = ak.sort(a)
-   >>> a
-   array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
 
 
 .. py:function:: sqrt(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray

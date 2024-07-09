@@ -381,7 +381,7 @@
 
 
 <div class="viewcode-block" id="argsort">
-<a class="viewcode-back" href="../../usage/argsort.html#arkouda.argsort">[docs]</a>
+<a class="viewcode-back" href="../../usage/argsort.html#arkouda.sorting.argsort">[docs]</a>
 <span class="k">def</span> <span class="nf">argsort</span><span class="p">(</span>
     <span class="n">pda</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="s2">&quot;Categorical&quot;</span><span class="p">],</span>  <span class="c1"># type: ignore # noqa</span>
     <span class="n">algorithm</span><span class="p">:</span> <span class="n">SortingAlgorithm</span> <span class="o">=</span> <span class="n">SortingAlgorithm</span><span class="o">.</span><span class="n">RadixSortLSD</span><span class="p">,</span>
@@ -449,7 +449,7 @@
 
 
 <div class="viewcode-block" id="coargsort">
-<a class="viewcode-back" href="../../usage/argsort.html#arkouda.coargsort">[docs]</a>
+<a class="viewcode-back" href="../../usage/argsort.html#arkouda.sorting.coargsort">[docs]</a>
 <span class="k">def</span> <span class="nf">coargsort</span><span class="p">(</span>
     <span class="n">arrays</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Strings</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">,</span> <span class="s2">&quot;Categorical&quot;</span><span class="p">]],</span>  <span class="c1"># type: ignore # noqa</span>
     <span class="n">algorithm</span><span class="p">:</span> <span class="n">SortingAlgorithm</span> <span class="o">=</span> <span class="n">SortingAlgorithm</span><span class="o">.</span><span class="n">RadixSortLSD</span><span class="p">,</span>
@@ -554,7 +554,7 @@
 
 
 <div class="viewcode-block" id="sort">
-<a class="viewcode-back" href="../../autoapi/arkouda/sorting/index.html#arkouda.sort">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/sorting/index.html#arkouda.sorting.sort">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">algorithm</span><span class="p">:</span> <span class="n">SortingAlgorithm</span> <span class="o">=</span> <span class="n">SortingAlgorithm</span><span class="o">.</span><span class="n">RadixSortLSD</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
