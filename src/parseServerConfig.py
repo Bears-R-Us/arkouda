@@ -31,6 +31,8 @@ def ndStamp(nd_msg_handler_name, cmd_prefix, d, mod_name):
         f"    do return {nd_msg_handler_name}(cmd, msgArgs, st, {d});\n"
     if "Msg" in mod_name:
         ret_string += f"registerFunction(\"{cmd_prefix}{d}D\", {msg_proc_name}, \"{mod_name}\");\n"
+    else:
+        ret_string += f"registerFunction(\"{cmd_prefix}{d}D\", {msg_proc_name});\n"
     return ret_string
 
 
