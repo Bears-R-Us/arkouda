@@ -108,24 +108,6 @@ module HistogramMsg
             var yMax = max reduce y.a;
             var xBinWidth:real = (xMax - xMin):real / xBins:real;
             var yBinWidth:real = (yMax - yMin):real / yBins:real;
-            writeln();
-            writeln();
-            writeln();
-            writeln();
-            writeln();
-            writeln("xBins: ", xBins);
-            writeln("yBins: ", yBins);
-            writeln();
-            writeln("xMin: ", xMin);
-            writeln("xMax: ", xMax);
-            writeln("yMin: ", yMin);
-            writeln("yMax: ", yMax);
-            writeln();
-            writeln();
-            // the bin widths are my first bet for a culprit
-            writeln("xBinWidth: ", xBinWidth);
-            writeln("yBinWidth: ", yBinWidth);
-            writeln();
             hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                             "xBinWidth %r yBinWidth %r".format(xBinWidth, yBinWidth));
 
@@ -133,10 +115,6 @@ module HistogramMsg
             if (totBins <= sBound) {
                 hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                             "%? <= %?".format(totBins,sBound));
-                writeln();
-                writeln();
-                writeln("Making sure we're in the small bound case");
-                writeln();
                 var hist = histogramReduceIntent(x.a, y.a, xMin, xMax, yMin, yMax, xBins, yBins, xBinWidth, yBinWidth);
                 st.addEntry(rname, createSymEntry(hist));
             }

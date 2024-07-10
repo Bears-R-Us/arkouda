@@ -200,21 +200,14 @@ module Histogram
         var gHist: [0..#totNumBins] int;
 
         // count into per-task/per-locale histogram and then reduce as tasks complete
-        writeln("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-        writeln("the zero bucket indices:");
-        forall (xi, yi, count) in zip(x, y, 1..) with (+ reduce gHist) {
+        forall (xi, yi, _) in zip(x, y, 1..) with (+ reduce gHist) {
             var xiBin = ((xi - xMin) / xBinWidth):int;
             var yiBin = ((yi - yMin) / yBinWidth):int;
             if xi == xMax {xiBin = numXBins-1;}
             if yi == yMax {yiBin = numYBins-1;}
-            var bucket_idx = (xiBin * numYBins) + yiBin;
+            const bucket_idx = (xiBin * numYBins) + yiBin;
             gHist[bucket_idx] += 1;
-
-            if (xiBin * numYBins) + yiBin == 0 {
-                writeln("\n", count:string);
-            }
         }
-        writeln();
 
         var hist = makeDistArray(totNumBins,int);
         hist = gHist;
