@@ -290,7 +290,7 @@ module ParquetMsg {
             const intersection = domain_intersection(locdom, filedom);
             if intersection.size > 0 {
               var col: [filedom] t;
-              byteSizes[i] = getStrColSize(filename, dsetname, col);
+              byteSizes[i] = getStrListColSize(filename, dsetname, col);
               offsets[filedom] = col;
             }
           }
