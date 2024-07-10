@@ -602,6 +602,9 @@ def register_commands(config, source_files):
     count = 0
 
     for filename, ctx in chapel.files_with_contexts(source_files):
+        file_stamps = []
+        found_annotation = False
+
         root = ctx.parse(filename)[0]
         mod_name = filename.split("/")[-1].split(".")[0]
 
@@ -610,6 +613,8 @@ def register_commands(config, source_files):
         # register procs annotated with 'registerCommand',
         # creating generic commands and instantiations if necessary
         for fn, attr_call in annotated_procs(root, registerAttr):
+            found_annotation = True
+
             name = fn.name()
             line_num = fn.location().start()[0]
 
@@ -635,7 +640,7 @@ def register_commands(config, source_files):
             (cmd_proc, cmd_name, is_generic_cmd, cmd_gen_formals) = gen_command_proc(
                 name, fn.return_type(), con_formals, mod_name
             )
-            stamps.append(cmd_proc)
+            file_stamps.append(cmd_proc)
             count += 1;
 
             if is_generic_cmd > 0:
@@ -649,17 +654,19 @@ def register_commands(config, source_files):
                         line_num,
                         False,
                     ):
-                        stamps.append(stamp)
+                        file_stamps.append(stamp)
                 except ValueError as e:
                     error_message(f"registering '{name}'", e, fn.location())
                     continue
             else:
-                stamps.append(
+                file_stamps.append(
                     f"registerFunction('{command_prefix}', {cmd_name}, '{mod_name}', {line_num});"
                 )
 
         # instantiate and register procs annotated with 'instantiateAndRegister'
         for fn, attr_call in annotated_procs(root, instAndRegisterAttr):
+            found_annotation = True
+
             name = fn.name()
             line_num = fn.location().start()[0]
 
@@ -687,11 +694,14 @@ def register_commands(config, source_files):
                 for stamp in stamp_out_command(
                     config, gen_formals, name, command_prefix, mod_name, line_num, True
                 ):
-                    stamps.append(stamp)
+                    file_stamps.append(stamp)
                     count += 1
             except ValueError as e:
                 error_message(f"registering '{name}'", e, fn.location())
                 continue
+
+        if found_annotation:
+            stamps.extend(file_stamps)
 
     stamps.append("}")
 
