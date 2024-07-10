@@ -423,10 +423,12 @@ def _prod_sum_dtype(dtype: Dtype) -> Dtype:
 
 
 def cumulative_sum(
-    x: Array, /, *,
+    x: Array,
+    /,
+    *,
     axis: Optional[int] = None,
     dtype: Optional[Dtype] = None,
-    include_initial: bool = False
+    include_initial: bool = False,
 ) -> Array:
     """
     Compute the cumulative sum of the elements of an array along a given axis.

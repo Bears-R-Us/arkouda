@@ -70,7 +70,9 @@ def concat(
     ndim = arrays[0].ndim
     for a in arrays:
         if a.ndim != ndim:
-            raise ValueError("all input arrays must have the same number of dimensions to concatenate")
+            raise ValueError(
+                "all input arrays must have the same number of dimensions to concatenate"
+            )
 
     (common_dt, _arrays) = promote_to_common_dtype([a._array for a in arrays])
 
@@ -79,9 +81,11 @@ def concat(
             cast(
                 str,
                 generic_msg(
-                    cmd=f"concat<{common_dt},{ndim}>"
-                    if axis is not None
-                    else f"concatFlat<{common_dt},{ndim}>",
+                    cmd=(
+                        f"concat<{common_dt},{ndim}>"
+                        if axis is not None
+                        else f"concatFlat<{common_dt},{ndim}>"
+                    ),
                     args={
                         "n": len(arrays),
                         "names": _arrays,
@@ -144,7 +148,11 @@ def flip(x: Array, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> 
                 cast(
                     str,
                     generic_msg(
-                        cmd=f"flipAll<{x.dtype},{x.ndim}>" if axis is None else f"flip<{x.dtype},{x.ndim}>",
+                        cmd=(
+                            f"flipAll<{x.dtype},{x.ndim}>"
+                            if axis is None
+                            else f"flip<{x.dtype},{x.ndim}>"
+                        ),
                         args={
                             "name": x._array,
                             "nAxes": len(axisList),
@@ -159,7 +167,10 @@ def flip(x: Array, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> 
 
 
 def moveaxis(
-    x: Array, source: Union[int, Tuple[int, ...]], destination: Union[int, Tuple[int, ...]], /
+    x: Array,
+    source: Union[int, Tuple[int, ...]],
+    destination: Union[int, Tuple[int, ...]],
+    /,
 ) -> Array:
     """
     Move axes of an array to new positions.
@@ -181,11 +192,15 @@ def moveaxis(
             for s, d in zip(source, destination):
                 perm[s] = d
         else:
-            raise ValueError("source and destination must both be tuples if source is a tuple")
+            raise ValueError(
+                "source and destination must both be tuples if source is a tuple"
+            )
     elif isinstance(destination, int):
         perm[source] = destination
     else:
-        raise ValueError("source and destination must both be integers if source is a tuple")
+        raise ValueError(
+            "source and destination must both be integers if source is a tuple"
+        )
 
     return permute_dims(x, axes=tuple(perm))
 
@@ -220,7 +235,9 @@ def permute_dims(x: Array, /, axes: Tuple[int, ...]) -> Array:
         raise IndexError(f"Failed to permute array dimensions: {e}")
 
 
-def repeat(x: Array, repeats: Union[int, Array], /, *, axis: Optional[int] = None) -> Array:
+def repeat(
+    x: Array, repeats: Union[int, Array], /, *, axis: Optional[int] = None
+) -> Array:
     """
     Repeat elements of an array.
 
@@ -330,15 +347,17 @@ def roll(
                 cast(
                     str,
                     generic_msg(
-                        cmd=f"rollFlattened<{x.dtype},{x.ndim}>"
-                        if axis is None
-                        else f"roll<{x.dtype},{x.ndim}>",
+                        cmd=(
+                            f"rollFlattened<{x.dtype},{x.ndim}>"
+                            if axis is None
+                            else f"roll<{x.dtype},{x.ndim}>"
+                        ),
                         args={
                             "name": x._array,
                             "nShifts": len(shift) if isinstance(shift, tuple) else 1,
-                            "shift": list(shift)
-                            if isinstance(shift, tuple)
-                            else [shift],
+                            "shift": (
+                                list(shift) if isinstance(shift, tuple) else [shift]
+                            ),
                             "nAxes": len(axisList),
                             "axis": axisList,
                         },
@@ -401,7 +420,9 @@ def stack(arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: int = 0) ->
     ndim = arrays[0].ndim
     for a in arrays:
         if a.ndim != ndim:
-            raise ValueError("all input arrays must have the same number of dimensions to stack")
+            raise ValueError(
+                "all input arrays must have the same number of dimensions to stack"
+            )
 
     (common_dt, _arrays) = promote_to_common_dtype([a._array for a in arrays])
 
@@ -478,16 +499,16 @@ def unstack(x: Array, /, *, axis: int = 0) -> Tuple[Array, ...]:
         Array._new(
             create_pdarrays(
                 cast(
-                        str,
-                        generic_msg(
-                            cmd=f"unstack<{x.dtype},{x.ndim}>",
-                            args={
-                                "name": x._array,
-                                "axis": axis,
-                                "numReturnArrays": x.shape[axis],
-                            },
-                        ),
-                    )
+                    str,
+                    generic_msg(
+                        cmd=f"unstack<{x.dtype},{x.ndim}>",
+                        args={
+                            "name": x._array,
+                            "axis": axis,
+                            "numReturnArrays": x.shape[axis],
+                        },
+                    ),
                 )
             )
         )
+    )
