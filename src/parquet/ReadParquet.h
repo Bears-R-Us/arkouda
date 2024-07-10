@@ -42,6 +42,9 @@ extern "C" {
                                     void* chpl_seg_sizes, int64_t numElems, int64_t startIdx, char** errMsg);
   int64_t cpp_getListColumnSize(const char* filename, const char* colname,
                                     void* chpl_seg_sizes, int64_t numElems, int64_t startIdx, char** errMsg);
+
+  int64_t c_getStringListColumnNumBytes(const char* filename, const char* colname, void* chpl_offsets, int64_t numElems, int64_t startIdx, int64_t batchSize, char** errMsg);
+  int64_t cpp_getStringListColumnNumBytes(const char* filename, const char* colname, void* chpl_offsets, int64_t numElems, int64_t startIdx, int64_t batchSize, char** errMsg);
    
 #ifdef __cplusplus
 }

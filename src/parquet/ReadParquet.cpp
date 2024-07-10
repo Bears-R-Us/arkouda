@@ -401,6 +401,69 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
 int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname, void* chpl_offsets, int64_t numElems, int64_t startIdx, int64_t batchSize, char** errMsg) {
   try {
     int64_t ty = cpp_getType(filename, colname, errMsg);
+    auto offsets = (int64_t*)chpl_offsets;
+    int64_t byteSize = 0;
+
+    if(ty == ARROWSTRING) {
+      std::unique_ptr<parquet::ParquetFileReader> parquet_reader =
+        parquet::ParquetFileReader::OpenFile(filename, false);
+
+      std::shared_ptr<parquet::FileMetaData> file_metadata = parquet_reader->metadata();
+      int num_row_groups = file_metadata->num_row_groups();
+
+      int64_t i = 0;
+      for (int r = 0; r < num_row_groups; r++) {
+        std::shared_ptr<parquet::RowGroupReader> row_group_reader =
+          parquet_reader->RowGroup(r);
+
+        int64_t values_read = 0;
+
+        std::shared_ptr<parquet::ColumnReader> column_reader;
+
+        int64_t idx;
+        idx = file_metadata -> schema() -> ColumnIndex(colname);
+
+        if(idx < 0) {
+          std::string dname(colname);
+          std::string fname(filename);
+          std::string msg = "Dataset: " + dname + " does not exist in file: " + fname; 
+          *errMsg = strdup(msg.c_str());
+          return ARROWERROR;
+        }
+        column_reader = row_group_reader->Column(idx);
+
+        int16_t definition_level;
+        parquet::ByteArrayReader* ba_reader =
+          static_cast<parquet::ByteArrayReader*>(column_reader.get());
+
+        int64_t numRead = 0;
+        while (ba_reader->HasNext() && numRead < numElems) {
+          parquet::ByteArray value;
+          (void)ba_reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
+          if(values_read > 0) {
+            offsets[i] = value.len + 1;
+            byteSize += value.len + 1;
+            numRead += values_read;
+          } else {
+            offsets[i] = 1;
+            byteSize+=1;
+            numRead+=1;
+          }
+          i++;
+        }
+      }
+      return byteSize;
+    }
+    return ARROWERROR;
+  } catch (const std::exception& e) {
+    *errMsg = strdup(e.what());
+    return ARROWERROR;
+  }
+}
+
+int64_t cpp_getStringListColumnNumBytes(const char* filename, const char* colname, void* chpl_offsets, int64_t numElems, int64_t startIdx, int64_t batchSize, char** errMsg) {
+  try {
+    int64_t ty = cpp_getType(filename, colname, errMsg);
     int64_t dty; // used to store the type of data so we can handle lists
     if (ty == ARROWLIST) { // get the type of the list so we can verify it is ARROWSTRING
       dty = cpp_getListType(filename, colname, errMsg);
@@ -683,5 +746,9 @@ extern "C" {
 
   int64_t c_getListColumnSize(const char* filename, const char* colname, void* chpl_seg_sizes, int64_t numElems, int64_t startIdx, char** errMsg) {
     return cpp_getListColumnSize(filename, colname, chpl_seg_sizes, numElems, startIdx, errMsg);
+  }
+
+  int64_t c_getStringListColumnNumBytes(const char* filename, const char* colname, void* chpl_offsets, int64_t numElems, int64_t startIdx, int64_t batchSize, char** errMsg) {
+    return cpp_getStringListColumnNumBytes(filename, colname, chpl_offsets, numElems, startIdx, batchSize, errMsg);
   }
 }
