@@ -321,27 +321,27 @@ class TestNumeric:
         # only do the first one so results are easier to find since the first one breaks
         # on the machine in question
 
-        # np_hist, np_x_edges, np_y_edges = np.histogram2d(np_x, np_y, bins=(10, 20))
-        # ak_hist, ak_x_edges, ak_y_edges = ak.histogram2d(ak_x, ak_y, bins=(10, 20))
-        # print_failure_indices(np_hist, ak_hist)
-        # print_failure_indices(np_x_edges, ak_x_edges)
-        # print_failure_indices(np_y_edges, ak_y_edges)
+        np_hist, np_x_edges, np_y_edges = np.histogram2d(np_x, np_y, bins=(10, 20))
+        ak_hist, ak_x_edges, ak_y_edges = ak.histogram2d(ak_x, ak_y, bins=(10, 20))
+        print_failure_indices(np_hist, ak_hist)
+        print_failure_indices(np_x_edges, ak_x_edges)
+        print_failure_indices(np_y_edges, ak_y_edges)
 
         # assert np.allclose(np_hist.tolist(), ak_hist.to_list())
         # assert np.allclose(np_x_edges.tolist(), ak_x_edges.to_list())
         # assert np.allclose(np_y_edges.tolist(), ak_y_edges.to_list())
 
         # test arbitrary dimensional histogram
-        # dim_list = [3, 4, 5]
-        # bin_list = [[2, 4, 5], [2, 4, 5, 2], [2, 4, 5, 2, 3]]
-        # for dim, bins in zip(dim_list, bin_list):
-        #     np_arrs = [np.random.randint(1, 100, 1000) for _ in range(dim)]
-        #     ak_arrs = [ak.array(a) for a in np_arrs]
-        #     np_hist, np_bin_edges = np.histogramdd(np_arrs, bins=bins)
-        #     ak_hist, ak_bin_edges = ak.histogramdd(ak_arrs, bins=bins)
-        #     assert np.allclose(np_hist.tolist(), ak_hist.to_list())
-        #     for np_edge, ak_edge in zip(np_bin_edges, ak_bin_edges):
-        #         assert np.allclose(np_edge.tolist(), ak_edge.to_list())
+        dim_list = [3, 4, 5]
+        bin_list = [[2, 4, 5], [2, 4, 5, 2], [2, 4, 5, 2, 3]]
+        for dim, bins in zip(dim_list, bin_list):
+            np_arrs = [np.random.randint(1, 100, 1000) for _ in range(dim)]
+            ak_arrs = [ak.array(a) for a in np_arrs]
+            np_hist, np_bin_edges = np.histogramdd(np_arrs, bins=bins)
+            ak_hist, ak_bin_edges = ak.histogramdd(ak_arrs, bins=bins)
+            assert np.allclose(np_hist.tolist(), ak_hist.to_list())
+            for np_edge, ak_edge in zip(np_bin_edges, ak_bin_edges):
+                assert np.allclose(np_edge.tolist(), ak_edge.to_list())
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_log_and_exp(self, num_type):
