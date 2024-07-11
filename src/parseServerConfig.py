@@ -27,10 +27,13 @@ def getModuleFiles(mods, src_dir):
 
 def ndStamp(nd_msg_handler_name, cmd_prefix, d, mod_name):
     msg_proc_name = f"arkouda_nd_stamp_{nd_msg_handler_name}{d}D"
-    return \
-    f"\nproc {msg_proc_name}(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws\n" + \
-    f"    do return {nd_msg_handler_name}(cmd, msgArgs, st, {d});\n" + \
-    f"registerFunction(\"{cmd_prefix}{d}D\", {msg_proc_name}, \"{mod_name}\");\n"
+    ret_string = f"\nproc {msg_proc_name}(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws\n" + \
+        f"    do return {nd_msg_handler_name}(cmd, msgArgs, st, {d});\n"
+    if "Msg" in mod_name:
+        ret_string += f"registerFunction(\"{cmd_prefix}{d}D\", {msg_proc_name}, \"{mod_name}\");\n"
+    else:
+        ret_string += f"registerFunction(\"{cmd_prefix}{d}D\", {msg_proc_name});\n"
+    return ret_string
 
 
 def ndStampMultiRank(nd_msg_handler_name, cmd_prefix, d1, d2, mod_name):
