@@ -369,6 +369,7 @@ Functions
    arkouda.power
    arkouda.power_divergence
    arkouda.prod
+   arkouda.putmask
    arkouda.rad2deg
    arkouda.randint
    arkouda.randint
@@ -39071,6 +39072,37 @@ Package Contents
 
    :raises TypeError: Raised if pda is not a pdarray instance
    :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+.. py:function:: putmask(pda: arkouda.pdarrayclass.pdarray, mask: Union[bool, arkouda.pdarrayclass.pdarray], values: arkouda.pdarrayclass.pdarray)
+
+   Overwrite elements of a pdarray at indices where mask is True
+
+   :param pda: pda = input where mask is False, = values where mask is True
+   :type pda: pdarray, source data, also output data
+   :param mask:
+   :type mask: a scalar boolean, or a pdarray of booleans
+   :param values:
+   :type values: pdarray, replacement data
+
+   :rtype: None - pda is modified in-place
+
+   .. rubric:: Notes
+
+   If values.size != a.size, values is repeated and/or pruned as needed to
+   make sizes match, because ak.where requires matching sizes.
+
+   .. rubric:: Examples
+
+   >>> a = ak.array(np.arange(10))
+   >>> ak.putmask (a,a>2,a**2)
+   array ([0,1,2,9,16,25,36,49,64,81])
+
+   >>> values = ak.array([3,2])
+   >>> ak.putmask (a,a>2,values)
+   array ([0,1,2,2,3,2,3,2,3,2])
+
+   :raises TypeError: Raised if a and values are not the same type
 
 
 .. py:function:: rad2deg(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray

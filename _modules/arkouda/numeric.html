@@ -429,6 +429,7 @@
     <span class="s2">&quot;rad2deg&quot;</span><span class="p">,</span>
     <span class="s2">&quot;deg2rad&quot;</span><span class="p">,</span>
     <span class="s2">&quot;hash&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;putmask&quot;</span><span class="p">,</span>
     <span class="s2">&quot;where&quot;</span><span class="p">,</span>
     <span class="s2">&quot;histogram&quot;</span><span class="p">,</span>
     <span class="s2">&quot;histogram2d&quot;</span><span class="p">,</span>
@@ -2675,6 +2676,64 @@
         <span class="k">return</span> <span class="nb">sum</span><span class="p">((</span><span class="n">pda</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
     <span class="k">elif</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">((</span><span class="n">pda</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="putmask">
+<a class="viewcode-back" href="../../autoapi/arkouda/numeric/index.html#arkouda.putmask">[docs]</a>
+<span class="k">def</span> <span class="nf">putmask</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">mask</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span> <span class="n">values</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Overwrite elements of a pdarray at indices where mask is True</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pda    : pdarray, source data, also output data</span>
+<span class="sd">        pda = input where mask is False, = values where mask is True</span>
+<span class="sd">    mask   : a scalar boolean, or a pdarray of booleans</span>
+<span class="sd">    values : pdarray, replacement data</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None - pda is modified in-place</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    If values.size != a.size, values is repeated and/or pruned as needed to</span>
+<span class="sd">    make sizes match, because ak.where requires matching sizes.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; a = ak.array(np.arange(10))</span>
+<span class="sd">    &gt;&gt;&gt; ak.putmask (a,a&gt;2,a**2)</span>
+<span class="sd">    array ([0,1,2,9,16,25,36,49,64,81])</span>
+
+<span class="sd">    &gt;&gt;&gt; values = ak.array([3,2])</span>
+<span class="sd">    &gt;&gt;&gt; ak.putmask (a,a&gt;2,values)</span>
+<span class="sd">    array ([0,1,2,2,3,2,3,2,3,2])</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        Raised if a and values are not the same type</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="kn">from</span> <span class="nn">arkouda.pdarraysetops</span> <span class="kn">import</span> <span class="n">concatenate</span>
+
+    <span class="c1"># check for matching types</span>
+
+    <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;ak.putmask requires arrays of matching type&quot;</span><span class="p">)</span>
+
+    <span class="c1"># if values is not the same size as pda, repeat it and/or prune it as needed</span>
+
+    <span class="n">growth</span> <span class="o">=</span> <span class="n">pda</span><span class="o">.</span><span class="n">size</span> <span class="o">//</span> <span class="n">values</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="p">(</span><span class="mi">0</span> <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">size</span> <span class="o">%</span> <span class="n">values</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">(</span><span class="n">growth</span> <span class="o">*</span> <span class="p">[</span><span class="n">values</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="n">pda</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+        <span class="n">reduction</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">size</span> <span class="o">%</span> <span class="n">pda</span><span class="o">.</span><span class="n">size</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="p">[:</span><span class="o">-</span><span class="p">(</span><span class="n">reduction</span><span class="p">)]</span>
+
+    <span class="n">pda</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">pda</span><span class="p">)</span>  <span class="c1"># pda[:] = allows us to return modified value</span></div>
 
 </pre></div>
         </article>
