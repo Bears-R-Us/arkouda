@@ -92,7 +92,7 @@ class TestJSONArgs:
     SCALAR_TYPES = [int, float, bool, str]
 #   The types below are support in arkouda, as noted in serverConfig.json.  This may be
 #   the same issue noted in the above comment.
-    SUPPORTED_TYPES = [ak.bool, ak.uint64, ak.int64, ak.bigint, ak.uint8, ak.float64]
+    SUPPORTED_TYPES = [ak.bool_, ak.uint64, ak.int64, ak.bigint, ak.uint8, ak.float64]
 
     @pytest.mark.parametrize("dtype", SCALAR_TYPES)
     def test_scalar_args(self, dtype):
@@ -104,7 +104,6 @@ class TestJSONArgs:
                 json.dumps(
                     {
                         "key": "arg1",
-                        "objType": "VALUE",
                         "dtype": ak.resolve_scalar_dtype(val1),
                         "val": str(val1),
                     }
@@ -112,7 +111,6 @@ class TestJSONArgs:
                 json.dumps(
                     {
                         "key": "arg2",
-                        "objType": "VALUE",
                         "dtype": ak.resolve_scalar_dtype(val2),
                         "val": str(val2),
                     }
@@ -127,7 +125,7 @@ class TestJSONArgs:
         expected = json.dumps(
             [
                 json.dumps(
-                    {"key": "arg", "objType": "VALUE", "dtype": ak.resolve_scalar_dtype(val), "val": val}
+                    {"key": "arg", "dtype": ak.resolve_scalar_dtype(val), "val": val}
                 ),
             ]
         )
@@ -144,7 +142,6 @@ class TestJSONArgs:
                 json.dumps(
                     {
                         "key": "list1",
-                        "objType": "LIST",
                         "dtype": ak.resolve_scalar_dtype(l1[0]),
                         "val": json.dumps([str(x) for x in l1]),
                     }
@@ -152,7 +149,6 @@ class TestJSONArgs:
                 json.dumps(
                     {
                         "key": "list2",
-                        "objType": "LIST",
                         "dtype": ak.resolve_scalar_dtype(l2[0]),
                         "val": json.dumps([str(x) for x in l2]),
                     }
@@ -170,7 +166,6 @@ class TestJSONArgs:
                 json.dumps(
                     {
                         "key": "str_list",
-                        "objType": "LIST",
                         "dtype": ak.resolve_scalar_dtype(string_list[0]),
                         "val": json.dumps(string_list),
                     }
@@ -184,7 +179,7 @@ class TestJSONArgs:
         size, args = _json_args_to_str({"datetime": dt})
 
         expected = json.dumps(
-            [json.dumps({"key": "datetime", "objType": "PDARRAY", "dtype": "int64", "val": dt.name})]
+            [json.dumps({"key": "datetime", "dtype": "int64", "val": dt.name})]
         )
         assert args == expected
 
@@ -193,7 +188,7 @@ class TestJSONArgs:
         ip = ak.ip_address(a)
         size, args = _json_args_to_str({"ip": ip})
         expected = json.dumps(
-            [json.dumps({"key": "ip", "objType": "PDARRAY", "dtype": "uint64", "val": ip.name})]
+            [json.dumps({"key": "ip", "dtype": "uint64", "val": ip.name})]
         )
         assert args == expected
 
@@ -202,7 +197,7 @@ class TestJSONArgs:
         f = ak.Fields(a, names="ABCD")
         size, args = _json_args_to_str({"fields": f})
         expected = json.dumps(
-            [json.dumps({"key": "fields", "objType": "PDARRAY", "dtype": "uint64", "val": f.name})]
+            [json.dumps({"key": "fields", "dtype": "uint64", "val": f.name})]
         )
         assert args == expected
 
@@ -214,10 +209,10 @@ class TestJSONArgs:
         expected = json.dumps(
             [
                 json.dumps(
-                    {"key": "pda1", "objType": "PDARRAY", "dtype": str(pda1.dtype), "val": pda1.name}
+                    {"key": "pda1", "dtype": str(pda1.dtype), "val": pda1.name}
                 ),
                 json.dumps(
-                    {"key": "pda2", "objType": "PDARRAY", "dtype": str(pda2.dtype), "val": pda2.name}
+                    {"key": "pda2", "dtype": str(pda2.dtype), "val": pda2.name}
                 ),
             ]
         )
@@ -229,7 +224,6 @@ class TestJSONArgs:
                 json.dumps(
                     {
                         "key": "pda_list",
-                        "objType": "LIST",
                         "dtype": ak.pdarray.objType,
                         "val": json.dumps([pda1.name, pda2.name]),
                     }
@@ -244,8 +238,8 @@ class TestJSONArgs:
         size, args = _json_args_to_str({"str1": str1, "str2": str2})
         expected = json.dumps(
             [
-                json.dumps({"key": "str1", "objType": "SEGSTRING", "dtype": "str", "val": str1.name}),
-                json.dumps({"key": "str2", "objType": "SEGSTRING", "dtype": "str", "val": str2.name}),
+                json.dumps({"key": "str1", "dtype": "str", "val": str1.name}),
+                json.dumps({"key": "str2",  "dtype": "str", "val": str2.name}),
             ]
         )
         assert args == expected
@@ -256,7 +250,6 @@ class TestJSONArgs:
                 json.dumps(
                     {
                         "key": "str_list",
-                        "objType": "LIST",
                         "dtype": ak.Strings.objType,
                         "val": json.dumps([str1.name, str2.name]),
                     }
@@ -280,14 +273,12 @@ class TestJSONArgs:
                 json.dumps(
                     {
                         "key": "json_1",
-                        "objType": "DICT",
                         "dtype": "dict",
                         "val": json.dumps(
                             [
                                 json.dumps(
                                     {
                                         "key": "param1",
-                                        "objType": "VALUE",
                                         "dtype": ak.resolve_scalar_dtype(json_1["param1"]),
                                         "val": "1",
                                     }
@@ -295,7 +286,6 @@ class TestJSONArgs:
                                 json.dumps(
                                     {
                                         "key": "param2",
-                                        "objType": "VALUE",
                                         "dtype": ak.resolve_scalar_dtype(json_1["param2"]),
                                         "val": "abc",
                                     }
@@ -303,7 +293,6 @@ class TestJSONArgs:
                                 json.dumps(
                                     {
                                         "key": "param3",
-                                        "objType": "LIST",
                                         "dtype": ak.resolve_scalar_dtype(json_1["param3"][0]),
                                         "val": json.dumps([str(x) for x in json_1["param3"]]),
                                     }
@@ -311,7 +300,6 @@ class TestJSONArgs:
                                 json.dumps(
                                     {
                                         "key": "param4",
-                                        "objType": "PDARRAY",
                                         "dtype": str(json_1["param4"].dtype),
                                         "val": json_1["param4"].name,
                                     }
@@ -319,7 +307,6 @@ class TestJSONArgs:
                                 json.dumps(
                                     {
                                         "key": "param5",
-                                        "objType": "SEGSTRING",
                                         "dtype": "str",
                                         "val": json_1["param5"].name,
                                     }

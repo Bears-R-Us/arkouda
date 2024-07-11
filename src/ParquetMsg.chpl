@@ -16,8 +16,7 @@ module ParquetMsg {
   use CTypes;
   use Map;
   use SegmentedString;
-
-  use ArkoudaIOCompat;
+  use IOUtils;
 
   enum CompressionType {
     NONE=0,
@@ -31,8 +30,12 @@ module ParquetMsg {
 
   // Use reflection for error information
   use Reflection;
-  require "ArrowFunctions.h";
-  require "ArrowFunctions.o";
+  require "ReadParquet.h";
+  require "ReadParquet.o";
+  require "WriteParquet.h";
+  require "WriteParquet.o";
+  require "UtilParquet.h";
+  require "UtilParquet.o";
 
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
@@ -168,8 +171,8 @@ module ParquetMsg {
     }
   }
 
-  proc readStrFilesByName(A: [] ?t, ref whereNull: [] bool, filenames: [] string, sizes: [] int, dsetname: string, ty) throws {
-    extern proc c_readColumnByName(filename, arr_chpl, where_null_chpl, colNum, numElems, startIdx, batchSize, byteLength, hasNonFloatNulls, errMsg): int;
+  proc readStrFilesByName(ref A: [] ?t, filenames: [] string, sizes: [] int, dsetname: string) throws {
+    extern proc c_readStrColumnByName(filename, arr_chpl, colname, batchSize, errMsg): int;
     var (subdoms, length) = getSubdomains(sizes);
     
     coforall loc in A.targetLocales() do on loc {
@@ -184,9 +187,9 @@ module ParquetMsg {
             var pqErr = new parquetErrorMsg();
             var col: [filedom] t;
 
-            if c_readColumnByName(filename.localize().c_str(), c_ptrTo(col), c_ptrTo(whereNull[intersection.low]),
-                                  dsetname.localize().c_str(), intersection.size, 0,
-                                  batchSize, -1, false, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
+            if c_readStrColumnByName(filename.localize().c_str(), c_ptrTo(col),
+                                     dsetname.localize().c_str(),
+                                     batchSize, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
               pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
             }
             A[filedom] = col;
@@ -273,6 +276,29 @@ module ParquetMsg {
     return byteSizes;
   }
 
+  proc calcStrListSizesAndOffset(offsets: [] ?t, filenames: [] string, sizes: [] int, dsetname: string) throws {
+    var (subdoms, length) = getSubdomains(sizes);
+
+    var byteSizes: [filenames.domain] int;
+
+    coforall loc in offsets.targetLocales() with (ref byteSizes) do on loc {
+        var locFiles = filenames;
+        var locFiledoms = subdoms;
+      
+        forall (i, filedom, filename) in zip(sizes.domain, locFiledoms, locFiles) {
+          for locdom in offsets.localSubdomains() {
+            const intersection = domain_intersection(locdom, filedom);
+            if intersection.size > 0 {
+              var col: [filedom] t;
+              byteSizes[i] = getStrListColSize(filename, dsetname, col);
+              offsets[filedom] = col;
+            }
+          }
+        }
+      }
+    return byteSizes;
+  }
+
   proc getNullIndices(A: [] ?t, filenames: [] string, sizes: [] int, dsetname: string, ty) throws {
     extern proc c_getStringColumnNullIndices(filename, colname, nulls_chpl, errMsg): int;
     var (subdoms, length) = getSubdomains(sizes);
@@ -304,6 +330,21 @@ module ParquetMsg {
     var pqErr = new parquetErrorMsg();
 
     var byteSize = c_getStringColumnNumBytes(filename.localize().c_str(),
+                                             dsetname.localize().c_str(),
+                                             c_ptrTo(offsets),
+                                             offsets.size, 0, 256,
+                                             c_ptrTo(pqErr.errMsg));
+    
+    if byteSize == ARROWERROR then
+      pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+    return byteSize;
+  }
+
+  proc getStrListColSize(filename: string, dsetname: string, ref offsets: [] int) throws {
+    extern proc c_getStringListColumnNumBytes(filename, colname, offsets, numElems, startIdx, batchSize, errMsg): int;
+    var pqErr = new parquetErrorMsg();
+
+    var byteSize = c_getStringListColumnNumBytes(filename.localize().c_str(),
                                              dsetname.localize().c_str(),
                                              c_ptrTo(offsets),
                                              offsets.size, 0, 256,
@@ -615,7 +656,7 @@ module ParquetMsg {
       }
     } else {
       throw getErrorWithContext(
-                 msg="The mode %? is invalid".doFormat(mode),
+                 msg="The mode %? is invalid".format(mode),
                  lineNumber=getLineNumber(), 
                  routineName=getRoutineName(), 
                  moduleName=getModuleName(), 
@@ -666,13 +707,13 @@ module ParquetMsg {
     }
     else if ty == ArrowTypes.stringArr {
       var entrySeg = createSymEntry((+ reduce listSizes), int);
-      var byteSizes = calcStrSizesAndOffset(entrySeg.a, filenames, listSizes, dsetname);
+      var byteSizes = calcStrListSizesAndOffset(entrySeg.a, filenames, listSizes, dsetname);
       entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
 
       var entryVal = createSymEntry((+ reduce byteSizes), uint(8));
       readListFilesByName(entryVal.a, sizes, seg_sizes, segments, filenames, byteSizes, dsetname, ty);
       var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
-      rtnmap.add("values", "created %s+created bytes.size %?".doFormat(st.attrib(stringsEntry.name), stringsEntry.nBytes));
+      rtnmap.add("values", "created %s+created bytes.size %?".format(st.attrib(stringsEntry.name), stringsEntry.nBytes));
     }
     else {
       throw getErrorWithContext(
@@ -810,6 +851,8 @@ module ParquetMsg {
     var tagData: bool = msgArgs.get("tag_data").getBoolValue();
     var strictTypes: bool = msgArgs.get("strict_types").getBoolValue();
 
+    var fixedLen = msgArgs.get('fixed_len').getIntValue() + 1;
+
     var allowErrors: bool = msgArgs.get("allow_errors").getBoolValue(); // default is false
     var hasNonFloatNulls: bool = msgArgs.get("has_non_float_nulls").getBoolValue();
     if allowErrors {
@@ -828,7 +871,7 @@ module ParquetMsg {
         var n: int = 1000;
         var jsondsets = msgArgs.getValueOf("dsets");
         var dsets: string = if jsondsets.size > 2*n then jsondsets[0..#n]+'...'+jsondsets[jsondsets.size-n..#n] else jsondsets;
-        var errorMsg = "Could not decode json dataset names via tempfile (%i files: %s)".doFormat(
+        var errorMsg = "Could not decode json dataset names via tempfile (%i files: %s)".format(
                                             ndsets, dsets);
         pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
         return new MsgTuple(errorMsg, MsgType.ERROR);
@@ -841,7 +884,7 @@ module ParquetMsg {
         var n: int = 1000;
         var jsonfiles = msgArgs.getValueOf("filenames");
         var files: string = if jsonfiles.size > 2*n then jsonfiles[0..#n]+'...'+jsonfiles[jsonfiles.size-n..#n] else jsonfiles;
-        var errorMsg = "Could not decode json filenames via tempfile (%i files: %s)".doFormat(nfiles, files);
+        var errorMsg = "Could not decode json filenames via tempfile (%i files: %s)".format(nfiles, files);
         pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
         return new MsgTuple(errorMsg, MsgType.ERROR);
     }
@@ -860,9 +903,9 @@ module ParquetMsg {
       }
       var tmp = glob(filelist[0]);
       pqLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                            "glob expanded %s to %i files".doFormat(filelist[0], tmp.size));
+                            "glob expanded %s to %i files".format(filelist[0], tmp.size));
       if tmp.size == 0 {
-          var errorMsg = "The wildcarded filename %s either corresponds to files inaccessible to Arkouda or files of an invalid format".doFormat(filelist[0]);
+          var errorMsg = "The wildcarded filename %s either corresponds to files inaccessible to Arkouda or files of an invalid format".format(filelist[0]);
           pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           return new MsgTuple(errorMsg, MsgType.ERROR);
       }
@@ -891,7 +934,7 @@ module ParquetMsg {
                 sizes[i] = getArrSize(fname);
             } catch e : Error {
                 // This is only type of error thrown by Parquet
-                fileErrorMsg = "Other error in accessing file %s: %s".doFormat(fname,e.message());
+                fileErrorMsg = "Other error in accessing file %s: %s".format(fname,e.message());
                 pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
                 hadError = true;
                 if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
@@ -979,60 +1022,23 @@ module ParquetMsg {
           }
           rnames.pushBack((dsetname, ObjType.PDARRAY, valName));
         } else if ty == ArrowTypes.stringArr {
-          /*
-            1. create a block distributed files array (locale owner reads file)
-            2. get number of row groups so we know how much data we have to store
-            3. create array to store data (2D array with same distribution dist files)
-            4. go distributed and create readers for each file
-          */
-          extern proc c_getNumRowGroups(readerIdx): c_int;
-          extern proc c_openFile(filename, idx);
-          extern proc c_createRowGroupReader(rowGroup, readerIdx);
-          extern proc c_createColumnReader(colname, readerIdx);
-          extern proc c_freeMapValues(rowToFree);
-          extern proc c_readParquetColumnChunks(filename, batchSize,
-                                                numElems, readerIdx, numRead,
-                                                externalData, defLevels, errMsg): int;
-
           var entrySeg = createSymEntry(len, int);
 
-          var distFiles = makeDistArray(filenames);
-          var numRowGroups: [distFiles.domain] int;
-
-          var maxRowGroups = getRowGroupNums(distFiles, numRowGroups);
-          var externalData: [distFiles.domain] [0..#maxRowGroups] c_ptr(void);
-          var containsNulls: [distFiles.domain] [0..#maxRowGroups] bool;
-          var valsRead: [distFiles.domain] [0..#maxRowGroups] int;
-          var bytesPerRG: [distFiles.domain] [0..#maxRowGroups] int;
-          var startIdxs: [distFiles.domain] [0..#maxRowGroups] int; // correspond to starting idx in entrySeg
-
-          fillSegmentsAndPersistData(distFiles, entrySeg, externalData, containsNulls, valsRead, dsetname, sizes, len, numRowGroups, bytesPerRG, startIdxs);
-
-          var (rgSubdomains, totalBytes) = getRGSubdomains(bytesPerRG, maxRowGroups);
-          
-          var entryVal;
-          
-          if containsNulls[0][0] {
+          // Calculate byte sizes by reading or fixed length
+          if fixedLen < 2 {
             byteSizes = calcStrSizesAndOffset(entrySeg.a, filenames, sizes, dsetname);
-            entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
-            entryVal = createSymEntry((+ reduce byteSizes), uint(8));
-            readStrFilesByName(entryVal.a, whereNull, filenames, byteSizes, dsetname, ty);
           } else {
-            entryVal = createSymEntry(totalBytes, uint(8));
-            entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
-            copyValuesFromC(entryVal, distFiles, externalData, valsRead, numRowGroups, rgSubdomains, maxRowGroups, sizes, entrySeg.a, startIdxs);
+            entrySeg.a = fixedLen;
+            byteSizes = fixedLen*len;
           }
+          entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
 
-          for i in externalData.domain {
-            for j in externalData[i].domain {
-              if valsRead[i][j] > 0 then
-                on externalData[i][j] do
-                  c_freeMapValues(externalData[i][j]);
-            }
-          }
+          // Read into distributed array
+          var entryVal = new shared SymEntry((+ reduce byteSizes), uint(8));
+          readStrFilesByName(entryVal.a, filenames, byteSizes, dsetname);
           
           var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
-          rnames.pushBack((dsetname, ObjType.STRINGS, "%s+%?".doFormat(stringsEntry.name, stringsEntry.nBytes)));
+          rnames.pushBack((dsetname, ObjType.STRINGS, "%s+%?".format(stringsEntry.name, stringsEntry.nBytes)));
         } else if ty == ArrowTypes.double || ty == ArrowTypes.float {
           var entryVal = createSymEntry(len, real);
           readFilesByName(entryVal.a, whereNull, filenames, sizes, dsetname, ty, hasNonFloatNulls=hasNonFloatNulls);
@@ -1042,7 +1048,7 @@ module ParquetMsg {
         } else if ty == ArrowTypes.list {
           var list_ty = getListData(filenames[0], dsetname);
           if list_ty == ArrowTypes.notimplemented { // check for and skip further nested datasets
-            pqLogger.info(getModuleName(),getRoutineName(),getLineNumber(),"Invalid list datatype found in %s. Skipping.".doFormat(dsetname));
+            pqLogger.info(getModuleName(),getRoutineName(),getLineNumber(),"Invalid list datatype found in %s. Skipping.".format(dsetname));
           }
           else {
             var create_str: string = parseListDataset(filenames, dsetname, list_ty, len, sizes, st);
@@ -1056,7 +1062,7 @@ module ParquetMsg {
           st.addEntry(valName, entryVal);
           rnames.pushBack((dsetname, ObjType.PDARRAY, valName));
         } else {
-          var errorMsg = "DType %s not supported for Parquet reading".doFormat(ty);
+          var errorMsg = "DType %s not supported for Parquet reading".format(ty);
           pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           return new MsgTuple(errorMsg, MsgType.ERROR);
         }
@@ -1127,7 +1133,7 @@ module ParquetMsg {
     var compression = msgArgs.getValueOf("compression").toUpper(): CompressionType;
 
     if (!entry.isAssignableTo(SymbolEntryType.TypedArraySymEntry)) {
-      var errorMsg = "ObjType (PDARRAY) does not match SymEntry Type: %s".doFormat(entry.entryType);
+      var errorMsg = "ObjType (PDARRAY) does not match SymEntry Type: %s".format(entry.entryType);
       throw getErrorWithContext(
                    msg=errorMsg,
                    lineNumber=getLineNumber(), 
@@ -1153,7 +1159,7 @@ module ParquetMsg {
         var e = toSymEntry(toGenSymEntry(entry), real);
         warnFlag = write1DDistArrayParquet(filename, dsetname, dtypestr, compression:int, mode, e.a);
       } otherwise {
-        var errorMsg = "Writing Parquet files not supported for %s type".doFormat(msgArgs.getValueOf("dtype"));
+        var errorMsg = "Writing Parquet files not supported for %s type".format(msgArgs.getValueOf("dtype"));
         pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
         throw getErrorWithContext(
                    msg=errorMsg,
@@ -1175,7 +1181,7 @@ module ParquetMsg {
     var compression = msgArgs.getValueOf("compression").toUpper(): CompressionType;
 
     if (!entry.isAssignableTo(SymbolEntryType.SegStringSymEntry)) {
-      var errorMsg = "ObjType (STRINGS) does not match SymEntry Type: %s".doFormat(entry.entryType);
+      var errorMsg = "ObjType (STRINGS) does not match SymEntry Type: %s".format(entry.entryType);
       throw getErrorWithContext(
                    msg=errorMsg,
                    lineNumber=getLineNumber(), 
@@ -1415,7 +1421,7 @@ module ParquetMsg {
         var values = toSegStringSymEntry(genVal);
         warnFlag = writeStrSegArrayParquet(filename, dsetname, segments, values, compression:int);
       } otherwise {
-        var errorMsg = "Writing Parquet files not supported for %s type".doFormat(genVal.dtype);
+        var errorMsg = "Writing Parquet files not supported for %s type".format(genVal.dtype);
         pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
         throw getErrorWithContext(
                    msg=errorMsg,
@@ -1447,25 +1453,25 @@ module ParquetMsg {
           warnFlag = segarray_toParquetMsg(msgArgs, st);
         }
         otherwise {
-            var errorMsg = "Unable to write object type %s to Parquet file.".doFormat(objType);
+            var errorMsg = "Unable to write object type %s to Parquet file.".format(objType);
             pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR);
         }
       }
     } catch e: FileNotFoundError {
-      var errorMsg = "Unable to open %s for writing: %s".doFormat(msgArgs.getValueOf("filename"),e.message());
+      var errorMsg = "Unable to open %s for writing: %s".format(msgArgs.getValueOf("filename"),e.message());
       pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
       return new MsgTuple(errorMsg, MsgType.ERROR);
     } catch e: MismatchedAppendError {
-      var errorMsg = "Mismatched append %s".doFormat(e.message());
+      var errorMsg = "Mismatched append %s".format(e.message());
       pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
       return new MsgTuple(errorMsg, MsgType.ERROR);
     } catch e: WriteModeError {
-      var errorMsg = "Write mode error %s".doFormat(e.message());
+      var errorMsg = "Write mode error %s".format(e.message());
       pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
       return new MsgTuple(errorMsg, MsgType.ERROR);
     } catch e: Error {
-      var errorMsg = "problem writing to file %s".doFormat(e.message());
+      var errorMsg = "problem writing to file %s".format(e.message());
       pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
       return new MsgTuple(errorMsg, MsgType.ERROR);
     }
@@ -1584,7 +1590,7 @@ module ParquetMsg {
             }
             otherwise {
               throw getErrorWithContext(
-                    msg="Unsupported SegArray DType for writing to Parquet, ".doFormat(values.dtype: string),
+                    msg="Unsupported SegArray DType for writing to Parquet, ".format(values.dtype: string),
                     lineNumber=getLineNumber(), 
                     routineName=getRoutineName(), 
                     moduleName=getModuleName(), 
@@ -1748,7 +1754,7 @@ module ParquetMsg {
                 }
                 otherwise {
                   throw getErrorWithContext(
-                    msg="Unsupported SegArray DType for writing to Parquet, ".doFormat(valEntry.dtype: string),
+                    msg="Unsupported SegArray DType for writing to Parquet, ".format(valEntry.dtype: string),
                     lineNumber=getLineNumber(), 
                     routineName=getRoutineName(), 
                     moduleName=getModuleName(), 
@@ -1778,7 +1784,7 @@ module ParquetMsg {
                 }
                 otherwise {
                   throw getErrorWithContext(
-                    msg="Unsupported SegArray DType for writing to Parquet, ".doFormat(valEntry.dtype: string),
+                    msg="Unsupported SegArray DType for writing to Parquet, ".format(valEntry.dtype: string),
                     lineNumber=getLineNumber(), 
                     routineName=getRoutineName(), 
                     moduleName=getModuleName(), 
@@ -1837,7 +1843,7 @@ module ParquetMsg {
               }
               otherwise {
                 throw getErrorWithContext(
-                  msg="Unsupported PDArray DType for writing to Parquet, ".doFormat(entry.dtype: string),
+                  msg="Unsupported PDArray DType for writing to Parquet, ".format(entry.dtype: string),
                   lineNumber=getLineNumber(), 
                   routineName=getRoutineName(), 
                   moduleName=getModuleName(), 
@@ -1848,7 +1854,7 @@ module ParquetMsg {
           }
           otherwise {
             throw getErrorWithContext(
-              msg="Writing Parquet files (multi-column) does not support %s columns.".doFormat(ot),
+              msg="Writing Parquet files (multi-column) does not support %s columns.".format(ot),
               lineNumber=getLineNumber(), 
               routineName=getRoutineName(), 
               moduleName=getModuleName(), 
@@ -1917,7 +1923,7 @@ module ParquetMsg {
           }
           otherwise {
             throw getErrorWithContext(
-              msg="Writing Parquet files (multi-column) does not support columns of type %s".doFormat(entryDtype: string),
+              msg="Writing Parquet files (multi-column) does not support columns of type %s".format(entryDtype: string),
               lineNumber=getLineNumber(), 
               routineName=getRoutineName(), 
               moduleName=getModuleName(), 
@@ -1928,7 +1934,7 @@ module ParquetMsg {
       }
       otherwise {
         throw getErrorWithContext(
-          msg="Writing Parquet files (multi-column) does not support %s columns.".doFormat(objType),
+          msg="Writing Parquet files (multi-column) does not support %s columns.".format(objType),
           lineNumber=getLineNumber(), 
           routineName=getRoutineName(), 
           moduleName=getModuleName(), 
@@ -1962,15 +1968,15 @@ module ParquetMsg {
     try {
       warnFlag = writeMultiColParquet(filename, col_names, ncols, sym_names, col_objType_strs, targetLocales, compression:int, st);
     } catch e: FileNotFoundError {
-      var errorMsg = "Unable to open %s for writing: %s".doFormat(filename,e.message());
+      var errorMsg = "Unable to open %s for writing: %s".format(filename,e.message());
       pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
       return new MsgTuple(errorMsg, MsgType.ERROR);
     } catch e: WriteModeError {
-      var errorMsg = "Write mode error %s".doFormat(e.message());
+      var errorMsg = "Write mode error %s".format(e.message());
       pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
       return new MsgTuple(errorMsg, MsgType.ERROR);
     } catch e: Error {
-      var errorMsg = "problem writing to file %s".doFormat(e.message());
+      var errorMsg = "problem writing to file %s".format(e.message());
       pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
       return new MsgTuple(errorMsg, MsgType.ERROR);
     }
@@ -2006,7 +2012,7 @@ module ParquetMsg {
       var tmp = glob(filename);
 
       if tmp.size <= 0 {
-        var errorMsg = "Cannot retrieve filename from glob expression %s, check file name or format".doFormat(filename);
+        var errorMsg = "Cannot retrieve filename from glob expression %s, check file name or format".format(filename);
         return new MsgTuple(errorMsg, MsgType.ERROR);
       }
             
@@ -2016,7 +2022,7 @@ module ParquetMsg {
         
     // Check to see if the file exists. If not, return an error message
     if !exists(filename) {
-      var errorMsg = "File %s does not exist in a location accessible to Arkouda".doFormat(filename);
+      var errorMsg = "File %s does not exist in a location accessible to Arkouda".format(filename);
       return new MsgTuple(errorMsg,MsgType.ERROR);
     }
         
@@ -2038,7 +2044,7 @@ module ParquetMsg {
 
       repMsg = formatJson(items);
     } catch e : Error {
-      var errorMsg = "Failed to process Parquet file %?".doFormat(e.message());
+      var errorMsg = "Failed to process Parquet file %?".format(e.message());
       return new MsgTuple(errorMsg, MsgType.ERROR);
     }
 
@@ -2056,7 +2062,7 @@ module ParquetMsg {
     try {
       dsetlist = msgArgs.get("dsets").getList(ndsets);
     } catch {
-      var errorMsg = "Could not decode json dataset names via tempfile (%i files: %s)".doFormat(
+      var errorMsg = "Could not decode json dataset names via tempfile (%i files: %s)".format(
                                                                                               1, msgArgs.getValueOf("dsets"));
       pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
       return new MsgTuple(errorMsg, MsgType.ERROR);
@@ -2069,7 +2075,7 @@ module ParquetMsg {
       var n: int = 1000;
       var jsonfiles = msgArgs.getValueOf("filenames");
       var files: string = if jsonfiles.size > 2*n then jsonfiles[0..#n]+'...'+jsonfiles[jsonfiles.size-n..#n] else jsonfiles;
-      var errorMsg = "Could not decode json filenames via tempfile (%i files: %s)".doFormat(nfiles, files);
+      var errorMsg = "Could not decode json filenames via tempfile (%i files: %s)".format(nfiles, files);
       pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
       return new MsgTuple(errorMsg, MsgType.ERROR);
     }
@@ -2088,9 +2094,9 @@ module ParquetMsg {
       }
       var tmp = glob(filelist[0]);
       pqLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                     "glob expanded %s to %i files".doFormat(filelist[0], tmp.size));
+                     "glob expanded %s to %i files".format(filelist[0], tmp.size));
       if tmp.size == 0 {
-        var errorMsg = "The wildcarded filename %s either corresponds to files inaccessible to Arkouda or files of an invalid format".doFormat(filelist[0]);
+        var errorMsg = "The wildcarded filename %s either corresponds to files inaccessible to Arkouda or files of an invalid format".format(filelist[0]);
         pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
         return new MsgTuple(errorMsg, MsgType.ERROR);
       }
@@ -2119,7 +2125,7 @@ module ParquetMsg {
                 sizes[i] = getArrSize(fname);
             } catch e : Error {
                 // This is only type of error thrown by Parquet
-                fileErrorMsg = "Other error in accessing file %s: %s".doFormat(fname,e.message());
+                fileErrorMsg = "Other error in accessing file %s: %s".format(fname,e.message());
                 pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
                 hadError = true;
                 return new MsgTuple(fileErrorMsg, MsgType.ERROR);
@@ -2144,7 +2150,7 @@ module ParquetMsg {
           st.addEntry(valName, entryVal);
           rnames.pushBack((dsetname, ObjType.PDARRAY, valName));
         } else {
-          var errorMsg = "Null indices only supported on Parquet string columns, not %? columns".doFormat(ty);
+          var errorMsg = "Null indices only supported on Parquet string columns, not %? columns".format(ty);
           pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           return new MsgTuple(errorMsg, MsgType.ERROR);
         }

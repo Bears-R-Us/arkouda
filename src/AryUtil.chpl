@@ -43,15 +43,15 @@ module AryUtil
             if (d.size == 0) {
                 s =  ""; // Unnecessary, but left for clarity
             } else if (d.size < printThresh || d.size <= 6) {
-                for i in 0..(d.size-2) {s += try! "%?".doFormat(A[i]) + " ";}
-                s += try! "%?".doFormat(A[d.size-1]);
+                for i in 0..(d.size-2) {s += try! "%?".format(A[i]) + " ";}
+                s += try! "%?".format(A[d.size-1]);
             } else {
-                s = try! "%? %? %? ... %? %? %?".doFormat(A[0], A[1], A[2], A[d.size-3], A[d.size-2], A[d.size-1]);
+                s = try! "%? %? %? ... %? %? %?".format(A[0], A[1], A[2], A[d.size-3], A[d.size-2], A[d.size-1]);
             }
             return s;
         } else {
             const shape = d.shape;
-            var s = "%?\n".doFormat(shape),
+            var s = "%?\n".format(shape),
                 front_indices: d.rank*range,
                 back_indices: d.rank*range;
 
@@ -67,7 +67,7 @@ module AryUtil
             const frontDom = {(...front_indices)},
                   backDom = {(...back_indices)};
 
-            s += "%? ... %?".doFormat(A[frontDom], A[backDom]);
+            s += "%? ... %?".format(A[frontDom], A[backDom]);
 
             return s;
         }
@@ -272,7 +272,7 @@ module AryUtil
     proc validateArraysSameLength(n:int, names:[] string, types: [] string, st: borrowed SymTab) throws {
       // Check that fields contains the stated number of arrays
       if (names.size != n) {
-          var errorMsg = "Expected %i arrays but got %i".doFormat(n, names.size);
+          var errorMsg = "Expected %i arrays but got %i".format(n, names.size);
           auLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           throw new owned ErrorWithContext(errorMsg,
                                            getLineNumber(),
@@ -281,7 +281,7 @@ module AryUtil
                                            "ArgumentError");
       }
       if (types.size != n) {
-          var errorMsg = "Expected %i types but got %i".doFormat(n, types.size);
+          var errorMsg = "Expected %i types but got %i".format(n, types.size);
           auLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           throw new owned ErrorWithContext(errorMsg,
                                            getLineNumber(),
@@ -342,7 +342,7 @@ module AryUtil
             thisSize = segs.size;
           }
           otherwise {
-              var errorMsg = "Unrecognized object type: %s".doFormat(objtype);
+              var errorMsg = "Unrecognized object type: %s".format(objtype);
               auLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
               throw new owned ErrorWithContext(errorMsg,
                                                getLineNumber(),
@@ -356,7 +356,7 @@ module AryUtil
             size = thisSize;
         } else {
             if (thisSize != size) {
-              var errorMsg = "Arrays must all be same size; expected size %?, got size %?".doFormat(size, thisSize);
+              var errorMsg = "Arrays must all be same size; expected size %?, got size %?".format(size, thisSize);
                 auLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 throw new owned ErrorWithContext(errorMsg,
                                                  getLineNumber(),
@@ -745,7 +745,7 @@ module AryUtil
       // ranges of flat indices owned by each locale
       const flatLocRanges = [loc in Locales] d.localSubdomain(loc).dim(0);
 
-      coforall loc in Locales do on loc {
+      coforall loc in Locales with (ref unflat) do on loc {
         const lduf = unflat.domain.localSubdomain(),
               lastRank = lduf.dim(N-1);
 
@@ -807,7 +807,7 @@ module AryUtil
       // ranges of flat indices owned by each locale
       const flatLocRanges = [loc in Locales] flat.domain.localSubdomain(loc).dim(0);
 
-      coforall loc in Locales do on loc {
+      coforall loc in Locales with (ref flat) do on loc {
         const ld = d.localSubdomain(),
               lastRank = ld.dim(d.rank-1);
 

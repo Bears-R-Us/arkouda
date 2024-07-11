@@ -3,9 +3,9 @@ import pytest
 
 import arkouda as ak
 
-NUMERIC_TYPES = [ak.int64, ak.float64, ak.bool, ak.uint64]
+NUMERIC_TYPES = [ak.int64, ak.float64, ak.bool_, ak.uint64]
 NO_BOOL = [ak.int64, ak.float64, ak.uint64]
-NO_FLOAT = [ak.int64, ak.bool, ak.uint64]
+NO_FLOAT = [ak.int64, ak.bool_, ak.uint64]
 INT_FLOAT = [ak.int64, ak.float64]
 
 

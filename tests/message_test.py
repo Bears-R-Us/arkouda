@@ -113,8 +113,8 @@ class JSONArgs(ArkoudaTest):
         self.assertEqual(size, 2)
         self.assertListEqual(
             [
-                '{"key": "arg1", "objType": "VALUE", "dtype": "str", "val": "Test"}',
-                '{"key": "arg2", "objType": "VALUE", "dtype": "int64", "val": "5"}',
+                '{"key": "arg1", "dtype": "str", "val": "Test"}',
+                '{"key": "arg2", "dtype": "int64", "val": "5"}',
             ],
             json.loads(args),
         )
@@ -124,7 +124,7 @@ class JSONArgs(ArkoudaTest):
         self.assertEqual(size, 1)
         self.assertListEqual(
             [
-                '{"key": "list1", "objType": "LIST", "dtype": "int64", "val": "[\\"3\\", \\"2\\", \\"4\\"]"}'
+                '{"key": "list1", "dtype": "int64", "val": "[\\"3\\", \\"2\\", \\"4\\"]"}'
             ],
             json.loads(args),
         )
@@ -134,8 +134,8 @@ class JSONArgs(ArkoudaTest):
         self.assertEqual(size, 2)
         self.assertListEqual(
             [
-                '{"key": "list1", "objType": "LIST", "dtype": "str", "val": "[\\"a\\", \\"b\\", \\"c\\"]"}',
-                '{"key": "list2", "objType": "LIST", "dtype": "str", "val": "[\\"d\\", \\"e\\", \\"f\\"]"}',
+                '{"key": "list1", "dtype": "str", "val": "[\\"a\\", \\"b\\", \\"c\\"]"}',
+                '{"key": "list2", "dtype": "str", "val": "[\\"d\\", \\"e\\", \\"f\\"]"}',
             ],
             json.loads(args),
         )
@@ -146,7 +146,6 @@ class JSONArgs(ArkoudaTest):
         self.assertEqual(size, 1)
         msgArgs = json.loads(json.loads(args)[0])
         self.assertEqual(msgArgs["key"], "datetime")
-        self.assertEqual(msgArgs["objType"], "PDARRAY")
         self.assertEqual(msgArgs["dtype"], "int64")
         self.assertRegex(msgArgs["val"], "^id_\\w{7}_\\d+$")
 
@@ -156,7 +155,6 @@ class JSONArgs(ArkoudaTest):
         self.assertEqual(size, 1)
         msgArgs = json.loads(json.loads(args)[0])
         self.assertEqual(msgArgs["key"], "ip")
-        self.assertEqual(msgArgs["objType"], "PDARRAY")
         self.assertEqual(msgArgs["dtype"], "uint64")
         self.assertRegex(msgArgs["val"], "^id_\\w{7}_\\d+$")
 
@@ -165,7 +163,6 @@ class JSONArgs(ArkoudaTest):
         self.assertEqual(size, 1)
         msgArgs = json.loads(json.loads(args)[0])
         self.assertEqual(msgArgs["key"], "fields")
-        self.assertEqual(msgArgs["objType"], "PDARRAY")
         self.assertEqual(msgArgs["dtype"], "uint64")
         self.assertRegex(msgArgs["val"], "^id_\\w{7}_\\d+$")
 
@@ -177,7 +174,6 @@ class JSONArgs(ArkoudaTest):
         for a in json.loads(args):
             p = json.loads(a)
             self.assertRegex(p["key"], "^pd(1|2)$")
-            self.assertEqual(p["objType"], "PDARRAY")
             self.assertEqual(p["dtype"], "int64")
             self.assertRegex(p["val"], "^id_\\w{7}_\\d+$")
 
@@ -189,7 +185,6 @@ class JSONArgs(ArkoudaTest):
         for a in json.loads(args):
             p = json.loads(a)
             self.assertRegex(p["key"], "^str(1|2)$")
-            self.assertEqual(p["objType"], "SEGSTRING")
             self.assertEqual(p["dtype"], "str")
             self.assertRegex(p["val"], "^id_\\w{7}_\\d+$")
 
@@ -206,20 +201,16 @@ class JSONArgs(ArkoudaTest):
         self.assertEqual(size, 1)
         j = json.loads(json.loads(args)[0])
         self.assertEqual(j["key"], "json_1")
-        self.assertEqual(j["objType"], "DICT")
         self.assertEqual(j["dtype"], "dict")
         for i, a in enumerate(json.loads(j["val"])):
             p = json.loads(a)
             self.assertEqual(p["key"], f"param{i+1}")
             if i == 0:
-                self.assertEqual(p["objType"], "VALUE")
                 self.assertEqual(p["dtype"], "int64")
                 self.assertEqual(p["val"], "1")
             elif i == 1:
-                self.assertEqual(p["objType"], "VALUE")
                 self.assertEqual(p["dtype"], "str")
                 self.assertEqual(p["val"], "abc")
             else:
-                self.assertEqual(p["objType"], "LIST")
                 self.assertEqual(p["dtype"], "int64")
                 self.assertListEqual(json.loads(p["val"]), ["1", "2", "3"])

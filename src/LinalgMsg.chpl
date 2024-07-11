@@ -30,7 +30,7 @@ module LinalgMsg {
               rname = st.nextName();
 
         linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-            "cmd: %s dtype: %s rname: %s aRows: %i: aCols: %i aDiag: %i".doFormat(
+            "cmd: %s dtype: %s rname: %s aRows: %i: aCols: %i aDiag: %i".format(
             cmd,dtype2str(dtype),rname,rows,cols,diag));
 
         proc setDiag(ref a: [?d] ?t, k: int, param one: t) where d.rank == 2 {
@@ -113,7 +113,7 @@ module LinalgMsg {
         const rname = st.nextName();
 
         linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-            "cmd: %s rname: %s aName: %s aDiag: %i".doFormat(
+            "cmd: %s rname: %s aName: %s aDiag: %i".format(
             cmd,rname,name,diag));
 
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
@@ -199,7 +199,7 @@ module LinalgMsg {
         const rname = st.nextName();
 
         linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-            "cmd: %s dtype1: %s dtype2: %s rname: %s".doFormat(
+            "cmd: %s dtype1: %s dtype2: %s rname: %s".format(
             cmd,dtype2str(x1G.dtype),dtype2str(x2G.dtype),rname));
 
         proc doMatMult(type x1Type, type x2Type, type resultType): MsgTuple throws {
@@ -325,7 +325,7 @@ module LinalgMsg {
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
         linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-            "cmd: %s dtype: %s rname: %s".doFormat(
+            "cmd: %s dtype: %s rname: %s".format(
             cmd,dtype2str(gEnt.dtype),rname));
 
         proc doTranspose(type t): MsgTuple throws {
@@ -389,7 +389,7 @@ module LinalgMsg {
             x2G: borrowed GenSymEntry = getGenericTypedArrayEntry(x2Name, st);
 
         linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-            "cmd: %s dtype1: %s dtype2: %s rname: %s".doFormat(
+            "cmd: %s dtype1: %s dtype2: %s rname: %s".format(
             cmd,dtype2str(x1G.dtype),dtype2str(x2G.dtype),rname));
 
         // assumes both arrays have been broadcasted to ND dimensions

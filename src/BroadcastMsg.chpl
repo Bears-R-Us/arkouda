@@ -87,7 +87,7 @@ module BroadcastMsg {
           res.a = broadcast(perm.a, segs.a, vals.a);
         }
         otherwise {
-          throw new owned ErrorWithContext("Values array has unsupported dtype %s".doFormat(gv.dtype:string),
+          throw new owned ErrorWithContext("Values array has unsupported dtype %s".format(gv.dtype:string),
                                            getLineNumber(),
                                            getRoutineName(),
                                            getModuleName(),
@@ -124,7 +124,7 @@ module BroadcastMsg {
           res.a = broadcast(segs.a, vals.a, size);
         }
         otherwise {
-          throw new owned ErrorWithContext("Values array has unsupported dtype %s".doFormat(gv.dtype:string),
+          throw new owned ErrorWithContext("Values array has unsupported dtype %s".format(gv.dtype:string),
                                            getLineNumber(),
                                            getRoutineName(),
                                            getModuleName(),

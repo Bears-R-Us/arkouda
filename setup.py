@@ -108,7 +108,7 @@ setup(
     # and refuse to install the project if the version does not match. If you
     # do not support Python 2, you can simplify this to '>=3.5' or similar, see
     # https://packaging.python.org/guides/distributing-packages-using-setuptools/#python-requires
-    python_requires=">=3.8",
+    python_requires=">=3.8,<3.12.4",
     # This field lists other packages that your project depends on to run.
     # Any package you put here will be installed by pip when your project is
     # installed, so they must be valid existing projects.
@@ -116,7 +116,7 @@ setup(
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
-        "numpy>=1.24.1",
+        "numpy>=1.24.1,<2.0",
         "pandas>=1.4.0,!=2.2.0",
         "pyzmq>=20.0.0",
         "typeguard==2.10.0",
@@ -129,7 +129,7 @@ setup(
         "types-tabulate",
         "tables>=3.7.0",
         "pyarrow",
-        "scipy",
+        "scipy<=1.13.1",
     ],
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"

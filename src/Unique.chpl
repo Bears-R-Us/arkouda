@@ -128,7 +128,7 @@ module Unique
         var iv: [truth.domain] int = (+ scan truth);
         // compute how many segments
         var pop = iv[iv.size-1];
-        try! uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"pop = %?".doFormat(pop));
+        try! uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"pop = %?".format(pop));
 
         var segs = makeDistArray(pop, int);
         var ukeys = makeDistArray(pop, eltType);
@@ -261,7 +261,7 @@ module Unique
         var iv: [aD] int = (+ scan truth);
         // compute how many segments
         var pop = iv[iv.size-1];
-        uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"pop = %?".doFormat(pop));
+        uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"pop = %?".format(pop));
 
         var segs = makeDistArray(pop, int);
         var counts = makeDistArray(pop, int);

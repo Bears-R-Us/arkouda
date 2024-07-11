@@ -95,7 +95,7 @@ class TestDTypes:
             ak.dtypes.uint64,
             ak.dtypes.int64,
             ak.dtypes.float64,
-            ak.dtypes.bool,
+            ak.dtypes.bool_,
         ]
 
         for dt in dtype_list:
@@ -109,7 +109,7 @@ class TestDTypes:
     def test_pdarrays_datatypes(self):
         assert dtypes.dtype("int64") == ak.array(np.arange(10)).dtype
         assert dtypes.dtype("uint64") == ak.array(np.arange(10), ak.uint64).dtype
-        assert dtypes.dtype("bool") == ak.ones(10, ak.bool).dtype
+        assert dtypes.dtype("bool") == ak.ones(10, ak.bool_).dtype
         assert dtypes.dtype("float64") == ak.ones(10).dtype
         assert dtypes.dtype("str") == ak.random_strings_uniform(1, 16, size=10).dtype
 
@@ -179,13 +179,13 @@ class TestDTypes:
 
         assert (
             frozenset(
-                {"bool", "float", "float64", "int", "int64", "uint", "uint64", "uint8", "bigint", "str"}
+                {"bool_", "float", "float64", "int", "int64", "uint", "uint64", "uint8", "bigint", "str"}
             )
             == ak.ARKOUDA_SUPPORTED_DTYPES
         )
 
     def test_NumericDTypes(self):
-        num_types = frozenset(["bool", "float", "float64", "int", "int64", "uint64", "bigint"])
+        num_types = frozenset(["bool", "bool_", "float", "float64", "int", "int64", "uint64", "bigint"])
         assert num_types == dtypes.NumericDTypes
 
     def test_SeriesDTypes(self):

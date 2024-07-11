@@ -94,7 +94,9 @@ def hist_all(ak_df: DataFrame, cols: list = []):
     fig, axes = plt.subplots(num_rows, num_cols, figsize=(10, 10))
     fig.tight_layout(pad=2.0)
 
-    if num_rows > 1:
+    if isinstance(axes, plt.Axes):
+        axes = np.array(axes).flatten()
+    elif isinstance(axes, np.ndarray):
         axes = axes.flatten()
     else:
         axes = [axes]

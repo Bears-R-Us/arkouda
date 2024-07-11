@@ -14,7 +14,7 @@ def is_cosorted(data):
     def helper(x, right):
         return (x[1:] > x[:-1]) | ((x[1:] == x[:-1]) & right)
 
-    right = ak.ones(data[0].size - 1, dtype=ak.bool)
+    right = ak.ones(data[0].size - 1, dtype=ak.bool_)
     for x in reversed(data):
         right = helper(x, right)
     return right.all()

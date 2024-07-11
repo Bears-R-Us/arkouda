@@ -173,7 +173,7 @@ module ArgSortMsg
               deltaIV = argsortDefault(newa);
           }
           otherwise { throw getErrorWithContext(
-                                msg="Unsupported DataType: %?".doFormat(dtype2str(g.dtype)),
+                                msg="Unsupported DataType: %?".format(dtype2str(g.dtype)),
                                 lineNumber=getLineNumber(),
                                 routineName=getRoutineName(),
                                 moduleName=getModuleName(),
@@ -233,7 +233,7 @@ module ArgSortMsg
           algorithm = algoName: SortingAlgorithm;
         } catch {
           throw getErrorWithContext(
-                                    msg="Unrecognized sorting algorithm: %s".doFormat(algoName),
+                                    msg="Unrecognized sorting algorithm: %s".format(algoName),
                                     lineNumber=getLineNumber(),
                                     routineName=getRoutineName(),
                                     moduleName=getModuleName(),
@@ -245,7 +245,7 @@ module ArgSortMsg
       var arrNames = msgArgs.get("arr_names").getList(n);
       var arrTypes = msgArgs.get("arr_types").getList(n);
       asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                                   "number of arrays: %i arrNames: %?, arrTypes: %?".doFormat(n,arrNames, arrTypes));
+                                   "number of arrays: %i arrNames: %?, arrTypes: %?".format(n,arrNames, arrTypes));
       var (arrSize, hasStr, allSmallStrs, extraArraysNeeded, numStrings, names, types) = validateArraysSameLength(n, arrNames, arrTypes, st);
 
       // If there were no string arrays, merge the arrays into a single array and sort
@@ -329,7 +329,7 @@ module ArgSortMsg
         }
         otherwise {
           throw getErrorWithContext(
-                                    msg="Unrecognized sorting algorithm: %s".doFormat(algorithm:string),
+                                    msg="Unrecognized sorting algorithm: %s".format(algorithm:string),
                                     lineNumber=getLineNumber(),
                                     routineName=getRoutineName(),
                                     moduleName=getModuleName(),
@@ -338,7 +338,7 @@ module ArgSortMsg
         }
       }
       try! asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                             "argsort time = %i".doFormat(Time.timeSinceEpoch().totalSeconds() - t1));
+                             "argsort time = %i".format(Time.timeSinceEpoch().totalSeconds() - t1));
       return iv;
     }
 
@@ -384,7 +384,7 @@ module ArgSortMsg
         }
         otherwise {
           throw getErrorWithContext(
-                                    msg="Unrecognized sorting algorithm: %s".doFormat(algorithm:string),
+                                    msg="Unrecognized sorting algorithm: %s".format(algorithm:string),
                                     lineNumber=getLineNumber(),
                                     routineName=getRoutineName(),
                                     moduleName=getModuleName(),
@@ -393,7 +393,7 @@ module ArgSortMsg
         }
       }
       try! asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                             "argsort time = %i".doFormat(Time.timeSinceEpoch().totalSeconds() - t1));
+                             "argsort time = %i".format(Time.timeSinceEpoch().totalSeconds() - t1));
       return iv;
     }
 
@@ -412,7 +412,7 @@ module ArgSortMsg
             algorithm = algoName: SortingAlgorithm;
           } catch {
             throw getErrorWithContext(
-                                    msg="Unrecognized sorting algorithm: %s".doFormat(algoName),
+                                    msg="Unrecognized sorting algorithm: %s".format(algoName),
                                     lineNumber=getLineNumber(),
                                     routineName=getRoutineName(),
                                     moduleName=getModuleName(),
@@ -424,7 +424,7 @@ module ArgSortMsg
         const ivname = st.nextName();
 
         asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                              "cmd: %s name: %s ivname: %s".doFormat(cmd, name, ivname));
+                              "cmd: %s name: %s ivname: %s".format(cmd, name, ivname));
 
         var objtype = msgArgs.getValueOf("objType").toUpper(): ObjType;
         select objtype {

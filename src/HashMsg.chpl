@@ -13,8 +13,7 @@ module HashMsg {
   use AryUtil;
   use UniqueMsg;
   use Map;
-
-  use ArkoudaIOCompat;
+  use IOUtils;
 
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
@@ -58,8 +57,8 @@ module HashMsg {
     var lowerName = st.nextName();
     st.addEntry(lowerName, createSymEntry(lower));
     var createdMap = new map(keyType=string,valType=string);
-    createdMap.add("upperHash", "created %s".doFormat(st.attrib(upperName)));
-    createdMap.add("lowerHash", "created %s".doFormat(st.attrib(lowerName)));
+    createdMap.add("upperHash", "created %s".format(st.attrib(upperName)));
+    createdMap.add("lowerHash", "created %s".format(st.attrib(lowerName)));
     repMsg = formatJson(createdMap);
     hmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
     return new MsgTuple(repMsg, MsgType.NORMAL);
@@ -88,8 +87,8 @@ module HashMsg {
     st.addEntry(lowerName, createSymEntry(lower));
 
     var createdMap = new map(keyType=string,valType=string);
-    createdMap.add("upperHash", "created %s".doFormat(st.attrib(upperName)));
-    createdMap.add("lowerHash", "created %s".doFormat(st.attrib(lowerName)));
+    createdMap.add("upperHash", "created %s".format(st.attrib(upperName)));
+    createdMap.add("lowerHash", "created %s".format(st.attrib(lowerName)));
     var repMsg = formatJson(createdMap);
     hmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
     return new MsgTuple(repMsg, MsgType.NORMAL);
