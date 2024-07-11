@@ -1,86 +1,102 @@
 # Intro to Chapel
-This guide will familiarize new developers with Chapel concepts regularly used in Arkouda.
+This guide aims to:
+* Introduce new arkouda developers with some Chapel concepts commonly used in Arkouda
+* Serve as a reference when encountering unfamiliar Chapel code
+  * Hopefully turn "I have no clue what this is doing" into "oh I think I saw this in the intro! Let me go reread that"
+* Provide links to the relevant [Chapel docs](https://chapel-lang.org/docs/) for further reading
+
+Ideally this material will be accessible to developers with no parallel or distributed programming experience.
+If you see something that should be updated for clarity or correctness,
+please [add an issue](https://github.com/Bears-R-Us/arkouda/issues) to let us know! 
+
+There three main sections of the Chapel docs linked in this document:
+the [primers](https://chapel-lang.org/docs/primers/index.html), the
+[user guide](https://chapel-lang.org/docs/users-guide/index.html), and the
+[language specification](https://chapel-lang.org/docs/language/spec/index.html).
+I link to the primers or user guide when possible since they are more beginner-friendly.
+If you prefer a more precise and exhaustive treatment of the material,
+I recommend looking into the langauge spec! 
 
 <a id="toc"></a>
 ## Table of Contents
-1. [Compiling and Running](#compile)
-2. [Ranges and Domains](#ranges_and_domains)
-   1. [Ranges](#ranges)
-      - [Example 1: Range `5..10`](#ex1)
-      - [Example 2: Range `5..#10`](#ex2)
-   2. [Domains](#domains)
-3. [Initial Factorial](#init_fact)
-   1. [Example 3: Initial Factorial](#ex3)
-   2. [Example 4: Parallel Factorial Attempt](#ex4)
-4. [`reduce` and `scan`](#reduce_and_scan)
-   1. [Example 5: `reduce` and `scan`](#ex5)
-5. [`forall` Loops](#forall)
-   1. [Example 6: Factorial with must-parallel `forall` and Reduction](#ex6)
-   2. [Example 7: may-parallel `forall`](#ex7)
-   3. [Example 8: `forall` Expressions](#ex8)
-   4. [Example 9: Factorial with may-parallel `forall` Expression and Reduction](#ex9)
-   5. [Try It Yourself 1: Perfect Squares <=25](#TIY1)
-6. [`coforall` Loops](#coforall)
-   1. [Example 10: `coforall` loop](#ex10)
-7. [Ternary](#ternary)
-   1. [Example 11: Absolute Value Ternary](#ex11)
-   2. [Example 12: Ternary and `forall` Expression](#ex12)
-   3. [Try It Yourself 2: Array Absolute Value](#TIY2)
-8. [Introspection](#introspection)
-   1. [Example 13: Introspection](#ex13)
-9. [Promotion](#promotion)
-   1. [Example 14: Promotion](#ex14)
-10. [Filtering](#filter)
-    1. [Example 15: Filtering](#ex15)
-    2. [Try It Yourself 3: Sum Odd Perfect Squares <=25](#TIY3)
-11. [Locality](#locality)
-    1. [Locales](#locale)
-    2. [Enabling and compiling with multiple locales](#compile-multiloc)
-    3. [Example 16: Looping Locales with `coforall`](#ex16)
-12. [Zippered Iteration and Aggregation](#zip_and_agg)
-    1. [Zippered Iteration](#zippered_iteration)
-       1. [Example 17: Simple Zippered Iteration](#ex17)
-       2. [Example 18: Zippered Iteration in Arkouda](#ex18)
-    2. [Aggregation](#aggregation)
-       1. [Example 19: Aggregation in Arkouda](#ex19)
-       2. [Try It Yourself 4: `title`](#TIY4)
-13. [Boolean Compression and Expansion Indexing](#bool_expand_and_compress)
-    1. [Example 20: Boolean Compression Indexing](#ex20)
-    2. [Example 21: Boolean Expansion Indexing](#ex21)
-    3. [Try It Yourself 5: Array Even Replace](#TIY5)
-14. [Performance and Diagnostics](#perf)
-    1. [Example 22: Variable Declarations](#ex22)
-    2. [Example 23: Diagnostics](#ex23)
-    3. [Example 24: Aggregation Reducing Communication](#ex24)
-    4. [Example 25: Common Pitfalls](#ex25)
+* [Compiling and Running](#compile)
+* [Ranges and Domains](#ranges_and_domains)
+  * [Ranges](#ranges)
+  * [Domains](#domains)
+* [Procedures](#procs)
+  * [Serial Factorial](#serial_factorial)
+  * [Parallel Factorial Attempt](#parallel_factorial_attempt)
+* [`scan` and `reduce` operations](#reduce_and_scan)
+* [`forall` Loops](#forall)
+  * [Factorial with must-parallel `forall` and Reduction](#must_parallel)
+  * [May-parallel `forall`](#may_parallel)
+  * [`forall` Expressions](#forall_expr)
+  * [Factorial with may-parallel `forall` Expression and Reduction](#may_parallel_expr_reduce)
+  * [Try It Yourself: Perfect Squares <=25](#TIY_perf_squares)
+* [Zippered Iteration](#zippered_iteration)
+* [Ternary](#ternary)
+  * [Absolute Value Ternary](#abs_val_ter)
+  * [Ternary and `forall` Expression](#ter_forall_expr)
+  * [Try It Yourself: Array Absolute Value](#TIY_arr_abs_val)
+* [Generics and Introspection](#generics_introspection)
+  * [Generics](#generics)
+  * [Introspection](#introspection)
+  * [Try It Yourself: Array Absolute Value with Introspection](#TIY_abs_val_introspec)
+* [Promotion](#promotion)
+  * [Try It Yourself: Absolute Value with Promotion](#TIY_abs_val_promotion)
+* [Filtering](#filter)
+  * [Try It Yourself: Sum Odd Perfect Squares <=25](#TIY_sum_odd_sqaures)
+* [Boolean Compression and Expansion Indexing](#bool_expand_and_compress)
+  * [Boolean Compression Indexing](#comp_ind)
+  * [Boolean Expansion Indexing](#expan_ind)
+  * [Try It Yourself: Array Even Replace](#TIY_arr_even_repl)
+* [Locales and `coforall` loops](#loc_and_coforall)
+  * [Locales](#locale)
+  * [`coforall` Loops](#coforall)
+  * [Enabling multiple locales](#compile-multiloc)
+  * [Looping Locales with a `coforall`](#locale_looping)
+* [Aggregation](#aggregation)
+* [Performance and Diagnostics](#perf)
+  * [Variable Declarations](#var_dec)
+  * [Diagnostics](#diagnostics)
+  * [Aggregation reducing Communication](#agg_comm)
+  * [Common Pitfalls](#pitfalls)
 
 <a id="compile"></a>
 ## Compiling and Running
-If you haven't already installed Chapel, be sure to follow the instructions in [INSTALL.md](https://github.com/Bears-R-Us/arkouda/blob/master/INSTALL.md).
+If you haven't already installed Chapel, be sure to follow the
+[installation instructions](https://bears-r-us.github.io/arkouda/setup/install_menu.html).
 
-For all examples below, the source code is located in `Tutorial.chpl`.
-After navigating to the directory containing that file, the terminal command to compile the source code into an executable (named `tutorial`) is:
+For all examples below, the source code is located in `tutorial.chpl`.
+After navigating to the directory containing that file, the terminal command to compile
+the source code into an executable (named `tutorial`) is:
 ```console
-chpl Tutorial.chpl -o tutorial
+chpl tutorial.chpl
 ```
+
 The command to run the executable is:
 ```console
 ./tutorial
 ```
-To follow along, uncomment the relevant example in `Tutorial.chpl`, compile, run, and verify the output matches the guide!
+
+Some later examples will provide additional instructions to add flags to these commands.
+
+To follow along, uncomment the relevant code in `tutorial.chpl`. Then compile, run, and verify the output matches the guide!
 
 <a id="ranges_and_domains"></a>
 ## Ranges and Domains
-This will only cover enough to provide context for the other examples (the very basics). More information can be found in the Chapel docs for
-[ranges](https://chapel-lang.org/docs/primers/ranges.html) and [domains](https://chapel-lang.org/docs/primers/domains.html).
+This will only cover enough to provide context for the other examples (the very basics).
+More information can be found in the Chapel docs for
+[ranges](https://chapel-lang.org/docs/primers/ranges.html) and
+[domains](https://chapel-lang.org/docs/primers/domains.html).
 
 <a id="ranges"></a>
 ### Ranges
 
-For this guide, the range functionality to highlight is `#`:
-- `5..10` starts at `5` and ends at `10` (both inclusive).
-<a id="ex1"></a>
-#### Example 1: Range `5..10`
+For this guide, the range functionality to highlight is `<` and `#`:
+#### Range `5..10`
+`5..10` starts at `5` and ends at `10` (both inclusive).
+
 ```chapel
 for i in 5..10 {
   writeln(i);
@@ -94,9 +110,27 @@ for i in 5..10 {
 9
 10
 ```
-- `5..#10` starts at `5` and steps forward util we've iterated `10` elements.
-<a id="ex2"></a>
-#### Example 2: Range `5..#10`
+
+#### Range `5..<10`
+`5..<10` starts at `5` (inclusive) and ends at `10` (exclusive).
+
+```chapel
+for i in 5..<10 {
+  writeln(i);
+}
+```
+```console
+5
+6
+7
+8
+9
+```
+- `j..<n` is equivalent to `j..(n-1)`.
+
+#### Range `5..#10`
+`5..#10` starts at `5` and counts forward `10` elements.
+
 ```chapel
 for i in 5..#10 {
   writeln(i);
@@ -119,14 +153,26 @@ for i in 5..#10 {
 <a id="domains"></a>
 ### Domains
 
-A domain is an index set used to specify iteration spaces and define the size and shape of arrays.
-A domain’s indices may be distributed across multiple locales.
-When iterating through two arrays with the same domain,
-you are guaranteed that index `i` of one array will be local to index `i` of the other.
+A domain is a set of indices which specify how to iterate over the elements it maps onto.
+For arrays, our most common use case, the domain specifies:
+- the size and shape of the array
+- if and how the elements of the array are distributed across the locales
 
-In Arkouda, pdarrays (which stand for parallel, distributed arrays), are Chapel arrays stored in
-[block-distributed domains](https://chapel-lang.org/docs/primers/distributions.html#block-and-distribution-basics),
-meaning that the elements are split as evenly as possible across all locales. We'll see this in action in a later section!
+We will cover locales in more detail in a later section, but you can think of a locale as a single computer 
+in a cluster of computers all working together to solve a problem.
+
+A distributed domain contains information about which locale an array element is stored on.
+Knowing where the data lives is necessary to take full advantage of distributed resources.
+A natural way to split up work is to have each locale operate on the elements of the distributed array that reside on it.
+This often ends up being the most efficient approach as well.
+
+When iterating over two arrays with the same domain, you are guaranteed that index `i` of one
+array will be co-located with index `i` of the other (i.e. they will be stored on the same locale).
+
+In Arkouda, pdarrays (which stand for parallel, distributed arrays), are Chapel arrays with
+[block-distributed domains](https://chapel-lang.org/docs/primers/distributions.html#the-block-distribution).
+This means the elements are split as evenly as possible across all locales.
+We'll see this in action in a later section!
 
 The syntax for declaring an array with domain `D` and type `t` is:
 ```Chapel 
@@ -151,18 +197,24 @@ var uintArray: [boolArray.domain] uint;
 ```
 Note: `makeDistDom` is a helper function in Arkouda and not part of Chapel.
 
-<a id="init_fact"></a>
-## Initial Factorial
+<a id="procs"></a>
+## Procedures
 Let's start our Chapel journey by writing a function to calculate the factorial of a given integer `n`.
 Where factorial is
 
 $$ n! = \prod_{i=1}^n i = 1 \cdot 2 \cdot\ldots\cdot (n-1) \cdot n$$
 
-This will introduce the syntax for `proc` and `for` loops!
+Functions in Chapel are called [procedures](https://chapel-lang.org/docs/primers/procedures.html),
+and they use the `proc` keyword.
 
-<a id="ex3"></a>
-#### Example 3: Initial Factorial
-Our initial implementation is similar to other languages:
+<a id="serial_factorial"></a>
+#### Serial Factorial
+Our initial implementation is similar to other languages. We iterate the values from 1 to n and multiply
+them all together. We use a [`for` loop](https://chapel-lang.org/docs/users-guide/base/forloops.html)
+which behaves like `for` loops in other languages. A `for` loop is a serial
+(non-parallel) loop, so it executes its loop iterations in order and a loop iteration doesn't start until the iteration
+before it finishes. 
+
 ```Chapel
 proc factorial(n: int) {
   var fact: int = 1;
@@ -174,18 +226,27 @@ proc factorial(n: int) {
 writeln(factorial(5));
 ```
 ```console
-$ chpl Tutorial.chpl -o tutorial
-$ ./tutorial
 120
 ```
 
-Excellent! Now let's write this loop in parallel.
-Our parallelism comes from the data parallel [`forall`](https://chapel-lang.org/docs/users-guide/datapar/forall.html) loop.
-The `forall` loop basically handles the parallelism for you!
+Excellent! We just wrote our first bit of Chapel code! Now can we make it parallel?
 
-<a id="ex4"></a>
-#### Example 4: Parallel Factorial Attempt
-So what happens if we just replace  the `for` loop with a `forall`?
+In a parallel loop, a loop iteration doesn't wait for the iterations before it to complete before it starts. So 
+if any of our logic relies on a previous loop iteration to finish first, using a parallel loop would sometimes
+give incorrect results.
+
+For our example, the order that the iterations complete doesn't affect the final answer (i.e. multiplying
+by `2` before `1` doesn't change the resulting product).
+
+Now that we've identified `factorial` as a good candidate, let's try to use a parallel loop!
+
+<a id="parallel_factorial_attempt"></a>
+#### Parallel Factorial Attempt
+The parallel loop we're going to use is a
+[`forall`](https://chapel-lang.org/docs/users-guide/datapar/forall.html) loop. We'll cover `forall` in more detail
+later, but for now just take it to mean that multiple iterations can execute at once. 
+
+So what happens if we just replace  the `for` loop with a `forall`? Let's try it.
 ```Chapel
 proc factorial(n: int) {
   var fact: int = 1;
@@ -197,36 +258,59 @@ proc factorial(n: int) {
 writeln(factorial(5));
 ```
 ```console
-$ chpl Tutorial.chpl -o tutorial
-Tutorial.chpl:41: In function 'factorial':
-Tutorial.chpl:44: error: cannot assign to const variable
-Tutorial.chpl:43: note: The shadow variable 'fact' is constant due to forall intents in this loop
+$ chpl tutorial.chpl
+tutorial.chpl:45: In function 'factorial':
+tutorial.chpl:48: error: cannot assign to const variable
+tutorial.chpl:47: note: The shadow variable 'fact' is constant due to task intents in this loop
 ```
 That's not what we want to see! There was an error during compilation.
-The issue is different iterations of the parallel loop could be modifying the outer variable `fact` simultaneously.
 
-Chapel handles this by giving each task its own copy of `fact` known as a [shadow variable](https://chapel-lang.org/docs/primers/forallLoops.html#task-intents-and-shadow-variables).
-To combine the shadow variables and write the result back into `fact`, we'll need to learn about `reduction` operations.
+To parallelize this loop, Chapel breaks it up into a number of
+[`tasks`](https://chapel-lang.org/docs/users-guide/taskpar/taskParallelismOverview.html)
+that can be performed simultaneously. For a `forall` loop, Chapel determines the number of tasks for us
+automagically using info like what we're iterating over and what system resources are available.
+It's likely that a single task will be responsible for multiple loop iterations.  
+
+If that's a lot to take in the key takeaway is there are several tasks which are executing at the same time.
+
+So there are multiple tasks executing at once and only one `fact`.
+This could lead to different tasks trying to modify `fact` simultaneously. 
+This could cause problems because it's possible for one task to prevent another from updating `fact` correctly.
+Resulting in incorrect answers and inconsistent behavior between runs.
+
+Okay our tasks are like kids that don't share well, so how do we avoid these problems?
+One idea is to give each task its own copy of `fact` and at the end figure out how combine them into a final answer.
+
+As turns out, Chapel does the first half of that for us!
+It gives each task its own private copy of `fact` called a
+[task private variable](https://chapel-lang.org/docs/primers/forallLoops.html#task-private-variables).
+These are a special kind of task private variables since they have the same name as the `fact` from
+the outer scope (aka [shadowing `fact`](https://en.wikipedia.org/wiki/Variable_shadowing)).
+Due to this, they're called 
+[shadow variables](https://chapel-lang.org/docs/primers/forallLoops.html#task-intents-and-shadow-variables).
+
+So right now each task has its own private copy of `fact`, but we still need to combine all these
+shadow variables to get our final answer. To do that, we'll need to learn about `reduction` operations.
 
 <a id="reduce_and_scan"></a>
 ## `reduce` and `scan`
 [Reductions and scans](https://chapel-lang.org/docs/language/spec/data-parallelism.html#reductions-and-scans)
-cumulatively apply an operation over the elements of an array (or any iterable) in parallel.
-
-- `op scan array`
+apply an operation over the elements of an array (or any iterable) in parallel.
+- scan operations
+  - has form `op scan array`
   - scans over `array` and cumulatively applies `op` to every element
   - returns an array
-  - `+ scan a` behaves like [`np.cumsum(a)`](https://numpy.org/doc/stable/reference/generated/numpy.cumsum.html) in numpy
+  - for those familiar with numpy, `+ scan a` behaves like [`np.cumsum(a)`](https://numpy.org/doc/stable/reference/generated/numpy.cumsum.html)
   - `scan` is an [inclusive scan](https://en.wikipedia.org/wiki/Prefix_sum#Inclusive_and_exclusive_scans)
-- `op reduce array`
+- reduce operations
+  - has form `op reduce array`
   - reduces the result of a scan to a single summary value
   - returns a single value
-  - `+ reduce a` behaves like [`sum(a)`](https://docs.python.org/3/library/functions.html#sum) in python
+  - for those familiar with python, `+ reduce a` behaves like [`sum(a)`](https://docs.python.org/3/library/functions.html#sum)
 
-<a id="ex5"></a>
-#### Example 5: `reduce` and `scan`
+#### `reduce` and `scan` Example
 ```Chapel
-var a: [0..#5] int = [1, 2, 3, 4, 5];
+var a: [0..<5] int = [1, 2, 3, 4, 5];
 writeln("a = ", a, "\n");
 writeln("+ scan a = ", + scan a);
 writeln("+ reduce a = ", + reduce a, "\n");
@@ -254,15 +338,20 @@ max reduce a = 5
 ```
 Notice `op reduce array` is always the last element of `op scan array`.
 
-Reductions and scans are defined for [many operations](https://chapel-lang.org/docs/language/spec/data-parallelism.html#reduction-expressions),
-and you can even [write your own](https://chapel-lang.org/docs/technotes/reduceIntents.html#user-defined-reduction-example)!
+Reductions and scans are defined for
+[many operations](https://chapel-lang.org/docs/language/spec/data-parallelism.html#reduction-expressions).
 
 <a id="forall"></a>
 ## `forall` Loops
-<a id="ex6"></a>
-#### Example 6: Factorial with must-parallel `forall` and Reduction
-Back to parallel factorial, let's use `reduce` to combine the results of each task. This will allow us to use the [`forall`](https://chapel-lang.org/docs/users-guide/datapar/forall.html) loop.
-This is a [task intent](https://chapel-lang.org/docs/primers/forallLoops.html#task-intents-and-shadow-variables) as signified by the `with` keyword.
+<a id="must_parallel"></a>
+#### Factorial with must-parallel `forall` and Reduction
+Back to parallel factorial! We want to combine all our shadow variables. Since our goal is the product of all
+the values, it sounds like we might be able to use a `* reduce` to combine the results of each task.
+
+To do this we use a [task intent](https://chapel-lang.org/docs/primers/forallLoops.html#task-intents-and-shadow-variables)
+to tell the tasks how we want them to handle their task private variables (in this case to reduce them to a single answer).
+We use the `with` keyword to signal we are adding a task intent for `fact`.
+
 ```Chapel
 proc factorial(n: int) {
   var fact: int = 1;
@@ -276,22 +365,28 @@ writeln(factorial(5));
 ```console
 120
 ```
-That's more like it!
-Every task multiplies its shadow variable of `fact` by `i`, so a `* reduce` of the shadow variables gives the product of all `i`.
+Yay! That's more like it!
+Every task multiplies its shadow variable of `fact` by `i`, so a `* reduce` of
+all the shadow variables gives the product of all `i`. This reduction is then written
+into `fact` from the outer scope. 
 
-This is an example of a must-parallel `forall`.
+Awesome, we've successfully used a `forall` loop to calculate factorial in parallel!
 
-There are [2 types of `forall`](https://chapel-lang.org/docs/primers/forallLoops.html#forall-loops) loops:
+<a id="may_parallel"></a>
+#### may-parallel `forall`
+There's another type of `forall` loop that uses a different syntax. The primary difference between the two is
+whether they are required to execute in parallel or not. For something to be executed in parallel, it needs a
+[parallel iterator](https://chapel-lang.org/docs/primers/parIters.html#primers-pariters).
+Core Chapel types like ranges, domains, and arrays all support parallel iterators.
+
 - must-parallel `forall`
-  - Is written using the `forall` keyword i.e. `forall i in D`
-  - Requires a parallel iterator
+  - is written using the `forall` keyword i.e. `forall i in D`
+  - requires a parallel iterator
 - may-parallel `forall`
-  - Is written using bracket notation i.e. `[i in D]`
-  - Will use a parallel iterator if present, otherwise will iterate serially
+  - is written using bracket notation i.e. `[i in D]`
+  - will use a parallel iterator if present, otherwise will iterate serially
 
-<a id="ex7"></a>
-#### Example 7: may-parallel `forall`
-Let's look at an example of a may-parallel `forall`:
+Up until now, we've only used the `must-parallel` form, let's look at an example of a may-parallel `forall`:
 ```Chapel
 [i in 0..10] {
   writeln(i);
@@ -310,28 +405,32 @@ Let's look at an example of a may-parallel `forall`:
 7
 5
 ```
-As we can see this loop is not executing serially.
-This is because core Chapel types like ranges, domains, and arrays support parallel iterators, so they will be invoked by the may-parallel form.
+As we can see this loop is not executing serially because a `range` has a parallel iterator, which
+will be invoked by the may-parallel form.
 Your output will likely be in a different order than the above and will differ between runs.
 
-<a id="ex8"></a>
-#### Example 8: `forall` Expressions
+<a id="forall_expr"></a>
+#### `forall` Expressions
 `forall`s can also be used in expressions, for example:
 ```Chapel
 // must-parallel forall expression
 var tens = forall i in 1..10 do i*10;
 writeln(tens);
 // may-parallel forall expression
-var negativeTens = [i in tens] -i;
+var negativeTens = [t in tens] -t;
 writeln(negativeTens);
 ```
 ```console
 10 20 30 40 50 60 70 80 90 100
 -10 -20 -30 -40 -50 -60 -70 -80 -90 -100
 ```
-<a id="ex9"></a>
-#### Example 9: Factorial with may-parallel `forall` Expression and Reduction
-Applying a may-parallel `forall` expression and a reduction, our factorial function becomes:
+Note: by doing `[t in tens] -t;`, we also just showed we can iterate over the values of an array directly using a `forall`.
+This is equivalent to looping over the domain and indexing into the array `[i in tens.domain] -tens[i];`
+
+<a id="may_parallel_expr_reduce"></a>
+#### Factorial with may-parallel `forall` Expression and Reduction
+Now let's add some of these new features to our factorial function! 
+Applying a may-parallel `forall` expression and a reduction, our function becomes:
 ```Chapel
 proc factorial(n: int) {
   return * reduce [i in 1..n] i;
@@ -342,20 +441,32 @@ writeln(factorial(5));
 120
 ```
 
-For a specified `n`, we  can do this in one line!
+For a specified `n`, we can even do this in one line!
 ```Chapel
-writeln(* reduce [i in 1..#5] i);
+writeln(* reduce [i in 1..5] i);
 ```
 
-<a id="TIY1"></a>
-#### Try It Yourself 1: Perfect Squares <=25
+<a id="TIY_perf_squares"></a>
+#### Try It Yourself: Perfect Squares <=25
 Problem:
 Compute and print out all perfect squares less than or equal to `25`
 
 Bonus points if you can do it in one line using a `forall` expression!
 <details>
-  <summary>Potential Solution</summary>
+  <summary>Potential Solutions</summary>
 
+One way is
+```Chapel
+var arr: [0..5] int;
+
+forall i in 0..5 {
+  arr[i] = i**2;
+}
+
+writeln(arr);
+```
+
+or the one-liner!
 ```Chapel
 writeln([i in 0..5] i**2);
 ```
@@ -365,56 +476,48 @@ Expected Output:
 ```console
 0 1 4 9 16 25
 ```
-<a id="coforall"></a>
-## `Coforall` loops
-The second most common parallel loop in arkouda is the [`coforall`](https://chapel-lang.org/docs/users-guide/taskpar/coforall.html) loop.
-The biggest difference between a `coforall` and [`forall`](https://chapel-lang.org/docs/users-guide/datapar/forall.html) loop
-is the way tasks are scheduled.
 
-A `coforall` loop creates one distinct task per loop iteration, each of which executes a copy of the loop body.
+<a id="zippered_iteration"></a>
+## Zippered Iteration
+[Zippered Iteration](https://chapel-lang.org/docs/users-guide/base/zip.html#zippered-iteration) is simultaneously
+iterating over multiple iterables (usually arrays and ranges) with compatible shape and size.
+For arrays, this means that their domains have the same number of elements in each dimension
 
-But a `forall` loop is a bit more complicated. A forall-loop creates a variable number of tasks to execute the loop
-determined by the data it's iterating.
-The number of tasks used is based on dynamic information such as the size of the loop and/or the number of available processors.
+The syntax:
+```chapel
+var A1, A2, A3, ..., An: [D] int;
+forall (v1, v2, v3, ..., vn) in zip(A1, A2, A3, ..., An) {
+  // for loop iteration `j`, `vi` will refer to the `j`th element of `Ai`
+}
+```
 
-Since a `coforall` does scheduling based on number of tasks, it's called a
-[task parallel](https://chapel-lang.org/docs/users-guide/index.html#task-parallelism) loop. And since a `forall` does
-it's scheduling based on the data it's iterating, it's a [data parallel](https://chapel-lang.org/docs/users-guide/index.html#data-parallelism) loop.
-
-<a id="ex10"></a>
-#### Example 10: `coforall` loop
+Let's look at an example of zippered iteration:
 ```Chapel
-const numTasks = 8;
-
-coforall tid in 1..numTasks do
-  writeln("Hello from task ", tid, " of ", numTasks);
-
-writeln("Signing off...");
+var A: [1..5] real;
+for (a, i, j) in zip(A, 1.., [3, 0, 1, 2, 4]) {
+  a = i**j;
+}
+writeln(A);
 ```
 ```console
-Hello from task 4 of 8
-Hello from task 1 of 8
-Hello from task 2 of 8
-Hello from task 5 of 8
-Hello from task 3 of 8
-Hello from task 6 of 8
-Hello from task 7 of 8
-Hello from task 8 of 8
-Signing off...
+1.0 1.0 3.0 16.0 625.0
 ```
-The most common use case of `coforalls` will be introduced in a later section.
+Notice we have an [unbounded range](https://chapel-lang.org/docs/primers/ranges.html#variations-on-basic-ranges),
+`1..`, so the end bound is determined by the size of the other iterables.
+Since in this case the other iterables are length 5, `1..` is equivalent to `1..5`.
 
 <a id="ternary"></a>
 ## Ternary
-A ternary statement is where a variable can have one of two possible values depending on whether a condition is True or False.
+A ternary statement can have one of two possible values depending on whether a condition is true or false.
+Because Chapel is a strongly typed language, both values must be the same type.
 
-The syntax for a ternary statement is:
+The syntax for a ternary statement in Chapel is:
 ```chapel
 var x = if cond then val1 else val2;
 ```
 This is equivalent to an `if/else`:
 ```chapel
-var x: t;
+var x;
 if cond {
   x = val1;
 }
@@ -422,8 +525,8 @@ else {
   x = val2;
 }
 ```
-<a id="ex11"></a>
-#### Example 11: Absolute Value Ternary
+<a id="abs_val_ter"></a>
+#### Absolute Value Ternary
 Let's use a ternary to create an absolute value function:
 ```chapel
 proc absoluteVal(n:int) {
@@ -436,29 +539,44 @@ writeln(absoluteVal(7));
 15
 7
 ```
-<a id="ex12"></a>
-#### Example 12: Ternary and `forall` Expression
-We can combine ternary with other tools such as forall expressions.
+<a id="ter_forall_expr"></a>
+#### Ternary and `forall` Expression
+Now let's combine a ternary with a `forall` expression!
+
+We're going to loop over the positive integers less than 10.
+If the value is even, we'll write out the `value + 10`, and if it's odd, we'll write out `-100`.
 ```chapel
-writeln([i in 0..#10] if i%2 == 0 then i+10 else -100);
+writeln([i in 0..<10] if i%2 == 0 then i+10 else -100);
 ```
 ```console
 10 -100 12 -100 14 -100 16 -100 18 -100
 ```
+Awesome! Now try to combine some of the topics we've covered.
 
-<a id="TIY2"></a>
-#### Try It Yourself 2: Array Absolute Value
+<a id="TIY_arr_abs_val"></a>
+#### Try It Yourself: Array Absolute Value
 Problem:
-Write a `proc` using a ternary to take an `int array`, `A`, 
-and return an array where index `i` is the absolute value of `A[i]`
+Write a `proc` using a ternary which takes an `int array`, `A`, 
+and returns the index-wise absolute value.
 
 Call: `arrayAbsVal([-3, 7, 0, -4, 12]);`
 
 <details>
-  <summary>Potential Solution</summary>
+  <summary>Potential Solutions</summary>
 
+using a forall loop
 ```Chapel
-proc arrayAbsVal(A) {
+proc arrayAbsVal(A: [] int) {
+  var absArr: [A.domain] int;
+  forall (v, a) in zip(absArr, A) {
+    v = if a >= 0 then a else -a;
+  } 
+  return absArr;
+}
+```
+or using a forall expression
+```Chapel
+proc arrayAbsVal(A: [] int) {
   return [a in A] if a >= 0 then a else -a;
 }
 ```
@@ -469,36 +587,191 @@ Expected Output:
 3 7 0 4 12
 ```
 
+<a id="generics_introspection"></a>
+## Generics and Introspection
+Let's say you want a function that takes some integer input and doubles it.
+We can do this pretty easily with what we've learned so far
+
+```Chapel
+proc double(a: int) {
+  return a * 2;
+}
+```
+
+Great! Now say we want to be able to do the same thing for `uint` and `real` input.
+We could [overload](https://chapel-lang.org/docs/primers/procedures.html#overloading-functions)
+our procedure and create multiple with the same name that accept different types. 
+
+```Chapel
+proc double(a:int) {
+  return a * 2;
+}
+
+proc double(a:uint) {
+  return a * 2;
+}
+
+proc double(a:real) {
+  return a * 2;
+}
+
+writeln(double(-100));
+writeln(double(7.5));
+```
+
+```console
+-200
+15.0
+```
+This works... but it's pretty inefficient considering the logic itself hasn't actually changed.
+Plus if we ever want to update this, we would need to remember to update all these spots.
+
+It would be nice if we could write one proc that accepts all these types.
+Luckily we can! This is called a
+[generic](https://chapel-lang.org/docs/language/spec/generics.html#generics) procedure.
+
+<a id="generics"></a>
+### Generics
+One way to make our `double` proc generic is to leave off the type annotation. 
+If we do this Chapel will allow it take input of any type.
+This is super nice because we don't have to do very much!
+
+```Chapel
+proc double(a) {
+  return a * 2;
+}
+
+writeln(double(-100));
+writeln(double(7.5));
+```
+
+```console
+-200
+15.0
+```
+
+There is a problem here though... Chapel will allow it take input of ANY type. 
+What if someone tries to pass in a `string`?
+
+```Chapel
+proc double(a) {
+  return a * 2;
+}
+
+writeln(double(-100));
+writeln(double(7.5));
+writeln(double("oh no! we don't want strings!"));
+```
+
+```console
+-200
+15.0
+oh no! we don't want strings!oh no! we don't want strings!
+```
+
+Since we're no longer adding type annotations, it's possible for unintended types to slip through.
+For a small program that only you modify, this might not be an issue. But for a bigger project like arkouda,
+the chances that your proc will be used in a way you didn't intend increases.
+
+Okay so we don't want to duplicate our function, but we'd like to do some type enforcement.
+To solve this, we'll use type introspection!
+
 <a id="introspection"></a>
-## Introspection
-Introspection is determining properties of a function argument at runtime.
-This is often used to determine the type and/or domain of a function argument.
-Introspection can avoid duplicating a `proc` for multiple types when none of the logic has changed.
-Using introspection will result in a [generic](https://chapel-lang.org/docs/language/spec/generics.html#generics) function.
+### Introspection
+
+Introspection is the process of determining properties of an object at runtime.
+In Chapel, this is often used to determine the type and/or domain of a function argument.
+When you see `?` preceding an identifier, it is acting as a
+[query expression](https://chapel-lang.org/docs/language/spec/expressions.html#the-query-expression)
+and is querying the type or value.
 
 The syntax for this is:
 ```Chapel
-proc foo(arr1: [?D] ?t, value: t, arr2: [?D2] ?t2) {
-  // using `D` and `t` in this proc will refer to `arr1`'s domain and type respectively
-  // since value is declared to have type `t`, it must be passed a value that is compatible with `arr1`'s element type
+proc foo(arr1: [?D] ?t, val: t, arr2: [?D2] ?t2) {
+  // `D` and `t` are now equal to `arr1`'s domain and type respectively
+  // since val is declared to have type `t`, it must be passed a value that is compatible with `arr1`'s element type
   // `D2` and `t2` refer to the domain and type of `arr2`
 }
 ```
-<a id="ex13"></a>
-#### Example 13: Introspection
-If we adapt our absolute value example to use introspection,
-we can use the same `proc` for `real array`s and `int array`s.
+
+To use `?` for type enforcement of our `double` proc, we need to briefly touch on 
+[`where` clauses](https://chapel-lang.org/docs/language/spec/procedures.html#where-clauses).
+A `where` clause has a condition that must be satisfied for a proc to be used.
+
+So we want to define a proc where the input's type is `int` or `uint` or `real`.
+In code this is:
+
 ```Chapel
-proc absoluteVal(a: [?D] ?t): [D] t {
-  return [i in D] if a[i] >= 0 then a[i] else -a[i];
+proc double(a: ?t) where t == int || t == uint || t == real {
+  return a * 2;
 }
 
-var r: [0..#5] real = [-3.14, 7:real, 0.0, INFINITY, -INFINITY];
-writeln(absoluteVal(r));
-
-var i: [0..#5] int = [-3, 7, 0, -4, 12];
-writeln(absoluteVal(i));
+writeln(double(-100));
+writeln(double(7.5));
 ```
+
+```console
+-200
+15.0
+```
+
+It works! Okay moment of truth, what happens if we try to pass in a `string`?
+
+```Chapel
+proc double(a: ?t) where t == int || t == uint || t == real {
+  return a * 2;
+}
+
+writeln(double("oh no! we don't want strings!"));
+```
+
+```console
+error: unresolved call 'double("oh no! we don't want strings!")'
+note: this candidate did not match: double(a: ?t)
+note: because where clause evaluated to false
+```
+
+Awesome! We used type querying and a where clause to create a generic
+proc which only accepts the types we want.
+
+<a id="TIY_abs_val_introspec"></a>
+#### Try It Yourself: Array Absolute Value with Introspection
+Problem:
+Let's build upon our Array Absolute Value Try It Yourself!
+
+We have a `proc` which takes an `int array`, `A`, and returns the index-wise absolute value.
+Modify it to also accept a `real array`.
+
+Call:
+```
+arrayAbsVal([-3.14, 7:real, 0.0, inf, -inf]);
+arrayAbsVal([-3, 7, 0, -4, 12]);
+```
+
+<details>
+  <summary>Potential Solutions</summary>
+
+using a forall loop
+```Chapel
+proc arrayAbsVal(A: [] ?t) where t == int || t == real {
+  var absArr: [A.domain] t;
+  
+  forall (v, a) in zip(absArr, A) {
+    v = if a >= 0 then a else -a;
+  }
+  return absArr;
+}
+```
+
+using a forall expression
+```Chapel
+proc arrayAbsVal(A: [] ?t) where t == int || t == real {
+  return [a in A] if a >= 0 then a else -a;
+}
+```
+</details>
+Expected Output:
+
 ```console
 3.14 7.0 0.0 inf inf
 3 7 0 4 12
@@ -506,14 +779,13 @@ writeln(absoluteVal(i));
 
 <a id="promotion"></a>
 ## Promotion
-[Promotion](https://chapel-lang.org/docs/users-guide/datapar/promotion.html) is a way to obtain data parallelism implicitly.
+A function or operation that works on a single value will also work on an array of values of the same type automatically. 
+ This is called
+[promotion](https://chapel-lang.org/docs/users-guide/datapar/promotion.html).
+It's essentially applying the function to every element of the array.
 
-A function or operation that operates on a type can automatically work on an array of that type
-by essentially applying the function to every element of the array.
-
-<a id="ex14"></a>
-#### Example 14: Promotion
-Returning to the factorial example, our `proc` can operate on an `int array` even though it's only defined to accept an `int`.
+Returning to the factorial example, our `proc` is only defined to accept an `int`. But if an `int array` is passed in,
+it will be automatically promoted to handle the array.
 ```chapel
 proc factorial(n: int) {
   return * reduce [i in 1..#n] i;
@@ -531,28 +803,70 @@ Promotion is equivalent to a `forall` loop. For this example the equivalent loop
 [x in [1, 2, 3, 4, 5]] factorial(x);
 ```
 
-<a id="filter"></a>
-## Filtering
-<a id="ex15"></a>
-#### Example 15: Filtering
-We can filter an iterator to only operate on values matching a certain condition:
-```chapel
-writeln([i in 0..#10] if i%2 == 0 then -i);
+<a id="TIY_abs_val_promotion"></a>
+#### Try It Yourself: Absolute Value with Promotion
+Problem:
+Write an absolute value `proc` which uses promotion to accept either a single `real` value or a `real` array. 
+
+Call:
 ```
-```console
-0 -2 -4 -6 -8
+absoluteVal(-inf);
+arrayAbsVal([-3.14, 7:real, 0.0, inf, -inf]);
 ```
 
-<a id="TIY3"></a>
-#### Try It Yourself 3: Sum Odd Perfect Squares <=25
-Problem:
-Use filtering and reduce to sum all odd perfect squares less than or equal to `25`
 <details>
   <summary>Potential Solution</summary>
 
 ```Chapel
+proc absoluteVal(a: real) {
+  return if a >= 0 then a else -a;
+}
+```
+</details>
+Expected Output:
+
+```console
+inf
+3.14 7.0 0.0 inf inf
+```
+
+<a id="filter"></a>
+## Filtering
+Let's say we want to negate the even values less than 10. We can iterate `0..<10` and filter out values
+that don't match our condition.
+```chapel
+writeln([i in 0..<10] if i%2 == 0 then -i);
+```
+```console
+0 -2 -4 -6 -8
+```
+Notice this is essentially a ternary but without an `else`.
+
+<a id="TIY_sum_odd_sqaures"></a>
+#### Try It Yourself: Sum Odd Perfect Squares <=25
+Problem:
+Use filtering and reduce to sum all odd perfect squares less than or equal to `25`
+<details>
+  <summary>Potential Solutions</summary>
+
+Using a forall loop
+```Chapel
+var arr: [0..5] int;
+
+forall i in 0..5 {
+  if i%2 != 0 {
+    arr[i] = i**2;
+  }
+}
+
+writeln(+ reduce arr);
+```
+
+using a forall expression
+```Chapel
 writeln(+ reduce [i in 0..5] if i%2 != 0 then i**2);
 ```
+
 </details>
 Expected Output:
 
@@ -560,48 +874,359 @@ Expected Output:
 35
 ```
 
-<a id="locality"></a>
-## Locality
+<a id="bool_expand_and_compress"></a>
+## Boolean Compression and Expansion Indexing
+A bit of a warning, this section is possibly the most difficult in the tutorial,
+so don't worry if you don't understand everything! No new material is introduced
+in this part, it's just an application of functionality already covered. So
+if you find yourself getting overwhelmed or intimidated, feel free to skip this one. 
+
+Let's dig into boolean indexing!
+Applications of this and similar logic pop up in various places in arkouda.
+
+<a id="comp_ind"></a>
+#### Boolean Compression Indexing
+Compression indexing is reducing an array to only the values meeting a certain condition.
+This is a common operation in numpy.
+
+Compression indexing in `numpy`:
+```python
+>>> X = np.array([1, 2, 5, 5, 1, 5, 2, 5, 3, 1])
+>>> Y = X[X==5]
+>>> Y
+array([5, 5, 5, 5])
+```
+We can accomplish the same result in Chapel using tools from this guide!
+```chapel
+var X = [1, 2, 5, 5, 1, 5, 2, 5, 3, 1];
+writeln("X = ", X, "\n");
+
+// we begin by creating a boolean array, `truth`, indicating where the condition is met
+var truth = (X == 5);
+writeln("truth = ", truth);
+
+// we use `truth` to create the indices, `iv`, into the compressed array
+// `+ scan truth - truth` is essentially creating an exclusive scan
+// note: `iv[truth] = [0, 1, 2, 3]`
+var iv = (+ scan truth) - truth;
+writeln("iv = ", iv);
+writeln("iv[truth] = ", [(t, v) in zip(truth, iv)] if t then v, "\n");
+
+// we then create the return array `Y`
+// it contains all the elements where the condition is met
+// so its size is the number of `True`s i.e. `+ reduce truth`
+var Y: [0..<(+ reduce truth)] int;
+writeln("+ reduce truth = ", + reduce truth);
+writeln("0..<(+ reduce truth) = ", 0..<(+ reduce truth), "\n");
+
+// now that we have the setup, it's time for the actual indexing
+// we use a forall to iterate over the indices of `X`
+// we only act if the condition is met i.e. truth[i] is true
+// we then use the compressed indices `iv[i]` to write into `Y`
+// while using the original indices `i` to get the correct value from `X`
+forall i in X.domain {
+  if truth[i] {
+    Y[iv[i]] = X[i];
+  }
+}
+
+// NOTE:
+// we could also use zippered iteration here since
+// `truth`, `X`, and `iv` have the same domain.
+// Using that and a may-parallel `forall` gives: 
+// [(t, x, v) in zip(truth, X, iv)] if t {Y[v] = x;}
+
+writeln("Y = ", Y);
+```
+```console
+X = 1 2 5 5 1 5 2 5 3 1
+
+truth = false false true true false true false true false false
+iv = 0 0 0 1 2 2 3 3 4 4
+iv[truth] = 0 1 2 3
+
++ reduce truth = 4
+0..<(+ reduce truth) = 0..3
+
+Y = 5 5 5 5
+```
+Awesome! We reproduced useful numpy functionality using only information from this guide!
+With the added benefit that our implementation is parallel and works on distributed data!
+Now let's tackle the very similar challenge of expansion indexing.
+
+<a id="expan_ind"></a>
+#### Boolean Expansion Indexing
+Expansion indexing is writing a smaller array into a larger array at only the values meeting a certain condition.
+This is another common operation in numpy.
+
+Expansion indexing in `numpy`:
+```python
+>>> X = np.array([1, 2, 5, 5, 1, 5, 2, 5, 3, 1])
+>>> Y = np.array([-9, -8, -7, -6])
+>>> X[X==5] = Y
+>>> X
+array([ 1,  2, -9, -8,  1, -7,  2, -6,  3,  1])
+```
+We can accomplish the same result in Chapel using tools from this guide!
+```chapel
+var X = [1, 2, 5, 5, 1, 5, 2, 5, 3, 1];
+var Y = [-9, -8, -7, -6];
+writeln("X = ", X);
+writeln("Y = ", Y, "\n");
+
+// we begin by creating a boolean array, `truth`, indicating where the condition is met
+var truth = (X == 5);
+writeln("truth = ", truth);
+
+// we use `truth` to create the indices, `iv`, into the compressed array
+// `+ scan truth - truth` is essentially creating an exclusive scan
+// note: `iv[truth] = [0, 1, 2, 3]`
+var iv = (+ scan truth) - truth;
+writeln("iv = ", iv);
+writeln("iv[truth] = ", [(t, v) in zip(truth, iv)] if t then v, "\n");
+
+// now that we have the setup, it's time for the actual indexing
+// notice this is equivalent to compression indexing with the assignment swapped
+// we use a forall to iterate over the indices of `X`
+// we only act if the condition is met i.e. truth[i] is true
+// we use the original indices `i` to write into `X`
+// while using the compressed indices `iv[i]` to get the correct value from `Y`
+forall i in X.domain {
+  if truth[i] {
+    X[i] = Y[iv[i]];
+  }
+}
+
+// NOTE:
+// we could also use zippered iteration here since
+// `truth`, `X`, and `iv` have the same domain.
+// Using that and a may-parallel `forall` gives: 
+// [(t, x, v) in zip(truth, X, iv)] if t {x = Y[v];}
+
+writeln("X = ", X);
+```
+```console
+X = 1 2 5 5 1 5 2 5 3 1
+Y = -9 -8 -7 -6
+
+truth = false false true true false true false true false false
+iv = 0 0 0 1 2 2 3 3 4 4
+iv[truth] = 0 1 2 3
+
+X = 1 2 -9 -8 1 -7 2 -6 3 1
+```
+Great! Now let's use this for a Try It Yourself!
+
+<a id="TIY_arr_even_repl"></a>
+#### Try It Yourself: Array Even Replace
+Problem:
+
+Use the following function signature to create a `proc`:
+```Chapel
+proc arrayEvenReplace(in A: [] int, B: [] int)
+```
+Then replace the even values of `A` with the values of `B` and return `A`.
+You can assume the size of `B` will be equal to number of even values in `A`.
+
+It may be helpful to review boolean expansion indexing
+
+Note:
+We use an [`in` argument intent](https://chapel-lang.org/docs/primers/procedures.html#argument-intents)
+in the function signature to allow us to modify `A`.
+
+Call:
+  - `arrayEvenReplace([8, 9, 7, 2, 4, 3], [17, 19, 21]);`
+  - `arrayEvenReplace([4, 4, 7, 4, 4, 4], [9, 9, 9, 9, 9]);`
+
+<details>
+  <summary>Potential Solutions</summary>
+
+Using a `forall` loop
+```Chapel
+proc arrayEvenReplace(in A: [] int, B: [] int) {
+  var isEven = (A % 2 == 0);
+  var expandedIdx = (+ scan isEven) - isEven;
+  forall (even, a, i) in zip(isEven, A, expandedIdx) {
+     if even {
+       a = B[i];
+     }
+   }
+  return A;
+}
+```
+
+using a `forall` expression
+```Chapel
+proc arrayEvenReplace(in A: [] int, B: [] int) {
+  var isEven = (A % 2 == 0);
+  var expandedIdx = (+ scan isEven) - isEven;
+  [(even, a, i) in zip(isEven, A, expandedIdx)] if even {a = B[i];}
+  return A;
+}
+```
+</details>
+Expected Output:
+
+```console
+17 9 7 19 21 3
+9 9 7 9 9 9
+```
+
+<a id="loc_and_coforall"></a>
+## Locales and `coforall` loops
+
 <a id="locale"></a>
 ### Locales
-[Locales](https://chapel-lang.org/docs/users-guide/locality/localesInChapel.html)
-can be thought of as chunk of memory that can do computation. Things that are co-located within a single locale
-are close to each other in the system and can interact with one another relatively cheaply. Things that are in distinct
-locales can still interact with each other in the same ways, but this is more expensive since transferring data between
-the locales will result in more communication.
+We've mentioned `Locale`s briefly in earlier sections, but let's dive into them a bit deeper.
+I like to think of a locale as a single computer in a cluster of computers all working together to solve a problem.
+This isn't always the case, but it is a useful model. More generally a
+[locale](https://chapel-lang.org/docs/users-guide/locality/localesInChapel.html) is
+"a piece of a target architecture that has processing and storage capabilities".
 
-Say `x` and `y` are both on `locale_i`. When on `locale_i`, we say both `x` and `y` are local.
 
-Say `x` is on `locale_i` and `y` is on `locale_j`. When on `locale_i`, we say `x` is local
-and `y` is remote.
+For any given computer in our cluster, accessing the data it stores will be faster than having it fetch data
+from a different computer in the cluster. This is because the data will need to be transferred from the computer
+that has it to the computer that needs it. 
+
+Data stored on a computer is "local" to that computer and data stored on
+a different computer is "remote". This terminology reflects the time penalty we have to pay when accessing "remote" data when compared
+to "local" data. This same intuition holds for locales in general.
+
+The big takeaway is it's in our best interest to minimize how often locales need to operate
+on remote data.
+
+To reiterate a bit more exactly:
+
+> Say `x` and `y` are both stored on `locale_i`. From the perspective of `locale_i`, we say `x` and `y` are
+both local. There no significant difference in access times.
+> 
+> But if `x` is on `locale_i` and `y` is on `locale_j`. From the perspective of `locale_i`, we say `x` is local
+and `y` is remote. In this case, accessing `y` would take longer than `x`.
+
+At runtime, Chapel assigns each locale a number from `0..<numLocales`. And if you were to create a program with a
+single simple statement like `var x = 5+3;`, it will be executed on locale 0. So how would we perform the
+computation on a different locale?  
+
+The most direct way is to use an [`on` clause](https://chapel-lang.org/docs/users-guide/locality/onClauses.html).
+```Chapel
+// happens on locale 0
+var x = 5+3;
+
+on 2 {
+  // happens on locale 2
+  var y = 5+3;
+}
+```
+But sometimes you don't need an explict `on` clause to operate on other locales.
+One example of this is a `forall` loop
+
+<a id="coforall"></a>
+### `coforall` Loops
+The second most common parallel loop in arkouda is the [`coforall`](https://chapel-lang.org/docs/users-guide/taskpar/coforall.html) loop.
+Let's see how this compares to the [`forall`](https://chapel-lang.org/docs/users-guide/datapar/forall.html)
+loops that we've been using up until now.
+
+The biggest differences between a `coforall` and `forall` is how many tasks are created and which locales
+execute these tasks. 
+I think of `forall` loops as a reasonable default where Chapel determines this for you.
+A `coforall` offers more control, but the tradeoff is you might need to manage some stuff yourself
+
+A `coforall` loop:
+* creates one distinct task per loop iteration, each of which executes a copy of the loop body.
+* [tasked based parallelism](https://chapel-lang.org/docs/users-guide/index.html#task-parallelism):
+I want exactly this many tasks operating in parallel
+
+A `forall` loop:
+* creates a variable number of tasks determined by the data it's iterating and the number of available processors.
+* [data based parallelism](https://chapel-lang.org/docs/users-guide/index.html#data-parallelism): operate on this
+data in parallel
+
+Here's a simple example of a `coforall`
+```Chapel
+var numTasks = 8;
+
+coforall tid in 1..numTasks {
+  writeln("Hello from task ", tid, " of ", numTasks);
+}
+
+writeln("Signing off...");
+```
+```console
+Hello from task 4 of 8
+Hello from task 1 of 8
+Hello from task 2 of 8
+Hello from task 5 of 8
+Hello from task 3 of 8
+Hello from task 6 of 8
+Hello from task 7 of 8
+Hello from task 8 of 8
+Signing off...
+```
 
 <a id="compile-multiloc"></a>
-### Enabling and compiling with multiple locales
-You will need to make changes to your chapel environment in order to run with
-[multi-locale](https://chapel-lang.org/docs/users-guide/locality/compilingAndExecutingMultiLocalePrograms.html).
-You can get set up by following the instructions [here](https://bears-r-us.github.io/arkouda/developer/GASNET.html).
-And unless you have done so before, you'll need to rebuild `chpl`.
+### Enabling multiple locales
+For the rest of this tutorial, we will be using Chapel with
+[multiple locales](https://chapel-lang.org/docs/users-guide/locality/compilingAndExecutingMultiLocalePrograms.html).
 
-<a id="ex16"></a>
-### Example 16: Looping Locales with `coforall`
-The most common use of `coforall` in arkouda is to iterate over all locales in parallel.
+If you're not running on a distributed system, Chapel will simulate running in a distributed way as if you had
+multiple distinct machines. This is useful for running diagnostics and finding bugs that only show up
+in a distributed setting.
 
-Let's look at an example that visualizes how
-[block distributed arrays](https://chapel-lang.org/docs/modules/dists/BlockDist.html#module-BlockDist) are distributed.
-To do this we'll use an [on clause](https://chapel-lang.org/docs/users-guide/locality/onClauses.html)
-and [local subdomain](https://chapel-lang.org/docs/primers/distributions.html#block-and-distribution-basics).
+It's worth noting the performance of simulating multi-locale on a non-distributed machine isn't a good indicator
+of how it will perform on an actual distributed system, but the amount of communication
+taking place should be the same. Minimizing communication is key to writing efficient chapel code
+and will be covered in later sections.
+
+To change your Chapel build to enable this, follow the instructions [here](https://bears-r-us.github.io/arkouda/developer/GASNET.html).
+If this is your first time configuring your environment variables to enable multi-locale, you'll need to rebuild `chpl`.
+After that you can switch into multi-locale mode by setting the same environment variables. To switch back, reset
+your environment variables to their original state. 
+
+The command to compile multi-locale programs doesn't change, but running the executable now requires a `-nl` flag to specify
+the number of locales.
+
+```console
+# to run with 2 locales
+$ ./tutorial -nl 2
+
+# to run with 5 locales
+$ ./tutorial -nl 5
+```
+
+All the previous sections should work with multiple locales.
+
+<a id="locale_looping"></a>
+### Looping Locales with `coforall`
+The most common use of `coforall` in arkouda is to create a single task for every locale.
+We can then use `on` blocks to have a single task run on each locale.
+
+The most common distribution used in arkouda is the
+[block distribution](https://chapel-lang.org/docs/primers/distributions.html#the-block-distribution).
+In this distribution the elements are split as evenly as possible across all locales.
+
+Let's look at an example to visualize how the data is distributed for block distributed arrays.
+
+
+To do this we'll use an [on clause](https://chapel-lang.org/docs/users-guide/locality/onClauses.html) to control
+which locale the computation is occuring on.
+
+We'll also need 
+[local subdomain](https://chapel-lang.org/docs/primers/distributions.html#block-and-distribution-basics),
+which is the subsection of the domain that is stored on the locale where the computation is happening,
 ```Chapel
 use BlockDist;
 
-// we create a block distributed array and populate with values from 1 to 16
+// we create a block distributed array and fill it with values from 1 to 16
 var A = Block.createArray({1..16}, int);
 A = 1..16;
 
-// we use a coforall to iterate over the Locales creating one task per
+// we use a coforall to create one task per Locales 
 coforall loc in Locales {
-  on loc {  // Then we use an `on` clause to execute on Locale `loc`
-    // Next we create `localA` by slicing `A` at it's local subdomain
-    const localA = A[A.localSubdomain()];
+  // Then we use an `on` clause to execute on Locale number `loc`
+  // so now there is exactly one task executing on each locale
+  on loc {
+    // Next we get the local part of `A` by slicing at it's local subdomain
+    var localA = A[A.localSubdomain()];
     writeln("The chunk of A owned by Locale ", loc.id, " is: ", localA);
   }
 }
@@ -611,8 +1236,8 @@ When running with `CHPL_COMM=none`, we see there's only one locale which owns al
 $ ./tutorial
 The chunk of A owned by Locale 0 is: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
 ```
-After enabling gasnet and recompiling, we can try this out with
-different numbers of locales to see how that changes the way the block distributed array is distributed!
+After enabling multi-locale and recompiling, we can try this out with
+different numbers of locales to see how the distribution changes!
 ```console
 $ ./tutorial -nl 2
 The chunk of A owned by Locale 0 is: 1 2 3 4 5 6 7 8
@@ -635,716 +1260,430 @@ The chunk of A owned by Locale 4 is: 9 10
 The chunk of A owned by Locale 1 is: 3 4
 ```
 
-<a id="zip_and_agg"></a>
-## Zippered Iteration and Aggregation
-
-<a id="zippered_iteration"></a>
-### Zippered Iteration
-[Zippered Iteration](https://chapel-lang.org/docs/users-guide/base/zip.html#zippered-iteration) is simultaneously
-iterating over multiple iterables (usually arrays and ranges) with compatible shape and size.
-For arrays, this means that their domains have the same number of elements in each dimension
-
-The syntax:
-```chapel
-var A1, A2, A3, ..., An: [D] int;
-forall (v1, v2, v3, ..., vn) in zip(A1, A2, A3, ..., An) {
-  // for loop iteration `j`, `vi` will refer to the `j`th element of `Ai`
-}
-```
-Since all `Ai` have compatible domains, we know all `vi` will be local to one another on any given loop iteration.
-
-<a id="ex17"></a>
-#### Example 17: Simple Zippered Iteration
-Let's start with a simple example involving zippered iteration:
-```Chapel
-var A: [1..5] real;
-for (a, i, j) in zip(A, 1.., [3, 0, 1, 2, 4]) {
-  a = i**j;
-}
-writeln(A);
-```
-```console
-1.0 1.0 3.0 16.0 625.0
-```
-Notice we have an [unbounded range](https://chapel-lang.org/docs/primers/ranges.html#variations-on-basic-ranges), `1..`,
-so the end bound is determined by the size of the other iterables.
-Since in this case the other iterables are length 5, `1..` is equivalent to `1..5`.
-
-<a id="ex18"></a>
-#### Example 18: Zippered Iteration in Arkouda
-Now let's look at an example based on [`getLengths`](https://github.com/Bears-R-Us/arkouda/blob/b86adeb843275b0b86553534ede632acef4d15e2/src/SegmentedString.chpl#L388-L406) in `SegmentedString.chpl`.
-
-First we need some context. An Arkouda `Strings` (aka SegString) is an array of variable length strings.
-```python
->>> s = ak.array([f"{'s'*(3-i)}{i}" for i in range(3)])
->>> s
-array(['sss0', 'ss1', 's2'])
->>> type(s)
-arkouda.strings.Strings
-```
-
-On the server, a SegString is made up of two distributed array components:
-- values: `uint(8)`
-  - the flattened array of bytes in all the strings (null byte delimited)
-- offsets: `int`
-  - the start index of each individual string in the `values`
-
-For the sake of simplicity, we'll treat values as a string array.
-So for our `s` above, these components look something like:
-```
-values = ['s', 's', 's', '0', '\x00', 's', 's', '1', '\x00', 's', '2', '\x00']
-offsets = [0, 5, 9]
-```
-For `getLengths`, we want to calculate the length of each individual string including the null terminator.
-
-```chapel
-const values: [0..#12] string = ['s', 's', 's', '0', '\x00', 's', 's', '1', '\x00', 's', '2', '\x00'],
-      offsets = [0, 5, 9],
-      size = offsets.size;  // size refers to the number of stings in the Segstring, this is always equivalent to offsets.size
-
-/* Return lengths of all strings, including null terminator. */
-proc getLengths() {
-  // initialize lengths with the same domain as offsets
-  var lengths: [offsets.domain] int;
-  if size == 0 {
-    // if the segstring is empty, the lengths are also empty
-    return lengths;
-  }
-  // save off the last index of offsets
-  const high = offsets.domain.high;
-  forall (i, o, l) in zip(offsets.domain, offsets, lengths) {
-    if i == high {
-      // the last string
-      // len = values.size - start position of this string
-      l = values.size - o;
-    }
-    else {
-      // not the last string
-      // len = start position of next string - start position of this string
-      l = offsets[i+1] - o;
-    }
-  }
-  return lengths;
-}
-
-writeln(getLengths());
-```
-```console
-5 4 3
-```
-Nice! We'll use `getLengths`, `values`, and `offsets` in the next section as well.
-
 <a id="aggregation"></a>
-### Aggregation
+## Aggregation
 
-[Aggregation](https://chapel-lang.org/docs/modules/packages/CopyAggregation.html#copyaggregation) is used to copy
-local values into a remote array (`DstAggregator`) or copy values from a remote array into local variables (`SrcAggregator`).
-This provides a significant speed-up and reduces communication when doing batch assignments.
+For the best performance we want to minimize how often we move data between locales. But there are situations
+where you need to move lots of data between locales. For example assigning local values into a distributed array
+at random indices. In this case, one locale might be copying multiple elements to every other locale.
+Sending each of those elements one at a time results in a lot of communication. Aggregation is used to mitigate
+this.
+
+I like to think of this in terms of transporting people, where our goal is minimizing the total number of trips.
+If a bunch of people are going to the same place, they could all travel there individually. But we'd have
+fewer total trips if we wait until we have enough people to fill a bus and send a whole group at once.
+
+[Copy aggregation](https://chapel-lang.org/docs/modules/packages/CopyAggregation.html#copyaggregation)
+is the same idea. Instead of copying each value individually, we wait until we have a bunch
+that are all going to the same locale and copy them over all at once.
+
+There are two types of copy aggregation:
+* copying local values into remote variables (`DstAggregator`)
+* copying remote values into local variables (`SrcAggregator`)
+
+It's important to note copy aggregation will only work if at least one side is local.
+Both sides being remote (remote-to-remote aggregation) is not supported.
 
 Syntax:
 ```chapel
-// without aggregation
+// without aggregation; every element is sent immediately 
 forall (i, v) in zip(inds, vals) {
   remoteArr[i] = v;
 }
 
-// with aggregation
+// with aggregation; wait until we have a few and send them together
 use CopyAggregation;
 forall (i, v) in zip(inds, vals) with (var agg = new DstAggregator(int)) {
   agg.copy(remoteArr[i], v);
 }
 ```
 The `with` keyword here declares `agg` as a [Task-Private variable](https://chapel-lang.org/docs/language/spec/data-parallelism.html#task-private-variables),
-meaning each task will get its own shadow variable.
+meaning each task will get its own private variable with the same name.
 
-It's important to note aggregation will only work if at least one side is local.
-Both sides being remote (remote-to-remote aggregation) is not yet supported. 
+Let's look at an example, where we copy values from one distributed array into another but shifted over by 3.
+We'll call the array we are copying from `src` and the array we are copying to `dst`.
+This example is designed so when ran with 2 locales, every value will be copied to or from a remote location.
 
-<a id="ex19"></a>
-#### Example 19: Aggregation in Arkouda
-Let's do an example based on [`upper`](https://github.com/Bears-R-Us/arkouda/blob/b86adeb843275b0b86553534ede632acef4d15e2/src/SegmentedString.chpl#L427-L444) in `SegmentedString.chpl`.
+When you do a `forall` loop over a distributed array, each locale will handle the values that are local to it.
+So we can go about this 2 different ways:
+* We could loop over the `src` array, so the source values will always be local. We then copy our local values
+into a remote position of the `dst` array using a `DstAggregator`
+* Or we loop over the `dst` array, so destination values are local. We then want to copy remote values from
+the `src` array into our local `dst` array positions using a `SrcAggregator`
 
-We will use `getLengths` and the `SegString s` from [example 18](#ex18):
+When doing a `forall` loop over a distributed array, I like to think of it as doing the computation from the
+perspective of that array. For this example, we can accomplish our goal just as easily using source or destination
+aggregation. But in some cases one may be easier than the other.
+
+We'll use a [config variable](https://chapel-lang.org/docs/users-guide/base/configs.html)
+to switch between source and destination aggregation. When `UseDstAgg` is set to `true` (the default), it will use
+destination aggregation. To switch to source aggregation we need to add the flag `--UseDstAgg=false` to our execution
+command.
+
 ```chapel
-use CopyAggregation;
+use BlockDist, CopyAggregation;
 
-/*
-  Given a SegString, return a new SegString with all lowercase characters from the original replaced with their uppercase equivalent
-  :returns: Strings – Substrings with lowercase characters replaced with uppercase equivalent
-*/
-proc upper() {
-  var upperVals: [values.domain] string;
-  const lengths = getLengths();
-  forall (off, len) in zip(offsets, lengths) with (var valAgg = new DstAggregator(string)) {
-    var i = 0;
-    for char in ''.join(values[off..#len]).toUpper() {
-      valAgg.copy(upperVals[off+i], char);
-      i += 1;
+config const UseDstAgg = true;
+
+const dom = blockDist.createDomain({0..<6});
+
+// named src because this is the source we are copying from
+var src: [dom] int = [0, 1, 2, 3, 4, 5];
+
+// named dst because this is the destination we are copying to
+var dst: [dom] int;
+
+writeln("src: ", src);
+writeln("dst: ", dst);
+
+if UseDstAgg {
+    // when the destination is remote we use a dstAggregator
+    forall (s, i) in zip(src, 0..) with (var agg = new DstAggregator(int)) {
+      // locNum is which locale this loop iteration is executing on
+      var locNum = here.id;
+
+      // localSubDom is the chunk of the distributed arrays that live on this locale
+      var localSubDom = dom.localSubdomain();
+      
+      // we use a single writeln to avoid interleaving output from another locale 
+      writeln("\niteration num: ", i, "\n  on Locale: ", locNum,
+              "\n  on localSubDom: ", localSubDom, "\n  src[", i, "] is local",
+              "\n  dst[", (i + 3) % 6, "] is remote");
+    
+      // since dst is remote, we use a dst aggregator
+      // assignment without aggregation would look like:
+      // dst[ (i + 3) % 6 ] = s
+      agg.copy(dst[ (i + 3) % 6 ], s);
     }
-  }
-  return (offsets, upperVals);
+    writeln();
+    writeln("src: ", src);
+    writeln("dst: ", dst);
 }
-
-writeln("Old Vals:", values);
-var (newOffs, newVals) = upper();
-writeln("New Vals:", newVals);
-```
-```console
-Old Vals:s s s 0  s s 1  s 2
-New Vals:S S S 0  S S 1  S 2
-```
-This function uses our previous `getLengths` function as well as the Chapel builtins
-[`toUpper`](https://chapel-lang.org/docs/language/spec/strings.html#String.string.toUpper)
-and [`join`](https://chapel-lang.org/docs/language/spec/strings.html#String.string.join)!
-
-
-<a id="TIY4"></a>
-#### Try It Yourself 4: `title`
-Problem:
-Use Aggregation to transform the SegString from [example 16](#ex16) into title case.
-Be sure to use the Chapel builtin [`toTitle`](https://chapel-lang.org/docs/language/spec/strings.html#String.string.toTitle)
-and `getLengths` from example 15.
-<details>
-  <summary>Potential Solution</summary>
-
-```Chapel
-use CopyAggregation;
-
-proc title() {
-  var titleVals: [values.domain] string;
-  const lengths = getLengths();
-  forall (off, len) in zip(offsets, lengths) with (var valAgg = new DstAggregator(string)) {
-    var i = 0;
-    for char in ''.join(values[off..#len]).toTitle() {
-      valAgg.copy(titleVals[off+i], char);
-      i += 1;
+else {
+    // when the source is remote we use a srcAggregator
+    forall (d, i) in zip(dst, 0..) with (var agg = new SrcAggregator(int)) {
+      // locNum is which locale this loop iteration is executing on
+      var locNum = here.id;
+      // localSubDom is the chunk of the distributed arrays that live on this locale
+      var localSubDom = dom.localSubdomain();
+      
+      // we use a single writeln to avoid interleaving output from another locale 
+      writeln("\niteration num: ", i, "\n  on Locale: ", locNum,
+              "\n  on localSubDom: ", localSubDom, "\n  src[", (i + 3) % 6, "] is remote",
+              "\n  dst[", i, "] is local");
+    
+      // since src is remote, we use a src aggregator
+      // assignment without aggregation would look like:
+      // d = src[ (i + 3) % 6 ]
+      agg.copy(d, src[ (i + 3) % 6 ]);
     }
-  }
-  return titleVals;
-}
-writeln(title());
-```
-</details>
-Expected Output:
-
-```console
-S s s 0  S s 1  S 2
-```
-
-<a id="bool_expand_and_compress"></a>
-## Boolean Compression and Expansion Indexing
-Boolean compression and expansion indexing is an application of `reduce scan op`, `forall`, and filtering.
-
-<a id="ex20"></a>
-#### Example 20: Boolean Compression Indexing
-Compression indexing is reducing an array to only the values meeting a certain condition.
-This is a common operation in numpy.
-
-Compression indexing in `numpy`:
-```python
->>> X = np.array([1, 2, 5, 5, 1, 5, 2, 5, 3, 1])
->>> Y = X[X==5]
->>> Y
-array([5, 5, 5, 5])
-```
-We can accomplish the same result in Chapel using tools from this guide! Specifically `reduce scan op`, `forall`, and filtering.
-```chapel
-var X = [1, 2, 5, 5, 1, 5, 2, 5, 3, 1];
-writeln("X = ", X, "\n");
-
-// we begin by creating a boolean array, `truth`, indicating where the condition is met
-var truth = X == 5;
-writeln("truth = ", truth);
-
-// we use `truth` to create the indices, `iv`, into the compressed array
-// `+ scan truth - truth` is essentially creating an exclusive scan
-// note: `iv[truth] = [0, 1, 2, 3]`
-var iv = + scan truth - truth;
-writeln("iv = ", iv);
-writeln("iv[truth] = ", [(t, v) in zip(truth, iv)] if t then v, "\n");
-
-// we then create the return array `Y`
-// it contains all the elements where the condition is met
-// so its size is the number of `True`s i.e. `+ reduce truth`
-var Y: [0..#(+ reduce truth)] int;
-writeln("+ reduce truth = ", + reduce truth);
-writeln("0..#(+ reduce truth) = ", 0..#(+ reduce truth), "\n");
-
-// now that we have the setup, it's time for the actual indexing
-// we do a may-parallel `forall` to iterate over the indices of `X`
-// we filter on `truth[i]`, so we only act if the condition is met
-// we use the compressed indices `iv[i]` to write into `Y`
-// while using the original indices `i` to get the correct value from `X`
-[i in X.domain] if truth[i] {Y[iv[i]] = X[i];}
-
-// note we could do the same thing with zippered iteration
-// since `truth`, `X`, and `iv` have the same domain
-// [(t, x, v) in zip(truth, X, iv)] if t {Y[v] = x;}
-
-writeln("Y = ", Y);
-```
-```console
-X = 1 2 5 5 1 5 2 5 3 1
-
-truth = false false true true false true false true false false
-iv = 0 0 0 1 2 2 3 3 4 4
-iv[truth] = 0 1 2 3
-
-+ reduce truth = 4
-0..#(+ reduce truth) = 0..3
-
-Y = 5 5 5 5
-```
-Awesome! We used most of the information from this guide to reproduce useful numpy functionality!
-With the added benefit that our implementation is parallel and works on distributed data!
-Now let's tackle the very similar challenge of expansion indexing.
-
-<a id="ex21"></a>
-#### Example 21: Boolean Expansion Indexing
-Expansion indexing is writing a smaller array into a larger array at only the values meeting a certain condition.
-This is a common operation in numpy.
-
-Expansion indexing in `numpy`:
-```python
->>> X = np.array([1, 2, 5, 5, 1, 5, 2, 5, 3, 1])
->>> Y = np.array([-9, -8, -7, -6])
->>> X[X==5] = Y
->>> X
-array([ 1,  2, -9, -8,  1, -7,  2, -6,  3,  1])
-```
-We can accomplish the same result in Chapel using tools from this guide! Specifically `reduce scan op`, `forall`, and filtering.
-```chapel
-var X = [1, 2, 5, 5, 1, 5, 2, 5, 3, 1];
-var Y = [-9, -8, -7, -6];
-writeln("X = ", X);
-writeln("Y = ", Y, "\n");
-
-// we begin by creating a boolean array, `truth`, indicating where the condition is met
-var truth = X == 5;
-writeln("truth = ", truth);
-
-// we use `truth` to create the indices, `iv`, into the compressed array
-// `+ scan truth - truth` is essentially creating an exclusive scan
-// note: `iv[truth] = [0, 1, 2, 3]`
-var iv = + scan truth - truth;
-writeln("iv = ", iv);
-writeln("iv[truth] = ", [(t, v) in zip(truth, iv)] if t then v, "\n");
-
-// now that we have the setup, it's time for the actual indexing
-// this is equivalent to compression indexing with the assignment swapped
-// we do a may-parallel `forall` to iterate over the indices of `X`
-// we filter on `truth[i]`, so we only act if the condition is met
-// we use the original indices `i` to write into `X`
-// while using the compressed indices `iv[i]` to get the correct value from `Y`
-[i in X.domain] if truth[i] {X[i] = Y[iv[i]];}
-
-// note we could do the same thing with zippered iteration
-// since `truth`, `X`, and `iv` have the same domain
-// [(t, x, v) in zip(truth, X, iv)] if t {x = Y[v];}
-
-writeln("X = ", X);
-```
-```console
-X = 1 2 5 5 1 5 2 5 3 1
-Y = -9 -8 -7 -6
-
-truth = false false true true false true false true false false
-iv = 0 0 0 1 2 2 3 3 4 4
-iv[truth] = 0 1 2 3
-
-X = 1 2 -9 -8 1 -7 2 -6 3 1
-```
-Great! Now let's use this to tackle our final Try It Yourself!
-
-<a id="TIY5"></a>
-#### Try It Yourself 5: Array Even Replace
-Problem:
-Create a `proc` which given two int arrays `A` and `B` with different domains
-will return `A` but with the even values replaced with the values of `B`
-
-You should aim to use as many of the concepts from the guide as possible:
-  - boolean expansion indexing
-  - may-parallel `forall`
-  - filtering
-  - scan
-  - introspection
-  - zippered iteration
-
-Call:
-  - `arrayEvenReplace([8, 9, 7, 2, 4, 3], [17, 19, 21]);`
-  - `arrayEvenReplace([4, 4, 7, 4, 4, 4], [9, 9, 9, 9, 9]);`
-
-<details>
-  <summary>Potential Solution</summary>
-
-```Chapel
-proc arrayEvenReplace(A: [?D] int, B: [?D2] int) {
-  const truth = A % 2 == 0;
-  const iv = + scan truth - truth;
-  [(t, a, v) in zip(truth, A, iv)] if t {a = B[v];}
-  return A;
+    writeln();
+    writeln("src: ", src);
+    writeln("dst: ", dst);
 }
 ```
-</details>
-Expected Output:
 
+using a `DstAggregator`:
 ```console
-17 9 7 19 21 3
-9 9 7 9 9 9
+$ chpl tutorial.chpl --no-cache-remote
+$ ./tutorial -nl 2
+
+src: 0 1 2 3 4 5
+dst: 0 0 0 0 0 0
+
+iteration num: 0
+  on Locale: 0
+  on localSubDom: {0..2}
+  src[0] is local
+  dst[3] is remote
+
+iteration num: 2
+  on Locale: 0
+  on localSubDom: {0..2}
+  src[2] is local
+  dst[5] is remote
+
+iteration num: 1
+  on Locale: 0
+  on localSubDom: {0..2}
+  src[1] is local
+  dst[4] is remote
+
+iteration num: 3
+  on Locale: 1
+  on localSubDom: {3..5}
+  src[3] is local
+  dst[0] is remote
+
+iteration num: 5
+  on Locale: 1
+  on localSubDom: {3..5}
+  src[5] is local
+  dst[2] is remote
+
+iteration num: 4
+  on Locale: 1
+  on localSubDom: {3..5}
+  src[4] is local
+  dst[1] is remote
+
+src: 0 1 2 3 4 5
+dst: 3 4 5 0 1 2
+```
+
+using a `SrcAggregator`:
+```console
+$ ./tutorial -nl 2 --UseDstAgg=false
+src: 0 1 2 3 4 5
+dst: 0 0 0 0 0 0
+
+iteration num: 0
+  on Locale: 0
+  on localSubDom: {0..2}
+  src[3] is remote
+  dst[0] is local
+
+iteration num: 1
+  on Locale: 0
+  on localSubDom: {0..2}
+  src[4] is remote
+  dst[1] is local
+
+iteration num: 2
+  on Locale: 0
+  on localSubDom: {0..2}
+  src[5] is remote
+  dst[2] is local
+
+iteration num: 3
+  on Locale: 1
+  on localSubDom: {3..5}
+  src[0] is remote
+  dst[3] is local
+
+iteration num: 5
+  on Locale: 1
+  on localSubDom: {3..5}
+  src[2] is remote
+  dst[5] is local
+
+iteration num: 4
+  on Locale: 1
+  on localSubDom: {3..5}
+  src[1] is remote
+  dst[4] is local
+
+src: 0 1 2 3 4 5
+dst: 3 4 5 0 1 2
 ```
 
 <a id="perf"></a>
 ## Performance and Diagnostics
 Now that you're a pro at writing chapel code, let's talk about how to make the code you write more efficient!
 
-<a id="ex22"></a>
-### Example 22: Variable Declarations
-Throughout this tutorial we've mostly used `var` for our variable declarations,
-but there are some instances where we used `const`. This begs the question, what are the different ways to declare
-variables and when should you use them?
+<a id="var_dec"></a>
+### Variable Declarations
+Throughout this tutorial we've mainly used `var` to declare variables, but this is not the only option.
+The driving factor of using other declarations is to improve performance or reduce memory usage.
 
-[`const`](https://chapel-lang.org/docs/users-guide/base/constParam.html) is used when a variable shouldn't ever be changed.
-This is a program execution time constant, so the compiler doesn't need to know its value.
-Knowing that this value won't change can help the compiler to make optimizations.
+[`const`](https://chapel-lang.org/docs/users-guide/base/constParam.html):
+* can be used when we know a variable should never be changed
+* a program execution time constant. This means the compiler doesn't need to know its value, and it can be 
+set at runtime (i.e. passed in by a user)
+* knowing this value won't change can help the compiler to make optimizations
 
-[`param`](https://chapel-lang.org/docs/users-guide/base/constParam.html#declaring-params) is very similar to `const`,
-but it's a program compilation time constant. So it's value does need to be known by the compiler.
+[`param`](https://chapel-lang.org/docs/users-guide/base/constParam.html#declaring-params):
+* similar to `const`, except it must be known at compile time.
 
-[`ref`](https://chapel-lang.org/docs/language/spec/variables.html?highlight=ref#ref-variables) is used to avoid creating a
-copy of an array or repeated accesses of an attribute (especially within a loop).
-Keep in mind changes to the `ref` will update the variable it is referencing.
+[`ref`](https://chapel-lang.org/docs/language/spec/variables.html?highlight=ref#ref-variables):
+* creates a reference to an existing object
+* avoids creating a copy (less memory use)
+* any updates to this will update the object it is referencing 
+* useful to avoid repeated accesses of an attribute (especially within a loop)
 
-```chapel
-// pretend myBool is determined during runtime
-var myBool = true;
 
-proc helper(myBool: bool) {
-    return if myBool then 5 else 10;
-}
+[`const ref`](https://chapel-lang.org/docs/language/spec/variables.html?highlight=ref#ref-variables)
+* same as a `ref` but cannot be changed
 
-// use a var if you expect a value to change
-var myVar = [0, 1, 2];
-// we use a const because we don't know the value at compilation time
-const myConst = helper(myBool);
-// we use a param becasue we know what the value is at compilation time
-param myParam = 17;
-
-// if we want a copy of myVar we can create a new var based on it
-// this results in more memory usage (because we are creating a new array)
-// but changes to myCopy won't change myVar
-var myCopy = myVar;
-myCopy[1] = 100;
-// we see myVar is unchanged
-writeln("myVar: ", myVar);
-
-// we use a ref if we do want changes to myRef to update myVar
-// This save us from having to create a whole new array
-ref myRef = myVar;
-myRef[1] = -2000;
-writeln("myVar: ", myVar);
-```
-```
-myVar: 0 1 2
-myVar: 0 -2000 2
-```
-
-<a id="ex23"></a>
-### Example 23: Diagnostics
+<a id="diagnostics"></a>
+### Diagnostics
 
 There are several chapel modules available to aid in optimizing your code. The most common ones
-used by the arkouda team are [comm](https://chapel-lang.org/docs/modules/standard/CommDiagnostics.html) and
-[time](https://chapel-lang.org/docs/modules/standard/Time.html). There is also
-[memory diagnostics](https://chapel-lang.org/docs/modules/standard/Memory/Diagnostics.html), which is used less frequently.
+used by the arkouda team are [comm](https://chapel-lang.org/docs/modules/standard/CommDiagnostics.html)
+and [time](https://chapel-lang.org/docs/modules/standard/Time.html).
+There is also
+[memory diagnostics](https://chapel-lang.org/docs/modules/standard/Memory/Diagnostics.html),
+which is used less frequently.
 
+For this section we will add the flag `--no-cache-remote` to our compilation command to make
+the output of comm diagnostics a bit simpler.
+
+<a id="agg_comm"></a>
+### Aggregation reducing Communication
 Let's craft an example where we are intentionally copying remote values to show the
-communication that takes place.
-```Chapel
-use BlockDist, CommDiagnostics, Time;
+communication that takes place. We'll be comparing aggregation, regular assignment, and a secret third way. 
 
-var A: [Block.createDomain({0..7})] int = 0..15 by 2;
-var B: [Block.createDomain({0..15})] int = 0..15;
-writeln("A = ", A);
-writeln();
-writeln("B = ", B);
-writeln();
+In this example, we use a
+[`config const`](https://chapel-lang.org/docs/users-guide/base/configs.html#config-var-and-config-const)
+to set the size. We change the size of our arrays by adding `--size=` to our execution command.
 
-resetCommDiagnostics();
-startCommDiagnostics();
-var t1 = Time.timeSinceEpoch().totalSeconds();
-
-forall (a, i) in zip(A, A.domain) {
-  B[B.size - (2*i + 1)] = a;
-}
-
-var t2 = Time.timeSinceEpoch().totalSeconds() - t1;
-stopCommDiagnostics();
-writeln("Copy without aggregation time = ", t2);
-writeln();
-printCommDiagnosticsTable();
-writeln("B = ", B);
-```
-```
-$ ./tutorial -nl 4
-A = 0 2 4 6 8 10 12 14
-
-B = 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
-
-Copy without aggregation time = 0.00058198
-
-| locale | get_nb | put | execute_on_nb | cache_get_hits | cache_get_misses |
-| -----: | -----: | --: | ------------: | -------------: | ---------------: |
-|      0 |      0 |   2 |             3 |              0 |                0 |
-|      1 |      3 |   2 |             0 |              4 |                3 |
-|      2 |      3 |   2 |             0 |              4 |                3 |
-|      3 |      3 |   2 |             0 |              4 |                3 |
-B = 0 14 2 12 4 10 6 8 8 6 10 4 12 2 14 0
-```
-
-<a id="ex24"></a>
-### Example 24: Aggregation Reducing Communication
-Let's compare that same example, but increase the problem size to see how aggregation can reduce
-communication and runtime.
-
-In this example, we use a [`config param`](https://chapel-lang.org/docs/users-guide/base/configs.html#config-param-and-config-type).
-This allows us to update the value of `SIZE` in our compile line by adding a flag `-sSIZE=NEW_VAL`.
 ```Chapel
 use BlockDist, CommDiagnostics, Time, CopyAggregation;
+// communication comparison betweeen using aggregation and straight writing
+// compile with --no-cache-remote
 
-config param SIZE = 1000000;
-var A: [Block.createDomain({0..#(SIZE / 2)})] int = 0..#SIZE by 2;
-var B: [Block.createDomain({0..#SIZE})] int = 0..#SIZE;
+config const size = 10**6;
+config const compareBulkTransfer = false;
+const dom = blockDist.createDomain({0..<size});
+
+// named src because this will be the source we are copying from
+var src: [dom] int = dom;
+
+// named dst because this will be the destination we are copying to
+var dst: [dom] int;
 
 resetCommDiagnostics();
 startCommDiagnostics();
 var t1 = Time.timeSinceEpoch().totalSeconds();
 
-forall (a, i) in zip(A, A.domain) {
-  B[B.size - (2*i + 1)] = a;
+forall (s, i) in zip(src, 0..) {
+  dst[ (i + (size / 2):int ) % size ] = s;
 }
 
 var t2 = Time.timeSinceEpoch().totalSeconds() - t1;
 stopCommDiagnostics();
-writeln("Copy without aggregation time = ", t2);
-writeln();
+writeln("copy without aggregation time = ", t2);
+writeln("communication without aggregation: ");
 printCommDiagnosticsTable();
 
 resetCommDiagnostics();
 startCommDiagnostics();
 t1 = Time.timeSinceEpoch().totalSeconds();
 
-forall (a, i) in zip(A, A.domain) with (var agg = new DstAggregator(int)) {
-  agg.copy(B[B.size - (2*i + 1)], a);
+forall (s, i) in zip(src, 0..) with (var agg = new DstAggregator(int)) {
+  agg.copy(dst[ (i + (size / 2):int ) % size ], s);
 }
 
 t2 = Time.timeSinceEpoch().totalSeconds() - t1;
 stopCommDiagnostics();
-writeln("Copy with aggregation time = ", t2);
 writeln();
+writeln("copy with aggregation time = ", t2);
+writeln("communication using aggregation: ");
 printCommDiagnosticsTable();
+
+if compareBulkTransfer {
+  resetCommDiagnostics();
+  startCommDiagnostics();
+  var t3 = Time.timeSinceEpoch().totalSeconds();
+  
+  // using aggregation is not actually needed
+  // since we are copying a contiguous block 
+  dst[0..<(size / 2)] = src[(size / 2)..<size];
+  dst[(size / 2)..<size] = src[0..<(size / 2)];
+  
+  var t4 = Time.timeSinceEpoch().totalSeconds() - t3;
+  stopCommDiagnostics();
+  writeln();
+  writeln("copy with aggregation time = ", t4);
+  writeln("communication using aggregation: ");
+  printCommDiagnosticsTable();
+}
 ```
-```
+
+```console
+$ chpl tutorial.chpl --no-cache-remote
 $ ./tutorial -nl 4
-Copy without aggregation time = 6.68731
+copy without aggregation time = 13.2172
+communication without aggregation:
+| locale | get |    put | execute_on_nb |
+| -----: | --: | -----: | ------------: |
+|      0 |   7 | 250000 |             3 |
+|      1 |   7 | 250000 |             0 |
+|      2 |   7 | 250000 |             0 |
+|      3 |   7 | 250000 |             0 |
 
-| locale | get_nb |    put | execute_on_nb | cache_get_hits | cache_get_misses |
-| -----: | -----: | -----: | ------------: | -------------: | ---------------: |
-|      0 |      3 | 125000 |             3 |              4 |                3 |
-|      1 |      3 | 125000 |             0 |              4 |                3 |
-|      2 |      3 | 125000 |             0 |              4 |                3 |
-|      3 |      3 | 125000 |             0 |              4 |                3 |
-Copy with aggregation time = 0.072623
-
-| locale | get_nb | put | put_nb | execute_on | execute_on_nb | cache_get_hits | cache_get_misses | cache_put_misses |
-| -----: | -----: | --: | -----: | ---------: | ------------: | -------------: | ---------------: | ---------------: |
-|      0 |     20 |  20 |     10 |         30 |             3 |             40 |               20 |               10 |
-|      1 |     20 |  20 |     10 |         30 |             0 |             40 |               20 |               10 |
-|      2 |     32 |  20 |     10 |         30 |             0 |             28 |               32 |               10 |
-|      3 |     20 |  20 |     10 |         30 |             0 |             40 |               20 |               10 |
+copy with aggregation time = 0.159691
+communication using aggregation:
+| locale | get | put | execute_on | execute_on_nb |
+| -----: | --: | --: | ---------: | ------------: |
+|      0 |  80 |  40 |         40 |             3 |
+|      1 |  80 |  40 |         40 |             0 |
+|      2 |  80 |  40 |         40 |             0 |
+|      3 |  80 |  40 |         40 |             0 |
 ```
-We see the number of `put`s has decreased drastically, and it's way faster!
+We see the number of `put`s has decreased drastically, and it's way faster! Aggregation is great!
+But what's this secret third way?
 
-If we decrease `SIZE`, we see the benefit of the aggregation is outweighed by the cost of setting it up.
-You can play around with different values to see at what point aggregation becomes worthwhile for this example.
+Until now we've been comparing aggregation to copying values individually.
+And that makes sense if we're copying to/from random indices. But there's a lot of structure 
+in this case that we're not using; we just want to swap the two halves. So why can't we just do two large copies?
+
+We can! We call it bulk transfer. In general if you want to copy a contiguous chunk of values into another 
+contiguous chunk of values, it's probably most efficient to do it in one go. 
+
+The code to do this looks something like this:
+
+```chapel
+// copy second half of src into first half of dst
+dst[0..<(size / 2)] = src[(size / 2)..<size];
+
+// copy first half of src into second half of dst
+dst[(size / 2)..<size] = src[0..<(size / 2)];
 ```
-$ chpl Tutorial.chpl -sSIZE=100 -o tutorial
-$ ./tutorial -nl 4
-Copy without aggregation time = 0.00141406
+This is already present in our example and can be enabled by setting the config const
+`compareBulkTransfer` to true.
 
-| locale | get_nb | put | execute_on_nb | cache_get_hits | cache_get_misses |
-| -----: | -----: | --: | ------------: | -------------: | ---------------: |
-|      0 |      3 |  13 |             3 |              4 |                3 |
-|      1 |      3 |  12 |             0 |              4 |                3 |
-|      2 |      3 |  13 |             0 |              4 |                3 |
-|      3 |      3 |  12 |             0 |              4 |                3 |
-Copy with aggregation time = 0.00498009
+```console
+$ ./tutorial -nl 4 --compareBulkTransfer=true
+copy without aggregation time = 12.974
+communication without aggregation:
+| locale | get |    put | execute_on_nb |
+| -----: | --: | -----: | ------------: |
+|      0 |   7 | 250000 |             3 |
+|      1 |   7 | 250000 |             0 |
+|      2 |   7 | 250000 |             0 |
+|      3 |   7 | 250000 |             0 |
 
-| locale | get_nb | put_nb | execute_on | execute_on_nb | cache_get_hits | cache_get_misses | cache_put_misses |
-| -----: | -----: | -----: | ---------: | ------------: | -------------: | ---------------: | ---------------: |
-|      0 |     10 |     20 |         20 |             3 |             30 |               10 |               20 |
-|      1 |     10 |     20 |         20 |             0 |             30 |               10 |               20 |
-|      2 |     14 |     20 |         20 |             0 |             26 |               14 |               20 |
-|      3 |     10 |     20 |         20 |             0 |             30 |               10 |               20 |
+copy with aggregation time = 0.233566
+communication using aggregation:
+| locale | get | put | execute_on | execute_on_nb |
+| -----: | --: | --: | ---------: | ------------: |
+|      0 |  80 |  40 |         40 |             3 |
+|      1 |  80 |  40 |         40 |             0 |
+|      2 |  80 |  40 |         40 |             0 |
+|      3 |  80 |  40 |         40 |             0 |
+
+copy with aggregation time = 0.0141501
+communication using aggregation:
+| locale | get | put | execute_on_nb |
+| -----: | --: | --: | ------------: |
+|      0 |   6 |   0 |            75 |
+|      1 |  54 |   4 |             0 |
+|      2 |  54 |   4 |             0 |
+|      3 |  54 |   4 |             0 |
 ```
 
-<a id="ex25"></a>
-### Example 25: Common Pitfalls
+<a id="pitfalls"></a>
+### Common Pitfalls
 In this section we will cover some common pitfalls that can hurt performance.
-  - Using ranges as leading iterators of parallel loops with distributed arrays (i.e. `forall (i, a) in zip(0..#A.size, A) {`).
+  - Using ranges as leading iterators of parallel loops with distributed arrays 
+    - i.e. `forall (i, a) in zip(0..<A.size, A)`
     - Ranges aren't distributed, so this actually turns into a parallel loop that only executes on locale 0.
-    So a task per core on locale 0 will be executing, but the rest of the machine will be unused.
+    So a task per core on locale 0 will be executing, but the rest of the machine(s) will be unused.
   - Not using aggregation (with random indices) or bulk transfer (with contiguous indices) for copying.
-    - We saw in the previous section what a big difference aggregation can make when copying random elements
+    - We saw in the previous section what a big difference these can make when copying random elements
     out of or into a distributed array.
-    - When we want to copy a contiguous block of indices (such as a slice), it's better to use bulk transfer. i.e. `A[start..#stop] = B;`.
   - Not using refs for component accesses inside loops.
-    - If you find yourself accessing a component of a class during every iteration of a loop, it's often more efficient
-    to save a reference to that component to avoid fetching it every time.
+    - If you find yourself accessing a component of a class during every iteration of a loop, it's
+    probably worth saving a reference to that component to avoid fetching it every time.
 
-Let's look at an example based on an [actual discussion](https://github.com/Bears-R-Us/arkouda/pull/2159#discussion_r1113699483)
-in arkouda that hits on a lot of these points. To motivate the use of `ref`s we need to create a simplified version of
-an arkouda `SymEntry`. All you really need to know is it's a class that contains a `.a` property which is a distributed array.
+Check out this [actual discussion](https://github.com/Bears-R-Us/arkouda/pull/2159#discussion_r1113699483)
+in Arkouda that highlights a lot of these points.
 
-In this example we will take `hashes`, a distributed array contain a tuple of uints `(uint, uint)`. And copy the values
-into `upper` and `lower`, 2 distributed `uint` arrays.
-```Chapel
-use BlockDist, CommDiagnostics, Time;
-
-// simplified symenty class
-class SymEntry {
-    type etype;
-    var a;
-
-    proc init(len: int, type etype) {
-        this.etype = etype;
-        this.a = Block.createArray({0..#len}, etype);
-    }
-
-    proc init(in a: [?D] ?etype) {
-        this.etype = etype;
-        this.a = a;
-    }
-}
-
-config param SIZE = 1000000;
-const distDom = Block.createDomain({0..#SIZE});
-
-// create a array containing tuples of uints
-var hashes: [distDom] (uint, uint) = (1, 1):(uint, uint);
-
-var upperEntry = new SymEntry(SIZE, uint);
-var lowerEntry = new SymEntry(SIZE, uint);
-
-resetCommDiagnostics();
-startCommDiagnostics();
-var t1 = Time.timeSinceEpoch().totalSeconds();
-
-// the leading iterator is a range, so all the computation happens on locale 0
-forall (i, (up, low)) in zip(0..#SIZE, hashes) {
-  upperEntry.a[i] = up;
-  lowerEntry.a[i] = low;
-}
-
-var t2 = Time.timeSinceEpoch().totalSeconds() - t1;
-stopCommDiagnostics();
-writeln("leading iterator not distributed time = ", t2);
-writeln();
-printCommDiagnosticsTable();
-
-resetCommDiagnostics();
-startCommDiagnostics();
-t1 = Time.timeSinceEpoch().totalSeconds();
-
-// leading iterator is distributed
-// but every iteration access the `.a` component
-forall (i, (up, low)) in zip(hashes.domain, hashes) {
-  upperEntry.a[i] = up;
-  lowerEntry.a[i] = low;
-}
-
-t2 = Time.timeSinceEpoch().totalSeconds() - t1;
-stopCommDiagnostics();
-writeln("leading iterator is distributed, but .a accesses time = ", t2);
-writeln();
-printCommDiagnosticsTable();
-
-resetCommDiagnostics();
-startCommDiagnostics();
-t1 = Time.timeSinceEpoch().totalSeconds();
-
-// use refs to avoid repeated accesses
-ref ua = upperEntry.a;
-ref la = lowerEntry.a;
-forall (i, (up, low)) in zip(hashes.domain, hashes) {
-  ua[i] = up;
-  la[i] = low;
-}
-
-t2 = Time.timeSinceEpoch().totalSeconds() - t1;
-stopCommDiagnostics();
-writeln("using refs time = ", t2);
-writeln();
-printCommDiagnosticsTable();
-
-
-var upper: [distDom] uint;
-var lower: [distDom] uint;
-resetCommDiagnostics();
-startCommDiagnostics();
-t1 = Time.timeSinceEpoch().totalSeconds();
-
-// iterate over arrays directly:
-// since they are distributed the same way,
-// the looping variables will always be local to each other
-forall (up, low, h) in zip(upper, lower, hashes) {
-  (up, low) = h;
-}
-
-t2 = Time.timeSinceEpoch().totalSeconds() - t1;
-stopCommDiagnostics();
-writeln("looping over arrays directly time = ", t2);
-writeln();
-printCommDiagnosticsTable();
-
-upperEntry = new SymEntry(upper);
-lowerEntry = new SymEntry(lower);
-```
-
-```
-leading iterator not distributed time = 1.00893
-
-| locale | get_nb | put_nb | cache_get_hits | cache_get_misses | cache_put_hits | cache_put_misses | cache_num_page_readaheads | cache_readahead_unused | cache_readahead_waited |
-| -----: | -----: | -----: | -------------: | ---------------: | -------------: | ---------------: | ------------------: | ------------------: | ------------------: |
-|      0 |  20569 |  11743 |        1488301 |            11762 |        1488257 |            11743 |                      8807 |                      2 |                   6600 |
-|      1 |      0 |      0 |              0 |                0 |              0 |                0 |                         0 |                      0 |                      0 |
-|      2 |      0 |      0 |              0 |                0 |              0 |                0 |                         0 |                      0 |                      0 |
-|      3 |      0 |      0 |              0 |                0 |              0 |                0 |                         0 |                      0 |                      0 |
-leading iterator is distributed, but .a accesses time = 0.138612
-
-| locale | get_nb | execute_on_nb | cache_get_hits | cache_get_misses |
-| -----: | -----: | ------------: | -------------: | ---------------: |
-|      0 |      0 |             3 |              0 |                0 |
-|      1 |     20 |             0 |         499980 |               20 |
-|      2 |     20 |             0 |         499980 |               20 |
-|      3 |     20 |             0 |         499980 |               20 |
-using refs time = 0.0485179
-
-| locale | execute_on_nb |
-| -----: | ------------: |
-|      0 |             3 |
-|      1 |             0 |
-|      2 |             0 |
-|      3 |             0 |
-looping over arrays directly time = 0.0310571
-
-| locale | execute_on_nb |
-| -----: | ------------: |
-|      0 |             3 |
-|      1 |             0 |
-|      2 |             0 |
-|      3 |             0 |
-```
 Congrats!! You've completed the Chapel tutorial!
 
 ## Want to learn more?
-Most of this functionality (and much more) is covered in depth in the Chapel documentation! Check out their [User's Guide](https://chapel-lang.org/docs/users-guide/index.html)
+
+Most of this functionality (and much more) is covered in depth in the Chapel documentation!
+Check out their [User's Guide](https://chapel-lang.org/docs/users-guide/index.html)
 and [primers](https://chapel-lang.org/docs/primers/index.html).
