@@ -347,7 +347,7 @@ class TestPdarrayCreation:
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [ak.int64, ak.float64, ak.bool_, ak.bigint])
     def test_ones_like(self, size, dtype):
-        ran_arr = ak.array(np.arange(size), dtype=dtype)
+        ran_arr = ak.array(ak.arange(size, dtype=dtype))
         ones_like_arr = ak.ones_like(ran_arr)
         assert isinstance(ones_like_arr, ak.pdarray)
         assert dtype == ones_like_arr.dtype
@@ -404,7 +404,7 @@ class TestPdarrayCreation:
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
     def test_zeros_like(self, size, dtype):
-        ran_arr = ak.array(np.arange(size), dtype=dtype)
+        ran_arr = ak.array(ak.arange(size, dtype=dtype))
         zeros_like_arr = ak.zeros_like(ran_arr)
         assert isinstance(zeros_like_arr, ak.pdarray)
         assert dtype == zeros_like_arr.dtype
