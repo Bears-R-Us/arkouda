@@ -11,6 +11,7 @@ from pandas.testing import assert_frame_equal, assert_series_equal
 import arkouda as ak
 from arkouda import io_util
 from arkouda.scipy import chisquare as akchisquare
+from arkouda.testing import assert_frame_equal as ak_assert_frame_equal
 
 
 def alternating_1_0(n):
@@ -238,6 +239,46 @@ class TestDataFrame:
         # these should be equivalent
         ak_to_pd = akdf.to_pandas()
         assert_frame_equal(pddf, ak_to_pd)
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", ["float64", "int64"])
+    def test_from_pandas_with_index(self, size, dtype):
+        np_arry = np.arange(size, dtype=dtype)
+        np_arry = np_arry[::2] * -1.0  # Alter so that index is different from default
+        idx = pd.Index(np_arry)
+        pd_df = pd.DataFrame({"col1": np_arry}, index=idx)
+        ak_df = ak.DataFrame(pd_df)
+        assert pd_df.index.inferred_type == ak_df.index.inferred_type
+
+        ak_arry = ak.arange(size, dtype=dtype)
+        ak_arry = ak_arry[::2] * -1.0
+        idx = ak.Index(ak_arry)
+        expected_df = ak.DataFrame({"col1": ak_arry}, index=idx)
+
+        ak_assert_frame_equal(ak_df, expected_df)
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", ["float64", "int64"])
+    def test_round_trip_pandas_conversion(self, size, dtype):
+        a = ak.arange(size, dtype=dtype)
+        a = a[::2] * -1.0  # Alter so that index is different from default
+        idx = ak.Index(a)
+        original_df = ak.DataFrame({"col1": a}, index=idx)
+        round_trip_df = ak.DataFrame(original_df.to_pandas(retain_index=True))
+
+        ak_assert_frame_equal(original_df, round_trip_df)
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_round_trip_dataframe_conversion2(self, size):
+
+        a = ak.arange(size, dtype="float64") + 0.001
+
+        idx = ak.Index(a)
+        df = ak.DataFrame({"col1": a}, index=idx)
+        pd_df = df.to_pandas(retain_index=True)
+        round_trip_df = ak.DataFrame(pd_df)
+
+        ak.assert_frame_equal(df, round_trip_df)
 
     def test_convenience_init(self):
         dict1 = {"0": [1, 2], "1": [True, False], "2": ["foo", "bar"], "3": [2.3, -1.8]}
