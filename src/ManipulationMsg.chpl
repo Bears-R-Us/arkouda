@@ -125,7 +125,6 @@ module ManipulationMsg {
         }
       }
 
-      // if eOut.a.rank > 1 then eOut.a = flatten(eOut.a); // adc -- doesn't work
       const repMsg = "created " + st.attrib(rname);
       mLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
       return new MsgTuple(repMsg, MsgType.NORMAL);
