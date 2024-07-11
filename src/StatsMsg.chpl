@@ -127,13 +127,15 @@ module StatsMsg {
         return cs;
       } else {
         var cs = makeDistArray(if includeInitial then expandedDomain(d, axis) else d, t);
+
         forall (slice, _) in axisSlices(d, new list([axis])) {
           const xSlice = removeDegenRanks(x[slice], 1),
-                csSlice = + scan xSlice;
+                csSlice = (+ scan xSlice):t;
+
           for idx in slice {
             var csIdx = idx;
             if includeInitial then csIdx[axis] += 1;
-            cs[csIdx] = (csSlice[idx[axis]]):t;
+            cs[csIdx] = csSlice[idx[axis]];
           }
         }
         return cs;
@@ -142,9 +144,9 @@ module StatsMsg {
 
     private proc expandedDomain(d: domain(?), axis: int): domain(?) {
       var rngs: d.rank*range;
-      for i in 0..<d.rank do rngs[i] = if i == axis
+      for param i in 0..<d.rank do rngs[i] = if i == axis
         then d.dim(i).low..(d.dim(i).high + 1)
         else d.dim(i);
-      return d[{(...rngs)}];
+      return {(...rngs)};
     }
 }

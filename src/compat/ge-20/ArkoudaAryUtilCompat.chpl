@@ -33,7 +33,7 @@ module ArkoudaAryUtilCompat {
   }
 
   proc domOnAxis(D: domain(?), idx: D.rank*int, const ref axes: list(int)): domain(?) throws {
-    if axes.size >= D.rank then
+    if axes.size > D.rank then
       throw new Error("Cannot create a %i dimensional slice from a %i dimensional domain".format(axes.size, D.rank));
 
     var outDims: D.rank*range;
