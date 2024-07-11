@@ -773,3 +773,54 @@ class TestNumeric:
                     assert np.allclose(
                         np.clip(nd_arry, lo, None), ak.clip(ak_arry, aklo, None).to_ndarray()
                     )
+
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_putmask(self, prob_size):
+
+        for data_type in INT_FLOAT:
+
+            #  three things to test: values same size as data
+
+            nda = np.random.randint(0, 10, prob_size).astype(data_type)
+            result = nda.copy()
+            np.putmask(result, result > 5, result**2)
+            pda = ak.array(nda)
+            ak.putmask(pda, pda > 5, pda**2)
+            assert (
+                np.all(result == pda.to_ndarray())
+                if data_type == ak.int64
+                else np.allclose(result, pda.to_ndarray())
+            )
+
+            # values shorter than data
+
+            result = nda.copy()
+            pda = ak.array(nda)
+            values = np.arange(3).astype(data_type)
+            np.putmask(result, result > 5, values)
+            ak.putmask(pda, pda > 5, ak.array(values))
+            assert (
+                np.all(result == pda.to_ndarray())
+                if data_type == ak.int64
+                else np.allclose(result, pda.to_ndarray())
+            )
+
+            # values longer than data
+
+            result = nda.copy()
+            pda = ak.array(nda)
+            values = np.arange(prob_size + 1).astype(data_type)
+            np.putmask(result, result > 5, values)
+            ak.putmask(pda, pda > 5, ak.array(values))
+            assert (
+                np.all(result == pda.to_ndarray())
+                if data_type == ak.int64
+                else np.allclose(result, pda.to_ndarray())
+            )
+
+            # finally try to raise the error
+
+            pda = ak.random.randint(0, 10, 10).astype(ak.float64)
+            values = np.arange(10)
+            with pytest.raises(TypeError):
+                ak.putmask(pda, pda > 3, values)
