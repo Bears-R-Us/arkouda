@@ -18,6 +18,9 @@ CHPL := chpl
 # We need to make the HDF5 API use the 1.10.x version for compatibility between 1.10 and 1.12
 CHPL_FLAGS += --ccflags="-DH5_USE_110_API"
 
+# Python
+CHPL_FLAGS += $(shell python3-config --includes) $(shell python3-config --ldflags) -lpython3.$(shell python -c "import sys; print(sys.version_info.minor)")
+
 # silence warnings about '@arkouda' annotations being unrecognized
 CHPL_FLAGS += --using-attribute-toolname arkouda
 
