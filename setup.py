@@ -130,6 +130,7 @@ setup(
         "tables>=3.7.0",
         "pyarrow",
         "scipy<=1.13.1",
+        "cloudpickle",
     ],
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"
