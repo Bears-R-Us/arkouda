@@ -16,6 +16,7 @@ from typing import (
 )
 
 import numpy as np
+from pandas import Categorical as pd_Categorical
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
@@ -48,8 +49,8 @@ class Categorical:
 
     Parameters
     ----------
-    values : Strings
-        String values to convert to categories
+    values : Strings, Categorical, pd.Categorical
+        Values to convert to categories
     NAvalue : str scalar
         The value to use to represent missing/null data
 
@@ -107,16 +108,32 @@ class Categorical:
             self._categories_used = self.categories[unique_codes]
         else:
             # Typical initialization, called with values
-            if not isinstance(values, Strings):
-                raise ValueError(("Categorical: inputs other than " + "Strings not yet supported"))
-            g = GroupBy(values)
-            self.categories = g.unique_keys
-            self.codes = g.broadcast(arange(self.categories.size), permute=True)
-            self.permutation = cast(pdarray, g.permutation)
-            self.segments = g.segments
-            # Make a copy because N/A value must be added below
-            self._categories_used = self.categories[:]
-
+            if isinstance(values, pd_Categorical):
+                self.values = array(values.to_numpy())
+                self.categories = array(values.categories)
+                self.codes = array(values.codes.astype("int64"))
+                self._categories_used = self.categories[unique(self.codes)]
+                self.permutation = None
+                self.segments = None
+            elif isinstance(values, Categorical):
+                self.values = values.values
+                self.categories = values.categories
+                self.codes = values.codes
+                self._categories_used = values._categories_used
+                self.permutation = values.permutation
+                self.segments = values.segments
+            elif isinstance(values, Strings):
+                g = GroupBy(values)
+                self.categories = g.unique_keys
+                self.codes = g.broadcast(arange(self.categories.size), permute=True)
+                self.permutation = cast(pdarray, g.permutation)
+                self.segments = g.segments
+                # Make a copy because N/A value must be added below
+                self._categories_used = self.categories[:]
+            else:
+                raise ValueError(
+                    ("Categorical: inputs other than " + "Strings or pd.Categorical not yet supported")
+                )
         # When read from file or attached, NA code will be passed as a pdarray
         # Otherwise, the NA value is set to a string
         if "_akNAcode" in kwargs and kwargs["_akNAcode"] is not None:
@@ -398,6 +415,14 @@ class Categorical:
             idx = self.categories.to_ndarray()
             valcodes = self.codes.to_ndarray()
         return idx[valcodes]
+
+    def to_pandas(self) -> pd_Categorical:
+        """
+        Return the equivalent Pandas Categorical.
+        """
+        return pd_Categorical.from_codes(
+            codes=self.codes.to_ndarray(), categories=self.categories.to_ndarray()
+        )
 
     def to_list(self) -> List:
         """

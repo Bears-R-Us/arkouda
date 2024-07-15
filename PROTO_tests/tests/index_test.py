@@ -5,12 +5,17 @@ import tempfile
 import pandas as pd
 import pytest
 from numpy import dtype as npdtype
+from pandas import Categorical as pd_Categorical
+from pandas import Index as pd_Index
+from pandas.testing import assert_index_equal as pd_assert_index_equal
 
 import arkouda as ak
 from arkouda import io_util
 from arkouda.dtypes import dtype
 from arkouda.index import Index
 from arkouda.pdarrayclass import pdarray
+from arkouda.testing import assert_index_equal
+from arkouda.testing import assert_index_equal as ak_assert_index_equal
 
 
 @pytest.fixture
@@ -37,6 +42,26 @@ class TestIndex:
         assert idx.size == size
         assert idx.to_list() == list(range(size))
 
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_index_creation_strings(self, size):
+        strings1 = ak.random_strings_uniform(1, 2, size)
+        idx = ak.Index(ak.Categorical(strings1))
+
+        assert isinstance(idx, ak.Index)
+        assert idx.size == size
+        assert idx.to_list() == strings1.to_list()
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_index_creation_from_index(self, size):
+        strings1 = ak.random_strings_uniform(1, 2, size)
+        idx = ak.Index(ak.Categorical(strings1))
+
+        idx2 = Index(idx)
+        ak_assert_index_equal(idx, idx2)
+
+        idx3 = Index(idx.to_pandas())
+        ak_assert_index_equal(idx, idx3)
+
     def test_index_creation_lists(self):
         i = ak.Index([1, 2, 3])
         assert isinstance(i.values, pdarray)
@@ -50,7 +75,15 @@ class TestIndex:
         assert i3.dtype == dtype("<U")
 
         with pytest.raises(ValueError):
-            i4 = ak.Index([1, 2, 3], allow_list=True, max_list_size=2)
+            ak.Index([1, 2, 3], allow_list=True, max_list_size=2)
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_index_creation_categorical(self, size):
+        strings1 = ak.random_strings_uniform(1, 2, size)
+        pd_cat = pd_Categorical(strings1.to_ndarray())
+        ak_cat = ak.Categorical(strings1)
+
+        assert_index_equal(Index(pd_cat), Index(ak_cat))
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_multiindex_creation(self, size):
@@ -61,16 +94,79 @@ class TestIndex:
         assert idx.size == size
 
         # test tuple generation
-        idx = ak.MultiIndex((ak.arange(size), ak.arange(size)))
-        assert isinstance(idx, ak.MultiIndex)
-        assert idx.nlevels == 2
-        assert idx.size == size
+        idx2 = ak.MultiIndex((ak.arange(size), ak.arange(size)))
+        assert isinstance(idx2, ak.MultiIndex)
+        assert idx2.nlevels == 2
+        assert idx2.size == size
+
+        ak_assert_index_equal(idx, idx2)
 
         with pytest.raises(TypeError):
             idx = ak.MultiIndex(ak.arange(size))
 
         with pytest.raises(ValueError):
             idx = ak.MultiIndex([ak.arange(size), ak.arange(size - 1)])
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_create_multiindex(self, size):
+        ak_str = ak.random_strings_uniform(1, 2, size)
+        ak_cat = ak.Categorical(ak_str)
+        ak_int = ak.arange(size)
+        ak_multi = ak.MultiIndex([ak_str, ak_cat, ak_int], names=["first", "second", "third"])
+
+        pd_str = ak_str.to_ndarray()
+        pd_cat = ak_cat.to_pandas()
+        pd_int = ak_int.to_ndarray()
+        pd_multi = pd.MultiIndex.from_arrays(
+            [pd_str, pd_cat, pd_int], names=["first", "second", "third"]
+        )
+
+        ak_assert_index_equal(ak_multi, ak.MultiIndex(pd_multi))
+
+    @pytest.mark.parametrize("names", [None, ["a", "b", "c"]])
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_multiindex_creation_categorical(self, size, names):
+        # test list generation
+        strings1 = ak.random_strings_uniform(1, 2, size)
+        idx = ak.MultiIndex([strings1, ak.Categorical(strings1), ak.arange(size)], names=names)
+
+        # test tuple generation
+        idx2 = ak.MultiIndex((strings1, ak.Categorical(strings1), ak.arange(size)), names=names)
+        ak_assert_index_equal(idx, idx2)
+
+        # test from MultiIndex
+        idx3 = ak.MultiIndex(idx2)
+        ak_assert_index_equal(idx, idx3)
+
+        # test from pd.MultiIndex
+        idx4 = ak.MultiIndex(idx2.to_pandas())
+        ak_assert_index_equal(idx, idx4)
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_multiindex_creation_names(self, size):
+        # test list generation
+        strings1 = ak.random_strings_uniform(1, 2, size)
+        idx = ak.MultiIndex(
+            [strings1, ak.Categorical(strings1), ak.arange(size)],
+            name="test_name",
+            names=["a", "b", "c"],
+        )
+
+        # test tuple generation
+        idx2 = ak.MultiIndex(
+            (strings1, ak.Categorical(strings1), ak.arange(size)),
+            name="test_name",
+            names=["a", "b", "c"],
+        )
+        ak_assert_index_equal(idx, idx2)
+
+        # test from MultiIndex
+        idx3 = ak.MultiIndex(idx2)
+        ak_assert_index_equal(idx, idx3)
+
+        # test from pd.MultiIndex
+        idx4 = ak.MultiIndex(idx2.to_pandas())
+        ak_assert_index_equal(idx, idx4)
 
     def test_name_names(self):
         i = ak.Index([1, 2, 3], name="test")
@@ -273,7 +369,7 @@ class TestIndex:
         i4 = Index(ak.arange(3))
         self.assert_equal(m2.get_level_values(0), i4)
 
-        with pytest.raises(RuntimeError):
+        with pytest.raises(ValueError):
             m2.get_level_values("col")
 
         with pytest.raises(ValueError):
@@ -411,7 +507,8 @@ class TestIndex:
             idx.to_hdf(f"{tmp_dirname}/idx_file.h5")
             assert len(glob.glob(f"{tmp_dirname}/idx_file_*.h5")) == locale_count
 
-    def test_to_pandas(self):
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_to_pandas(self, size):
         i = ak.Index([1, 2, 3])
         assert i.to_pandas().equals(pd.Index([1, 2, 3]))
 
@@ -423,6 +520,32 @@ class TestIndex:
 
         i4 = ak.Index(ak.array(["a", "b", "c"]))
         assert i4.to_pandas().equals(pd.Index(["a", "b", "c"]))
+
+        # categorical case
+        strings1 = ak.random_strings_uniform(1, 2, size)
+        ak_cat = ak.Categorical(strings1)
+
+        pd_cat = pd_Categorical.from_codes(
+            codes=ak_cat.codes.to_ndarray(), categories=ak_cat.categories.to_ndarray()
+        )
+
+        pd_assert_index_equal(ak.Index(ak_cat).to_pandas(), pd_Index(pd_cat), check_categorical=True)
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_to_pandas_multiindex(self, size):
+        ak_str = ak.random_strings_uniform(1, 2, size)
+        ak_cat = ak.Categorical(ak_str)
+        ak_int = ak.arange(size)
+        ak_multi = ak.MultiIndex([ak_str, ak_cat, ak_int], names=["first", "second", "third"])
+
+        pd_str = ak_str.to_ndarray()
+        pd_cat = ak_cat.to_pandas()
+        pd_int = ak_int.to_ndarray()
+        pd_multi = pd.MultiIndex.from_arrays(
+            [pd_str, pd_cat, pd_int], names=["first", "second", "third"]
+        )
+
+        pd_assert_index_equal(ak_multi.to_pandas(), pd_multi, check_categorical=True)
 
     def test_to_ndarray(self):
         from numpy import array as ndarray
@@ -457,3 +580,10 @@ class TestIndex:
         i = ak.Index([1, 2, 3], allow_list=True)
         with pytest.raises(TypeError):
             i.register("test")
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_round_trip_conversion_categorical(self, size):
+        strings1 = ak.random_strings_uniform(1, 2, size)
+        i1 = ak.Index(ak.Categorical(strings1))
+        i2 = ak.Index(i1.to_pandas())
+        assert_index_equal(i1, i2)

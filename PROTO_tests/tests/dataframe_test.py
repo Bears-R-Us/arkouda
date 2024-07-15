@@ -595,9 +595,9 @@ class TestDataFrame:
         s = ak.DataFrame({"a": ak.Categorical(ak.array(["a", "a", "a", "b"]))}).groupby("a").size()
         pds = pd.Series(
             data=np.array([3, 1]),
-            index=pd.Index(data=np.array(["a", "b"], dtype="<U7"), name="a"),
+            index=pd.Index(data=pd.Categorical(np.array(["a", "b"])), name="a"),
         )
-        assert_series_equal(pds, s.to_pandas())
+        assert_series_equal(pds, s.to_pandas(), check_categorical=False)
 
     def test_gb_series(self):
         df = self.build_ak_df()
