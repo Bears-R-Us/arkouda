@@ -14,6 +14,9 @@ from server_util.test.server_test_util import (
 
 def pytest_addoption(parser):
     parser.addoption(
+        "--optional-parquet", action="store_true", default=False, help="run optional parquet tests"
+    )
+    parser.addoption(
         "--nl", action="store", default="2",
         help="Number of Locales to run Arkouda with. "
              "Defaults to 2. If Arkouda is not configured for multi_locale, 1 locale is used"
@@ -28,6 +31,15 @@ def pytest_addoption(parser):
         help="Value to initialize random number generator."
     )
 
+def pytest_collection_modifyitems(config, items):
+    if config.getoption("--optional-parquet"):
+        # --optional-parquet given in cli: do not skip optional parquet tests
+        return
+    skip_parquet = pytest.mark.skip(reason="need --optional-parquet option to run")
+    for item in items:
+        if "optional_parquet" in item.keywords:
+            item.add_marker(skip_parquet)
+
 
 def _get_test_locales(config):
     """
@@ -39,6 +51,7 @@ def _get_test_locales(config):
 
 
 def pytest_configure(config):
+    config.addinivalue_line("markers", "optional_parquet: mark test as slow to run")
     pytest.port = int(os.getenv("ARKOUDA_SERVER_PORT", 5555))
     pytest.server = os.getenv("ARKOUDA_SERVER_HOST", "localhost")
     pytest.timeout = int(os.getenv("ARKOUDA_CLIENT_TIMEOUT", 5))
