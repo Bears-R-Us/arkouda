@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, List, Optional, Tuple, Union, cast
 
 from arkouda.client import generic_msg
 import numpy as np
-from arkouda.pdarrayclass import create_pdarray, pdarray, _to_pdarray
+from arkouda.pdarrayclass import create_pdarray, pdarray, _to_pdarray, scalar_array
 from arkouda.dtypes import dtype as akdtype
 from arkouda.dtypes import resolve_scalar_dtype
 
@@ -375,7 +375,7 @@ def zeros(
         ndim = len(shape)
     else:
         if shape == 0:
-            ndim = 0
+            return Array._new(scalar_array(0))
         else:
             ndim = 1
 
@@ -383,12 +383,8 @@ def zeros(
     dtype_name = cast(np.dtype, dtype).name
 
     repMsg = generic_msg(
-        cmd=f"create{ndim}D",
-        args={
-            "dtype": dtype_name,
-            "shape": shape,
-            "value": 0,
-        },
+        cmd=f"create<{dtype_name},{ndim}>",
+        args={"shape": shape},
     )
 
     return Array._new(create_pdarray(repMsg))

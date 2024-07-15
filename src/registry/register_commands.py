@@ -1,6 +1,11 @@
 import chapel
 import sys
 import json
+import itertools
+
+DEFAULT_MODS = [
+    "MsgProcessing"
+]
 
 registerAttr = ("arkouda.registerCommand", ["name"])
 instAndRegisterAttr = ("arkouda.instantiateAndRegister", ["prefix"])
@@ -25,6 +30,7 @@ chapel_scalar_types = {
     "complex(64)": "complex64",
     "complex(128)": "complex128",
     "complex": "complex128",
+    "bigint": "bigint",
 }
 
 # type and variable names from arkouda infrastructure that could conceivable be changed in the future:
@@ -597,6 +603,7 @@ def register_commands(config, source_files):
     stamps = [
         "module Commands {",
         "use CommandMap, Message, MultiTypeSymbolTable, MultiTypeSymEntry;",
+        "use BigInteger;",
     ]
 
     count = 0
@@ -711,7 +718,7 @@ def register_commands(config, source_files):
 def getModuleFiles(config, src_dir):
     with open(config, 'r') as cfg_file:
         mods = []
-        for line in cfg_file.readlines():
+        for line in itertools.chain(cfg_file.readlines(), DEFAULT_MODS):
             mod = line.split("#")[0].strip()
             if mod != "":
                 mods.append(f"{mod}.chpl" if mod[0] == '/' else f"{src_dir}/{mod}.chpl")

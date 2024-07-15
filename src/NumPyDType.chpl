@@ -79,6 +79,10 @@ module NumPyDType
       }
     }
 
+    proc typeSize(type t): int {
+      return dtypeSize(whichDtype(t));
+    }
+
     /* Turns a dtype string in pythonland into a DType
 
     :arg dstr: pythonic dtype to be converted

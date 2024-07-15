@@ -479,7 +479,7 @@ def zeros(
     # check dtype for error
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-    repMsg = generic_msg(cmd="create1D", args={"dtype": dtype_name, "shape": size})
+    repMsg = generic_msg(cmd=f"create<{dtype_name},1>", args={"shape": size})
 
     return create_pdarray(repMsg, max_bits=max_bits)
 
@@ -535,7 +535,7 @@ def ones(
     # check dtype for error
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-    repMsg = generic_msg(cmd="create1D", args={"dtype": dtype_name, "shape": size})
+    repMsg = generic_msg(cmd=f"create<{dtype_name},1>", args={"shape": size})
     a = create_pdarray(repMsg)
     a.fill(1)
     if max_bits:
@@ -600,7 +600,7 @@ def full(
     # check dtype for error
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-    repMsg = generic_msg(cmd="create1D", args={"dtype": dtype_name, "shape": size})
+    repMsg = generic_msg(cmd=f"create<{dtype_name},1>", args={"shape": size})
     a = create_pdarray(repMsg)
     a.fill(fill_value)
     if max_bits:
@@ -626,11 +626,8 @@ def scalar_array(value: numeric_scalars):
 
     return create_pdarray(
         generic_msg(
-            cmd="create0D",
-            args={
-                "dtype": resolve_scalar_dtype(value),
-                "value": value,
-            },
+            cmd=f"createScalarArray<{resolve_scalar_dtype(value)}>",
+            args={"value": value},
         )
     )
 

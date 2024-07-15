@@ -19,6 +19,8 @@ module RandMsg
     use ServerErrorStrings;
     use ArkoudaRandomCompat;
 
+    import BigInteger;
+
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const randLogger = new Logger(logLevel, logChannel);
@@ -29,137 +31,53 @@ module RandMsg
 
     :arg reqMsg: message to process (contains cmd,aMin,aMax,len,dtype)
     */
-    @arkouda.registerND
-    proc randintMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-        param pn = Reflection.getRoutineName();
-        var repMsg: string; // response message
-        
-        const shape = msgArgs.get("shape").getTuple(nd);
-        const dtype = str2dtype(msgArgs.getValueOf("dtype"));
-        const seed = msgArgs.getValueOf("seed");
-        const low = msgArgs.get("low");
-        const high = msgArgs.get("high");
+    @arkouda.instantiateAndRegister
+    proc randint(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
+        where array_dtype != BigInteger.bigint
+    {
+        const shape = msgArgs["shape"].toScalarTuple(int, array_nd),
+              seed = msgArgs["seed"].toScalar(int);
+
+        const low = msgArgs["low"].toScalar(array_dtype),
+              high = msgArgs["high"].toScalar(array_dtype) - if isIntegralType(array_dtype) then 1 else 0;
 
         var len = 1;
         for s in shape do len *= s;
+        overMemLimit(len);
 
-        // get next symbol name
-        const rname = st.nextName();
-
-        // if verbose print action
         randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-               "cmd: %s len: %i dtype: %s rname: %s aMin: %s: aMax: %s".format(
-                                           cmd,len,dtype2str(dtype),rname,low.getValue(),high.getValue()));
+                         "cmd: %s len: %i dtype: %s aMin: %?: aMax: %?".format(
+                         cmd,len,type2str(array_dtype),low,high));
 
-        proc doFillRand(type t, param sub: t): MsgTuple throws {
-            overMemLimit(len);
-            const aMin = low.getScalarValue(t),
-                  aMax = high.getScalarValue(t) - sub,
-                  t1 = Time.timeSinceEpoch().totalSeconds();
-            var e = st.addEntry(rname, (...shape), t);
-            randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                              "alloc time = %i sec".format(Time.timeSinceEpoch().totalSeconds() - t1));
-            const t2 = Time.timeSinceEpoch().totalSeconds();
-            fillRand(e.a, aMin, aMax, seed);
-            randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                              "compute time = %i sec".format(Time.timeSinceEpoch().totalSeconds() - t2));
+        var t = new stopwatch();
+        t.start();
 
-            const repMsg = "created " + st.attrib(rname);
-            randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-            return new MsgTuple(repMsg, MsgType.NORMAL);
+        var e = createSymEntry((...shape), array_dtype);
+
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                         "alloc time = %? sec".format(t.elapsed()));
+        t.restart();
+
+        if array_dtype == bool {
+            if seed == -1
+                then fillRandom(e.a);
+                else fillRandom(e.a, seed);
+        } else {
+            if seed == -1
+                then fillRandom(e.a, low, high);
+                else fillRandom(e.a, low, high, seed);
         }
 
-        inline proc notImplemented(): MsgTuple throws {
-            const errorMsg = unsupportedTypeError(dtype, pn);
-            randLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);
-        }
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                         "compute time = %i sec".format(t.elapsed()));
 
-        select dtype {
-            when DType.Int8 {
-                if SupportsInt8
-                    then return doFillRand(int(8), 1);
-                    else return notImplemented();
-            }
-            when DType.Int16 {
-                if SupportsInt16
-                    then return doFillRand(int(16), 1);
-                    else return notImplemented();
-            }
-            when DType.Int32 {
-                if SupportsInt32
-                    then return doFillRand(int(32), 1);
-                    else return notImplemented();
-            }
-            when DType.Int64 {
-                if SupportsInt64
-                    then return doFillRand(int, 1);
-                    else return notImplemented();
-            }
-            when DType.UInt8 {
-                if SupportsUint8
-                    then return doFillRand(uint(8), 1);
-                    else return notImplemented();
-            }
-            when DType.UInt16 {
-                if SupportsUint16
-                    then return doFillRand(uint(16), 1);
-                    else return notImplemented();
-            }
-            when DType.UInt32 {
-                if SupportsUint32
-                    then return doFillRand(uint(32), 1);
-                    else return notImplemented();
-            }
-            when DType.UInt64 {
-                if SupportsUint64
-                    then return doFillRand(uint, 1);
-                    else return notImplemented();
-            }
-            when DType.Float32 {
-                if SupportsFloat32
-                    then return doFillRand(real(32), 0.0);
-                    else return notImplemented();
-            }
-            when DType.Float64 {
-                if SupportsFloat64
-                    then return doFillRand(real, 0.0);
-                    else return notImplemented();
-            }
-            when DType.Complex64 {
-                if SupportsComplex64
-                    then return doFillRand(complex(64), 0.0 + 0.0i);
-                    else return notImplemented();
-            }
-            when DType.Complex128 {
-                if SupportsComplex128
-                    then return doFillRand(complex, 0.0 + 0.0i);
-                    else return notImplemented();
-            }
-            when DType.Bool {
-                if SupportsBool {
-                    overMemLimit(len);
-                    const t1 = Time.timeSinceEpoch().totalSeconds();
-                    var e = st.addEntry(rname, (...shape), bool);
-                    randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                              "alloc time = %i sec".format(Time.timeSinceEpoch().totalSeconds() - t1));
-                    const t2 = Time.timeSinceEpoch().totalSeconds();
-                    fillBool(e.a, seed);
-                    randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                              "compute time = %i sec".format(Time.timeSinceEpoch().totalSeconds() - t2));
+        return st.insert(e);
+    }
 
-                    const repMsg = "created " + st.attrib(rname);
-                    randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-                    return new MsgTuple(repMsg, MsgType.NORMAL);
-                }
-                else return notImplemented();
-            }
-            otherwise {
-                var errorMsg = notImplementedError(pn,dtype);
-                randLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
-            }
-        }
+    proc randint(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
+        where array_dtype == BigInteger.bigint
+    {
+        return MsgTuple.error("randint does not support the bigint dtype");
     }
 
     proc randomNormalMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {

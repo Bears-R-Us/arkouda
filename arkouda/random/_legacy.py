@@ -97,13 +97,12 @@ def randint(
         raise TypeError(f"unsupported dtype {dtype}")
 
     repMsg = generic_msg(
-        cmd=f"randint{ndim}D",
+        cmd=f"randint<{dtype.name},{ndim}>",
         args={
             "shape": shape,
-            "dtype": dtype.name,
             "low": NUMBER_FORMAT_STRINGS[dtype.name].format(low),
             "high": NUMBER_FORMAT_STRINGS[dtype.name].format(high),
-            "seed": seed,
+            "seed": seed if seed is not None else -1,
         },
     )
     return create_pdarray(repMsg)

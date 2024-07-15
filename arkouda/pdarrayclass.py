@@ -133,9 +133,8 @@ def _create_scalar_array(value):
     """
     return create_pdarray(
         generic_msg(
-            cmd="create0D",
+            cmd=f"createScalarArray<{resolve_scalar_dtype(value)}>",
             args={
-                "dtype": resolve_scalar_dtype(value),
                 "value": value,
             },
         )
@@ -292,12 +291,7 @@ def _to_pdarray(value: np.ndarray, dt=None) -> pdarray:
         )
 
     if value.shape == ():
-        return create_pdarray(
-            generic_msg(
-                cmd="create0D",
-                args={"dtype": _dtype, "value": value.item()},
-            )
-        )
+        return _create_scalar_array(value.item())
     else:
         value_flat = value.flatten()
         return create_pdarray(
@@ -1250,7 +1244,7 @@ class pdarray:
         TypeError
             Raised if value is not an int, int64, float, or float64
         """
-        cmd = f"set{self.ndim}D"
+        cmd = f"set<{self.dtype},{self.ndim}>"
         generic_msg(
             cmd=cmd, args={"array": self, "dtype": self.dtype.name, "val": self.format_other(value)}
         )
@@ -3933,15 +3927,7 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
         )
     else:
         m = mod(dividend, divisor)
-        return create_pdarray(
-            generic_msg(
-                cmd="create0D",
-                args={
-                    "dtype": resolve_scalar_dtype(m),
-                    "value": m,
-                },
-            )
-        )
+        return _create_scalar_array(m)
 
 
 @typechecked

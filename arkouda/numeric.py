@@ -139,39 +139,46 @@ def cast(
     array([False, True, True, True, True])
     """
     from arkouda.categorical import Categorical  # type: ignore
+    dt = _as_dtype(dt)
 
     if isinstance(pda, pdarray):
-        name = pda.name
+        if dt is Strings or dt in ["Strings", "str"]:
+            if pda.ndim > 1:
+                raise ValueError("Cannot cast a multi-dimensional pdarray to Strings")
+            repMsg = generic_msg(
+                cmd=f"castToStrings<{dt}>",
+                args={"name": pda},
+            )
+            return Strings.from_parts(*(type_cast(str, repMsg).split("+")))
+        else:
+            return create_pdarray(
+                generic_msg(
+                    cmd=f"cast<{pda.dtype},{dt},{pda.ndim}>",
+                    args={"name": pda},
+                )
+            )
     elif isinstance(pda, Strings):
-        name = pda.entry.name
-        if dt is Categorical or dt == "Categorical":
-            return Categorical(pda)  # type: ignore
+        if dt is Strings or dt in ["Strings", "str"]:
+            # TODO: copy the strings object?
+            return 0
+        else:
+            repMsg = generic_msg(
+                cmd=f"castStringsTo<{dt}>",
+                args={
+                    "name": pda.entry.name,
+                    "opt": errors.name,
+                },
+            )
+            if errors == ErrorMode.return_validity:
+                a, b = type_cast(str, repMsg).split("+")
+                return create_pdarray(type_cast(str, a)), create_pdarray(type_cast(str, b))
+            else:
+                return create_pdarray(type_cast(str, repMsg))
     elif isinstance(pda, Categorical):  # type: ignore
         if dt is Strings or dt in ["Strings", "str"]:
             return pda.categories[pda.codes]
         else:
             raise ValueError("Categoricals can only be casted to Strings")
-    # typechecked decorator guarantees no other case
-
-    dt = _as_dtype(dt)
-    cmd = f"cast{pda.ndim}D"
-    repMsg = generic_msg(
-        cmd=cmd,
-        args={
-            "name": name,
-            "objType": pda.objType,
-            "targetDtype": dt.name,
-            "opt": errors.name,
-        },
-    )
-    if dt.name.startswith("str"):
-        return Strings.from_parts(*(type_cast(str, repMsg).split("+")))
-    else:
-        if errors == ErrorMode.return_validity:
-            a, b = type_cast(str, repMsg).split("+")
-            return create_pdarray(type_cast(str, a)), create_pdarray(type_cast(str, b))
-        else:
-            return create_pdarray(type_cast(str, repMsg))
 
 
 @typechecked
