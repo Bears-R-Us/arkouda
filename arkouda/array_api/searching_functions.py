@@ -112,7 +112,7 @@ def nonzero(x: Array, /) -> Tuple[Array, ...]:
         generic_msg(
             cmd=f"nonzero{x.ndim}D",
             args={"x": x._array},
-        )
+        ),
     )
 
     return tuple([Array._new(create_pdarray(a)) for a in resp.split("+")])
@@ -149,7 +149,12 @@ def where(condition: Array, x1: Array, x2: Array, /) -> Array:
 
 
 def searchsorted(
-    x1: Array, x2: Array, /, *, side: Literal['left', 'right'] = 'left', sorter: Optional[Array] = None
+    x1: Array,
+    x2: Array,
+    /,
+    *,
+    side: Literal["left", "right"] = "left",
+    sorter: Optional[Array] = None,
 ) -> Array:
     """
     Given a sorted array `x1`, find the indices to insert elements from another array `x2` such that

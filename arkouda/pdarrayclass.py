@@ -150,7 +150,7 @@ def _reshape(array: pdarray, shape: Tuple[int, ...]):
     """
     return create_pdarray(
         generic_msg(
-            cmd=f"reshape{array.ndim}Dx{len(shape)}D",
+            cmd=f"reshape<{array.dtype},{array.ndim},{len(shape)}>",
             args={
                 "name": array,
                 "shape": shape,
@@ -167,7 +167,7 @@ def _squeeze(array: pdarray, degen_axes: List[int]):
     """
     return create_pdarray(
         generic_msg(
-            cmd=f"squeeze{array.ndim}Dx{array.ndim-len(degen_axes)}D",
+            cmd=f"squeeze<{array.dtype},{array.ndim},{array.ndim-len(degen_axes)}>",
             args={
                 "name": array,
                 "nAxes": len(degen_axes),
@@ -2568,6 +2568,42 @@ def create_pdarray(repMsg: str, max_bits=None) -> pdarray:
     return pdarray(name, dtype(mydtype), size, ndim, shape, itemsize, max_bits)
 
 
+@typechecked
+def create_pdarrays(repMsg: str) -> List[pdarray]:
+    """
+    Return a list of pdarray instances pointing to arrays created by the
+    arkouda server.
+
+    Parameters
+    ----------
+    repMsg : str
+        A JSON list of space delimited strings, each containing the pdarray
+        name, datatype, size,
+
+    Returns
+    -------
+    List[pdarray]
+        A list of pdarrays with the same attributes and data as the pdarrays
+
+    Raises
+    ------
+    ValueError
+        If there's an error in parsing the repMsg parameter into the six
+        values needed to create the pdarray instance
+    RuntimeError
+        Raised if a server-side error is thrown in the process of creating
+        the pdarray instance
+    """
+
+    # TODO: maybe add more robust json parsing here
+    try:
+        repMsg = repMsg.strip("[]")
+        responses = [r.strip().strip('\"') for r in repMsg.split("\",")]
+        return [create_pdarray(response) for response in responses]
+    except Exception as e:
+        raise ValueError(e)
+
+
 def clear() -> None:
     """
     Send a clear message to clear all unregistered data from the server symbol table
@@ -2912,8 +2948,8 @@ def mean(pda: pdarray) -> np.float64:
     """
     return parse_single_value(
         generic_msg(
-            cmd=f"stats{pda.ndim}D",
-            args={"x": pda, "comp": "mean", "nAxes": 0, "axis": [], "ddof": 0, "skipNan": False},
+            cmd=f"mean<{pda.dtype},{pda.ndim}>",
+            args={"x": pda, "skipNan": False},
         )
     )
 
@@ -2964,8 +3000,8 @@ def var(pda: pdarray, ddof: int_scalars = 0) -> np.float64:
         raise ValueError("var: ddof must be less than number of values")
     return parse_single_value(
         generic_msg(
-            cmd=f"stats{pda.ndim}D",
-            args={"x": pda, "comp": "var", "ddof": ddof, "nAxes": 0, "axis": [], "skipNan": False},
+            cmd=f"var<{pda.dtype},{pda.ndim}>",
+            args={"x": pda, "ddof": ddof, "skipNan": False},
         )
     )
 
@@ -3020,8 +3056,8 @@ def std(pda: pdarray, ddof: int_scalars = 0) -> np.float64:
         raise ValueError("ddof must be an integer 0 or greater")
     return parse_single_value(
         generic_msg(
-            cmd=f"stats{pda.ndim}D",
-            args={"x": pda, "comp": "std", "ddof": ddof, "nAxes": 0, "axis": [], "skipNan": False},
+            cmd=f"std<{pda.dtype},{pda.ndim}>",
+            args={"x": pda, "ddof": ddof, "skipNan": False},
         )
     )
 
@@ -3059,7 +3095,12 @@ def cov(x: pdarray, y: pdarray) -> np.float64:
     The covariance is calculated by
     ``cov = ((x - x.mean()) * (y - y.mean())).sum() / (x.size - 1)``.
     """
-    return parse_single_value(generic_msg(cmd="cov", args={"x": x, "y": y}))
+    return parse_single_value(
+        generic_msg(
+            cmd=f"cov<{x.dtype},{x.ndim},{y.dtype},{y.ndim}>",
+            args={"x": x, "y": y}
+        )
+    )
 
 
 @typechecked
@@ -3095,7 +3136,12 @@ def corr(x: pdarray, y: pdarray) -> np.float64:
     The correlation is calculated by
     cov(x, y) / (x.std(ddof=1) * y.std(ddof=1))
     """
-    return parse_single_value(generic_msg(cmd="corr", args={"x": x, "y": y}))
+    return parse_single_value(
+        generic_msg(
+            cmd=f"corr<{x.dtype},{x.ndim},{y.dtype},{y.ndim}>",
+            args={"x": x, "y": y}
+        )
+    )
 
 
 @typechecked
@@ -3941,7 +3987,7 @@ def broadcast_to_shape(pda: pdarray, shape: Tuple[int, ...]) -> pdarray:
         cast(
             str,
             generic_msg(
-                cmd=f"broadcastTo{pda.ndim}Dx{len(shape)}D",
+                cmd=f"broadcast<{pda.dtype},{pda.ndim},{len(shape)}>",
                 args={
                     "name": pda,
                     "shape": shape,

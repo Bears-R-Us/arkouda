@@ -4490,17 +4490,16 @@ class DataFrame(UserDict):
                 d = Categorical(d)
             return d if isinstance(d, pdarray) else d.codes
 
-        args = {
-            "size": len(self.columns.values),
-            "columns": self.columns.values,
-            "data_names": [numeric_help(self[c]) for c in self.columns.values],
-        }
+        corrs = {}
+        for c1 in self.columns.values:
+            corrs[c1] = np.zeros(len(self.columns.values))
+            for i, c2 in enumerate(self.columns.values):
+                if c1 == c2:
+                    corrs[c1][i] = 1
+                else:
+                    corrs[c1][i] = numeric_help(self[c1]).corr(numeric_help(self[c2]))
 
-        ret_dict = json.loads(generic_msg(cmd="corrMatrix", args=args))
-        return DataFrame(
-            {c: create_pdarray(ret_dict[c]) for c in self.columns.values},
-            index=array(self.columns.values),
-        )
+        return DataFrame({c: array(v) for c, v in corrs.items()}, index=array(self.columns.values))
 
     @typechecked
     def merge(
