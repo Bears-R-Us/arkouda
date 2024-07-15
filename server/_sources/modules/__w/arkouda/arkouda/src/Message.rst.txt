@@ -71,7 +71,7 @@ or
 
 .. method:: proc MsgTuple.init(msg: string, msgType: MsgType, msgFormat: MsgFormat, user = "", payload = b"")
 
-.. method:: proc type MsgTuple.success(msg: string): MsgTuple
+.. method:: proc type MsgTuple.success(msg: string = ""): MsgTuple
 
 .. method:: proc type MsgTuple.newSymbol(name: string, sym: borrowed AbstractSymEntry): MsgTuple throws
 
@@ -89,6 +89,8 @@ or
    Otherwise, return a success message, where each of the 'msg' fields
    are composed into a JSON list.
    
+
+.. method:: proc type MsgTuple.fromScalar(scalar: ?t): MsgTuple throws
 
 .. method:: proc type MsgTuple.error(msg: string): MsgTuple
 

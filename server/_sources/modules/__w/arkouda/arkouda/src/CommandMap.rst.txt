@@ -28,19 +28,17 @@ or
 
 .. data:: var commandMap: map(string, f.type)
 
-.. data:: var moduleMap: map(string, string)
+.. data:: var moduleMap: map(string, (string, int))
 
 .. data:: var usedModules: set(string)
 
-.. function:: proc registerFunction(cmd: string, fcf: f.type)
+.. function:: proc registerFunction(cmd: string, fcf: f.type, modName: string = "", line: int = -1)
 
    *
    * Register command->function in the CommandMap
    * This binds a server command to its corresponding function matching the standard
    * function signature & MsgTuple return type
    
-
-.. function:: proc registerFunction(cmd: string, fcf: f.type, modName: string)
 
 .. function:: proc writeUsedModulesJson(ref mods: set(string))
 

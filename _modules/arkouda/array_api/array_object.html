@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
+    <!-- Generated with Sphinx 7.4.4 and Furo 2024.05.06 -->
         <title>arkouda.array_api.array_object - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=387cc868" />
@@ -494,7 +494,9 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_single_elem</span><span class="p">():</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Can only convert an array with one element to a Python scalar&quot;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Can only convert an array with one element to a Python scalar&quot;</span>
+            <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Array.transpose">
@@ -506,6 +508,7 @@
 <span class="sd">        For axes=None, reverse all the dimensions of the array.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">.manipulation_functions</span> <span class="kn">import</span> <span class="n">permute_dims</span>
+
         <span class="k">if</span> <span class="n">axes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">_axes</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
@@ -563,7 +566,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span> <span class="nn">json</span>
 
-        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;chunkInfo</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array</span><span class="p">}))</span></div>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span>
+            <span class="n">ak</span><span class="o">.</span><span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;chunkInfo</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array</span><span class="p">})</span>
+        <span class="p">)</span></div>
 
 
     <span class="k">def</span> <span class="nf">__array__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
@@ -838,7 +843,7 @@
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kt</span><span class="p">,</span> <span class="n">Array</span><span class="p">):</span>
                     <span class="k">if</span> <span class="n">kt</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">kt</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">():</span>
                         <span class="n">k</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">kt</span><span class="o">.</span><span class="n">_array</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-                    <span class="k">else</span> <span class="p">:</span>
+                    <span class="k">else</span><span class="p">:</span>
                         <span class="n">k</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">kt</span><span class="o">.</span><span class="n">_array</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kt</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
                     <span class="n">k</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">asarray</span><span class="p">(</span><span class="n">kt</span><span class="p">)</span><span class="o">.</span><span class="n">_array</span><span class="p">)</span>
@@ -883,7 +888,9 @@
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">s</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only integer arrays can be converted to a Python integer&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;Only integer arrays can be converted to a Python integer&quot;</span>
+                <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;cannot convert non-scalar array to int&quot;</span><span class="p">)</span>
 
@@ -986,9 +993,9 @@
 <span class="sd">        Compute the power of this array by another array or scalar.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
-            <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_array</span> <span class="o">**</span> <span class="n">other</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_array</span><span class="o">**</span><span class="n">other</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_array</span> <span class="o">**</span> <span class="n">other</span><span class="o">.</span><span class="n">_array</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_array</span><span class="o">**</span><span class="n">other</span><span class="o">.</span><span class="n">_array</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__rshift__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Array</span><span class="p">],</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1221,9 +1228,9 @@
 <span class="sd">        Compute the power of another array or scalar by this array.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
-            <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">other</span> <span class="o">**</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">other</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_array</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_array</span> <span class="o">**</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_array</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_array</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__irshift__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Array</span><span class="p">],</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1357,9 +1364,11 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/array_object/index.html#arkouda.array_api.array_object.implements_numpy">[docs]</a>
 <span class="k">def</span> <span class="nf">implements_numpy</span><span class="p">(</span><span class="n">numpy_function</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Register an __array_function__ implementation for MyArray objects.&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
         <span class="n">HANDLED_FUNCTIONS</span><span class="p">[</span><span class="n">numpy_function</span><span class="p">]</span> <span class="o">=</span> <span class="n">func</span>
         <span class="k">return</span> <span class="n">func</span>
+
     <span class="k">return</span> <span class="n">decorator</span></div>
 
 </pre></div>

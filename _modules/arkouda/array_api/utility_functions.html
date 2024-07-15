@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
+    <!-- Generated with Sphinx 7.4.4 and Furo 2024.05.06 -->
         <title>arkouda.array_api.utility_functions - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=387cc868" />
@@ -501,8 +501,8 @@
 <span class="k">def</span> <span class="nf">pad</span><span class="p">(</span>
     <span class="n">array</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span>
     <span class="n">pad_width</span><span class="p">,</span>  <span class="c1"># Union[int, Tuple[int, int], Tuple[Tuple[int, int], ...]]</span>
-    <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Pad an array.</span>
@@ -519,13 +519,13 @@
 <span class="sd">        Padding mode. Only &#39;constant&#39; is currently supported. Use the `constant_values` keyword argument</span>
 <span class="sd">        to specify the padding value or values (in the same format as `pad_width`).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s1">&#39;constant&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s2">&quot;constant&quot;</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;pad mode &#39;</span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">&#39; is not supported&quot;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="s1">&#39;constant_values&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">&quot;constant_values&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
         <span class="n">cvals</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">cvals</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;constant_values&#39;</span><span class="p">]</span>
+        <span class="n">cvals</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;constant_values&quot;</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pad_width</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
         <span class="n">pad_widths_b</span> <span class="o">=</span> <span class="p">[</span><span class="n">pad_width</span><span class="p">]</span> <span class="o">*</span> <span class="n">array</span><span class="o">.</span><span class="n">ndim</span>

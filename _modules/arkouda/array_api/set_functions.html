@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
+    <!-- Generated with Sphinx 7.4.4 and Furo 2024.05.06 -->
         <title>arkouda.array_api.set_functions - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=387cc868" />
@@ -407,14 +407,14 @@
 <span class="sd">    - the counts of each unique value</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">resp</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
-                <span class="nb">str</span><span class="p">,</span>
-                <span class="n">generic_msg</span><span class="p">(</span>
-                    <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;uniqueAll</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
-                    <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">},</span>
-                <span class="p">),</span>
-            <span class="p">)</span>
+        <span class="nb">str</span><span class="p">,</span>
+        <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;uniqueAll</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">},</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
 
-    <span class="n">arrays</span> <span class="o">=</span> <span class="p">[</span><span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">create_pdarray</span><span class="p">(</span><span class="n">r</span><span class="p">))</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;+&#39;</span><span class="p">)]</span>
+    <span class="n">arrays</span> <span class="o">=</span> <span class="p">[</span><span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">create_pdarray</span><span class="p">(</span><span class="n">r</span><span class="p">))</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)]</span>
 
     <span class="k">return</span> <span class="n">UniqueAllResult</span><span class="p">(</span>
         <span class="n">values</span><span class="o">=</span><span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
@@ -434,14 +434,14 @@
 <span class="sd">    - the counts of each unique value</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">resp</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
-                <span class="nb">str</span><span class="p">,</span>
-                <span class="n">generic_msg</span><span class="p">(</span>
-                    <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;uniqueCounts</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
-                    <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">},</span>
-                <span class="p">),</span>
-            <span class="p">)</span>
+        <span class="nb">str</span><span class="p">,</span>
+        <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;uniqueCounts</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">},</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
 
-    <span class="n">arrays</span> <span class="o">=</span> <span class="p">[</span><span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">create_pdarray</span><span class="p">(</span><span class="n">r</span><span class="p">))</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;+&#39;</span><span class="p">)]</span>
+    <span class="n">arrays</span> <span class="o">=</span> <span class="p">[</span><span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">create_pdarray</span><span class="p">(</span><span class="n">r</span><span class="p">))</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)]</span>
 
     <span class="k">return</span> <span class="n">UniqueCountsResult</span><span class="p">(</span>
         <span class="n">values</span><span class="o">=</span><span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
@@ -459,14 +459,14 @@
 <span class="sd">    - the inverse indices that reconstruct `x` from the unique values</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">resp</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
-                <span class="nb">str</span><span class="p">,</span>
-                <span class="n">generic_msg</span><span class="p">(</span>
-                    <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;uniqueInverse</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
-                    <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">},</span>
-                <span class="p">),</span>
-            <span class="p">)</span>
+        <span class="nb">str</span><span class="p">,</span>
+        <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;uniqueInverse</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">},</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
 
-    <span class="n">arrays</span> <span class="o">=</span> <span class="p">[</span><span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">create_pdarray</span><span class="p">(</span><span class="n">r</span><span class="p">))</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;+&#39;</span><span class="p">)]</span>
+    <span class="n">arrays</span> <span class="o">=</span> <span class="p">[</span><span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">create_pdarray</span><span class="p">(</span><span class="n">r</span><span class="p">))</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)]</span>
 
     <span class="k">return</span> <span class="n">UniqueInverseResult</span><span class="p">(</span>
         <span class="n">values</span><span class="o">=</span><span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>

@@ -121,7 +121,7 @@
 </div>
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ArkoudaAryUtilCompat.domOnAxis">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domOnAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">idx:</span> <span class="pre">D.rank*int</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">int</span> <span class="pre">...?NA</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">domain</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">NA</span> <span class="pre">&lt;=</span> <span class="pre">D.rank</span></em><a class="headerlink" href="#ArkoudaAryUtilCompat.domOnAxis" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domOnAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">idx:</span> <span class="pre">D.rank*int</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">int</span> <span class="pre">...?NA</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">domain(?)</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">NA</span> <span class="pre">&lt;=</span> <span class="pre">D.rank</span></em><a class="headerlink" href="#ArkoudaAryUtilCompat.domOnAxis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a domain that selects out the idx’th set of indices along the specified axes</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
@@ -132,17 +132,19 @@
 </ul>
 </dd>
 </dl>
-<p>Example 1: if D represents a stack of 1000 10x10 matrices (ex: {1..10, 1..10, 1..1000})
+<p>For example, if D represents a stack of 1000 10x10 matrices (ex: {1..10, 1..10, 1..1000})
 Then, domOnAxis(D, (1, 1, 25), 0, 1) will return D sliced with {1..10, 1..10, 25..25}
 (i.e., the 25th matrix)</p>
-<p>Example 2: if D belongs to a 3D array {1..100, 1..100, 1..100}, then
-domOnAxis(D, (5, 1, 7), 1) will return D sliced with {5..5, 1..100, 7..7}, i.e.,
-the set of indices for the (5,7)-th 1D sub-array along axis 1</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domOnAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">idx:</span> <span class="pre">D.rank*int</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">[?aD]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">domain</span> <span class="pre">throws</span></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domOnAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">idx:</span> <span class="pre">D.rank*int</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">[?aD]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">domain(?)</span> <span class="pre">throws</span></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domOnAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">idx:</span> <span class="pre">D.rank*int</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">axes:</span> <span class="pre">list(int)</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">domain(?)</span> <span class="pre">throws</span></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
@@ -157,29 +159,42 @@ the set of indices for the (5,7)-th 1D sub-array along axis 1</p>
 </ul>
 </dd>
 </dl>
-<p>Example 1: if D represents a stack of 1000 10x10 matrices (ex: {1..10, 1..10, 1..1000})
+<p>For example, if D represents a stack of 1000 10x10 matrices (ex: {1..10, 1..10, 1..1000})
 Then, domOffAxis(D, 0, 1) will return D sliced with {0..0, 0..0, 1..1000}
 (i.e., a set of indices for the 1000 matrices)</p>
-<p>Example 2: if D belongs to a 3D array {1..100, 1..100, 1..100}, then
-domOffAxis(D, 1) will return D sliced with {1..100, 0..0, 1..100}, i.e.,
-the set of indices for all the 1D sub-arrays along axis 1</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domOffAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">[?aD]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">domain</span> <span class="pre">throws</span></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domOffAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">[?aD]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">domain(?)</span> <span class="pre">throws</span></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domOffAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">axes:</span> <span class="pre">list(int)</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">domain(?)</span> <span class="pre">throws</span></dt>
+<dd></dd></dl>
+
+<dl class="chpl iterfunction">
+<dt class="sig sig-object chpl" id="ArkoudaAryUtilCompat.axisSlices">
+<em class="property"><span class="pre">iter</span> </em><span class="sig-name descname"><span class="pre">axisSlices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">axes:</span> <span class="pre">list(int)</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">(domain(?),</span> <span class="pre">D.rank*int)</span> <span class="pre">throws</span><a class="headerlink" href="#ArkoudaAryUtilCompat.axisSlices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate over all the slices of a domain along the specified axes</p>
+</dd></dl>
+
+<dl class="chpl iterfunction">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">iter</span> </em><span class="sig-name descname"><span class="pre">axisSlices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">param</span> <span class="pre">tag:</span> <span class="pre">iterKind</span></em>, <em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">axes:</span> <span class="pre">list(int)</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">(domain(?),</span> <span class="pre">D.rank*int)</span> <span class="pre">throws</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">tag</span> <span class="pre">==</span> <span class="pre">iterKind.standalone</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ArkoudaAryUtilCompat.subDomChunk">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">subDomChunk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dom:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">chunkIdx:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">nChunks:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">domain</span><a class="headerlink" href="#ArkoudaAryUtilCompat.subDomChunk" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">subDomChunk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dom:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">chunkIdx:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">nChunks:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">domain(?)</span><a class="headerlink" href="#ArkoudaAryUtilCompat.subDomChunk" title="Permalink to this definition">¶</a></dt>
 <dd><p>Naively create a domain over a chunk of the input domain</p>
 <p>Chunks are created by splitting the largest dimension of the input domain
 into ‘nChunks’ roughly equal-sized chunks, and then taking the
 ‘chunkIdx’-th chunk</p>
 <p>(if ‘nChunks’ is greater than the size of the largest dimension, the
 first ‘nChunks-1’ chunks will be empty, and the last chunk will contain
-the entire domain)</p>
+the entire set of indices along that dimension)</p>
 </dd></dl>
 
 </div>

@@ -18,6 +18,7 @@ Functions
    arkouda.pdarraycreation.linspace
    arkouda.pdarraycreation.ones
    arkouda.pdarraycreation.ones_like
+   arkouda.pdarraycreation.promote_to_common_dtype
    arkouda.pdarraycreation.randint
    arkouda.pdarraycreation.random_strings_lognormal
    arkouda.pdarraycreation.random_strings_uniform
@@ -398,6 +399,31 @@ Module Contents
    >>> ones = ak.ones(5, dtype=ak.bool_)
    >>> ak.ones_like(ones)
    array([True, True, True, True, True])
+
+
+.. py:function:: promote_to_common_dtype(arrays: List[arkouda.pdarrayclass.pdarray]) -> Tuple[Any, List[arkouda.pdarrayclass.pdarray]]
+
+   Promote a list of pdarrays to a common dtype.
+
+   :param arrays: List of pdarrays to promote
+   :type arrays: List[pdarray]
+
+   :returns: The common dtype of the pdarrays and the list of pdarrays promoted to that dtype
+   :rtype: dtype, List[pdarray]
+
+   :raises TypeError: Raised if the pdarrays are not all of the same dtype
+
+   .. seealso:: :obj:`pdarray.promote_dtype`
+
+   .. rubric:: Examples
+
+   >>> a = ak.arange(5)
+   >>> b = ak.ones(5, dtype=ak.float64)
+   >>> dtype, promoted = promote_to_common_dtype([a, b])
+   >>> dtype
+   dtype(float64)
+   >>> all(isinstance(p, pdarray) and p.dtype == dtype for p in promoted)
+   True
 
 
 .. py:function:: randint(low: arkouda.dtypes.numeric_scalars, high: arkouda.dtypes.numeric_scalars, size: Union[arkouda.dtypes.int_scalars, Tuple[arkouda.dtypes.int_scalars, Ellipsis]] = 1, dtype=akint64, seed: Optional[arkouda.dtypes.int_scalars] = None) -> arkouda.pdarrayclass.pdarray

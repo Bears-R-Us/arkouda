@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="arkouda.pdarraymanipulation" href="../pdarraymanipulation/index.html" /><link rel="prev" title="arkouda.pdarrayclass" href="../pdarrayclass/index.html" />
 
-    <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
+    <!-- Generated with Sphinx 7.4.4 and Furo 2024.05.06 -->
         <title>arkouda.pdarraycreation - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=387cc868" />
@@ -400,25 +400,28 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.ones_like" title="arkouda.pdarraycreation.ones_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ones_like</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Create a one-filled pdarray of the same size and dtype as an existing</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.randint" title="arkouda.pdarraycreation.randint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">randint</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.promote_to_common_dtype" title="arkouda.pdarraycreation.promote_to_common_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">promote_to_common_dtype</span></code></a>(→ Tuple[Any, ...)</p></td>
+<td><p>Promote a list of pdarrays to a common dtype.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.randint" title="arkouda.pdarraycreation.randint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">randint</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Generate a pdarray of randomized int, float, or bool values in a</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.random_strings_lognormal" title="arkouda.pdarraycreation.random_strings_lognormal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_strings_lognormal</span></code></a>(→ arkouda.strings.Strings)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.random_strings_lognormal" title="arkouda.pdarraycreation.random_strings_lognormal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_strings_lognormal</span></code></a>(→ arkouda.strings.Strings)</p></td>
 <td><p>Generate random strings with log-normally distributed lengths and</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.random_strings_uniform" title="arkouda.pdarraycreation.random_strings_uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_strings_uniform</span></code></a>(→ arkouda.strings.Strings)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.random_strings_uniform" title="arkouda.pdarraycreation.random_strings_uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_strings_uniform</span></code></a>(→ arkouda.strings.Strings)</p></td>
 <td><p>Generate random strings with lengths uniformly distributed between</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.standard_normal" title="arkouda.pdarraycreation.standard_normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">standard_normal</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.standard_normal" title="arkouda.pdarraycreation.standard_normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">standard_normal</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Draw real numbers from the standard normal distribution.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.uniform" title="arkouda.pdarraycreation.uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniform</span></code></a>(, high, seed, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.uniform" title="arkouda.pdarraycreation.uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniform</span></code></a>(, high, seed, ...)</p></td>
 <td><p>Generate a pdarray with uniformly distributed random float values</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.zeros" title="arkouda.pdarraycreation.zeros"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.zeros" title="arkouda.pdarraycreation.zeros"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Create a pdarray filled with zeros.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.zeros_like" title="arkouda.pdarraycreation.zeros_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros_like</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.zeros_like" title="arkouda.pdarraycreation.zeros_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros_like</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Create a zero-filled pdarray of the same size and dtype as an existing</p></td>
 </tr>
 </tbody>
@@ -891,6 +894,40 @@ Accordingly, the supported dtypes match are defined by the ak.ones method.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="arkouda.pdarraycreation.promote_to_common_dtype">
+<span class="sig-prename descclassname"><span class="pre">arkouda.pdarraycreation.</span></span><span class="sig-name descname"><span class="pre">promote_to_common_dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arrays</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarraycreation.html#promote_to_common_dtype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarraycreation.promote_to_common_dtype" title="Link to this definition">¶</a></dt>
+<dd><p>Promote a list of pdarrays to a common dtype.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>arrays</strong> (<em>List</em><em>[</em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>]</em>) – List of pdarrays to promote</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The common dtype of the pdarrays and the list of pdarrays promoted to that dtype</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dtype, List[<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – Raised if the pdarrays are not all of the same dtype</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pdarray.promote_dtype</span></code></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dtype</span><span class="p">,</span> <span class="n">promoted</span> <span class="o">=</span> <span class="n">promote_to_common_dtype</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dtype</span>
+<span class="go">dtype(float64)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">dtype</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">promoted</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="arkouda.pdarraycreation.randint">
 <span class="sig-prename descclassname"><span class="pre">arkouda.pdarraycreation.</span></span><span class="sig-name descname"><span class="pre">randint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.dtypes.numeric_scalars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.dtypes.numeric_scalars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.dtypes.int_scalars</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">arkouda.dtypes.int_scalars</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">akint64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.dtypes.int_scalars</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarraycreation.html#randint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarraycreation.randint" title="Link to this definition">¶</a></dt>
 <dd><p>Generate a pdarray of randomized int, float, or bool values in a
@@ -1274,6 +1311,7 @@ pdarray.</p>
 <li><a class="reference internal" href="#arkouda.pdarraycreation.linspace"><code class="docutils literal notranslate"><span class="pre">linspace()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarraycreation.ones"><code class="docutils literal notranslate"><span class="pre">ones()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarraycreation.ones_like"><code class="docutils literal notranslate"><span class="pre">ones_like()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pdarraycreation.promote_to_common_dtype"><code class="docutils literal notranslate"><span class="pre">promote_to_common_dtype()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarraycreation.randint"><code class="docutils literal notranslate"><span class="pre">randint()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarraycreation.random_strings_lognormal"><code class="docutils literal notranslate"><span class="pre">random_strings_lognormal()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarraycreation.random_strings_uniform"><code class="docutils literal notranslate"><span class="pre">random_strings_uniform()</span></code></a></li>

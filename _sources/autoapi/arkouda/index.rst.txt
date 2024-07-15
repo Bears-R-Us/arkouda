@@ -369,6 +369,7 @@ Functions
    arkouda.power
    arkouda.power_divergence
    arkouda.prod
+   arkouda.promote_to_common_dtype
    arkouda.putmask
    arkouda.rad2deg
    arkouda.randint
@@ -39072,6 +39073,31 @@ Package Contents
 
    :raises TypeError: Raised if pda is not a pdarray instance
    :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+.. py:function:: promote_to_common_dtype(arrays: List[arkouda.pdarrayclass.pdarray]) -> Tuple[Any, List[arkouda.pdarrayclass.pdarray]]
+
+   Promote a list of pdarrays to a common dtype.
+
+   :param arrays: List of pdarrays to promote
+   :type arrays: List[pdarray]
+
+   :returns: The common dtype of the pdarrays and the list of pdarrays promoted to that dtype
+   :rtype: dtype, List[pdarray]
+
+   :raises TypeError: Raised if the pdarrays are not all of the same dtype
+
+   .. seealso:: :obj:`pdarray.promote_dtype`
+
+   .. rubric:: Examples
+
+   >>> a = ak.arange(5)
+   >>> b = ak.ones(5, dtype=ak.float64)
+   >>> dtype, promoted = promote_to_common_dtype([a, b])
+   >>> dtype
+   dtype(float64)
+   >>> all(isinstance(p, pdarray) and p.dtype == dtype for p in promoted)
+   True
 
 
 .. py:function:: putmask(pda: arkouda.pdarrayclass.pdarray, mask: Union[bool, arkouda.pdarrayclass.pdarray], values: arkouda.pdarrayclass.pdarray)

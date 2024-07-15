@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
+    <!-- Generated with Sphinx 7.4.4 and Furo 2024.05.06 -->
         <title>arkouda.pdarraycreation - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=387cc868" />
@@ -361,7 +361,7 @@
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.pdarraycreation</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">itertools</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">Any</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -407,6 +407,7 @@
     <span class="s2">&quot;random_strings_lognormal&quot;</span><span class="p">,</span>
     <span class="s2">&quot;from_series&quot;</span><span class="p">,</span>
     <span class="s2">&quot;bigint_from_uint_arrays&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;promote_to_common_dtype&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -669,6 +670,51 @@
             <span class="n">send_binary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">akcast</span><span class="p">(</span><span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">),</span> <span class="n">dtype</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="promote_to_common_dtype">
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarraycreation/index.html#arkouda.promote_to_common_dtype">[docs]</a>
+<span class="k">def</span> <span class="nf">promote_to_common_dtype</span><span class="p">(</span><span class="n">arrays</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">pdarray</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">pdarray</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Promote a list of pdarrays to a common dtype.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    arrays : List[pdarray]</span>
+<span class="sd">        List of pdarrays to promote</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dtype, List[pdarray]</span>
+<span class="sd">        The common dtype of the pdarrays and the list of pdarrays promoted to that dtype</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        Raised if the pdarrays are not all of the same dtype</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    pdarray.promote_dtype</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; a = ak.arange(5)</span>
+<span class="sd">    &gt;&gt;&gt; b = ak.ones(5, dtype=ak.float64)</span>
+<span class="sd">    &gt;&gt;&gt; dtype, promoted = promote_to_common_dtype([a, b])</span>
+<span class="sd">    &gt;&gt;&gt; dtype</span>
+<span class="sd">    dtype(float64)</span>
+<span class="sd">    &gt;&gt;&gt; all(isinstance(p, pdarray) and p.dtype == dtype for p in promoted)</span>
+<span class="sd">    True</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># find the common dtype of the input arrays</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">common_type</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">])</span>
+
+    <span class="c1"># cast the input arrays to the output dtype if necessary</span>
+    <span class="n">arrays</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">dt</span> <span class="k">else</span> <span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">akdtype</span><span class="p">(</span><span class="n">dt</span><span class="p">),</span> <span class="n">arrays</span><span class="p">)</span></div>
 
 
 
