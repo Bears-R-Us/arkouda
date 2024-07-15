@@ -46,6 +46,7 @@ __all__ = [
     "from_series",
     "bigint_from_uint_arrays",
     "promote_to_common_dtype",
+    "scalar_array"
 ]
 
 

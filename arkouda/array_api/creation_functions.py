@@ -4,7 +4,8 @@ from typing import TYPE_CHECKING, List, Optional, Tuple, Union, cast
 
 from arkouda.client import generic_msg
 import numpy as np
-from arkouda.pdarrayclass import create_pdarray, pdarray, _to_pdarray, scalar_array
+from arkouda.pdarrayclass import create_pdarray, pdarray, _to_pdarray
+from arkouda.pdarraycreation import scalar_array
 from arkouda.dtypes import dtype as akdtype
 from arkouda.dtypes import resolve_scalar_dtype
 
