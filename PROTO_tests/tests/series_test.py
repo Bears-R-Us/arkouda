@@ -6,10 +6,10 @@ from pandas.testing import assert_frame_equal, assert_series_equal
 import arkouda as ak
 from arkouda.series import Series
 
-DTYPES = [ak.int64, ak.uint64, ak.bool, ak.float64, ak.bigint, ak.str_]
-NO_STRING = [ak.int64, ak.uint64, ak.bool, ak.float64, ak.bigint]
+DTYPES = [ak.int64, ak.uint64, ak.bool_, ak.float64, ak.bigint, ak.str_]
+NO_STRING = [ak.int64, ak.uint64, ak.bool_, ak.float64, ak.bigint]
 NUMERICAL_TYPES = [ak.int64, ak.uint64, ak.float64, ak.bigint]
-INTEGRAL_TYPES = [ak.int64, ak.uint64, ak.bool, ak.bigint]
+INTEGRAL_TYPES = [ak.int64, ak.uint64, ak.bool_, ak.bigint]
 
 
 class TestSeries:
@@ -74,6 +74,14 @@ class TestSeries:
             with pytest.raises(TypeError):
                 s.locate([0, 2])
 
+    def test_shape(self):
+        v = ak.array(["A", "B", "C"])
+        i = ak.arange(3)
+        s = ak.Series(data=v, index=i)
+
+        (l,) = s.shape
+        assert l == 3
+
     @pytest.mark.parametrize("dtype", NO_STRING)
     def test_add(self, dtype):
         size = 100
@@ -84,7 +92,7 @@ class TestSeries:
             )
         )
         assert (added.index == ak.arange(size)).all()
-        if dtype != ak.bool:
+        if dtype != ak.bool_:
             assert all(i in added.values.to_list() for i in range(size))
         else:
             # we have exactly one False
@@ -298,6 +306,17 @@ class TestSeries:
         )
         assert s.to_markdown(tablefmt="jira") == s.to_pandas().to_markdown(tablefmt="jira")
 
+    def test_has_repeat_labels(self):
+        ints = ak.array([0, 1, 3, 7, 3])
+        floats = ak.array([0.0, 1.5, 0.5, 1.5, -1.0])
+        strings = ak.array(["A", "C", "C", "DE", "Z"])
+        for idxs in [ints, floats, strings]:
+            s1 = ak.Series(index=idxs, data=floats)
+            assert s1.has_repeat_labels()
+
+        s2 = ak.Series(index=ak.array([0, 1, 3, 4, 5]), data=floats)
+        assert not s2.has_repeat_labels()
+
     def test_isna_int(self):
         # Test case with integer data type
         data_int = Series([1, 2, 3, 4, 5])
@@ -349,4 +368,379 @@ class TestSeries:
         pddf = pd.DataFrame({"test": sa.to_list()})
 
         assert_frame_equal(akdf.to_pandas(), pddf)
-        assert_series_equal(akdf['test'].to_pandas(), pddf['test'], check_names=False)
+        assert_series_equal(akdf.to_pandas()["test"], pddf["test"], check_names=False)
+
+    def test_getitem_scalars(self):
+        ints = [0, 1, 3, 7, 3]
+        floats = [0.0, 1.5, 0.5, 1.5, -1.0]
+        strings = ["A", "C", "C", "DE", "Z"]
+
+        _s1 = pd.Series(index=np.array(strings), data=np.array(floats))
+        s1 = ak.Series(index=ak.array(strings), data=ak.array(floats))
+        with pytest.raises(TypeError):
+            s1[1.0]
+        with pytest.raises(TypeError):
+            s1[1]
+        _s1_a1 = _s1["A"]
+        s1_a1 = s1["A"]
+
+        assert isinstance(_s1_a1, float)
+        assert isinstance(s1_a1, float)
+        assert s1_a1 == _s1_a1
+        _s1_a2 = _s1["C"]
+        s1_a2 = s1["C"]
+        assert isinstance(_s1_a2, pd.Series)
+        assert isinstance(s1_a2, ak.Series)
+        assert s1_a2.index.to_list() == _s1_a2.index.tolist()
+        assert s1_a2.values.to_list() == _s1_a2.values.tolist()
+
+        _s2 = pd.Series(index=np.array(ints), data=np.array(strings))
+        s2 = ak.Series(index=ak.array(ints), data=ak.array(strings))
+        with pytest.raises(TypeError):
+            s2[1.0]
+        with pytest.raises(TypeError):
+            s2["A"]
+        _s2_a1 = _s2[7]
+        s2_a1 = s2[7]
+        assert isinstance(_s2_a1, str)
+        assert isinstance(s2_a1, str)
+        assert _s2_a1 == s2_a1
+
+        _s2_a2 = _s2[3]
+        s2_a2 = s2[3]
+        assert isinstance(_s2_a2, pd.Series)
+        assert isinstance(s2_a2, ak.Series)
+        assert s2_a2.index.to_list() == _s2_a2.index.tolist()
+        assert s2_a2.values.to_list() == _s2_a2.values.tolist()
+
+        _s3 = pd.Series(index=np.array(floats), data=np.array(ints))
+        s3 = ak.Series(index=ak.array(floats), data=ak.array(ints))
+        with pytest.raises(TypeError):
+            s3[1]
+        with pytest.raises(TypeError):
+            s3["A"]
+        _s3_a1 = _s3[0.0]
+        s3_a1 = s3[0.0]
+        assert isinstance(_s3_a1, np.int64)
+        assert isinstance(s3_a1, np.int64)
+
+        _s3_a2 = _s3[1.5]
+        s3_a2 = s3[1.5]
+        assert isinstance(_s3_a2, pd.Series)
+        assert isinstance(s3_a2, ak.Series)
+        assert s3_a2.index.to_list() == _s3_a2.index.tolist()
+        assert s3_a2.values.to_list() == _s3_a2.values.tolist()
+
+    def test_getitem_vectors(self):
+        ints = [0, 1, 3, 7, 3]
+        floats = [0.0, 1.5, 0.5, 1.5, -1.0]
+        strings = ["A", "C", "C", "DE", "Z"]
+
+        _s1 = pd.Series(index=np.array(strings), data=np.array(floats))
+        s1 = ak.Series(index=ak.array(strings), data=ak.array(floats))
+
+        # Arkouda requires homogeneous index type
+        with pytest.raises(TypeError):
+            s1[[1.0, 2.0]]
+        with pytest.raises(TypeError):
+            s1[[1, 2]]
+        with pytest.raises(TypeError):
+            s1[ak.array([1.0, 2.0])]
+        with pytest.raises(TypeError):
+            s1[ak.array([1, 2])]
+
+        _s1_a1 = _s1[np.array(["A", "Z"])]
+        s1_a1 = s1[ak.array(["A", "Z"])]
+        assert isinstance(s1_a1, ak.Series)
+        assert s1_a1.index.to_list() == _s1_a1.index.tolist()
+        assert s1_a1.values.to_list() == _s1_a1.values.tolist()
+
+        _s1_a2 = _s1[["C", "DE"]]
+        s1_a2 = s1[["C", "DE"]]
+        assert isinstance(s1_a2, ak.Series)
+        assert s1_a2.index.to_list() == _s1_a2.index.tolist()
+        assert s1_a2.values.to_list() == _s1_a2.values.tolist()
+
+        _s1_a3 = _s1[[True, False, True, False, False]]
+        s1_a3 = s1[[True, False, True, False, False]]
+        assert isinstance(s1_a3, ak.Series)
+        assert s1_a3.index.to_list() == _s1_a3.index.tolist()
+        assert s1_a3.values.to_list() == _s1_a3.values.tolist()
+
+        with pytest.raises(IndexError):
+            _s1[[True, False, True]]
+        with pytest.raises(IndexError):
+            s1[[True, False, True]]
+        with pytest.raises(IndexError):
+            _s1[np.array([True, False, True])]
+        with pytest.raises(IndexError):
+            s1[ak.array([True, False, True])]
+
+        _s2 = pd.Series(index=np.array(floats), data=np.array(ints))
+        s2 = ak.Series(index=ak.array(floats), data=ak.array(ints))
+        with pytest.raises(TypeError):
+            s2[["A"]]
+        with pytest.raises(TypeError):
+            s2[[1, 2]]
+        with pytest.raises(TypeError):
+            s2[ak.array(["A", "B"])]
+        with pytest.raises(TypeError):
+            s2[ak.array([1, 2])]
+
+        _s2_a1 = _s2[[0.5, 0.0]]
+        s2_a1 = s2[[0.5, 0.0]]
+        assert isinstance(s1_a2, ak.Series)
+        assert s2_a1.index.to_list() == _s2_a1.index.tolist()
+        assert s2_a1.values.to_list() == _s2_a1.values.tolist()
+
+        _s2_a2 = _s2[np.array([0.5, 0.0])]
+        s2_a2 = s2[ak.array([0.5, 0.0])]
+        assert isinstance(s1_a2, ak.Series)
+        assert s2_a2.index.to_list() == _s2_a2.index.tolist()
+        assert s2_a2.values.to_list() == _s2_a2.values.tolist()
+
+        with pytest.raises(KeyError):
+            _s2_a3 = _s2[[1.5, 1.2]]
+        with pytest.raises(KeyError):
+            s2_a3 = s2[[1.5, 1.2]]
+
+        _s2_a3 = _s2[[1.5, 0.0]]
+        s2_a3 = s2[[1.5, 0.0]]
+        assert isinstance(s2_a2, ak.Series)
+        assert s2_a3.index.to_list() == _s2_a3.index.tolist()
+        assert s2_a3.values.to_list() == _s2_a3.values.tolist()
+
+    def test_setitem_scalars(self):
+        ints = [0, 1, 3, 7, 3]
+        floats = [0.0, 1.5, 0.5, 1.5, -1.0]
+        strings = ["A", "C", "C", "DE", "Z"]
+
+        s1 = ak.Series(index=ak.array(strings), data=ak.array(floats))
+        _s1 = pd.Series(index=np.array(strings), data=np.array(floats))
+
+        with pytest.raises(TypeError):
+            s1[1.0] = 1.0
+        with pytest.raises(TypeError):
+            s1[1] = 1.0
+        with pytest.raises(TypeError):
+            s1["A"] = 1
+        with pytest.raises(TypeError):
+            s1["A"] = "C"
+
+        s1["A"] = 0.2
+        _s1["A"] = 0.2
+        assert s1.values.to_list() == _s1.values.tolist()
+        s1["C"] = 1.2
+        _s1["C"] = 1.2
+        assert s1.values.to_list() == _s1.values.tolist()
+        s1["X"] = 0.0
+        _s1["X"] = 0.0
+        assert s1.index.to_list() == _s1.index.tolist()
+        assert s1.values.to_list() == _s1.values.tolist()
+        s1["C"] = [0.3, 0.4]
+        _s1["C"] = [0.3, 0.4]
+        assert s1.values.to_list() == _s1.values.tolist()
+
+        with pytest.raises(ValueError):
+            s1["C"] = [0.4, 0.3, 0.2]
+
+        # cannot assign to Strings
+        s2 = ak.Series(index=ak.array(ints), data=ak.array(strings))
+        with pytest.raises(TypeError):
+            s2[1.0] = "D"
+        with pytest.raises(TypeError):
+            s2["C"] = "E"
+        with pytest.raises(TypeError):
+            s2[0] = 1.0
+        with pytest.raises(TypeError):
+            s2[0] = 1
+        with pytest.raises(TypeError):
+            s2[7] = "L"
+        with pytest.raises(TypeError):
+            s2[3] = ["X1", "X2"]
+
+        s3 = ak.Series(index=ak.array(floats), data=ak.array(ints))
+        _s3 = pd.Series(index=np.array(floats), data=np.array(ints))
+        assert s3.values.to_list() == [0, 1, 3, 7, 3]
+        assert s3.index.to_list() == [0.0, 1.5, 0.5, 1.5, -1.0]
+        assert s3.values.to_list() == _s3.values.tolist()
+        assert s3.index.to_list() == _s3.index.tolist()
+        s3[0.0] = 2
+        _s3[0.0] = 2
+        assert s3.values.to_list() == _s3.values.tolist()
+        _s3[1.5] = 8
+        s3[1.5] = 8
+        assert s3.values.to_list() == _s3.values.tolist()
+        _s3[2.0] = 9
+        s3[2.0] = 9
+        assert s3.index.to_list() == _s3.index.tolist()
+        assert s3.values.to_list() == _s3.values.tolist()
+        _s3[1.5] = [4, 5]
+        s3[1.5] = [4, 5]
+        assert s3.values.to_list() == _s3.values.tolist()
+        _s3[1.5] = np.array([6, 7])
+        s3[1.5] = ak.array([6, 7])
+        assert s3.values.to_list() == _s3.values.tolist()
+        _s3[1.5] = [8]
+        s3[1.5] = [8]
+        assert s3.values.to_list() == _s3.values.tolist()
+        _s3[1.5] = np.array([2])
+        s3[1.5] = ak.array([2])
+        assert s3.values.to_list() == _s3.values.tolist()
+        with pytest.raises(ValueError):
+            s3[1.5] = [9, 10, 11]
+        with pytest.raises(ValueError):
+            s3[1.5] = ak.array([0, 1, 2])
+
+        # adding new entries
+        _s3[-1.0] = 14
+        s3[-1.0] = 14
+        assert s3.values.to_list() == _s3.values.tolist()
+        assert s3.index.to_list() == _s3.index.tolist()
+
+        # pandas makes the entry a list, which is not what we want.
+        with pytest.raises(ValueError):
+            s3[-11.0] = [13, 14, 15]
+
+    def test_setitem_vectors(self):
+        ints = [0, 1, 3, 7, 3]
+        floats = [0.0, 1.5, 0.5, 1.5, -1.0]
+        strings = ["A", "C", "C", "DE", "Z"]
+
+        s1 = ak.Series(index=ak.array(strings), data=ak.array(floats))
+        _s1 = pd.Series(index=np.array(strings), data=np.array(floats))
+
+        # mismatching types for values and indices
+        with pytest.raises(TypeError):
+            s1[[0.1, 0.2]] = 1.0
+        with pytest.raises(TypeError):
+            s1[[0, 3]] = 1.0
+        with pytest.raises(TypeError):
+            s1[ak.array([0, 3])] = 1.0
+        with pytest.raises(TypeError):
+            s1[["A", "B"]] = 1
+        with pytest.raises(TypeError):
+            s1[["A", "B"]] = "C"
+        with pytest.raises(TypeError):
+            s1[ak.array(["A", "B"])] = 1
+
+        # indexing using list of labels only valid with uniquely labeled Series
+        with pytest.raises(pd.errors.InvalidIndexError):
+            _s1[["A", "Z"]] = 2.0
+        assert s1.has_repeat_labels()
+        with pytest.raises(ValueError):
+            s1[["A", "Z"]] = 2.0
+
+        s2 = ak.Series(index=ak.array(["A", "C", "DE", "F", "Z"]), data=ak.array(ints))
+        _s2 = pd.Series(index=pd.array(["A", "C", "DE", "F", "Z"]), data=pd.array(ints))
+        s2[["A", "Z"]] = 2
+        _s2[["A", "Z"]] = 2
+        assert s2.values.to_list() == _s2.values.tolist()
+        s2[ak.array(["A", "Z"])] = 3
+        _s2[np.array(["A", "Z"])] = 3
+        assert s2.values.to_list() == _s2.values.tolist()
+        with pytest.raises(ValueError):
+            _s2[np.array(["A", "Z"])] = [3]
+        with pytest.raises(ValueError):
+            s2[ak.array(["A", "Z"])] = [3]
+
+        with pytest.raises(KeyError):
+            _s2[np.array(["B", "D"])] = 0
+        with pytest.raises(KeyError):
+            s2[ak.array(["B", "D"])] = 0
+        with pytest.raises(KeyError):
+            _s2[["B", "D"]] = 0
+        with pytest.raises(KeyError):
+            s2[["B", "D"]] = 0
+        with pytest.raises(KeyError):
+            _s2[["B"]] = 0
+        with pytest.raises(KeyError):
+            s2[["B"]] = 0
+        assert s2.values.to_list() == _s2.values.tolist()
+        assert s2.index.to_list() == _s2.index.tolist()
+
+        _s2[np.array(["A", "C", "F"])] = [10, 11, 12]
+        s2[ak.array(["A", "C", "F"])] = [10, 11, 12]
+        assert s2.values.to_list() == _s2.values.tolist()
+
+    def test_iloc(self):
+        floats = [0.0, 1.5, 0.5, 1.5, -1.0]
+        strings = ["A", "C", "C", "DE", "Z"]
+        s1 = ak.Series(index=ak.array(strings), data=ak.array(floats))
+        _s1 = pd.Series(index=np.array(strings), data=np.array(floats))
+
+        with pytest.raises(TypeError):
+            s1.iloc["A"]
+        with pytest.raises(TypeError):
+            s1.iloc["A"] = 1.0
+        with pytest.raises(TypeError):
+            s1.iloc[0] = 1
+
+        s1_a1 = s1.iloc[0]
+        assert isinstance(s1_a1, ak.Series)
+        assert s1_a1.index.to_list() == ["A"]
+        assert s1_a1.values.to_list() == [0.0]
+        _s1.iloc[0] = 1.0
+        s1.iloc[0] = 1.0
+        assert s1.values.to_list() == _s1.values.tolist()
+
+        with pytest.raises(pd.errors.IndexingError):
+            _s1_a2 = _s1.iloc[1, 3]
+        with pytest.raises(TypeError):
+            s1_a2 = s1.iloc[1, 3]
+        with pytest.raises(IndexError):
+            _s1.iloc[1, 3] = 2.0
+        with pytest.raises(TypeError):
+            s1.iloc[1, 3] = 2.0
+
+        _s1_a2 = _s1.iloc[[1, 2]]
+        s1_a2 = s1.iloc[[1, 2]]
+        assert s1_a2.index.to_list() == _s1_a2.index.tolist()
+        assert s1_a2.values.to_list() == _s1_a2.values.tolist()
+        _s1.iloc[[1, 2]] = 0.2
+        s1.iloc[[1, 2]] = 0.2
+        assert s1.values.to_list() == _s1.values.tolist()
+
+        with pytest.raises(ValueError):
+            _s1.iloc[[3, 4]] = [0.3]
+        with pytest.raises(ValueError):
+            s1.iloc[[3, 4]] = [0.3]
+
+        _s1.iloc[[3, 4]] = [0.4, 0.5]
+        s1.iloc[[3, 4]] = [0.4, 0.5]
+        assert s1.values.to_list() == _s1.values.tolist()
+
+        with pytest.raises(TypeError):
+            # in pandas this hits a NotImplementedError
+            s1.iloc[3, 4] = [0.4, 0.5]
+
+        with pytest.raises(ValueError):
+            s1.iloc[[3, 4]] = ak.array([0.3])
+        with pytest.raises(ValueError):
+            s1.iloc[[3, 4]] = [0.1, 0.2, 0.3]
+
+        # iloc does not enlarge its target object
+        with pytest.raises(IndexError):
+            _s1.iloc[5]
+        with pytest.raises(IndexError):
+            s1.iloc[5]
+        with pytest.raises(IndexError):
+            s1.iloc[5] = 2
+        with pytest.raises(IndexError):
+            s1.iloc[[3, 5]]
+        with pytest.raises(IndexError):
+            s1.iloc[[3, 5]] = [0.1, 0.2]
+
+        # can also take boolean array
+        _b = _s1.iloc[[True, False, True, True, False]]
+        b = s1.iloc[[True, False, True, True, False]]
+        assert b.values.to_list() == _b.values.tolist()
+
+        _s1.iloc[[True, False, False, True, False]] = [0.5, 0.6]
+        s1.iloc[[True, False, False, True, False]] = [0.5, 0.6]
+        assert b.values.to_list() == _b.values.tolist()
+
+        with pytest.raises(IndexError):
+            _s1.iloc[[True, False, True]]
+        with pytest.raises(IndexError):
+            s1.iloc[[True, False, True]]

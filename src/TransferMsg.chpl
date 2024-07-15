@@ -53,7 +53,7 @@ module TransferMsg
 
       var localeCount = receiveLocaleCount(hostname, port:string);
       
-      sendDataFrameSetupInfo(port:string, numColumns, formatString(eleList));
+      sendDataFrameSetupInfo(port:string, numColumns, "%?".format(eleList));
 
       var colNames = "";
       for ele in eleList {

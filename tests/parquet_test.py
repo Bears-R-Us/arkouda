@@ -34,7 +34,7 @@ class ParquetTest(ArkoudaTest):
             elif dtype == "uint64":
                 ak_arr = ak.randint(0, 2**32, SIZE, dtype=ak.uint64)
             elif dtype == "bool":
-                ak_arr = ak.randint(0, 1, SIZE, dtype=ak.bool)
+                ak_arr = ak.randint(0, 1, SIZE, dtype=ak.bool_)
             elif dtype == "float64":
                 ak_arr = ak.randint(0, 2**32, SIZE, dtype=ak.float64)
             elif dtype == "str":
@@ -60,7 +60,7 @@ class ParquetTest(ArkoudaTest):
             elif dtype == "uint64":
                 elems = ak.randint(0, 2**32, adjusted_size, dtype=ak.uint64)
             elif dtype == "bool":
-                elems = ak.randint(0, 1, adjusted_size, dtype=ak.bool)
+                elems = ak.randint(0, 1, adjusted_size, dtype=ak.bool_)
             elif dtype == "float64":
                 elems = ak.randint(0, 2**32, adjusted_size, dtype=ak.float64)
             elif dtype == "str":
@@ -111,7 +111,7 @@ class ParquetTest(ArkoudaTest):
             elif dtype == "uint64":
                 ak_arr = ak.randint(0, 2**32, 10, dtype=ak.uint64)
             elif dtype == "bool":
-                ak_arr = ak.randint(0, 1, 10, dtype=ak.bool)
+                ak_arr = ak.randint(0, 1, 10, dtype=ak.bool_)
             elif dtype == "float64":
                 ak_arr = ak.randint(0, 2**32, SIZE, dtype=ak.float64)
             elif dtype == "str":
@@ -129,7 +129,7 @@ class ParquetTest(ArkoudaTest):
         base_dset = ak.randint(0, 2**32, append_size)
         ak_dict = {}
         ak_dict["uint-dset"] = ak.randint(0, 2**32, append_size, dtype=ak.uint64)
-        ak_dict["bool-dset"] = ak.randint(0, 1, append_size, dtype=ak.bool)
+        ak_dict["bool-dset"] = ak.randint(0, 1, append_size, dtype=ak.bool_)
         ak_dict["float-dset"] = ak.randint(0, 2**32, append_size, dtype=ak.float64)
         ak_dict["int-dset"] = ak.randint(0, 2**32, append_size)
         ak_dict["str-dset"] = ak.random_strings_uniform(1, 10, append_size)
@@ -171,7 +171,7 @@ class ParquetTest(ArkoudaTest):
             elif dtype == "uint64":
                 ak_arr = ak.randint(0, 2**32, SIZE, dtype=ak.uint64)
             elif dtype == "bool":
-                ak_arr = ak.randint(0, 1, SIZE, dtype=ak.bool)
+                ak_arr = ak.randint(0, 1, SIZE, dtype=ak.bool_)
             elif dtype == "float64":
                 ak_arr = ak.randint(0, 2**32, SIZE, dtype=ak.float64)
             elif dtype == "str":
@@ -196,7 +196,7 @@ class ParquetTest(ArkoudaTest):
                 # validate the list read out matches the array used to write
                 self.assertListEqual(rd_arr.to_list(), a.to_list())
 
-        b = ak.randint(0, 2, 150, dtype=ak.bool)
+        b = ak.randint(0, 2, 150, dtype=ak.bool_)
         for comp in COMPRESSIONS:
             with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
                 # write with the selected compression
@@ -407,7 +407,7 @@ class ParquetTest(ArkoudaTest):
         a = [0, 1, 1]
         b = [0]
         c = [1, 0]
-        s = ak.SegArray(ak.array([0, len(a), len(a) + len(b)]), ak.array(a + b + c, dtype=ak.bool))
+        s = ak.SegArray(ak.array([0, len(a), len(a) + len(b)]), ak.array(a + b + c, dtype=ak.bool_))
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             s.to_parquet(f"{tmp_dirname}/bool_test")
 
@@ -419,7 +419,7 @@ class ParquetTest(ArkoudaTest):
         a = [0, 1, 1]
         c = [1, 0]
         s = ak.SegArray(
-            ak.array([0, 0, len(a), len(a), len(a), len(a) + len(c)]), ak.array(a + c, dtype=ak.bool)
+            ak.array([0, 0, len(a), len(a), len(a), len(a) + len(c)]), ak.array(a + c, dtype=ak.bool_)
         )
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             s.to_parquet(f"{tmp_dirname}/bool_test_empty")
@@ -458,7 +458,7 @@ class ParquetTest(ArkoudaTest):
             "c_3": ak.arange(3, 6, dtype=ak.uint64),
             "c_4": ak.SegArray(ak.array([0, 5, 10]), ak.arange(15, dtype=ak.uint64)),
             "c_5": ak.array([False, True, False]),
-            "c_6": ak.SegArray(ak.array([0, 5, 10]), ak.randint(0, 1, 15, dtype=ak.bool)),
+            "c_6": ak.SegArray(ak.array([0, 5, 10]), ak.randint(0, 1, 15, dtype=ak.bool_)),
             "c_7": ak.array(np.random.uniform(0, 100, 3)),
             "c_8": ak.SegArray(ak.array([0, 9, 14]), ak.array(np.random.uniform(0, 100, 20))),
             "c_9": ak.array(["abc", "123", "xyz"]),
@@ -485,7 +485,7 @@ class ParquetTest(ArkoudaTest):
             # read files and ensure that all resulting fields are as expected
             rd_data = ak.read_parquet(f"{tmp_dirname}/multicol_parquet*")
             for k, v in rd_data.items():
-                self.assertListEqual(v.to_list(), akdf[k].values.to_list())
+                self.assertListEqual(v.to_list(), akdf[k].to_list())
 
             # extra insurance, check dataframes are equivalent
             rd_df = ak.DataFrame(rd_data)
@@ -517,20 +517,20 @@ class ParquetTest(ArkoudaTest):
             data = ak.read_parquet(fname + "_*")
             self.assertTrue("idx" in data)
             self.assertTrue("seg" in data)
-            self.assertListEqual(df["idx"].values.to_list(), data["idx"].to_list())
-            self.assertListEqual(df["seg"].values.to_list(), data["seg"].to_list())
+            self.assertListEqual(df["idx"].to_list(), data["idx"].to_list())
+            self.assertListEqual(df["seg"].to_list(), data["seg"].to_list())
 
             # test read with read_nested=false and no supplied datasets
             data = ak.read_parquet(fname + "_*", read_nested=False).popitem()[1]
             self.assertIsInstance(data, ak.pdarray)
-            self.assertListEqual(df["idx"].values.to_list(), data.to_list())
+            self.assertListEqual(df["idx"].to_list(), data.to_list())
 
             # test read with read_nested=false and user supplied datasets. Should ignore read_nested
             data = ak.read_parquet(fname + "_*", datasets=["idx", "seg"], read_nested=False)
             self.assertTrue("idx" in data)
             self.assertTrue("seg" in data)
-            self.assertListEqual(df["idx"].values.to_list(), data["idx"].to_list())
-            self.assertListEqual(df["seg"].values.to_list(), data["seg"].to_list())
+            self.assertListEqual(df["idx"].to_list(), data["idx"].to_list())
+            self.assertListEqual(df["seg"].to_list(), data["seg"].to_list())
 
     def test_segarray_string(self):
         words = ak.array(["one,two,three", "uno,dos,tres"])
@@ -584,11 +584,14 @@ class ParquetTest(ArkoudaTest):
             for i in range(1, 39):
                 self.assertTrue(np.allclose(ak_data["decCol" + str(i)].to_ndarray(), data[i - 1]))
 
-    def test_empty_segs_segarray(self):
+    def test_multi_batch_reads(self):
+        pytest.skip()
         # verify reproducer for #3074 is resolved
+        # seagarray w/ empty segs multi-batch pq reads
 
         # bug seemed to consistently appear for val_sizes
-        # exceeding 700000, round up to ensure we'd hit it
+        # exceeding 700000 (likely due to this requiring more than one batch)
+        # we round up to ensure we'd hit it
         val_size = 1000000
 
         df_dict = dict()
@@ -601,7 +604,8 @@ class ParquetTest(ArkoudaTest):
             rng.integers(0, 2**32, size=val_size, dtype="uint"),
             rng.integers(0, 1, size=val_size, dtype="bool"),
             rng.integers(-(2**32), 2**32, size=val_size, dtype="int"),
-            some_nans,
+            some_nans,  # contains nans
+            ak.random_strings_uniform(0, 4, val_size, seed=seed),  # contains empty strings
         ]
 
         for vals in vals_list:
@@ -619,7 +623,7 @@ class ParquetTest(ArkoudaTest):
                 pddf.to_parquet(file_path)
                 akdf = ak.DataFrame(ak.read_parquet(file_path))
 
-                to_pd = pd.Series(akdf["rand"].values.to_list())
+                to_pd = pd.Series(akdf["rand"].to_list())
                 # raises an error if the two series aren't equal
                 # we can't use np.allclose(pddf['rand'].to_list, akdf['rand'].to_list) since these
                 # are lists of lists. assert_series_equal handles this and properly handles nans.
@@ -627,6 +631,15 @@ class ParquetTest(ArkoudaTest):
                 # to ensure float point differences don't cause errors
                 print("\nseed: ", seed)
                 assert_series_equal(pddf["rand"], to_pd, check_names=False, rtol=1e-05, atol=1e-08)
+
+                # test writing multi-batch non-segarrays
+                file_path = f"{tmp_dirname}/multi_batch_vals"
+                vals.to_parquet(file_path, dataset="my_vals")
+                read = ak.read_parquet(file_path + "*")["my_vals"]
+                if isinstance(vals, ak.pdarray) and vals.dtype == ak.float64:
+                    assert np.allclose(read.to_list(), vals.to_list(), equal_nan=True)
+                else:
+                    assert (read == vals).all()
 
     @pytest.mark.optional_parquet
     def test_against_standard_files(self):

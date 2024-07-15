@@ -1,6 +1,7 @@
 import pytest
 
 import arkouda as ak
+from arkouda.client import generic_msg
 from server_util.test.server_test_util import start_arkouda_server
 
 
@@ -138,3 +139,26 @@ class TestClient:
         cmds = ak.client.get_server_commands()
         for cmd in ["connect", "array", "create1D", "tondarray1D", "info", "str"]:
             assert cmd in cmds
+
+    def test_client_array_dim_cmd_error(self):
+        """
+        Tests that a user will get a helpful error message if they attempt to
+        use a multi-dimensional command when the server is not configured to
+        support multi-dimensional arrays of the given rank.
+        """
+        with pytest.raises(RuntimeError) as cm:
+            resp = generic_msg("create10D")
+
+        err_msg = "Error: Command 'create10D' is not supported with the current server configuration as the maximum array dimensionality is 1. Please recompile with support for at least 10D arrays"
+        cm.match(err_msg)  #   Asserts the error msg matches the expected value
+
+    def test_client_nd_unimplemented_error(self):
+        """
+        Tests that a user will get a helpful error message if they attempt to
+        use a multi-dimensional command when only a 1D implementation exists.
+        """
+        with pytest.raises(RuntimeError) as cm:
+            resp = generic_msg("connect2D")
+
+        err_msg = "Error: Command 'connect' is not supported for multidimensional arrays"
+        cm.match(err_msg)  #   Asserts the error msg matches the expected value

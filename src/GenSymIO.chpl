@@ -19,8 +19,7 @@ module GenSymIO {
     use Map;
     use CTypes;
     use CommAggregation;
-
-    use ArkoudaIOCompat;
+    use IOUtils;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -31,8 +30,8 @@ module GenSymIO {
      * Creates a pdarray server-side and returns the SymTab name used to
      * retrieve the pdarray from the SymTab.
     */
-    @arkouda.registerArrayMsg
-    proc arrayMsg(cmd: string, msgArgs: borrowed MessageArgs, ref data: bytes, st: borrowed SymTab, param nd: int): MsgTuple throws {
+    @arkouda.registerND
+    proc arrayMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
         const dtype = str2dtype(msgArgs.getValueOf("dtype")),
               shape = msgArgs.get("shape").getTuple(nd),
               asSegStr = msgArgs.get("seg_string").getBoolValue(),
@@ -43,11 +42,11 @@ module GenSymIO {
         overMemLimit(2*size*dtypeSize(dtype));
 
         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                       "dtype: %? shape: %? size: %i".doFormat(dtype,shape,size));
+                       "dtype: %? shape: %? size: %i".format(dtype,shape,size));
 
         proc bytesToSymEntry(type t) throws {
             var entry = createSymEntry((...shape), t);
-            var localA = makeArrayFromPtr(data.c_str():c_ptr(void):c_ptr(t), num_elts=size:uint);
+            var localA = makeArrayFromPtr(msgArgs.payload.c_str():c_ptr(void):c_ptr(t), num_elts=size:uint);
             if nd == 1 {
                 entry.a = localA;
             } else {
@@ -68,7 +67,7 @@ module GenSymIO {
         } else if dtype == DType.UInt8 {
             bytesToSymEntry(uint(8));
         } else {
-            const msg = "Unhandled data type %s".doFormat(msgArgs.getValueOf("dtype"));
+            const msg = "Unhandled data type %s".format(msgArgs.getValueOf("dtype"));
             gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
             return new MsgTuple(msg, MsgType.ERROR);
         }
@@ -87,7 +86,7 @@ module GenSymIO {
                     gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),msg);
                     return new MsgTuple(msg, MsgType.NORMAL);
                 } else {
-                    throw new Error("Unsupported Type %s".doFormat(g.entryType));
+                    throw new Error("Unsupported Type %s".format(g.entryType));
                 }
             } catch e: Error {
                 const msg = "Error creating offsets for SegString";
@@ -121,13 +120,13 @@ module GenSymIO {
      * Chapel Bytes object
      */
     @arkouda.registerND
-    proc tondarrayMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): bytes throws {
+    proc tondarrayMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
         var arrayBytes: bytes;
         var abstractEntry = st.lookup(msgArgs.getValueOf("array"));
         if !abstractEntry.isAssignableTo(SymbolEntryType.TypedArraySymEntry) {
-            var errorMsg = "Error: Unhandled SymbolEntryType %s".doFormat(abstractEntry.entryType);
+            var errorMsg = "Error: Unhandled SymbolEntryType %s".format(abstractEntry.entryType);
             gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return errorMsg.encode(); // return as bytes
+            return MsgTuple.error(errorMsg);
         }
         var entry:borrowed GenSymEntry = abstractEntry: borrowed GenSymEntry;
 
@@ -157,12 +156,12 @@ module GenSymIO {
         } else if entry.dtype == DType.UInt8 {
             arrayBytes = distArrToBytes(toSymEntry(entry, uint(8), nd).a);
         } else {
-            var errorMsg = "Error: Unhandled dtype %s".doFormat(entry.dtype);
+            const errorMsg = "Error: Unhandled dtype %s".format(entry.dtype);
             gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return errorMsg.encode(); // return as bytes
+            return MsgTuple.error(errorMsg);
         }
 
-       return arrayBytes;
+       return MsgTuple.payload(arrayBytes);
     }
 
     /*

@@ -8,6 +8,7 @@ module Registry {
     use Reflection;
     use ServerErrors;
     use Logging;
+    use IOUtils;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -63,7 +64,7 @@ module Registry {
                         registered_entries.pushBack(bre.array);
                     }
                     otherwise {
-                        var errorMsg = "Dataframes only support pdarray, Strings, SegArray, and Categorical columns. Found %s".doFormat(gre.objType: string);
+                        var errorMsg = "Dataframes only support pdarray, Strings, SegArray, and Categorical columns. Found %s".format(gre.objType: string);
                         throw getErrorWithContext(
                             msg=errorMsg,
                             lineNumber=getLineNumber(),
@@ -198,7 +199,7 @@ module Registry {
                         registered_entries.remove(bre.array);
                     }
                     otherwise {
-                        var errorMsg = "Dataframes only support pdarray, Strings, Datetime, Timedelta, IPv4, BitVector, SegArray, and Categorical columns. Found %s".doFormat(gre.objType: string);
+                        var errorMsg = "Dataframes only support pdarray, Strings, Datetime, Timedelta, IPv4, BitVector, SegArray, and Categorical columns. Found %s".format(gre.objType: string);
                         throw getErrorWithContext(
                             msg=errorMsg,
                             lineNumber=getLineNumber(),
@@ -292,8 +293,8 @@ module Registry {
         proc checkAvailability(name: string) throws {
             if tab.contains(name) {
                 regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                                                "Name, %s, not available for registration. Already in use.".doFormat(name));
-                var errorMsg = "Name, %s, not available for registration. Already in use.".doFormat(name); 
+                                                "Name, %s, not available for registration. Already in use.".format(name));
+                var errorMsg = "Name, %s, not available for registration. Already in use.".format(name); 
                     throw getErrorWithContext(
                         msg=errorMsg,
                         lineNumber=getLineNumber(),
@@ -309,7 +310,7 @@ module Registry {
         proc checkTable(name: string, calling_func="check") throws { 
             if (!tab.contains(name)) { 
                 regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                                                "undefined registry entry: %s".doFormat(name));
+                                                "undefined registry entry: %s".format(name));
                 throw getErrorWithContext(
                     msg=unknownSymbolError(pname=calling_func, sname=name),
                     lineNumber=getLineNumber(),
@@ -318,7 +319,7 @@ module Registry {
                     errorClass="UnknownSymbolError");
             } else {
                 regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                "found registered object: %s".doFormat(name));
+                                                "found registered object: %s".format(name));
             }
         }
 

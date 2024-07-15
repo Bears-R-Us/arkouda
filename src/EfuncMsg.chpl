@@ -51,7 +51,7 @@ module EfuncMsg
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
         eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                           "cmd: %s efunc: %s pdarray: %s".doFormat(cmd,efunc,st.attrib(name)));
+                           "cmd: %s efunc: %s pdarray: %s".format(cmd,efunc,st.attrib(name)));
 
         select (gEnt.dtype) {
             when (DType.Int64) {
@@ -498,14 +498,16 @@ module EfuncMsg
         var repMsg: string;
         var rname = st.nextName();
         var efunc = msgArgs.getValueOf("func");
-        var aParam = msgArgs.get("A");
-        var bParam = msgArgs.get("B");
+        var aParam = msgArgs["A"];
+        var bParam = msgArgs["B"];
 
-        // TODO see issue #2522: merge enum ObjType and ObjectType
-        select (aParam.objType, bParam.objType) {
-            when (ObjectType.PDARRAY, ObjectType.PDARRAY) {
-                var aGen: borrowed GenSymEntry = getGenericTypedArrayEntry(aParam.val, st);
-                var bGen: borrowed GenSymEntry = getGenericTypedArrayEntry(bParam.val, st);
+        const (aName, aIsPdarray) = aParam.tryGetScalar(string),
+              (bName, bIsPdarray) = bParam.tryGetScalar(string);
+
+        select (aIsPdarray, bIsPdarray) {
+            when (true, true) {
+                var aGen: borrowed GenSymEntry = getGenericTypedArrayEntry(aName, st);
+                var bGen: borrowed GenSymEntry = getGenericTypedArrayEntry(bName, st);
                 if aGen.shape != bGen.shape {
                     var errorMsg = "shape mismatch in arguments to "+pn;
                     eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -615,8 +617,8 @@ module EfuncMsg
                     }
                 }
             }
-            when (ObjectType.PDARRAY, ObjectType.VALUE) {
-                var aGen: borrowed GenSymEntry = getGenericTypedArrayEntry(aParam.val, st);
+            when (true, false) {
+                var aGen: borrowed GenSymEntry = getGenericTypedArrayEntry(aName, st);
                 select (aGen.dtype, bParam.getDType()) {
                     when (DType.Int64, DType.Int64) {
                         var aEnt = toSymEntry(aGen, int, nd);
@@ -721,8 +723,8 @@ module EfuncMsg
                     }
                 }
             }
-            when (ObjectType.VALUE, ObjectType.PDARRAY) {
-                var bGen: borrowed GenSymEntry = getGenericTypedArrayEntry(bParam.val, st);
+            when (false, true) {
+                var bGen: borrowed GenSymEntry = getGenericTypedArrayEntry(bName, st);
                 select (aParam.getDType(), bGen.dtype) {
                     when (DType.Int64, DType.Int64) {
                         var aScal = aParam.getIntValue();
@@ -965,7 +967,7 @@ module EfuncMsg
         var name1 = msgArgs.getValueOf("condition");
         var name2 = msgArgs.getValueOf("a");
         eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-            "cmd: %s efunc: %s scalar: %s dtype: %s name1: %s name2: %s rname: %s".doFormat(
+            "cmd: %s efunc: %s scalar: %s dtype: %s name1: %s name2: %s rname: %s".format(
              cmd,efunc,msgArgs.getValueOf("scalar"),dtype,name1,name2,rname));
 
         var g1: borrowed GenSymEntry = getGenericTypedArrayEntry(name1, st);
@@ -1080,7 +1082,7 @@ module EfuncMsg
         var name1 = msgArgs.getValueOf("condition");
         var name2 = msgArgs.getValueOf("b");
         eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-            "cmd: %s efunc: %s scalar: %s dtype: %s name1: %s name2: %s rname: %s".doFormat(
+            "cmd: %s efunc: %s scalar: %s dtype: %s name1: %s name2: %s rname: %s".format(
              cmd,efunc,msgArgs.getValueOf("scalar"),dtype,name1,name2,rname));
 
         var g1: borrowed GenSymEntry = getGenericTypedArrayEntry(name1, st);
@@ -1195,7 +1197,7 @@ module EfuncMsg
         var name1 = msgArgs.getValueOf("condition");
 
         eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-            "cmd: %s efunc: %s scalar1: %s dtype1: %s scalar2: %s name: %s rname: %s".doFormat(
+            "cmd: %s efunc: %s scalar1: %s dtype1: %s scalar2: %s name: %s rname: %s".format(
              cmd,efunc,msgArgs.getValueOf("a"),dtype,msgArgs.getValueOf("b"),name1,rname));
 
         var g1: borrowed GenSymEntry = getGenericTypedArrayEntry(name1, st);

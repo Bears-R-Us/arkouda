@@ -6,8 +6,8 @@ module StatusMsg {
     use MemoryMgmt;
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
-    use ArkoudaIOCompat;
-    
+    use IOUtils;
+
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const sLogger = new Logger(logLevel, logChannel);

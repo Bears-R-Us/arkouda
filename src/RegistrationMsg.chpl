@@ -21,8 +21,7 @@ module RegistrationMsg {
     use Map;
     use MultiTypeRegEntry;
     use GenSymIO;
-
-    use ArkoudaIOCompat;
+    use IOUtils;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -35,7 +34,7 @@ module RegistrationMsg {
 
         var are = new shared ArrayRegEntry(array_name, objType);
         st.registry.register_array(reg_name, are);
-        return new MsgTuple("Registered %s".doFormat(objType: string), MsgType.NORMAL);
+        return new MsgTuple("Registered %s".format(objType: string), MsgType.NORMAL);
     }
 
     private proc register_segarray(msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
@@ -92,7 +91,7 @@ module RegistrationMsg {
                     col_list.pushBack(bre);
                 }
                 otherwise {
-                    var errorMsg = "DataFrames only support columns of type pdarray, Strings, Datetime, Timedelta, IPv4, Categorical, BitVector and SegArray. Found %s".doFormat(objType: string);
+                    var errorMsg = "DataFrames only support columns of type pdarray, Strings, Datetime, Timedelta, IPv4, Categorical, BitVector and SegArray. Found %s".format(objType: string);
                     throw getErrorWithContext(
                         msg=errorMsg,
                         lineNumber=getLineNumber(),
@@ -132,7 +131,7 @@ module RegistrationMsg {
                 key_list.pushBack(cre);
             }
             else {
-                var errorMsg = "GroupBys only support pdarray, Strings, and Categorical keys. Found %s".doFormat(objType: string);
+                var errorMsg = "GroupBys only support pdarray, Strings, and Categorical keys. Found %s".format(objType: string);
                 throw getErrorWithContext(
                     msg=errorMsg,
                     lineNumber=getLineNumber(),
@@ -186,7 +185,7 @@ module RegistrationMsg {
                 idx.pushBack(cre);
             }
             else {
-                var errorMsg = "Index only support pdarray, Strings, and Categorical ObjTypes. Found %s".doFormat(objType: string);
+                var errorMsg = "Index only support pdarray, Strings, and Categorical ObjTypes. Found %s".format(objType: string);
                 throw getErrorWithContext(
                     msg=errorMsg,
                     lineNumber=getLineNumber(),
@@ -222,7 +221,7 @@ module RegistrationMsg {
                 idx.pushBack(cre);
             }
             else {
-                var errorMsg = "Index only support pdarray, Strings, and Categorical ObjTypes. Found %s".doFormat(objType: string);
+                var errorMsg = "Index only support pdarray, Strings, and Categorical ObjTypes. Found %s".format(objType: string);
                 throw getErrorWithContext(
                     msg=errorMsg,
                     lineNumber=getLineNumber(),
@@ -249,7 +248,7 @@ module RegistrationMsg {
             sre = new shared SeriesRegEntry(ire, cre: shared GenRegEntry);
         }
         else {
-            var errorMsg = "Series only support pdarray, Strings, and Categorical ObjTypes. Found %s".doFormat(val_type: string);
+            var errorMsg = "Series only support pdarray, Strings, and Categorical ObjTypes. Found %s".format(val_type: string);
             throw getErrorWithContext(
                 msg=errorMsg,
                 lineNumber=getLineNumber(),
@@ -304,7 +303,7 @@ module RegistrationMsg {
                 return register_bitvector(msgArgs, st);
             }
             otherwise {
-                var errorMsg = "ObjType Not Supported by Registry: %s".doFormat(objtype: string);
+                var errorMsg = "ObjType Not Supported by Registry: %s".format(objtype: string);
                 throw getErrorWithContext(
                     msg=errorMsg,
                     lineNumber=getLineNumber(),
@@ -357,7 +356,7 @@ module RegistrationMsg {
                 st.registry.unregister_bitvector(bre);
             }
             otherwise {
-                var errorMsg = "ObjType Not Supported by Registry: %s".doFormat(gre.objType: string);
+                var errorMsg = "ObjType Not Supported by Registry: %s".format(gre.objType: string);
                 throw getErrorWithContext(
                     msg=errorMsg,
                     lineNumber=getLineNumber(),
@@ -366,7 +365,7 @@ module RegistrationMsg {
                     errorClass="TypeError");
             }
         }
-        return new MsgTuple("Unregistered %s %s".doFormat(gre.objType: string, name), MsgType.NORMAL);
+        return new MsgTuple("Unregistered %s %s".format(gre.objType: string, name), MsgType.NORMAL);
     }
 
     proc attachMsg(cmd: string, msgArgs: borrowed MessageArgs,
@@ -428,7 +427,7 @@ module RegistrationMsg {
                 rtnMap = bre.asMap(st);
             }
             otherwise {
-                var errorMsg = "Unexpected ObjType, %s, found in registry.".doFormat(gre.objType: string);
+                var errorMsg = "Unexpected ObjType, %s, found in registry.".format(gre.objType: string);
                 throw getErrorWithContext(
                     msg=errorMsg,
                     lineNumber=getLineNumber(),

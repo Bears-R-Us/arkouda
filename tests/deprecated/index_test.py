@@ -2,7 +2,6 @@ import glob
 import os
 import tempfile
 
-
 import pandas as pd
 from base_test import ArkoudaTest
 from context import arkouda as ak
@@ -12,7 +11,6 @@ from arkouda import io_util
 from arkouda.dtypes import dtype
 from arkouda.index import Index
 from arkouda.pdarrayclass import pdarray
-from arkouda.index import Index
 
 
 class IndexTest(ArkoudaTest):

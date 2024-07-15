@@ -16,14 +16,14 @@ def randArr(shape):
 
 class UtilFunctions(ArkoudaTest):
     def test_all(self):
-        a = xp.ones((10, 10), dtype=ak.bool)
+        a = xp.ones((10, 10), dtype=ak.bool_)
         self.assertTrue(xp.all(a))
 
         a[3, 4] = False
         self.assertFalse(xp.all(a))
 
     def test_any(self):
-        a = xp.zeros((10, 10), dtype=ak.bool)
+        a = xp.zeros((10, 10), dtype=ak.bool_)
         self.assertFalse(xp.any(a))
 
         a[3, 4] = True

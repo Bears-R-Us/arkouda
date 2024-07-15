@@ -67,6 +67,7 @@ __all__ = [
     "rad2deg",
     "deg2rad",
     "hash",
+    "putmask",
     "where",
     "histogram",
     "histogram2d",
@@ -131,10 +132,10 @@ def cast(
     >>> ak.cast(ak.arange(0,5), dt=ak.float64).dtype
     dtype('float64')
 
-    >>> ak.cast(ak.arange(0,5), dt=ak.bool)
+    >>> ak.cast(ak.arange(0,5), dt=ak.bool_)
     array([False, True, True, True, True])
 
-    >>> ak.cast(ak.linspace(0,4,5), dt=ak.bool)
+    >>> ak.cast(ak.linspace(0,4,5), dt=ak.bool_)
     array([False, True, True, True, True])
     """
     from arkouda.categorical import Categorical  # type: ignore
@@ -740,7 +741,7 @@ def cumsum(pda: pdarray) -> pdarray:
     array([3.1598310770203937, 5.4110385860243131, 9.1622479306453748,
            12.710615785506533, 13.945880905466208])
 
-    >>> ak.cumsum(ak.randint(0, 1, 5, dtype=ak.bool))
+    >>> ak.cumsum(ak.randint(0, 1, 5, dtype=ak.bool_))
     array([0, 1, 1, 2, 3])
     """
     repMsg = generic_msg(
@@ -2182,3 +2183,58 @@ def count_nonzero(pda):
         return sum((pda).astype(np.int64))
     elif pda.dtype == str:
         return sum((pda != "").astype(np.int64))
+
+
+def putmask(pda: pdarray, mask: Union[bool, pdarray], values: pdarray):
+    """
+    Overwrite elements of a pdarray at indices where mask is True
+
+    Parameters
+    ----------
+    pda    : pdarray, source data, also output data
+        pda = input where mask is False, = values where mask is True
+    mask   : a scalar boolean, or a pdarray of booleans
+    values : pdarray, replacement data
+
+    Returns
+    -------
+    None - pda is modified in-place
+
+    Notes
+    -----
+    If values.size != a.size, values is repeated and/or pruned as needed to
+    make sizes match, because ak.where requires matching sizes.
+
+    Examples
+    -------
+    >>> a = ak.array(np.arange(10))
+    >>> ak.putmask (a,a>2,a**2)
+    array ([0,1,2,9,16,25,36,49,64,81])
+
+    >>> values = ak.array([3,2])
+    >>> ak.putmask (a,a>2,values)
+    array ([0,1,2,2,3,2,3,2,3,2])
+
+    Raises
+    ------
+    TypeError
+        Raised if a and values are not the same type
+
+    """
+
+    from arkouda.pdarraysetops import concatenate
+
+    # check for matching types
+
+    if values.dtype != pda.dtype:
+        raise TypeError("ak.putmask requires arrays of matching type")
+
+    # if values is not the same size as pda, repeat it and/or prune it as needed
+
+    growth = pda.size // values.size + (0 if pda.size % values.size == 0 else 1)
+    result = concatenate(growth * [values])
+    if result.size > pda.size:
+        reduction = result.size % pda.size
+        result = result[:-(reduction)]
+
+    pda[:] = where(mask, result, pda)  # pda[:] = allows us to return modified value

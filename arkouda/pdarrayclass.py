@@ -11,8 +11,7 @@ from typeguard import typechecked
 
 from arkouda.client import generic_msg
 from arkouda.dtypes import NUMBER_FORMAT_STRINGS, DTypes, bigint
-from arkouda.dtypes import bool as akbool
-from arkouda.dtypes import bool as npbool
+from arkouda.dtypes import bool_ as akbool
 from arkouda.dtypes import dtype, get_byteorder
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import get_server_byteorder
@@ -112,7 +111,7 @@ def parse_single_value(msg: str) -> object:
             return int(value[1:-1])
         else:
             return int(value)
-    if mydtype == npbool:
+    if mydtype == akbool:
         if value == "True":
             return mydtype.type(True)
         elif value == "False":

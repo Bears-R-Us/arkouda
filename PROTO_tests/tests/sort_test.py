@@ -69,7 +69,7 @@ class TestSort:
     @pytest.mark.parametrize("algo", SortingAlgorithm)
     def test_error_handling(self, algo):
         # Test RuntimeError from bool NotImplementedError
-        ak_bools = ak.randint(0, 1, 1000, dtype=ak.bool)
+        ak_bools = ak.randint(0, 1, 1000, dtype=ak.bool_)
         bools = ak.randint(0, 1, 1000, dtype=bool)
 
         for arr in ak_bools, bools:

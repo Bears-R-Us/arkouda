@@ -163,13 +163,13 @@ module SipHash {
         if DEBUG {
             try! {
               shLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                   "%i v0 %016xu".doFormat(numBytes, v0));
+                                                   "%i v0 %016xu".format(numBytes, v0));
               shLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                   "%i v1 %016xu".doFormat(numBytes, v1));
+                                                   "%i v1 %016xu".format(numBytes, v1));
               shLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                   "%i v2 %016xu".doFormat(numBytes, v2));
+                                                   "%i v2 %016xu".format(numBytes, v2));
               shLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                   "%i v3 %016xu".doFormat(numBytes, v3));
+                                                   "%i v3 %016xu".format(numBytes, v3));
             }
         }
     }
@@ -195,7 +195,7 @@ module SipHash {
 
         if DEBUG {
           try! shLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
-                         "m = %016xu".doFormat(m));
+                         "m = %016xu".format(m));
         }
 
         v3 ^= m;
@@ -253,7 +253,7 @@ module SipHash {
     const res0 = byte_reverse(b);
     if DEBUG {
       try! shLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
-                          "b = %016xu".doFormat(b));
+                          "b = %016xu".format(b));
     }
     
     if (outlen == 8) {
@@ -270,7 +270,7 @@ module SipHash {
     b = v0 ^ v1 ^ v2 ^ v3;
     if DEBUG {
       try! shLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
-                          "b = %016xu".doFormat(b));
+                          "b = %016xu".format(b));
     }
     return  (res0, byte_reverse(b));
   }

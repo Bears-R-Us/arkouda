@@ -10,8 +10,7 @@ module BigIntMsg {
     use ServerErrorStrings;
     use BigInteger;
     use List;
-
-    use ArkoudaIOCompat;
+    use IOUtils;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -49,7 +48,7 @@ module BigIntMsg {
         var retname = st.nextName();
         st.addEntry(retname, createSymEntry(bigIntArray, max_bits));
         var syment = toSymEntry(getGenericTypedArrayEntry(retname, st), bigint);
-        repMsg = "created %s".doFormat(st.attrib(retname));
+        repMsg = "created %s".format(st.attrib(retname));
         biLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
@@ -73,7 +72,7 @@ module BigIntMsg {
                   low = tmp:uint;
                   var retname = st.nextName();
                   st.addEntry(retname, createSymEntry(low));
-                  retList.pushBack("created %s".doFormat(st.attrib(retname)));
+                  retList.pushBack("created %s".format(st.attrib(retname)));
 
                   all_zero = true;
                   forall t in tmp with (&& reduce all_zero) {

@@ -31,7 +31,7 @@ module HistogramMsg
         // get next symbol name
         var rname = st.nextName();
         hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                      "cmd: %s name: %s bins: %i rname: %s".doFormat(cmd, name, bins, rname));
+                      "cmd: %s name: %s bins: %i rname: %s".format(cmd, name, bins, rname));
 
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
@@ -42,23 +42,23 @@ module HistogramMsg
           var aMax = max reduce e.a;
           var binWidth:real = (aMax - aMin):real / bins:real;
           hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                           "binWidth %r".doFormat(binWidth));
+                                                           "binWidth %r".format(binWidth));
 
           if (bins <= sBound) {
               hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                           "%? <= %?".doFormat(bins,sBound));
+                                                           "%? <= %?".format(bins,sBound));
               var hist = histogramReduceIntent(e.a, aMin, aMax, bins, binWidth);
               st.addEntry(rname, createSymEntry(hist));
           }
           else if (bins <= mBound) {
               hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                           "%? <= %?".doFormat(bins,mBound));
+                                                           "%? <= %?".format(bins,mBound));
               var hist = histogramLocalAtomic(e.a, aMin, aMax, bins, binWidth);
               st.addEntry(rname, createSymEntry(hist));
           }
           else {
               hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                            "%? > %?".doFormat(bins,mBound));
+                                                            "%? > %?".format(bins,mBound));
               var hist = histogramGlobalAtomic(e.a, aMin, aMax, bins, binWidth);
               st.addEntry(rname, createSymEntry(hist));
           }
@@ -93,7 +93,7 @@ module HistogramMsg
         // get next symbol name
         var rname = st.nextName();
         hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                      "cmd: %s xName: %s yName: %s xBins: %i yBins: %i rname: %s".doFormat(cmd, xName, yName, xBins, yBins, rname));
+                      "cmd: %s xName: %s yName: %s xBins: %i yBins: %i rname: %s".format(cmd, xName, yName, xBins, yBins, rname));
 
         var xGenEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(xName, st);
         var yGenEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(yName, st);
@@ -109,24 +109,24 @@ module HistogramMsg
             var xBinWidth:real = (xMax - xMin):real / xBins:real;
             var yBinWidth:real = (yMax - yMin):real / yBins:real;
             hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                            "xBinWidth %r yBinWidth %r".doFormat(xBinWidth, yBinWidth));
+                                                            "xBinWidth %r yBinWidth %r".format(xBinWidth, yBinWidth));
 
             var totBins = xBins * yBins;
             if (totBins <= sBound) {
                 hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                            "%? <= %?".doFormat(totBins,sBound));
+                                                            "%? <= %?".format(totBins,sBound));
                 var hist = histogramReduceIntent(x.a, y.a, xMin, xMax, yMin, yMax, xBins, yBins, xBinWidth, yBinWidth);
                 st.addEntry(rname, createSymEntry(hist));
             }
             else if (totBins <= mBound) {
                 hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                            "%? <= %?".doFormat(totBins,mBound));
+                                                            "%? <= %?".format(totBins,mBound));
                 var hist = histogramLocalAtomic(x.a, y.a, xMin, xMax, yMin, yMax, xBins, yBins, xBinWidth, yBinWidth);
                 st.addEntry(rname, createSymEntry(hist));
             }
             else {
                 hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                                "%? > %?".doFormat(totBins,mBound));
+                                                                "%? > %?".format(totBins,mBound));
                 var hist = histogramGlobalAtomic(x.a, y.a, xMin, xMax, yMin, yMax, xBins, yBins, xBinWidth, yBinWidth);
                 st.addEntry(rname, createSymEntry(hist));
             }
@@ -162,7 +162,7 @@ module HistogramMsg
         // get next symbol name
         var rname = st.nextName();
         hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                      "cmd: %s name: %? bins: %? rname: %s".doFormat(cmd, names, bins, rname));
+                      "cmd: %s name: %? bins: %? rname: %s".format(cmd, names, bins, rname));
 
         var gEnts = try! [name in names] getGenericTypedArrayEntry(name, st);
         var dimProdGenEnt = getGenericTypedArrayEntry(dimProdName, st);
@@ -183,7 +183,7 @@ module HistogramMsg
                 // small number of buckets (so histogram is relatively small):
                 // each task gets it's own copy of the histogram and they're reduced
                 hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                            "%? <= %?".doFormat(bins,sBound));
+                                                            "%? <= %?".format(bins,sBound));
                 forall (gEnt, stride, bin) in zip(gEnts, dimProd.a, bins) with (+ reduce indices) {
                     var e = toSymEntry(gEnt,t);
                     var aMin = min reduce e.a;
@@ -210,7 +210,7 @@ module HistogramMsg
                 // medium number of buckets:
                 // each locale gets it's own atomic copy of the histogram and these are reduced together
                 hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                            "%? <= %?".doFormat(bins,mBound));
+                                                            "%? <= %?".format(bins,mBound));
                 use PrivateDist;
                 var atomicIdx: [PrivateSpace] [0..#numSamples] atomic int;
 
@@ -254,7 +254,7 @@ module HistogramMsg
                 // large number of buckets:
                 // one global atomic histogram
                 hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                                "%? > %?".doFormat(bins,mBound));
+                                                                "%? > %?".format(bins,mBound));
                 use PrivateDist;
                 var atomicIdx: [makeDistDom(numSamples)] atomic int;
 

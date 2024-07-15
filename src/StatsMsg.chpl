@@ -10,6 +10,7 @@ module StatsMsg {
     use MultiTypeSymEntry;
     use ServerErrorStrings;
     use Stats;
+    use IOUtils;
 
     use Map;
     use ArkoudaIOCompat;
@@ -32,13 +33,13 @@ module StatsMsg {
         const x = msgArgs.getValueOf("x"),
               comp = msgArgs.getValueOf("comp"),
               nAxes = msgArgs.get("nAxes").getIntValue(),
-              axesRaw = msgArgs.get("axis").getListAs(int, nAxes),
+              axesRaw = msgArgs.get("axis").toScalarArray(int, nAxes),
               ddof = msgArgs.get("ddof").getRealValue(), // "correction" for std and variance
               skipNan = msgArgs.get("skipNan").getBoolValue(),
               rname = st.nextName();
 
         if !computations.contains(comp) {
-            var errorMsg = "Unrecognized stats computation: %s".doFormat(comp);
+            var errorMsg = "Unrecognized stats computation: %s".format(comp);
             sLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg,MsgType.ERROR);
         }
@@ -57,13 +58,13 @@ module StatsMsg {
                     otherwise halt("unreachable");
                 }
 
-                const scalarValue = "float64 %.17r".doFormat(s);
+                const scalarValue = "float64 %.17r".format(s);
                 sLogger.debug(getModuleName(),pn,getLineNumber(),scalarValue);
                 return new MsgTuple(scalarValue, MsgType.NORMAL);
             } else {
                 const (valid, axes) = validateNegativeAxes(axesRaw, nd);
                 if !valid {
-                    const errMsg = "Unable to compute 'std' on array with shape %? using axes %?".doFormat(eIn.tupShape, axesRaw);
+                    const errMsg = "Unable to compute 'std' on array with shape %? using axes %?".format(eIn.tupShape, axesRaw);
                     sLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
                     return new MsgTuple(errMsg,MsgType.ERROR);
                 } else {
@@ -120,85 +121,85 @@ module StatsMsg {
             when (DType.Int64, DType.Int64) {
                 var eX = toSymEntry(x,int);
                 var eY = toSymEntry(y,int);
-                repMsg = "float64 %.17r".doFormat(cov(eX.a, eY.a));
+                repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
             }
             when (DType.Int64, DType.Float64) {
                 var eX = toSymEntry(x,int);
                 var eY = toSymEntry(y,real);
-                repMsg = "float64 %.17r".doFormat(cov(eX.a, eY.a));
+                repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
             }
             when (DType.Int64, DType.Bool) {
                 var eX = toSymEntry(x,int);
                 var eY = toSymEntry(y,bool);
-                repMsg = "float64 %.17r".doFormat(cov(eX.a, eY.a));
+                repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
             }
             when (DType.Int64, DType.UInt64) {
                 var eX = toSymEntry(x,int);
                 var eY = toSymEntry(y,uint);
-                repMsg = "float64 %.17r".doFormat(cov(eX.a, eY.a));
+                repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
             }
             when (DType.Float64, DType.Float64) {
                 var eX = toSymEntry(x,real);
                 var eY = toSymEntry(y,real);
-                repMsg = "float64 %.17r".doFormat(cov(eX.a, eY.a));
+                repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
             }
             when (DType.Float64, DType.Int64) {
                 var eX = toSymEntry(x,real);
                 var eY = toSymEntry(y,int);
-                repMsg = "float64 %.17r".doFormat(cov(eX.a, eY.a));
+                repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
             }
             when (DType.Float64, DType.Bool) {
                 var eX = toSymEntry(x,real);
                 var eY = toSymEntry(y,bool);
-                repMsg = "float64 %.17r".doFormat(cov(eX.a, eY.a));
+                repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
             }
             when (DType.Float64, DType.UInt64) {
                 var eX = toSymEntry(x,real);
                 var eY = toSymEntry(y,uint);
-                repMsg = "float64 %.17r".doFormat(cov(eX.a, eY.a));
+                repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
             }
             when (DType.Bool, DType.Bool) {
                 var eX = toSymEntry(x,bool);
                 var eY = toSymEntry(y,bool);
-                repMsg = "float64 %.17r".doFormat(cov(eX.a, eY.a));
+                repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
             }
             when (DType.Bool, DType.Float64) {
                 var eX = toSymEntry(x,bool);
                 var eY = toSymEntry(y,real);
-                repMsg = "float64 %.17r".doFormat(cov(eX.a, eY.a));
+                repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
             }
             when (DType.Bool, DType.Int64) {
                 var eX = toSymEntry(x,bool);
                 var eY = toSymEntry(y,int);
-                repMsg = "float64 %.17r".doFormat(cov(eX.a, eY.a));
+                repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
             }
             when (DType.Bool, DType.UInt64) {
                 var eX = toSymEntry(x,bool);
                 var eY = toSymEntry(y,uint);
-                repMsg = "float64 %.17r".doFormat(cov(eX.a, eY.a));
+                repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
             }
             when (DType.UInt64, DType.UInt64) {
                 var eX = toSymEntry(x,uint);
                 var eY = toSymEntry(y,uint);
-                repMsg = "float64 %.17r".doFormat(cov(eX.a, eY.a));
+                repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
             }
             when (DType.UInt64, DType.Int64) {
                 var eX = toSymEntry(x,uint);
                 var eY = toSymEntry(y,int);
-                repMsg = "float64 %.17r".doFormat(cov(eX.a, eY.a));
+                repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
             }
             when (DType.UInt64, DType.Float64) {
                 var eX = toSymEntry(x,uint);
                 var eY = toSymEntry(y,real);
-                repMsg = "float64 %.17r".doFormat(cov(eX.a, eY.a));
+                repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
             }
             when (DType.UInt64, DType.Bool) {
                 var eX = toSymEntry(x,uint);
                 var eY = toSymEntry(y,bool);
-                repMsg = "float64 %.17r".doFormat(cov(eX.a, eY.a));
+                repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
             }
             otherwise {
-                var errorMsg = unrecognizedTypeError(pn, "(%s,%s)".doFormat(dtype2str(x.dtype),dtype2str(y.dtype)));
+                var errorMsg = unrecognizedTypeError(pn, "(%s,%s)".format(dtype2str(x.dtype),dtype2str(y.dtype)));
                 sLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR);
             }
@@ -213,7 +214,7 @@ module StatsMsg {
         var x: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("x"), st);
         var y: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("y"), st);
 
-        var repMsg: string = "float64 %.17r".doFormat(corrHelper(x, y));
+        var repMsg: string = "float64 %.17r".format(corrHelper(x, y));
         sLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
@@ -270,7 +271,7 @@ module StatsMsg {
                 return corr(toSymEntry(x,uint).a, toSymEntry(y,bool).a);
             }
             otherwise {
-                var errorMsg = unrecognizedTypeError(pn, "(%s,%s)".doFormat(dtype2str(x.dtype),dtype2str(y.dtype)));
+                var errorMsg = unrecognizedTypeError(pn, "(%s,%s)".format(dtype2str(x.dtype),dtype2str(y.dtype)));
                 sLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 throw new owned IllegalArgumentError(errorMsg);
             }
@@ -294,7 +295,7 @@ module StatsMsg {
             }
             var retname = st.nextName();
             st.addEntry(retname, createSymEntry(corrPdarray));
-            corrDict.add(col, "created %s".doFormat(st.attrib(retname)));
+            corrDict.add(col, "created %s".format(st.attrib(retname)));
         }
         var repMsg: string = formatJson(corrDict);
 

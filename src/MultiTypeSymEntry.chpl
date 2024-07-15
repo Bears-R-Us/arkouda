@@ -195,8 +195,12 @@ module MultiTypeSymEntry
         */
         override proc entry__str__(thresh:int=1, prefix:string="", suffix:string="", baseFormat:string=""): string throws {
             genLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "__str__ invoked");
-            var s = "DType: %s, itemsize: %?, size: %?".doFormat(this.dtype, this.itemsize, this.size);
+            var s = "DType: %s, itemsize: %?, size: %?".format(this.dtype, this.itemsize, this.size);
             return prefix + s + suffix;
+        }
+
+        proc attrib(): string throws {
+            return "%s %? %? %s %?".format(dtype2str(this.dtype), this.size, this.ndim, this.shape, this.itemsize);
         }
     }
 
@@ -348,18 +352,18 @@ module MultiTypeSymEntry
                         for i in 0..<dimSize {
                             if first then first = false; else s += " ";
                             idx[dim] = i;
-                            s += try! baseFormat.doFormat(this.a[idx]);
+                            s += try! baseFormat.format(this.a[idx]);
                         }
                     } else {
                         for i in 0..<3 {
                             idx[dim] = i;
-                            s += try! baseFormat.doFormat(this.a[idx]) + " ";
+                            s += try! baseFormat.format(this.a[idx]) + " ";
                         }
                         s += "... ";
                         for i in (dimSize - 3)..<dimSize {
                             if first then first = false; else s += " ";
                             idx[dim] = i;
-                            s += try! baseFormat.doFormat(this.a[idx]);
+                            s += try! baseFormat.format(this.a[idx]);
                         }
                     }
                 }
@@ -428,6 +432,9 @@ module MultiTypeSymEntry
             this.size = len;
         }
 
+        proc attrib(): string throws {
+            return "%? %?".format(this.size, this.ndim);
+        }
     }
 
     /**
@@ -489,7 +496,7 @@ module MultiTypeSymEntry
          */
         override proc entry__str__(thresh:int=1, prefix:string="", suffix:string="", baseFormat:string=""): string throws {
             genLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "__str__ invoked");
-            var s = "DType: %s, itemsize: %?, size: %?".doFormat(this.dtype, this.itemsize, this.size);
+            var s = "DType: %s, itemsize: %?, size: %?".format(this.dtype, this.itemsize, this.size);
             return prefix + s + suffix;
         }
     }

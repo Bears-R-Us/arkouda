@@ -426,7 +426,7 @@ def zeros(
     >>> ak.zeros(5, dtype=ak.float64)
     array([0, 0, 0, 0, 0])
 
-    >>> ak.zeros(5, dtype=ak.bool)
+    >>> ak.zeros(5, dtype=ak.bool_)
     array([False, False, False, False, False])
     """
     if not np.isscalar(size):
@@ -482,7 +482,7 @@ def ones(
     >>> ak.ones(5, dtype=ak.float64)
     array([1, 1, 1, 1, 1])
 
-    >>> ak.ones(5, dtype=ak.bool)
+    >>> ak.ones(5, dtype=ak.bool_)
     array([True, True, True, True, True])
     """
     if not np.isscalar(size):
@@ -544,7 +544,7 @@ def full(
     >>> ak.full(5, 9, dtype=ak.float64)
     array([9, 9, 9, 9, 9])
 
-    >>> ak.full(5, 5, dtype=ak.bool)
+    >>> ak.full(5, 5, dtype=ak.bool_)
     array([True, True, True, True, True])
     """
     if not np.isscalar(size):
@@ -651,7 +651,7 @@ def zeros_like(pda: pdarray) -> pdarray:
     >>> ak.zeros_like(zeros)
     array([0, 0, 0, 0, 0])
 
-    >>> zeros = ak.zeros(5, dtype=ak.bool)
+    >>> zeros = ak.zeros(5, dtype=ak.bool_)
     >>> ak.zeros_like(zeros)
     array([False, False, False, False, False])
     """
@@ -698,7 +698,7 @@ def ones_like(pda: pdarray) -> pdarray:
     >>> ak.ones_like(ones)
     array([1, 1, 1, 1, 1])
 
-    >>> ones = ak.ones(5, dtype=ak.bool)
+    >>> ones = ak.ones(5, dtype=ak.bool_)
     >>> ak.ones_like(ones)
     array([True, True, True, True, True])
     """
@@ -747,7 +747,7 @@ def full_like(pda: pdarray, fill_value: numeric_scalars) -> pdarray:
     >>> ak.full_like(full)
     array([9, 9, 9, 9, 9])
 
-    >>> full = ak.full(5, 5, dtype=ak.bool)
+    >>> full = ak.full(5, 5, dtype=ak.bool_)
     >>> ak.full_like(full)
     array([True, True, True, True, True])
     """
@@ -971,7 +971,7 @@ def randint(
     >>> ak.randint(0, 1, 3, dtype=ak.float64)
     array([0.92176432277231968, 0.083130710959903542, 0.68894208386667544])
 
-    >>> ak.randint(0, 1, 5, dtype=ak.bool)
+    >>> ak.randint(0, 1, 5, dtype=ak.bool_)
     array([True, False, True, True, True])
 
     >>> ak.randint(1, 5, 10, seed=2)

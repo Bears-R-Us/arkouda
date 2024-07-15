@@ -10,7 +10,7 @@ from numpy import dtype as npdtype
 from typeguard import typechecked
 
 from arkouda import Categorical, Strings
-from arkouda.dtypes import bool as akbool
+from arkouda.dtypes import bool_ as akbool
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import int64 as akint64
 from arkouda.groupbyclass import GroupBy, unique
@@ -1110,6 +1110,7 @@ class MultiIndex(Index):
     def nlevels(self) -> int:
         """
         Integer number of levels in this MultiIndex.
+
         See Also
         --------
         Index.nlevels
@@ -1130,6 +1131,13 @@ class MultiIndex(Index):
     @property
     def inferred_type(self) -> str:
         return "mixed"
+
+    @property
+    def dtype(self) -> npdtype:
+        """
+        Return the dtype object of the underlying data.
+        """
+        return npdtype("O")
 
     def get_level_values(self, level: Union[str, int]):
         if isinstance(level, str):
@@ -1152,13 +1160,6 @@ class MultiIndex(Index):
                 "Cannot get level values because level must be a string in names or "
                 "an integer with absolute value less than the number of levels."
             )
-
-    @property
-    def dtype(self) -> npdtype:
-        """
-        Return the dtype object of the underlying data.
-        """
-        return npdtype("O")
 
     def equal_levels(self, other: MultiIndex) -> builtins.bool:
         """

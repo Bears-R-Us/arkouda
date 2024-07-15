@@ -1,3 +1,4 @@
+import os
 from collections import Counter
 
 import numpy as np
@@ -223,6 +224,36 @@ class RandomTest(ArkoudaTest):
         self.assertEqual(rng.poisson(lam=scal_lam, size=num_samples).to_list(), scal_sample)
         self.assertEqual(rng.poisson(lam=arr_lam, size=num_samples).to_list(), arr_sample)
 
+    def test_poisson_seed_reproducibility(self):
+        # test resolution of issue #3322, same seed gives same result across machines / num locales
+        seed = 11
+        # test with many orders of magnitude to ensure we test different remainders and case where
+        # all elements are pulled to first locale i.e. total_size < (minimum elemsPerStream = 256)
+        saved_seeded_file_patterns = ["second_order*", "third_order*", "fourth_order*"]
+
+        # directory of this file
+        file_dir = os.path.dirname(os.path.realpath(__file__))
+        for i, f_name in zip(range(2, 5), saved_seeded_file_patterns):
+            generated = ak.random.default_rng(seed=seed).poisson(size=10**i)
+            saved = ak.read_parquet(f"{file_dir}/saved_seeded_random/{f_name}")["array"]
+            self.assertListEqual(generated.to_list(), saved.to_list())
+
+    def test_exponential(self):
+        rng = ak.random.default_rng(17)
+        num_samples = 5
+        # scalar scale
+        scal_scale = 2
+        scal_sample = rng.exponential(scale=scal_scale, size=num_samples).to_list()
+
+        # array scale
+        arr_scale = ak.arange(5)
+        arr_sample = rng.exponential(scale=arr_scale, size=num_samples).to_list()
+
+        # reset rng with same seed and ensure we get same results
+        rng = ak.random.default_rng(17)
+        self.assertEqual(rng.exponential(scale=scal_scale, size=num_samples).to_list(), scal_sample)
+        self.assertEqual(rng.exponential(scale=arr_scale, size=num_samples).to_list(), arr_sample)
+
     def test_choice_hypothesis_testing(self):
         # perform a weighted sample and use chisquare to test
         # if the observed frequency matches the expected frequency
@@ -296,6 +327,25 @@ class RandomTest(ArkoudaTest):
         _, pval = sp_stats.chisquare(f_obs=obs_counts, f_exp=exp_counts)
         self.assertTrue(pval > 0.05)
 
+    def test_exponential_hypothesis_testing(self):
+        # I tested this many times without a set seed, but with no seed
+        # it's expected to fail one out of every ~20 runs given a pval limit of 0.05.
+        rng = ak.random.default_rng(43)
+        num_samples = 10**4
+
+        scale = rng.uniform(0, 10)
+        for method in "zig", "inv":
+            sample = rng.exponential(scale=scale, size=num_samples, method=method)
+            sample_list = sample.to_list()
+
+            # do the Kolmogorov-Smirnov test for goodness of fit
+            ks_res = sp_stats.kstest(
+                rvs=sample_list,
+                cdf=sp_stats.expon.cdf,
+                args=(0, scale),
+            )
+            self.assertTrue(ks_res.pvalue > 0.05)
+
     def test_legacy_randint(self):
         testArray = ak.random.randint(0, 10, 5)
         self.assertIsInstance(testArray, ak.pdarray)
@@ -323,8 +373,8 @@ class RandomTest(ArkoudaTest):
         test_array = ak.random.randint(0, 1, 3, dtype=ak.float64)
         self.assertEqual(ak.float64, test_array.dtype)
 
-        test_array = ak.random.randint(0, 1, 5, dtype=ak.bool)
-        self.assertEqual(ak.bool, test_array.dtype)
+        test_array = ak.random.randint(0, 1, 5, dtype=ak.bool_)
+        self.assertEqual(ak.bool_, test_array.dtype)
 
         test_ndarray = test_array.to_ndarray()
 
@@ -385,7 +435,7 @@ class RandomTest(ArkoudaTest):
             values.to_list(),
         )
 
-        values = ak.random.randint(1, 5, 10, dtype=ak.bool, seed=2)
+        values = ak.random.randint(1, 5, 10, dtype=ak.bool_, seed=2)
         self.assertListEqual(
             [False, True, True, True, True, False, True, True, True, True],
             values.to_list(),

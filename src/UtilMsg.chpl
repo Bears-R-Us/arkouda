@@ -182,8 +182,8 @@ module UtilMsg {
     proc doPad(type t): MsgTuple throws {
       const e = toSymEntry(gEnt, t, nd);
 
-      const pvb = padValsBefore.getListAs(t, nd),
-            pva = padValsAfter.getListAs(t, nd);
+      const pvb = padValsBefore.toScalarArray(t, nd),
+            pva = padValsAfter.toScalarArray(t, nd);
 
       // compute the padded shape
       var outShape: nd*int;
