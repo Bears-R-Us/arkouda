@@ -604,6 +604,7 @@ def register_commands(config, source_files):
         "module Commands {",
         "use CommandMap, Message, MultiTypeSymbolTable, MultiTypeSymEntry;",
         "use BigInteger;",
+        watermarkConfig(config),
     ]
 
     count = 0
@@ -723,6 +724,10 @@ def getModuleFiles(config, src_dir):
             if mod != "":
                 mods.append(f"{mod}.chpl" if mod[0] == '/' else f"{src_dir}/{mod}.chpl")
         return mods
+
+
+def watermarkConfig(config):
+    return "param regConfig = \"\"\"\n" + json.dumps(config, indent=2) + "\n\"\"\";"
 
 
 def main():

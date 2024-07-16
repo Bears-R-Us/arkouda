@@ -4,11 +4,26 @@ use CommandMap, Message, MultiTypeSymbolTable, MultiTypeSymEntry;
 
 use BigInteger;
 
-import ArgSortMsg;
-
-import ArraySetopsMsg;
-
-import BroadcastMsg;
+param regConfig = """
+{
+  "parameter_classes": {
+    "NOTE!!!": "run 'make register-commands' after changing any of these values",
+    "array": {
+      "nd": [
+        1
+      ],
+      "dtype": [
+        "int",
+        "uint",
+        "uint(8)",
+        "real",
+        "bool",
+        "bigint"
+      ]
+    }
+  }
+}
+""";
 
 import CastMsg;
 
@@ -203,34 +218,6 @@ registerFunction('castStringsTo<bool>', ark_castStringsTo_bool, 'CastMsg', 67);
 proc ark_castStringsTo_bigint(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return CastMsg.castStringsToArray(cmd, msgArgs, st, array_dtype=bigint);
 registerFunction('castStringsTo<bigint>', ark_castStringsTo_bigint, 'CastMsg', 67);
-
-import ConcatenateMsg;
-
-import CSVMsg;
-
-import DataFrameIndexingMsg;
-
-import EfuncMsg;
-
-import EncodingMsg;
-
-import FlattenMsg;
-
-import HashMsg;
-
-import HDF5Msg;
-
-import HistogramMsg;
-
-import In1dMsg;
-
-import IndexingMsg;
-
-import JoinEqWithDTMsg;
-
-import KExtremeMsg;
-
-import LogMsg;
 
 import ManipulationMsg;
 
@@ -594,10 +581,6 @@ proc ark_repeatFlat_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: bor
   return ManipulationMsg.repeatFlatMsg(cmd, msgArgs, st, array_dtype=bigint, array_nd=1);
 registerFunction('repeatFlat<bigint,1>', ark_repeatFlat_bigint_1, 'ManipulationMsg', 903);
 
-import OperatorMsg;
-
-import ParquetMsg;
-
 import RandMsg;
 
 proc ark_randint_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
@@ -623,16 +606,6 @@ registerFunction('randint<bool,1>', ark_randint_bool_1, 'RandMsg', 36);
 proc ark_randint_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.randint(cmd, msgArgs, st, array_dtype=bigint, array_nd=1);
 registerFunction('randint<bigint,1>', ark_randint_bigint_1, 'RandMsg', 36);
-
-import ReductionMsg;
-
-import RegistrationMsg;
-
-import SegmentedMsg;
-
-import SequenceMsg;
-
-import SortMsg;
 
 import StatsMsg;
 
@@ -1186,12 +1159,6 @@ registerFunction('cumSum<bool,1>', ark_cumSum_bool_1, 'StatsMsg', 123);
 proc ark_cumSum_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ark_reg_cumSum_generic(cmd, msgArgs, st, array_dtype_0=bigint, array_nd_0=1);
 registerFunction('cumSum<bigint,1>', ark_cumSum_bigint_1, 'StatsMsg', 123);
-
-import TimeClassMsg;
-
-import TransferMsg;
-
-import UniqueMsg;
 
 import MsgProcessing;
 
