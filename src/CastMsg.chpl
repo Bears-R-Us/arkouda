@@ -25,7 +25,7 @@ module CastMsg {
     type array_dtype_to,
     param array_nd: int
   ): MsgTuple throws
-    where !(isFloatingType(array_dtype_from) && (array_dtype_to == bigint || array_dtype_to == bool)) &&
+    where !(isFloatingType(array_dtype_from) && array_dtype_to == bigint) &&
           !(array_dtype_from == bigint && array_dtype_to == bool)
   {
     const a = st[msgArgs["name"]]: SymEntry(array_dtype_from, array_nd);
@@ -40,13 +40,13 @@ module CastMsg {
     }
   }
 
-  // cannot cast float types to bigint or bool, cannot cast bigint to bool
+  // cannot cast float types to bigint, cannot cast bigint to bool
   proc castArray(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
     type array_dtype_from,
     type array_dtype_to,
     param array_nd: int
   ): MsgTuple throws
-    where (isFloatingType(array_dtype_from) && (array_dtype_to == bigint || array_dtype_to == bool)) ||
+    where (isFloatingType(array_dtype_from) && array_dtype_to == bigint) ||
           (array_dtype_from == bigint && array_dtype_to == bool)
   {
     return MsgTuple.error(

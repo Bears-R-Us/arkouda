@@ -1,7 +1,7 @@
 module RandMsg
 {
     use ServerConfig;
-    
+
     use Time;
     use Math;
     use Reflection;
@@ -11,9 +11,10 @@ module RandMsg
     use Message;
     use RandArray;
     use RandUtil;
+    use Random;
     use CommAggregation;
     use ZigguratConstants;
-    
+
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;

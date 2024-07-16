@@ -145,6 +145,7 @@ def cast(
         if dt is Strings or dt in ["Strings", "str"]:
             if pda.ndim > 1:
                 raise ValueError("Cannot cast a multi-dimensional pdarray to Strings")
+                return None
             repMsg = generic_msg(
                 cmd=f"castToStrings<{pda.dtype}>",
                 args={"name": pda},
@@ -158,7 +159,9 @@ def cast(
                 )
             )
     elif isinstance(pda, Strings):
-        if dt is Strings or dt in ["Strings", "str"]:
+        if dt is Categorical or dt == "Categorical":
+            return Categorical(pda)  # type: ignore
+        elif dt is Strings or dt in ["Strings", "str"]:
             return pda[:]
         else:
             repMsg = generic_msg(
@@ -178,6 +181,7 @@ def cast(
             return pda.categories[pda.codes]
         else:
             raise ValueError("Categoricals can only be casted to Strings")
+            return None
 
 
 @typechecked
