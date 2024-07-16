@@ -139,7 +139,6 @@ def cast(
     array([False, True, True, True, True])
     """
     from arkouda.categorical import Categorical  # type: ignore
-    dt = _as_dtype(dt)
 
     if isinstance(pda, pdarray):
         if dt is Strings or dt in ["Strings", "str"]:
@@ -151,6 +150,7 @@ def cast(
             )
             return Strings.from_parts(*(type_cast(str, repMsg).split("+")))
         else:
+            dt = _as_dtype(dt)
             return create_pdarray(
                 generic_msg(
                     cmd=f"cast<{pda.dtype},{dt},{pda.ndim}>",
@@ -163,6 +163,7 @@ def cast(
         elif dt is Strings or dt in ["Strings", "str"]:
             return pda[:]
         else:
+            dt = _as_dtype(dt)
             repMsg = generic_msg(
                 cmd=f"castStringsTo<{dt}>",
                 args={
