@@ -245,16 +245,16 @@ $(ARROW_WRITE_O): $(ARROW_WRITE_CPP) $(ARROW_WRITE_H)
 
 CHPL_MAJOR := $(shell $(CHPL) --version | sed -n "s/chpl version \([0-9]\)\.[0-9]*.*/\1/p")
 CHPL_MINOR := $(shell $(CHPL) --version | sed -n "s/chpl version [0-9]\.\([0-9]*\).*/\1/p")
-CHPL_VERSION_OK := $(shell test $(CHPL_MAJOR) -ge 2 -o $(CHPL_MINOR) -ge 32  && echo yes)
-CHPL_VERSION_WARN := $(shell test $(CHPL_MAJOR) -eq 1 -a $(CHPL_MINOR) -le 33 && echo yes)
+CHPL_VERSION_OK := $(shell test $(CHPL_MAJOR) -ge 2 -o $(CHPL_MINOR) -ge 0  && echo yes)
+# CHPL_VERSION_WARN := $(shell test $(CHPL_MAJOR) -eq 1 -a $(CHPL_MINOR) -le 33 && echo yes)
 .PHONY: check-chpl
 check-chpl:
 ifneq ($(CHPL_VERSION_OK),yes)
-	$(error Chapel 1.32.0 or newer is required, found $(CHPL_MAJOR).$(CHPL_MINOR))
+	$(error Chapel 2.0 or newer is required, found $(CHPL_MAJOR).$(CHPL_MINOR))
 endif
-ifeq ($(CHPL_VERSION_WARN),yes)
-	$(warning Chapel 1.33.0 or newer is recommended, found $(CHPL_MAJOR).$(CHPL_MINOR))
-endif
+# ifeq ($(CHPL_VERSION_WARN),yes)
+# 	$(warning Chapel 1.33.0 or newer is recommended, found $(CHPL_MAJOR).$(CHPL_MINOR))
+# endif
 
 ZMQ_CHECK = $(DEP_INSTALL_DIR)/checkZMQ.chpl
 check-zmq: $(ZMQ_CHECK)
@@ -358,27 +358,15 @@ endif
 ARKOUDA_SOURCES = $(shell find $(ARKOUDA_SOURCE_DIR)/ -type f -name '*.chpl')
 ARKOUDA_MAIN_SOURCE := $(ARKOUDA_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl
 
-ifeq ($(shell expr $(CHPL_MAJOR) \= 2),1)
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/ge-20
+ifeq ($(shell expr $(CHPL_MINOR) \= 0),1)
+	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/eq-20
 endif
 
-ifeq ($(shell expr $(CHPL_MINOR) \= 34),1)
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/eq-134
+ifeq ($(shell expr $(CHPL_MINOR) \> 0),1)
+	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/ge-21
 endif
 
-ifeq ($(shell expr $(CHPL_MINOR) \= 33),1)
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/eq-133
-endif
-
-ifeq ($(shell expr $(CHPL_MINOR) \= 32),1)
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/e-132
-endif
-
-ifeq ($(shell expr $(CHPL_MINOR) \> 33),1)
-	ARKOUDA_RW_DEFAULT_FLAG := -sOpenReaderLockingDefault=false -sOpenWriterLockingDefault=false
-endif
-
-ifeq ($(shell expr $(CHPL_MAJOR) \= 2),1)
+ifeq ($(shell expr $(CHPL_MINOR) \= 0),1)
 	ARKOUDA_RW_DEFAULT_FLAG := -sOpenReaderLockingDefault=false -sOpenWriterLockingDefault=false
 endif
 
