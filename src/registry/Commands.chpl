@@ -114,43 +114,43 @@ registerFunction('cast<bigint,bigint,1>', ark_cast_bigint_bigint_1, 'CastMsg', 2
 
 proc ark_castToStrings_int(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return CastMsg.castArrayToStrings(cmd, msgArgs, st, array_dtype=int);
-registerFunction('castToStrings<int64>', ark_castToStrings_int, 'CastMsg', 57);
+registerFunction('castToStrings<int64>', ark_castToStrings_int, 'CastMsg', 60);
 
 proc ark_castToStrings_uint(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return CastMsg.castArrayToStrings(cmd, msgArgs, st, array_dtype=uint);
-registerFunction('castToStrings<uint64>', ark_castToStrings_uint, 'CastMsg', 57);
+registerFunction('castToStrings<uint64>', ark_castToStrings_uint, 'CastMsg', 60);
 
 proc ark_castToStrings_real(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return CastMsg.castArrayToStrings(cmd, msgArgs, st, array_dtype=real);
-registerFunction('castToStrings<float64>', ark_castToStrings_real, 'CastMsg', 57);
+registerFunction('castToStrings<float64>', ark_castToStrings_real, 'CastMsg', 60);
 
 proc ark_castToStrings_bool(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return CastMsg.castArrayToStrings(cmd, msgArgs, st, array_dtype=bool);
-registerFunction('castToStrings<bool>', ark_castToStrings_bool, 'CastMsg', 57);
+registerFunction('castToStrings<bool>', ark_castToStrings_bool, 'CastMsg', 60);
 
 proc ark_castToStrings_bigint(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return CastMsg.castArrayToStrings(cmd, msgArgs, st, array_dtype=bigint);
-registerFunction('castToStrings<bigint>', ark_castToStrings_bigint, 'CastMsg', 57);
+registerFunction('castToStrings<bigint>', ark_castToStrings_bigint, 'CastMsg', 60);
 
 proc ark_castStringsTo_int(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return CastMsg.castStringsToArray(cmd, msgArgs, st, array_dtype=int);
-registerFunction('castStringsTo<int64>', ark_castStringsTo_int, 'CastMsg', 64);
+registerFunction('castStringsTo<int64>', ark_castStringsTo_int, 'CastMsg', 67);
 
 proc ark_castStringsTo_uint(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return CastMsg.castStringsToArray(cmd, msgArgs, st, array_dtype=uint);
-registerFunction('castStringsTo<uint64>', ark_castStringsTo_uint, 'CastMsg', 64);
+registerFunction('castStringsTo<uint64>', ark_castStringsTo_uint, 'CastMsg', 67);
 
 proc ark_castStringsTo_real(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return CastMsg.castStringsToArray(cmd, msgArgs, st, array_dtype=real);
-registerFunction('castStringsTo<float64>', ark_castStringsTo_real, 'CastMsg', 64);
+registerFunction('castStringsTo<float64>', ark_castStringsTo_real, 'CastMsg', 67);
 
 proc ark_castStringsTo_bool(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return CastMsg.castStringsToArray(cmd, msgArgs, st, array_dtype=bool);
-registerFunction('castStringsTo<bool>', ark_castStringsTo_bool, 'CastMsg', 64);
+registerFunction('castStringsTo<bool>', ark_castStringsTo_bool, 'CastMsg', 67);
 
 proc ark_castStringsTo_bigint(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return CastMsg.castStringsToArray(cmd, msgArgs, st, array_dtype=bigint);
-registerFunction('castStringsTo<bigint>', ark_castStringsTo_bigint, 'CastMsg', 64);
+registerFunction('castStringsTo<bigint>', ark_castStringsTo_bigint, 'CastMsg', 67);
 
 import ConcatenateMsg;
 
@@ -490,23 +490,23 @@ import RandMsg;
 
 proc ark_randint_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.randint(cmd, msgArgs, st, array_dtype=int, array_nd=1);
-registerFunction('randint<int64,1>', ark_randint_int_1, 'RandMsg', 33);
+registerFunction('randint<int64,1>', ark_randint_int_1, 'RandMsg', 35);
 
 proc ark_randint_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.randint(cmd, msgArgs, st, array_dtype=uint, array_nd=1);
-registerFunction('randint<uint64,1>', ark_randint_uint_1, 'RandMsg', 33);
+registerFunction('randint<uint64,1>', ark_randint_uint_1, 'RandMsg', 35);
 
 proc ark_randint_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.randint(cmd, msgArgs, st, array_dtype=real, array_nd=1);
-registerFunction('randint<float64,1>', ark_randint_real_1, 'RandMsg', 33);
+registerFunction('randint<float64,1>', ark_randint_real_1, 'RandMsg', 35);
 
 proc ark_randint_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.randint(cmd, msgArgs, st, array_dtype=bool, array_nd=1);
-registerFunction('randint<bool,1>', ark_randint_bool_1, 'RandMsg', 33);
+registerFunction('randint<bool,1>', ark_randint_bool_1, 'RandMsg', 35);
 
 proc ark_randint_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.randint(cmd, msgArgs, st, array_dtype=bigint, array_nd=1);
-registerFunction('randint<bigint,1>', ark_randint_bigint_1, 'RandMsg', 33);
+registerFunction('randint<bigint,1>', ark_randint_bigint_1, 'RandMsg', 35);
 
 import ReductionMsg;
 

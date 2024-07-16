@@ -146,7 +146,7 @@ def cast(
             if pda.ndim > 1:
                 raise ValueError("Cannot cast a multi-dimensional pdarray to Strings")
             repMsg = generic_msg(
-                cmd=f"castToStrings<{dt}>",
+                cmd=f"castToStrings<{pda.dtype}>",
                 args={"name": pda},
             )
             return Strings.from_parts(*(type_cast(str, repMsg).split("+")))
@@ -159,8 +159,7 @@ def cast(
             )
     elif isinstance(pda, Strings):
         if dt is Strings or dt in ["Strings", "str"]:
-            # TODO: copy the strings object?
-            return 0
+            return pda[:]
         else:
             repMsg = generic_msg(
                 cmd=f"castStringsTo<{dt}>",
