@@ -17,6 +17,7 @@ from arkouda.dtypes import (
     isSupportedNumber,
     numeric_scalars,
     resolve_scalar_dtype,
+    str_
 )
 from arkouda.groupbyclass import GroupBy
 from arkouda.pdarrayclass import all as ak_all
@@ -141,7 +142,7 @@ def cast(
     from arkouda.categorical import Categorical  # type: ignore
 
     if isinstance(pda, pdarray):
-        if dt is Strings or dt in ["Strings", "str"]:
+        if dt is Strings or dt in ["Strings", "str"] or dt == str_:
             if pda.ndim > 1:
                 raise ValueError("Cannot cast a multi-dimensional pdarray to Strings")
             repMsg = generic_msg(
@@ -160,7 +161,7 @@ def cast(
     elif isinstance(pda, Strings):
         if dt is Categorical or dt == "Categorical":
             return Categorical(pda)  # type: ignore
-        elif dt is Strings or dt in ["Strings", "str"]:
+        elif dt is Strings or dt in ["Strings", "str"] or dt == str_:
             return pda[:]
         else:
             dt = _as_dtype(dt)
@@ -177,7 +178,7 @@ def cast(
             else:
                 return create_pdarray(type_cast(str, repMsg))
     elif isinstance(pda, Categorical):  # type: ignore
-        if dt is Strings or dt in ["Strings", "str"]:
+        if dt is Strings or dt in ["Strings", "str"] or dt == str_:
             return pda.categories[pda.codes]
         else:
             raise ValueError("Categoricals can only be casted to Strings")
