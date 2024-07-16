@@ -1,8 +1,8 @@
 module RandUtil {
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
+    use Random;
     use RandMsg;
-    use ArkoudaRandomCompat;
     use CommAggregation;
 
     const minPerStream = 256; // minimum number of elements per random stream

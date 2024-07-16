@@ -12,9 +12,7 @@ module StatsMsg {
     use Stats;
     use IOUtils;
     use List;
-
     use Map;
-    use ArkoudaIOCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;

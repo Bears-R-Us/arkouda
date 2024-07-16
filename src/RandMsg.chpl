@@ -1,9 +1,10 @@
 module RandMsg
 {
     use ServerConfig;
-    
+
     use Time;
     use Math;
+    use Random;
     use Reflection;
     use ServerErrors;
     use ServerConfig;
@@ -13,11 +14,10 @@ module RandMsg
     use RandUtil;
     use CommAggregation;
     use ZigguratConstants;
-    
+
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
-    use ArkoudaRandomCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;

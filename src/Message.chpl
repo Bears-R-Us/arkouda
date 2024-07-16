@@ -9,9 +9,7 @@ module Message {
     use List;
     use BigInteger;
     use MultiTypeSymEntry;
-
     use Map;
-    use ArkoudaIOCompat;
 
     enum MsgType {NORMAL,WARNING,ERROR}
     enum MsgFormat {STRING,BINARY}

@@ -13,9 +13,6 @@ module AryUtil
     use Communication;
     use OS.POSIX;
     use List;
-
-    use ArkoudaRandomCompat;
-
     use CommAggregation;
 
     param bitsPerDigit = RSLSD_bitsPerDigit;
