@@ -11,7 +11,6 @@ module ArgSortMsg
     use Time;
     use Math only;
     private use Sort;
-    use ArkoudaSortCompat;
     
     use Reflection only;
     
@@ -20,7 +19,6 @@ module ArgSortMsg
     use CommAggregation;
 
     use AryUtil;
-    use ArkoudaAryUtilCompat;
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -36,6 +34,14 @@ module ArgSortMsg
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const asLogger = new Logger(logLevel, logChannel);
+
+    proc dynamicTwoArrayRadixSort(ref Data:[], comparator:?rec=defaultComparator) {
+      if Data._instance.isDefaultRectangular() {
+        Sort.TwoArrayRadixSort.twoArrayRadixSort(Data, comparator);
+      } else {
+        Sort.TwoArrayDistributedRadixSort.twoArrayDistributedRadixSort(Data, comparator);
+      }
+    }
 
     // thresholds for different sized sorts
     var lgSmall = 10;
@@ -321,7 +327,7 @@ module ArgSortMsg
         when SortingAlgorithm.TwoArrayRadixSort {
           var AI = makeDistArray(D, (t,int));
           AI = [(a, i) in zip(A, D)] (a, i);
-          ArkoudaSortCompat.twoArrayRadixSort(AI, comparator=myDefaultComparator);
+          dynamicTwoArrayRadixSort(AI, comparator=myDefaultComparator);
           iv = [(a, i) in AI] i;
         }
         when SortingAlgorithm.RadixSortLSD {
@@ -362,7 +368,7 @@ module ArgSortMsg
             }
 
             // sort the array
-            ArkoudaSortCompat.twoArrayRadixSort(AI, comparator=myDefaultComparator);
+            dynamicTwoArrayRadixSort(AI, comparator=myDefaultComparator);
 
             // store result in 'iv'
             forall i in D.dim(axis) with (var perpIdx = idx) {

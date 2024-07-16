@@ -20,7 +20,6 @@ module ReductionMsg
     use AryUtil;
     use PrivateDist;
     use RadixSortLSD;
-    use ArkoudaAryUtilCompat;
 
     private config const lBins = 2**25 * numLocales;
 

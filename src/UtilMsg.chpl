@@ -8,7 +8,6 @@ module UtilMsg {
   use Logging;
   use Message;
   use AryUtil;
-  use ArkoudaAryUtilCompat;
 
   use MultiTypeSymEntry;
   use MultiTypeSymbolTable;

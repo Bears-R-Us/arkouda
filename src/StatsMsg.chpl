@@ -15,7 +15,6 @@ module StatsMsg {
 
     use Map;
     use ArkoudaIOCompat;
-    use ArkoudaAryUtilCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;

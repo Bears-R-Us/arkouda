@@ -12,11 +12,10 @@ module SortMsg
     use MultiTypeSymEntry;
     use ServerErrorStrings;
     use RadixSortLSD;
-    use AryUtil; use ArkoudaAryUtilCompat;
+    use AryUtil;
     use Logging;
     use Message;
     private use ArgSortMsg;
-    use ArkoudaSortCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -71,7 +70,7 @@ module SortMsg
 
         if algorithm == SortingAlgorithm.TwoArrayRadixSort {
           var sorted = makeDistArray(e.a);
-          ArkoudaSortCompat.twoArrayRadixSort(sorted, comparator=myDefaultComparator);
+          ArgSortMsg.dynamicTwoArrayRadixSort(sorted, comparator=myDefaultComparator);
           st.addEntry(rname, createSymEntry(sorted));
         } else {
           var sorted = radixSortLSD_keys(e.a);
@@ -101,7 +100,7 @@ module SortMsg
               slice[i] = e.a[perpIdx];
             }
 
-            ArkoudaSortCompat.twoArrayRadixSort(slice, comparator=myDefaultComparator);
+            ArgSortMsg.dynamicTwoArrayRadixSort(slice, comparator=myDefaultComparator);
 
             forall i in e.a.domain.dim(axis) with (var perpIdx = idx) {
               perpIdx[axis] = i;

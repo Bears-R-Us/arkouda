@@ -9,7 +9,6 @@ module ManipulationMsg {
   use ServerErrorStrings;
   use CommAggregation;
   use AryUtil;
-  use ArkoudaAryUtilCompat;
 
   use Reflection;
 

@@ -8,7 +8,6 @@ module IndexingMsg
     use Logging;
     use Message;
     use AryUtil;
-    use ArkoudaAryUtilCompat;
     use IOUtils;
 
     use MultiTypeSymEntry;
