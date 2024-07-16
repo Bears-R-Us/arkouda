@@ -615,7 +615,7 @@ def register_commands(config, source_files):
         root = ctx.parse(filename)[0]
         mod_name = filename.split("/")[-1].split(".")[0]
 
-        stamps.append(f"import {mod_name};")
+        file_stamps.append(f"import {mod_name};")
 
         # register procs annotated with 'registerCommand',
         # creating generic commands and instantiations if necessary
@@ -648,7 +648,7 @@ def register_commands(config, source_files):
                 name, fn.return_type(), con_formals, mod_name
             )
             file_stamps.append(cmd_proc)
-            count += 1;
+            count += 1
 
             if is_generic_cmd > 0:
                 try:
