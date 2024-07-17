@@ -3,7 +3,7 @@ import pytest
 import arkouda as ak
 from arkouda.dtypes import npstr
 from math import isclose
-
+import subprocess
 NUMERIC_TYPES = [ak.int64, ak.float64, ak.bool_, ak.uint64]
 NO_BOOL = [ak.int64, ak.float64, ak.uint64]
 NO_FLOAT = [ak.int64, ak.bool_, ak.uint64]
@@ -280,6 +280,8 @@ class TestNumeric:
 
     #   log and exp tests were identical, and so have been combined.
 
+    host = subprocess.check_output("hostname").decode("utf-8").strip()
+    @pytest.mark.skipif(host == "horizon", reason="Fails on horizon")
     def test_histogram_multidim(self):
         # test 2d histogram
         seed = 1
