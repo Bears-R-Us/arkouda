@@ -223,7 +223,7 @@ module FileIO {
 
     proc getFirstEightBytesFromFile(path:string):bytes throws {
         var f:file = open(path, ioMode.r);
-        var reader = f.reader(deserializer=new binarySerializer(endian=endianness.native));
+        var reader = f.reader(locking=false, deserializer=new binarySerializer(endian=endianness.native));
         var header:bytes;
         if reader.deserializerType == binarySerializer {
           reader.readBytes(header, 8);

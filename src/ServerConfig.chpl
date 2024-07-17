@@ -322,8 +322,8 @@ module ServerConfig
     proc getByteorder() throws {
       var writeVal = 1, readVal = 0;
       var tmpf = openMemFile();
-      tmpf.writer(serializer = new binarySerializer(endian=endianness.big)).write(writeVal);
-      tmpf.reader(deserializer=new binaryDeserializer(endian=endianness.native)).read(readVal);
+      tmpf.writer(locking=false, serializer = new binarySerializer(endian=endianness.big)).write(writeVal);
+      tmpf.reader(locking=false, deserializer=new binaryDeserializer(endian=endianness.native)).read(readVal);
       return if writeVal == readVal then "big" else "little";
     }
 
