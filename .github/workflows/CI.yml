@@ -83,6 +83,9 @@ jobs:
     - name: Check python version
       run: |
         python3 --version
+    - name: Install Chapel frontend bindings
+      run: |
+        (cd $CHPL_HOME/tools/chapel-py && pip install -e .)
     - name: Build/Install Arkouda
       run: |
         make
@@ -115,6 +118,9 @@ jobs:
     - name: Check python version
       run: |
         python3 --version
+    - name: Install Chapel frontend bindings
+      run: |
+        (cd $CHPL_HOME/tools/chapel-py && pip install -e .)
     - name: Build/Install Arkouda
       run: |
         make
@@ -143,6 +149,9 @@ jobs:
     - name: Check chpl version
       run: |
         chpl --version
+    - name: Install Chapel frontend bindings
+      run: |
+        (cd $CHPL_HOME/tools/chapel-py && pip install -e .)
     - name: Build/Install Arkouda
       run: |
         make
@@ -171,6 +180,9 @@ jobs:
     - name: Check chpl version
       run: |
         chpl --version
+    - name: Install Chapel frontend bindings
+      run: |
+        (cd $CHPL_HOME/tools/chapel-py && pip install -e .)
     - name: Build/Install Arkouda
       run: |
         make
@@ -202,6 +214,9 @@ jobs:
         apt-get update && apt-get install -y libhdf5-dev hdf5-tools libzmq3-dev python3-pip libarrow-dev libparquet-dev libcurl4-openssl-dev libidn2-dev
         make install-iconv
         echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" >> Makefile.paths
+    - name: Install Chapel frontend bindings
+      run: |
+        (cd $CHPL_HOME/tools/chapel-py && pip install -e .)
     - name: Build/Install Arkouda
       run: |
         make
@@ -244,6 +259,9 @@ jobs:
         apt-get update && apt-get install -y libhdf5-dev hdf5-tools libzmq3-dev python3-pip libarrow-dev libparquet-dev libcurl4-openssl-dev libidn2-dev
         make install-iconv
         echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" >> Makefile.paths
+    - name: Install Chapel frontend bindings
+      run: |
+        (cd $CHPL_HOME/tools/chapel-py && pip install -e .)
     - name: Build/Install Arkouda
       run: |
         make
