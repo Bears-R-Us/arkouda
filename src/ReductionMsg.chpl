@@ -20,7 +20,6 @@ module ReductionMsg
     use AryUtil;
     use PrivateDist;
     use RadixSortLSD;
-    use ArkoudaAryUtilCompat;
 
     private config const lBins = 2**25 * numLocales;
 
@@ -950,7 +949,7 @@ module ReductionMsg
        of reduced values is the same size as <segments>.
      */
 
-    proc segHead(values:[?vD] ?intype, segments:[?D] int, n: int) throws {
+    proc segHead(ref values:[?vD] ?intype, segments:[?D] int, n: int) throws {
 
       //  segCount counts the size of each segment
       const newSegLengths = minimum(segCount(segments, values.size), n);
@@ -970,7 +969,7 @@ module ReductionMsg
       return ret;
     }
 
-    proc segTail(values:[?vD] ?intype, segments:[?D] int, n: int) throws {
+    proc segTail(ref values:[?vD] ?intype, segments:[?D] int, n: int) throws {
 
       //  segCount counts the size of each segment
       const counts = segCount(segments, values.size);

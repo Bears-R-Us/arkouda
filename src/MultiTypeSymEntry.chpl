@@ -1,6 +1,7 @@
 
 module MultiTypeSymEntry
 {
+    use Random;
     use Reflection;
     use Set;
 
@@ -8,9 +9,9 @@ module MultiTypeSymEntry
     use Logging;
     use AryUtil;
 
+
     public use NumPyDType;
     public use SymArrayDmap;
-    use ArkoudaRandomCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;

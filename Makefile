@@ -244,16 +244,16 @@ $(ARROW_WRITE_O): $(ARROW_WRITE_CPP) $(ARROW_WRITE_H)
 
 CHPL_MAJOR := $(shell $(CHPL) --version | sed -n "s/chpl version \([0-9]\)\.[0-9]*.*/\1/p")
 CHPL_MINOR := $(shell $(CHPL) --version | sed -n "s/chpl version [0-9]\.\([0-9]*\).*/\1/p")
-CHPL_VERSION_OK := $(shell test $(CHPL_MAJOR) -ge 2 -o $(CHPL_MINOR) -ge 32  && echo yes)
-CHPL_VERSION_WARN := $(shell test $(CHPL_MAJOR) -eq 1 -a $(CHPL_MINOR) -le 33 && echo yes)
+CHPL_VERSION_OK := $(shell test $(CHPL_MAJOR) -ge 2 -o $(CHPL_MINOR) -ge 0  && echo yes)
+# CHPL_VERSION_WARN := $(shell test $(CHPL_MAJOR) -eq 1 -a $(CHPL_MINOR) -le 33 && echo yes)
 .PHONY: check-chpl
 check-chpl:
 ifneq ($(CHPL_VERSION_OK),yes)
-	$(error Chapel 1.32.0 or newer is required, found $(CHPL_MAJOR).$(CHPL_MINOR))
+	$(error Chapel 2.0 or newer is required, found $(CHPL_MAJOR).$(CHPL_MINOR))
 endif
-ifeq ($(CHPL_VERSION_WARN),yes)
-	$(warning Chapel 1.33.0 or newer is recommended, found $(CHPL_MAJOR).$(CHPL_MINOR))
-endif
+# ifeq ($(CHPL_VERSION_WARN),yes)
+# 	$(warning Chapel 1.33.0 or newer is recommended, found $(CHPL_MAJOR).$(CHPL_MINOR))
+# endif
 
 ZMQ_CHECK = $(DEP_INSTALL_DIR)/checkZMQ.chpl
 check-zmq: $(ZMQ_CHECK)
@@ -357,33 +357,21 @@ endif
 ARKOUDA_SOURCES = $(shell find $(ARKOUDA_SOURCE_DIR)/ -type f -name '*.chpl')
 ARKOUDA_MAIN_SOURCE := $(ARKOUDA_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl
 
-ifeq ($(shell expr $(CHPL_MAJOR) \= 2),1)
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/ge-20
+ifeq ($(shell expr $(CHPL_MINOR) \= 0),1)
+	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/eq-20
 endif
 
-ifeq ($(shell expr $(CHPL_MINOR) \= 34),1)
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/eq-134
+ifeq ($(shell expr $(CHPL_MINOR) \> 0),1)
+	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/ge-21
 endif
 
-ifeq ($(shell expr $(CHPL_MINOR) \= 33),1)
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/eq-133
-endif
-
-ifeq ($(shell expr $(CHPL_MINOR) \= 32),1)
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/e-132
-endif
-
-ifeq ($(shell expr $(CHPL_MINOR) \> 33),1)
-	ARKOUDA_RW_DEFAULT_FLAG := -sOpenReaderLockingDefault=false -sOpenWriterLockingDefault=false
-endif
-
-ifeq ($(shell expr $(CHPL_MAJOR) \= 2),1)
+ifeq ($(shell expr $(CHPL_MINOR) \>= 0),1)
 	ARKOUDA_RW_DEFAULT_FLAG := -sOpenReaderLockingDefault=false -sOpenWriterLockingDefault=false
 endif
 
 SERVER_CONFIG_SCRIPT=$(ARKOUDA_SOURCE_DIR)/parseServerConfig.py
 # This is the main compilation statement section
-$(ARKOUDA_MAIN_MODULE): check-deps $(ARROW_UTIL_O) $(ARROW_READ_O) $(ARROW_WRITE_O) $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
+$(ARKOUDA_MAIN_MODULE): check-deps register-commands $(ARROW_UTIL_O) $(ARROW_READ_O) $(ARROW_WRITE_O) $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
 	$(eval MOD_GEN_OUT=$(shell python3 $(SERVER_CONFIG_SCRIPT) $(ARKOUDA_CONFIG_FILE) $(ARKOUDA_REGISTRATION_CONFIG) $(ARKOUDA_SOURCE_DIR)))
 
 	$(CHPL) $(CHPL_DEBUG_FLAGS) $(PRINT_PASSES_FLAGS) $(REGEX_MAX_CAPTURES_FLAG) $(OPTIONAL_SERVER_FLAGS) $(CHPL_FLAGS_WITH_VERSION) $(CHPL_COMPAT_FLAGS) $(ARKOUDA_MAIN_SOURCE) $(ARKOUDA_COMPAT_MODULES) $(ARKOUDA_SERVER_USER_MODULES) $(MOD_GEN_OUT) $(ARKOUDA_RW_DEFAULT_FLAG) $(ARKOUDA_REGISTRY_DIR)/Commands.chpl -I$(ARKOUDA_SOURCE_DIR)/parquet -o $@
@@ -469,7 +457,7 @@ doc-server: ${DOC_DIR} $(DOC_SERVER_OUTPUT_DIR)/index.html
 $(DOC_SERVER_OUTPUT_DIR)/index.html: $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES) | $(DOC_SERVER_OUTPUT_DIR)
 	@echo "Building documentation for: Server"
 	@# Build the documentation to the Chapel output directory
-	$(CHPLDOC) $(CHPLDOC_FLAGS) $(ARKOUDA_MAIN_SOURCE) $(ARKOUDA_SOURCE_DIR)/compat/e-132/* -o $(DOC_SERVER_OUTPUT_DIR)
+	$(CHPLDOC) $(CHPLDOC_FLAGS) $(ARKOUDA_MAIN_SOURCE) -o $(DOC_SERVER_OUTPUT_DIR)
 	@# Create the .nojekyll file needed for github pages in the  Chapel output directory
 	touch $(DOC_SERVER_OUTPUT_DIR)/.nojekyll
 	@echo "Completed building documentation for: Server"
