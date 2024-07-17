@@ -1,19 +1,21 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MsgProcessing &mdash; chpldoc 0.0.1 documentation</title>
-      <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
-        <script src="../../../../../_static/jquery.js"></script>
-        <script src="../../../../../_static/underscore.js"></script>
-        <script src="../../../../../_static/doctools.js"></script>
+        <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
+        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
@@ -26,14 +28,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../../../index.html" class="icon icon-home"> chpldoc
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            chpldoc
           </a>
               <div class="version">
                 0.0.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -79,10 +85,6 @@
 <li class="toctree-l1"><a class="reference internal" href="SymArrayDmap.html">SymArrayDmap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Unique.html">Unique</a></li>
 <li class="toctree-l1"><a class="reference internal" href="arkouda_server.html">arkouda_server</a></li>
-<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaAryUtilCompat.html">ArkoudaAryUtilCompat</a></li>
-<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaIOCompat.html">ArkoudaIOCompat</a></li>
-<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaRandomCompat.html">ArkoudaRandomCompat</a></li>
-<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaSortCompat.html">ArkoudaSortCompat</a></li>
 </ul>
 
         </div>
@@ -98,8 +100,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>MsgProcessing</li>
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">MsgProcessing</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../../../../_sources/modules/__w/arkouda/arkouda/src/MsgProcessing.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -109,8 +111,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <span class="target" id="module-MsgProcessing"></span><div class="section" id="msgprocessing">
-<h1>MsgProcessing<a class="headerlink" href="#msgprocessing" title="Permalink to this headline">¶</a></h1>
+  <section id="msgprocessing">
+<span id="module-MsgProcessing"></span><h1>MsgProcessing<a class="headerlink" href="#msgprocessing" title="Link to this heading">¶</a></h1>
 <p><strong>Usage</strong></p>
 <div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">MsgProcessing</span><span class="p">;</span>
 </pre></div>
@@ -121,20 +123,20 @@
 </div>
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="MsgProcessing.mpLogger">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">mpLogger</span></span> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel,</span> <span class="pre">logChannel)</span><a class="headerlink" href="#MsgProcessing.mpLogger" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">mpLogger</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel,</span> <span class="pre">logChannel)</span></em><a class="headerlink" href="#MsgProcessing.mpLogger" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MsgProcessing.createMsg">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">createMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">nd:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#MsgProcessing.createMsg" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">createMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">nd:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#MsgProcessing.createMsg" title="Link to this definition">¶</a></dt>
 <dd><p>Parse, execute, and respond to a create message</p>
 <p>:arg : payload
 :type string: containing (dtype,size)</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>st</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">borrowed</span> <span class="pre">SymTab</span></code></span> – SymTab to act on</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>(MsgTuple) response message</p>
 </dd>
 </dl>
@@ -142,21 +144,21 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MsgProcessing.createMsg0D">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">createMsg0D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#MsgProcessing.createMsg0D" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">createMsg0D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#MsgProcessing.createMsg0D" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MsgProcessing.deleteMsg">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deleteMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#MsgProcessing.deleteMsg" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deleteMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#MsgProcessing.deleteMsg" title="Link to this definition">¶</a></dt>
 <dd><p>Parse, execute, and respond to a delete message</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>reqMsg</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">string</span></code></span> – request containing (cmd,name)</p></li>
 <li><p><strong>st</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">borrowed</span> <span class="pre">SymTab</span></code></span> – SymTab to act on</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>MsgTuple</p>
 </dd>
 </dl>
@@ -164,16 +166,16 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MsgProcessing.clearMsg">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">clearMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#MsgProcessing.clearMsg" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">clearMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#MsgProcessing.clearMsg" title="Link to this definition">¶</a></dt>
 <dd><p>Clear all unregistered symbols and associated data from sym table</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>reqMsg</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">string</span></code></span> – request containing (cmd)</p></li>
 <li><p><strong>st</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">borrowed</span> <span class="pre">SymTab</span></code></span> – SymTab to act on</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>MsgTuple</p>
 </dd>
 </dl>
@@ -181,17 +183,17 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MsgProcessing.infoMsg">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">infoMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#MsgProcessing.infoMsg" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">infoMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#MsgProcessing.infoMsg" title="Link to this definition">¶</a></dt>
 <dd><p>Takes the name of data referenced in a msg and searches for the name in the provided sym table.
 Returns a string of info for the sym entry that is mapped to the provided name.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>reqMsg</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">string</span></code></span> – request containing (cmd,name)</p></li>
 <li><p><strong>st</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">borrowed</span> <span class="pre">SymTab</span></code></span> – SymTab to act on</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>MsgTuple</p>
 </dd>
 </dl>
@@ -199,16 +201,16 @@ Returns a string of info for the sym entry that is mapped to the provided name.<
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MsgProcessing.getconfigMsg">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getconfigMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#MsgProcessing.getconfigMsg" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getconfigMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#MsgProcessing.getconfigMsg" title="Link to this definition">¶</a></dt>
 <dd><p>query server configuration…</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>reqMsg</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">string</span></code></span> – request containing (cmd)</p></li>
 <li><p><strong>st</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">borrowed</span> <span class="pre">SymTab</span></code></span> – SymTab to act on</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>MsgTuple</p>
 </dd>
 </dl>
@@ -216,16 +218,16 @@ Returns a string of info for the sym entry that is mapped to the provided name.<
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MsgProcessing.getmemusedMsg">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getmemusedMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#MsgProcessing.getmemusedMsg" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getmemusedMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#MsgProcessing.getmemusedMsg" title="Link to this definition">¶</a></dt>
 <dd><p>query server total memory allocated or symbol table data memory</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>reqMsg</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">string</span></code></span> – request containing (cmd)</p></li>
 <li><p><strong>st</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">borrowed</span> <span class="pre">SymTab</span></code></span> – SymTab to act on</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>MsgTuple</p>
 </dd>
 </dl>
@@ -233,16 +235,16 @@ Returns a string of info for the sym entry that is mapped to the provided name.<
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MsgProcessing.getmemavailMsg">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getmemavailMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#MsgProcessing.getmemavailMsg" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getmemavailMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#MsgProcessing.getmemavailMsg" title="Link to this definition">¶</a></dt>
 <dd><p>query server total memory availble</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>reqMsg</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">string</span></code></span> – request containing (cmd)</p></li>
 <li><p><strong>st</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">borrowed</span> <span class="pre">SymTab</span></code></span> – SymTab to act on</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>MsgTuple</p>
 </dd>
 </dl>
@@ -250,7 +252,7 @@ Returns a string of info for the sym entry that is mapped to the provided name.<
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MsgProcessing.getCommandMapMsg">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getCommandMapMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#MsgProcessing.getCommandMapMsg" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getCommandMapMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MsgProcessing.getCommandMapMsg" title="Link to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>Generate the mapping of server command to function as JSON</p></li>
@@ -260,46 +262,46 @@ Returns a string of info for the sym entry that is mapped to the provided name.<
 <li><p>standard function signature, similar to other procs.</p></li>
 <li></li>
 <li><dl class="field-list simple">
-<dt class="field-odd">arg cmd</dt>
+<dt class="field-odd">arg cmd<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Ignored</p>
 </dd>
 </dl>
 </li>
 <li><dl class="field-list simple">
-<dt class="field-odd">type cmd</dt>
+<dt class="field-odd">type cmd<span class="colon">:</span></dt>
 <dd class="field-odd"><p>string</p>
 </dd>
 </dl>
 </li>
 <li></li>
 <li><dl class="field-list simple">
-<dt class="field-odd">arg payload</dt>
+<dt class="field-odd">arg payload<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Ignored</p>
 </dd>
 </dl>
 </li>
 <li><dl class="field-list simple">
-<dt class="field-odd">type payload</dt>
+<dt class="field-odd">type payload<span class="colon">:</span></dt>
 <dd class="field-odd"><p>string</p>
 </dd>
 </dl>
 </li>
 <li></li>
 <li><dl class="field-list simple">
-<dt class="field-odd">arg st</dt>
+<dt class="field-odd">arg st<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Ignored</p>
 </dd>
 </dl>
 </li>
 <li><dl class="field-list simple">
-<dt class="field-odd">type st</dt>
+<dt class="field-odd">type st<span class="colon">:</span></dt>
 <dd class="field-odd"><p>borrowed SymTab</p>
 </dd>
 </dl>
 </li>
 <li></li>
 <li><dl class="field-list simple">
-<dt class="field-odd">returns</dt>
+<dt class="field-odd">returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>MsgTuple containing JSON formatted string of cmd -&gt; function mapping</p>
 </dd>
 </dl>
@@ -309,16 +311,16 @@ Returns a string of info for the sym entry that is mapped to the provided name.<
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MsgProcessing.strMsg">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">strMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#MsgProcessing.strMsg" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">strMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#MsgProcessing.strMsg" title="Link to this definition">¶</a></dt>
 <dd><p>Response to __str__ method in python str convert array data to string</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>reqMsg</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">string</span></code></span> – request containing (cmd,name)</p></li>
 <li><p><strong>st</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">borrowed</span> <span class="pre">SymTab</span></code></span> – SymTab to act on</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>(string,MsgType)</p>
 </dd>
 </dl>
@@ -326,17 +328,17 @@ Returns a string of info for the sym entry that is mapped to the provided name.<
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MsgProcessing.reprMsg">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">reprMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#MsgProcessing.reprMsg" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">reprMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#MsgProcessing.reprMsg" title="Link to this definition">¶</a></dt>
 <dd><p>Response to __repr__ method in python.
 Repr convert array data to string</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>reqMsg</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">string</span></code></span> – request containing (cmd,name)</p></li>
 <li><p><strong>st</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">borrowed</span> <span class="pre">SymTab</span></code></span> – SymTab to act on</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>MsgTuple</p>
 </dd>
 </dl>
@@ -344,19 +346,19 @@ Repr convert array data to string</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MsgProcessing.setMsg">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">setMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">nd</span> <span class="pre">=</span> <span class="pre">1</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#MsgProcessing.setMsg" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">setMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">nd</span> <span class="pre">=</span> <span class="pre">1</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#MsgProcessing.setMsg" title="Link to this definition">¶</a></dt>
 <dd><p>Sets all elements in array to a value (broadcast)</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>reqMsg</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">string</span></code></span> – request containing (cmd,name,dtype,value)</p></li>
 <li><p><strong>st</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">borrowed</span> <span class="pre">SymTab</span></code></span> – SymTab to act on</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>MsgTuple</p>
 </dd>
-<dt class="field-odd">Throws</dt>
+<dt class="field-odd">Throws<span class="colon">:</span></dt>
 <dd class="field-odd"><p><cite>UndefinedSymbolError(name)</cite></p>
 </dd>
 </dl>
@@ -364,14 +366,14 @@ Repr convert array data to string</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MsgProcessing.chunkInfoMsg">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">chunkInfoMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">nd:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#MsgProcessing.chunkInfoMsg" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">chunkInfoMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">nd:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#MsgProcessing.chunkInfoMsg" title="Link to this definition">¶</a></dt>
 <dd><p>Get a list of lists indicating how an array is “chunked” across locales.</p>
 <p>For example, a 100x40 2D array on 4 locales could return: [[0, 50], [0, 20]]
 indicating that the chunks start at indices 0 and 50 in the first dimension,
 and 0 and 20 in the second dimension.</p>
 </dd></dl>
 
-</div>
+</section>
 
 
            </div>

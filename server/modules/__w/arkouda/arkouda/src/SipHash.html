@@ -1,19 +1,21 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SipHash &mdash; chpldoc 0.0.1 documentation</title>
-      <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
-        <script src="../../../../../_static/jquery.js"></script>
-        <script src="../../../../../_static/underscore.js"></script>
-        <script src="../../../../../_static/doctools.js"></script>
+        <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
+        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
@@ -26,14 +28,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../../../index.html" class="icon icon-home"> chpldoc
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            chpldoc
           </a>
               <div class="version">
                 0.0.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -79,10 +85,6 @@
 <li class="toctree-l1"><a class="reference internal" href="SymArrayDmap.html">SymArrayDmap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Unique.html">Unique</a></li>
 <li class="toctree-l1"><a class="reference internal" href="arkouda_server.html">arkouda_server</a></li>
-<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaAryUtilCompat.html">ArkoudaAryUtilCompat</a></li>
-<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaIOCompat.html">ArkoudaIOCompat</a></li>
-<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaRandomCompat.html">ArkoudaRandomCompat</a></li>
-<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaSortCompat.html">ArkoudaSortCompat</a></li>
 </ul>
 
         </div>
@@ -98,8 +100,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>SipHash</li>
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">SipHash</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../../../../_sources/modules/__w/arkouda/arkouda/src/SipHash.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -109,8 +111,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <span class="target" id="module-SipHash"></span><div class="section" id="siphash">
-<h1>SipHash<a class="headerlink" href="#siphash" title="Permalink to this headline">¶</a></h1>
+  <section id="siphash">
+<span id="module-SipHash"></span><h1>SipHash<a class="headerlink" href="#siphash" title="Link to this heading">¶</a></h1>
 <p><strong>Usage</strong></p>
 <div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">SipHash</span><span class="p">;</span>
 </pre></div>
@@ -121,42 +123,42 @@
 </div>
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="SipHash.cROUNDS">
-<em class="property"><span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">cROUNDS</span></span> <span class="pre">=</span> <span class="pre">2</span><a class="headerlink" href="#SipHash.cROUNDS" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">cROUNDS</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#SipHash.cROUNDS" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="SipHash.dROUNDS">
-<em class="property"><span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">dROUNDS</span></span> <span class="pre">=</span> <span class="pre">4</span><a class="headerlink" href="#SipHash.dROUNDS" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">dROUNDS</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">4</span></em><a class="headerlink" href="#SipHash.dROUNDS" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="SipHash.defaultSipHashKey">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">defaultSipHashKey</span></span><span class="pre">:</span> <span class="pre">[0..#16]</span> <span class="pre">uint(8)</span> <span class="pre">=</span> <span class="pre">for</span> <span class="pre">i</span> <span class="pre">in</span> <span class="pre">0..</span> <span class="pre">#</span> <span class="pre">16</span> <span class="pre">do</span> <span class="pre">i</span> <span class="pre">:</span> <span class="pre">uint(8)</span><a class="headerlink" href="#SipHash.defaultSipHashKey" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">defaultSipHashKey</span></span><em class="property"> <span class="pre">:</span> <span class="pre">[0..#16]</span> <span class="pre">uint(8)</span> <span class="pre">=</span> <span class="pre">for</span> <span class="pre">i</span> <span class="pre">in</span> <span class="pre">0..</span> <span class="pre">#</span> <span class="pre">16</span> <span class="pre">do</span> <span class="pre">i</span> <span class="pre">:</span> <span class="pre">uint(8)</span></em><a class="headerlink" href="#SipHash.defaultSipHashKey" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="SipHash.shLogger">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">shLogger</span></span> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel,</span> <span class="pre">logChannel)</span><a class="headerlink" href="#SipHash.shLogger" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">shLogger</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel,</span> <span class="pre">logChannel)</span></em><a class="headerlink" href="#SipHash.shLogger" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SipHash.ROTL">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">ROTL</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">b</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SipHash.ROTL" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">ROTL</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">b</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SipHash.ROTL" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SipHash.sipHash64">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">sipHash64</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">[]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">D</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">uint(64)</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">uint(8)</span> <span class="pre">||</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">int(64)</span> <span class="pre">||</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">real(64)</span></em><a class="headerlink" href="#SipHash.sipHash64" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">sipHash64</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">[]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">D</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">uint(64)</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">uint(8)</span> <span class="pre">||</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">int(64)</span> <span class="pre">||</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">real(64)</span></em><a class="headerlink" href="#SipHash.sipHash64" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SipHash.sipHash128">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">sipHash128</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">msg:</span> <span class="pre">[]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">D</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">2*(uint(64))</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">uint(8)</span> <span class="pre">||</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">int(64)</span> <span class="pre">||</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">real(64)</span></em><a class="headerlink" href="#SipHash.sipHash128" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">sipHash128</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">msg:</span> <span class="pre">[]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">D</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">2*(uint(64))</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">uint(8)</span> <span class="pre">||</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">int(64)</span> <span class="pre">||</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">real(64)</span></em><a class="headerlink" href="#SipHash.sipHash128" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">sipHash64</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">val</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">uint(64)</span></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">sipHash64</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">val</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">uint(64)</span></em></dt>
 <dd><ul class="simple">
 <li><p>Compute hash of a single value</p></li>
 </ul>
@@ -164,10 +166,10 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">sipHash128</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">val</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">2*(uint(64))</span></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">sipHash128</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">val</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">2*(uint(64))</span></em></dt>
 <dd></dd></dl>
 
-</div>
+</section>
 
 
            </div>

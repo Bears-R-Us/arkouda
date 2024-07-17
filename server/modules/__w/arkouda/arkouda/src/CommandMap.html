@@ -1,19 +1,21 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CommandMap &mdash; chpldoc 0.0.1 documentation</title>
-      <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
-        <script src="../../../../../_static/jquery.js"></script>
-        <script src="../../../../../_static/underscore.js"></script>
-        <script src="../../../../../_static/doctools.js"></script>
+        <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
+        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
@@ -26,14 +28,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../../../index.html" class="icon icon-home"> chpldoc
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            chpldoc
           </a>
               <div class="version">
                 0.0.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -79,10 +85,6 @@
 <li class="toctree-l1"><a class="reference internal" href="SymArrayDmap.html">SymArrayDmap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Unique.html">Unique</a></li>
 <li class="toctree-l1"><a class="reference internal" href="arkouda_server.html">arkouda_server</a></li>
-<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaAryUtilCompat.html">ArkoudaAryUtilCompat</a></li>
-<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaIOCompat.html">ArkoudaIOCompat</a></li>
-<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaRandomCompat.html">ArkoudaRandomCompat</a></li>
-<li class="toctree-l1"><a class="reference internal" href="compat/e-132/ArkoudaSortCompat.html">ArkoudaSortCompat</a></li>
 </ul>
 
         </div>
@@ -98,8 +100,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>CommandMap</li>
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">CommandMap</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../../../../_sources/modules/__w/arkouda/arkouda/src/CommandMap.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -109,8 +111,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <span class="target" id="module-CommandMap"></span><div class="section" id="commandmap">
-<h1>CommandMap<a class="headerlink" href="#commandmap" title="Permalink to this headline">¶</a></h1>
+  <section id="commandmap">
+<span id="module-CommandMap"></span><h1>CommandMap<a class="headerlink" href="#commandmap" title="Link to this heading">¶</a></h1>
 <p><strong>Usage</strong></p>
 <div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">CommandMap</span><span class="p">;</span>
 </pre></div>
@@ -121,7 +123,7 @@
 </div>
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="CommandMap.akMsgSign">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">akMsgSign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#CommandMap.akMsgSign" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">akMsgSign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#CommandMap.akMsgSign" title="Link to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>This is a dummy function to get the signature of the Arkouda</p></li>
@@ -133,22 +135,22 @@
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="CommandMap.commandMap">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">commandMap</span></span><span class="pre">:</span> <span class="pre">map(string,</span> <span class="pre">f.type)</span><a class="headerlink" href="#CommandMap.commandMap" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">commandMap</span></span><em class="property"> <span class="pre">:</span> <span class="pre">map(string,</span> <span class="pre">f.type)</span></em><a class="headerlink" href="#CommandMap.commandMap" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="CommandMap.moduleMap">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">moduleMap</span></span><span class="pre">:</span> <span class="pre">map(string,</span> <span class="pre">(string,</span> <span class="pre">int))</span><a class="headerlink" href="#CommandMap.moduleMap" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">moduleMap</span></span><em class="property"> <span class="pre">:</span> <span class="pre">map(string,</span> <span class="pre">(string,</span> <span class="pre">int))</span></em><a class="headerlink" href="#CommandMap.moduleMap" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="CommandMap.usedModules">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">usedModules</span></span><span class="pre">:</span> <span class="pre">set(string)</span><a class="headerlink" href="#CommandMap.usedModules" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">usedModules</span></span><em class="property"> <span class="pre">:</span> <span class="pre">set(string)</span></em><a class="headerlink" href="#CommandMap.usedModules" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="CommandMap.registerFunction">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">registerFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">fcf:</span> <span class="pre">f.type</span></em>, <em class="sig-param"><span class="pre">modName:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em>, <em class="sig-param"><span class="pre">line:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">-1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CommandMap.registerFunction" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">registerFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">fcf:</span> <span class="pre">f.type</span></em>, <em class="sig-param"><span class="pre">modName:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em>, <em class="sig-param"><span class="pre">line:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">-1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CommandMap.registerFunction" title="Link to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>Register command-&gt;function in the CommandMap</p></li>
@@ -159,17 +161,17 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="CommandMap.writeUsedModulesJson">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">writeUsedModulesJson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">mods:</span> <span class="pre">set(string)</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CommandMap.writeUsedModulesJson" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">writeUsedModulesJson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">mods:</span> <span class="pre">set(string)</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CommandMap.writeUsedModulesJson" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="CommandMap.writeUsedModules">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">writeUsedModules</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">fmt:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;cfg&quot;</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CommandMap.writeUsedModules" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">writeUsedModules</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">fmt:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;cfg&quot;</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CommandMap.writeUsedModules" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="CommandMap.dumpCommandMap">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">dumpCommandMap</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#CommandMap.dumpCommandMap" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">dumpCommandMap</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span></em><a class="headerlink" href="#CommandMap.dumpCommandMap" title="Link to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>Dump the combined contents of the command maps as a single json encoded string</p></li>
@@ -178,10 +180,10 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="CommandMap.executeCommand">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">executeCommand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs</span></em>, <em class="sig-param"><span class="pre">st</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#CommandMap.executeCommand" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">executeCommand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs</span></em>, <em class="sig-param"><span class="pre">st</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#CommandMap.executeCommand" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
-</div>
+</section>
 
 
            </div>
