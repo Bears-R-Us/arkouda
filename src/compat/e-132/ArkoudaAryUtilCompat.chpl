@@ -1,4 +1,6 @@
 module ArkoudaAryUtilCompat {
+  use List;
+
   /*
     Get a domain that selects out the idx'th set of indices along the specified axes
 
@@ -6,15 +8,11 @@ module ArkoudaAryUtilCompat {
     :arg idx: the index to select along the specified axes (must have the same rank as D)
     :arg axes: the axes to slice along (must be a subset of the axes of D)
 
-    Example 1: if D represents a stack of 1000 10x10 matrices (ex: {1..10, 1..10, 1..1000})
+    For example, if D represents a stack of 1000 10x10 matrices (ex: {1..10, 1..10, 1..1000})
     Then, domOnAxis(D, (1, 1, 25), 0, 1) will return D sliced with {1..10, 1..10, 25..25}
     (i.e., the 25th matrix)
-
-    Example 2: if D belongs to a 3D array {1..100, 1..100, 1..100}, then
-    domOnAxis(D, (5, 1, 7), 1) will return D sliced with {5..5, 1..100, 7..7}, i.e.,
-    the set of indices for the (5,7)-th 1D sub-array along axis 1
   */
-  proc domOnAxis(D: domain(?), idx: D.rank*int, axes: int ...?NA): domain
+  proc domOnAxis(D: domain(?), idx: D.rank*int, axes: int ...?NA): domain(?)
     where NA <= D.rank
   {
     var outDims: D.rank*range;
@@ -30,19 +28,19 @@ module ArkoudaAryUtilCompat {
     return D[{(...outDims)}];
   }
 
-  proc domOnAxis(D: domain(?), idx: D.rank*int, axes: [?aD] int): domain throws {
+  proc domOnAxis(D: domain(?), idx: D.rank*int, axes: [?aD] int): domain(?) throws {
+    return domOnAxis(D, idx, new list(axes));
+  }
+
+  proc domOnAxis(D: domain(?), idx: D.rank*int, const ref axes: list(int)): domain(?) throws {
     if axes.size >= D.rank then
-      throw new Error("Cannot create a " + axes.size:string + "-dimensional slice from a " + D.rank:string + "-dimensional domain");
+      throw new Error("Cannot create a %i dimensional slice from a %i dimensional domain".format(axes.size, D.rank));
 
     var outDims: D.rank*range;
-    label ranks for i in 0..<D.rank {
-      for j in 0..<axes.size {
-        if i == axes[j] {
-          outDims[i] = D.dim(i);
-          continue ranks;
-        }
-      }
-      outDims[i] = idx[i]..idx[i];
+    for i in 0..<D.rank {
+      if axes.contains(i)
+        then outDims[i] = D.dim(i);
+        else outDims[i] = idx[i]..idx[i];
     }
     return D[{(...outDims)}];
   }
@@ -53,13 +51,9 @@ module ArkoudaAryUtilCompat {
     :arg D: the domain to slice
     :arg axes: the axes to slice along (must be a subset of the axes of D)
 
-    Example 1: if D represents a stack of 1000 10x10 matrices (ex: {1..10, 1..10, 1..1000})
+    For example, if D represents a stack of 1000 10x10 matrices (ex: {1..10, 1..10, 1..1000})
     Then, domOffAxis(D, 0, 1) will return D sliced with {0..0, 0..0, 1..1000}
     (i.e., a set of indices for the 1000 matrices)
-
-    Example 2: if D belongs to a 3D array {1..100, 1..100, 1..100}, then
-    domOffAxis(D, 1) will return D sliced with {1..100, 0..0, 1..100}, i.e.,
-    the set of indices for all the 1D sub-arrays along axis 1
   */
   proc domOffAxis(D: domain(?), axes: int ...?NA): domain(?)
     where NA <= D.rank
@@ -77,21 +71,38 @@ module ArkoudaAryUtilCompat {
     return D[{(...outDims)}];
   }
 
-  proc domOffAxis(D: domain(?), axes: [?aD] int): domain throws {
+  proc domOffAxis(D: domain(?), axes: [?aD] int): domain(?) throws {
+    return domOffAxis(D, new list(axes));
+  }
+
+  proc domOffAxis(D: domain(?), const ref axes: list(int)): domain(?) throws {
     if axes.size >= D.rank then
-      throw new Error("Cannot create a " + axes.size:string + "-dimensional slice from a " + D.rank:string + "-dimensional domain");
+      throw new Error("Cannot create a %i dimensional slice from a %i dimensional domain".format(axes.size, D.rank));
 
     var outDims: D.rank*range;
-    label ranks for i in 0..<D.rank {
-      for j in 0..<axes.size {
-        if i == axes[j] {
-          outDims[i] = D.dim(i).low..D.dim(i).low;
-          continue ranks;
-        }
-      }
-      outDims[i] = D.dim(i);
+    for i in 0..<D.rank {
+      if axes.contains(i)
+        then outDims[i] = D.dim(i).low..D.dim(i).low;
+        else outDims[i] = D.dim(i);
     }
     return D[{(...outDims)}];
+  }
+
+  /*
+    Iterate over all the slices of a domain along the specified axes
+  */
+  iter axisSlices(D: domain(?), const ref axes: list(int)): (domain(?), D.rank*int) throws {
+    for sliceIdx in domOffAxis(D, axes) {
+      yield (domOnAxis(D, if D.rank == 1 then (sliceIdx,) else sliceIdx, axes), sliceIdx);
+    }
+  }
+
+  iter axisSlices(param tag: iterKind, D: domain(?), const ref axes: list(int)): (domain(?), D.rank*int) throws
+    where tag == iterKind.standalone
+  {
+    forall sliceIdx in domOffAxis(D, axes) {
+      yield (domOnAxis(D, if D.rank == 1 then (sliceIdx,) else sliceIdx, axes), sliceIdx);
+    }
   }
 
   /*
@@ -103,9 +114,9 @@ module ArkoudaAryUtilCompat {
 
     (if 'nChunks' is greater than the size of the largest dimension, the
     first 'nChunks-1' chunks will be empty, and the last chunk will contain
-    the entire domain)
+    the entire set of indices along that dimension)
   */
-  proc subDomChunk(dom: domain(?), chunkIdx: int, nChunks: int): domain {
+  proc subDomChunk(dom: domain(?), chunkIdx: int, nChunks: int): domain(?) {
     const dimSizes = [i in 0..<dom.rank] dom.dim(i).size,
           (maxDim, maxDimIdx) = maxloc reduce zip(dimSizes, dimSizes.domain);
 

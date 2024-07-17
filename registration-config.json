@@ -1,5 +1,16 @@
 {
-    "max_array_dims": 1,
+    "parameter_classes": {
+        "NOTE!!!": "run 'make register-commands' after changing any of these values",
+        "array": {
+            "nd": [1],
+            "dtype": [
+                "int",
+                "uint",
+                "real",
+                "bool"
+            ]
+        }
+    },
     "supported_scalar_types": {
         "uint8": true,
         "uint16": false,

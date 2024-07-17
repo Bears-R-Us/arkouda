@@ -42,7 +42,7 @@ class ArrayCreationTests(ArkoudaTest):
     def test_sort(self):
         for shape in SHAPES:
             for dtype in ak.ScalarDTypes:
-                if dtype == ak.bool:
+                if dtype == ak.bool_:
                     continue
                 for axis in range(len(shape)):
                     a = xp.asarray(ak.randint(0, 100, shape, dtype=dtype, seed=SEED))

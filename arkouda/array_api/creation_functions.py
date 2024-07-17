@@ -82,7 +82,9 @@ def asarray(
     elif isinstance(obj, np.ndarray):
         return Array._new(_to_pdarray(obj, dt=dtype))
     else:
-        raise ValueError("asarray not implemented for 'NestedSequence' or 'SupportsBufferProtocol'")
+        raise ValueError(
+            "asarray not implemented for 'NestedSequence' or 'SupportsBufferProtocol'"
+        )
 
 
 def arange(

@@ -107,31 +107,28 @@ def mean(
     if x.dtype not in _real_floating_dtypes:
         raise TypeError("Only real floating-point dtypes are allowed in mean")
 
-    axis_list = []
     if axis is not None:
         axis_list = list(axis) if isinstance(axis, tuple) else [axis]
+    else:
+        axis_list = list(range(x.ndim))
 
-    resp = generic_msg(
-        cmd=f"stats{x.ndim}D",
-        args={
-            "x": x._array,
-            "comp": "mean",
-            "nAxes": len(axis_list),
-            "axis": axis_list,
-            "ddof": 0,
-            "skipNan": True,  # TODO: handle all-nan slices
-        },
+    arr = Array._new(
+        create_pdarray(
+            generic_msg(
+                cmd=f"meanReduce<{x.dtype},{x.ndim}>",
+                args={
+                    "x": x._array,
+                    "axes": axis_list,
+                    "skipNan": True,  # TODO: handle all-nan slices
+                },
+            )
+        )
     )
 
-    if axis is None or x.ndim == 1:
-        return Array._new(scalar_array(parse_single_value(resp)))
+    if keepdims or axis is None:
+        return arr
     else:
-        arr = Array._new(create_pdarray(resp))
-
-        if keepdims:
-            return arr
-        else:
-            return squeeze(arr, axis)
+        return squeeze(arr, axis)
 
 
 def min(
@@ -272,31 +269,29 @@ def std(
     if correction < 0:
         raise ValueError("Correction must be non-negative in std")
 
-    axis_list = []
     if axis is not None:
         axis_list = list(axis) if isinstance(axis, tuple) else [axis]
+    else:
+        axis_list = list(range(x.ndim))
 
-    resp = generic_msg(
-        cmd=f"stats{x.ndim}D",
-        args={
-            "x": x._array,
-            "comp": "std",
-            "ddof": correction,
-            "nAxes": len(axis_list),
-            "axis": axis_list,
-            "skipNan": True,
-        },
+    arr = Array._new(
+        create_pdarray(
+            generic_msg(
+                cmd=f"stdReduce<{x.dtype},{x.ndim}>",
+                args={
+                    "x": x._array,
+                    "ddof": correction,
+                    "axes": axis_list,
+                    "skipNan": True,
+                },
+            )
+        )
     )
 
-    if axis is None or x.ndim == 1:
-        return Array._new(scalar_array(parse_single_value(resp)))
+    if keepdims or axis is None:
+        return arr
     else:
-        arr = Array._new(create_pdarray(resp))
-
-        if keepdims:
-            return arr
-        else:
-            return squeeze(arr, axis)
+        return squeeze(arr, axis)
 
 
 def sum(
@@ -389,31 +384,29 @@ def var(
     if correction < 0:
         raise ValueError("Correction must be non-negative in std")
 
-    axis_list = []
     if axis is not None:
         axis_list = list(axis) if isinstance(axis, tuple) else [axis]
+    else:
+        axis_list = list(range(x.ndim))
 
-    resp = generic_msg(
-        cmd=f"stats{x.ndim}D",
-        args={
-            "x": x._array,
-            "comp": "var",
-            "ddof": correction,
-            "nAxes": len(axis_list),
-            "axis": axis_list,
-            "skipNan": True,
-        },
+    arr = Array._new(
+        create_pdarray(
+            generic_msg(
+                cmd=f"varReduce<{x.dtype},{x.ndim}>",
+                args={
+                    "x": x._array,
+                    "ddof": correction,
+                    "axes": axis_list,
+                    "skipNan": True,
+                },
+            )
+        )
     )
 
-    if axis is None or x.ndim == 1:
-        return Array._new(scalar_array(parse_single_value(resp)))
+    if keepdims or axis is None:
+        return arr
     else:
-        arr = Array._new(create_pdarray(resp))
-
-        if keepdims:
-            return arr
-        else:
-            return squeeze(arr, axis)
+        return squeeze(arr, axis)
 
 
 def _prod_sum_dtype(dtype: Dtype) -> Dtype:
@@ -430,10 +423,12 @@ def _prod_sum_dtype(dtype: Dtype) -> Dtype:
 
 
 def cumulative_sum(
-    x: Array, /, *,
+    x: Array,
+    /,
+    *,
     axis: Optional[int] = None,
     dtype: Optional[Dtype] = None,
-    include_initial: bool = False
+    include_initial: bool = False,
 ) -> Array:
     """
     Compute the cumulative sum of the elements of an array along a given axis.
@@ -450,12 +445,18 @@ def cumulative_sum(
     include_initial : bool, optional
         Whether to include the initial value as the first element of the output.
     """
+
+    if dtype is None:
+        x_ = x
+    else:
+        x_ = akcast(x, dtype)
+
     resp = generic_msg(
-        cmd=f"cumSum{x.ndim}D",
+        cmd=f"cumSum<{x_.dtype},{x.ndim}>",
         args={
-            "x": x._array,
+            "x": x_._array,
             "axis": axis if axis is not None else 0,
-            "include_initial": include_initial,
+            "includeInitial": include_initial,
         },
     )
 

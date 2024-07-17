@@ -15,7 +15,7 @@ class ArrayCreationTests(ArkoudaTest):
         for op in ops:
             for shape_a, shape_b in zip(SHAPE_A, SHAPE_B):
                 for dtype in ak.ScalarDTypes:
-                    if dtype != ak.bool:
+                    if dtype != ak.bool_:
                         x = xp.asarray(ak.randint(0, 100, shape_a, dtype=dtype, seed=SEED))
                         y = xp.asarray(ak.randint(0, 100, shape_b, dtype=dtype, seed=SEED))
 

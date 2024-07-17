@@ -1,5 +1,5 @@
 import itertools
-from typing import Iterable, List, Optional, Tuple, Union, cast
+from typing import Iterable, List, Optional, Tuple, Union, cast, Any
 
 import numpy as np
 import pandas as pd
@@ -45,6 +45,7 @@ __all__ = [
     "random_strings_lognormal",
     "from_series",
     "bigint_from_uint_arrays",
+    "promote_to_common_dtype",
 ]
 
 
@@ -302,6 +303,48 @@ def array(
             send_binary=True,
         )
         return create_pdarray(rep_msg) if dtype is None else akcast(create_pdarray(rep_msg), dtype)
+
+
+def promote_to_common_dtype(arrays: List[pdarray]) -> Tuple[Any, List[pdarray]]:
+    """
+    Promote a list of pdarrays to a common dtype.
+
+    Parameters
+    ----------
+    arrays : List[pdarray]
+        List of pdarrays to promote
+
+    Returns
+    -------
+    dtype, List[pdarray]
+        The common dtype of the pdarrays and the list of pdarrays promoted to that dtype
+
+    Raises
+    ------
+    TypeError
+        Raised if the pdarrays are not all of the same dtype
+
+    See Also
+    --------
+    pdarray.promote_dtype
+
+    Examples
+    --------
+    >>> a = ak.arange(5)
+    >>> b = ak.ones(5, dtype=ak.float64)
+    >>> dtype, promoted = promote_to_common_dtype([a, b])
+    >>> dtype
+    dtype(float64)
+    >>> all(isinstance(p, pdarray) and p.dtype == dtype for p in promoted)
+    True
+    """
+    # find the common dtype of the input arrays
+    dt = np.common_type(*[np.empty(0, dtype=a.dtype) for a in arrays])
+
+    # cast the input arrays to the output dtype if necessary
+    arrays = [a.astype(dt) if a.dtype != dt else a for a in arrays]
+
+    return (akdtype(dt), arrays)
 
 
 def _array_memview(a) -> memoryview:
