@@ -19,7 +19,9 @@ CHPL := chpl
 CHPL_FLAGS += --ccflags="-DH5_USE_110_API"
 
 # Python
+ifdef ARKOUDA_PYTHON_SERVER
 CHPL_FLAGS += $(shell python3-config --includes) $(shell python3-config --ldflags) -lpython3.$(shell python -c "import sys; print(sys.version_info.minor)")
+endif
 
 # silence warnings about '@arkouda' annotations being unrecognized
 CHPL_FLAGS += --using-attribute-toolname arkouda
