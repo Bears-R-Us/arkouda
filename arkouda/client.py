@@ -1057,7 +1057,8 @@ def get_max_array_rank() -> int:
     if serverConfig is None:
         raise RuntimeError("client is not connected to a server")
 
-    return serverConfig["maxArrayDims"]
+    return int(serverConfig["maxArrayDims"])
+
 
 def _get_config_msg() -> Mapping[str, Union[str, int, float]]:
     """
