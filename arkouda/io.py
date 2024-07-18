@@ -1170,7 +1170,7 @@ def to_parquet(
     prefix_path: str,
     names: Optional[List[str]] = None,
     mode: str = "truncate",
-    compression: Optional[str] = None,
+    compression: Optional[str] = "zstd",
     convert_categoricals: bool = False,
 ) -> None:
     """
@@ -1189,7 +1189,7 @@ def to_parquet(
         If 'append', attempt to create new dataset in existing files.
         'append' is deprecated, please use the multi-column write
     compression : str (Optional)
-            Default None
+            Default zstd
             Provide the compression type to use when writing the file.
             Supported values: snappy, gzip, brotli, zstd, lz4
         convert_categoricals: bool
@@ -1519,7 +1519,7 @@ def save_all(
     file_format="HDF5",
     mode: str = "truncate",
     file_type: str = "distribute",
-    compression: Optional[str] = None,
+    compression: Optional[str] = "zstd",
 ) -> None:
     """
     DEPRECATED
@@ -1544,6 +1544,7 @@ def save_all(
         Only used with HDF5
     compression: str (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
         Optional
+        Default zstd
         Select the compression to use with Parquet files.
         Only used with Parquet.
 
