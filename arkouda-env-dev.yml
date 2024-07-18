@@ -39,6 +39,10 @@ dependencies:
   - pytest-json-report
   - pytest-benchmark
   - mathjax
+  - sphinx-design
+  - sphinx-autodoc-typehints
+  - pandas-stubs
+  - types-python-dateutil
 
   - pip:
     # Developer dependencies
