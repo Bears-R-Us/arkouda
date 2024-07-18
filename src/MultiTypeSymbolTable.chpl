@@ -420,7 +420,11 @@ module MultiTypeSymbolTable
             else if entry.isAssignableTo(SymbolEntryType.GeneratorSymEntry) {
                 return name;
             }
-            
+            else if entry.isAssignableTo(SymbolEntryType.SparseSymEntry){
+                var g: GenSparseSymEntry = toGenSparseSymEntry(entry);
+                return name + " " + g.attrib();
+            }
+
             throw new Error("attrib - Unsupported Entry Type %s".format(entry.entryType));
         }
 
@@ -557,5 +561,20 @@ module MultiTypeSymbolTable
             throw new Error(errorMsg);
         }
         return (abstractEntry: borrowed SegStringSymEntry);
+    }
+
+    /**
+     * Convenience proc to retrieve GenSparseSymEntry from SymTab
+     * Performs conversion from AbstractSymEntry to GenSparseSymEntry
+     * You can pass a logger from the calling function for better error reporting.
+     */
+    proc getGenericSparseArrayEntry(name:string, st: borrowed SymTab): borrowed GenSparseSymEntry throws {
+        var abstractEntry = st.lookup(name);
+        if ! abstractEntry.isAssignableTo(SymbolEntryType.SparseSymEntry) {
+            var errorMsg = "Error: SymbolEntryType %s is not assignable to GenSparseSymEntry".format(abstractEntry.entryType);
+            mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            throw new Error(errorMsg);
+        }
+        return (abstractEntry: borrowed GenSparseSymEntry);
     }
 }
