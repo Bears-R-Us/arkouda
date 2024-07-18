@@ -1804,7 +1804,7 @@ module ParquetMsg {
                 datatypes[i] = ARROWINT64;
                 // set the pointer to the entry array in the list of Pointers
                 if locDom.size > 0 {
-                  ptrList[i] = c_ptrTo(e.a[locDom]): c_ptr(void);
+                  ptrList[i] = c_ptrTo(e.a[locDom.low]): c_ptr(void);
                   sizeList[i] = locDom.size;
                 }
               }
@@ -1815,7 +1815,7 @@ module ParquetMsg {
                 datatypes[i] = ARROWUINT64;
                 // set the pointer to the entry array in the list of Pointers
                 if locDom.size > 0 {
-                  ptrList[i] = c_ptrTo(e.a[locDom]): c_ptr(void);
+                  ptrList[i] = c_ptrTo(e.a[locDom.low]): c_ptr(void);
                   sizeList[i] = locDom.size;
                 }
               }
@@ -1826,7 +1826,7 @@ module ParquetMsg {
                 datatypes[i] = ARROWDOUBLE;
                 // set the pointer to the entry array in the list of Pointers
                 if locDom.size > 0 {
-                  ptrList[i] = c_ptrTo(e.a[locDom]): c_ptr(void);
+                  ptrList[i] = c_ptrTo(e.a[locDom.low]): c_ptr(void);
                   sizeList[i] = locDom.size;
                 }
               }
@@ -1837,7 +1837,7 @@ module ParquetMsg {
                 datatypes[i] = ARROWBOOLEAN;
                 // set the pointer to the entry array in the list of Pointers
                 if locDom.size > 0 {
-                  ptrList[i] = c_ptrTo(e.a[locDom]): c_ptr(void);
+                  ptrList[i] = c_ptrTo(e.a[locDom.low]): c_ptr(void);
                   sizeList[i] = locDom.size;
                 }
               }

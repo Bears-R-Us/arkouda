@@ -3,8 +3,7 @@ module ServerErrorStrings
 {
     use NumPyDType;
     use IO;
-    use ArkoudaIOCompat;
-    
+
     class ErrorWithMsg: Error {
       var msg: string;
     }

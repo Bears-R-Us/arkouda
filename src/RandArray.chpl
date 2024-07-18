@@ -10,10 +10,7 @@ module RandArray {
   use ServerConfig;
   private use IO;
   use Math;
-
   use Map;
-
-  use ArkoudaRandomCompat;
 
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;

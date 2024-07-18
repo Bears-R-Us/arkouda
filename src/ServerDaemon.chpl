@@ -28,8 +28,6 @@ module ServerDaemon {
     use StatusMsg;
     use IOUtils;
 
-    use ArkoudaIOCompat;
-
     enum ServerDaemonType {DEFAULT,INTEGRATION,METRICS,STATUS}
 
     private config const logLevel = ServerConfig.logLevel;

@@ -4,6 +4,7 @@ module RandMsg
 
     use Time;
     use Math;
+    use Random;
     use Reflection;
     use ServerErrors;
     use ServerConfig;
@@ -18,7 +19,6 @@ module RandMsg
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
-    use ArkoudaRandomCompat;
 
     import BigInteger;
 

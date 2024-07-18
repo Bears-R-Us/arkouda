@@ -1,7 +1,6 @@
 module ServerErrors {
 
     private use IO; // for string.format
-    use ArkoudaIOCompat;
 
     class OutOfBoundsError: Error {}
 
