@@ -1761,12 +1761,14 @@ def array_equal(pda_a: pdarray, pda_b: pdarray, equal_nan: bool = False):
     If equal_Nan is False, then any nan element in either array gives a False return.
     If equal_Nan is True, then pairwise-corresponding nans are considered equal.
 
-    Parameters:
+    Parameters
+    ----------
         pda_a : pdarray
         pda_b : pdarray
         equal_nan : boolean to determine how to handle nans, default False
 
-    Returns:
+    Returns
+    -------
         boolean
 
         With string data: False if one array is of type npstr and the other isn't,
