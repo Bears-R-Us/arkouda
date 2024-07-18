@@ -257,6 +257,7 @@ module ServerConfig
             const byteorder: string;
             const autoShutdown: bool;
             const serverInfoNoSplash: bool;
+            const maxArrayDims: int;
         }
 
         var (Zmajor, Zminor, Zmicro) = ZMQ.version;
@@ -282,7 +283,8 @@ module ServerConfig
             regexMaxCaptures = regexMaxCaptures,
             byteorder = try! getByteorder(),
             autoShutdown = autoShutdown,
-            serverInfoNoSplash = serverInfoNoSplash
+            serverInfoNoSplash = serverInfoNoSplash,
+            maxArrayDims = MaxArrayDims
         );
         return try! formatJson(cfg);
 

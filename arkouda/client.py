@@ -21,6 +21,7 @@ __all__ = [
     "disconnect",
     "shutdown",
     "get_config",
+    "get_max_array_rank",
     "get_mem_used",
     "get_mem_avail",
     "get_mem_status",
@@ -1038,6 +1039,25 @@ def get_config() -> Mapping[str, Union[str, int, float]]:
 
     return serverConfig
 
+
+def get_max_array_rank() -> int:
+    """
+    Get the maximum pdarray rank the server was compiled to support
+
+    This value corresponds to the maximum number in
+    parameter_classes -> array -> nd in the `registration-config.json`
+    file when the server was compiled.
+
+    Returns
+    -------
+    int
+        The maximum pdarray rank supported by the server
+    """
+
+    if serverConfig is None:
+        raise RuntimeError("client is not connected to a server")
+
+    return serverConfig["maxArrayDims"]
 
 def _get_config_msg() -> Mapping[str, Union[str, int, float]]:
     """

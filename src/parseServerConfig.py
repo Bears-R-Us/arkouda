@@ -130,7 +130,7 @@ def get_nd_setting(config):
 
 
 def createNDHandlerInstantiations(config, modules, src_dir):
-    max_dims = get_nd_setting(config)[-1]
+    max_dims = max(get_nd_setting(config))
     filename = f"{src_dir}/nd_support/nd_array_stamps.chpl"
 
     with open(filename, 'w') as stamps:
