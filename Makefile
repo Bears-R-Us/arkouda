@@ -566,7 +566,7 @@ version:
 #####################
 
 register-commands:
-	python3 $(ARKOUDA_REGISTRY_DIR)/register_commands.py $(ARKOUDA_REGISTRATION_CONFIG) $(ARKOUDA_CONFIG_FILE) $(ARKOUDA_SOURCE_DIR)
+	$(ARKOUDA_REGISTRY_DIR)/register_commands.bash $(ARKOUDA_REGISTRY_DIR) $(ARKOUDA_REGISTRATION_CONFIG) $(ARKOUDA_CONFIG_FILE) $(ARKOUDA_SOURCE_DIR)
 
 #####################
 #### Epilogue.mk ####
