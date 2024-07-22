@@ -13,6 +13,7 @@ Functions
    arkouda.client.disconnect
    arkouda.client.generate_history
    arkouda.client.get_config
+   arkouda.client.get_max_array_rank
    arkouda.client.get_mem_avail
    arkouda.client.get_mem_status
    arkouda.client.get_mem_used
@@ -108,6 +109,18 @@ Module Contents
    :rtype: Mapping[str, Union[str, int, float]]
 
    :raises RuntimeError: Raised if the client is not connected to a server
+
+
+.. py:function:: get_max_array_rank() -> int
+
+   Get the maximum pdarray rank the server was compiled to support
+
+   This value corresponds to the maximum number in
+   parameter_classes -> array -> nd in the `registration-config.json`
+   file when the server was compiled.
+
+   :returns: The maximum pdarray rank supported by the server
+   :rtype: int
 
 
 .. py:function:: get_mem_avail(unit: str = 'b', as_percent: bool = False) -> int

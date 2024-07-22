@@ -370,6 +370,7 @@
     <span class="s2">&quot;disconnect&quot;</span><span class="p">,</span>
     <span class="s2">&quot;shutdown&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_config&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;get_max_array_rank&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_mem_used&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_mem_avail&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_mem_status&quot;</span><span class="p">,</span>
@@ -1397,6 +1398,29 @@
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;client is not connected to a server&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">serverConfig</span></div>
+
+
+
+<div class="viewcode-block" id="get_max_array_rank">
+<a class="viewcode-back" href="../../autoapi/arkouda/client/index.html#arkouda.client.get_max_array_rank">[docs]</a>
+<span class="k">def</span> <span class="nf">get_max_array_rank</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the maximum pdarray rank the server was compiled to support</span>
+
+<span class="sd">    This value corresponds to the maximum number in</span>
+<span class="sd">    parameter_classes -&gt; array -&gt; nd in the `registration-config.json`</span>
+<span class="sd">    file when the server was compiled.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    int</span>
+<span class="sd">        The maximum pdarray rank supported by the server</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">serverConfig</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;client is not connected to a server&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">serverConfig</span><span class="p">[</span><span class="s2">&quot;maxArrayDims&quot;</span><span class="p">])</span></div>
 
 
 
