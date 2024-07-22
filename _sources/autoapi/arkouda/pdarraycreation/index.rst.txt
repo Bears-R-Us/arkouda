@@ -22,6 +22,7 @@ Functions
    arkouda.pdarraycreation.randint
    arkouda.pdarraycreation.random_strings_lognormal
    arkouda.pdarraycreation.random_strings_uniform
+   arkouda.pdarraycreation.scalar_array
    arkouda.pdarraycreation.standard_normal
    arkouda.pdarraycreation.uniform
    arkouda.pdarraycreation.zeros
@@ -550,6 +551,17 @@ Module Contents
    >>> ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=5,
    ... characters='printable')
    array(['+5"f', '-P]3', '4k', '~HFF', 'F'])
+
+
+.. py:function:: scalar_array(value: arkouda.dtypes.numeric_scalars)
+
+   Create a pdarray from a single scalar value.
+
+   :param value: Value to create pdarray from
+   :type value: numeric_scalars
+
+   :returns: pdarray with a single element
+   :rtype: pdarray
 
 
 .. py:function:: standard_normal(size: arkouda.dtypes.int_scalars, seed: Union[None, arkouda.dtypes.int_scalars] = None) -> arkouda.pdarrayclass.pdarray

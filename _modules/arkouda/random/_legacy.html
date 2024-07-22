@@ -448,13 +448,12 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported dtype </span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;randint</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;randint&lt;</span><span class="si">{</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">shape</span><span class="p">,</span>
-            <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="s2">&quot;low&quot;</span><span class="p">:</span> <span class="n">NUMBER_FORMAT_STRINGS</span><span class="p">[</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">low</span><span class="p">),</span>
             <span class="s2">&quot;high&quot;</span><span class="p">:</span> <span class="n">NUMBER_FORMAT_STRINGS</span><span class="p">[</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">high</span><span class="p">),</span>
-            <span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="n">seed</span><span class="p">,</span>
+            <span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="n">seed</span> <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>

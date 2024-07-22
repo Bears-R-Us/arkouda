@@ -74,6 +74,8 @@ or
    :returns: (int)
    
 
+.. function:: proc typeSize(type t): int
+
 .. function:: proc str2dtype(dstr: string): DType
 
    Turns a dtype string in pythonland into a DType

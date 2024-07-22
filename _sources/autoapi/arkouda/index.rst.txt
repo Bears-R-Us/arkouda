@@ -391,6 +391,7 @@ Functions
    arkouda.rotr
    arkouda.round
    arkouda.save_all
+   arkouda.scalar_array
    arkouda.search_intervals
    arkouda.segarray
    arkouda.setdiff1d
@@ -40273,6 +40274,17 @@ Package Contents
    >>> ak.save_all({'a': a, 'b': b}, 'path/name_prefix', file_format='Parquet')
    >>> # Save using names instead of mapping
    >>> ak.save_all([a, b], 'path/name_prefix', names=['a', 'b'], file_format='Parquet')
+
+
+.. py:function:: scalar_array(value: arkouda.dtypes.numeric_scalars)
+
+   Create a pdarray from a single scalar value.
+
+   :param value: Value to create pdarray from
+   :type value: numeric_scalars
+
+   :returns: pdarray with a single element
+   :rtype: pdarray
 
 
 .. py:function:: search_intervals(vals, intervals, tiebreak=None, hierarchical=True)

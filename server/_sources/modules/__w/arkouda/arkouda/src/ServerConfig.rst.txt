@@ -65,36 +65,6 @@ arkouda server config param and config const
    set by 'serverModuleGen.py' based on 'serverConfig.json'
    
 
-.. data:: param SupportsUint8 = true
-
-.. data:: param SupportsUint16 = false
-
-.. data:: param SupportsUint32 = false
-
-.. data:: param SupportsUint64 = true
-
-.. data:: param SupportsInt8 = false
-
-.. data:: param SupportsInt16 = false
-
-.. data:: param SupportsInt32 = false
-
-.. data:: param SupportsInt64 = true
-
-.. data:: param SupportsFloat32 = false
-
-.. data:: param SupportsFloat64 = true
-
-.. data:: param SupportsComplex64 = false
-
-.. data:: param SupportsComplex128 = false
-
-.. data:: param SupportsBool = true
-
-.. function:: proc isSupportedType(type t) param: bool
-
-.. function:: proc isSupportedDType(dt: DType): bool
-
 .. data:: config const deployment = Deployment.STANDARD
 
    

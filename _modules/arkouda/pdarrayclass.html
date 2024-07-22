@@ -482,9 +482,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
         <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;create0D&quot;</span><span class="p">,</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;createScalarArray&lt;</span><span class="si">{</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">value</span><span class="p">),</span>
                 <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
@@ -641,12 +640,7 @@
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">():</span>
-        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
-            <span class="n">generic_msg</span><span class="p">(</span>
-                <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;create0D&quot;</span><span class="p">,</span>
-                <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">_dtype</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">value</span><span class="o">.</span><span class="n">item</span><span class="p">()},</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">_create_scalar_array</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">value_flat</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
@@ -1615,7 +1609,7 @@
 <span class="sd">        TypeError</span>
 <span class="sd">            Raised if value is not an int, int64, float, or float64</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;set</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;set&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
         <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="n">cmd</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_other</span><span class="p">(</span><span class="n">value</span><span class="p">)}</span>
         <span class="p">)</span></div>
@@ -4527,15 +4521,7 @@
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">m</span> <span class="o">=</span> <span class="n">mod</span><span class="p">(</span><span class="n">dividend</span><span class="p">,</span> <span class="n">divisor</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
-            <span class="n">generic_msg</span><span class="p">(</span>
-                <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;create0D&quot;</span><span class="p">,</span>
-                <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                    <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">m</span><span class="p">),</span>
-                    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">m</span><span class="p">,</span>
-                <span class="p">},</span>
-            <span class="p">)</span>
-        <span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">_create_scalar_array</span><span class="p">(</span><span class="n">m</span><span class="p">)</span></div>
 
 
 

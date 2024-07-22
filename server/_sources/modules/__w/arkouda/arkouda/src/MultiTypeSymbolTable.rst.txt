@@ -53,7 +53,7 @@ or
       Returns a symbol-creation message with the symbol's attributes
       
 
-   .. method:: proc addEntry(name: string, shape: int ...?N, type t): borrowed SymEntry(t, N) throws where isSupportedType(t)
+   .. method:: proc addEntry(name: string, shape: int ...?N, type t): borrowed SymEntry(t, N) throws
 
       
       Takes args and creates a new SymEntry.
@@ -70,8 +70,6 @@ or
       
 
    .. method:: proc addEntry(name: string, shape: ?ND*int, type t): borrowed SymEntry(t, ND) throws
-
-   .. method:: proc addEntry(name: string, shape: int ...?N, type t): borrowed SymEntry(t, N) throws where !isSupportedType(t)
 
    .. method:: proc addEntry(name: string, in entry: shared AbstractSymEntry): borrowed AbstractSymEntry throws
 

@@ -399,16 +399,19 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.random_strings_uniform" title="arkouda.pdarraycreation.random_strings_uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_strings_uniform</span></code></a>(→ arkouda.strings.Strings)</p></td>
 <td><p>Generate random strings with lengths uniformly distributed between</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.standard_normal" title="arkouda.pdarraycreation.standard_normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">standard_normal</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.scalar_array" title="arkouda.pdarraycreation.scalar_array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scalar_array</span></code></a>(value)</p></td>
+<td><p>Create a pdarray from a single scalar value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.standard_normal" title="arkouda.pdarraycreation.standard_normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">standard_normal</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Draw real numbers from the standard normal distribution.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.uniform" title="arkouda.pdarraycreation.uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniform</span></code></a>(, high, seed, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.uniform" title="arkouda.pdarraycreation.uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniform</span></code></a>(, high, seed, ...)</p></td>
 <td><p>Generate a pdarray with uniformly distributed random float values</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.zeros" title="arkouda.pdarraycreation.zeros"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.zeros" title="arkouda.pdarraycreation.zeros"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Create a pdarray filled with zeros.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.zeros_like" title="arkouda.pdarraycreation.zeros_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros_like</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.zeros_like" title="arkouda.pdarraycreation.zeros_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros_like</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Create a zero-filled pdarray of the same size and dtype as an existing</p></td>
 </tr>
 </tbody>
@@ -1066,6 +1069,23 @@ minlen and maxlen, and with characters drawn from a specified set.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="arkouda.pdarraycreation.scalar_array">
+<span class="sig-prename descclassname"><span class="pre">arkouda.pdarraycreation.</span></span><span class="sig-name descname"><span class="pre">scalar_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.dtypes.numeric_scalars</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/pdarraycreation.html#scalar_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarraycreation.scalar_array" title="Link to this definition">¶</a></dt>
+<dd><p>Create a pdarray from a single scalar value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>numeric_scalars</em>) – Value to create pdarray from</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>pdarray with a single element</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="arkouda.pdarraycreation.standard_normal">
 <span class="sig-prename descclassname"><span class="pre">arkouda.pdarraycreation.</span></span><span class="sig-name descname"><span class="pre">standard_normal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.dtypes.int_scalars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">arkouda.dtypes.int_scalars</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarraycreation.html#standard_normal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarraycreation.standard_normal" title="Link to this definition">¶</a></dt>
 <dd><p>Draw real numbers from the standard normal distribution.</p>
@@ -1302,6 +1322,7 @@ pdarray.</p>
 <li><a class="reference internal" href="#arkouda.pdarraycreation.randint"><code class="docutils literal notranslate"><span class="pre">randint()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarraycreation.random_strings_lognormal"><code class="docutils literal notranslate"><span class="pre">random_strings_lognormal()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarraycreation.random_strings_uniform"><code class="docutils literal notranslate"><span class="pre">random_strings_uniform()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pdarraycreation.scalar_array"><code class="docutils literal notranslate"><span class="pre">scalar_array()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarraycreation.standard_normal"><code class="docutils literal notranslate"><span class="pre">standard_normal()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarraycreation.uniform"><code class="docutils literal notranslate"><span class="pre">uniform()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarraycreation.zeros"><code class="docutils literal notranslate"><span class="pre">zeros()</span></code></a></li>

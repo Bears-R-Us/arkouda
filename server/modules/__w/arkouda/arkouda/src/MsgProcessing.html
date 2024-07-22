@@ -127,8 +127,8 @@
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt class="sig sig-object chpl" id="MsgProcessing.createMsg">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">createMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">nd:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#MsgProcessing.createMsg" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="MsgProcessing.create">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">array_dtype</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">array_nd:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#MsgProcessing.create" title="Link to this definition">¶</a></dt>
 <dd><p>Parse, execute, and respond to a create message</p>
 <p>:arg : payload
 :type string: containing (dtype,size)</p>
@@ -143,8 +143,8 @@
 </dd></dl>
 
 <dl class="chpl function">
-<dt class="sig sig-object chpl" id="MsgProcessing.createMsg0D">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">createMsg0D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#MsgProcessing.createMsg0D" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="MsgProcessing.createScalarArray">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">createScalarArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">array_dtype</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#MsgProcessing.createScalarArray" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
@@ -346,7 +346,7 @@ Repr convert array data to string</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MsgProcessing.setMsg">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">setMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">nd</span> <span class="pre">=</span> <span class="pre">1</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#MsgProcessing.setMsg" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">setMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">array_dtype</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">array_nd:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#MsgProcessing.setMsg" title="Link to this definition">¶</a></dt>
 <dd><p>Sets all elements in array to a value (broadcast)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>

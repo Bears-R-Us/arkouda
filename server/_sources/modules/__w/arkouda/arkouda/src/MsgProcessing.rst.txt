@@ -19,7 +19,7 @@ or
 
 .. data:: const mpLogger = new Logger(logLevel, logChannel)
 
-.. function:: proc createMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws
+.. function:: proc create(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
 
     
    Parse, execute, and respond to a create message 
@@ -33,7 +33,7 @@ or
    :returns: (MsgTuple) response message
    
 
-.. function:: proc createMsg0D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws
+.. function:: proc createScalarArray(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype): MsgTuple throws
 
 .. function:: proc deleteMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws
 
@@ -169,7 +169,7 @@ or
    :returns: MsgTuple
    
 
-.. function:: proc setMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd = 1): MsgTuple throws
+.. function:: proc setMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
 
     
    Sets all elements in array to a value (broadcast) 

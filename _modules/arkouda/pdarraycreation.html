@@ -395,6 +395,7 @@
     <span class="s2">&quot;from_series&quot;</span><span class="p">,</span>
     <span class="s2">&quot;bigint_from_uint_arrays&quot;</span><span class="p">,</span>
     <span class="s2">&quot;promote_to_common_dtype&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;scalar_array&quot;</span>
 <span class="p">]</span>
 
 
@@ -842,7 +843,7 @@
     <span class="c1"># check dtype for error</span>
     <span class="k">if</span> <span class="n">dtype_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">NumericDTypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported dtype </span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;create1D&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">dtype_name</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">size</span><span class="p">})</span>
+    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;create&lt;</span><span class="si">{</span><span class="n">dtype_name</span><span class="si">}</span><span class="s2">,1&gt;&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">size</span><span class="p">})</span>
 
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">,</span> <span class="n">max_bits</span><span class="o">=</span><span class="n">max_bits</span><span class="p">)</span></div>
 
@@ -901,7 +902,7 @@
     <span class="c1"># check dtype for error</span>
     <span class="k">if</span> <span class="n">dtype_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">NumericDTypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported dtype </span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;create1D&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">dtype_name</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">size</span><span class="p">})</span>
+    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;create&lt;</span><span class="si">{</span><span class="n">dtype_name</span><span class="si">}</span><span class="s2">,1&gt;&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">size</span><span class="p">})</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
     <span class="n">a</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">max_bits</span><span class="p">:</span>
@@ -969,7 +970,7 @@
     <span class="c1"># check dtype for error</span>
     <span class="k">if</span> <span class="n">dtype_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">NumericDTypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported dtype </span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;create1D&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">dtype_name</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">size</span><span class="p">})</span>
+    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;create&lt;</span><span class="si">{</span><span class="n">dtype_name</span><span class="si">}</span><span class="s2">,1&gt;&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">size</span><span class="p">})</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
     <span class="n">a</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">fill_value</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">max_bits</span><span class="p">:</span>
@@ -978,6 +979,8 @@
 
 
 
+<div class="viewcode-block" id="scalar_array">
+<a class="viewcode-back" href="../../autoapi/arkouda/pdarraycreation/index.html#arkouda.scalar_array">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">scalar_array</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">numeric_scalars</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -996,13 +999,11 @@
 
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
         <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;create0D&quot;</span><span class="p">,</span>
-            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">value</span><span class="p">),</span>
-                <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span>
-            <span class="p">},</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;createScalarArray&lt;</span><span class="si">{</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">},</span>
         <span class="p">)</span>
-    <span class="p">)</span>
+    <span class="p">)</span></div>
+
 
 
 <span class="nd">@typechecked</span>
