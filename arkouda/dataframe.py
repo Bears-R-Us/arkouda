@@ -18,7 +18,6 @@ from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, maxTransferBytes
 from arkouda.client_dtypes import BitVector, Fields, IPv4
 from arkouda.dtypes import BigInt
-
 from arkouda.dtypes import bool_ as akbool
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import int64 as akint64
@@ -884,6 +883,7 @@ class DataFrame(UserDict):
             self.data = initialdata.data
             self.update_nrows()
             return
+
         elif isinstance(initialdata, pd.DataFrame):
             # copy pd.DataFrame data into the ak.DataFrame object
             self._nrows = initialdata.shape[0]
@@ -892,14 +892,15 @@ class DataFrame(UserDict):
             self._columns = initialdata.columns.tolist()
 
             if index is None:
-                self._set_index(initialdata.index.values.tolist())
+                self._set_index(initialdata.index)
             else:
                 self._set_index(index)
             self.data = {}
             for key in initialdata.columns:
                 self.data[key] = (
                     SegArray.from_multi_array([array(r) for r in initialdata[key]])
-                    if isinstance(initialdata[key][0], (list, np.ndarray))
+                    if hasattr(initialdata[key], "values")
+                    and isinstance(initialdata[key].values[0], (list, np.ndarray))
                     else array(initialdata[key])
                 )
 
@@ -1849,7 +1850,7 @@ class DataFrame(UserDict):
     def _set_index(self, value):
         if isinstance(value, Index) or value is None:
             self._index = value
-        elif isinstance(value, (pdarray, Strings)):
+        elif isinstance(value, (pdarray, Strings, pd.Index)):
             self._index = Index(value)
         elif isinstance(value, list):
             self._index = Index(array(value))
