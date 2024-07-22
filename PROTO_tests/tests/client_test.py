@@ -137,7 +137,7 @@ class TestClient:
         sample of commands.
         """
         cmds = ak.client.get_server_commands()
-        for cmd in ["connect", "create1D", "tondarray1D", "info", "str"]:
+        for cmd in ["connect", "tondarray1D", "info", "str"]:
             assert cmd in cmds
 
     def test_client_array_dim_cmd_error(self):
@@ -147,9 +147,9 @@ class TestClient:
         support multi-dimensional arrays of the given rank.
         """
         with pytest.raises(RuntimeError) as cm:
-            resp = generic_msg("create10D")
+            resp = generic_msg("reduce10D")
 
-        err_msg = "Error: Command 'create10D' is not supported with the current server configuration as the maximum array dimensionality is 1. Please recompile with support for at least 10D arrays"
+        err_msg = "Error: Command 'reduce10D' is not supported with the current server configuration as the maximum array dimensionality is 1. Please recompile with support for at least 10D arrays"
         cm.match(err_msg)  #   Asserts the error msg matches the expected value
 
     def test_client_nd_unimplemented_error(self):

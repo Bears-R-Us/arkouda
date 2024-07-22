@@ -72,9 +72,7 @@ module MultiTypeSymbolTable
 
             :returns: borrow of newly created `SymEntry(t)`
         */
-        proc addEntry(name: string, shape: int ...?N, type t): borrowed SymEntry(t, N) throws
-            where isSupportedType(t)
-        {
+        proc addEntry(name: string, shape: int ...?N, type t): borrowed SymEntry(t, N) throws {
             // check and throw if memory limit would be exceeded
             // TODO figure out a way to do memory checking for bigint
             if t != bigint {
@@ -99,16 +97,6 @@ module MultiTypeSymbolTable
 
         proc addEntry(name: string, shape: ?ND*int, type t): borrowed SymEntry(t, ND) throws
             do return addEntry(name, (...shape), t);
-
-        proc addEntry(name: string, shape: int ...?N, type t): borrowed SymEntry(t, N) throws
-            where !isSupportedType(t)
-        {
-            throw new ConfigurationError(
-                "The server was not configured to support pdarray's of type %s. ".format(t:string) +
-                "Please update the configuration and recompile.",
-                getLineNumber(),getRoutineName(),getModuleName()
-            );
-        }
 
         /*
         Takes an already created AbstractSymEntry and creates a new AbstractSymEntry.

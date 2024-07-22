@@ -17,6 +17,7 @@ from arkouda.dtypes import (
     isSupportedNumber,
     numeric_scalars,
     resolve_scalar_dtype,
+    str_
 )
 from arkouda.groupbyclass import GroupBy
 from arkouda.pdarrayclass import all as ak_all
@@ -141,37 +142,48 @@ def cast(
     from arkouda.categorical import Categorical  # type: ignore
 
     if isinstance(pda, pdarray):
-        name = pda.name
+        if dt is Strings or dt in ["Strings", "str"] or dt == str_:
+            if pda.ndim > 1:
+                raise ValueError("Cannot cast a multi-dimensional pdarray to Strings")
+            repMsg = generic_msg(
+                cmd=f"castToStrings<{pda.dtype}>",
+                args={"name": pda},
+            )
+            return Strings.from_parts(*(type_cast(str, repMsg).split("+")))
+        else:
+            dt = _as_dtype(dt)
+            return create_pdarray(
+                generic_msg(
+                    cmd=f"cast<{pda.dtype},{dt},{pda.ndim}>",
+                    args={"name": pda},
+                )
+            )
     elif isinstance(pda, Strings):
-        name = pda.entry.name
         if dt is Categorical or dt == "Categorical":
             return Categorical(pda)  # type: ignore
+        elif dt is Strings or dt in ["Strings", "str"] or dt == str_:
+            return pda[:]
+        else:
+            dt = _as_dtype(dt)
+            repMsg = generic_msg(
+                cmd=f"castStringsTo<{dt}>",
+                args={
+                    "name": pda.entry.name,
+                    "opt": errors.name,
+                },
+            )
+            if errors == ErrorMode.return_validity:
+                a, b = type_cast(str, repMsg).split("+")
+                return create_pdarray(type_cast(str, a)), create_pdarray(type_cast(str, b))
+            else:
+                return create_pdarray(type_cast(str, repMsg))
     elif isinstance(pda, Categorical):  # type: ignore
-        if dt is Strings or dt in ["Strings", "str"]:
+        if dt is Strings or dt in ["Strings", "str"] or dt == str_:
             return pda.categories[pda.codes]
         else:
             raise ValueError("Categoricals can only be casted to Strings")
-    # typechecked decorator guarantees no other case
-
-    dt = _as_dtype(dt)
-    cmd = f"cast{pda.ndim}D"
-    repMsg = generic_msg(
-        cmd=cmd,
-        args={
-            "name": name,
-            "objType": pda.objType,
-            "targetDtype": dt.name,
-            "opt": errors.name,
-        },
-    )
-    if dt.name.startswith("str"):
-        return Strings.from_parts(*(type_cast(str, repMsg).split("+")))
     else:
-        if errors == ErrorMode.return_validity:
-            a, b = type_cast(str, repMsg).split("+")
-            return create_pdarray(type_cast(str, a)), create_pdarray(type_cast(str, b))
-        else:
-            return create_pdarray(type_cast(str, repMsg))
+        raise TypeError("pda must be a pdarray, Strings, or Categorical object")
 
 
 @typechecked

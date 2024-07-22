@@ -226,7 +226,9 @@ module Message {
                 } else {
                     // temporary special case (until frontend is modified to provide lowercase 'true'/'false' values)
                     if t == bool {
-                        return this.val.toLower():bool;
+                        if this.val.startsWith("True") then return true;
+                        if this.val.startsWith("False") then return false;
+                        return this.val:int:bool;
                     }
                     return this.val: t;
                 }

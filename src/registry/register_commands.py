@@ -1,6 +1,11 @@
 import chapel
 import sys
 import json
+import itertools
+
+DEFAULT_MODS = [
+    "MsgProcessing"
+]
 
 registerAttr = ("arkouda.registerCommand", ["name"])
 instAndRegisterAttr = ("arkouda.instantiateAndRegister", ["prefix"])
@@ -25,6 +30,7 @@ chapel_scalar_types = {
     "complex(64)": "complex64",
     "complex(128)": "complex128",
     "complex": "complex128",
+    "bigint": "bigint",
 }
 
 # type and variable names from arkouda infrastructure that could conceivable be changed in the future:
@@ -597,6 +603,8 @@ def register_commands(config, source_files):
     stamps = [
         "module Commands {",
         "use CommandMap, Message, MultiTypeSymbolTable, MultiTypeSymEntry;",
+        "use BigInteger;",
+        watermarkConfig(config),
     ]
 
     count = 0
@@ -608,7 +616,7 @@ def register_commands(config, source_files):
         root = ctx.parse(filename)[0]
         mod_name = filename.split("/")[-1].split(".")[0]
 
-        stamps.append(f"import {mod_name};")
+        file_stamps.append(f"import {mod_name};")
 
         # register procs annotated with 'registerCommand',
         # creating generic commands and instantiations if necessary
@@ -641,7 +649,7 @@ def register_commands(config, source_files):
                 name, fn.return_type(), con_formals, mod_name
             )
             file_stamps.append(cmd_proc)
-            count += 1;
+            count += 1
 
             if is_generic_cmd > 0:
                 try:
@@ -711,11 +719,15 @@ def register_commands(config, source_files):
 def getModuleFiles(config, src_dir):
     with open(config, 'r') as cfg_file:
         mods = []
-        for line in cfg_file.readlines():
+        for line in itertools.chain(cfg_file.readlines(), DEFAULT_MODS):
             mod = line.split("#")[0].strip()
             if mod != "":
                 mods.append(f"{mod}.chpl" if mod[0] == '/' else f"{src_dir}/{mod}.chpl")
         return mods
+
+
+def watermarkConfig(config):
+    return "param regConfig = \"\"\"\n" + json.dumps(config, indent=2) + "\n\"\"\";"
 
 
 def main():
