@@ -149,9 +149,10 @@ def standard_normal(size: int_scalars, seed: Union[None, int_scalars] = None) ->
     """
     if size < 0:
         raise ValueError("The size parameter must be > 0")
+    ndim = 1
     return create_pdarray(
         generic_msg(
-            cmd="randomNormal", args={"size": NUMBER_FORMAT_STRINGS["int64"].format(size), "seed": seed}
+            cmd=f"randomNormal<{ndim}>", args={"size": NUMBER_FORMAT_STRINGS["int64"].format(size), "seed": seed}
         )
     )
 

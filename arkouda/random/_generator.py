@@ -115,8 +115,9 @@ class Generator:
         # weighted sample requires float and non-weighted uses int
         name = self._name_dict[to_numpy_dtype(akfloat64 if has_weights else akint64)]
 
+        ndim = 1
         rep_msg = generic_msg(
-            cmd="choice",
+            cmd=f"choice<{dtype.name},{ndim}>",
             args={
                 "gName": name,
                 "aName": a,
@@ -126,7 +127,6 @@ class Generator:
                 "hasWeights": has_weights,
                 "isDom": is_domain,
                 "popSize": pop_size,
-                "dtype": dtype,
                 "state": self._state,
             },
         )
@@ -202,8 +202,9 @@ class Generator:
             # delegate to numpy when return size is 1
             return self._np_generator.standard_exponential(method=method)
 
+        ndim = 1
         rep_msg = generic_msg(
-            cmd="standardExponential",
+            cmd=f"standardExponential<{ndim}>",
             args={
                 "name": self._name_dict[akfloat64],
                 "size": size,
@@ -272,15 +273,14 @@ class Generator:
         elif not endpoint:
             high = high - 1
 
-        name = self._name_dict[dtype]
+        ndim = 1
         rep_msg = generic_msg(
-            cmd="uniformGenerator",
+            cmd=f"uniformGenerator<{dtype.name},{ndim}>",
             args={
-                "name": name,
+                "name": self._name_dict[dtype],
                 "low": low,
                 "high": high,
                 "size": size,
-                "dtype": dtype,
                 "state": self._state,
             },
         )
@@ -373,19 +373,7 @@ class Generator:
         if size is None:
             # delegate to numpy when return size is 1
             return self._np_generator.random()
-        rep_msg = generic_msg(
-            cmd="uniformGenerator",
-            args={
-                "name": self._name_dict[akfloat64],
-                "low": 0.0,
-                "high": 1.0,
-                "size": size,
-                "dtype": akfloat64,
-                "state": self._state,
-            },
-        )
-        self._state += size
-        return create_pdarray(rep_msg)
+        return self.uniform(size)
 
     def standard_normal(self, size=None):
         r"""
@@ -423,8 +411,9 @@ class Generator:
         if size is None:
             # delegate to numpy when return size is 1
             return self._np_generator.standard_normal()
+        ndim = 1
         rep_msg = generic_msg(
-            cmd="standardNormalGenerator",
+            cmd=f"standardNormalGenerator<{ndim}>",
             args={
                 "name": self._name_dict[akfloat64],
                 "size": size,
@@ -452,13 +441,13 @@ class Generator:
             raise TypeError("shuffle only accepts a pdarray.")
         dtype = to_numpy_dtype(x.dtype)
         name = self._name_dict[to_numpy_dtype(akint64)]
+        ndim = 1
         generic_msg(
-            cmd="shuffle",
+            cmd=f"shuffle<{dtype.name},{ndim}>",
             args={
                 "name": name,
                 "x": x,
                 "size": x.size,
-                "dtype": dtype,
                 "state": self._state,
             },
         )
@@ -492,14 +481,13 @@ class Generator:
 
         # we have to use the int version since we permute the domain
         name = self._name_dict[to_numpy_dtype(akint64)]
-
+        ndim = 1
         rep_msg = generic_msg(
-            cmd="permutation",
+            cmd=f"permutation<{dtype.name},{ndim}>",
             args={
                 "name": name,
                 "x": x,
                 "size": size,
-                "dtype": dtype,
                 "isDomPerm": is_domain_perm,
                 "state": self._state,
             },
@@ -566,8 +554,9 @@ class Generator:
         else:
             raise TypeError("poisson only accepts a pdarray or float scalar for lam")
 
+        ndim = 1
         rep_msg = generic_msg(
-            cmd="poissonGenerator",
+            cmd=f"poissonGenerator<{ndim}>",
             args={
                 "name": self._name_dict[akfloat64],
                 "lam": lam,
@@ -620,14 +609,15 @@ class Generator:
         if size is None:
             # delegate to numpy when return size is 1
             return self._np_generator.uniform(low=low, high=high)
+        ndim = 1
+        dt = akfloat64
         rep_msg = generic_msg(
-            cmd="uniformGenerator",
+            cmd=f"uniformGenerator<{dt.name},{ndim}>",
             args={
-                "name": self._name_dict[akfloat64],
+                "name": self._name_dict[dt],
                 "low": low,
                 "high": high,
                 "size": size,
-                "dtype": akfloat64,
                 "state": self._state,
             },
         )
@@ -667,21 +657,13 @@ def default_rng(seed=None):
     # chpl has to know the type of the generator, in order to avoid having to declare
     # the type of the generator beforehand (which is not what numpy does)
     # we declare a generator for each type and fast-forward the state
-    int_name = generic_msg(
-        cmd="createGenerator",
-        args={"dtype": "int64", "has_seed": has_seed, "seed": seed, "state": state},
-    )
-    uint_name = generic_msg(
-        cmd="createGenerator",
-        args={"dtype": "uint64", "has_seed": has_seed, "seed": seed, "state": state},
-    )
-    float_name = generic_msg(
-        cmd="createGenerator",
-        args={"dtype": "float64", "has_seed": has_seed, "seed": seed, "state": state},
-    )
-    bool_name = generic_msg(
-        cmd="createGenerator",
-        args={"dtype": "bool", "has_seed": has_seed, "seed": seed, "state": state},
-    )
-    name_dict = {akint64: int_name, akuint64: uint_name, akfloat64: float_name, akbool: bool_name}
+
+    ndim = 1
+    name_dict = dict()
+    for dt in akint64, akuint64, akfloat64, akbool:
+        name_dict[dt] = generic_msg(
+            cmd=f"createGenerator<{dt.name},{ndim}>",
+            args={"has_seed": has_seed, "seed": seed, "state": state},
+        ).split()[1]
+
     return Generator(name_dict, seed if has_seed else None, state=state)
