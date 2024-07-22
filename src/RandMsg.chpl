@@ -84,14 +84,11 @@ module RandMsg
     @arkouda.instantiateAndRegister
     proc randomNormal(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd: int): MsgTuple throws {
         var pn = Reflection.getRoutineName();
-        const len = msgArgs["size"].toScalar(int),
+        const shape = msgArgs["shape"].toScalarTuple(int, array_nd),
               seed = msgArgs["seed"].toScalar(string);
 
-        // Result + 2 scratch arrays
-        overMemLimit(3*8*len);
-        var entry = createSymEntry(len, real);
+        var entry = createSymEntry((...shape), real);
         fillNormal(entry.a, seed);
-
         return st.insert(entry);
     }
 
@@ -100,7 +97,7 @@ module RandMsg
      * retrieve the generator from the SymTab.
      */
     @arkouda.instantiateAndRegister
-    proc createGenerator(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
+    proc createGenerator(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype): MsgTuple throws
         where array_dtype != BigInteger.bigint
     {
         const pn = Reflection.getRoutineName();
@@ -122,7 +119,7 @@ module RandMsg
         return st.insert(new shared GeneratorSymEntry(generator, state));
     }
 
-    proc createGenerator(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
+    proc createGenerator(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype): MsgTuple throws
         where array_dtype == BigInteger.bigint
     {
         return MsgTuple.error("createGenerator does not support the bigint dtype");
@@ -133,17 +130,17 @@ module RandMsg
         where array_dtype != BigInteger.bigint
     {
         const name = msgArgs["name"],
-              size = msgArgs["size"].toScalar(int),
+              shape = msgArgs["shape"].toScalarTuple(int, array_nd),
               state = msgArgs["state"].toScalar(int);
 
         randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                "name: %? size %i dtype: %? state %i".format(name, size, type2str(array_dtype), state));
+                                "name: %? shape %? dtype: %? state %i".format(name, shape, type2str(array_dtype), state));
 
         var generatorEntry = st[name]: borrowed GeneratorSymEntry(array_dtype); 
         ref rng = generatorEntry.generator;
         if state != 1 then rng.skipTo(state-1);
 
-        var uniformEntry = createSymEntry(size, array_dtype);
+        var uniformEntry = createSymEntry((...shape), array_dtype);
         if array_dtype == bool {
             // chpl doesn't support bounded random with boolean type
             rng.fill(uniformEntry.a);
@@ -163,13 +160,13 @@ module RandMsg
     }
 
     @arkouda.instantiateAndRegister
-    proc standardNormalGenerator(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd: int): MsgTuple throws {
-        const name = msgArgs["name"],                  // generator name
-              size = msgArgs["size"].toScalar(int),    // population size
-              state = msgArgs["state"].toScalar(int);  // rng state
+    proc standardNormalGenerator(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd): MsgTuple throws {
+        const name = msgArgs["name"],                                   // generator name
+              shape = msgArgs["shape"].toScalarTuple(int, array_nd),    // population size
+              state = msgArgs["state"].toScalar(int);                   // rng state
 
         randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                "name: %? size %i state %i".format(name, size, state));
+                                "name: %? shape %? state %i".format(name, shape, state));
 
 
         var generatorEntry= st[name]: borrowed GeneratorSymEntry(real);
@@ -179,8 +176,8 @@ module RandMsg
         // uses Box–Muller transform
         // generates values drawn from the standard normal distribution using
         // 2 uniformly distributed random numbers
-        var u1 = makeDistArray(size, real);
-        var u2 = makeDistArray(size, real);
+        var u1 = makeDistArray((...shape), real);
+        var u2 = makeDistArray((...shape), real);
         rng.fill(u1);
         rng.fill(u2);
 
@@ -247,8 +244,7 @@ module RandMsg
         return -1.0;  // we failed 100 times in a row which should practically never happen
     }
 
-    @arkouda.instantiateAndRegister
-    proc standardExponential(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd: int): MsgTuple throws {
+    proc standardExponentialMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         const name = msgArgs["name"],                        // generator name
               size = msgArgs["size"].toScalar(int),          // population size
               method = msgArgs["method"].toScalar(string),   // method to use to generate exponential samples
@@ -264,6 +260,7 @@ module RandMsg
 
         select method {
             when "ZIG" {
+                // TODO before this can be adapted to handle multidim, we need to figure out how to modify uniformStreamPerElem
                 var exponentialArr = makeDistArray(size, real);
                 uniformStreamPerElem(exponentialArr, rng, GenerationFunction.ExponentialGenerator, hasSeed);
                 return st.insert(createSymEntry(exponentialArr));
@@ -284,8 +281,7 @@ module RandMsg
         }
     }
 
-    @arkouda.instantiateAndRegister
-    proc segmentedSample(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd: int): MsgTuple throws {
+    proc segmentedSampleMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         const genName = msgArgs["genName"],                                 // generator name
               permName = msgArgs["perm"],                                   // values array name
               segsName = msgArgs["segs"],                                   // segments array name
@@ -302,6 +298,8 @@ module RandMsg
                          "genName: %? permName %? segsName: %? weightsName: %? numSamplesName %? replace %i hasWeights %i state %i"
                          .format(genName, permName, segsName, weightsName, numSamplesName, replace, hasWeights, state));
 
+        // TODO replace this with instantiateAndRegister array_nd once this is adapted to handle multi-dim
+        param array_nd = 1;
         const permutation = (st[permName]: SymEntry(int, array_nd)).a,
               segments = (st[segsName]: SymEntry(int, array_nd)).a,
               segLens = (st[segLensName]: SymEntry(int, array_nd)).a,
@@ -333,7 +331,7 @@ module RandMsg
     }
 
     @arkouda.instantiateAndRegister
-    proc choice(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
+    proc choice(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype): MsgTuple throws
         where array_dtype != BigInteger.bigint
     {
         const gName = msgArgs["gName"],                             // generator name
@@ -350,6 +348,15 @@ module RandMsg
                          "gname: %? aname %? wname: %? numSamples %i replace %i hasWeights %i isDom %i dtype %? popSize %? state %i"
                          .format(gName, aName, wName, numSamples, replace, hasWeights, isDom, type2str(array_dtype), popSize, state));
 
+
+        // TODO this doesn't support multi-dim because it calls out to sampleDomWeighted, which results in the following error
+        // RandArray.chpl:138: In function 'sampleDomWeighted':
+        // RandArray.chpl:154: error: isSorted() requires 1-D array
+        param array_nd: int = 1;
+
+        // do we still need sampleDomWeighted? or is weight sample in our lowest supported version
+        // there's probably a way to flatten the weights but it's not immediately obvious how to go about that,
+        // so I'm leaving that for future work
         proc weightedIdxHelper() throws {
             var generatorEntry = st[gName]: borrowed GeneratorSymEntry(real);
             ref rng = generatorEntry.generator;
@@ -383,32 +390,31 @@ module RandMsg
             const arrEntry = st[aName]: borrowed SymEntry(array_dtype, array_nd);
             const myArr = arrEntry.a;
 
-            forall (ca,idx) in zip(choiceArr, choiceIdx) with (var agg = newSrcAggregator(array_dtype)) {
-                agg.copy(ca, myArr[idx]);
+            forall (idx, arrIdx) in zip(choiceIdx, 0..) with (var agg = newSrcAggregator(array_dtype)) {
+                agg.copy(choiceArr[choiceArr.domain.orderToIndex(arrIdx)], myArr[idx]);
             }
 
             return st.insert(createSymEntry(choiceArr));
         }
     }
 
-    proc choice(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
+    proc choice(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype): MsgTuple throws
         where array_dtype == BigInteger.bigint
     {
         return MsgTuple.error("choice does not support the bigint dtype");
     }
 
     @arkouda.instantiateAndRegister
-    proc permutation(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
-            where array_dtype != BigInteger.bigint
-    {
+    proc permutation(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws {
         const name = msgArgs["name"],
               xName = msgArgs["x"],
+              shape = msgArgs["shape"].toScalarTuple(int, array_nd),
               size = msgArgs["size"].toScalar(int),
               state = msgArgs["state"].toScalar(int),
               isDomPerm = msgArgs["isDomPerm"].toScalar(bool);
 
         randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                "name: %? size %i dtype: %? state %i isDomPerm %?".format(name, size, type2str(array_dtype), state, isDomPerm));
+                                "name: %? shape %? dtype: %? state %i isDomPerm %?".format(name, shape, type2str(array_dtype), state, isDomPerm));
 
         // we need the int generator in order for permute(domain) to work correctly
         var intGeneratorEntry = st[name]: borrowed GeneratorSymEntry(int);
@@ -431,23 +437,20 @@ module RandMsg
 
             // permute requires that the stream's eltType is coercible to the array/domain's idxType,
             // so we use permute(dom) and use that to gather the permuted vals
-            var permutedArr: [permutedDom] array_dtype;
             const arrEntry = st[xName]: SymEntry(array_dtype, array_nd);
             ref myArr = arrEntry.a;
 
-            forall (pa,idx) in zip(permutedArr, permutedIdx) with (var agg = newSrcAggregator(array_dtype)) {
-                agg.copy(pa, myArr[idx]);
+            var permutedArr: [myArr.domain] array_dtype;
+
+
+            forall (idx, arrIdx) in zip(permutedIdx, 0..) with (var agg = newSrcAggregator(array_dtype)) {
+                // slightly concerned about remote-to-remote aggregation
+                agg.copy(permutedArr[permutedArr.domain.orderToIndex(arrIdx)], myArr[myArr.domain.orderToIndex(idx)]);
             }
 
             const permutedEntry = createSymEntry(permutedArr);
             return st.insert(permutedEntry);
         }
-    }
-
-    proc permutation(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
-        where array_dtype == BigInteger.bigint
-    {
-        return MsgTuple.error("permutation does not support the bigint dtype");
     }
 
     inline proc poissonGenerator(lam: real, ref rs) {
@@ -465,8 +468,7 @@ module RandMsg
         return k - 1;
     }
 
-    @arkouda.instantiateAndRegister
-    proc poissonGenerator(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd: int): MsgTuple throws {
+    proc poissonGeneratorMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         const name = msgArgs["name"],                                       // generator name
               isSingleLam = msgArgs["is_single_lambda"].toScalar(bool),     // boolean indicating if lambda is a single value or array
               lamStr = msgArgs["lam"].toScalar(string),                     // lambda for poisson distribution
@@ -490,16 +492,16 @@ module RandMsg
     }
 
     @arkouda.instantiateAndRegister
-    proc shuffle(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
-            where array_dtype != BigInteger.bigint
+    proc shuffle(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws 
+        where array_nd == 1
     {
         const name = msgArgs["name"],
               xName = msgArgs["x"].toScalar(string),
-              size = msgArgs["size"].toScalar(int),
+              shape = msgArgs["shape"].toScalarTuple(int, array_nd),
               state = msgArgs["state"].toScalar(int);
 
         randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                "name: %? size %i dtype: %? state %i".format(name, size, type2str(array_dtype), state));
+                                "name: %? shape %? dtype: %? state %i".format(name, shape, type2str(array_dtype), state));
 
         var generatorEntry = st[name]: borrowed GeneratorSymEntry(int);
         ref rng = generatorEntry.generator;
@@ -508,16 +510,45 @@ module RandMsg
 
         const arrEntry = st[xName]: SymEntry(array_dtype, array_nd);
         ref myArr = arrEntry.a;
-        try {
-            rng.shuffle(myArr);
-
-        }
+        rng.shuffle(myArr);
         return MsgTuple.success();
     }
 
-    proc shuffle(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
-        where array_dtype == BigInteger.bigint
+    proc shuffle(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws 
+        where array_nd != 1
     {
-        return MsgTuple.error("shuffle does not support the bigint dtype");
+        const name = msgArgs["name"],
+              xName = msgArgs["x"].toScalar(string),
+              shape = msgArgs["shape"].toScalarTuple(int, array_nd),
+              state = msgArgs["state"].toScalar(int);
+
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "name: %? shape %? dtype: %? state %i".format(name, shape, type2str(array_dtype), state));
+
+        var generatorEntry = st[name]: borrowed GeneratorSymEntry(int);
+        ref rng = generatorEntry.generator;
+
+        if state != 1 then rng.skipTo(state-1);
+
+        const arrEntry = st[xName]: SymEntry(array_dtype, array_nd);
+        ref myArr = arrEntry.a;
+
+        // stolen; will be in chpl 2.2 so it can be deleted then
+        // Fisher-Yates shuffle
+        const d = myArr.domain;
+        for i in 0..#d.size by -1 {
+            const ki = rng.next(0:int, i:int),
+                k = d.orderToIndex(ki),
+                j = d.orderToIndex(i);
+
+            myArr[k] <=> myArr[j];
+        }
+
+        return MsgTuple.success();
     }
+
+    use CommandMap;
+    registerFunction("standardExponential", standardExponentialMsg, getModuleName());
+    registerFunction("segmentedSample", segmentedSampleMsg, getModuleName());
+    registerFunction("poissonGenerator", poissonGeneratorMsg, getModuleName());
 }
