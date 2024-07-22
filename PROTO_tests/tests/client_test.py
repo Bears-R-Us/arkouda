@@ -67,6 +67,12 @@ class TestClient:
         assert "arkoudaVersion" in config
         assert "INFO" == config["logLevel"]
 
+        try:
+            mar = ak.client.get_max_array_rank()
+            assert mar == 1
+        except Exception as e:
+            raise AssertionError(e)
+
     def test_get_mem_used(self):
         """
         Tests the ak.get_mem_used and ak.get_mem_avail methods
