@@ -110,6 +110,9 @@ Module Contents
 
 
 
+   .. py:attribute:: re
+
+
    .. py:method:: start() -> arkouda.pdarrayclass.pdarray
 
       Returns the starts of matches

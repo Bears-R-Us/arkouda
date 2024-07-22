@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="arkouda.pdarraycreation" href="../pdarraycreation/index.html" /><link rel="prev" title="arkouda.numpy" href="../numpy/index.html" />
 
-    <!-- Generated with Sphinx 7.4.6 and Furo 2024.07.18 -->
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.07.18 -->
         <title>arkouda.pdarrayclass - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=613ab9ff" />
@@ -1484,6 +1484,11 @@ bigint pdarray and the last item will be the lowest 64 bits.</p>
 <dd><p>Count the number of trailing zeros in each element. See <cite>ak.ctz</cite>.</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#id0" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarrayclass.pdarray.equals">
 <span class="sig-name descname"><span class="pre">equals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#pdarray.equals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.equals" title="Link to this definition">¶</a></dt>
@@ -1618,6 +1623,11 @@ of another object</p>
 </dl>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">itemsize</span></span><a class="headerlink" href="#id1" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarrayclass.pdarray.max">
 <span class="sig-name descname"><span class="pre">max</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">arkouda.dtypes.numpy_scalars</span></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#pdarray.max"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.max" title="Link to this definition">¶</a></dt>
@@ -1681,6 +1691,11 @@ of another object</p>
 </dl>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#id2" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="arkouda.pdarrayclass.pdarray.nbytes">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nbytes</span></span><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.nbytes" title="Link to this definition">¶</a></dt>
@@ -1695,6 +1710,11 @@ of another object</p>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">ndim</span></span><a class="headerlink" href="#id3" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.pdarrayclass.pdarray.objType">
@@ -1786,6 +1806,11 @@ until they are unregistered.</p>
 </pre></div>
 </div>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.pdarrayclass.pdarray.registered_name">
+<span class="sig-name descname"><span class="pre">registered_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.registered_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarrayclass.pdarray.reshape">
@@ -1902,6 +1927,16 @@ determine the file format.</p>
 </div>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#id4" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">size</span></span><a class="headerlink" href="#id5" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarrayclass.pdarray.slice_bits">
 <span class="sig-name descname"><span class="pre">slice_bits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">low</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#pdarray.slice_bits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.slice_bits" title="Link to this definition">¶</a></dt>
@@ -2005,7 +2040,7 @@ from the server.</p>
 <li><p>All CSV files must delimit rows using newline (`</p></li>
 </ul>
 </div></blockquote>
-<p><a href="#id1"><span class="problematic" id="id2">`</span></a>) at this time.</p>
+<p><a href="#id6"><span class="problematic" id="id7">`</span></a>) at this time.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2819,6 +2854,7 @@ normally distributed variables.</p>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.corr"><code class="docutils literal notranslate"><span class="pre">pdarray.corr()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.cov"><code class="docutils literal notranslate"><span class="pre">pdarray.cov()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.ctz"><code class="docutils literal notranslate"><span class="pre">pdarray.ctz()</span></code></a></li>
+<li><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">pdarray.dtype</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.equals"><code class="docutils literal notranslate"><span class="pre">pdarray.equals()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.fill"><code class="docutils literal notranslate"><span class="pre">pdarray.fill()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.format_other"><code class="docutils literal notranslate"><span class="pre">pdarray.format_other()</span></code></a></li>
@@ -2826,13 +2862,16 @@ normally distributed variables.</p>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.info"><code class="docutils literal notranslate"><span class="pre">pdarray.info()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.is_registered"><code class="docutils literal notranslate"><span class="pre">pdarray.is_registered()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.is_sorted"><code class="docutils literal notranslate"><span class="pre">pdarray.is_sorted()</span></code></a></li>
+<li><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">pdarray.itemsize</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.max"><code class="docutils literal notranslate"><span class="pre">pdarray.max()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.max_bits"><code class="docutils literal notranslate"><span class="pre">pdarray.max_bits</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.maxk"><code class="docutils literal notranslate"><span class="pre">pdarray.maxk()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.mean"><code class="docutils literal notranslate"><span class="pre">pdarray.mean()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.min"><code class="docutils literal notranslate"><span class="pre">pdarray.min()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.mink"><code class="docutils literal notranslate"><span class="pre">pdarray.mink()</span></code></a></li>
+<li><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">pdarray.name</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.nbytes"><code class="docutils literal notranslate"><span class="pre">pdarray.nbytes</span></code></a></li>
+<li><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">pdarray.ndim</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.objType"><code class="docutils literal notranslate"><span class="pre">pdarray.objType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.opeq"><code class="docutils literal notranslate"><span class="pre">pdarray.opeq()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.parity"><code class="docutils literal notranslate"><span class="pre">pdarray.parity()</span></code></a></li>
@@ -2840,10 +2879,13 @@ normally distributed variables.</p>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.pretty_print_info"><code class="docutils literal notranslate"><span class="pre">pdarray.pretty_print_info()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.prod"><code class="docutils literal notranslate"><span class="pre">pdarray.prod()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.register"><code class="docutils literal notranslate"><span class="pre">pdarray.register()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.registered_name"><code class="docutils literal notranslate"><span class="pre">pdarray.registered_name</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.reshape"><code class="docutils literal notranslate"><span class="pre">pdarray.reshape()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.rotl"><code class="docutils literal notranslate"><span class="pre">pdarray.rotl()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.rotr"><code class="docutils literal notranslate"><span class="pre">pdarray.rotr()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.save"><code class="docutils literal notranslate"><span class="pre">pdarray.save()</span></code></a></li>
+<li><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">pdarray.shape</span></code></a></li>
+<li><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">pdarray.size</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.slice_bits"><code class="docutils literal notranslate"><span class="pre">pdarray.slice_bits()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.std"><code class="docutils literal notranslate"><span class="pre">pdarray.std()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.sum"><code class="docutils literal notranslate"><span class="pre">pdarray.sum()</span></code></a></li>

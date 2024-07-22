@@ -66,9 +66,27 @@ Module Contents
       :type: str {'C'/'row_major' | 'F'/'column_major'}
 
 
+   .. py:attribute:: base
+
+
+   .. py:attribute:: dtype
+
+
+   .. py:attribute:: itemsize
+
+
+   .. py:attribute:: ndim
+
+
    .. py:attribute:: objType
       :value: 'ArrayView'
 
+
+
+   .. py:attribute:: shape
+
+
+   .. py:attribute:: size
 
 
    .. py:method:: to_hdf(prefix_path: str, dataset: str = 'ArrayView', mode: str = 'truncate', file_type: str = 'distribute')

@@ -97,6 +97,14 @@ Module Contents
 
 
 
+   .. py:attribute:: registered_name
+      :value: None
+
+
+
+   .. py:attribute:: reverse
+
+
    .. py:attribute:: special_objType
       :value: 'BitVector'
 
@@ -112,6 +120,12 @@ Module Contents
 
       Export data to a numpy array of string-formatted bit vectors.
 
+
+
+   .. py:attribute:: values
+
+
+   .. py:attribute:: width
 
 
 .. py:function:: BitVectorizer(width=64, reverse=False)
@@ -170,13 +184,42 @@ Module Contents
    typically treat this class like an int64 pdarray.
 
 
+   .. py:attribute:: MSB_left
+
+
    .. py:method:: format(x)
 
       Format a single binary value as a string of named fields.
 
 
 
+   .. py:attribute:: name
+      :value: None
+
+
+
+   .. py:attribute:: names
+
+
+   .. py:attribute:: namewidth
+
+
    .. py:method:: opeq(other, op)
+
+
+   .. py:attribute:: pad
+
+
+   .. py:attribute:: padchar
+
+
+   .. py:attribute:: separator
+
+
+   .. py:attribute:: show_int
+
+
+   .. py:attribute:: width
 
 
 .. py:class:: IPv4(values)
@@ -271,6 +314,9 @@ Module Contents
 
       Override the pdarray implementation so that the special object type will be used.
 
+
+
+   .. py:attribute:: values
 
 
 .. py:function:: ip_address(values)

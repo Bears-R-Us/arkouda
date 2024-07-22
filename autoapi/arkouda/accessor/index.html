@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="arkouda.alignment" href="../alignment/index.html" /><link rel="prev" title="arkouda.testing" href="../testing/index.html" />
 
-    <!-- Generated with Sphinx 7.4.6 and Furo 2024.07.18 -->
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.07.18 -->
         <title>arkouda.accessor - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=613ab9ff" />
@@ -412,6 +412,16 @@ single argument <code class="docutils literal notranslate"><span class="pre">dat
 <dt class="sig sig-object py" id="arkouda.accessor.DatetimeAccessor">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.accessor.</span></span><span class="sig-name descname"><span class="pre">DatetimeAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">series</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/accessor.html#DatetimeAccessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.accessor.DatetimeAccessor" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#arkouda.accessor.Properties" title="arkouda.accessor.Properties"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Properties</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.accessor.DatetimeAccessor.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#arkouda.accessor.DatetimeAccessor.data" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.accessor.DatetimeAccessor.series">
+<span class="sig-name descname"><span class="pre">series</span></span><a class="headerlink" href="#arkouda.accessor.DatetimeAccessor.series" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -423,6 +433,16 @@ single argument <code class="docutils literal notranslate"><span class="pre">dat
 <dt class="sig sig-object py" id="arkouda.accessor.StringAccessor">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.accessor.</span></span><span class="sig-name descname"><span class="pre">StringAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">series</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/accessor.html#StringAccessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.accessor.StringAccessor" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#arkouda.accessor.Properties" title="arkouda.accessor.Properties"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Properties</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.accessor.StringAccessor.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#arkouda.accessor.StringAccessor.data" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.accessor.StringAccessor.series">
+<span class="sig-name descname"><span class="pre">series</span></span><a class="headerlink" href="#arkouda.accessor.StringAccessor.series" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py function">
@@ -498,9 +518,17 @@ single argument <code class="docutils literal notranslate"><span class="pre">dat
 <li><a class="reference internal" href="#functions">Functions</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li><a class="reference internal" href="#arkouda.accessor.CachedAccessor"><code class="docutils literal notranslate"><span class="pre">CachedAccessor</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.accessor.DatetimeAccessor"><code class="docutils literal notranslate"><span class="pre">DatetimeAccessor</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.accessor.DatetimeAccessor"><code class="docutils literal notranslate"><span class="pre">DatetimeAccessor</span></code></a><ul>
+<li><a class="reference internal" href="#arkouda.accessor.DatetimeAccessor.data"><code class="docutils literal notranslate"><span class="pre">DatetimeAccessor.data</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.accessor.DatetimeAccessor.series"><code class="docutils literal notranslate"><span class="pre">DatetimeAccessor.series</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#arkouda.accessor.Properties"><code class="docutils literal notranslate"><span class="pre">Properties</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.accessor.StringAccessor"><code class="docutils literal notranslate"><span class="pre">StringAccessor</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.accessor.StringAccessor"><code class="docutils literal notranslate"><span class="pre">StringAccessor</span></code></a><ul>
+<li><a class="reference internal" href="#arkouda.accessor.StringAccessor.data"><code class="docutils literal notranslate"><span class="pre">StringAccessor.data</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.accessor.StringAccessor.series"><code class="docutils literal notranslate"><span class="pre">StringAccessor.series</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#arkouda.accessor.date_operators"><code class="docutils literal notranslate"><span class="pre">date_operators()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.accessor.string_operators"><code class="docutils literal notranslate"><span class="pre">string_operators()</span></code></a></li>
 </ul>

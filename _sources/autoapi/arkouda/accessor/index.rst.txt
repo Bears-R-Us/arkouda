@@ -48,11 +48,23 @@ Module Contents
    Bases: :py:obj:`Properties`
 
 
+   .. py:attribute:: data
+
+
+   .. py:attribute:: series
+
+
 .. py:class:: Properties
 
 .. py:class:: StringAccessor(series)
 
    Bases: :py:obj:`Properties`
+
+
+   .. py:attribute:: data
+
+
+   .. py:attribute:: series
 
 
 .. py:function:: date_operators(cls)

@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="arkouda.series" href="../series/index.html" /><link rel="prev" title="arkouda.security" href="../security/index.html" />
 
-    <!-- Generated with Sphinx 7.4.6 and Furo 2024.07.18 -->
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.07.18 -->
         <title>arkouda.segarray - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=613ab9ff" />
@@ -546,6 +546,11 @@ concatenation is not yet supported.</p></li>
 <dd><p>Return a deep copy.</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.segarray.SegArray.dtype">
+<span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#arkouda.segarray.SegArray.dtype" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.segarray.SegArray.filter">
 <span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discard_empty</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/segarray.html#SegArray.filter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.segarray.SegArray.filter" title="Link to this definition">¶</a></dt>
@@ -571,7 +576,7 @@ the return SegArray</p></li>
 resulting in an array of rows.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>m</strong> (<em>list</em><em> of </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#id681" title="arkouda.Strings"><em>Strings</em></a>) – List of columns, the rows of which will form the sub-arrays of the output</p>
+<dd class="field-odd"><p><strong>m</strong> (<em>list</em><em> of </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#id721" title="arkouda.Strings"><em>Strings</em></a>) – List of columns, the rows of which will form the sub-arrays of the output</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Array of rows of input</p>
@@ -823,6 +828,11 @@ of the ith values from each array.</p>
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'segarray'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'segments'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'values'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/segarray.html#SegArray.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.segarray.SegArray.load" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.segarray.SegArray.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><a class="headerlink" href="#arkouda.segarray.SegArray.logger" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.segarray.SegArray.max">
 <span class="sig-name descname"><span class="pre">max</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/segarray.html#SegArray.max"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.segarray.SegArray.max" title="Link to this definition">¶</a></dt>
@@ -914,7 +924,7 @@ Please note you cannot register two different SegArrays with the same name.</p>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.segarray.SegArray" title="arkouda.segarray.SegArray">SegArray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../index.html#id467" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if the server could not register the SegArray object</p>
+<dd class="field-even"><p><a class="reference internal" href="../index.html#id492" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if the server could not register the SegArray object</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -925,6 +935,11 @@ they are unregistered.</p>
 <p><a class="reference internal" href="#arkouda.segarray.SegArray.unregister" title="arkouda.segarray.SegArray.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <a class="reference internal" href="#arkouda.segarray.SegArray.attach" title="arkouda.segarray.SegArray.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#arkouda.segarray.SegArray.is_registered" title="arkouda.segarray.SegArray.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
 </div>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.segarray.SegArray.registered_name">
+<span class="sig-name descname"><span class="pre">registered_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#arkouda.segarray.SegArray.registered_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.segarray.SegArray.remove_repeats">
@@ -992,6 +1007,11 @@ determine the file format.</p>
 <p><a class="reference internal" href="#arkouda.segarray.SegArray.to_hdf" title="arkouda.segarray.SegArray.to_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_hdf</span></code></a>, <a class="reference internal" href="#arkouda.segarray.SegArray.load" title="arkouda.segarray.SegArray.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a></p>
 </div>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.segarray.SegArray.segments">
+<span class="sig-name descname"><span class="pre">segments</span></span><a class="headerlink" href="#arkouda.segarray.SegArray.segments" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.segarray.SegArray.set_jth">
@@ -1081,6 +1101,11 @@ backwards from the end of the sub-array.</p></li>
 </pre></div>
 </div>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.segarray.SegArray.size">
+<span class="sig-name descname"><span class="pre">size</span></span><a class="headerlink" href="#arkouda.segarray.SegArray.size" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.segarray.SegArray.sum">
@@ -1381,6 +1406,16 @@ file with the new data</p></li>
 </ul>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.segarray.SegArray.valsize">
+<span class="sig-name descname"><span class="pre">valsize</span></span><a class="headerlink" href="#arkouda.segarray.SegArray.valsize" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.segarray.SegArray.values">
+<span class="sig-name descname"><span class="pre">values</span></span><a class="headerlink" href="#arkouda.segarray.SegArray.values" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py data">
@@ -1474,6 +1509,7 @@ DEPRECATED</p>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.attach"><code class="docutils literal notranslate"><span class="pre">SegArray.attach()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.concat"><code class="docutils literal notranslate"><span class="pre">SegArray.concat()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.copy"><code class="docutils literal notranslate"><span class="pre">SegArray.copy()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.segarray.SegArray.dtype"><code class="docutils literal notranslate"><span class="pre">SegArray.dtype</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.filter"><code class="docutils literal notranslate"><span class="pre">SegArray.filter()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.from_multi_array"><code class="docutils literal notranslate"><span class="pre">SegArray.from_multi_array()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.from_parts"><code class="docutils literal notranslate"><span class="pre">SegArray.from_parts()</span></code></a></li>
@@ -1488,6 +1524,7 @@ DEPRECATED</p>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.intersect"><code class="docutils literal notranslate"><span class="pre">SegArray.intersect()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.is_registered"><code class="docutils literal notranslate"><span class="pre">SegArray.is_registered()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.load"><code class="docutils literal notranslate"><span class="pre">SegArray.load()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.segarray.SegArray.logger"><code class="docutils literal notranslate"><span class="pre">SegArray.logger</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.max"><code class="docutils literal notranslate"><span class="pre">SegArray.max()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.mean"><code class="docutils literal notranslate"><span class="pre">SegArray.mean()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.min"><code class="docutils literal notranslate"><span class="pre">SegArray.min()</span></code></a></li>
@@ -1499,11 +1536,14 @@ DEPRECATED</p>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.prod"><code class="docutils literal notranslate"><span class="pre">SegArray.prod()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.read_hdf"><code class="docutils literal notranslate"><span class="pre">SegArray.read_hdf()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.register"><code class="docutils literal notranslate"><span class="pre">SegArray.register()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.segarray.SegArray.registered_name"><code class="docutils literal notranslate"><span class="pre">SegArray.registered_name</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.remove_repeats"><code class="docutils literal notranslate"><span class="pre">SegArray.remove_repeats()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.save"><code class="docutils literal notranslate"><span class="pre">SegArray.save()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.segarray.SegArray.segments"><code class="docutils literal notranslate"><span class="pre">SegArray.segments</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.set_jth"><code class="docutils literal notranslate"><span class="pre">SegArray.set_jth()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.setdiff"><code class="docutils literal notranslate"><span class="pre">SegArray.setdiff()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.setxor"><code class="docutils literal notranslate"><span class="pre">SegArray.setxor()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.segarray.SegArray.size"><code class="docutils literal notranslate"><span class="pre">SegArray.size</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.sum"><code class="docutils literal notranslate"><span class="pre">SegArray.sum()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.to_hdf"><code class="docutils literal notranslate"><span class="pre">SegArray.to_hdf()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.to_list"><code class="docutils literal notranslate"><span class="pre">SegArray.to_list()</span></code></a></li>
@@ -1515,6 +1555,8 @@ DEPRECATED</p>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.unregister"><code class="docutils literal notranslate"><span class="pre">SegArray.unregister()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.unregister_segarray_by_name"><code class="docutils literal notranslate"><span class="pre">SegArray.unregister_segarray_by_name()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.update_hdf"><code class="docutils literal notranslate"><span class="pre">SegArray.update_hdf()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.segarray.SegArray.valsize"><code class="docutils literal notranslate"><span class="pre">SegArray.valsize</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.segarray.SegArray.values"><code class="docutils literal notranslate"><span class="pre">SegArray.values</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#arkouda.segarray.VAL_SUFFIX"><code class="docutils literal notranslate"><span class="pre">VAL_SUFFIX</span></code></a></li>

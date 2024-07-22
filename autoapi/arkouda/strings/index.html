@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="arkouda.timeclass" href="../timeclass/index.html" /><link rel="prev" title="arkouda.sorting" href="../sorting/index.html" />
 
-    <!-- Generated with Sphinx 7.4.6 and Furo 2024.07.18 -->
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.07.18 -->
         <title>arkouda.strings - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=613ab9ff" />
@@ -621,6 +621,11 @@ default to UTF-8</p></li>
 </dl>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#id0" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.strings.Strings.encode">
 <span class="sig-name descname"><span class="pre">encode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">toEncoding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fromEncoding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'UTF-8'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/strings.html#Strings.encode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.strings.Strings.encode" title="Link to this definition">¶</a></dt>
@@ -691,6 +696,11 @@ Note: only handles regular expressions supported by re2
 </pre></div>
 </div>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">entry</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></em><a class="headerlink" href="#id1" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.strings.Strings.equals">
@@ -1448,6 +1458,11 @@ Strings is entirely uppercase</p>
 </div>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">logger</span></span><a class="headerlink" href="#id2" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.strings.Strings.lower">
 <span class="sig-name descname"><span class="pre">lower</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/strings.html#Strings.lower"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.strings.Strings.lower" title="Link to this definition">¶</a></dt>
@@ -1661,7 +1676,7 @@ Please note you cannot register two different objects with the same name.</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
-<li><p><a class="reference internal" href="../index.html#id467" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Strings object with the user_defined_name
+<li><p><a class="reference internal" href="../index.html#id492" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Strings object with the user_defined_name
 If the user is attempting to register more than one object with the same name,
 the former should be unregistered first to free up the registration name.</p></li>
 </ul>
@@ -1675,6 +1690,11 @@ the former should be unregistered first to free up the registration name.</p></l
 <p>Registered names/Strings objects in the server are immune to deletion
 until they are unregistered.</p>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.strings.Strings.registered_name">
+<span class="sig-name descname"><span class="pre">registered_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#arkouda.strings.Strings.registered_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.strings.Strings.rpeel">
@@ -2498,8 +2518,10 @@ their uppercase equivalent</p>
 <li><a class="reference internal" href="#arkouda.strings.Strings.capitalize"><code class="docutils literal notranslate"><span class="pre">Strings.capitalize()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.contains"><code class="docutils literal notranslate"><span class="pre">Strings.contains()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.decode"><code class="docutils literal notranslate"><span class="pre">Strings.decode()</span></code></a></li>
+<li><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">Strings.dtype</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.encode"><code class="docutils literal notranslate"><span class="pre">Strings.encode()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.endswith"><code class="docutils literal notranslate"><span class="pre">Strings.endswith()</span></code></a></li>
+<li><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">Strings.entry</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.equals"><code class="docutils literal notranslate"><span class="pre">Strings.equals()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.find_locations"><code class="docutils literal notranslate"><span class="pre">Strings.find_locations()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.findall"><code class="docutils literal notranslate"><span class="pre">Strings.findall()</span></code></a></li>
@@ -2526,6 +2548,7 @@ their uppercase equivalent</p>
 <li><a class="reference internal" href="#arkouda.strings.Strings.isspace"><code class="docutils literal notranslate"><span class="pre">Strings.isspace()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.istitle"><code class="docutils literal notranslate"><span class="pre">Strings.istitle()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.isupper"><code class="docutils literal notranslate"><span class="pre">Strings.isupper()</span></code></a></li>
+<li><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">Strings.logger</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.lower"><code class="docutils literal notranslate"><span class="pre">Strings.lower()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.lstick"><code class="docutils literal notranslate"><span class="pre">Strings.lstick()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.match"><code class="docutils literal notranslate"><span class="pre">Strings.match()</span></code></a></li>
@@ -2534,6 +2557,7 @@ their uppercase equivalent</p>
 <li><a class="reference internal" href="#arkouda.strings.Strings.pretty_print_info"><code class="docutils literal notranslate"><span class="pre">Strings.pretty_print_info()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.purge_cached_regex_patterns"><code class="docutils literal notranslate"><span class="pre">Strings.purge_cached_regex_patterns()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.register"><code class="docutils literal notranslate"><span class="pre">Strings.register()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.strings.Strings.registered_name"><code class="docutils literal notranslate"><span class="pre">Strings.registered_name</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.rpeel"><code class="docutils literal notranslate"><span class="pre">Strings.rpeel()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.save"><code class="docutils literal notranslate"><span class="pre">Strings.save()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.search"><code class="docutils literal notranslate"><span class="pre">Strings.search()</span></code></a></li>

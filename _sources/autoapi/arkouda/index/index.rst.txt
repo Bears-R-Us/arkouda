@@ -135,6 +135,9 @@ Module Contents
 
 
 
+   .. py:attribute:: max_list_size
+
+
    .. py:method:: memory_usage(unit='B')
 
       Return the memory usage of the Index values.
@@ -230,6 +233,12 @@ Module Contents
 
       Objects registered with the server are immune to deletion until
       they are unregistered.
+
+
+
+   .. py:attribute:: registered_name
+      :type:  Optional[str]
+      :value: None
 
 
 
@@ -506,6 +515,11 @@ Module Contents
 
 
 
+   .. py:attribute:: first
+      :value: True
+
+
+
    .. py:method:: get_level_values(level: Union[str, int])
 
 
@@ -538,6 +552,9 @@ Module Contents
 
 
 
+   .. py:attribute:: levels
+
+
    .. py:method:: lookup(key)
 
 
@@ -561,6 +578,9 @@ Module Contents
       >>> m.memory_usage()
       48
 
+
+
+   .. py:attribute:: name
 
 
    .. py:property:: names
@@ -609,6 +629,12 @@ Module Contents
 
       Objects registered with the server are immune to deletion until
       they are unregistered.
+
+
+
+   .. py:attribute:: registered_name
+      :type:  Optional[str]
+      :value: None
 
 
 

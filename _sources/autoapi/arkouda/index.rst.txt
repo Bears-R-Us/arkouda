@@ -500,9 +500,27 @@ Package Contents
       :type: str {'C'/'row_major' | 'F'/'column_major'}
 
 
+   .. py:attribute:: base
+
+
+   .. py:attribute:: dtype
+
+
+   .. py:attribute:: itemsize
+
+
+   .. py:attribute:: ndim
+
+
    .. py:attribute:: objType
       :value: 'ArrayView'
 
+
+
+   .. py:attribute:: shape
+
+
+   .. py:attribute:: size
 
 
    .. py:method:: to_hdf(prefix_path: str, dataset: str = 'ArrayView', mode: str = 'truncate', file_type: str = 'distribute')
@@ -694,6 +712,14 @@ Package Contents
 
 
 
+   .. py:attribute:: registered_name
+      :value: None
+
+
+
+   .. py:attribute:: reverse
+
+
    .. py:attribute:: special_objType
       :value: 'BitVector'
 
@@ -709,6 +735,12 @@ Package Contents
 
       Export data to a numpy array of string-formatted bit vectors.
 
+
+
+   .. py:attribute:: values
+
+
+   .. py:attribute:: width
 
 
 .. py:function:: BitVectorizer(width=64, reverse=False)
@@ -891,6 +923,9 @@ Package Contents
    .. py:attribute:: dtype
 
 
+   .. py:attribute:: dtype
+
+
    .. py:method:: endswith(substr: Union[bytes, arkouda.dtypes.str_scalars], regex: bool = False) -> arkouda.pdarrayclass.pdarray
 
       Check whether each element ends with the given substring.
@@ -1101,11 +1136,20 @@ Package Contents
 
 
 
+   .. py:attribute:: logger
+
+
    .. py:property:: nbytes
       The size of the Categorical in bytes.
 
       :returns: The size of the Categorical in bytes.
       :rtype: int
+
+
+   .. py:attribute:: ndim
+
+
+   .. py:attribute:: nlevels
 
 
    .. py:attribute:: objType
@@ -1172,6 +1216,12 @@ Package Contents
 
       Objects registered with the server are immune to deletion until
       they are unregistered.
+
+
+
+   .. py:attribute:: registered_name
+      :type:  Optional[str]
+      :value: None
 
 
 
@@ -1250,6 +1300,13 @@ Package Contents
                 be assigned the NA value.
       :rtype: Categorical
 
+
+
+   .. py:attribute:: shape
+
+
+   .. py:attribute:: size
+      :type:  arkouda.dtypes.int_scalars
 
 
    .. py:method:: sort_values()
@@ -1676,6 +1733,9 @@ Package Contents
    .. py:attribute:: dtype
 
 
+   .. py:attribute:: dtype
+
+
    .. py:method:: endswith(substr: Union[bytes, arkouda.dtypes.str_scalars], regex: bool = False) -> arkouda.pdarrayclass.pdarray
 
       Check whether each element ends with the given substring.
@@ -1886,11 +1946,20 @@ Package Contents
 
 
 
+   .. py:attribute:: logger
+
+
    .. py:property:: nbytes
       The size of the Categorical in bytes.
 
       :returns: The size of the Categorical in bytes.
       :rtype: int
+
+
+   .. py:attribute:: ndim
+
+
+   .. py:attribute:: nlevels
 
 
    .. py:attribute:: objType
@@ -1957,6 +2026,12 @@ Package Contents
 
       Objects registered with the server are immune to deletion until
       they are unregistered.
+
+
+
+   .. py:attribute:: registered_name
+      :type:  Optional[str]
+      :value: None
 
 
 
@@ -2035,6 +2110,13 @@ Package Contents
                 be assigned the NA value.
       :rtype: Categorical
 
+
+
+   .. py:attribute:: shape
+
+
+   .. py:attribute:: size
+      :type:  arkouda.dtypes.int_scalars
 
 
    .. py:method:: sort_values()
@@ -2461,6 +2543,9 @@ Package Contents
    .. py:attribute:: dtype
 
 
+   .. py:attribute:: dtype
+
+
    .. py:method:: endswith(substr: Union[bytes, arkouda.dtypes.str_scalars], regex: bool = False) -> arkouda.pdarrayclass.pdarray
 
       Check whether each element ends with the given substring.
@@ -2671,11 +2756,20 @@ Package Contents
 
 
 
+   .. py:attribute:: logger
+
+
    .. py:property:: nbytes
       The size of the Categorical in bytes.
 
       :returns: The size of the Categorical in bytes.
       :rtype: int
+
+
+   .. py:attribute:: ndim
+
+
+   .. py:attribute:: nlevels
 
 
    .. py:attribute:: objType
@@ -2742,6 +2836,12 @@ Package Contents
 
       Objects registered with the server are immune to deletion until
       they are unregistered.
+
+
+
+   .. py:attribute:: registered_name
+      :type:  Optional[str]
+      :value: None
 
 
 
@@ -2820,6 +2920,13 @@ Package Contents
                 be assigned the NA value.
       :rtype: Categorical
 
+
+
+   .. py:attribute:: shape
+
+
+   .. py:attribute:: size
+      :type:  arkouda.dtypes.int_scalars
 
 
    .. py:method:: sort_values()
@@ -9975,6 +10082,12 @@ Package Contents
    Bases: :py:obj:`Properties`
 
 
+   .. py:attribute:: data
+
+
+   .. py:attribute:: series
+
+
 .. py:class:: DiffAggregate
 
    A column in a GroupBy that has been differenced.
@@ -10112,13 +10225,42 @@ Package Contents
    typically treat this class like an int64 pdarray.
 
 
+   .. py:attribute:: MSB_left
+
+
    .. py:method:: format(x)
 
       Format a single binary value as a string of named fields.
 
 
 
+   .. py:attribute:: name
+      :value: None
+
+
+
+   .. py:attribute:: names
+
+
+   .. py:attribute:: namewidth
+
+
    .. py:method:: opeq(other, op)
+
+
+   .. py:attribute:: pad
+
+
+   .. py:attribute:: padchar
+
+
+   .. py:attribute:: separator
+
+
+   .. py:attribute:: show_int
+
+
+   .. py:attribute:: width
 
 
 .. py:class:: GROUPBY_REDUCTION_TYPES
@@ -17243,6 +17385,9 @@ Package Contents
 
 
 
+   .. py:attribute:: values
+
+
 .. py:class:: Index(values: Union[List, arkouda.pdarrayclass.pdarray, arkouda.Strings, arkouda.Categorical, pandas.Index, Index], name: Optional[str] = None, allow_list=False, max_list_size=1000)
 
    .. py:method:: argsort(ascending=True)
@@ -17362,6 +17507,9 @@ Package Contents
 
 
 
+   .. py:attribute:: max_list_size
+
+
    .. py:method:: memory_usage(unit='B')
 
       Return the memory usage of the Index values.
@@ -17457,6 +17605,12 @@ Package Contents
 
       Objects registered with the server are immune to deletion until
       they are unregistered.
+
+
+
+   .. py:attribute:: registered_name
+      :type:  Optional[str]
+      :value: None
 
 
 
@@ -17772,6 +17926,11 @@ Package Contents
 
 
 
+   .. py:attribute:: first
+      :value: True
+
+
+
    .. py:method:: get_level_values(level: Union[str, int])
 
 
@@ -17804,6 +17963,9 @@ Package Contents
 
 
 
+   .. py:attribute:: levels
+
+
    .. py:method:: lookup(key)
 
 
@@ -17827,6 +17989,9 @@ Package Contents
       >>> m.memory_usage()
       48
 
+
+
+   .. py:attribute:: name
 
 
    .. py:property:: names
@@ -17875,6 +18040,12 @@ Package Contents
 
       Objects registered with the server are immune to deletion until
       they are unregistered.
+
+
+
+   .. py:attribute:: registered_name
+      :type:  Optional[str]
+      :value: None
 
 
 
@@ -18168,6 +18339,9 @@ Package Contents
 
 
 
+   .. py:attribute:: dtype
+
+
    .. py:method:: filter(filter, discard_empty: bool = False)
 
       Filter values out of the SegArray object
@@ -18388,6 +18562,9 @@ Package Contents
 
 
 
+   .. py:attribute:: logger
+
+
    .. py:method:: max(x=None)
 
 
@@ -18461,6 +18638,12 @@ Package Contents
 
 
 
+   .. py:attribute:: registered_name
+      :type:  Optional[str]
+      :value: None
+
+
+
    .. py:method:: remove_repeats(return_multiplicity=False)
 
       Condense sequences of repeated values within a sub-array to a single value.
@@ -18512,6 +18695,9 @@ Package Contents
 
       .. seealso:: :obj:`to_hdf`, :obj:`load`
 
+
+
+   .. py:attribute:: segments
 
 
    .. py:method:: set_jth(i, j, v)
@@ -18584,6 +18770,9 @@ Package Contents
       [1, 3, 5, 2]
       ])
 
+
+
+   .. py:attribute:: size
 
 
    .. py:method:: sum(x=None)
@@ -18824,6 +19013,12 @@ Package Contents
       - Because HDF5 deletes do not release memory, this will create a copy of the
         file with the new data
 
+
+
+   .. py:attribute:: valsize
+
+
+   .. py:attribute:: values
 
 
 .. py:class:: Series
@@ -19716,6 +19911,12 @@ Package Contents
    Bases: :py:obj:`Properties`
 
 
+   .. py:attribute:: data
+
+
+   .. py:attribute:: series
+
+
 .. py:class:: Strings(strings_pdarray: arkouda.pdarrayclass.pdarray, bytes_size: arkouda.dtypes.int_scalars)
 
    Represents an array of strings whose data resides on the
@@ -19897,6 +20098,9 @@ Package Contents
 
 
 
+   .. py:attribute:: dtype
+
+
    .. py:method:: encode(toEncoding: str, fromEncoding: str = 'UTF-8')
 
       Return a new strings object in `toEncoding`, expecting that the
@@ -19948,6 +20152,10 @@ Package Contents
       >>> strings_end.endswith('ing \d', regex = True)
       array([True, True, True, True, True])
 
+
+
+   .. py:attribute:: entry
+      :type:  arkouda.pdarrayclass.pdarray
 
 
    .. py:method:: equals(other) -> bool
@@ -20548,6 +20756,9 @@ Package Contents
 
 
 
+   .. py:attribute:: logger
+
+
    .. py:method:: lower() -> Strings
 
       Returns a new Strings with all uppercase characters from the original replaced with
@@ -20729,6 +20940,12 @@ Package Contents
 
       Registered names/Strings objects in the server are immune to deletion
       until they are unregistered.
+
+
+
+   .. py:attribute:: registered_name
+      :type:  Optional[str]
+      :value: None
 
 
 
@@ -21529,6 +21746,9 @@ Package Contents
 
 
 
+   .. py:attribute:: dtype
+
+
    .. py:method:: encode(toEncoding: str, fromEncoding: str = 'UTF-8')
 
       Return a new strings object in `toEncoding`, expecting that the
@@ -21580,6 +21800,10 @@ Package Contents
       >>> strings_end.endswith('ing \d', regex = True)
       array([True, True, True, True, True])
 
+
+
+   .. py:attribute:: entry
+      :type:  arkouda.pdarrayclass.pdarray
 
 
    .. py:method:: equals(other) -> bool
@@ -22180,6 +22404,9 @@ Package Contents
 
 
 
+   .. py:attribute:: logger
+
+
    .. py:method:: lower() -> Strings
 
       Returns a new Strings with all uppercase characters from the original replaced with
@@ -22361,6 +22588,12 @@ Package Contents
 
       Registered names/Strings objects in the server are immune to deletion
       until they are unregistered.
+
+
+
+   .. py:attribute:: registered_name
+      :type:  Optional[str]
+      :value: None
 
 
 
@@ -23161,6 +23394,9 @@ Package Contents
 
 
 
+   .. py:attribute:: dtype
+
+
    .. py:method:: encode(toEncoding: str, fromEncoding: str = 'UTF-8')
 
       Return a new strings object in `toEncoding`, expecting that the
@@ -23212,6 +23448,10 @@ Package Contents
       >>> strings_end.endswith('ing \d', regex = True)
       array([True, True, True, True, True])
 
+
+
+   .. py:attribute:: entry
+      :type:  arkouda.pdarrayclass.pdarray
 
 
    .. py:method:: equals(other) -> bool
@@ -23812,6 +24052,9 @@ Package Contents
 
 
 
+   .. py:attribute:: logger
+
+
    .. py:method:: lower() -> Strings
 
       Returns a new Strings with all uppercase characters from the original replaced with
@@ -23993,6 +24236,12 @@ Package Contents
 
       Registered names/Strings objects in the server are immune to deletion
       until they are unregistered.
+
+
+
+   .. py:attribute:: registered_name
+      :type:  Optional[str]
+      :value: None
 
 
 
@@ -24793,6 +25042,9 @@ Package Contents
 
 
 
+   .. py:attribute:: dtype
+
+
    .. py:method:: encode(toEncoding: str, fromEncoding: str = 'UTF-8')
 
       Return a new strings object in `toEncoding`, expecting that the
@@ -24844,6 +25096,10 @@ Package Contents
       >>> strings_end.endswith('ing \d', regex = True)
       array([True, True, True, True, True])
 
+
+
+   .. py:attribute:: entry
+      :type:  arkouda.pdarrayclass.pdarray
 
 
    .. py:method:: equals(other) -> bool
@@ -25444,6 +25700,9 @@ Package Contents
 
 
 
+   .. py:attribute:: logger
+
+
    .. py:method:: lower() -> Strings
 
       Returns a new Strings with all uppercase characters from the original replaced with
@@ -25625,6 +25884,12 @@ Package Contents
 
       Registered names/Strings objects in the server are immune to deletion
       until they are unregistered.
+
+
+
+   .. py:attribute:: registered_name
+      :type:  Optional[str]
+      :value: None
 
 
 
@@ -26425,6 +26690,9 @@ Package Contents
 
 
 
+   .. py:attribute:: dtype
+
+
    .. py:method:: encode(toEncoding: str, fromEncoding: str = 'UTF-8')
 
       Return a new strings object in `toEncoding`, expecting that the
@@ -26476,6 +26744,10 @@ Package Contents
       >>> strings_end.endswith('ing \d', regex = True)
       array([True, True, True, True, True])
 
+
+
+   .. py:attribute:: entry
+      :type:  arkouda.pdarrayclass.pdarray
 
 
    .. py:method:: equals(other) -> bool
@@ -27076,6 +27348,9 @@ Package Contents
 
 
 
+   .. py:attribute:: logger
+
+
    .. py:method:: lower() -> Strings
 
       Returns a new Strings with all uppercase characters from the original replaced with
@@ -27257,6 +27532,12 @@ Package Contents
 
       Registered names/Strings objects in the server are immune to deletion
       until they are unregistered.
+
+
+
+   .. py:attribute:: registered_name
+      :type:  Optional[str]
+      :value: None
 
 
 
@@ -33291,6 +33572,9 @@ Package Contents
 
 
 
+   .. py:attribute:: dtype
+
+
    .. py:method:: equals(other) -> bool
 
       Whether pdarrays are the same size and all entries are equal.
@@ -33391,6 +33675,9 @@ Package Contents
 
 
 
+   .. py:attribute:: itemsize
+
+
    .. py:method:: max() -> arkouda.dtypes.numpy_scalars
 
       Return the maximum value of the array.
@@ -33440,11 +33727,17 @@ Package Contents
 
 
 
+   .. py:attribute:: name
+
+
    .. py:property:: nbytes
       The size of the pdarray in bytes.
 
       :returns: The size of the pdarray in bytes.
       :rtype: int
+
+
+   .. py:attribute:: ndim
 
 
    .. py:attribute:: objType
@@ -33521,6 +33814,12 @@ Package Contents
       >>> b = ak.pdarray.attach("my_zeros")
       >>> # ...other work...
       >>> b.unregister()
+
+
+
+   .. py:attribute:: registered_name
+      :type:  Optional[str]
+      :value: None
 
 
 
@@ -33623,6 +33922,12 @@ Package Contents
       Saves the array in numLocales Parquet files with the name
       ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
 
+
+
+   .. py:attribute:: shape
+
+
+   .. py:attribute:: size
 
 
    .. py:method:: slice_bits(low, high) -> pdarray
@@ -34266,6 +34571,9 @@ Package Contents
 
 
 
+   .. py:attribute:: dtype
+
+
    .. py:method:: equals(other) -> bool
 
       Whether pdarrays are the same size and all entries are equal.
@@ -34366,6 +34674,9 @@ Package Contents
 
 
 
+   .. py:attribute:: itemsize
+
+
    .. py:method:: max() -> arkouda.dtypes.numpy_scalars
 
       Return the maximum value of the array.
@@ -34415,11 +34726,17 @@ Package Contents
 
 
 
+   .. py:attribute:: name
+
+
    .. py:property:: nbytes
       The size of the pdarray in bytes.
 
       :returns: The size of the pdarray in bytes.
       :rtype: int
+
+
+   .. py:attribute:: ndim
 
 
    .. py:attribute:: objType
@@ -34496,6 +34813,12 @@ Package Contents
       >>> b = ak.pdarray.attach("my_zeros")
       >>> # ...other work...
       >>> b.unregister()
+
+
+
+   .. py:attribute:: registered_name
+      :type:  Optional[str]
+      :value: None
 
 
 
@@ -34598,6 +34921,12 @@ Package Contents
       Saves the array in numLocales Parquet files with the name
       ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
 
+
+
+   .. py:attribute:: shape
+
+
+   .. py:attribute:: size
 
 
    .. py:method:: slice_bits(low, high) -> pdarray
@@ -35241,6 +35570,9 @@ Package Contents
 
 
 
+   .. py:attribute:: dtype
+
+
    .. py:method:: equals(other) -> bool
 
       Whether pdarrays are the same size and all entries are equal.
@@ -35341,6 +35673,9 @@ Package Contents
 
 
 
+   .. py:attribute:: itemsize
+
+
    .. py:method:: max() -> arkouda.dtypes.numpy_scalars
 
       Return the maximum value of the array.
@@ -35390,11 +35725,17 @@ Package Contents
 
 
 
+   .. py:attribute:: name
+
+
    .. py:property:: nbytes
       The size of the pdarray in bytes.
 
       :returns: The size of the pdarray in bytes.
       :rtype: int
+
+
+   .. py:attribute:: ndim
 
 
    .. py:attribute:: objType
@@ -35471,6 +35812,12 @@ Package Contents
       >>> b = ak.pdarray.attach("my_zeros")
       >>> # ...other work...
       >>> b.unregister()
+
+
+
+   .. py:attribute:: registered_name
+      :type:  Optional[str]
+      :value: None
 
 
 
@@ -35573,6 +35920,12 @@ Package Contents
       Saves the array in numLocales Parquet files with the name
       ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
 
+
+
+   .. py:attribute:: shape
+
+
+   .. py:attribute:: size
 
 
    .. py:method:: slice_bits(low, high) -> pdarray
@@ -36216,6 +36569,9 @@ Package Contents
 
 
 
+   .. py:attribute:: dtype
+
+
    .. py:method:: equals(other) -> bool
 
       Whether pdarrays are the same size and all entries are equal.
@@ -36316,6 +36672,9 @@ Package Contents
 
 
 
+   .. py:attribute:: itemsize
+
+
    .. py:method:: max() -> arkouda.dtypes.numpy_scalars
 
       Return the maximum value of the array.
@@ -36365,11 +36724,17 @@ Package Contents
 
 
 
+   .. py:attribute:: name
+
+
    .. py:property:: nbytes
       The size of the pdarray in bytes.
 
       :returns: The size of the pdarray in bytes.
       :rtype: int
+
+
+   .. py:attribute:: ndim
 
 
    .. py:attribute:: objType
@@ -36446,6 +36811,12 @@ Package Contents
       >>> b = ak.pdarray.attach("my_zeros")
       >>> # ...other work...
       >>> b.unregister()
+
+
+
+   .. py:attribute:: registered_name
+      :type:  Optional[str]
+      :value: None
 
 
 
@@ -36548,6 +36919,12 @@ Package Contents
       Saves the array in numLocales Parquet files with the name
       ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
 
+
+
+   .. py:attribute:: shape
+
+
+   .. py:attribute:: size
 
 
    .. py:method:: slice_bits(low, high) -> pdarray
@@ -37191,6 +37568,9 @@ Package Contents
 
 
 
+   .. py:attribute:: dtype
+
+
    .. py:method:: equals(other) -> bool
 
       Whether pdarrays are the same size and all entries are equal.
@@ -37291,6 +37671,9 @@ Package Contents
 
 
 
+   .. py:attribute:: itemsize
+
+
    .. py:method:: max() -> arkouda.dtypes.numpy_scalars
 
       Return the maximum value of the array.
@@ -37340,11 +37723,17 @@ Package Contents
 
 
 
+   .. py:attribute:: name
+
+
    .. py:property:: nbytes
       The size of the pdarray in bytes.
 
       :returns: The size of the pdarray in bytes.
       :rtype: int
+
+
+   .. py:attribute:: ndim
 
 
    .. py:attribute:: objType
@@ -37421,6 +37810,12 @@ Package Contents
       >>> b = ak.pdarray.attach("my_zeros")
       >>> # ...other work...
       >>> b.unregister()
+
+
+
+   .. py:attribute:: registered_name
+      :type:  Optional[str]
+      :value: None
 
 
 
@@ -37523,6 +37918,12 @@ Package Contents
       Saves the array in numLocales Parquet files with the name
       ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
 
+
+
+   .. py:attribute:: shape
+
+
+   .. py:attribute:: size
 
 
    .. py:method:: slice_bits(low, high) -> pdarray
@@ -38166,6 +38567,9 @@ Package Contents
 
 
 
+   .. py:attribute:: dtype
+
+
    .. py:method:: equals(other) -> bool
 
       Whether pdarrays are the same size and all entries are equal.
@@ -38266,6 +38670,9 @@ Package Contents
 
 
 
+   .. py:attribute:: itemsize
+
+
    .. py:method:: max() -> arkouda.dtypes.numpy_scalars
 
       Return the maximum value of the array.
@@ -38315,11 +38722,17 @@ Package Contents
 
 
 
+   .. py:attribute:: name
+
+
    .. py:property:: nbytes
       The size of the pdarray in bytes.
 
       :returns: The size of the pdarray in bytes.
       :rtype: int
+
+
+   .. py:attribute:: ndim
 
 
    .. py:attribute:: objType
@@ -38396,6 +38809,12 @@ Package Contents
       >>> b = ak.pdarray.attach("my_zeros")
       >>> # ...other work...
       >>> b.unregister()
+
+
+
+   .. py:attribute:: registered_name
+      :type:  Optional[str]
+      :value: None
 
 
 
@@ -38498,6 +38917,12 @@ Package Contents
       Saves the array in numLocales Parquet files with the name
       ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
 
+
+
+   .. py:attribute:: shape
+
+
+   .. py:attribute:: size
 
 
    .. py:method:: slice_bits(low, high) -> pdarray

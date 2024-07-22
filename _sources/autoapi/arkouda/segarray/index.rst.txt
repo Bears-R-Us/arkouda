@@ -141,6 +141,9 @@ Module Contents
 
 
 
+   .. py:attribute:: dtype
+
+
    .. py:method:: filter(filter, discard_empty: bool = False)
 
       Filter values out of the SegArray object
@@ -361,6 +364,9 @@ Module Contents
 
 
 
+   .. py:attribute:: logger
+
+
    .. py:method:: max(x=None)
 
 
@@ -434,6 +440,12 @@ Module Contents
 
 
 
+   .. py:attribute:: registered_name
+      :type:  Optional[str]
+      :value: None
+
+
+
    .. py:method:: remove_repeats(return_multiplicity=False)
 
       Condense sequences of repeated values within a sub-array to a single value.
@@ -485,6 +497,9 @@ Module Contents
 
       .. seealso:: :obj:`to_hdf`, :obj:`load`
 
+
+
+   .. py:attribute:: segments
 
 
    .. py:method:: set_jth(i, j, v)
@@ -557,6 +572,9 @@ Module Contents
       [1, 3, 5, 2]
       ])
 
+
+
+   .. py:attribute:: size
 
 
    .. py:method:: sum(x=None)
@@ -797,6 +815,12 @@ Module Contents
       - Because HDF5 deletes do not release memory, this will create a copy of the
         file with the new data
 
+
+
+   .. py:attribute:: valsize
+
+
+   .. py:attribute:: values
 
 
 .. py:data:: VAL_SUFFIX

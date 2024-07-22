@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="arkouda.numeric" href="../numeric/index.html" /><link rel="prev" title="arkouda.match" href="../match/index.html" />
 
-    <!-- Generated with Sphinx 7.4.6 and Furo 2024.07.18 -->
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.07.18 -->
         <title>arkouda.matcher - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=613ab9ff" />
@@ -389,17 +389,87 @@
 <dd><p>Return all non-overlapping matches of pattern in Strings as a new Strings object</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.matcher.Matcher.full_match_bool">
+<span class="sig-name descname"><span class="pre">full_match_bool</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></em><a class="headerlink" href="#arkouda.matcher.Matcher.full_match_bool" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.matcher.Matcher.full_match_ind">
+<span class="sig-name descname"><span class="pre">full_match_ind</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></em><a class="headerlink" href="#arkouda.matcher.Matcher.full_match_ind" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.matcher.Matcher.get_match">
 <span class="sig-name descname"><span class="pre">get_match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">match_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.match.MatchType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../match/index.html#arkouda.match.Match" title="arkouda.match.Match"><span class="pre">arkouda.match.Match</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/matcher.html#Matcher.get_match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.matcher.Matcher.get_match" title="Link to this definition">¶</a></dt>
 <dd><p>Create a Match object of type match_type</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.matcher.Matcher.indices">
+<span class="sig-name descname"><span class="pre">indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></em><a class="headerlink" href="#arkouda.matcher.Matcher.indices" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.matcher.Matcher.lengths">
+<span class="sig-name descname"><span class="pre">lengths</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></em><a class="headerlink" href="#arkouda.matcher.Matcher.lengths" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.matcher.Matcher.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><a class="headerlink" href="#arkouda.matcher.Matcher.logger" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.matcher.Matcher.match_bool">
+<span class="sig-name descname"><span class="pre">match_bool</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></em><a class="headerlink" href="#arkouda.matcher.Matcher.match_bool" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.matcher.Matcher.match_ind">
+<span class="sig-name descname"><span class="pre">match_ind</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></em><a class="headerlink" href="#arkouda.matcher.Matcher.match_ind" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.matcher.Matcher.num_matches">
+<span class="sig-name descname"><span class="pre">num_matches</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></em><a class="headerlink" href="#arkouda.matcher.Matcher.num_matches" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.matcher.Matcher.objType">
+<span class="sig-name descname"><span class="pre">objType</span></span><a class="headerlink" href="#arkouda.matcher.Matcher.objType" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.matcher.Matcher.parent_entry_name">
+<span class="sig-name descname"><span class="pre">parent_entry_name</span></span><a class="headerlink" href="#arkouda.matcher.Matcher.parent_entry_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.matcher.Matcher.populated">
+<span class="sig-name descname"><span class="pre">populated</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#arkouda.matcher.Matcher.populated" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.matcher.Matcher.search_bool">
+<span class="sig-name descname"><span class="pre">search_bool</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></em><a class="headerlink" href="#arkouda.matcher.Matcher.search_bool" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.matcher.Matcher.search_ind">
+<span class="sig-name descname"><span class="pre">search_ind</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></em><a class="headerlink" href="#arkouda.matcher.Matcher.search_ind" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.matcher.Matcher.split">
 <span class="sig-name descname"><span class="pre">split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">maxsplit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_segments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/matcher.html#Matcher.split"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.matcher.Matcher.split" title="Link to this definition">¶</a></dt>
 <dd><p>Split string by the occurrences of pattern. If maxsplit is nonzero, at most maxsplit splits occur</p>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.matcher.Matcher.starts">
+<span class="sig-name descname"><span class="pre">starts</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></em><a class="headerlink" href="#arkouda.matcher.Matcher.starts" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.matcher.Matcher.sub">
@@ -477,8 +547,22 @@ If return_num_subs is True, return the number of substitutions that occurred</p>
 <li><a class="reference internal" href="#arkouda.matcher.Matcher.LocationsInfo"><code class="docutils literal notranslate"><span class="pre">Matcher.LocationsInfo</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.Matcher.find_locations"><code class="docutils literal notranslate"><span class="pre">Matcher.find_locations()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.Matcher.findall"><code class="docutils literal notranslate"><span class="pre">Matcher.findall()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.matcher.Matcher.full_match_bool"><code class="docutils literal notranslate"><span class="pre">Matcher.full_match_bool</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.matcher.Matcher.full_match_ind"><code class="docutils literal notranslate"><span class="pre">Matcher.full_match_ind</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.Matcher.get_match"><code class="docutils literal notranslate"><span class="pre">Matcher.get_match()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.matcher.Matcher.indices"><code class="docutils literal notranslate"><span class="pre">Matcher.indices</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.matcher.Matcher.lengths"><code class="docutils literal notranslate"><span class="pre">Matcher.lengths</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.matcher.Matcher.logger"><code class="docutils literal notranslate"><span class="pre">Matcher.logger</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.matcher.Matcher.match_bool"><code class="docutils literal notranslate"><span class="pre">Matcher.match_bool</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.matcher.Matcher.match_ind"><code class="docutils literal notranslate"><span class="pre">Matcher.match_ind</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.matcher.Matcher.num_matches"><code class="docutils literal notranslate"><span class="pre">Matcher.num_matches</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.matcher.Matcher.objType"><code class="docutils literal notranslate"><span class="pre">Matcher.objType</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.matcher.Matcher.parent_entry_name"><code class="docutils literal notranslate"><span class="pre">Matcher.parent_entry_name</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.matcher.Matcher.populated"><code class="docutils literal notranslate"><span class="pre">Matcher.populated</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.matcher.Matcher.search_bool"><code class="docutils literal notranslate"><span class="pre">Matcher.search_bool</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.matcher.Matcher.search_ind"><code class="docutils literal notranslate"><span class="pre">Matcher.search_ind</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.Matcher.split"><code class="docutils literal notranslate"><span class="pre">Matcher.split()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.matcher.Matcher.starts"><code class="docutils literal notranslate"><span class="pre">Matcher.starts</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.Matcher.sub"><code class="docutils literal notranslate"><span class="pre">Matcher.sub()</span></code></a></li>
 </ul>
 </li>

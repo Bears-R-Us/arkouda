@@ -799,6 +799,9 @@ Module Contents
 
 
 
+   .. py:attribute:: dtype
+
+
    .. py:method:: equals(other) -> bool
 
       Whether pdarrays are the same size and all entries are equal.
@@ -899,6 +902,9 @@ Module Contents
 
 
 
+   .. py:attribute:: itemsize
+
+
    .. py:method:: max() -> arkouda.dtypes.numpy_scalars
 
       Return the maximum value of the array.
@@ -948,11 +954,17 @@ Module Contents
 
 
 
+   .. py:attribute:: name
+
+
    .. py:property:: nbytes
       The size of the pdarray in bytes.
 
       :returns: The size of the pdarray in bytes.
       :rtype: int
+
+
+   .. py:attribute:: ndim
 
 
    .. py:attribute:: objType
@@ -1029,6 +1041,12 @@ Module Contents
       >>> b = ak.pdarray.attach("my_zeros")
       >>> # ...other work...
       >>> b.unregister()
+
+
+
+   .. py:attribute:: registered_name
+      :type:  Optional[str]
+      :value: None
 
 
 
@@ -1131,6 +1149,12 @@ Module Contents
       Saves the array in numLocales Parquet files with the name
       ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
 
+
+
+   .. py:attribute:: shape
+
+
+   .. py:attribute:: size
 
 
    .. py:method:: slice_bits(low, high) -> pdarray

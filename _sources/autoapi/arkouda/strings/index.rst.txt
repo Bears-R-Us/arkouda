@@ -196,6 +196,9 @@ Module Contents
 
 
 
+   .. py:attribute:: dtype
+
+
    .. py:method:: encode(toEncoding: str, fromEncoding: str = 'UTF-8')
 
       Return a new strings object in `toEncoding`, expecting that the
@@ -247,6 +250,10 @@ Module Contents
       >>> strings_end.endswith('ing \d', regex = True)
       array([True, True, True, True, True])
 
+
+
+   .. py:attribute:: entry
+      :type:  arkouda.pdarrayclass.pdarray
 
 
    .. py:method:: equals(other) -> bool
@@ -847,6 +854,9 @@ Module Contents
 
 
 
+   .. py:attribute:: logger
+
+
    .. py:method:: lower() -> Strings
 
       Returns a new Strings with all uppercase characters from the original replaced with
@@ -1028,6 +1038,12 @@ Module Contents
 
       Registered names/Strings objects in the server are immune to deletion
       until they are unregistered.
+
+
+
+   .. py:attribute:: registered_name
+      :type:  Optional[str]
+      :value: None
 
 
 

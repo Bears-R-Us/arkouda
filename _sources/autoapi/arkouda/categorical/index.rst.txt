@@ -163,6 +163,9 @@ Module Contents
    .. py:attribute:: dtype
 
 
+   .. py:attribute:: dtype
+
+
    .. py:method:: endswith(substr: Union[bytes, arkouda.dtypes.str_scalars], regex: bool = False) -> arkouda.pdarrayclass.pdarray
 
       Check whether each element ends with the given substring.
@@ -373,11 +376,20 @@ Module Contents
 
 
 
+   .. py:attribute:: logger
+
+
    .. py:property:: nbytes
       The size of the Categorical in bytes.
 
       :returns: The size of the Categorical in bytes.
       :rtype: int
+
+
+   .. py:attribute:: ndim
+
+
+   .. py:attribute:: nlevels
 
 
    .. py:attribute:: objType
@@ -444,6 +456,12 @@ Module Contents
 
       Objects registered with the server are immune to deletion until
       they are unregistered.
+
+
+
+   .. py:attribute:: registered_name
+      :type:  Optional[str]
+      :value: None
 
 
 
@@ -522,6 +540,13 @@ Module Contents
                 be assigned the NA value.
       :rtype: Categorical
 
+
+
+   .. py:attribute:: shape
+
+
+   .. py:attribute:: size
+      :type:  arkouda.dtypes.int_scalars
 
 
    .. py:method:: sort_values()
