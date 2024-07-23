@@ -3,11 +3,12 @@ import tempfile
 
 import numpy as np
 import pytest
+from pandas import Categorical as pd_Categorical
 
 import arkouda as ak
 from arkouda import io, io_util
 from arkouda.categorical import Categorical
-
+from arkouda.testing import assert_categorical_equal
 
 @pytest.fixture
 def df_test_base_tmp(request):
@@ -101,6 +102,31 @@ class TestCategorical:
         cat = ak.Categorical.from_codes(codes, categories)
         assert codes.to_list() == cat.codes.to_list()
         assert categories.to_list() == cat.categories.to_list()
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_from_pd_categorical(self, size):
+        strings1 = ak.random_strings_uniform(1, 2, size)
+        pd_cat = pd_Categorical(strings1.to_ndarray())
+        ak_cat = ak.Categorical(pd_cat)
+
+        assert np.array_equal(pd_cat.to_numpy(), ak_cat.to_pandas().to_numpy())
+        assert np.array_equal(pd_cat.codes.astype("int64"), ak_cat.codes.to_ndarray())
+
+        filter = ak_cat.categories != "N/A"
+        assert np.array_equal(pd_cat.categories.values, ak_cat.categories[filter].to_ndarray())
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_creation_from_categorical(self, size):
+        strings1 = ak.random_strings_uniform(1, 2, size)
+        pd_cat = pd_Categorical(strings1.to_ndarray())
+        ak_cat = ak.Categorical(pd_cat)
+        expected_cat = ak.Categorical(strings1)
+        assert_categorical_equal(ak_cat, expected_cat)
+
+        ak_cat2 = ak.Categorical(ak.Categorical(strings1))
+        expected_cat = ak.Categorical(strings1)
+        assert_categorical_equal(ak_cat2, expected_cat)
+
 
     def test_substring_search(self):
         cat = self.create_basic_categorical()
@@ -435,3 +461,17 @@ class TestCategorical:
         cat = ak.Categorical.from_codes(codes=rand_codes, categories=rand_cats)
 
         assert sorted(cat.to_list()) == cat.sort_values().to_list()
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_to_pandas(self, size):
+        strings1 = ak.random_strings_uniform(1, 2, size)
+        ak_cat = ak.Categorical(strings1)
+        pd_cat = ak_cat.to_pandas()
+
+        expected_cat = pd_Categorical.from_codes(
+            codes=ak_cat.codes.to_ndarray(), categories=ak_cat.categories.to_ndarray()
+        )
+
+        assert np.array_equal(pd_cat.to_numpy(), expected_cat.to_numpy())
+        assert np.array_equal(pd_cat.codes.astype("int64"), expected_cat.codes.astype("int64"))
+        assert np.array_equal(pd_cat.categories.values, expected_cat.categories.values)

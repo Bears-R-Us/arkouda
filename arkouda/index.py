@@ -34,7 +34,7 @@ class Index:
 
     Parameters
     ----------
-    values: List, pdarray, Strings, Categorical, pandas.Index, or Index
+    values: List, pdarray, Strings, Categorical, pandas.Categorical, pandas.Index, or Index
     name : str, default=None
         Name to be stored in the index.
     allow_list = False,
@@ -68,20 +68,27 @@ class Index:
     @typechecked
     def __init__(
         self,
-        values: Union[List, pdarray, Strings, Categorical, pd.Index, "Index"],
+        values: Union[List, pdarray, Strings, Categorical, pd.Index, "Index", pd.Categorical],
         name: Optional[str] = None,
         allow_list=False,
         max_list_size=1000,
     ):
         self.max_list_size = max_list_size
         self.registered_name: Optional[str] = None
+
+        if isinstance(values, pd.Categorical):
+            values = Categorical(values)
+
         if isinstance(values, Index):
             self.values = values.values
             self.size = values.size
             self.dtype = values.dtype
             self.name = name if name else values.name
         elif isinstance(values, pd.Index):
-            self.values = array(values.values)
+            if isinstance(values.values, pd.Categorical):
+                self.values = Categorical(values.values)
+            else:
+                self.values = array(values.values)
             self.size = values.size
             self.dtype = self.values.dtype
             self.name = name if name else values.name
@@ -382,10 +389,16 @@ class Index:
         return convert_bytes(self.values.nbytes, unit=unit)
 
     def to_pandas(self):
+        """
+        Return the equivalent Pandas Index.
+        """
         if isinstance(self.values, list):
             val = ndarray(self.values)
+        elif isinstance(self.values, Categorical):
+            val = self.values.to_pandas()
+            return pd.CategoricalIndex(data=val, dtype=val.dtype, name=self.name)
         else:
-            val = convert_if_categorical(self.values).to_ndarray()
+            val = self.values.to_ndarray()
         return pd.Index(data=val, dtype=val.dtype, name=self.name)
 
     def to_ndarray(self):
@@ -459,25 +472,27 @@ class Index:
                 "objType": self.objType,
                 "num_idxs": 1,
                 "idx_names": [
-                    json.dumps(
-                        {
-                            "codes": self.values.codes.name,
-                            "categories": self.values.categories.name,
-                            "NA_codes": self.values._akNAcode.name,
-                            **(
-                                {"permutation": self.values.permutation.name}
-                                if self.values.permutation is not None
-                                else {}
-                            ),
-                            **(
-                                {"segments": self.values.segments.name}
-                                if self.values.segments is not None
-                                else {}
-                            ),
-                        }
+                    (
+                        json.dumps(
+                            {
+                                "codes": self.values.codes.name,
+                                "categories": self.values.categories.name,
+                                "NA_codes": self.values._akNAcode.name,
+                                **(
+                                    {"permutation": self.values.permutation.name}
+                                    if self.values.permutation is not None
+                                    else {}
+                                ),
+                                **(
+                                    {"segments": self.values.segments.name}
+                                    if self.values.segments is not None
+                                    else {}
+                                ),
+                            }
+                        )
+                        if isinstance(self.values, Categorical)
+                        else self.values.name
                     )
-                    if isinstance(self.values, Categorical)
-                    else self.values.name
                 ],
                 "idx_types": [self.values.objType],
             },
@@ -714,24 +729,26 @@ class Index:
             raise TypeError("Unable to write Index to hdf when values are a list.")
 
         index_data = [
-            self.values.name
-            if not isinstance(self.values, (Categorical_))
-            else json.dumps(
-                {
-                    "codes": self.values.codes.name,
-                    "categories": self.values.categories.name,
-                    "NA_codes": self.values._akNAcode.name,
-                    **(
-                        {"permutation": self.values.permutation.name}
-                        if self.values.permutation is not None
-                        else {}
-                    ),
-                    **(
-                        {"segments": self.values.segments.name}
-                        if self.values.segments is not None
-                        else {}
-                    ),
-                }
+            (
+                self.values.name
+                if not isinstance(self.values, (Categorical_))
+                else json.dumps(
+                    {
+                        "codes": self.values.codes.name,
+                        "categories": self.values.categories.name,
+                        "NA_codes": self.values._akNAcode.name,
+                        **(
+                            {"permutation": self.values.permutation.name}
+                            if self.values.permutation is not None
+                            else {}
+                        ),
+                        **(
+                            {"segments": self.values.segments.name}
+                            if self.values.segments is not None
+                            else {}
+                        ),
+                    }
+                )
             )
         ]
         return typecast(
@@ -805,24 +822,26 @@ class Index:
         file_type = _get_hdf_filetype(prefix_path + "*")
 
         index_data = [
-            self.values.name
-            if not isinstance(self.values, (Categorical_))
-            else json.dumps(
-                {
-                    "codes": self.values.codes.name,
-                    "categories": self.values.categories.name,
-                    "NA_codes": self.values._akNAcode.name,
-                    **(
-                        {"permutation": self.values.permutation.name}
-                        if self.values.permutation is not None
-                        else {}
-                    ),
-                    **(
-                        {"segments": self.values.segments.name}
-                        if self.values.segments is not None
-                        else {}
-                    ),
-                }
+            (
+                self.values.name
+                if not isinstance(self.values, (Categorical_))
+                else json.dumps(
+                    {
+                        "codes": self.values.codes.name,
+                        "categories": self.values.categories.name,
+                        "NA_codes": self.values._akNAcode.name,
+                        **(
+                            {"permutation": self.values.permutation.name}
+                            if self.values.permutation is not None
+                            else {}
+                        ),
+                        **(
+                            {"segments": self.values.segments.name}
+                            if self.values.segments is not None
+                            else {}
+                        ),
+                    }
+                )
             )
         ]
 
@@ -1044,20 +1063,34 @@ class Index:
 
 class MultiIndex(Index):
     objType = "MultiIndex"
+    levels: list
+    _name: str | None
+    _names: list[str] | list[None]
 
     def __init__(
         self,
-        levels: Union[list, pdarray, Strings, Categorical],
+        data: Union[list, tuple, pd.MultiIndex, MultiIndex],
         name: Optional[str] = None,
         names: Optional[list[str]] = None,
     ):
         self.registered_name: Optional[str] = None
-        if not (isinstance(levels, list) or isinstance(levels, tuple)):
-            raise TypeError("MultiIndex should be an iterable")
-        self.levels = levels
+        if isinstance(data, MultiIndex):
+            self.levels = data.levels
+        elif isinstance(data, pd.MultiIndex):
+            self.levels = [
+                (
+                    Categorical(data.get_level_values(i).values)
+                    if isinstance(data.get_level_values(i).values, pd.Categorical)
+                    else array(data.get_level_values(i).values)
+                )
+                for i in range(data.nlevels)
+            ]
+        elif isinstance(data, (list, tuple)):
+            self.levels = list(data)
+        else:
+            raise TypeError("MultiIndex should be an iterable, ak.MultiIndex, or pd.MutiIndex")
+
         first = True
-        self._names = names
-        self.name = name
         for col in self.levels:
             # col can be a python int which doesn't have a size attribute
             col_size = col.size if not isinstance(col, int) else 0
@@ -1070,6 +1103,15 @@ class MultiIndex(Index):
             else:
                 if col_size != self.size:
                     raise ValueError("All columns in MultiIndex must have same length")
+
+        self._name = data.name if not name and isinstance(data, (MultiIndex, pd.MultiIndex)) else name
+
+        if names is not None:
+            self._names = list(names)
+        elif isinstance(data, (MultiIndex, pd.MultiIndex)) and data.names:
+            self._names = list(data.names)
+        else:
+            self._names = [None for _i in range(len(self.levels))]
 
     def __getitem__(self, key):
         from arkouda.series import Series
@@ -1101,6 +1143,13 @@ class MultiIndex(Index):
         Return Index or MultiIndex names.
         """
         return self._names
+
+    @property
+    def name(self):
+        """
+        Return Index or MultiIndex name.
+        """
+        return self._name
 
     @property
     def index(self):
@@ -1214,9 +1263,12 @@ class MultiIndex(Index):
         return convert_bytes(nbytes, unit=unit)
 
     def to_pandas(self):
-        idx = [convert_if_categorical(i) for i in self.index]
-        mi = pd.MultiIndex.from_arrays([i.to_ndarray() for i in idx], names=self.names)
-        return pd.Series(index=mi, dtype="float64", name=self.name).index
+        mi = pd.MultiIndex.from_arrays(
+            [i.to_pandas() if isinstance(i, Categorical) else i.to_ndarray() for i in self.index],
+            names=self.names,
+        )
+        mi.name = self.name
+        return mi
 
     def set_dtype(self, dtype):
         """Change the data type of the index
@@ -1279,17 +1331,23 @@ class MultiIndex(Index):
                 "objType": self.objType,
                 "num_idxs": len(self.levels),
                 "idx_names": [
-                    json.dumps(
-                        {
-                            "codes": v.codes.name,
-                            "categories": v.categories.name,
-                            "NA_codes": v._akNAcode.name,
-                            **({"permutation": v.permutation.name} if v.permutation is not None else {}),
-                            **({"segments": v.segments.name} if v.segments is not None else {}),
-                        }
+                    (
+                        json.dumps(
+                            {
+                                "codes": v.codes.name,
+                                "categories": v.categories.name,
+                                "NA_codes": v._akNAcode.name,
+                                **(
+                                    {"permutation": v.permutation.name}
+                                    if v.permutation is not None
+                                    else {}
+                                ),
+                                **({"segments": v.segments.name} if v.segments is not None else {}),
+                            }
+                        )
+                        if isinstance(v, Categorical)
+                        else v.name
                     )
-                    if isinstance(v, Categorical)
-                    else v.name
                     for v in self.levels
                 ],
                 "idx_types": [v.objType for v in self.levels],
@@ -1409,16 +1467,18 @@ class MultiIndex(Index):
         from arkouda.io import _file_type_to_int, _mode_str_to_int
 
         index_data = [
-            obj.name
-            if not isinstance(obj, (Categorical_))
-            else json.dumps(
-                {
-                    "codes": obj.codes.name,
-                    "categories": obj.categories.name,
-                    "NA_codes": obj._akNAcode.name,
-                    **({"permutation": obj.permutation.name} if obj.permutation is not None else {}),
-                    **({"segments": obj.segments.name} if obj.segments is not None else {}),
-                }
+            (
+                obj.name
+                if not isinstance(obj, (Categorical_))
+                else json.dumps(
+                    {
+                        "codes": obj.codes.name,
+                        "categories": obj.categories.name,
+                        "NA_codes": obj._akNAcode.name,
+                        **({"permutation": obj.permutation.name} if obj.permutation is not None else {}),
+                        **({"segments": obj.segments.name} if obj.segments is not None else {}),
+                    }
+                )
             )
             for obj in self.levels
         ]
@@ -1498,16 +1558,18 @@ class MultiIndex(Index):
         file_type = _get_hdf_filetype(prefix_path + "*")
 
         index_data = [
-            obj.name
-            if not isinstance(obj, (Categorical_))
-            else json.dumps(
-                {
-                    "codes": obj.codes.name,
-                    "categories": obj.categories.name,
-                    "NA_codes": obj._akNAcode.name,
-                    **({"permutation": obj.permutation.name} if obj.permutation is not None else {}),
-                    **({"segments": obj.segments.name} if obj.segments is not None else {}),
-                }
+            (
+                obj.name
+                if not isinstance(obj, (Categorical_))
+                else json.dumps(
+                    {
+                        "codes": obj.codes.name,
+                        "categories": obj.categories.name,
+                        "NA_codes": obj._akNAcode.name,
+                        **({"permutation": obj.permutation.name} if obj.permutation is not None else {}),
+                        **({"segments": obj.segments.name} if obj.segments is not None else {}),
+                    }
+                )
             )
             for obj in self.levels
         ]
