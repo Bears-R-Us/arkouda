@@ -379,7 +379,7 @@ work in initialization.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>values</strong> (<a class="reference internal" href="../index.html#id721" title="arkouda.Strings"><em>Strings</em></a>) – String values to convert to categories</p></li>
+<li><p><strong>values</strong> (<a class="reference internal" href="../index.html#id718" title="arkouda.Strings"><em>Strings</em></a>) – String values to convert to categories</p></li>
 <li><p><strong>NAvalue</strong> (<em>str scalar</em>) – The value to use to represent missing/null data</p></li>
 </ul>
 </dd>
@@ -390,7 +390,7 @@ work in initialization.</p>
 <dd><p>The set of category labels (determined automatically)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id721" title="arkouda.Strings">Strings</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id718" title="arkouda.Strings">Strings</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -589,11 +589,6 @@ instead of the full array.</p>
 <span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#arkouda.categorical.Categorical.dtype" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id0">
-<span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#id0" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.categorical.Categorical.endswith">
 <span class="sig-name descname"><span class="pre">endswith</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">substr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">arkouda.dtypes.str_scalars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/categorical.html#Categorical.endswith"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.categorical.Categorical.endswith" title="Link to this definition">¶</a></dt>
@@ -670,7 +665,7 @@ time. If not, please use the normal constructor.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>codes</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../numpy/index.html#arkouda.numpy.int64" title="arkouda.numpy.int64"><em>int64</em></a>) – Category indices of each value</p></li>
-<li><p><strong>categories</strong> (<a class="reference internal" href="../index.html#id721" title="arkouda.Strings"><em>Strings</em></a>) – Unique category labels</p></li>
+<li><p><strong>categories</strong> (<a class="reference internal" href="../index.html#id718" title="arkouda.Strings"><em>Strings</em></a>) – Unique category labels</p></li>
 <li><p><strong>permutation</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../numpy/index.html#arkouda.numpy.int64" title="arkouda.numpy.int64"><em>int64</em></a>) – The permutation that groups the values in the same order
 as categories</p></li>
 <li><p><strong>segments</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../numpy/index.html#arkouda.numpy.int64" title="arkouda.numpy.int64"><em>int64</em></a>) – When values are grouped, the starting offset of each group</p></li>
@@ -754,7 +749,7 @@ also present in the test Strings or Categorical object.</p>
 where an element of <cite>self</cite> is in <cite>test</cite> and False otherwise.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>test</strong> (<em>Union</em><em>[</em><a class="reference internal" href="../index.html#id721" title="arkouda.Strings"><em>Strings</em></a><em>,</em><a class="reference internal" href="#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>]</em>) – The values against which to test each value of ‘self`.</p>
+<dd class="field-odd"><p><strong>test</strong> (<em>Union</em><em>[</em><a class="reference internal" href="../index.html#id718" title="arkouda.Strings"><em>Strings</em></a><em>,</em><a class="reference internal" href="#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>]</em>) – The values against which to test each value of ‘self`.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The values <cite>self[in1d]</cite> are in the <cite>test</cite> Strings or Categorical object.</p>
@@ -826,7 +821,7 @@ registered object.</p>
 <dd class="field-even"><p>numpy.bool</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id492" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mis-match of registered components</p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id489" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mis-match of registered components</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -865,13 +860,13 @@ they are unregistered.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="id1">
-<span class="sig-name descname"><span class="pre">ndim</span></span><a class="headerlink" href="#id1" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">ndim</span></span><a class="headerlink" href="#id0" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="id2">
-<span class="sig-name descname"><span class="pre">nlevels</span></span><a class="headerlink" href="#id2" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">nlevels</span></span><a class="headerlink" href="#id1" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -906,8 +901,8 @@ constructed for the user.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="id3">
-<span class="sig-name descname"><span class="pre">permutation</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id3" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">permutation</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id2" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -945,7 +940,7 @@ Please note you cannot register two different Categoricals with the same name.</
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
-<li><p><a class="reference internal" href="../index.html#id492" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Categorical with the user_defined_name</p></li>
+<li><p><a class="reference internal" href="../index.html#id489" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Categorical with the user_defined_name</p></li>
 </ul>
 </dd>
 </dl>
@@ -1034,8 +1029,8 @@ via the dataset parameter.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="id4">
-<span class="sig-name descname"><span class="pre">segments</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id4" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">segments</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id3" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1045,7 +1040,7 @@ via the dataset parameter.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>new_categories</strong> (<a class="reference internal" href="../index.html#id721" title="arkouda.Strings"><em>Strings</em></a>) – The array of new categories to use. Must be unique.</p></li>
+<li><p><strong>new_categories</strong> (<a class="reference internal" href="../index.html#id718" title="arkouda.Strings"><em>Strings</em></a>) – The array of new categories to use. Must be unique.</p></li>
 <li><p><strong>NAvalue</strong> (<em>str scalar</em>) – The value to use to represent missing/null data</p></li>
 </ul>
 </dd>
@@ -1061,13 +1056,13 @@ be assigned the NA value.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="id5">
-<span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#id5" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#id4" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="id6">
-<span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">arkouda.dtypes.int_scalars</span></em><a class="headerlink" href="#id6" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">arkouda.dtypes.int_scalars</span></em><a class="headerlink" href="#id5" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1334,7 +1329,7 @@ a supported dtype</p></li>
 registered using register() and/or attached to using attach()</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id492" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id489" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
 when attempting to unregister</p>
 </dd>
 </dl>
@@ -1359,7 +1354,7 @@ with the arkouda server via register()</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – if user_defined_name is not a string</p></li>
-<li><p><a class="reference internal" href="../index.html#id492" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if there is an issue attempting to unregister any underlying components</p></li>
+<li><p><a class="reference internal" href="../index.html#id489" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if there is an issue attempting to unregister any underlying components</p></li>
 </ul>
 </dd>
 </dl>
@@ -1483,7 +1478,6 @@ automatic creation of a file without the inaccessible data.</p></li>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical.concatenate"><code class="docutils literal notranslate"><span class="pre">Categorical.concatenate()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical.contains"><code class="docutils literal notranslate"><span class="pre">Categorical.contains()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical.dtype"><code class="docutils literal notranslate"><span class="pre">Categorical.dtype</span></code></a></li>
-<li><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">Categorical.dtype</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical.endswith"><code class="docutils literal notranslate"><span class="pre">Categorical.endswith()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical.equals"><code class="docutils literal notranslate"><span class="pre">Categorical.equals()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical.from_codes"><code class="docutils literal notranslate"><span class="pre">Categorical.from_codes()</span></code></a></li>
@@ -1497,20 +1491,20 @@ automatic creation of a file without the inaccessible data.</p></li>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical.isna"><code class="docutils literal notranslate"><span class="pre">Categorical.isna()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical.logger"><code class="docutils literal notranslate"><span class="pre">Categorical.logger</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical.nbytes"><code class="docutils literal notranslate"><span class="pre">Categorical.nbytes</span></code></a></li>
-<li><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">Categorical.ndim</span></code></a></li>
-<li><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">Categorical.nlevels</span></code></a></li>
+<li><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">Categorical.ndim</span></code></a></li>
+<li><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">Categorical.nlevels</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical.objType"><code class="docutils literal notranslate"><span class="pre">Categorical.objType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical.parse_hdf_categoricals"><code class="docutils literal notranslate"><span class="pre">Categorical.parse_hdf_categoricals()</span></code></a></li>
-<li><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">Categorical.permutation</span></code></a></li>
+<li><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">Categorical.permutation</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical.pretty_print_info"><code class="docutils literal notranslate"><span class="pre">Categorical.pretty_print_info()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical.register"><code class="docutils literal notranslate"><span class="pre">Categorical.register()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical.registered_name"><code class="docutils literal notranslate"><span class="pre">Categorical.registered_name</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical.reset_categories"><code class="docutils literal notranslate"><span class="pre">Categorical.reset_categories()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical.save"><code class="docutils literal notranslate"><span class="pre">Categorical.save()</span></code></a></li>
-<li><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">Categorical.segments</span></code></a></li>
+<li><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">Categorical.segments</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical.set_categories"><code class="docutils literal notranslate"><span class="pre">Categorical.set_categories()</span></code></a></li>
-<li><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">Categorical.shape</span></code></a></li>
-<li><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">Categorical.size</span></code></a></li>
+<li><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">Categorical.shape</span></code></a></li>
+<li><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">Categorical.size</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical.sort_values"><code class="docutils literal notranslate"><span class="pre">Categorical.sort_values()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical.standardize_categories"><code class="docutils literal notranslate"><span class="pre">Categorical.standardize_categories()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical.startswith"><code class="docutils literal notranslate"><span class="pre">Categorical.startswith()</span></code></a></li>
