@@ -8,13 +8,11 @@ import numpy as np
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
-from arkouda.dtypes import dtype
-from arkouda.dtypes import (
-    int_scalars
-)
+from arkouda.dtypes import dtype, int_scalars
 from arkouda.logger import getArkoudaLogger
 
 logger = getArkoudaLogger(name="sparrayclass")
+
 
 class sparray:
     """
@@ -94,6 +92,7 @@ class sparray:
     #     from arkouda.client import pdarrayIterThresh
 
     #     return generic_msg(cmd="repr", args={"array": self, "printThresh": pdarrayIterThresh})
+
 
 # creates sparray object
 #   only after:

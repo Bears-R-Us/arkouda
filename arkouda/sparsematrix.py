@@ -1,16 +1,18 @@
 from __future__ import annotations
 
 from typeguard import typechecked
+
 from arkouda.client import generic_msg
 from arkouda.logger import getArkoudaLogger
-from arkouda.sparrayclass import sparray, create_sparray
+from arkouda.sparrayclass import create_sparray, sparray
 
 __all__ = ["random_sparse_matrix", "sparse_matrix_matrix_mult"]
 
 logger = getArkoudaLogger(name="sparsematrix")
 
+
 @typechecked
-def random_sparse_matrix(size: int, density: float, layout:str) -> sparray:
+def random_sparse_matrix(size: int, density: float, layout: str) -> sparray:
     """
     Create a random sparse matrix with the specified number of rows and columns
     and the specified density. The density is the fraction of non-zero elements
@@ -43,7 +45,7 @@ def random_sparse_matrix(size: int, density: float, layout:str) -> sparray:
         cmd="random_sparse_matrix",
         args={
             # "dtype": dtype,
-            "size":size,
+            "size": size,
             "density": density,
             # shape : always 2D
             "layout": layout,
@@ -52,6 +54,7 @@ def random_sparse_matrix(size: int, density: float, layout:str) -> sparray:
     )
 
     return create_sparray(repMsg)
+
 
 @typechecked
 def sparse_matrix_matrix_mult(A, B: sparray) -> sparray:
