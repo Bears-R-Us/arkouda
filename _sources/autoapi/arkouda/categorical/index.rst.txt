@@ -22,8 +22,8 @@ Module Contents
    especially if there are many repeated values, at the cost of some one-time
    work in initialization.
 
-   :param values: String values to convert to categories
-   :type values: Strings
+   :param values: Values to convert to categories
+   :type values: Strings, Categorical, pd.Categorical
    :param NAvalue: The value to use to represent missing/null data
    :type NAvalue: str scalar
 
@@ -659,6 +659,12 @@ Module Contents
       distributed system with much more memory than the client. The user
       may override this limit by setting ak.client.maxTransferBytes to a larger
       value, but proceed with caution.
+
+
+
+   .. py:method:: to_pandas() -> pandas.Categorical
+
+      Return the equivalent Pandas Categorical.
 
 
 

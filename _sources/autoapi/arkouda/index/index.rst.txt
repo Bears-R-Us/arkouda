@@ -16,7 +16,7 @@ Classes
 Module Contents
 ---------------
 
-.. py:class:: Index(values: Union[List, arkouda.pdarrayclass.pdarray, arkouda.Strings, arkouda.Categorical, pandas.Index, Index], name: Optional[str] = None, allow_list=False, max_list_size=1000)
+.. py:class:: Index(values: Union[List, arkouda.pdarrayclass.pdarray, arkouda.Strings, arkouda.Categorical, pandas.Index, Index, pandas.Categorical], name: Optional[str] = None, allow_list=False, max_list_size=1000)
 
    .. py:method:: argsort(ascending=True)
 
@@ -185,7 +185,7 @@ Module Contents
       The basic object storing axis labels for all DataFrame objects.
 
       :param values:
-      :type values: List, pdarray, Strings, Categorical, pandas.Index, or Index
+      :type values: List, pdarray, Strings, Categorical, pandas.Categorical, pandas.Index, or Index
       :param name: Name to be stored in the index.
       :type name: str, default=None
       :param allow_list = False: If False, list values will be converted to a pdarray.
@@ -405,6 +405,9 @@ Module Contents
 
    .. py:method:: to_pandas()
 
+      Return the equivalent Pandas Index.
+
+
 
    .. py:method:: to_parquet(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', compression: Optional[str] = None)
 
@@ -491,7 +494,7 @@ Module Contents
 
 
 
-.. py:class:: MultiIndex(levels: Union[list, arkouda.pdarrayclass.pdarray, arkouda.Strings, arkouda.Categorical], name: Optional[str] = None, names: Optional[list[str]] = None)
+.. py:class:: MultiIndex(data: Union[list, tuple, pandas.MultiIndex, MultiIndex], name: Optional[str] = None, names: Optional[list[str]] = None)
 
    Bases: :py:obj:`Index`
 
@@ -553,6 +556,7 @@ Module Contents
 
 
    .. py:attribute:: levels
+      :type:  list
 
 
    .. py:method:: lookup(key)
@@ -580,7 +584,8 @@ Module Contents
 
 
 
-   .. py:attribute:: name
+   .. py:property:: name
+      Return Index or MultiIndex name.
 
 
    .. py:property:: names
@@ -693,6 +698,9 @@ Module Contents
 
 
    .. py:method:: to_pandas()
+
+      Return the equivalent Pandas Index.
+
 
 
    .. py:method:: unregister()
