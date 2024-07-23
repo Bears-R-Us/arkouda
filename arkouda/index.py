@@ -1111,7 +1111,7 @@ class MultiIndex(Index):
         elif isinstance(data, (MultiIndex, pd.MultiIndex)) and data.names:
             self._names = list(data.names)
         else:
-            self._names = [None for i in range(len(self.levels))]
+            self._names = [None for _i in range(len(self.levels))]
 
     def __getitem__(self, key):
         from arkouda.series import Series

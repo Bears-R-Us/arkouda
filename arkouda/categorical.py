@@ -109,14 +109,12 @@ class Categorical:
         else:
             # Typical initialization, called with values
             if isinstance(values, pd_Categorical):
-                self.values = array(values.to_numpy())
                 self.categories = array(values.categories)
                 self.codes = array(values.codes.astype("int64"))
                 self._categories_used = self.categories[unique(self.codes)]
                 self.permutation = None
                 self.segments = None
             elif isinstance(values, Categorical):
-                self.values = values.values
                 self.categories = values.categories
                 self.codes = values.codes
                 self._categories_used = values._categories_used

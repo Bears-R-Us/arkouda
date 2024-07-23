@@ -109,7 +109,7 @@ class TestCategorical:
         pd_cat = pd_Categorical(strings1.to_ndarray())
         ak_cat = ak.Categorical(pd_cat)
 
-        assert np.array_equal(pd_cat.to_numpy(), ak_cat.values.to_ndarray())
+        assert np.array_equal(pd_cat.to_numpy(), ak_cat.to_pandas().to_numpy())
         assert np.array_equal(pd_cat.codes.astype("int64"), ak_cat.codes.to_ndarray())
 
         filter = ak_cat.categories != "N/A"
@@ -123,11 +123,9 @@ class TestCategorical:
         expected_cat = ak.Categorical(strings1)
         assert_categorical_equal(ak_cat, expected_cat)
 
-        strings1 = ak.random_strings_uniform(1, 2, size)
-        pd_cat = pd_Categorical(strings1.to_ndarray())
-        ak_cat = ak.Categorical(pd_cat)
+        ak_cat2 = ak.Categorical(ak.Categorical(strings1))
         expected_cat = ak.Categorical(strings1)
-        assert_categorical_equal(ak_cat, expected_cat)
+        assert_categorical_equal(ak_cat2, expected_cat)
 
 
     def test_substring_search(self):
