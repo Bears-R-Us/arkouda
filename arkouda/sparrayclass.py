@@ -8,13 +8,11 @@ import numpy as np
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
-from arkouda.dtypes import dtype
-from arkouda.dtypes import (
-    int_scalars
-)
+from arkouda.dtypes import dtype, int_scalars
 from arkouda.logger import getArkoudaLogger
 
 logger = getArkoudaLogger(name="sparrayclass")
+
 
 class sparray:
     """
@@ -82,6 +80,9 @@ class sparray:
     def __len__(self):
         return reduce(lambda x, y: x * y, self.shape)
 
+    def __getitem__(self, key):
+        raise NotImplementedError("sparray does not support __getitem__")
+
     # def __str__(self): # This won't work out of the box for sparrays need to add this in later
     #     from arkouda.client import pdarrayIterThresh
 
@@ -91,6 +92,7 @@ class sparray:
     #     from arkouda.client import pdarrayIterThresh
 
     #     return generic_msg(cmd="repr", args={"array": self, "printThresh": pdarrayIterThresh})
+
 
 # creates sparray object
 #   only after:
@@ -128,7 +130,6 @@ def create_sparray(repMsg: str, max_bits=None) -> sparray:
         mydtype = fields[2]
         size = int(fields[3])
         ndim = int(fields[4])
-        
 
         if fields[5] == "[]":
             shape = []
