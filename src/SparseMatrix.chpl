@@ -1,35 +1,15 @@
 module SparseMatrix {
 
-  use CommDiagnostics, Time;
   public use SpsMatUtil;
-
-  config const countComms=false,
-               printTimings=false;
 
   // sparse, outer, matrix-matrix multiplication algorithm; A is assumed
   // CSC and B CSR
-  //
   proc sparseMatMatMult(A, B) {
-    if countComms then startCommDiagnostics();
-    var time: stopwatch;
-    time.start();
-
     var spsData: sparseMatDat;
 
     sparseMatMatMult(A, B, spsData);
 
     var C = makeSparseMat(A.domain.parentDom, spsData);
-
-    const elapsed = time.elapsed();
-
-    if countComms {
-      stopCommDiagnostics();
-      printCommDiagnosticsTable();
-      writeln();
-    }
-
-    if printTimings then writeln("Elapsed time = ", elapsed, "\n");
-
     return C;
   }
 
@@ -50,11 +30,6 @@ module SparseMatrix {
     var C: [CD] int;
 
     ref targLocs = A.targetLocales();
-  
-    if countComms then startCommDiagnostics();
-    var time: stopwatch;
-    time.start();
-
     coforall (locRow, locCol) in targLocs.domain {
       on targLocs[locRow, locCol] {
         var spsData: sparseMatDat;
@@ -86,17 +61,6 @@ module SparseMatrix {
         C.setLocalSubarray(cBlk);
       }
     }
-
-    const elapsed = time.elapsed();
-    
-    if countComms {
-      stopCommDiagnostics();
-      printCommDiagnosticsTable();
-      writeln();
-    }
-
-    if printTimings then writeln("Elapsed time = ", elapsed, "\n");
-
     return C;
   }
 
@@ -107,10 +71,6 @@ module SparseMatrix {
   // be expensive.
   //
   proc denseMatMatMult(A, B) {
-    if countComms then startCommDiagnostics();
-    var time: stopwatch;
-    time.start();
-
     const n = A.dim(0).size;
 
     var spsData: sparseMatDat;
@@ -128,17 +88,6 @@ module SparseMatrix {
     }
 
     var C = makeSparseMat(A.domain.parentDom, spsData);
-
-    const elapsed = time.elapsed();
-
-    if countComms {
-      stopCommDiagnostics();
-      printCommDiagnosticsTable();
-      writeln();
-    }
-
-    if printTimings then writeln("Elapsed time = ", elapsed, "\n");
-
     return C;
   }
 
@@ -164,16 +113,10 @@ module SparseMatrix {
     enum layout { CSR, CSC };
     public use layout;
 
-    config const seed = 0,
-                printSeed = seed == 0;
+    config const seed = 0;
 
     var rands = if seed == 0 then new randomStream(real)
                           else new randomStream(real, seed);
-
-    // print library-selected seed, for reproducibility
-    //
-    if printSeed then
-      writeln("Using seed: ", rands.seed);
 
     record sparseMatDat {
       forwarding var m: map(2*int, int);
@@ -269,7 +212,7 @@ module SparseMatrix {
         inds[i] = idx;
 
       sort(inds);
-    
+
       for ij in inds do
         CDom += ij;
 
@@ -307,13 +250,6 @@ module SparseMatrix {
         var ident: eltType;
         return ident;
       }
-
-      /*
-      proc initialAccumulate(x) {
-        if x.size != 0 then
-          halt("Error shouldn't call merge.initialAccumulate() with a non-empty table");
-      }
-      */
 
       proc accumulate(x) {
         // Why is this ever called with a sparseMatDat as the argument?!?

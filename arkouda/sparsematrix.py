@@ -19,10 +19,8 @@ def random_sparse_matrix(size: int, density: float, layout:str) -> sparray:
 
     Parameters
     ----------
-    nrows : int
-        The number of rows in the matrix
-    ncols : int
-        The number of columns in the matrix
+    size : int
+        The number of rows in the matrix, columns are equal to rows right now
     density : float
         The fraction of non-zero elements in the matrix
     dtype : Union[DTypes, str]

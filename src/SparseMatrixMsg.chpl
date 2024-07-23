@@ -29,9 +29,8 @@ module SparseMatrixMsg {
 
         var size: int = msgArgs.get("size").getIntValue();
         var density: real = msgArgs.get("density").getRealValue();
-        // var shape: always 2d?
         var l: string = msgArgs.getValueOf("layout");
-        // var distributed: bool = msgArgs.getBoolValueOf("distributed"); TODO does this need to be configurable?
+
 
         select l {
             when "CSR" {
