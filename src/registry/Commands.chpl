@@ -7,7 +7,6 @@ use BigInteger;
 param regConfig = """
 {
   "parameter_classes": {
-    "NOTE!!!": "run 'make register-commands' after changing any of these values",
     "array": {
       "nd": [
         1
