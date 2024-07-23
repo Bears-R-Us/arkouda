@@ -140,17 +140,30 @@ def make_multi_dtype_dict():
     }
 
 
-class TestParquet:
-    par_test_base_tmp = f"{os.getcwd()}/par_io_test"
+@pytest.fixture
+def par_test_base_tmp(request):
+    par_test_base_tmp = "{}/.par_io_test".format(os.getcwd())
     io_util.get_directory(par_test_base_tmp)
+
+    # Define a finalizer function for teardown
+    def finalizer():
+        # Clean up any resources if needed
+        io_util.delete_directory(par_test_base_tmp)
+
+    # Register the finalizer to ensure cleanup
+    request.addfinalizer(finalizer)
+    return par_test_base_tmp
+
+
+class TestParquet:
     COMPRESSIONS = [None, "snappy", "gzip", "brotli", "zstd", "lz4"]
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERIC_AND_STR_TYPES)
     @pytest.mark.parametrize("comp", COMPRESSIONS)
-    def test_read_and_write(self, prob_size, dtype, comp):
+    def test_read_and_write(self, par_test_base_tmp, prob_size, dtype, comp):
         ak_arr = make_ak_arrays(prob_size * pytest.nl, dtype)
-        with tempfile.TemporaryDirectory(dir=TestParquet.par_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/pq_test_correct"
             ak_arr.to_parquet(file_name, "my-dset", compression=comp)
             pq_arr = ak.read_parquet(f"{file_name}*", "my-dset")["my-dset"]
@@ -174,14 +187,14 @@ class TestParquet:
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERIC_AND_STR_TYPES)
-    def test_multi_file(self, prob_size, dtype):
+    def test_multi_file(self, par_test_base_tmp, prob_size, dtype):
         is_multi_loc = pytest.nl != 1
         NUM_FILES = pytest.nl if is_multi_loc else 2
         adjusted_size = int(prob_size / NUM_FILES) * NUM_FILES
         ak_arr = make_ak_arrays(adjusted_size, dtype)
 
         per_arr = int(adjusted_size / NUM_FILES)
-        with tempfile.TemporaryDirectory(dir=TestParquet.par_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/pq_test"
             if is_multi_loc:
                 # when multi locale multiple created automatically
@@ -196,9 +209,9 @@ class TestParquet:
             pq_arr = ak.read_parquet(f"{file_name}*", "test-dset")["test-dset"]
             assert (ak_arr == pq_arr).all()
 
-    def test_wrong_dset_name(self):
+    def test_wrong_dset_name(self, par_test_base_tmp):
         ak_arr = ak.randint(0, 2**32, 100)
-        with tempfile.TemporaryDirectory(dir=TestParquet.par_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/pq_test"
             ak_arr.to_parquet(file_name, "test-dset-name")
 
@@ -210,10 +223,10 @@ class TestParquet:
 
     @pytest.mark.parametrize("dtype", NUMERIC_AND_STR_TYPES)
     @pytest.mark.parametrize("comp", COMPRESSIONS)
-    def test_edge_case_read_write(self, dtype, comp):
+    def test_edge_case_read_write(self, par_test_base_tmp, dtype, comp):
         np_edge_case = make_edge_case_arrays(dtype)
         ak_edge_case = ak.array(np_edge_case)
-        with tempfile.TemporaryDirectory(dir=TestParquet.par_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
             ak_edge_case.to_parquet(f"{tmp_dirname}/pq_test_edge_case", "my-dset", compression=comp)
             pq_arr = ak.read_parquet(f"{tmp_dirname}/pq_test_edge_case*", "my-dset")["my-dset"]
             if dtype == "float64":
@@ -222,21 +235,21 @@ class TestParquet:
                 assert (np_edge_case == pq_arr.to_ndarray()).all()
 
     @pytest.mark.parametrize("dtype", NUMERIC_AND_STR_TYPES)
-    def test_get_datasets(self, dtype):
+    def test_get_datasets(self, par_test_base_tmp, dtype):
         ak_arr = make_ak_arrays(10, dtype)
-        with tempfile.TemporaryDirectory(dir=TestParquet.par_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
             ak_arr.to_parquet(f"{tmp_dirname}/pq_test", "TEST_DSET")
             dsets = ak.get_datasets(f"{tmp_dirname}/pq_test*")
             assert ["TEST_DSET"] == dsets
 
-    def test_append(self):
+    def test_append(self, par_test_base_tmp):
         # use small size to cut down on execution time
         append_size = 32
 
         base_dset = ak.randint(0, 2**32, append_size)
         ak_dict = {dt: make_ak_arrays(append_size, dt) for dt in NUMERIC_AND_STR_TYPES}
 
-        with tempfile.TemporaryDirectory(dir=TestParquet.par_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/pq_test"
             base_dset.to_parquet(file_name, "base-dset")
 
@@ -249,19 +262,19 @@ class TestParquet:
                 assert ak_vals[key].to_list() == ak_dict[key].to_list()
 
     @pytest.mark.parametrize("dtype", NUMERIC_AND_STR_TYPES)
-    def test_append_empty(self, dtype):
+    def test_append_empty(self, par_test_base_tmp, dtype):
         # use small size to cut down on execution time
         ak_arr = make_ak_arrays(32, dtype)
-        with tempfile.TemporaryDirectory(dir=TestParquet.par_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
             ak_arr.to_parquet(f"{tmp_dirname}/pq_test_correct", "my-dset", mode="append")
             pq_arr = ak.read_parquet(f"{tmp_dirname}/pq_test_correct*", "my-dset")["my-dset"]
 
             assert ak_arr.to_list() == pq_arr.to_list()
 
     @pytest.mark.parametrize("comp", COMPRESSIONS)
-    def test_null_strings(self, comp):
+    def test_null_strings(self, par_test_base_tmp, comp):
         null_strings = ak.array(["first-string", "", "string2", "", "third", "", ""])
-        with tempfile.TemporaryDirectory(dir=TestParquet.par_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/null_strings"
             null_strings.to_parquet(file_name, compression=comp)
 
@@ -272,8 +285,43 @@ class TestParquet:
             res = ak.get_null_indices(f"{file_name}*", datasets="strings_array").popitem()[1]
             assert [0, 1, 0, 1, 0, 1, 1] == res.to_list()
 
+    def test_null_indices(self):
+        datadir = "resources/parquet-testing"
+        basename = "null-strings.parquet"
+
+        filename = os.path.join(datadir, basename)
+        res = ak.get_null_indices(filename, datasets="col1")["col1"]
+
+        assert [0, 1, 0, 1, 0, 1, 1] == res.to_list()
+
     @pytest.mark.parametrize("comp", COMPRESSIONS)
-    def test_nan_compressions(self, comp):
+    def test_compression(self, par_test_base_tmp, comp):
+        a = ak.arange(150)
+
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
+            # write with the selected compression
+            a.to_parquet(f"{tmp_dirname}/compress_test", compression=comp)
+
+            # ensure read functions
+            rd_arr = ak.read_parquet(f"{tmp_dirname}/compress_test*", "array")["array"]
+
+            # validate the list read out matches the array used to write
+            assert rd_arr.to_list() == a.to_list()
+
+        b = ak.randint(0, 2, 150, dtype=ak.bool_)
+
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
+            # write with the selected compression
+            b.to_parquet(f"{tmp_dirname}/compress_test", compression=comp)
+
+            # ensure read functions
+            rd_arr = ak.read_parquet(f"{tmp_dirname}/compress_test*", "array")["array"]
+
+            # validate the list read out matches the array used to write
+            assert rd_arr.to_list() == b.to_list()
+
+    @pytest.mark.parametrize("comp", COMPRESSIONS)
+    def test_nan_compressions(self, par_test_base_tmp, comp):
         # Reproducer for issue #2005 specifically for gzip
         pdf = pd.DataFrame(
             {
@@ -282,15 +330,31 @@ class TestParquet:
             }
         )
 
-        with tempfile.TemporaryDirectory(dir=TestParquet.par_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
             pdf.to_parquet(f"{tmp_dirname}/nan_compressed_pq", engine="pyarrow", compression=comp)
 
             ak_data = ak.read_parquet(f"{tmp_dirname}/nan_compressed_pq")
             rd_df = ak.DataFrame(ak_data)
             pd.testing.assert_frame_equal(rd_df.to_pandas(), pdf)
 
+    def test_gzip_nan_rd(self, par_test_base_tmp):
+        # create pandas dataframe
+        pdf = pd.DataFrame(
+            {
+                "all_nan": np.array([np.nan, np.nan, np.nan, np.nan]),
+                "some_nan": np.array([3.14, np.nan, 7.12, 4.44]),
+            }
+        )
+
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
+            pdf.to_parquet(f"{tmp_dirname}/gzip_pq", engine="pyarrow", compression="gzip")
+
+            ak_data = ak.read_parquet(f"{tmp_dirname}/gzip_pq")
+            rd_df = ak.DataFrame(ak_data)
+            assert pdf.equals(rd_df.to_pandas())
+
     @pytest.mark.parametrize("comp", COMPRESSIONS)
-    def test_segarray_read(self, comp):
+    def test_segarray_read(self, par_test_base_tmp, comp):
         df = pd.DataFrame(
             {
                 "IntList": [
@@ -320,7 +384,7 @@ class TestParquet:
             }
         )
         table = pa.Table.from_pandas(df)
-        with tempfile.TemporaryDirectory(dir=TestParquet.par_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/segarray_parquet"
             pq.write_table(table, file_name, compression=comp)
 
@@ -345,7 +409,7 @@ class TestParquet:
         # test for handling empty segments only reading single segarray
         df = pd.DataFrame({"ListCol": [[8], [0, 1], [], [3, 4, 5, 6], []]})
         table = pa.Table.from_pandas(df)
-        with tempfile.TemporaryDirectory(dir=TestParquet.par_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
             pq.write_table(table, f"{tmp_dirname}/empty_segments", compression=comp)
 
             ak_data = ak.read_parquet(f"{tmp_dirname}/empty_segments*")["ListCol"]
@@ -358,7 +422,7 @@ class TestParquet:
             {"IntCol": [0, 1, 2, 3], "ListCol": [[0, 1, 2], [0, 1], [3, 4, 5, 6], [1, 2, 3]]}
         )
         table = pa.Table.from_pandas(df)
-        with tempfile.TemporaryDirectory(dir=TestParquet.par_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/segarray_varied_parquet"
             pq.write_table(table, file_name, compression=comp)
 
@@ -393,7 +457,7 @@ class TestParquet:
             dataframes = [pd.DataFrame({"ListCol": li}) for li in lists]
             tables = [pa.Table.from_pandas(df) for df in dataframes]
             combo = pd.concat(dataframes, ignore_index=True)
-            with tempfile.TemporaryDirectory(dir=TestParquet.par_test_base_tmp) as tmp_dirname:
+            with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
                 file_name = f"{tmp_dirname}/segarray_varied_parquet"
                 if is_multi_loc:
                     # when multi locale multiple created automatically
@@ -416,12 +480,34 @@ class TestParquet:
                 for i in range(ak_data.size):
                     assert combo["ListCol"][i] == ak_data[i].to_list()
 
+    def test_segarray_string(self, par_test_base_tmp):
+        words = ak.array(["one,two,three", "uno,dos,tres"])
+        strs, segs = words.split(",", return_segments=True)
+        x = ak.SegArray(segs, strs)
+
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
+            x.to_parquet(f"{tmp_dirname}/segarr_str")
+
+            rd = ak.read_parquet(f"{tmp_dirname}/segarr_str_*").popitem()[1]
+            assert isinstance(rd, ak.SegArray)
+            assert x.segments.to_list() == rd.segments.to_list()
+            assert x.values.to_list() == rd.values.to_list()
+            assert x.to_list() == rd.to_list()
+
+        # additional testing for empty segments. See Issue #2560
+        a, b, c = ["one", "two", "three"], ["un", "deux", "trois"], ["uno", "dos", "tres"]
+        s = ak.SegArray(ak.array([0, 0, len(a), len(a), len(a), len(a) + len(c)]), ak.array(a + c))
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
+            s.to_parquet(f"{tmp_dirname}/segarray_test_empty")
+            rd_data = ak.read_parquet(f"{tmp_dirname}/segarray_test_empty_*").popitem()[1]
+            assert s.to_list() == rd_data.to_list()
+
     @pytest.mark.parametrize("dtype", NUMERIC_AND_STR_TYPES)
     @pytest.mark.parametrize("segarray_create", [segarray_setup, edge_case_segarray_setup])
-    def test_segarray_write(self, dtype, segarray_create):
+    def test_segarray_write(self, par_test_base_tmp, dtype, segarray_create):
         a, b, c = segarray_create(dtype)
         s = ak.SegArray(ak.array([0, len(a), len(a) + len(b)]), ak.array(a + b + c))
-        with tempfile.TemporaryDirectory(dir=TestParquet.par_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
             s.to_parquet(f"{tmp_dirname}/segarray_test")
 
             rd_data = ak.read_parquet(f"{tmp_dirname}/segarray_test*").popitem()[1]
@@ -430,7 +516,7 @@ class TestParquet:
                 assert x == y if dtype != "float64" else np.allclose(x, y, equal_nan=True)
 
         s = ak.SegArray(ak.array([0, 0, len(a), len(a), len(a), len(a) + len(c)]), ak.array(a + c))
-        with tempfile.TemporaryDirectory(dir=TestParquet.par_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
             s.to_parquet(f"{tmp_dirname}/segarray_test_empty")
 
             rd_data = ak.read_parquet(f"{tmp_dirname}/segarray_test_empty*").popitem()[1]
@@ -439,10 +525,10 @@ class TestParquet:
                 assert x == y if dtype != "float64" else np.allclose(x, y, equal_nan=True)
 
     @pytest.mark.parametrize("comp", COMPRESSIONS)
-    def test_multi_col_write(self, comp):
+    def test_multi_col_write(self, par_test_base_tmp, comp):
         df_dict = make_multi_dtype_dict()
         akdf = ak.DataFrame(df_dict)
-        with tempfile.TemporaryDirectory(dir=TestParquet.par_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
             # use multi-column write to generate parquet file
             akdf.to_parquet(f"{tmp_dirname}/multi_col_parquet", compression=comp)
             # read files and ensure that all resulting fields are as expected
@@ -456,7 +542,7 @@ class TestParquet:
             rd_df = ak.DataFrame(rd_data)
             pd.testing.assert_frame_equal(akdf.to_pandas(), rd_df.to_pandas())
 
-    def test_small_ints(self):
+    def test_small_ints(self, par_test_base_tmp):
         df_pd = pd.DataFrame(
             {
                 "int16": pd.Series([2**15 - 1, -(2**15)], dtype=np.int16),
@@ -465,16 +551,16 @@ class TestParquet:
                 "uint32": pd.Series([2**31 - 1, 2**31], dtype=np.uint32),
             }
         )
-        with tempfile.TemporaryDirectory(dir=TestParquet.par_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/pq_small_int"
             df_pd.to_parquet(file_name)
             df_ak = ak.DataFrame(ak.read_parquet(f"{file_name}*"))
             for c in df_ak.columns.values:
                 assert df_ak[c].to_list() == df_pd[c].to_list()
 
-    def test_read_nested(self):
+    def test_read_nested(self, par_test_base_tmp):
         df = ak.DataFrame({"idx": ak.arange(5), "seg": ak.SegArray(ak.arange(0, 10, 2), ak.arange(10))})
-        with tempfile.TemporaryDirectory(dir=TestParquet.par_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/read_nested_test"
             df.to_parquet(file_name)
 
@@ -498,11 +584,11 @@ class TestParquet:
             assert df["seg"].to_list() == data["seg"].to_list()
 
     @pytest.mark.parametrize("comp", COMPRESSIONS)
-    def test_ipv4_columns(self, comp):
+    def test_ipv4_columns(self, par_test_base_tmp, comp):
         # Added as reproducer for issue #2337
         # test with single IPv4 column
         df = ak.DataFrame({"a": ak.arange(10), "b": ak.IPv4(ak.arange(10))})
-        with tempfile.TemporaryDirectory(dir=TestParquet.par_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/ipv4_df"
             df.to_parquet(file_name, compression=comp)
 
@@ -513,7 +599,7 @@ class TestParquet:
 
         # test with multiple IPv4 columns
         df = ak.DataFrame({"a": ak.IPv4(ak.arange(10)), "b": ak.IPv4(ak.arange(10))})
-        with tempfile.TemporaryDirectory(dir=TestParquet.par_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/ipv4_df"
             df.to_parquet(file_name, compression=comp)
 
@@ -527,7 +613,23 @@ class TestParquet:
         df["a"] = df["a"].export_uint()
         assert ak.arange(10).to_list() == df["a"].to_list()
 
-    def test_multi_batch_reads(self):
+    def test_decimal_reads(self, par_test_base_tmp):
+        cols = []
+        data = []
+        for i in range(1, 39):
+            cols.append(("decCol" + str(i), pa.decimal128(i, 0)))
+            data.append([i])
+
+        schema = pa.schema(cols)
+
+        table = pa.Table.from_arrays(data, schema=schema)
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
+            pq.write_table(table, f"{tmp_dirname}/decimal")
+            ak_data = ak.read(f"{tmp_dirname}/decimal")
+            for i in range(1, 39):
+                assert np.allclose(ak_data["decCol" + str(i)].to_ndarray(), data[i - 1])
+
+    def test_multi_batch_reads(self, par_test_base_tmp):
         # verify reproducer for #3074 is resolved
         # seagarray w/ empty segs multi-batch pq reads
 
@@ -560,7 +662,7 @@ class TestParquet:
             df_dict["rand"] = ak.SegArray(segs, vals).to_list()
 
             pddf = pd.DataFrame(df_dict)
-            with tempfile.TemporaryDirectory(dir=TestParquet.par_test_base_tmp) as tmp_dirname:
+            with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
                 file_path = f"{tmp_dirname}/empty_segs"
                 pddf.to_parquet(file_path)
                 akdf = ak.DataFrame(ak.read_parquet(file_path))
@@ -582,6 +684,51 @@ class TestParquet:
                     assert np.allclose(read.to_list(), vals.to_list(), equal_nan=True)
                 else:
                     assert (read == vals).all()
+
+    @pytest.mark.optional_parquet
+    def test_against_standard_files(self):
+        datadir = "resources/parquet-testing"
+        filenames = [
+            "alltypes_plain.parquet",
+            "alltypes_plain.snappy.parquet",
+            "delta_byte_array.parquet",
+        ]
+        columns1 = [
+            "id",
+            "bool_col",
+            "tinyint_col",
+            "smallint_col",
+            "int_col",
+            "bigint_col",
+            "float_col",
+            "double_col",
+            "date_string_col",
+            "string_col",
+            "timestamp_col",
+        ]
+        columns2 = [
+            "c_customer_id",
+            "c_salutation",
+            "c_first_name",
+            "c_last_name",
+            "c_preferred_cust_flag",
+            "c_birth_country",
+            "c_login",
+            "c_email_address",
+            "c_last_review_date",
+        ]
+        for basename, ans in zip(filenames, (columns1, columns1, columns2)):
+            filename = os.path.join(datadir, basename)
+            columns = ak.get_datasets(filename)
+            assert columns == ans
+            # Merely test that read succeeds, do not check output
+            if "delta_byte_array.parquet" not in filename:
+                data = ak.read_parquet(filename, datasets=columns)
+            else:
+                # Since delta encoding is not supported, the columns in
+                # this file should raise an error and not crash the server
+                with pytest.raises(RuntimeError):
+                    data = ak.read_parquet(filename, datasets=columns)
 
 
 class TestHDF5:
@@ -998,9 +1145,7 @@ class TestHDF5:
             "pdarray": ak.arange(2**200, 2**200 + 3, max_bits=201),
             "arrayview": ak.arange(2**200, 2**200 + 27, max_bits=201).reshape((3, 3, 3)),
             "groupby": ak.GroupBy(ak.arange(2**200, 2**200 + 5)),
-            "segarray": ak.SegArray(
-                ak.arange(0, 10, 2), ak.arange(2**200, 2**200 + 10, max_bits=212)
-            ),
+            "segarray": ak.SegArray(ak.arange(0, 10, 2), ak.arange(2**200, 2**200 + 10, max_bits=212)),
         }
         with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/bigint_test"
