@@ -279,7 +279,8 @@ This could cause problems because it's possible for one task to prevent another 
 Resulting in incorrect answers and inconsistent behavior between runs.
 
 Okay our tasks are like kids that don't share well, so how do we avoid these problems?
-One idea is to give each task its own copy of `fact` and at the end figure out how combine them into a final answer.
+One idea is to give each task its own copy of `fact` and at the end figure out how to
+combine them into a final answer.
 
 As turns out, Chapel does the first half of that for us!
 It gives each task its own private copy of `fact` called a
@@ -1098,7 +1099,7 @@ on remote data.
 To reiterate a bit more exactly:
 
 > Say `x` and `y` are both stored on `locale_i`. From the perspective of `locale_i`, we say `x` and `y` are
-both local. There no significant difference in access times.
+both local. There is no significant difference in access times.
 > 
 > But if `x` is on `locale_i` and `y` is on `locale_j`. From the perspective of `locale_i`, we say `x` is local
 and `y` is remote. In this case, accessing `y` would take longer than `x`.
@@ -1280,6 +1281,23 @@ that are all going to the same locale and copy them over all at once.
 There are two types of copy aggregation:
 * copying local values into remote variables (`DstAggregator`)
 * copying remote values into local variables (`SrcAggregator`)
+
+The question of which aggregator do I need to use can sometimes trip people up.
+This is because the same operation could use either a source or destination aggregator
+depending on which locale is performing the operation.
+
+For example:
+> Let's say `x` is stored on `locale_i` and we want to copy `x` into a position on `locale_j`.
+Which aggregator do we use? It depends
+> 
+> If `locale_i` is the one doing the computation, then `x` is a local value.
+Since we're viewing this from perspective of `locale_i`, positions on `locale_j` are remote.
+So we need a `DstAggregator` because we are putting a local value into a remote position.
+>
+> If instead `locale_j` is the one doing this computation, the position
+we want to write into is local.
+And from `locale_j`'s perspective `x` is remote. 
+Since we're getting a remote value and writing it into a local position, we need a `SrcAggregator`.
 
 It's important to note copy aggregation will only work if at least one side is local.
 Both sides being remote (remote-to-remote aggregation) is not supported.
