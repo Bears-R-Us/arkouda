@@ -203,7 +203,7 @@ class Generator:
             return self._np_generator.standard_exponential(method=method)
 
         rep_msg = generic_msg(
-            cmd=f"standardExponential",
+            cmd="standardExponential",
             args={
                 "name": self._name_dict[akfloat64],
                 "size": size,
@@ -586,7 +586,7 @@ class Generator:
             raise TypeError("poisson only accepts a pdarray or float scalar for lam")
 
         rep_msg = generic_msg(
-            cmd=f"poissonGenerator",
+            cmd="poissonGenerator",
             args={
                 "name": self._name_dict[akfloat64],
                 "lam": lam,

@@ -109,7 +109,9 @@ def randint(
 
 
 @typechecked
-def standard_normal(size: Union[int_scalars, Tuple[int_scalars, ...]], seed: Union[None, int_scalars] = None) -> pdarray:
+def standard_normal(
+    size: Union[int_scalars, Tuple[int_scalars, ...]], seed: Union[None, int_scalars] = None
+) -> pdarray:
     """
     Draw real numbers from the standard normal distribution.
 
