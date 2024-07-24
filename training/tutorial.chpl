@@ -378,7 +378,7 @@
 // use BlockDist;
 
 // // we create a block distributed array and populate with values from 1 to 16
-// var A = Block.createArray({1..16}, int);
+// var A = blockDist.createArray({1..16}, int);
 // A = 1..16;
 
 // // we use a coforall to iterate over the Locales creating one task per
@@ -388,6 +388,17 @@
 //     const localA = A[A.localSubdomain()];
 //     writeln("The chunk of A owned by Locale ", loc.id, " is: ", localA);
 //   }
+// }
+
+/* Implicit distributed computation with `forall` */
+
+// use BlockDist;
+
+// var MyDistArr = blockDist.createArray({1..16}, int);
+// MyDistArr = 1..16;
+
+// forall i in MyDistArr.domain {
+//   writeln("element ", i, " (", MyDistArr[i], ") is owned by locale ", here.id);
 // }
 
 /***************

@@ -1,6 +1,6 @@
 # Intro to Chapel
 This guide aims to:
-* Introduce new arkouda developers with some Chapel concepts commonly used in Arkouda
+* Introduce new Arkouda developers to some Chapel concepts commonly used in Arkouda
 * Serve as a reference when encountering unfamiliar Chapel code
   * Hopefully turn "I have no clue what this is doing" into "oh I think I saw this in the intro! Let me go reread that"
 * Provide links to the relevant [Chapel docs](https://chapel-lang.org/docs/) for further reading
@@ -15,7 +15,7 @@ the [primers](https://chapel-lang.org/docs/primers/index.html), the
 [language specification](https://chapel-lang.org/docs/language/spec/index.html).
 I link to the primers or user guide when possible since they are more beginner-friendly.
 If you prefer a more precise and exhaustive treatment of the material,
-I recommend looking into the langauge spec! 
+I recommend looking into the language spec!
 
 <a id="toc"></a>
 ## Table of Contents
@@ -55,6 +55,7 @@ I recommend looking into the langauge spec!
   * [`coforall` Loops](#coforall)
   * [Enabling multiple locales](#compile-multiloc)
   * [Looping Locales with a `coforall`](#locale_looping)
+  * [Implicit distributed computation with `forall`](#forall_distribution)
 * [Aggregation](#aggregation)
 * [Performance and Diagnostics](#perf)
   * [Variable Declarations](#var_dec)
@@ -64,7 +65,7 @@ I recommend looking into the langauge spec!
 
 <a id="compile"></a>
 ## Compiling and Running
-If you haven't already installed Chapel, be sure to follow the
+If you haven't already installed Chapel and Arkouda, be sure to follow the
 [installation instructions](https://bears-r-us.github.io/arkouda/setup/install_menu.html).
 
 For all examples below, the source code is located in `tutorial.chpl`.
@@ -153,12 +154,13 @@ for i in 5..#10 {
 <a id="domains"></a>
 ### Domains
 
-A domain is a set of indices which specify how to iterate over the elements it maps onto.
+A domain represents a set of indices.
+Domains can be used to specify the indices of an array, or the indices for a loop.
 For arrays, our most common use case, the domain specifies:
 - the size and shape of the array
 - if and how the elements of the array are distributed across the locales
 
-We will cover locales in more detail in a later section, but you can think of a locale as a single computer 
+We cover locales in more detail in a later section, but you can think of a locale as a single computer 
 in a cluster of computers all working together to solve a problem.
 
 A distributed domain contains information about which locale an array element is stored on.
@@ -271,12 +273,12 @@ that can be performed simultaneously. For a `forall` loop, Chapel determines the
 automagically using info like what we're iterating over and what system resources are available.
 It's likely that a single task will be responsible for multiple loop iterations.  
 
-If that's a lot to take in the key takeaway is there are several tasks which are executing at the same time.
+If that's a lot to take in the key takeaway is there are several tasks that are executing at the same time.
 
-So there are multiple tasks executing at once and only one `fact`.
+So there are multiple tasks executing at once and only one logical `fact` variable.
 This could lead to different tasks trying to modify `fact` simultaneously. 
-This could cause problems because it's possible for one task to prevent another from updating `fact` correctly.
-Resulting in incorrect answers and inconsistent behavior between runs.
+This could cause problems because it's possible for one task to prevent another from
+updating `fact` correctly, resulting in incorrect answers and inconsistent behavior between runs.
 
 Okay our tasks are like kids that don't share well, so how do we avoid these problems?
 One idea is to give each task its own copy of `fact` and at the end figure out how to
@@ -298,13 +300,13 @@ shadow variables to get our final answer. To do that, we'll need to learn about 
 [Reductions and scans](https://chapel-lang.org/docs/language/spec/data-parallelism.html#reductions-and-scans)
 apply an operation over the elements of an array (or any iterable) in parallel.
 - scan operations
-  - has form `op scan array`
+  - have form `op scan array`
   - scans over `array` and cumulatively applies `op` to every element
   - returns an array
   - for those familiar with numpy, `+ scan a` behaves like [`np.cumsum(a)`](https://numpy.org/doc/stable/reference/generated/numpy.cumsum.html)
   - `scan` is an [inclusive scan](https://en.wikipedia.org/wiki/Prefix_sum#Inclusive_and_exclusive_scans)
 - reduce operations
-  - has form `op reduce array`
+  - have form `op reduce array`
   - reduces the result of a scan to a single summary value
   - returns a single value
   - for those familiar with python, `+ reduce a` behaves like [`sum(a)`](https://docs.python.org/3/library/functions.html#sum)
@@ -367,8 +369,9 @@ writeln(factorial(5));
 120
 ```
 Yay! That's more like it!
-Every task multiplies its shadow variable of `fact` by `i`, so a `* reduce` of
-all the shadow variables gives the product of all `i`. This reduction is then written
+Every task multiplies its shadow variable of `fact` by all the values of `i` it owns,
+so a `* reduce` of
+all the shadow variables gives the product of all `i`. This reduction is then combined
 into `fact` from the outer scope. 
 
 Awesome, we've successfully used a `forall` loop to calculate factorial in parallel!
@@ -389,13 +392,12 @@ Core Chapel types like ranges, domains, and arrays all support parallel iterator
 
 Up until now, we've only used the `must-parallel` form, let's look at an example of a may-parallel `forall`:
 ```Chapel
-[i in 0..10] {
+[i in 0..<10] {
   writeln(i);
 }
 ```
 ```console
 8
-10
 4
 0
 9
@@ -453,6 +455,13 @@ Problem:
 Compute and print out all perfect squares less than or equal to `25`
 
 Bonus points if you can do it in one line using a `forall` expression!
+
+Expected Output:
+
+```console
+0 1 4 9 16 25
+```
+
 <details>
   <summary>Potential Solutions</summary>
 
@@ -472,11 +481,6 @@ or the one-liner!
 writeln([i in 0..5] i**2);
 ```
 </details>
-Expected Output:
-
-```console
-0 1 4 9 16 25
-```
 
 <a id="zippered_iteration"></a>
 ## Zippered Iteration
@@ -557,10 +561,22 @@ Awesome! Now try to combine some of the topics we've covered.
 <a id="TIY_arr_abs_val"></a>
 #### Try It Yourself: Array Absolute Value
 Problem:
-Write a `proc` using a ternary which takes an `int array`, `A`, 
-and returns the index-wise absolute value.
+
+Use the following function signature to write
+a `proc` using a ternary which takes an `int array` 
+and returns an array whose elements are the absolute values
+of the corresponding input array values:
+```Chapel
+proc arrayAbsVal(A: [] int)
+```
 
 Call: `arrayAbsVal([-3, 7, 0, -4, 12]);`
+
+Expected Output:
+
+```console
+3 7 0 4 12
+```
 
 <details>
   <summary>Potential Solutions</summary>
@@ -582,11 +598,6 @@ proc arrayAbsVal(A: [] int) {
 }
 ```
 </details>
-Expected Output:
-
-```console
-3 7 0 4 12
-```
 
 <a id="generics_introspection"></a>
 ## Generics and Introspection
@@ -671,7 +682,7 @@ oh no! we don't want strings!oh no! we don't want strings!
 ```
 
 Since we're no longer adding type annotations, it's possible for unintended types to slip through.
-For a small program that only you modify, this might not be an issue. But for a bigger project like arkouda,
+For a small program that only you modify, this might not be an issue. But for a bigger project like Arkouda,
 the chances that your proc will be used in a way you didn't intend increases.
 
 Okay so we don't want to duplicate our function, but we'd like to do some type enforcement.
@@ -680,7 +691,7 @@ To solve this, we'll use type introspection!
 <a id="introspection"></a>
 ### Introspection
 
-Introspection is the process of determining properties of an object at runtime.
+Introspection is the process of determining properties of an object.
 In Chapel, this is often used to determine the type and/or domain of a function argument.
 When you see `?` preceding an identifier, it is acting as a
 [query expression](https://chapel-lang.org/docs/language/spec/expressions.html#the-query-expression)
@@ -689,9 +700,9 @@ and is querying the type or value.
 The syntax for this is:
 ```Chapel
 proc foo(arr1: [?D] ?t, val: t, arr2: [?D2] ?t2) {
-  // `D` and `t` are now equal to `arr1`'s domain and type respectively
+  // `D` and `t` are now equal to `arr1`'s domain and element type respectively
   // since val is declared to have type `t`, it must be passed a value that is compatible with `arr1`'s element type
-  // `D2` and `t2` refer to the domain and type of `arr2`
+  // `D2` and `t2` refer to the domain and element type of `arr2`
 }
 ```
 
@@ -748,6 +759,12 @@ Call:
 arrayAbsVal([-3.14, 7:real, 0.0, inf, -inf]);
 arrayAbsVal([-3, 7, 0, -4, 12]);
 ```
+Expected Output:
+
+```console
+3.14 7.0 0.0 inf inf
+3 7 0 4 12
+```
 
 <details>
   <summary>Potential Solutions</summary>
@@ -771,12 +788,6 @@ proc arrayAbsVal(A: [] ?t) where t == int || t == real {
 }
 ```
 </details>
-Expected Output:
-
-```console
-3.14 7.0 0.0 inf inf
-3 7 0 4 12
-```
 
 <a id="promotion"></a>
 ## Promotion
@@ -833,8 +844,8 @@ inf
 
 <a id="filter"></a>
 ## Filtering
-Let's say we want to negate the even values less than 10. We can iterate `0..<10` and filter out values
-that don't match our condition.
+Let's say we want to negate the even values less than 10 and drop the others on the floor.
+We can iterate `0..<10` and filter out values that don't match our condition.
 ```chapel
 writeln([i in 0..<10] if i%2 == 0 then -i);
 ```
@@ -847,6 +858,12 @@ Notice this is essentially a ternary but without an `else`.
 #### Try It Yourself: Sum Odd Perfect Squares <=25
 Problem:
 Use filtering and reduce to sum all odd perfect squares less than or equal to `25`
+
+Expected Output:
+
+```console
+35
+```
 <details>
   <summary>Potential Solutions</summary>
 
@@ -869,21 +886,17 @@ writeln(+ reduce [i in 0..5] if i%2 != 0 then i**2);
 ```
 
 </details>
-Expected Output:
-
-```console
-35
-```
 
 <a id="bool_expand_and_compress"></a>
 ## Boolean Compression and Expansion Indexing
 A bit of a warning, this section is possibly the most difficult in the tutorial,
 so don't worry if you don't understand everything! No new material is introduced
 in this part, it's just an application of functionality already covered. So
-if you find yourself getting overwhelmed or intimidated, feel free to skip this one. 
+if you find yourself getting overwhelmed or intimidated, feel free to skip to the next section
+([Locales and `coforall` loops](#loc_and_coforall)). 
 
 Let's dig into boolean indexing!
-Applications of this and similar logic pop up in various places in arkouda.
+Applications of this and similar logic pop up in various places in Arkouda.
 
 <a id="comp_ind"></a>
 #### Boolean Compression Indexing
@@ -1039,6 +1052,13 @@ Call:
   - `arrayEvenReplace([8, 9, 7, 2, 4, 3], [17, 19, 21]);`
   - `arrayEvenReplace([4, 4, 7, 4, 4, 4], [9, 9, 9, 9, 9]);`
 
+Expected Output:
+
+```console
+17 9 7 19 21 3
+9 9 7 9 9 9
+```
+
 <details>
   <summary>Potential Solutions</summary>
 
@@ -1066,26 +1086,20 @@ proc arrayEvenReplace(in A: [] int, B: [] int) {
 }
 ```
 </details>
-Expected Output:
-
-```console
-17 9 7 19 21 3
-9 9 7 9 9 9
-```
 
 <a id="loc_and_coforall"></a>
 ## Locales and `coforall` loops
 
 <a id="locale"></a>
 ### Locales
-We've mentioned `Locale`s briefly in earlier sections, but let's dive into them a bit deeper.
+We've mentioned _locales_ briefly in earlier sections, but let's dive into them a bit deeper.
 I like to think of a locale as a single computer in a cluster of computers all working together to solve a problem.
 This isn't always the case, but it is a useful model. More generally a
 [locale](https://chapel-lang.org/docs/users-guide/locality/localesInChapel.html) is
 "a piece of a target architecture that has processing and storage capabilities".
 
 
-For any given computer in our cluster, accessing the data it stores will be faster than having it fetch data
+For any given computer in our cluster, accessing the data it stores locally will be faster than having it fetch data
 from a different computer in the cluster. This is because the data will need to be transferred from the computer
 that has it to the computer that needs it. 
 
@@ -1113,17 +1127,17 @@ The most direct way is to use an [`on` clause](https://chapel-lang.org/docs/user
 // happens on locale 0
 var x = 5+3;
 
-on 2 {
+on Locales[2] {
   // happens on locale 2
   var y = 5+3;
 }
 ```
 But sometimes you don't need an explict `on` clause to operate on other locales.
-One example of this is a `forall` loop
+One example of this is a `forall` loop over a distributed array or domain.
 
 <a id="coforall"></a>
 ### `coforall` Loops
-The second most common parallel loop in arkouda is the [`coforall`](https://chapel-lang.org/docs/users-guide/taskpar/coforall.html) loop.
+The second most common parallel loop in Arkouda is the [`coforall`](https://chapel-lang.org/docs/users-guide/taskpar/coforall.html) loop.
 Let's see how this compares to the [`forall`](https://chapel-lang.org/docs/users-guide/datapar/forall.html)
 loops that we've been using up until now.
 
@@ -1134,7 +1148,7 @@ A `coforall` offers more control, but the tradeoff is you might need to manage s
 
 A `coforall` loop:
 * creates one distinct task per loop iteration, each of which executes a copy of the loop body.
-* [tasked based parallelism](https://chapel-lang.org/docs/users-guide/index.html#task-parallelism):
+* [task based parallelism](https://chapel-lang.org/docs/users-guide/index.html#task-parallelism):
 I want exactly this many tasks operating in parallel
 
 A `forall` loop:
@@ -1198,10 +1212,10 @@ All the previous sections should work with multiple locales.
 
 <a id="locale_looping"></a>
 ### Looping Locales with `coforall`
-The most common use of `coforall` in arkouda is to create a single task for every locale.
+The most common use of `coforall` in Arkouda is to create a single task for every locale.
 We can then use `on` blocks to have a single task run on each locale.
 
-The most common distribution used in arkouda is the
+The most common distribution used in Arkouda is the
 [block distribution](https://chapel-lang.org/docs/primers/distributions.html#the-block-distribution).
 In this distribution the elements are split as evenly as possible across all locales.
 
@@ -1209,7 +1223,7 @@ Let's look at an example to visualize how the data is distributed for block dist
 
 
 To do this we'll use an [on clause](https://chapel-lang.org/docs/users-guide/locality/onClauses.html) to control
-which locale the computation is occuring on.
+which locale the computation is occurring on.
 
 We'll also need 
 [local subdomain](https://chapel-lang.org/docs/primers/distributions.html#block-and-distribution-basics),
@@ -1218,7 +1232,7 @@ which is the subsection of the domain that is stored on the locale where the com
 use BlockDist;
 
 // we create a block distributed array and fill it with values from 1 to 16
-var A = Block.createArray({1..16}, int);
+var A = blockDist.createArray({1..16}, int);
 A = 1..16;
 
 // we use a coforall to create one task per Locales 
@@ -1232,7 +1246,7 @@ coforall loc in Locales {
   }
 }
 ```
-When running with `CHPL_COMM=none`, we see there's only one locale which owns all the data.
+When running with `CHPL_COMM=none`, we see there's only one locale that owns all the data.
 ```console
 $ ./tutorial
 The chunk of A owned by Locale 0 is: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
@@ -1260,6 +1274,45 @@ The chunk of A owned by Locale 5 is: 11 12
 The chunk of A owned by Locale 4 is: 9 10
 The chunk of A owned by Locale 1 is: 3 4
 ```
+
+<a id="forall_distribution"></a>
+### Implicit distributed computation with `forall`
+
+We mentioned earlier one way to do distributed computation without an explicit `on` statement
+is using a `forall` on a distributed domain or array. To demonstrate this we're going
+to use the `here` keyword which refers to the locale where the computation is taking place.
+
+```Chapel
+use BlockDist;
+
+var MyDistArr = blockDist.createArray({1..16}, int);
+MyDistArr = 1..16;
+
+forall i in MyDistArr.domain {
+  writeln("element ", i, " (", MyDistArr[i], ") is owned by locale ", here.id);
+}
+```
+
+```console
+$ ./tutorial -nl 4
+element 1 (1) is owned by locale 0
+element 2 (2) is owned by locale 0
+element 4 (4) is owned by locale 0
+element 3 (3) is owned by locale 0
+element 5 (5) is owned by locale 1
+element 9 (9) is owned by locale 2
+element 14 (14) is owned by locale 3
+element 11 (11) is owned by locale 2
+element 15 (15) is owned by locale 3
+element 8 (8) is owned by locale 1
+element 10 (10) is owned by locale 2
+element 12 (12) is owned by locale 2
+element 16 (16) is owned by locale 3
+element 13 (13) is owned by locale 3
+element 7 (7) is owned by locale 1
+element 6 (6) is owned by locale 1
+```
+
 
 <a id="aggregation"></a>
 ## Aggregation
@@ -1300,7 +1353,7 @@ And from `locale_j`'s perspective `x` is remote.
 Since we're getting a remote value and writing it into a local position, we need a `SrcAggregator`.
 
 It's important to note copy aggregation will only work if at least one side is local.
-Both sides being remote (remote-to-remote aggregation) is not supported.
+Both sides being remote (remote-to-remote aggregation) is not currently supported.
 
 Syntax:
 ```chapel
@@ -1509,6 +1562,9 @@ The driving factor of using other declarations is to improve performance or redu
 * a program execution time constant. This means the compiler doesn't need to know its value, and it can be 
 set at runtime (i.e. passed in by a user)
 * knowing this value won't change can help the compiler to make optimizations
+* acts as a guardrail to prevent you from modifying the variable accidentally
+* programmers should always reach for const when they have variables that they know won't be changing
+for both the performance and code safety benefits
 
 [`param`](https://chapel-lang.org/docs/users-guide/base/constParam.html#declaring-params):
 * similar to `const`, except it must be known at compile time.
@@ -1527,8 +1583,8 @@ set at runtime (i.e. passed in by a user)
 ### Diagnostics
 
 There are several chapel modules available to aid in optimizing your code. The most common ones
-used by the arkouda team are [comm](https://chapel-lang.org/docs/modules/standard/CommDiagnostics.html)
-and [time](https://chapel-lang.org/docs/modules/standard/Time.html).
+used by the Arkouda team are [CommDiagnostics](https://chapel-lang.org/docs/modules/standard/CommDiagnostics.html)
+and [Time](https://chapel-lang.org/docs/modules/standard/Time.html).
 There is also
 [memory diagnostics](https://chapel-lang.org/docs/modules/standard/Memory/Diagnostics.html),
 which is used less frequently.
@@ -1629,10 +1685,16 @@ communication using aggregation:
 |      2 |  80 |  40 |         40 |             0 |
 |      3 |  80 |  40 |         40 |             0 |
 ```
+At a high level these categories mean:
+* "get": reading a value from a remote locale's memory
+* "put": storing a value into a remote locale's memory
+* "execute_on": creating a task on a remote locale, for example via an on-clause
+* "execute_on_nb": same as above but non-blocking (doesn't prevent the original task from continuing)
+
 We see the number of `put`s has decreased drastically, and it's way faster! Aggregation is great!
 But what's this secret third way?
 
-Until now we've been comparing aggregation to copying values individually.
+Until now, we've been comparing aggregation to copying values individually.
 And that makes sense if we're copying to/from random indices. But there's a lot of structure 
 in this case that we're not using; we just want to swap the two halves. So why can't we just do two large copies?
 
@@ -1683,7 +1745,7 @@ communication using aggregation:
 
 <a id="pitfalls"></a>
 ### Common Pitfalls
-In this section we will cover some common pitfalls that can hurt performance.
+In this section we cover some common pitfalls that can hurt performance.
   - Using ranges as leading iterators of parallel loops with distributed arrays 
     - i.e. `forall (i, a) in zip(0..<A.size, A)`
     - Ranges aren't distributed, so this actually turns into a parallel loop that only executes on locale 0.
