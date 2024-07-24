@@ -18,6 +18,66 @@ NUMERIC_TYPES = ["int64", "float64", "bool", "uint64"]
 NUMERIC_AND_STR_TYPES = NUMERIC_TYPES + ["str"]
 
 
+@pytest.fixture
+def par_test_base_tmp(request):
+    par_test_base_tmp = "{}/io_test".format(os.getcwd())
+    io_util.get_directory(par_test_base_tmp)
+
+    # Define a finalizer function for teardown
+    def finalizer():
+        # Clean up any resources if needed
+        io_util.delete_directory(par_test_base_tmp)
+
+    # Register the finalizer to ensure cleanup
+    request.addfinalizer(finalizer)
+    return par_test_base_tmp
+
+
+@pytest.fixture
+def hdf_test_base_tmp(request):
+    hdf_test_base_tmp = "{}/hdf_test".format(os.getcwd())
+    io_util.get_directory(hdf_test_base_tmp)
+
+    # Define a finalizer function for teardown
+    def finalizer():
+        # Clean up any resources if needed
+        io_util.delete_directory(hdf_test_base_tmp)
+
+    # Register the finalizer to ensure cleanup
+    request.addfinalizer(finalizer)
+    return hdf_test_base_tmp
+
+
+@pytest.fixture
+def csv_test_base_tmp(request):
+    csv_test_base_tmp = "{}/csv_test".format(os.getcwd())
+    io_util.get_directory(csv_test_base_tmp)
+
+    # Define a finalizer function for teardown
+    def finalizer():
+        # Clean up any resources if needed
+        io_util.delete_directory(csv_test_base_tmp)
+
+    # Register the finalizer to ensure cleanup
+    request.addfinalizer(finalizer)
+    return csv_test_base_tmp
+
+
+@pytest.fixture
+def import_export_base_tmp(request):
+    import_export_base_tmp = "{}/import_export_test".format(os.getcwd())
+    io_util.get_directory(import_export_base_tmp)
+
+    # Define a finalizer function for teardown
+    def finalizer():
+        # Clean up any resources if needed
+        io_util.delete_directory(import_export_base_tmp)
+
+    # Register the finalizer to ensure cleanup
+    request.addfinalizer(finalizer)
+    return import_export_base_tmp
+
+
 def make_ak_arrays(size, dtype):
     if dtype in ["int64", "float64"]:
         # randint for float is equivalent to uniform
@@ -154,7 +214,6 @@ def par_test_base_tmp(request):
     request.addfinalizer(finalizer)
     return par_test_base_tmp
 
-
 class TestParquet:
     COMPRESSIONS = [None, "snappy", "gzip", "brotli", "zstd", "lz4"]
 
@@ -224,6 +283,7 @@ class TestParquet:
     @pytest.mark.parametrize("dtype", NUMERIC_AND_STR_TYPES)
     @pytest.mark.parametrize("comp", COMPRESSIONS)
     def test_edge_case_read_write(self, par_test_base_tmp, dtype, comp):
+
         np_edge_case = make_edge_case_arrays(dtype)
         ak_edge_case = ak.array(np_edge_case)
         with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
@@ -732,14 +792,12 @@ class TestParquet:
 
 
 class TestHDF5:
-    hdf_test_base_tmp = f"{os.getcwd()}/hdf_io_test"
-    io_util.get_directory(hdf_test_base_tmp)
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERIC_AND_STR_TYPES)
-    def test_read_and_write(self, prob_size, dtype):
+    def test_read_and_write(self, prob_size, dtype, hdf_test_base_tmp):
         ak_arr = make_ak_arrays(prob_size * pytest.nl, dtype)
-        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/hdf_test_correct"
             ak_arr.to_hdf(file_name)
 
@@ -785,13 +843,13 @@ class TestHDF5:
 
             # Test load with invalid file
             with pytest.raises(RuntimeError):
-                ak.load(path_prefix=f"{TestHDF5.hdf_test_base_tmp}/not-a-file")
+                ak.load(path_prefix=f"{hdf_test_base_tmp}/not-a-file")
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERIC_AND_STR_TYPES)
-    def test_read_and_write_dset_provided(self, prob_size, dtype):
+    def test_read_and_write_dset_provided(self, prob_size, dtype, hdf_test_base_tmp):
         ak_arr = make_ak_arrays(prob_size * pytest.nl, dtype)
-        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/hdf_test_correct"
             ak_arr.to_hdf(file_name, "my_dset")
 
@@ -823,13 +881,13 @@ class TestHDF5:
 
             # Test load with invalid file
             with pytest.raises(RuntimeError):
-                ak.load(path_prefix=f"{TestHDF5.hdf_test_base_tmp}/not-a-file", dataset="my_dset")
+                ak.load(path_prefix=f"{hdf_test_base_tmp}/not-a-file", dataset="my_dset")
 
     @pytest.mark.parametrize("dtype", NUMERIC_AND_STR_TYPES)
-    def test_edge_case_read_write(self, dtype):
+    def test_edge_case_read_write(self, dtype, hdf_test_base_tmp):
         np_edge_case = make_edge_case_arrays(dtype)
         ak_edge_case = ak.array(np_edge_case)
-        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
             ak_edge_case.to_hdf(f"{tmp_dirname}/hdf_test_edge_case", "my-dset")
             hdf_arr = ak.read_hdf(f"{tmp_dirname}/hdf_test_edge_case*", "my-dset")["my-dset"]
             if dtype == "float64":
@@ -837,7 +895,7 @@ class TestHDF5:
             else:
                 assert (np_edge_case == hdf_arr.to_ndarray()).all()
 
-    def test_read_and_write_with_dict(self):
+    def test_read_and_write_with_dict(self, hdf_test_base_tmp):
         df_dict = make_multi_dtype_dict()
         # extend to include categoricals
         df_dict["cat"] = ak.Categorical(ak.array(["c", "b", "a", "b"]))
@@ -845,7 +903,7 @@ class TestHDF5:
             codes=ak.array([2, 1, 0, 1]), categories=ak.array(["a", "b", "c"])
         )
         akdf = ak.DataFrame(df_dict)
-        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/multi_col_hdf"
             # use multi-column write to generate hdf file
             akdf.to_hdf(file_name)
@@ -925,7 +983,7 @@ class TestHDF5:
             # Test load with invalid file
             with pytest.raises(RuntimeError):
                 ak.load(
-                    path_prefix=f"{TestHDF5.hdf_test_base_tmp}/not-a-file",
+                    path_prefix=f"{hdf_test_base_tmp}/not-a-file",
                     dataset=akdf.columns.values[0],
                 )
 
@@ -938,7 +996,7 @@ class TestHDF5:
 
             # Test load_all with invalid file
             with pytest.raises(ValueError):
-                ak.load_all(path_prefix=f"{TestHDF5.hdf_test_base_tmp}/not-a-file")
+                ak.load_all(path_prefix=f"{hdf_test_base_tmp}/not-a-file")
 
             # test get_datasets
             datasets = ak.get_datasets(f"{file_name}*")
@@ -956,10 +1014,10 @@ class TestHDF5:
             datasets = ak.get_datasets(f"{file_name}*")
             assert sorted(datasets) == ["Index"] + sorted(akdf.columns.values)
 
-    def test_ls_hdf(self):
+    def test_ls_hdf(self, hdf_test_base_tmp):
         df_dict = make_multi_dtype_dict()
         akdf = ak.DataFrame(df_dict)
-        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/test_ls_hdf"
             # use multi-column write to generate hdf file
             akdf.to_hdf(file_name)
@@ -982,10 +1040,10 @@ class TestHDF5:
         with pytest.raises(ValueError):
             ak.ls(" \n\r\t  ")
 
-    def test_read_hdf_with_error_and_warn(self):
+    def test_read_hdf_with_error_and_warn(self, hdf_test_base_tmp):
         df_dict = make_multi_dtype_dict()
         akdf = ak.DataFrame(df_dict)
-        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/test_error_hdf"
             # use multi-column write to generate hdf file
             akdf.to_hdf(file_name)
@@ -1024,7 +1082,7 @@ class TestHDF5:
                 assert dataset is not None
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
-    def test_save_strings_dataset(self, prob_size):
+    def test_save_strings_dataset(self, prob_size, hdf_test_base_tmp):
         reg_strings = make_ak_arrays(prob_size, "str")
         # hard coded at 26 because we don't need to test long strings at large scale
         # passing data from python to chpl this way can really slow down as size increases
@@ -1033,7 +1091,7 @@ class TestHDF5:
         )
 
         for strings_array in [reg_strings, long_strings]:
-            with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+            with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
                 file_name = f"{tmp_dirname}/test_strings_hdf"
                 strings_array.to_hdf(file_name)
                 r_strings_array = ak.read_hdf(f"{file_name}*").popitem()[1]
@@ -1058,7 +1116,7 @@ class TestHDF5:
                 r_strings_dupe = ak.read_hdf(f"{file_name}*", datasets="strings-dupe")["strings-dupe"]
                 assert (r_strings == r_strings_dupe).all()
 
-    def test_save_multi_type_dict_dataset(self):
+    def test_save_multi_type_dict_dataset(self, hdf_test_base_tmp):
         df_dict = make_multi_dtype_dict()
         # extend to include categoricals
         df_dict["cat"] = ak.Categorical(ak.array(["c", "b", "a", "b"]))
@@ -1066,7 +1124,7 @@ class TestHDF5:
             codes=ak.array([2, 1, 0, 1]), categories=ak.array(["a", "b", "c"])
         )
         keys = list(df_dict.keys())
-        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/multi_type_dict_test"
             # use multi-column write to generate hdf file
             ak.to_hdf(df_dict, file_name)
@@ -1089,7 +1147,7 @@ class TestHDF5:
         # test append for multi type dict
         single_arr = df_dict[keys[0]]
         rest_dict = {k: df_dict[k] for k in keys[1:]}
-        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/multi_type_dict_test"
             single_arr.to_hdf(file_name, dataset=keys[0])
 
@@ -1110,11 +1168,11 @@ class TestHDF5:
                         else:
                             assert np.allclose(a, b, equal_nan=True)
 
-    def test_strict_types(self):
+    def test_strict_types(self, hdf_test_base_tmp):
         N = 100
         int_types = [np.uint32, np.int64, np.uint16, np.int16]
         float_types = [np.float32, np.float64, np.float32, np.float64]
-        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
             prefix = f"{tmp_dirname}/strict-type-test"
             for i, (it, ft) in enumerate(zip(int_types, float_types)):
                 with h5py.File("{}-{}".format(prefix, i), "w") as f:
@@ -1133,21 +1191,21 @@ class TestHDF5:
                 a["floats"].to_ndarray(), np.arange(len(float_types) * N, dtype=np.float64)
             )
 
-    def test_small_arrays(self):
+    def test_small_arrays(self, hdf_test_base_tmp):
         for arr in [ak.array([1]), ak.array(["ab", "cd"]), ak.array(["123456789"])]:
-            with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+            with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
                 arr.to_hdf(f"{tmp_dirname}/small_numeric")
                 ret_arr = ak.read_hdf(f"{tmp_dirname}/small_numeric*").popitem()[1]
                 assert (arr == ret_arr).all()
 
-    def test_bigint(self):
+    def test_bigint(self, hdf_test_base_tmp):
         df_dict = {
             "pdarray": ak.arange(2**200, 2**200 + 3, max_bits=201),
             "arrayview": ak.arange(2**200, 2**200 + 27, max_bits=201).reshape((3, 3, 3)),
             "groupby": ak.GroupBy(ak.arange(2**200, 2**200 + 5)),
             "segarray": ak.SegArray(ak.arange(0, 10, 2), ak.arange(2**200, 2**200 + 10, max_bits=212)),
         }
-        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/bigint_test"
             ak.to_hdf(df_dict, file_name)
             ret_dict = ak.read_hdf(f"{tmp_dirname}/bigint_test*")
@@ -1182,10 +1240,10 @@ class TestHDF5:
                 assert sa.values.to_list() == rd_sa.values.to_list()
                 assert sa.segments.to_list() == rd_sa.segments.to_list()
 
-    def test_unsanitized_dataset_names(self):
+    def test_unsanitized_dataset_names(self, hdf_test_base_tmp):
         # Test when quotes are part of the dataset name
         my_arrays = {'foo"0"': ak.arange(100), 'bar"': ak.arange(100)}
-        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
             ak.to_hdf(my_arrays, f"{tmp_dirname}/bad_dataset_names")
             ak.read_hdf(f"{tmp_dirname}/bad_dataset_names*")
 
@@ -1212,16 +1270,16 @@ class TestHDF5:
         assert 50 == v0.size
         assert 50 == v1.size
 
-    def test_multi_dim_read_write(self):
+    def test_multi_dim_read_write(self, hdf_test_base_tmp):
         av = ak.ArrayView(ak.arange(27), ak.array([3, 3, 3]))
-        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
             av.to_hdf(f"{tmp_dirname}/multi_dim_test", dataset="MultiDimObj", mode="append")
             read_av = ak.read_hdf(f"{tmp_dirname}/multi_dim_test*", datasets="MultiDimObj")[
                 "MultiDimObj"
             ]
             assert np.array_equal(av.to_ndarray(), read_av.to_ndarray())
 
-    def test_hdf_groupby(self):
+    def test_hdf_groupby(self, hdf_test_base_tmp):
         # test for categorical and multiple keys
         string = ak.array(["a", "b", "a", "b", "c"])
         cat = ak.Categorical(string)
@@ -1234,7 +1292,7 @@ class TestHDF5:
         str_grouping = ak.GroupBy(string)
         cat_grouping = ak.GroupBy([cat, cat_from_codes])
 
-        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
             for g in [pda_grouping, str_grouping, cat_grouping]:
                 g.to_hdf(f"{tmp_dirname}/groupby_test")
                 g_load = ak.read(f"{tmp_dirname}/groupby_test*").popitem()[1]
@@ -1248,12 +1306,12 @@ class TestHDF5:
                 else:
                     assert g_load.keys.to_list() == g.keys.to_list()
 
-    def test_hdf_categorical(self):
+    def test_hdf_categorical(self, hdf_test_base_tmp):
         cat = ak.Categorical(ak.array(["a", "b", "a", "b", "c"]))
         cat_from_codes = ak.Categorical.from_codes(
             codes=ak.array([0, 1, 0, 1, 2]), categories=ak.array(["a", "b", "c"])
         )
-        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
             for c in cat, cat_from_codes:
                 c.to_hdf(f"{tmp_dirname}/categorical_test")
                 c_load = ak.read(f"{tmp_dirname}/categorical_test*").popitem()[1]
@@ -1263,12 +1321,12 @@ class TestHDF5:
                     assert c.segments.to_list() == c_load.segments.to_list()
                     assert c.permutation.to_list() == c_load.permutation.to_list()
 
-    def test_hdf_overwrite_pdarray(self):
+    def test_hdf_overwrite_pdarray(self, hdf_test_base_tmp):
         # test repack with a single object
         a = ak.arange(1000)
         b = ak.randint(0, 100, 1000)
         c = ak.arange(15)
-        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/pda_test"
             for repack in [True, False]:
                 a.to_hdf(file_name)
@@ -1287,7 +1345,7 @@ class TestHDF5:
                 assert data["array"].to_list() == c.to_list()
 
         # test overwrites with different types
-        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/pda_test"
             a.to_hdf(file_name)
             for size, dtype in [(15, ak.uint64), (150, ak.float64), (1000, ak.bool_)]:
@@ -1296,12 +1354,12 @@ class TestHDF5:
                 data = ak.read_hdf(f"{file_name}*").popitem()[1]
                 assert data.to_list() == b.to_list()
 
-    def test_hdf_overwrite_strings(self):
+    def test_hdf_overwrite_strings(self, hdf_test_base_tmp):
         # test repack with a single object
         a = ak.random_strings_uniform(0, 16, 1000)
         b = ak.random_strings_uniform(0, 16, 1000)
         c = ak.random_strings_uniform(0, 16, 10)
-        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/str_test"
             for repack in [True, False]:
                 a.to_hdf(file_name, dataset="test_str")
@@ -1319,11 +1377,11 @@ class TestHDF5:
                 data = ak.read_hdf(f"{file_name}*")
                 assert data["test_str"].to_list() == c.to_list()
 
-    def test_overwrite_categorical(self):
+    def test_overwrite_categorical(self, hdf_test_base_tmp):
         a = ak.Categorical(ak.array([f"cat_{i%3}" for i in range(100)]))
         b = ak.Categorical(ak.array([f"cat_{i%4}" for i in range(100)]))
         c = ak.Categorical(ak.array([f"cat_{i%5}" for i in range(10)]))
-        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/cat_test"
             for repack in [True, False]:
                 a.to_hdf(file_name, dataset="test_cat")
@@ -1355,7 +1413,7 @@ class TestHDF5:
             for attr in "categories", "codes", "permutation", "segments", "_akNAcode":
                 assert getattr(d, attr).to_list() == getattr(a, attr).to_list()
 
-    def test_hdf_overwrite_dataframe(self):
+    def test_hdf_overwrite_dataframe(self, hdf_test_base_tmp):
         df = ak.DataFrame(
             {
                 "a": ak.arange(1000),
@@ -1370,7 +1428,7 @@ class TestHDF5:
                 "c": ak.arange(50, dtype=bool),
             }
         )
-        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/df_test"
             for repack in [True, False]:
                 df.to_hdf(file_name)
@@ -1388,10 +1446,10 @@ class TestHDF5:
                 for key in df.keys():
                     assert (data[key] == (odf[key] if key in odf_keys else df[key])).all()
 
-    def test_overwrite_segarray(self):
+    def test_overwrite_segarray(self, hdf_test_base_tmp):
         sa1 = ak.SegArray(ak.arange(0, 1000, 5), ak.arange(1000))
         sa2 = ak.SegArray(ak.arange(0, 100, 5), ak.arange(100))
-        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/segarray_test"
             for repack in [True, False]:
                 sa1.to_hdf(file_name)
@@ -1409,21 +1467,21 @@ class TestHDF5:
                 assert (data["segarray"].values == sa2.values).all()
                 assert (data["segarray"].segments == sa2.segments).all()
 
-    def test_overwrite_arrayview(self):
+    def test_overwrite_arrayview(self, hdf_test_base_tmp):
         av = ak.arange(27).reshape((3, 3, 3))
         av2 = ak.arange(8).reshape((2, 2, 2))
-        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/array_view_test"
             av.to_hdf(file_name)
             av2.update_hdf(file_name, repack=False)
             data = ak.read_hdf(f"{file_name}*").popitem()[1]
             assert av2.to_list() == data.to_list()
 
-    def test_overwrite_single_dset(self):
+    def test_overwrite_single_dset(self, hdf_test_base_tmp):
         # we need to test that both repack=False and repack=True generate the same file size here
         a = ak.arange(1000)
         b = ak.arange(15)
-        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
             a.to_hdf(f"{tmp_dirname}/test_file")
             b.update_hdf(f"{tmp_dirname}/test_file")
             f_list = glob.glob(f"{tmp_dirname}/test_file*")
@@ -1436,7 +1494,7 @@ class TestHDF5:
 
             assert f1_size == f2_size
 
-    def test_snapshot(self):
+    def test_snapshot(self, hdf_test_base_tmp):
         df = ak.DataFrame(make_multi_dtype_dict())
         df_str_idx = df.copy()
         df_str_idx._set_index([f"A{i}" for i in range(len(df))])
@@ -1449,7 +1507,7 @@ class TestHDF5:
         g = ak.GroupBy(a)
         ref_data = {"a": a, "s": s, "c": c, "g": g}
 
-        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
             ak.snapshot(f"{tmp_dirname}/snapshot_test")
             for v in [df, df_str_idx, a, s, c, g]:
                 # delete variables and verify no longer in the namespace
@@ -1480,9 +1538,9 @@ class TestHDF5:
 
     @pytest.mark.parametrize("dtype", NUMERIC_AND_STR_TYPES)
     @pytest.mark.parametrize("size", pytest.prob_size)
-    def test_index_save_and_load(self, dtype, size):
+    def test_index_save_and_load(self, dtype, size, hdf_test_base_tmp):
         idx = ak.Index(make_ak_arrays(size, dtype))
-        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
             idx.to_hdf(f"{tmp_dirname}/idx_test")
             rd_idx = ak.read_hdf(f"{tmp_dirname}/idx_test*").popitem()[1]
 
@@ -1493,7 +1551,7 @@ class TestHDF5:
         if dtype == ak.str_:
             # if strings we need to also test Categorical
             idx = ak.Index(ak.Categorical(make_ak_arrays(size, dtype)))
-            with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+            with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
                 idx.to_hdf(f"{tmp_dirname}/idx_test")
                 rd_idx = ak.read_hdf(f"{tmp_dirname}/idx_test*").popitem()[1]
 
@@ -1504,11 +1562,11 @@ class TestHDF5:
     @pytest.mark.parametrize("dtype1", NUMERIC_AND_STR_TYPES)
     @pytest.mark.parametrize("dtype2", NUMERIC_AND_STR_TYPES)
     @pytest.mark.parametrize("size", pytest.prob_size)
-    def test_multi_index(self, dtype1, dtype2, size):
+    def test_multi_index(self, dtype1, dtype2, size, hdf_test_base_tmp):
         t1 = make_ak_arrays(size, dtype1)
         t2 = make_ak_arrays(size, dtype2)
         idx = ak.Index.factory([t1, t2])
-        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
             idx.to_hdf(f"{tmp_dirname}/idx_test")
             rd_idx = ak.read_hdf(f"{tmp_dirname}/idx_test*").popitem()[1]
 
@@ -1522,19 +1580,19 @@ class TestHDF5:
             if dtype2 == ak.str_:
                 t2 = ak.Categorical(t2)
             idx = ak.Index.factory([t1, t2])
-            with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+            with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
                 idx.to_hdf(f"{tmp_dirname}/idx_test")
                 rd_idx = ak.read_hdf(f"{tmp_dirname}/idx_test*").popitem()[1]
 
                 assert isinstance(rd_idx, ak.MultiIndex)
                 assert idx.to_list() == rd_idx.to_list()
 
-    def test_hdf_overwrite_index(self):
+    def test_hdf_overwrite_index(self, hdf_test_base_tmp):
         # test repack with a single object
         a = ak.Index(ak.arange(1000))
         b = ak.Index(ak.randint(0, 100, 1000))
         c = ak.Index(ak.arange(15))
-        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/idx_test"
             for repack in [True, False]:
                 a.to_hdf(file_name, dataset="index")
@@ -1553,7 +1611,7 @@ class TestHDF5:
                 assert isinstance(data["index"], ak.Index)
                 assert data["index"].to_list() == c.to_list()
 
-    def test_special_objtype(self):
+    def test_special_objtype(self, hdf_test_base_tmp):
         """
         This test is simply to ensure that the dtype is persisted through the io
         operation. It ultimately uses the process of pdarray, but need to ensure
@@ -1564,7 +1622,7 @@ class TestHDF5:
         td = ak.Timedelta(ak.arange(10))
         df = ak.DataFrame({"ip": ip, "datetime": dt, "timedelta": td})
 
-        with tempfile.TemporaryDirectory(dir=TestHDF5.hdf_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
             ip.to_hdf(f"{tmp_dirname}/ip_test")
             rd_ip = ak.read_hdf(f"{tmp_dirname}/ip_test*").popitem()[1]
             assert isinstance(rd_ip, ak.IPv4)
@@ -1592,16 +1650,14 @@ class TestHDF5:
 
 
 class TestCSV:
-    csv_test_base_tmp = f"{os.getcwd()}/csv_io_test"
-    io_util.get_directory(csv_test_base_tmp)
 
-    def test_csv_read_write(self):
+    def test_csv_read_write(self, csv_test_base_tmp):
         # first test that can read csv with no header not written by Arkouda
         cols = ["ColA", "ColB", "ColC"]
         a = ["ABC", "DEF"]
         b = ["123", "345"]
         c = ["3.14", "5.56"]
-        with tempfile.TemporaryDirectory(dir=TestCSV.csv_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=csv_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/non_ak.csv"
             with open(file_name, "w") as f:
                 f.write(",".join(cols) + "\n")
@@ -1623,7 +1679,7 @@ class TestCSV:
             cols[1]: ak.array([int(x) for x in b]),
             cols[2]: ak.array([round(float(x), 2) for x in c]),
         }
-        with tempfile.TemporaryDirectory(dir=TestCSV.csv_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=csv_test_base_tmp) as tmp_dirname:
             # test can read csv with header not written by Arkouda
             non_ak_file_name = f"{tmp_dirname}/non_ak.csv"
             with open(non_ak_file_name, "w") as f:
@@ -1659,7 +1715,7 @@ class TestCSV:
             "ColB": ak.randint(0, 50, 101),
             "ColC": ak.randint(0, 50, 101),
         }
-        with tempfile.TemporaryDirectory(dir=TestCSV.csv_test_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=csv_test_base_tmp) as tmp_dirname:
             ak.to_csv(d, f"{tmp_dirname}/non_equal_set.csv")
             data = ak.read_csv(f"{tmp_dirname}/non_equal_set*")
             assert data["ColA"].to_list() == d["ColA"].to_list()
@@ -1668,8 +1724,6 @@ class TestCSV:
 
 
 class TestImportExport:
-    import_export_base_tmp = f"{os.getcwd()}/import_export_test"
-    io_util.get_directory(import_export_base_tmp)
 
     @classmethod
     def setup_class(cls):
@@ -1684,9 +1738,9 @@ class TestImportExport:
         )
         cls.akdf = ak.DataFrame(cls.pddf)
 
-    def test_import_hdf(self):
+    def test_import_hdf(self, import_export_base_tmp):
         locales = pytest.nl
-        with tempfile.TemporaryDirectory(dir=TestImportExport.import_export_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=import_export_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/import_hdf_test"
 
             self.pddf.to_hdf(f"{file_name}_table.h5", "dataframe", format="Table", mode="w")
@@ -1715,8 +1769,8 @@ class TestImportExport:
             with pytest.raises(RuntimeError):
                 ak.import_data(f"{file_name}_*.h5", write_file=f"{file_name}_ak_fixed.h5")
 
-    def test_export_hdf(self):
-        with tempfile.TemporaryDirectory(dir=TestImportExport.import_export_base_tmp) as tmp_dirname:
+    def test_export_hdf(self, import_export_base_tmp):
+        with tempfile.TemporaryDirectory(dir=import_export_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/export_hdf_test"
 
             self.akdf.to_hdf(f"{file_name}_ak_write")
@@ -1730,9 +1784,9 @@ class TestImportExport:
             with pytest.raises(RuntimeError):
                 ak.export(f"{tmp_dirname}_foo.h5", write_file=f"{tmp_dirname}/pd_from_ak.h5", index=True)
 
-    def test_import_parquet(self):
+    def test_import_parquet(self, import_export_base_tmp):
         locales = pytest.nl
-        with tempfile.TemporaryDirectory(dir=TestImportExport.import_export_base_tmp) as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=import_export_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/import_pq_test"
 
             self.pddf.to_parquet(f"{file_name}_table.parquet")
@@ -1742,8 +1796,8 @@ class TestImportExport:
             assert len(glob.glob(f"{file_name}_ak_table*.parquet")) == locales
             assert self.pddf.equals(akdf.to_pandas())
 
-    def test_export_parquet(self):
-        with tempfile.TemporaryDirectory(dir=TestImportExport.import_export_base_tmp) as tmp_dirname:
+    def test_export_parquet(self, import_export_base_tmp):
+        with tempfile.TemporaryDirectory(dir=import_export_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/export_pq_test"
 
             self.akdf.to_parquet(f"{file_name}_ak_write")
