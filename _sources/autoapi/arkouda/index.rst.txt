@@ -52,6 +52,8 @@ Submodules
    /autoapi/arkouda/segarray/index
    /autoapi/arkouda/series/index
    /autoapi/arkouda/sorting/index
+   /autoapi/arkouda/sparrayclass/index
+   /autoapi/arkouda/sparsematrix/index
    /autoapi/arkouda/strings/index
    /autoapi/arkouda/timeclass/index
    /autoapi/arkouda/util/index
@@ -101,6 +103,8 @@ Attributes
    arkouda.int_scalars
    arkouda.int_scalars
    arkouda.int_scalars
+   arkouda.int_scalars
+   arkouda.logger
    arkouda.numeric_scalars
    arkouda.numpy_scalars
    arkouda.str_
@@ -169,6 +173,7 @@ Classes
    arkouda.pdarray
    arkouda.pdarray
    arkouda.pdarray
+   arkouda.sparray
 
 
 Functions
@@ -237,6 +242,7 @@ Functions
    arkouda.create_pdarray
    arkouda.create_pdarray
    arkouda.create_pdarray
+   arkouda.create_sparray
    arkouda.ctz
    arkouda.date_operators
    arkouda.date_range
@@ -245,6 +251,7 @@ Functions
    arkouda.disableVerbose
    arkouda.divmod
    arkouda.dot
+   arkouda.dtype
    arkouda.dtype
    arkouda.enableVerbose
    arkouda.export
@@ -258,6 +265,7 @@ Functions
    arkouda.gen_ranges
    arkouda.gen_ranges
    arkouda.generic_concat
+   arkouda.getArkoudaLogger
    arkouda.getArkoudaLogger
    arkouda.get_byteorder
    arkouda.get_callback
@@ -318,6 +326,7 @@ Functions
    arkouda.promote_to_common_dtype
    arkouda.randint
    arkouda.randint
+   arkouda.random_sparse_matrix
    arkouda.random_strings_lognormal
    arkouda.random_strings_uniform
    arkouda.read
@@ -342,6 +351,7 @@ Functions
    arkouda.skew
    arkouda.snapshot
    arkouda.sort
+   arkouda.sparse_matrix_matrix_mult
    arkouda.sqrt
    arkouda.standard_normal
    arkouda.standard_normal
@@ -27040,6 +27050,24 @@ Package Contents
        the pdarray instance
 
 
+.. py:function:: create_sparray(repMsg: str, max_bits=None) -> sparray
+
+   Return a sparray instance pointing to an array created by the arkouda server.
+   The user should not call this function directly.
+
+   :param repMsg: space-delimited string containing the sparray name, datatype, size
+                  dimension, shape,and itemsize
+   :type repMsg: str
+
+   :returns: A sparray with the same attributes as on the server
+   :rtype: sparray
+
+   :raises ValueError: If there's an error in parsing the repMsg parameter into the six
+       values needed to create the pdarray instance
+   :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
+       the pdarray instance
+
+
 .. py:function:: ctz(pda: pdarray) -> pdarray
 
    Count trailing zeros for each integer in an array.
@@ -27245,6 +27273,8 @@ Package Contents
    >>> ak.dot(x,2)
    array([4 6])
 
+
+.. py:function:: dtype(x)
 
 .. py:function:: dtype(x)
 
@@ -27663,6 +27693,33 @@ Package Contents
    and updates for the specified handler.
 
 
+.. py:function:: getArkoudaLogger(name: str, handlers: Optional[List[logging.Handler]] = None, logFormat: Optional[str] = ArkoudaLogger.DEFAULT_LOG_FORMAT, logLevel: Optional[LogLevel] = None) -> ArkoudaLogger
+
+   A convenience method for instantiating an ArkoudaLogger that retrieves the
+   logging level from the ARKOUDA_LOG_LEVEL env variable
+
+   :param name: The name of the ArkoudaLogger
+   :type name: str
+   :param handlers: A list of logging.Handler objects, if None, a list consisting of
+                    one StreamHandler named 'console-handler' is generated and configured
+   :type handlers: List[Handler]
+   :param logFormat: The format for log messages, defaults to the following format:
+                     '[%(name)s] Line %(lineno)d %(levelname)s: %(message)s'
+   :type logFormat: str
+
+   :rtype: ArkoudaLogger
+
+   :raises TypeError: Raised if either name or logFormat is not a str object or if handlers
+       is not a list of str objects
+
+   .. rubric:: Notes
+
+   Important note: if a list of 1..n logging.Handler objects is passed in, and
+   dynamic changes to 1..n handlers is desired, set a name for each Handler
+   object as follows: handler.name = <desired name>, which will enable retrieval
+   and updates for the specified handler.
+
+
 .. py:function:: get_byteorder(dt: numpy.dtype) -> str
 
    Get a concrete byteorder (turns '=' into '<' or '>')
@@ -28003,6 +28060,8 @@ Package Contents
 .. py:data:: intTypes
 
 .. py:data:: intTypes
+
+.. py:data:: int_scalars
 
 .. py:data:: int_scalars
 
@@ -28455,6 +28514,8 @@ Package Contents
 
    CSV files without the Arkouda Header are not supported.
 
+
+.. py:data:: logger
 
 .. py:function:: lookup(keys, values, arguments, fillvalue=-1)
 
@@ -34298,6 +34359,27 @@ Package Contents
    array([False, True, True, True, True, False, True, True, True, True])
 
 
+.. py:function:: random_sparse_matrix(size: int, density: float, layout: str) -> arkouda.sparrayclass.sparray
+
+   Create a random sparse matrix with the specified number of rows and columns
+   and the specified density. The density is the fraction of non-zero elements
+   in the matrix. The non-zero elements are uniformly distributed random
+   numbers in the range [0,1).
+
+   :param size: The number of rows in the matrix, columns are equal to rows right now
+   :type size: int
+   :param density: The fraction of non-zero elements in the matrix
+   :type density: float
+   :param dtype: The dtype of the elements in the matrix
+   :type dtype: Union[DTypes, str]
+
+   :returns: A sparse matrix with the specified number of rows and columns
+             and the specified density
+   :rtype: sparray
+
+   :raises ValueError: Raised if density is not in the range [0,1]
+
+
 .. py:function:: random_strings_lognormal(logmean: arkouda.dtypes.numeric_scalars, logstd: arkouda.dtypes.numeric_scalars, size: arkouda.dtypes.int_scalars, characters: str = 'uppercase', seed: Optional[arkouda.dtypes.int_scalars] = None) -> arkouda.strings.Strings
 
    Generate random strings with log-normally distributed lengths and
@@ -35101,6 +35183,92 @@ Package Contents
    >>> sorted = ak.sort(a)
    >>> a
    array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
+
+
+.. py:class:: sparray(name: str, mydtype: Union[numpy.dtype, str], size: arkouda.dtypes.int_scalars, ndim: arkouda.dtypes.int_scalars, shape: Sequence[int], layout: str, itemsize: arkouda.dtypes.int_scalars, max_bits: Optional[int] = None)
+
+   The class for sparse arrays. This class contains only the
+   attributies of the array; the data resides on the arkouda
+   server. When a server operation results in a new array, arkouda
+   will create a sparray instance that points to the array data on
+   the server. As such, the user should not initialize sparray
+   instances directly.
+
+   .. attribute:: name
+
+      The server-side identifier for the array
+
+      :type: str
+
+   .. attribute:: dtype
+
+      The element type of the array
+
+      :type: dtype
+
+   .. attribute:: size
+
+      The size of any one dimension of the array (all dimensions are assumed to be equal sized for now)
+
+      :type: int_scalars
+
+   .. attribute:: ndim
+
+      The rank of the array (currently only rank 2 arrays supported)
+
+      :type: int_scalars
+
+   .. attribute:: shape
+
+      A list or tuple containing the sizes of each dimension of the array
+
+      :type: Sequence[int]
+
+   .. attribute:: layout
+
+      The layout of the array ("CSR" or "CSC" are the only valid values)
+
+      :type: str
+
+   .. attribute:: itemsize
+
+      The size in bytes of each element
+
+      :type: int_scalars
+
+
+   .. py:attribute:: dtype
+
+
+   .. py:attribute:: itemsize
+
+
+   .. py:attribute:: layout
+
+
+   .. py:attribute:: name
+
+
+   .. py:attribute:: ndim
+
+
+   .. py:attribute:: shape
+
+
+   .. py:attribute:: size
+
+
+.. py:function:: sparse_matrix_matrix_mult(A, B: arkouda.sparrayclass.sparray) -> arkouda.sparrayclass.sparray
+
+   Multiply two sparse matrices.
+
+   :param A: The left-hand sparse matrix
+   :type A: sparray
+   :param B: The right-hand sparse matrix
+   :type B: sparray
+
+   :returns: The product of the two sparse matrices
+   :rtype: sparray
 
 
 .. py:function:: sqrt(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray

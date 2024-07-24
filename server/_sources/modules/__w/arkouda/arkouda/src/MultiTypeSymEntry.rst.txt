@@ -19,7 +19,7 @@ or
 
 .. data:: const genLogger = new Logger(logLevel, logChannel)
 
-.. enum:: enum SymbolEntryType { AbstractSymEntry, TypedArraySymEntry, PrimitiveTypedArraySymEntry, ComplexTypedArraySymEntry, GenSymEntry, SegStringSymEntry, CompositeSymEntry, GeneratorSymEntry, AnythingSymEntry, UnknownSymEntry, None }
+.. enum:: enum SymbolEntryType { AbstractSymEntry, TypedArraySymEntry, PrimitiveTypedArraySymEntry, ComplexTypedArraySymEntry, GenSymEntry, SegStringSymEntry, CompositeSymEntry, GenSparseSymEntry, SparseSymEntry, GeneratorSymEntry, AnythingSymEntry, UnknownSymEntry, None }
 
    *
    * Internal Types we can use to build our Symbol type hierarchy.
@@ -40,6 +40,10 @@ or
 
    .. enumconstant:: enum constant CompositeSymEntry
 
+   .. enumconstant:: enum constant GenSparseSymEntry
+
+   .. enumconstant:: enum constant SparseSymEntry
+
    .. enumconstant:: enum constant GeneratorSymEntry
 
    .. enumconstant:: enum constant AnythingSymEntry
@@ -55,7 +59,7 @@ or
    * All other SymEntry classes should inherit from this class
    * or one of its ancestors and ultimately everything should
    * be assignable/coercible to this class.
-   * 
+   *
    * All subclasses should set & add their type to the `assignableTypes`
    * set so we can maintain & determine the type hierarchy.
    
@@ -346,6 +350,100 @@ or
       * :returns: s (string) containing the array data
       
 
+.. class:: GenSparseSymEntry : AbstractSymEntry
+
+   .. attribute:: var dtype: DType
+
+   .. attribute:: var itemsize: int
+
+   .. attribute:: var size: int = 0
+
+   .. attribute:: var ndim: int = 2
+
+   .. attribute:: var shape: string = "[0,0]"
+
+   .. attribute:: var layoutStr: string = "UNKNOWN"
+
+   .. method:: proc init(type etype, size: int = 0, ndim: int = 2, layoutStr: string)
+
+      
+      Create a 1D GenSymEntry from an array element type and length
+      
+
+   .. method:: proc toSparseSymEntry(type etype, param dimensions = 2, param layout)
+
+      Cast this `SparseGenSymEntry` to `borrowed SparseSymEntry(etype)`
+      
+      This function will halt if the cast fails.
+      
+      :arg etype: `SparseSymEntry` type parameter
+      :type etype: type
+      
+
+   .. method:: proc attrib(): string throws
+
+.. function:: proc layoutToStr(param l) param
+
+.. class:: SparseSymEntry : GenSparseSymEntry
+
+   Symbol table entry 
+
+   .. attribute:: type etype
+
+      
+      generic element type array
+      etype is different from dtype (chapel vs numpy)
+      
+
+   .. attribute:: param dimensions: int
+
+      
+      number of dimensions, to be passed back to the `GenSparseSymEntry` so that
+      we are able to make it visible to the Python client
+      
+
+   .. attribute:: var tupShape: dimensions*int
+
+      
+      the actual shape of the array, this has to live here, since GenSparseSymEntry
+      has to stay generic
+      For now, each dimension is assumed to be equal.
+      
+
+   .. attribute:: param matLayout: layout
+
+      
+      layout of the sparse array: CSC or CSR
+      
+
+   .. attribute:: var a = makeSparseArray(tupShape[0], etype, matLayout)
+
+      
+      'a' is the distributed sparse array
+      
+
+   .. method:: proc init(a, size, param matLayout, type eltType)
+
+      
+      Create a SparseSymEntry from a shape and element type, etc.
+      
+      :args len: size of each dimension
+      :type len: int
+      
+      :arg etype: type to be instantiated
+      :type etype: type
+      
+
+   .. method:: proc deinit()
+
+      
+      Verbose flag utility method
+      
+
+.. function:: proc createSparseSymEntry(a, size, param matLayout, type eltType) throws
+
+.. function:: proc makeSparseArray(size, type eltType, param matLayout)
+
 .. class:: GeneratorSymEntry : AbstractSymEntry
 
    .. attribute:: type etype
@@ -372,6 +470,12 @@ or
 
    *
    * Helper proc to cast AbstractSymEntry to SegStringSymEntry
+   
+
+.. function:: proc toGenSparseSymEntry(entry: borrowed AbstractSymEntry) throws
+
+   *
+   * Helper proc to cast AbstractSymEntry to GenSparseSymEntry
    
 
 .. function:: proc toGeneratorSymEntry(entry: borrowed AbstractSymEntry, type t) throws

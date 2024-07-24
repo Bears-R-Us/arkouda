@@ -1,0 +1,52 @@
+arkouda.sparsematrix
+====================
+
+.. py:module:: arkouda.sparsematrix
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   arkouda.sparsematrix.random_sparse_matrix
+   arkouda.sparsematrix.sparse_matrix_matrix_mult
+
+
+Module Contents
+---------------
+
+.. py:function:: random_sparse_matrix(size: int, density: float, layout: str) -> arkouda.sparrayclass.sparray
+
+   Create a random sparse matrix with the specified number of rows and columns
+   and the specified density. The density is the fraction of non-zero elements
+   in the matrix. The non-zero elements are uniformly distributed random
+   numbers in the range [0,1).
+
+   :param size: The number of rows in the matrix, columns are equal to rows right now
+   :type size: int
+   :param density: The fraction of non-zero elements in the matrix
+   :type density: float
+   :param dtype: The dtype of the elements in the matrix
+   :type dtype: Union[DTypes, str]
+
+   :returns: A sparse matrix with the specified number of rows and columns
+             and the specified density
+   :rtype: sparray
+
+   :raises ValueError: Raised if density is not in the range [0,1]
+
+
+.. py:function:: sparse_matrix_matrix_mult(A, B: arkouda.sparrayclass.sparray) -> arkouda.sparrayclass.sparray
+
+   Multiply two sparse matrices.
+
+   :param A: The left-hand sparse matrix
+   :type A: sparray
+   :param B: The right-hand sparse matrix
+   :type B: sparray
+
+   :returns: The product of the two sparse matrices
+   :rtype: sparray
+
+

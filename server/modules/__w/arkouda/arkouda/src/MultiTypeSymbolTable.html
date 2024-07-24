@@ -81,6 +81,8 @@
 <li class="toctree-l1"><a class="reference internal" href="ServerErrorStrings.html">ServerErrorStrings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ServerErrors.html">ServerErrors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="SipHash.html">SipHash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SparseMatrix.html">SparseMatrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SparseMatrix/SpsMatUtil.html">SpsMatUtil</a></li>
 <li class="toctree-l1"><a class="reference internal" href="StatusMsg.html">StatusMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="SymArrayDmap.html">SymArrayDmap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Unique.html">Unique</a></li>
@@ -486,6 +488,17 @@ returns a string array of matching names</p>
 <li></li>
 <li><p>Convenience proc to retrieve SegStringSymEntry from SymTab</p></li>
 <li><p>Performs conversion from AbstractySymEntry to SegStringSymEntry</p></li>
+<li><p>You can pass a logger from the calling function for better error reporting.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="MultiTypeSymbolTable.getGenericSparseArrayEntry">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getGenericSparseArrayEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">borrowed</span> <span class="pre">GenSparseSymEntry</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.getGenericSparseArrayEntry" title="Link to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li></li>
+<li><p>Convenience proc to retrieve GenSparseSymEntry from SymTab</p></li>
+<li><p>Performs conversion from AbstractSymEntry to GenSparseSymEntry</p></li>
 <li><p>You can pass a logger from the calling function for better error reporting.</p></li>
 </ul>
 </dd></dl>

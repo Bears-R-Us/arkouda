@@ -1,0 +1,37 @@
+.. default-domain:: chpl
+
+.. module:: SparseMatrix
+
+SparseMatrix
+============
+**Usage**
+
+.. code-block:: chapel
+
+   use SparseMatrix;
+
+
+or
+
+.. code-block:: chapel
+
+   import SparseMatrix;
+
+**Submodules**
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   SparseMatrix/*
+
+.. function:: proc sparseMatMatMult(A, B)
+
+.. function:: proc sparseMatMatMult(A, B, ref spsData)
+
+.. function:: proc sparseMatMatMult(A, B) where !A.chpl_isNonDistributedArray() && !B.chpl_isNonDistributedArray()
+
+.. function:: proc denseMatMatMult(A, B)
+
+.. function:: proc randSparseMatrix(size, density, param layout, param distributed = false, type eltType)
+

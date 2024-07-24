@@ -1,0 +1,63 @@
+.. default-domain:: chpl
+
+.. module:: SpsMatUtil
+
+SpsMatUtil
+==========
+**Usage**
+
+.. code-block:: chapel
+
+   use SparseMatrix.SpsMatUtil;
+
+
+or
+
+.. code-block:: chapel
+
+   import SparseMatrix.SpsMatUtil;
+
+.. enum:: enum layout { CSR, CSC }
+
+   .. enumconstant:: enum constant CSR
+
+   .. enumconstant:: enum constant CSC
+
+.. data:: config const seed = 0
+
+.. data:: var rands = if seed == 0 then new randomStream(real) else new randomStream(real, seed)
+
+.. record:: sparseMatDat
+
+   .. method:: proc ref add(idx: 2*(int), val: int)
+
+.. function:: proc randSparseDomain(parentDom, density, param matLayout, param distributed) where distributed == false
+
+.. function:: proc randSparseDomain(parentDom, density, param matLayout, param distributed) where distributed == true
+
+.. function:: proc emptySparseDomLike(Mat)
+
+.. function:: proc writeSparseMatrix(msg, Arr)
+
+.. function:: proc makeSparseMat(parentDom, spsData)
+
+.. function:: proc makeSparseMat(parentDom, nnzs, vals)
+
+.. class:: merge : ReduceScanOp
+
+   .. attribute:: type eltType = sparseMatDat
+
+   .. attribute:: var value: eltType
+
+   .. method:: proc identity
+
+   .. method:: proc accumulate(x)
+
+   .. method:: proc accumulateOntoState(ref state, x)
+
+   .. method:: proc combine(x)
+
+   .. method:: proc generate()
+
+   .. method:: proc clone()
+

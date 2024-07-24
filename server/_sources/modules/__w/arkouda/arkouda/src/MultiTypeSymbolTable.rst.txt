@@ -300,3 +300,11 @@ or
    * You can pass a logger from the calling function for better error reporting.
    
 
+.. function:: proc getGenericSparseArrayEntry(name: string, st: borrowed SymTab): borrowed GenSparseSymEntry throws
+
+   *
+   * Convenience proc to retrieve GenSparseSymEntry from SymTab
+   * Performs conversion from AbstractSymEntry to GenSparseSymEntry
+   * You can pass a logger from the calling function for better error reporting.
+   
+
