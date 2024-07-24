@@ -1806,9 +1806,8 @@ class GroupBy:
 
         has_seed = random_state._seed is not None
 
-        ndim = 1
         repMsg = generic_msg(
-            cmd=f"segmentedSample<{ndim}>",
+            cmd="segmentedSample",
             args={
                 "genName": gen_name,
                 "perm": self.permutation,
