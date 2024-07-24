@@ -34,15 +34,15 @@ module SparseMatrixMsg {
 
         select l {
             when "CSR" {
-                var aV = randSparseMatrix(size, density, CSR, distributed, int); // Hardcode int for now and false for distributed
-                st.addEntry(vName, createSparseSymEntry(aV, size, CSR, int));
+                var aV = randSparseMatrix(size, density, layout.CSR, distributed, int); // Hardcode int for now and false for distributed
+                st.addEntry(vName, createSparseSymEntry(aV, size, layout.CSR, int));
                 repMsg = "created " + st.attrib(vName);
                 sparseLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
                 return new MsgTuple(repMsg, MsgType.NORMAL);
             }
             when "CSC" {
-                var aV = randSparseMatrix(size, density, CSC, distributed, int); // Hardcode int for now and false for distributed
-                st.addEntry(vName, createSparseSymEntry(aV, size, CSC, int));
+                var aV = randSparseMatrix(size, density, layout.CSC, distributed, int); // Hardcode int for now and false for distributed
+                st.addEntry(vName, createSparseSymEntry(aV, size, layout.CSC, int));
                 repMsg = "created " + st.attrib(vName);
                 sparseLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
                 return new MsgTuple(repMsg, MsgType.NORMAL);
@@ -67,13 +67,13 @@ module SparseMatrixMsg {
         var gEnt2 = getGenericSparseArrayEntry(msgArgs.getValueOf("arg2"), st);
 
         // Hardcode for int right now
-        var e1 = gEnt1.toSparseSymEntry(int, dimensions=2, CSC);
-        var e2 = gEnt2.toSparseSymEntry(int, dimensions=2, CSR);
+        var e1 = gEnt1.toSparseSymEntry(int, dimensions=2, layout.CSC);
+        var e2 = gEnt2.toSparseSymEntry(int, dimensions=2, layout.CSR);
 
         var size = gEnt2.size;
 
         var aV = sparseMatMatMult(e1.a, e2.a);
-        st.addEntry(vName, createSparseSymEntry(aV, size, CSR, int));
+        st.addEntry(vName, createSparseSymEntry(aV, size, layout.CSR, int));
         repMsg = "created " + st.attrib(vName);
         sparseLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);

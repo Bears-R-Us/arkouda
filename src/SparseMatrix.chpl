@@ -110,8 +110,11 @@ module SparseMatrix {
 
     use BlockDist, LayoutCS, Map, Random;
 
-    enum layout { CSR, CSC };
-    public use layout;
+    enum layout {
+      CSR,
+      CSC
+    };
+    // public use layout;
 
     config const seed = 0;
 
@@ -137,10 +140,10 @@ module SparseMatrix {
     // the given density and layout.  If distributed is true, this will
     // be a block-distributed sparse matrix, otherwise it'll be local.
     //
-    proc randSparseDomain(parentDom, density, param layout, param distributed)
+    proc randSparseDomain(parentDom, density, param matLayout, param distributed)
     where distributed == false {
 
-      var SD: sparse subdomain(parentDom) dmapped new dmap(new CS(compressRows=(layout==CSR)));
+      var SD: sparse subdomain(parentDom) dmapped new dmap(new CS(compressRows=(matLayout==layout.CSR)));
 
       for (i,j) in parentDom do
         if rands.next() <= density then
@@ -149,20 +152,13 @@ module SparseMatrix {
       return SD;
     }
 
-    proc randSparseDomain(parentDom, density, param layout, param distributed)
+    proc randSparseDomain(parentDom, density, param matLayout, param distributed)
     where distributed == true {
       const locsPerDim = sqrt(numLocales:real): int,
             grid = {0..<locsPerDim, 0..<locsPerDim},
             localeGrid = reshape(Locales[0..<grid.size], grid);
 
-
-      if grid.size != numLocales then
-        writeln("Warning: Only using ", grid.size, " of ", numLocales,
-                " locales");
-
-      // writeln(grid);
-
-      type layoutType = CS(compressRows=(layout==CSR));
+      type layoutType = CS(compressRows=(matLayout==layout.CSR));
       const DenseBlkDom = parentDom dmapped new blockDist(boundingBox=parentDom,
                                                     targetLocales=localeGrid,
                                                     sparseLayoutType=layoutType);
