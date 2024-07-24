@@ -12,10 +12,10 @@ dependencies:
   - versioneer
   - matplotlib>=3.3.2
   - h5py>=3.7.0
-  - hdf5==1.12.2
+  - hdf5>=1.12.2
   - pip
   - types-tabulate
-  - pytables>=3.7.0
+  - pytables>=3.8.0
   - pyarrow
   - libiconv
   - libidn2

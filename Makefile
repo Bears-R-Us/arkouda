@@ -127,8 +127,8 @@ install-zmq:
 	rm -r $(ZMQ_BUILD_DIR)
 	echo '$$(eval $$(call add-path,$(ZMQ_INSTALL_DIR)))' >> Makefile.paths
 
-HDF5_MAJ_MIN_VER := 1.12
-HDF5_VER := 1.12.1
+HDF5_MAJ_MIN_VER := 1.14
+HDF5_VER := 1.14.4
 HDF5_NAME_VER := hdf5-$(HDF5_VER)
 HDF5_BUILD_DIR := $(DEP_BUILD_DIR)/$(HDF5_NAME_VER)
 HDF5_INSTALL_DIR := $(DEP_INSTALL_DIR)/hdf5-install
