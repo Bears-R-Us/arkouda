@@ -23,16 +23,18 @@ module MultiTypeSymEntry
      */
     enum SymbolEntryType {
         AbstractSymEntry,  // Root Type from which all other types will inherit
-        
+
             TypedArraySymEntry, // Parent type for Arrays with a dtype, legacy->GenSymEntry
                 PrimitiveTypedArraySymEntry, // int, uint8, bool, etc.
                 ComplexTypedArraySymEntry,   // DateTime, TimeDelta, IP Address, etc.
-        
+
             GenSymEntry,
                 SegStringSymEntry,    // SegString composed of offset-int[], bytes->uint(8)
 
             CompositeSymEntry,        // Entries that consist of multiple SymEntries of varying type
 
+            GenSparseSymEntry,    // Generic entry for sparse matrices
+                SparseSymEntry,    // Entry for sparse matrices
             GeneratorSymEntry,  // Entry for random number generators
 
             AnythingSymEntry, // Placeholder to stick aritrary things in the map
@@ -45,7 +47,7 @@ module MultiTypeSymEntry
      * All other SymEntry classes should inherit from this class
      * or one of its ancestors and ultimately everything should
      * be assignable/coercible to this class.
-     * 
+     *
      * All subclasses should set & add their type to the `assignableTypes`
      * set so we can maintain & determine the type hierarchy.
      */
@@ -502,6 +504,143 @@ module MultiTypeSymEntry
         }
     }
 
+    class GenSparseSymEntry:AbstractSymEntry {
+        var dtype: DType; // answer to numpy dtype
+        var itemsize: int; // answer to numpy itemsize = num bytes per elt
+        var size: int = 0; // answer to numpy size == num elts
+        var ndim: int = 2; // answer to numpy ndim == 2-axis for now
+        var shape: string = "[0,0]"; // answer to numpy shape
+        var layoutStr: string = "UNKNOWN"; // How to initialize
+
+        /*
+          Create a 1D GenSymEntry from an array element type and length
+        */
+        proc init(type etype, size: int = 0, ndim: int = 2, layoutStr: string) {
+            this.entryType = SymbolEntryType.SparseSymEntry;
+            assignableTypes.add(this.entryType);
+            this.dtype = whichDtype(etype);
+            this.itemsize = dtypeSize(this.dtype);
+            this.size = size;
+            this.ndim = ndim;
+            init this;
+            if size == 0 then
+              this.shape = "[0,0]";
+            else
+              this.shape = tupShapeString(1, ndim);
+            this.layoutStr = layoutStr;
+        }
+
+        /* Cast this `SparseGenSymEntry` to `borrowed SparseSymEntry(etype)`
+
+           This function will halt if the cast fails.
+
+           :arg etype: `SparseSymEntry` type parameter
+           :type etype: type
+         */
+        inline proc toSparseSymEntry(type etype, param dimensions=2, param layout) {
+            return try! this :borrowed SparseSymEntry(etype, dimensions, layout);
+        }
+
+        proc attrib(): string throws {
+            return "%s %? %? %s %s %?".format(dtype2str(this.dtype), this.size, this.ndim, this.shape, this.layoutStr, this.itemsize);
+        }
+
+    }
+
+    import SparseMatrix.layout;
+    use LayoutCS;
+
+
+    proc layoutToStr(param l) param {
+        select l {
+            when layout.CSR {
+                return "CSR";
+            }
+            when layout.CSC {
+                return "CSC";
+            }
+            otherwise {
+                return "UNKNOWN";
+            }
+        }
+    }
+
+    /* Symbol table entry */
+    class SparseSymEntry : GenSparseSymEntry
+    {
+        /*
+        generic element type array
+        etype is different from dtype (chapel vs numpy)
+        */
+        type etype;
+
+        /*
+        number of dimensions, to be passed back to the `GenSparseSymEntry` so that
+        we are able to make it visible to the Python client
+        */
+        param dimensions: int;
+
+        /*
+        the actual shape of the array, this has to live here, since GenSparseSymEntry
+        has to stay generic
+        For now, each dimension is assumed to be equal.
+        */
+        var tupShape: dimensions*int;
+
+        /*
+        layout of the sparse array: CSC or CSR
+        */
+        param matLayout : layout;
+
+        /*
+        'a' is the distributed sparse array
+        */
+        var a = makeSparseArray(tupShape[0], etype, matLayout); // Hardcode 2D matrix for now
+
+        /*
+          Create a SparseSymEntry from a shape and element type, etc.
+
+          :args len: size of each dimension
+          :type len: int
+
+          :arg etype: type to be instantiated
+          :type etype: type
+        */
+        proc init(a, size, param matLayout, type eltType) {
+            super.init(eltType, size, 2, layoutToStr(matLayout)); // Hardcode a 2D matrix for now
+            this.entryType = SymbolEntryType.SparseSymEntry;
+            assignableTypes.add(this.entryType);
+
+            this.etype = eltType;
+            this.dimensions = 2; // Hardcode a 2D matrix for now
+            this.tupShape = (size,size); // Harcode a 2D matrix for now
+            this.matLayout = matLayout;
+            this.a = a;
+            init this;
+            this.shape = tupShapeString(this.tupShape);
+            this.ndim = this.tupShape.size;
+        }
+
+        /*
+        Verbose flag utility method
+        */
+        proc deinit() {
+            if logLevel == LogLevel.DEBUG {writeln("deinit SparseSymEntry");try! stdout.flush();}
+        }
+    }
+
+    inline proc createSparseSymEntry(a, size, param matLayout, type eltType) throws {
+        return new shared SparseSymEntry(a, size, matLayout, eltType);
+    }
+
+    proc makeSparseArray(size, type eltType, param matLayout) {
+        const dom = {1..size, 1..size};
+        var spsDom: sparse subdomain(dom) dmapped new dmap(new CS(compressRows=(matLayout==layout.CSR)));
+        var A: [spsDom] eltType;
+        return A;
+    }
+
+
     class GeneratorSymEntry:AbstractSymEntry {
         type etype;
         var generator: randomStream(etype);
@@ -529,12 +668,19 @@ module MultiTypeSymEntry
     proc toCompositeSymEntry(entry: borrowed AbstractSymEntry) throws {
         return (entry: borrowed CompositeSymEntry);
     }
-    
+
     /**
      * Helper proc to cast AbstractSymEntry to SegStringSymEntry
      */
     proc toSegStringSymEntry(entry: borrowed AbstractSymEntry) throws {
         return (entry: borrowed SegStringSymEntry);
+    }
+
+    /**
+     * Helper proc to cast AbstractSymEntry to GenSparseSymEntry
+     */
+    proc toGenSparseSymEntry(entry: borrowed AbstractSymEntry) throws {
+        return (entry: borrowed GenSparseSymEntry);
     }
 
     /**

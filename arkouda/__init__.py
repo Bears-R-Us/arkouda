@@ -23,6 +23,8 @@ from arkouda.logger import *
 from arkouda.timeclass import *
 from arkouda.infoclass import *
 from arkouda.segarray import *
+from arkouda.sparrayclass import *
+from arkouda.sparsematrix import *
 from arkouda.dataframe import *
 from arkouda.row import *
 from arkouda.index import *
