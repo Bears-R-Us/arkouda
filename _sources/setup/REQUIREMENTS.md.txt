@@ -27,10 +27,10 @@ The following python packages are required by the Arkouda client package.
 - `versioneer`
 - `matplotlib>=3.3.2`
 - `h5py>=3.7.0`
-- `hdf5==1.12.2`
+- `hdf5>=1.12.2`
 - `pip`
 - `types-tabulate`
-- `tables>=3.7.0`
+- `tables>=3.8.0`
 - `pyarrow`
 - `scipy<=1.13.1`
 
