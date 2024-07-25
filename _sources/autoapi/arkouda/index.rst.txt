@@ -334,6 +334,7 @@ Functions
    arkouda.read_hdf
    arkouda.read_parquet
    arkouda.read_tagged_data
+   arkouda.read_zarr
    arkouda.receive
    arkouda.receive_dataframe
    arkouda.register_all
@@ -363,6 +364,7 @@ Functions
    arkouda.to_csv
    arkouda.to_hdf
    arkouda.to_parquet
+   arkouda.to_zarr
    arkouda.translate_np_dtype
    arkouda.uniform
    arkouda.uniform
@@ -34766,6 +34768,24 @@ Package Contents
    {'Filname_Codes': array([0 3 6 9 12]), 'col_name': array([0 0 0 1])}
 
 
+.. py:function:: read_zarr(store_path: str, ndim: int, dtype)
+
+   Reads a Zarr store from disk into a pdarray. Supports multi-dimensional pdarrays of numeric types.
+   To use this function, ensure you have installed the blosc dependency (`make install-blosc`)
+   and have included `ZarrMsg.chpl` in the `ServerModules.cfg` file.
+
+   :param store_path: The path to the Zarr store. The path must be to a directory that contains a `.zarray`
+                      file containing the Zarr store metadata.
+   :type store_path: str
+   :param ndim: The number of dimensions in the array
+   :type ndim: int
+   :param dtype: The data type of the array
+   :type dtype: str
+
+   :returns: The pdarray read from the Zarr store.
+   :rtype: pdarray
+
+
 .. py:function:: receive(hostname: str, port)
 
    Receive a pdarray sent by `pdarray.transfer()`.
@@ -35618,6 +35638,23 @@ Package Contents
 
    >>> # Save using names instead of mapping
    >>> ak.to_parquet([a, b], 'path/name_prefix', names=['a', 'b'])
+
+
+.. py:function:: to_zarr(store_path: str, arr: arkouda.pdarrayclass.pdarray, chunk_shape)
+
+   Writes a pdarray to disk as a Zarr store. Supports multi-dimensional pdarrays of numeric types.
+   To use this function, ensure you have installed the blosc dependency (`make install-blosc`)
+   and have included `ZarrMsg.chpl` in the `ServerModules.cfg` file.
+
+   :param store_path: The path at which Zarr store should be written
+   :type store_path: str
+   :param arr: The pdarray to be written to disk
+   :type arr: pdarray
+   :param chunk_shape: The shape of the chunks to be used in the Zarr store
+   :type chunk_shape: tuple
+
+   :raises ValueError: Raised if the number of dimensions in the chunk shape does not match
+       the number of dimensions in the array or if the array is not a 32 or 64 bit numeric type
 
 
 .. py:function:: translate_np_dtype(dt) -> Tuple[str, int]

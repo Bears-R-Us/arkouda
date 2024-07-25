@@ -370,6 +370,7 @@
 <span class="kn">from</span> <span class="nn">arkouda.segarray</span> <span class="kn">import</span> <span class="n">SegArray</span>
 <span class="kn">from</span> <span class="nn">arkouda.strings</span> <span class="kn">import</span> <span class="n">Strings</span>
 <span class="kn">from</span> <span class="nn">arkouda.timeclass</span> <span class="kn">import</span> <span class="n">Datetime</span><span class="p">,</span> <span class="n">Timedelta</span>
+<span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">float32</span><span class="p">,</span> <span class="n">float64</span><span class="p">,</span> <span class="n">int32</span><span class="p">,</span> <span class="n">int64</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;get_filetype&quot;</span><span class="p">,</span>
@@ -381,6 +382,7 @@
     <span class="s2">&quot;read_hdf&quot;</span><span class="p">,</span>
     <span class="s2">&quot;read_parquet&quot;</span><span class="p">,</span>
     <span class="s2">&quot;read_csv&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;read_zarr&quot;</span><span class="p">,</span>
     <span class="s2">&quot;read&quot;</span><span class="p">,</span>
     <span class="s2">&quot;read_tagged_data&quot;</span><span class="p">,</span>
     <span class="s2">&quot;import_data&quot;</span><span class="p">,</span>
@@ -388,6 +390,7 @@
     <span class="s2">&quot;to_hdf&quot;</span><span class="p">,</span>
     <span class="s2">&quot;to_parquet&quot;</span><span class="p">,</span>
     <span class="s2">&quot;to_csv&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;to_zarr&quot;</span><span class="p">,</span>
     <span class="s2">&quot;save_all&quot;</span><span class="p">,</span>
     <span class="s2">&quot;load&quot;</span><span class="p">,</span>
     <span class="s2">&quot;load_all&quot;</span><span class="p">,</span>
@@ -1902,6 +1905,82 @@
             <span class="s2">&quot;overwrite&quot;</span><span class="p">:</span> <span class="n">overwrite</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="to_zarr">
+<a class="viewcode-back" href="../../autoapi/arkouda/io/index.html#arkouda.to_zarr">[docs]</a>
+<span class="k">def</span> <span class="nf">to_zarr</span><span class="p">(</span><span class="n">store_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">arr</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">chunk_shape</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Writes a pdarray to disk as a Zarr store. Supports multi-dimensional pdarrays of numeric types.</span>
+<span class="sd">    To use this function, ensure you have installed the blosc dependency (`make install-blosc`)</span>
+<span class="sd">    and have included `ZarrMsg.chpl` in the `ServerModules.cfg` file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    store_path : str</span>
+<span class="sd">        The path at which Zarr store should be written</span>
+<span class="sd">    arr : pdarray</span>
+<span class="sd">        The pdarray to be written to disk</span>
+<span class="sd">    chunk_shape : tuple</span>
+<span class="sd">        The shape of the chunks to be used in the Zarr store</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Raised if the number of dimensions in the chunk shape does not match</span>
+<span class="sd">        the number of dimensions in the array or if the array is not a 32 or 64 bit numeric type</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ndim</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="k">if</span> <span class="n">ndim</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chunk_shape</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The number of dimensions in the chunk shape must match the </span><span class="se">\</span>
+<span class="s2">                          number of dimensions in the array&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">int64</span><span class="p">,</span> <span class="n">int32</span><span class="p">,</span> <span class="n">float64</span><span class="p">,</span> <span class="n">float32</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Only pdarrays of 64 and 32 bit numeric types are supported&quot;</span><span class="p">)</span>
+
+    <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;writeAllZarr</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;store_path&quot;</span><span class="p">:</span> <span class="n">store_path</span><span class="p">,</span>
+            <span class="s2">&quot;arr&quot;</span><span class="p">:</span> <span class="n">arr</span><span class="p">,</span>
+            <span class="s2">&quot;chunk_shape&quot;</span><span class="p">:</span> <span class="n">chunk_shape</span>
+        <span class="p">}</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="read_zarr">
+<a class="viewcode-back" href="../../autoapi/arkouda/io/index.html#arkouda.read_zarr">[docs]</a>
+<span class="k">def</span> <span class="nf">read_zarr</span><span class="p">(</span><span class="n">store_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ndim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads a Zarr store from disk into a pdarray. Supports multi-dimensional pdarrays of numeric types.</span>
+<span class="sd">    To use this function, ensure you have installed the blosc dependency (`make install-blosc`)</span>
+<span class="sd">    and have included `ZarrMsg.chpl` in the `ServerModules.cfg` file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    store_path : str</span>
+<span class="sd">        The path to the Zarr store. The path must be to a directory that contains a `.zarray`</span>
+<span class="sd">        file containing the Zarr store metadata.</span>
+<span class="sd">    ndim : int</span>
+<span class="sd">        The number of dimensions in the array</span>
+<span class="sd">    dtype : str</span>
+<span class="sd">        The data type of the array</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray</span>
+<span class="sd">        The pdarray read from the Zarr store.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;readAllZarr</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;store_path&quot;</span><span class="p">:</span> <span class="n">store_path</span><span class="p">,</span>
+            <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">dtype</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
