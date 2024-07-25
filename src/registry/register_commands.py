@@ -713,7 +713,7 @@ def register_commands(config, source_files):
 
     stamps.append("}")
 
-    return ("\n\n".join(stamps), count)
+    return ("\n\n".join(stamps) + "\n", count)
 
 
 def getModuleFiles(config, src_dir):
