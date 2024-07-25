@@ -185,6 +185,19 @@ install-idn2:
 	rm -rf $(LIBIDN_BUILD_DIR)
 	echo '$$(eval $$(call add-path,$(LIBIDN_INSTALL_DIR)))' >> Makefile.paths
 
+
+BLOSC_BUILD_DIR := $(DEP_BUILD_DIR)/c-blosc
+BLOSC_INSTALL_DIR := $(DEP_INSTALL_DIR)/c-blosc-install
+
+install-blosc:
+	@echo "Installing blosc"
+	rm -rf $(BLOSC_INSTALL_DIR) $(BLOSC_BUILD_DIR)
+	mkdir -p $(BLOSC_INSTALL_DIR)
+	cd $(DEP_BUILD_DIR) && git clone https://github.com/Blosc/c-blosc.git
+	cd $(BLOSC_BUILD_DIR) && cmake -DCMAKE_INSTALL_PREFIX=$(BLOSC_INSTALL_DIR) && make && make install
+	rm -rf $(BLOSC_BUILD_DIR)
+	echo '$$(eval $$(call add-path,$(BLOSC_INSTALL_DIR)))' >> Makefile.paths
+
 # System Environment
 ifdef LD_RUN_PATH
 #CHPL_FLAGS += --ldflags="-Wl,-rpath=$(LD_RUN_PATH)"
