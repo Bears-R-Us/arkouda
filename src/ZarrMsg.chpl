@@ -72,7 +72,7 @@ module ZarrMsg {
     const name = msgArgs.getValueOf("arr");
     const chunkShape = msgArgs.get("chunk_shape").getTuple(nd);
     
-    zarrLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "%s".doFormat(name));
+    zarrLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "%s".format(name));
     var gAr1: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
     var failed = false;
@@ -98,7 +98,7 @@ module ZarrMsg {
       }
     } catch e {
       throw getErrorWithContext(
-                     msg=formatString(e),
+                     msg="%s".format(e),
                      getLineNumber(),
                      getRoutineName(),
                      getModuleName(),
@@ -106,7 +106,7 @@ module ZarrMsg {
     }
     if failed {
       throw getErrorWithContext(
-                     msg="unsupported dtype %s".doFormat(gAr1.dtype),
+                     msg="unsupported dtype %s".format(gAr1.dtype),
                      getLineNumber(),
                      getRoutineName(),
                      getModuleName(),
@@ -114,7 +114,7 @@ module ZarrMsg {
     }
     // if verbose print result
     zarrLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                "wrote the pdarray %s".doFormat(st.attrib(name)));
+                                "wrote the pdarray %s".format(st.attrib(name)));
 
     const repMsg = "wrote " + st.attrib(name);
     zarrLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), repMsg);
