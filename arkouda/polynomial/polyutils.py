@@ -1,3 +1,4 @@
+import arkouda as ak
 import numpy.polynomial.polyutils as nputils
 
 __all__ = [
@@ -21,5 +22,8 @@ def mapdomain(x, old, new):
     if scl == 1.0:
         return off + x
 
-    return off + scl*x
+    def remap(x):
+        return off + scl*x
+
+    return ak.for_each(x, remap)
 
