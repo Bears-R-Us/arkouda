@@ -14,7 +14,7 @@ module ZarrMsg {
   use CommAggregation;
   use AryUtil;
   use CTypes;
-  use ArkoudaZarrCompat;
+  use Zarr;
   use ServerConfig;
 
   use Reflection;
