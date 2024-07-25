@@ -1733,12 +1733,12 @@ def matching_shapes(pda_a: pdarray, pda_b: pdarray):
 
     Parameters
     ----------
-        pda_a : pdarray
-        pda_b : pdarray
+    pda_a : pdarray
+    pda_b : pdarray
 
     Returns
     -------
-        True if pda_a.size == pda_b.size, else False
+    True if pda_a.size == pda_b.size, else False
 
     Examples
     --------
@@ -1765,19 +1765,18 @@ def array_equal(pda_a: pdarray, pda_b: pdarray, equal_nan: bool = False):
 
     Parameters
     ----------
-        pda_a : pdarray
-        pda_b : pdarray
-        equal_nan : boolean to determine how to handle nans, default False
+    pda_a : pdarray
+    pda_b : pdarray
+    equal_nan : boolean to determine how to handle nans, default False
 
     Returns
     -------
-        boolean
-
-        With string data: False if one array is of type npstr and the other isn't,
-                            True is both are npstr and they match.
-        With numeric data: True if neither array has any nan elements, and all elements pairwise equal.
-                            False if equal_Nan is False, and either array has any nan element.
-                            True if equal_Nan is True, all non-nan elements are pairwise equal,
+    boolean
+      With string data: False if one array is of type npstr and the other isn't,
+                        True is both are npstr and they match.
+      With numeric data: True if neither array has any nan elements, and all elements pairwise equal.
+                         False if equal_Nan is False, and either array has any nan element.
+                         True if equal_Nan is True, all non-nan elements are pairwise equal,
                                             and all nans in pda_a correspond to nans in pda_b
 
     Examples
