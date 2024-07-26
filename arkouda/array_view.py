@@ -151,15 +151,14 @@ class ArrayView:
                 )
             coords = key if self.order is OrderType.COLUMN_MAJOR else key[::-1]
             repMsg = generic_msg(
-                cmd="arrayViewIntIndex",
+                cmd=f"arrayViewIntIndex<{self.dtype}>",
                 args={
                     "base": self.base,
                     "dim_prod": self._dim_prod,
                     "coords": coords,
                 },
             )
-            fields = repMsg.split()
-            return parse_single_value(" ".join(fields[1:]))
+            return parse_single_value(repMsg)
         elif isinstance(key, list):
             indices = []
             reshape_dim_list = []

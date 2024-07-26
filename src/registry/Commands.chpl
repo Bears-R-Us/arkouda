@@ -218,6 +218,65 @@ proc ark_castStringsTo_bigint(cmd: string, msgArgs: borrowed MessageArgs, st: bo
   return CastMsg.castStringsToArray(cmd, msgArgs, st, array_dtype=bigint);
 registerFunction('castStringsTo<bigint>', ark_castStringsTo_bigint, 'CastMsg', 67);
 
+import IndexingMsg;
+
+proc ark_reg_intIndex_generic(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype_0, param array_nd_0: int): MsgTuple throws {
+  var a_array_sym = st[msgArgs['a']]: SymEntry(array_dtype_0, array_nd_0);
+  ref a = a_array_sym.a;
+  var idx = msgArgs['idx'].toScalarTuple(int, array_nd_0);
+  var ark_result = IndexingMsg.intIndex(a,idx);
+
+  return MsgTuple.fromScalar(ark_result);
+}
+
+proc ark__int__int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_intIndex_generic(cmd, msgArgs, st, array_dtype_0=int, array_nd_0=1);
+registerFunction('[int]<int64,1>', ark__int__int_1, 'IndexingMsg', 197);
+
+proc ark__int__uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_intIndex_generic(cmd, msgArgs, st, array_dtype_0=uint, array_nd_0=1);
+registerFunction('[int]<uint64,1>', ark__int__uint_1, 'IndexingMsg', 197);
+
+proc ark__int__uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_intIndex_generic(cmd, msgArgs, st, array_dtype_0=uint(8), array_nd_0=1);
+registerFunction('[int]<uint8,1>', ark__int__uint8_1, 'IndexingMsg', 197);
+
+proc ark__int__real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_intIndex_generic(cmd, msgArgs, st, array_dtype_0=real, array_nd_0=1);
+registerFunction('[int]<float64,1>', ark__int__real_1, 'IndexingMsg', 197);
+
+proc ark__int__bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_intIndex_generic(cmd, msgArgs, st, array_dtype_0=bool, array_nd_0=1);
+registerFunction('[int]<bool,1>', ark__int__bool_1, 'IndexingMsg', 197);
+
+proc ark__int__bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_intIndex_generic(cmd, msgArgs, st, array_dtype_0=bigint, array_nd_0=1);
+registerFunction('[int]<bigint,1>', ark__int__bigint_1, 'IndexingMsg', 197);
+
+proc ark_arrayViewIntIndex_int(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return IndexingMsg.arrayViewIntIndex(cmd, msgArgs, st, array_dtype=int);
+registerFunction('arrayViewIntIndex<int64>', ark_arrayViewIntIndex_int, 'IndexingMsg', 117);
+
+proc ark_arrayViewIntIndex_uint(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return IndexingMsg.arrayViewIntIndex(cmd, msgArgs, st, array_dtype=uint);
+registerFunction('arrayViewIntIndex<uint64>', ark_arrayViewIntIndex_uint, 'IndexingMsg', 117);
+
+proc ark_arrayViewIntIndex_uint8(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return IndexingMsg.arrayViewIntIndex(cmd, msgArgs, st, array_dtype=uint(8));
+registerFunction('arrayViewIntIndex<uint8>', ark_arrayViewIntIndex_uint8, 'IndexingMsg', 117);
+
+proc ark_arrayViewIntIndex_real(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return IndexingMsg.arrayViewIntIndex(cmd, msgArgs, st, array_dtype=real);
+registerFunction('arrayViewIntIndex<float64>', ark_arrayViewIntIndex_real, 'IndexingMsg', 117);
+
+proc ark_arrayViewIntIndex_bool(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return IndexingMsg.arrayViewIntIndex(cmd, msgArgs, st, array_dtype=bool);
+registerFunction('arrayViewIntIndex<bool>', ark_arrayViewIntIndex_bool, 'IndexingMsg', 117);
+
+proc ark_arrayViewIntIndex_bigint(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return IndexingMsg.arrayViewIntIndex(cmd, msgArgs, st, array_dtype=bigint);
+registerFunction('arrayViewIntIndex<bigint>', ark_arrayViewIntIndex_bigint, 'IndexingMsg', 117);
+
 import ManipulationMsg;
 
 proc ark_broadcast_int_1_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do

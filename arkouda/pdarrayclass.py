@@ -112,9 +112,9 @@ def parse_single_value(msg: str) -> object:
         else:
             return int(value)
     if mydtype == akbool:
-        if value == "True":
+        if value == "True" or value == "true":
             return mydtype.type(True)
-        elif value == "False":
+        elif value == "False" or value == "false":
             return mydtype.type(False)
         else:
             raise ValueError(f"unsupported value from server {mydtype.name} {value}")
@@ -869,15 +869,13 @@ class pdarray:
                 key += self.size
             if key >= 0 and key < self.size:
                 repMsg = generic_msg(
-                    cmd="[int]1D",
+                    cmd=f"[int]<{self.dtype},1>",
                     args={
-                        "array": self,
+                        "a": self,
                         "idx": key,
                     },
                 )
-                fields = repMsg.split()
-                # value = fields[2]
-                return parse_single_value(" ".join(fields[1:]))
+                return parse_single_value(repMsg)
             else:
                 raise IndexError(f"[int] {orig_key} is out of bounds with size {self.size}")
 
@@ -906,14 +904,13 @@ class pdarray:
             if len(scalar_axes) == len(clean_key):
                 # all scalars: use simpler indexing (and return a scalar)
                 repMsg = generic_msg(
-                    cmd=f"[int]{self.ndim}D",
+                    cmd=f"[int]<{self.dtype},{self.ndim}>",
                     args={
-                        "array": self,
+                        "a": self,
                         "idx": clean_key,
                     },
                 )
-                fields = repMsg.split()
-                ret_array = parse_single_value(" ".join(fields[1:]))
+                ret_array = parse_single_value(repMsg)
 
             elif len(pdarray_axes) > 0:
                 if len(pdarray_axes) == len(clean_key):

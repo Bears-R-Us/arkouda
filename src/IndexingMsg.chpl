@@ -112,8 +112,9 @@ module IndexingMsg
         return pdarrayIndexMsg(cmd, subArgs, st);
     }
 
-    /* arrayViewIntIndexMsg "av[int_list]" response to __getitem__(int_list) where av is an ArrayView */
-    proc arrayViewIntIndexMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    /* arrayViewIntIndex "av[int_list]" response to __getitem__(int_list) where av is an ArrayView */
+    @arkouda.instantiateAndRegister()
+    proc arrayViewIntIndex(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         const pdaName = msgArgs.getValueOf("base");
         const dimProdName = msgArgs.getValueOf("dim_prod");
@@ -124,26 +125,22 @@ module IndexingMsg
         var dimProdEntry = toSymEntry(dimProd, int);
         var coords: borrowed GenSymEntry = getGenericTypedArrayEntry(coordsName, st);
 
-        var arrParam = msgArgs.get("base");
-        arrParam.setKey("array");
-        var idxParam = new ParameterObj("idx", "", "");
-
         // multi-dim to 1D address calculation
         // (dimProd and coords are reversed on python side to account for row_major vs column_major)
         select (coords.dtype) {
             when (DType.Int64) {
                 var coordsEntry = toSymEntry(coords, int);
                 var idx = + reduce (dimProdEntry.a * coordsEntry.a);
-                idxParam.setVal(idx:string);
-                var subArgs = new MessageArgs(new list([arrParam, idxParam]));
-                return intIndexMsg(cmd, subArgs, st, 1);
+
+                var a_array_sym = st[msgArgs['base']]: SymEntry(array_dtype, 1);
+                return MsgTuple.fromScalar(a_array_sym.a[idx]);
             }
             when (DType.UInt64) {
                 var coordsEntry = toSymEntry(coords, uint);
                 var idx = + reduce (dimProdEntry.a: uint * coordsEntry.a);
-                idxParam.setVal(idx:string);
-                var subArgs = new MessageArgs(new list([arrParam, idxParam]));
-                return intIndexMsg(cmd, subArgs, st, 1);
+
+                var a_array_sym = st[msgArgs['base']]: SymEntry(array_dtype, 1);
+                return MsgTuple.fromScalar(a_array_sym.a[idx:int]);
             }
             otherwise {
                  var errorMsg = notImplementedError(pn, "("+dtype2str(coords.dtype)+")");
@@ -196,60 +193,9 @@ module IndexingMsg
         }
     }
 
-    /* intIndex "a[int]" response to __getitem__(int) */
-    @arkouda.registerND(cmd_prefix="[int]")
-    proc intIndexMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-        param pn = Reflection.getRoutineName();
-        var repMsg: string; // response message
-        var idx = msgArgs.get("idx").getTuple(nd);
-        const name = msgArgs.getValueOf("array");
-        imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                    "%s %s %?".format(cmd, name, idx));
-        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
-
-        select (gEnt.dtype) {
-             when (DType.Int64) {
-                 var e = toSymEntry(gEnt, int, nd);
-                 repMsg = "item %s %?".format(dtype2str(e.dtype),e.a[(...idx)]);
-
-                 imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-                 return new MsgTuple(repMsg, MsgType.NORMAL);  
-             }
-             when (DType.UInt64) {
-               var e = toSymEntry(gEnt, uint, nd);
-                 repMsg = "item %s %?".format(dtype2str(e.dtype),e.a[(...idx)]);
-
-                 imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-                 return new MsgTuple(repMsg, MsgType.NORMAL);  
-             }
-             when (DType.Float64) {
-                 var e = toSymEntry(gEnt,real, nd);
-                 repMsg = "item %s %.17r".format(dtype2str(e.dtype),e.a[(...idx)]);
-
-                 imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-                 return new MsgTuple(repMsg, MsgType.NORMAL); 
-             }
-             when (DType.Bool) {
-                 var e = toSymEntry(gEnt,bool, nd);
-                 repMsg = "item %s %?".format(dtype2str(e.dtype),e.a[(...idx)]);
-                 repMsg = repMsg.replace("true","True"); // chapel to python bool
-                 repMsg = repMsg.replace("false","False"); // chapel to python bool
-
-                 imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-                 return new MsgTuple(repMsg, MsgType.NORMAL); 
-             }
-             when (DType.BigInt) {
-                 var e = toSymEntry(gEnt,bigint, nd);
-                 repMsg = "item %s %?".format(dtype2str(e.dtype),e.a[(...idx)]);
-                 imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-                 return new MsgTuple(repMsg, MsgType.NORMAL);
-             }
-             otherwise {
-                 var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
-                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                 return new MsgTuple(errorMsg, MsgType.ERROR);                
-             }
-         }
+    @arkouda.registerCommand("[int]")
+    proc intIndex(const ref a: [?d] ?t, idx: d.rank*int): t {
+        return a[idx];
     }
 
     /* convert python slice to chapel slice */
@@ -1774,7 +1720,6 @@ module IndexingMsg
     }
 
     use CommandMap;
-    registerFunction("arrayViewIntIndex", arrayViewIntIndexMsg, getModuleName());
     registerFunction("arrayViewMixedIndex", arrayViewMixedIndexMsg, getModuleName());
     registerFunction("arrayViewIntIndexAssign", arrayViewIntIndexAssignMsg, getModuleName());
     registerFunction("[pdarray]", pdarrayIndexMsg, getModuleName());

@@ -81,18 +81,54 @@ def annotated_procs(root, attr):
                         yield fn, attr_call
 
 
-def get_formals(fn):
+def extract_ast_block_text(node):
+    file, loc = str(node.location()).split(":", 1)
+    start, stop = loc.split("-")
+    lstart, bstart = start.split(":")
+    lstop, bstop = stop.split(":")
+
+    with open(file, "r") as f:
+        # get to the start line
+        for i in range(int(lstart) - 1):
+            f.readline()
+
+        # get to the start column
+        f.read(int(bstart) - 1)
+
+        # read the block text
+        return f.read(int(bstop) - int(bstart)).strip()
+
+
+def get_formals(fn, require_type_annotations):
     """
     Get a function's formal parameters, separating them into concrete and
     generic (param and type) formals
-    The (name, storage kind, and type expression) of each formal is returned
+    The (name, storage kind, type expression, info) of each formal is returned
+    Info is used to store extra information about the formal type, such as the
+    presence of a type-query in a bracket-loop type expression
     """
 
     def info_tuple(formal):
+        ten = None
+        extra_info = None
         if te := formal.type_expression():
             if isinstance(te, chapel.BracketLoop):
                 if te.is_maybe_array_type():
                     ten = "<array>"
+                    extra_info = [None, None]
+
+                    # record domain query name if any
+                    if isinstance(te.iterand(), chapel.TypeQuery):
+                        extra_info[0] = te.iterand().name()
+
+                    # record element type query if any
+                    if isinstance(te.body(), chapel.Block):
+                        # hack: chapel-py doesn't have a way to get the text of a block (I think)
+                        block_text = extract_ast_block_text(te.body())
+                        if block_text[0] == "?":
+                            extra_info[1] = block_text[1:]
+
+                    extra_info = tuple(extra_info)
                 else:
                     raise ValueError("invalid formal type expression")
             elif isinstance(te, chapel.FnCall):
@@ -106,7 +142,6 @@ def get_formals(fn):
                                     f"registering '{fn.name()}'",
                                     f"unsupported formal type for registration {list_type}",
                                 )
-                                ten = None
                             else:
                                 ten = f"list,{list_type}"
                         elif call_name == "borrowed":
@@ -116,30 +151,62 @@ def get_formals(fn):
                                 f"registering '{fn.name()}'",
                                 f"unsupported composite type expression for registration {call_name}",
                             )
-                            ten = None
-                    else:
-                        ten = None
+            elif isinstance(te, chapel.OpCall) and te.is_binary_op() and te.op() == "*":
+                ten = "<homog_tuple>"
+                actuals = list(te.actuals())
+
+                # check the tuple element type
+                if not (isinstance(actuals[1], chapel.Identifier) and actuals[1].name() in chapel_scalar_types):
+                    error_message(
+                        f"registering '{fn.name()}'",
+                        f"unsupported homog_tuple type expression for registration on formal '{formal.name()}'; " +
+                        f"tuple element type must be a scalar (one of {chapel_scalar_types.keys()})",
+                    )
                 else:
-                    ten = None
+                    tuple_elt_type = actuals[1].name()
+
+                    # check the tuple size (should be an int literal or a queried domain's rank)
+                    if isinstance(actuals[0], chapel.IntLiteral):
+                        extra_info = (int(actuals[0].text()), tuple_elt_type)
+                    elif isinstance(actuals[0], chapel.Dot) and actuals[0].field() == "rank" and isinstance(actuals[0].receiver(), chapel.Identifier):
+                        extra_info = (actuals[0].receiver().name(), tuple_elt_type)
+                    else:
+                        error_message(
+                            f"registering '{fn.name()}'",
+                            f"unsupported homog_tuple type expression for registration on formal '{formal.name()}'; " +
+                            "tuple size must be an int literal or a queried domain's rank",
+                        )
             else:
                 ten = te.name()
-        else:
-            ten = None
-        return (formal.name(), formal.storage_kind(), ten)
+        return (formal.name(), formal.storage_kind(), ten, extra_info)
 
     con_formals = []
     gen_formals = []
     for formal in fn.formals():
         if isinstance(formal, (chapel.TupleDecl, chapel.VarArgFormal)):
             raise ValueError(
-                "registration of procedures with tuple or vararg formals is not yet supported."
+                "registration of procedures with vararg or tuple-grouped formals are not yet supported."
             )
         elif isinstance(formal, (chapel.Formal, chapel.AnonFormal)):
-            if formal.storage_kind() in ["type", "param"]:
-                gen_formals.append(info_tuple(formal))
+            formal_info = info_tuple(formal)
+            if formal_info[2] is None and require_type_annotations:
+                error_message(
+                    f"registering '{fn.name()}'",
+                    f"missing type expression for formal '{formal_info[0]}'",
+                )
             else:
-                con_formals.append(info_tuple(formal))
+                if formal_info[1] in ["type", "param"]:
+                    gen_formals.append(formal_info)
+                else:
+                    con_formals.append(formal_info)
     return con_formals, gen_formals
+
+
+def clean_stamp_name(name):
+    """
+    Remove any invalid characters from a stamped command name
+    """
+    return name.translate(str.maketrans("[](),", "_____"))
 
 
 def stamp_generic_command(generic_proc_name, prefix, module_name, formals, line_num, is_user_proc):
@@ -165,7 +232,7 @@ def stamp_generic_command(generic_proc_name, prefix, module_name, formals, line_
         + ">"
     )
 
-    stamp_name = f"ark_{prefix}_" + "_".join(
+    stamp_name = f"ark_{clean_stamp_name(prefix)}_" + "_".join(
         [str(v).replace("(", "").replace(")", "") for _, v in formals.items()]
     )
 
@@ -248,7 +315,7 @@ def generic_permutations(config, gen_formals):
     to_permute = {}
     # TODO: check that the type annotations on param formals are scalars and that
     # the values in the config file can be used as literals of that type
-    for formal_name, storage_kind, _ in gen_formals:
+    for formal_name, storage_kind, _, _ in gen_formals:
         name_components = formal_name.split("_")
 
         if len(name_components) < 2:
@@ -335,7 +402,7 @@ def unpack_array_arg(arg_name, array_count):
     return (
         f"\tvar {arg_name}_array_sym = {SYMTAB_FORMAL_NAME}[{ARGS_FORMAL_NAME}['{arg_name}']]: {ARRAY_ENTRY_CLASS_NAME}({dtype_arg_name}, {nd_arg_name});\n"
         + f"\tref {arg_name} = {arg_name}_array_sym.a;",
-        [(dtype_arg_name, "type", None), (nd_arg_name, "param", "int")],
+        [(dtype_arg_name, "type", None, None), (nd_arg_name, "param", "int", None)],
     )
 
 
@@ -413,7 +480,7 @@ def gen_signature(user_proc_name, generic_args=None):
         name = "ark_reg_" + user_proc_name + "_generic"
         arg_strings = [
             f"{kind} {name}: {ft}" if ft else f"{kind} {name}"
-            for (name, kind, ft) in generic_args
+            for name, kind, ft, _ in generic_args
         ]
         proc = f"proc {name}(cmd: string, {ARGS_FORMAL_NAME}: {ARGS_FORMAL_TYPE}, {SYMTAB_FORMAL_NAME}: {SYMTAB_FORMAL_TYPE}, {', '.join(arg_strings)}): {RESPONSE_TYPE_NAME} throws {'{'}"
     else:
@@ -432,7 +499,10 @@ def gen_arg_unpacking(formals):
     generic_args = []
     array_arg_counter = 0
 
-    for fname, fintent, ftype in formals:
+    array_domain_queries = {}
+    array_elttype_queries = {}
+
+    for fname, fintent, ftype, finfo in formals:
         if ftype in chapel_scalar_types:
             unpack_lines.append(unpack_scalar_arg(fname, ftype))
         elif ftype == "<array>":
@@ -440,11 +510,27 @@ def gen_arg_unpacking(formals):
             unpack_lines.append(code)
             generic_args += array_args
             array_arg_counter += 1
+
+            # when an array formal type has a domain query (e.g., '[?d]'), keep track of
+            # the array's generic rank argument under the domain query's name (e.g., 'd').
+            # this allows homogeneous-tuple formal types to use the array's rank as a size argument
+            if finfo is not None:
+                if finfo[0] is not None:
+                    array_domain_queries[finfo[0]] = array_args[1][0]
+                if finfo[1] is not None:
+                    array_elttype_queries[finfo[1]] = array_args[0][0]
+
         elif "list" in ftype:
             unpack_lines.append(unpack_list_arg(fname, ftype))
-        elif ftype == "tuple":
-            print("ERROR: tuple and list types are not yet supported")
-            continue
+        elif ftype == "<homog_tuple>":
+            tsize = finfo[0]
+            ttype = finfo[1]
+
+            # if the tuple size is a domain query, use the corresponding generic rank argument
+            if isinstance(tsize, str):
+                tsize = array_domain_queries[tsize]
+
+            unpack_lines.append(unpack_tuple_arg(fname, tsize, ttype))
         else:
             # TODO: handle generic user-defined types
             unpack_lines.append(unpack_user_symbol(fname, ftype))
@@ -542,10 +628,15 @@ def gen_command_proc(name, return_type, formals, mod_name):
         name, [f[0] for f in formals], mod_name, return_type
     )
 
+    # get the names of the array-elt-type queries in the formals
+    array_type_queries = [f[3][1] for f in formals if (f[2] == "<array>" and f[3] is not None)]
+
+    # assume the returned type is a symbol if it's an identifier that is not a scalar or type-query reference
     returns_symbol = (
         return_type
         and isinstance(return_type, chapel.Identifier)
         and return_type.name() not in chapel_scalar_types
+        and return_type.name() not in array_type_queries
     )
     returns_array = (
         return_type
@@ -627,7 +718,7 @@ def register_commands(config, source_files):
             line_num = fn.location().start()[0]
 
             try:
-                con_formals, gen_formals = get_formals(fn)
+                con_formals, gen_formals = get_formals(fn, True)
             except ValueError as e:
                 error_message(f"registering '{name}'", e, fn.location())
                 continue
@@ -679,7 +770,7 @@ def register_commands(config, source_files):
             line_num = fn.location().start()[0]
 
             try:
-                con_formals, gen_formals = get_formals(fn)
+                con_formals, gen_formals = get_formals(fn, False)
             except ValueError as e:
                 error_message(f"registering '{name}'", e, fn.location())
                 continue
