@@ -1,4 +1,3 @@
-from typing import Tuple, Union, cast
 import numpy.random as np_random
 
 from arkouda.client import generic_msg
@@ -257,6 +256,8 @@ class Generator:
         >>> rng.integers(5, size=10)
         array([2, 4, 0, 0, 0, 3, 1, 5, 5, 3])  # random
         """
+        from arkouda.util import _calc_shape
+
         # normalize dtype so things like "int" will work
         dtype = to_numpy_dtype(dtype)
 
@@ -273,19 +274,9 @@ class Generator:
         elif not endpoint:
             high = high - 1
 
-        shape: Union[int_scalars, Tuple[int_scalars, ...]] = 1
-        if isinstance(size, tuple):
-            shape = cast(Tuple, size)
-            full_size = 1
-            for s in cast(Tuple, shape):
-                full_size *= s
-            ndim = len(shape)
-        else:
-            full_size = cast(int, size)
-            if full_size < 0:
-                raise ValueError("The size parameter must be > 0")
-            shape = full_size
-            ndim = 1
+        shape, full_size, ndim = _calc_shape(size)
+        if full_size < 0:
+            raise ValueError("The size parameter must be > 0")
 
         rep_msg = generic_msg(
             cmd=f"uniformGenerator<{dtype.name},{ndim}>",
@@ -421,23 +412,15 @@ class Generator:
         >>> rng.standard_normal(3)
         array([0.8797352989638163, -0.7085325853376141, 0.021728052940979934])  # random
         """
+        from arkouda.util import _calc_shape
+
         if size is None:
             # delegate to numpy when return size is 1
             return self._np_generator.standard_normal()
 
-        shape: Union[int_scalars, Tuple[int_scalars, ...]] = 1
-        if isinstance(size, tuple):
-            shape = cast(Tuple, size)
-            full_size = 1
-            for s in cast(Tuple, shape):
-                full_size *= s
-            ndim = len(shape)
-        else:
-            full_size = cast(int, size)
-            if full_size < 0:
-                raise ValueError("The size parameter must be > 0")
-            shape = full_size
-            ndim = 1
+        shape, full_size, ndim = _calc_shape(size)
+        if full_size < 0:
+            raise ValueError("The size parameter must be > 0")
 
         rep_msg = generic_msg(
             cmd=f"standardNormalGenerator<{ndim}>",
@@ -636,23 +619,15 @@ class Generator:
         >>> rng.uniform(-1, 1, 3)
         array([0.030785499755523249, 0.08505865366367038, -0.38552048588998722])  # random
         """
+        from arkouda.util import _calc_shape
+
         if size is None:
             # delegate to numpy when return size is 1
             return self._np_generator.uniform(low=low, high=high)
 
-        shape: Union[int_scalars, Tuple[int_scalars, ...]] = 1
-        if isinstance(size, tuple):
-            shape = cast(Tuple, size)
-            full_size = 1
-            for s in cast(Tuple, shape):
-                full_size *= s
-            ndim = len(shape)
-        else:
-            full_size = cast(int, size)
-            if full_size < 0:
-                raise ValueError("The size parameter must be > 0")
-            shape = full_size
-            ndim = 1
+        shape, full_size, ndim = _calc_shape(size)
+        if full_size < 0:
+            raise ValueError("The size parameter must be > 0")
 
         dt = akfloat64
         rep_msg = generic_msg(
