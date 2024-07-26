@@ -182,7 +182,7 @@ def _slice_index(array: pdarray, starts: List[int], stops: List[int], strides: L
     """
     return create_pdarray(
         generic_msg(
-            cmd=f"[slice]{array.ndim}D",
+            cmd=f"[slice]<{array.dtype},{array.ndim}>",
             args={
                 "array": array,
                 "starts": tuple(starts) if array.ndim > 1 else starts[0],
@@ -871,7 +871,7 @@ class pdarray:
                 repMsg = generic_msg(
                     cmd=f"[int]<{self.dtype},1>",
                     args={
-                        "a": self,
+                        "array": self,
                         "idx": key,
                     },
                 )
@@ -882,7 +882,7 @@ class pdarray:
         if self.ndim == 1 and isinstance(key, slice):
             (start, stop, stride) = key.indices(self.size)
             repMsg = generic_msg(
-                cmd="[slice]1D",
+                cmd=f"[slice]<{self.dtype},1>",
                 args={
                     "array": self,
                     "starts": start,
@@ -906,7 +906,7 @@ class pdarray:
                 repMsg = generic_msg(
                     cmd=f"[int]<{self.dtype},{self.ndim}>",
                     args={
-                        "a": self,
+                        "array": self,
                         "idx": clean_key,
                     },
                 )
@@ -928,11 +928,17 @@ class pdarray:
                     # pdarray dimensions are squeezed out
                     degen_axes = pdarray_axes[1:] + scalar_axes
 
+                # ensure all indexing arrays have the same dtype (either int64 or uint64)
+                idx_dtype = pdarray_axes[0].dtype
+                for dim in pdarray_axes:
+                    if dim.dtype != idx_dtype:
+                        raise TypeError("all pdarray indices must have the same dtype")
+
                 # apply pdarray indexing (returning an ndim array with degenerate dimensions
                 # along all the indexed axes except the first one)
                 temp2 = create_pdarray(
                     generic_msg(
-                        cmd=f"[pdarray]x{self.ndim}D",
+                        cmd=f"[pdarray]<{self.dtype},{idx_dtype},{self.ndim}>",
                         args={
                             "array": temp1,
                             "nIdxArrays": len(pdarray_axes),

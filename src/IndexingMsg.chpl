@@ -194,8 +194,8 @@ module IndexingMsg
     }
 
     @arkouda.registerCommand("[int]")
-    proc intIndex(const ref a: [?d] ?t, idx: d.rank*int): t {
-        return a[idx];
+    proc intIndex(const ref array: [?d] ?t, idx: d.rank*int): t {
+        return array[idx];
     }
 
     /* convert python slice to chapel slice */
@@ -210,114 +210,21 @@ module IndexingMsg
         return slice;
     }
 
-    /* sliceIndex "a[slice]" response to __getitem__(slice) */
-    @arkouda.registerND(cmd_prefix="[slice]")
-    proc sliceIndexMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-        if nd == 1 then return sliceIndexMsg1DFast(cmd, msgArgs, st);
-
-        const starts = msgArgs.get("starts").getTuple(nd),
-              stops = msgArgs.get("stops").getTuple(nd),
-              strides = msgArgs.get("strides").getTuple(nd),
-              array = msgArgs.getValueOf("array"),
-              rname = st.nextName();
-
-        var sliceRanges: nd * range(strides=strideKind.any),
-            outDomRanges: nd * range(strides=strideKind.any);
-        for param dim in 0..<nd {
-            sliceRanges[dim] = convertSlice(starts[dim], stops[dim], strides[dim]);
-            outDomRanges[dim] = starts[dim]..#sliceRanges[dim].size;
+    @arkouda.registerCommand("[slice]")
+    proc sliceIndex(const ref array: [?d] ?t, starts: d.rank*int, stops: d.rank*int, strides: d.rank*int): [] t throws {
+        var rngs: d.rank*range(strides=strideKind.any),
+            outSizes: d.rank*int;
+        for param dim in 0..<d.rank {
+            rngs[dim] = convertSlice(starts[dim], stops[dim], strides[dim]);
+            outSizes[dim] = rngs[dim].size;
         }
-        const sliceDom = {(...sliceRanges)},
-              outDom = {(...outDomRanges)};
+        const sliceDom = {(...rngs)};
+        var arraySlice = makeDistArray((...outSizes), t);
 
-        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(array, st);
-        imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-            "cmd: %s pdarray to slice: %s starts: %? stops: %? strides: %? new name: %s".format(
-                       cmd, st.attrib(array), starts, stops, strides, rname));
+        forall (elt,j) in zip(arraySlice, sliceDom) with (var agg = newSrcAggregator(t)) do
+            agg.copy(elt,array[j]);
 
-        proc sliceHelper(type t): MsgTuple throws {
-            var e = toSymEntry(gEnt,t, nd),
-                a = st.addEntry(rname, (...outDom.shape), t);
-            ref ea = e.a;
-            ref aa = a.a;
-            forall (elt,j) in zip(aa, sliceDom) with (var agg = newSrcAggregator(t)) do
-              agg.copy(elt,ea[j]);
-
-            a.max_bits = e.max_bits;
-            var repMsg = "created " + st.attrib(rname);
-            imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-            return new MsgTuple(repMsg, MsgType.NORMAL);
-        }
-
-        select gEnt.dtype {
-            when DType.Int64 do return sliceHelper(int);
-            when DType.UInt64 do return sliceHelper(uint);
-            when DType.Float64 do return sliceHelper(real);
-            when DType.Bool do return sliceHelper(bool);
-            when DType.BigInt do return sliceHelper(bigint);
-            otherwise {
-                var errorMsg = notImplementedError(getRoutineName(),dtype2str(gEnt.dtype));
-                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg,MsgType.ERROR);
-            }
-        }
-    }
-
-    // this is likely faster than the more general ND implementation
-    // because of the iteration over a range instead of a domain when gathering into the new array
-    proc sliceIndexMsg1DFast(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
-        param pn = Reflection.getRoutineName();
-        var repMsg: string; // response message
-        const start = msgArgs.get("starts").getTuple(1);
-        const stop = msgArgs.get("stops").getTuple(1);
-        const stride = msgArgs.get("strides").getTuple(1);
-        var slice: range(strides=strideKind.any) = convertSlice(start[0], stop[0], stride[0]);
-
-        // get next symbol name
-        var rname = st.nextName();
-        const name = msgArgs.getValueOf("array");
-        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
-        
-        imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-            "cmd: %s pdarray to slice: %s start: %i stop: %i stride: %i slice: %? new name: %s".format(
-                       cmd, st.attrib(name), start[0], stop[0], stride[0], slice, rname));
-
-        proc sliceHelper(type t) throws {
-            var e = toSymEntry(gEnt,t);
-            var a = st.addEntry(rname, slice.size, t);
-            ref ea = e.a;
-            ref aa = a.a;
-            forall (elt,j) in zip(aa, slice) with (var agg = newSrcAggregator(t)) {
-              agg.copy(elt,ea[j]);
-            }
-            a.max_bits = e.max_bits;
-            var repMsg = "created " + st.attrib(rname);
-            imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-            return new MsgTuple(repMsg, MsgType.NORMAL);
-        }
-        
-        select(gEnt.dtype) {
-            when (DType.Int64) {
-                return sliceHelper(int);
-            }
-            when (DType.UInt64) {
-                return sliceHelper(uint);
-            }
-            when (DType.Float64) {
-                return sliceHelper(real);
-            }
-            when (DType.Bool) {
-                return sliceHelper(bool);
-            }
-            when (DType.BigInt) {
-                return sliceHelper(bigint);
-            }
-            otherwise {
-                var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
-                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg,MsgType.ERROR);
-            }
-        }
+        return arraySlice;
     }
 
     /*
@@ -338,91 +245,50 @@ module IndexingMsg
         Would return a new 4x6x1 array, where the 1st and 3rd dimensions are indexed by
         (1, 3), (2, 4), (3, 5), (4, 6), and the 2nd dimension is indexed by all of 0..<6.
     */
-    @arkouda.registerND(cmd_prefix="[pdarray]x")
-    proc multiPDArrayIndexMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-        param pn = Reflection.getRoutineName();
-        const name = msgArgs.getValueOf("array"),
-              nIdxArrays = msgArgs.get("nIdxArrays").getIntValue(),
-              idxArrays = msgArgs.get("idx").getList(nIdxArrays),               // lists of indices to use along a particular dimension
-              idxDims = msgArgs.get("idxDims").toScalarArray(int, nIdxArrays),  // which dimension each index array corresponds to
-              rname = st.nextName();
+    @arkouda.instantiateAndRegister(prefix="[pdarray]")
+    proc multiPDArrayIndex(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype_a, type array_dtype_idx, param array_nd: int): MsgTuple throws
+        where array_dtype_idx == int || array_dtype_idx == uint
+    {
+        const a = st[msgArgs["array"]]: SymEntry(array_dtype_a, array_nd),
+              nIndexArrays = msgArgs["nIdxArrays"].toScalar(int),
+              names = msgArgs["idx"].toScalarArray(string, nIndexArrays),
+              idxDims = msgArgs["idxDims"].toScalarArray(int, names.size);
 
-        const gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
-        var gIdx: [0..<nIdxArrays] borrowed GenSymEntry = getGenericEntries(idxArrays, st);
+        const idxArrays = for n in names do st[n]: borrowed SymEntry(array_dtype_idx, 1);
 
-        // ensure all index arrays have the same length and dtype
-        const idxDT = gIdx[0].dtype,
-              outSize = gIdx[0].size;
-        for i in 0..<nIdxArrays {
-            if gIdx[i].ndim > 1 {
-                const errorMsg = "Only 1D index arrays are supported";
-                imLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg,MsgType.ERROR);
+        const outSize = idxArrays[0].size;
+        for i in 1..<nIndexArrays do
+            if idxArrays[i].size != outSize then
+                MsgTuple.error("All index arrays must have the same length");
+
+        const (valid, outRankIdx, outShape) = multiIndexShape(a.tupShape, idxDims, outSize);
+
+        if valid {
+            var ret = makeDistArray((...outShape), array_dtype_a);
+            forall i in ret.domain with (
+                var agg = newSrcAggregator(array_dtype_a),
+                in idxDims // small array: create a per-task copy
+            ) {
+                const idx = if array_nd == 1 then (i,) else i,
+                      iIdxArray: int = idx[outRankIdx];
+
+                var inIdx = if array_nd == 1 then (i,) else i;
+
+                for (rank, j) in zip(idxDims, 0..<nIndexArrays) do
+                    inIdx[rank] = idxArrays[j].a[iIdxArray]:int;
+
+                agg.copy(ret[idx], a.a[inIdx]);
             }
-
-            if gIdx[i].size != outSize {
-                const errorMsg = "All index arrays must have the same length".format(pn);
-                imLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg,MsgType.ERROR);
-            }
-
-            if gIdx[i].dtype != idxDT {
-                const errorMsg = "All index arrays must have the same dtype".format(pn);
-                imLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg,MsgType.ERROR);
-            }
+            return st.insert(new shared SymEntry(ret));
+        } else {
+            return MsgTuple.error("Invalid index dimensions: %? for %iD array".format(idxDims, array_nd));
         }
+    }
 
-        proc doMultiIdx(type arrType, type idxType): MsgTuple throws {
-            const eIn = toSymEntry(gEnt, arrType, nd),
-                  eIdxs = for g in gIdx do toSymEntry(g, idxType, 1),
-                  (valid, outRankIdx, outShape) = multiIndexShape(eIn.tupShape, idxDims, outSize);
-
-            if valid {
-                var eOut = st.addEntry(rname, (...outShape), arrType);
-
-                forall i in eOut.a.domain with (
-                    var agg = newSrcAggregator(arrType),
-                    in idxDims // short array: create a per-task copy
-                ) {
-                    const idx = if nd == 1 then (i, ) else i,
-                          iIdxArray = idx[outRankIdx];
-
-                    var inIdx = if nd == 1 then (i, ) else i;
-
-                    for (rank, j) in zip(idxDims, 0..<nIdxArrays) do
-                        inIdx[rank] = eIdxs[j].a[iIdxArray]:int;
-
-                    agg.copy(eOut.a[idx], eIn.a[inIdx]);
-                }
-
-                const repMsg =  "created " + st.attrib(rname);
-                imLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
-                return new MsgTuple(repMsg, MsgType.NORMAL);
-            } else {
-                const errorMsg = "Invalid index dimensions: %? for %iD array".format(idxDims, nd);
-                imLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg,MsgType.ERROR);
-            }
-        }
-
-        select (gEnt.dtype, idxDT) {
-            when (DType.Int64, DType.Int64) do return doMultiIdx(int, int);
-            when (DType.Int64, DType.UInt64) do return doMultiIdx(int, uint);
-            when (DType.UInt64, DType.Int64) do return doMultiIdx(uint, int);
-            when (DType.UInt64, DType.UInt64) do return doMultiIdx(uint, uint);
-            when (DType.Float64, DType.Int64) do return doMultiIdx(real, int);
-            when (DType.Float64, DType.UInt64) do return doMultiIdx(real, uint);
-            when (DType.Bool, DType.Int64) do return doMultiIdx(bool, int);
-            when (DType.Bool, DType.UInt64) do return doMultiIdx(bool, uint);
-            when (DType.BigInt, DType.Int64) do return doMultiIdx(bigint, int);
-            when (DType.BigInt, DType.UInt64) do return doMultiIdx(bigint, uint);
-            otherwise {
-                var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
-                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg,MsgType.ERROR);
-            }
-        }
+    proc multiPDArrayIndex(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype_a, type array_dtype_idx, param array_nd: int): MsgTuple throws
+        where array_dtype_idx != int && array_dtype_idx != uint
+    {
+        return MsgTuple.error("Invalid index type: %s; must be 'int' or 'uint'".format(type2str(array_dtype_idx)));
     }
 
     private proc multiIndexShape(inShape: ?N*int, idxDims: [?d] int, outSize: int): (bool, int, N*int) {
