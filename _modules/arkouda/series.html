@@ -368,7 +368,6 @@
 <span class="kn">from</span> <span class="nn">arkouda.index</span> <span class="kn">import</span> <span class="n">Index</span><span class="p">,</span> <span class="n">MultiIndex</span>
 <span class="kn">from</span> <span class="nn">arkouda.numeric</span> <span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
 <span class="kn">from</span> <span class="nn">arkouda.numeric</span> <span class="kn">import</span> <span class="n">isnan</span><span class="p">,</span> <span class="n">value_counts</span>
-<span class="kn">from</span> <span class="nn">arkouda.segarray</span> <span class="kn">import</span> <span class="n">SegArray</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">RegistrationError</span><span class="p">,</span>
     <span class="nb">any</span><span class="p">,</span>
@@ -378,8 +377,9 @@
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarraycreation</span> <span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">full</span><span class="p">,</span> <span class="n">zeros</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarraysetops</span> <span class="kn">import</span> <span class="n">argsort</span><span class="p">,</span> <span class="n">concatenate</span><span class="p">,</span> <span class="n">in1d</span><span class="p">,</span> <span class="n">indexof1d</span>
+<span class="kn">from</span> <span class="nn">arkouda.segarray</span> <span class="kn">import</span> <span class="n">SegArray</span>
 <span class="kn">from</span> <span class="nn">arkouda.strings</span> <span class="kn">import</span> <span class="n">Strings</span>
-<span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">convert_if_categorical</span><span class="p">,</span> <span class="n">get_callback</span><span class="p">,</span> <span class="n">is_float</span>
+<span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">get_callback</span><span class="p">,</span> <span class="n">is_float</span>
 
 <span class="c1"># pd.set_option(&quot;display.max_colwidth&quot;, 65) is being called in DataFrame.py. This will resolve BitVector</span>
 <span class="c1"># truncation issues. If issues arise, that&#39;s where to look for it.</span>
@@ -486,11 +486,16 @@
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">groupable_element_type</span><span class="p">,</span> <span class="n">Series</span><span class="p">,</span> <span class="n">SegArray</span><span class="p">],</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">groupable_element_type</span><span class="p">,</span> <span class="n">Series</span><span class="p">,</span> <span class="n">SegArray</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Categorical</span><span class="p">],</span>
         <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">index</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Index</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Categorical</span><span class="p">):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">Categorical</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
         <span class="k">if</span> <span class="n">index</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
             <span class="c1"># handles the previous `ar_tuple` case</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Index</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
@@ -499,6 +504,13 @@
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;values must be a pdarray, Strings, SegArray, or Categorical&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">Series</span><span class="p">)</span> <span class="k">else</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">Index</span><span class="o">.</span><span class="n">factory</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="k">if</span> <span class="n">index</span> <span class="k">else</span> <span class="n">Index</span><span class="o">.</span><span class="n">factory</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Categorical</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">Categorical</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">Index</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">name</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Series initialization requries a tuple of (index, values)&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -515,7 +527,10 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;Index size does not match data size: </span><span class="si">{}</span><span class="s2"> != </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
             <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1131,16 +1146,21 @@
         <span class="kn">import</span> <span class="nn">copy</span>
 
         <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span>
-        <span class="n">val</span> <span class="o">=</span> <span class="n">convert_if_categorical</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
-        <span class="c1"># pandas errors when ndarray formatted like a segarray is</span>
-        <span class="c1"># passed into Series but works when it&#39;s just a list of lists</span>
-        <span class="n">vals_on_client</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">SegArray</span><span class="p">)</span> <span class="k">else</span> <span class="n">val</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">SegArray</span><span class="p">):</span>
+            <span class="c1"># pandas errors when ndarray formatted like a segarray is</span>
+            <span class="c1"># passed into Series but works when it&#39;s just a list of lists</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">name</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">vals_on_client</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">idx</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">idx</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">vals_on_client</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">idx</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">idx</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Series.to_markdown">
@@ -1329,46 +1349,50 @@
                 <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span>
                 <span class="s2">&quot;num_idxs&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
                 <span class="s2">&quot;idx_names&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">(</span>
+                        <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
+                            <span class="p">{</span>
+                                <span class="s2">&quot;codes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                                <span class="s2">&quot;categories&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                                <span class="s2">&quot;NA_codes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">_akNAcode</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                                <span class="o">**</span><span class="p">(</span>
+                                    <span class="p">{</span><span class="s2">&quot;permutation&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">permutation</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
+                                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">permutation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                                    <span class="k">else</span> <span class="p">{}</span>
+                                <span class="p">),</span>
+                                <span class="o">**</span><span class="p">(</span>
+                                    <span class="p">{</span><span class="s2">&quot;segments&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
+                                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">segments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                                    <span class="k">else</span> <span class="p">{}</span>
+                                <span class="p">),</span>
+                            <span class="p">}</span>
+                        <span class="p">)</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)</span>
+                        <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">name</span>
+                    <span class="p">)</span>
+                <span class="p">],</span>
+                <span class="s2">&quot;idx_types&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">objType</span><span class="p">],</span>
+                <span class="s2">&quot;values&quot;</span><span class="p">:</span> <span class="p">(</span>
                     <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
                         <span class="p">{</span>
-                            <span class="s2">&quot;codes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                            <span class="s2">&quot;categories&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                            <span class="s2">&quot;NA_codes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">_akNAcode</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                            <span class="s2">&quot;codes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                            <span class="s2">&quot;categories&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                            <span class="s2">&quot;NA_codes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">_akNAcode</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                             <span class="o">**</span><span class="p">(</span>
-                                <span class="p">{</span><span class="s2">&quot;permutation&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">permutation</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
-                                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">permutation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                                <span class="p">{</span><span class="s2">&quot;permutation&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">permutation</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
+                                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">permutation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
                                 <span class="k">else</span> <span class="p">{}</span>
                             <span class="p">),</span>
                             <span class="o">**</span><span class="p">(</span>
-                                <span class="p">{</span><span class="s2">&quot;segments&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
-                                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">segments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                                <span class="p">{</span><span class="s2">&quot;segments&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
+                                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">segments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
                                 <span class="k">else</span> <span class="p">{}</span>
                             <span class="p">),</span>
                         <span class="p">}</span>
                     <span class="p">)</span>
-                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)</span>
-                    <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">name</span>
-                <span class="p">],</span>
-                <span class="s2">&quot;idx_types&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">objType</span><span class="p">],</span>
-                <span class="s2">&quot;values&quot;</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
-                    <span class="p">{</span>
-                        <span class="s2">&quot;codes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                        <span class="s2">&quot;categories&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                        <span class="s2">&quot;NA_codes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">_akNAcode</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                        <span class="o">**</span><span class="p">(</span>
-                            <span class="p">{</span><span class="s2">&quot;permutation&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">permutation</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
-                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">permutation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-                            <span class="k">else</span> <span class="p">{}</span>
-                        <span class="p">),</span>
-                        <span class="o">**</span><span class="p">(</span>
-                            <span class="p">{</span><span class="s2">&quot;segments&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
-                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">segments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-                            <span class="k">else</span> <span class="p">{}</span>
-                        <span class="p">),</span>
-                    <span class="p">}</span>
-                <span class="p">)</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)</span>
-                <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">name</span>
+                <span class="p">),</span>
                 <span class="s2">&quot;val_type&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
