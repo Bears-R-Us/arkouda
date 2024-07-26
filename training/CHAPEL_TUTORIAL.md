@@ -1663,7 +1663,13 @@ if compareBulkTransfer {
   printCommDiagnosticsTable();
 }
 ```
+The output of `printCommDiagnosticsTable()` has several categories
 
+At a high level these categories mean:
+* "get": reading a value from a remote locale's memory
+* "put": storing a value into a remote locale's memory
+* "execute_on": creating a task on a remote locale, for example via an on-clause
+* "execute_on_nb": same as above but non-blocking (doesn't prevent the original task from continuing)
 ```console
 $ chpl tutorial.chpl --no-cache-remote
 $ ./tutorial -nl 4
@@ -1685,11 +1691,6 @@ communication using aggregation:
 |      2 |  80 |  40 |         40 |             0 |
 |      3 |  80 |  40 |         40 |             0 |
 ```
-At a high level these categories mean:
-* "get": reading a value from a remote locale's memory
-* "put": storing a value into a remote locale's memory
-* "execute_on": creating a task on a remote locale, for example via an on-clause
-* "execute_on_nb": same as above but non-blocking (doesn't prevent the original task from continuing)
 
 We see the number of `put`s has decreased drastically, and it's way faster! Aggregation is great!
 But what's this secret third way?
