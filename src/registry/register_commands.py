@@ -206,7 +206,7 @@ def clean_stamp_name(name):
     """
     Remove any invalid characters from a stamped command name
     """
-    return name.translate(str.maketrans("[](),", "_____"))
+    return name.translate(str.maketrans("[](),=", "______"))
 
 
 def stamp_generic_command(generic_proc_name, prefix, module_name, formals, line_num, is_user_proc):
@@ -500,7 +500,7 @@ def gen_arg_unpacking(formals):
     array_arg_counter = 0
 
     array_domain_queries = {}
-    array_elttype_queries = {}
+    array_dtype_queries = {}
 
     for fname, fintent, ftype, finfo in formals:
         if ftype in chapel_scalar_types:
@@ -518,7 +518,7 @@ def gen_arg_unpacking(formals):
                 if finfo[0] is not None:
                     array_domain_queries[finfo[0]] = array_args[1][0]
                 if finfo[1] is not None:
-                    array_elttype_queries[finfo[1]] = array_args[0][0]
+                    array_dtype_queries[finfo[1]] = array_args[0][0]
 
         elif "list" in ftype:
             unpack_lines.append(unpack_list_arg(fname, ftype))
@@ -532,8 +532,11 @@ def gen_arg_unpacking(formals):
 
             unpack_lines.append(unpack_tuple_arg(fname, tsize, ttype))
         else:
-            # TODO: handle generic user-defined types
-            unpack_lines.append(unpack_user_symbol(fname, ftype))
+            if ftype in array_dtype_queries.keys():
+                unpack_lines.append(unpack_scalar_arg(fname, array_dtype_queries[ftype]))
+            else:
+                # TODO: fully handle generic user-defined types
+                unpack_lines.append(unpack_user_symbol(fname, ftype))
 
     return ("\n".join(unpack_lines), generic_args)
 
@@ -593,7 +596,7 @@ def gen_response(result=None, is_symbol=False):
         else:
             return f"\treturn {RESPONSE_TYPE_NAME}.fromScalar({result});"
     else:
-        return "\treturn {RESPONSE_TYPE_NAME}.success();"
+        return f"\treturn {RESPONSE_TYPE_NAME}.success();"
 
 
 def gen_command_proc(name, return_type, formals, mod_name):

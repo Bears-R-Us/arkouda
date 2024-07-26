@@ -503,80 +503,19 @@ module IndexingMsg
         }
     }
 
-    /* setIntIndexToValue "a[int] = value" response to __setitem__(int, value) */
-    @arkouda.registerND(cmd_prefix="[int]=val-")
-    proc setIntIndexToValueMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-        param pn = Reflection.getRoutineName();
-        const name = msgArgs.getValueOf("array"),
-              idx = msgArgs.get("idx").getTuple(nd),
-              dtype = str2dtype(msgArgs.getValueOf("dtype")),
-              valueArg = msgArgs.get("value");
-
-        imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                               "%s %s %? %s %s".format(cmd, name, idx, dtype2str(dtype), valueArg.getValue()));
-
-        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
-
-        proc setValue(type arrType, type valType): MsgTuple throws {
-            var e = toSymEntry(gEnt, arrType, nd);
-            const val = valueArg.toScalar(valType);
-            e.a[(...idx)] = val:arrType;
-
-            const repMsg = "%s success".format(pn);
-            imLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
-            return new MsgTuple(repMsg, MsgType.NORMAL);
-        }
-
-        proc setBigintValue(type valType): MsgTuple throws {
-            var e = toSymEntry(gEnt, bigint, nd),
-                val = valueArg.toScalar(valType):bigint;
-            if e.max_bits != -1 {
+    @arkouda.registerCommand("[int]=val")
+    proc setIndexToValue(ref array: [?d] ?t, idx: d.rank*int, value: t, max_bits: int) {
+        if t == bigint {
+            var val_mb = value;
+            if max_bits != -1 {
                 var max_size = 1:bigint;
-                max_size <<= e.max_bits;
+                max_size <<= max_bits;
                 max_size -= 1;
-                val &= max_size;
+                val_mb &= max_size;
             }
-            e.a[(...idx)] = val;
-
-            const repMsg = "%s success".format(pn);
-            imLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
-            return new MsgTuple(repMsg, MsgType.NORMAL);
-        }
-
-        select (gEnt.dtype, dtype) {
-            when (DType.Int64, DType.Int64) do return setValue(int, int);
-            when (DType.Int64, DType.UInt64) do return setValue(int, uint);
-            when (DType.Int64, DType.Float64) do return setValue(int, real);
-            when (DType.Int64, DType.Bool) do return setValue(int, bool);
-            when (DType.UInt64, DType.Int64) do return setValue(uint, int);
-            when (DType.UInt64, DType.UInt64) do return setValue(uint, uint);
-            when (DType.UInt64, DType.Float64) do return setValue(uint, real);
-            when (DType.UInt64, DType.Bool) do return setValue(uint, bool);
-            when (DType.Float64, DType.Int64) do return setValue(real, int);
-            when (DType.Float64, DType.UInt64) do return setValue(real, uint);
-            when (DType.Float64, DType.Float64) do return setValue(real, real);
-            when (DType.Float64, DType.Bool) {
-                var e = toSymEntry(gEnt,real, nd);
-                e.a[(...idx)] = if valueArg.getBoolValue() then 1.0 else 0.0;
-
-                const repMsg = "%s success".format(pn);
-                imLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
-                return new MsgTuple(repMsg, MsgType.NORMAL);
-            }
-            when (DType.Bool, DType.Int64) do return setValue(bool, int);
-            when (DType.Bool, DType.UInt64) do return setValue(bool, uint);
-            when (DType.Bool, DType.Float64) do return setValue(bool, real);
-            when (DType.Bool, DType.Bool) do return setValue(bool, bool);
-            when (DType.BigInt, DType.BigInt) do return setBigintValue(bigint);
-            when (DType.BigInt, DType.Int64) do return setBigintValue(int);
-            when (DType.BigInt, DType.UInt64) do return setBigintValue(uint);
-            when (DType.BigInt, DType.Bool) do return setBigintValue(bool);
-            otherwise {
-                const errorMsg = notImplementedError(pn,
-                                    "("+dtype2str(gEnt.dtype)+","+dtype2str(dtype)+")");
-                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
-            }
+            array[idx] = val_mb;
+        } else {
+            array[idx] = value;
         }
     }
 
@@ -976,348 +915,59 @@ module IndexingMsg
         }
     }
 
-    /* setSliceIndexToValue "a[slice] = value" response to __setitem__(slice, value) */
-    @arkouda.registerND(cmd_prefix="[slice]=val-")
-    proc setSliceIndexToValueMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-        if nd == 1 then return setSliceIndexToValue1DFast(cmd, msgArgs, st);
+    @arkouda.registerCommand("[slice]=val")
+    proc setSliceIndexToValue(ref array: [?d] ?t, starts: d.rank*int, stops: d.rank*int, strides: d.rank*int, value: t, max_bits: int) throws {
+        var rngs: d.rank*range(strides=strideKind.any);
+        for param dim in 0..<d.rank do
+            rngs[dim] = convertSlice(starts[dim], stops[dim], strides[dim]);
+        const sliceDom = {(...rngs)};
 
-        param pn = Reflection.getRoutineName();
-        const name = msgArgs.getValueOf("array"),
-              starts = msgArgs.get("starts").getTuple(nd),
-              stops = msgArgs.get("stops").getTuple(nd),
-              strides = msgArgs.get("strides").getTuple(nd),
-              dtype = str2dtype(msgArgs.getValueOf("dtype")),
-              valueArg = msgArgs.get("value");
-
-        imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                       "%s %s %? %? %? %s %s".format(cmd, name, starts, stops, strides,
-                                  dtype2str(dtype), valueArg.getValue()));
-
-        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
-
-        var sliceRanges: nd * range(strides=strideKind.any);
-        for param dim in 0..<nd do
-            sliceRanges[dim] = convertSlice(starts[dim], stops[dim], strides[dim]);
-        const sliceDom = {(...sliceRanges)};
-
-        proc sliceAssign(type arrType, type valType): MsgTuple throws {
-            var e = toSymEntry(gEnt, arrType, nd);
-            const value = valueArg.toScalar(valType);
-            e.a[sliceDom] = value:arrType;
-
-            const repMsg = "%s success".format(pn);
-            imLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
-            return new MsgTuple(repMsg, MsgType.NORMAL);
-        }
-
-        proc sliceAssignBigint(type valType): MsgTuple throws {
-            var e = toSymEntry(gEnt, bigint, nd),
-                value = valueArg.toScalar(valType):bigint;
-            if e.max_bits != -1 {
+        if t == bigint {
+            var val_mb = value;
+            if max_bits != -1 {
                 var max_size = 1:bigint;
-                max_size <<= e.max_bits;
+                max_size <<= max_bits;
                 max_size -= 1;
-                value &= max_size;
+                val_mb &= max_size;
             }
-            e.a[sliceDom] = value;
-
-            const repMsg = "%s success".format(pn);
-            imLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
-            return new MsgTuple(repMsg, MsgType.NORMAL);
-        }
-
-        select (gEnt.dtype, dtype) {
-            when (DType.Int64, DType.Int64) do return sliceAssign(int, int);
-            when (DType.Int64, DType.UInt64) do return sliceAssign(int, uint);
-            when (DType.Int64, DType.Float64) do return sliceAssign(int, real);
-            when (DType.Int64, DType.Bool) do return sliceAssign(int, bool);
-            when (DType.UInt64, DType.Int64) do return sliceAssign(uint, int);
-            when (DType.UInt64, DType.UInt64) do return sliceAssign(uint, uint);
-            when (DType.UInt64, DType.Float64) do return sliceAssign(uint, real);
-            when (DType.UInt64, DType.Bool) do return sliceAssign(uint, bool);
-            when (DType.Float64, DType.Int64) do return sliceAssign(real, int);
-            when (DType.Float64, DType.UInt64) do return sliceAssign(real, uint);
-            when (DType.Float64, DType.Float64) do return sliceAssign(real, real);
-            when (DType.Float64, DType.Bool) {
-                var e = toSymEntry(gEnt,real, nd);
-                e.a[sliceDom] = if valueArg.getBoolValue() then 1.0 else 0.0;
-
-                const repMsg = "%s success".format(pn);
-                imLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
-                return new MsgTuple(repMsg, MsgType.NORMAL);
-            }
-            when (DType.Bool, DType.Int64) do return sliceAssign(bool, int);
-            when (DType.Bool, DType.UInt64) do return sliceAssign(bool, uint);
-            when (DType.Bool, DType.Float64) do return sliceAssign(bool, real);
-            when (DType.Bool, DType.Bool) do return sliceAssign(bool, bool);
-            when (DType.BigInt, DType.BigInt) do return sliceAssignBigint(bigint);
-            when (DType.BigInt, DType.Int64) do return sliceAssignBigint(int);
-            when (DType.BigInt, DType.UInt64) do return sliceAssignBigint(uint);
-            when (DType.BigInt, DType.Bool) do return sliceAssignBigint(bool);
-            otherwise {
-                const errorMsg = notImplementedError(pn,
-                                        "("+dtype2str(gEnt.dtype)+","+dtype2str(dtype)+")");
-                imLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
-            }
+            array[sliceDom] = val_mb;
+        } else {
+            array[sliceDom] = value;
         }
     }
 
-    proc setSliceIndexToValue1DFast(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
-        param pn = Reflection.getRoutineName();
-        var repMsg: string; // response message
-        const name = msgArgs.getValueOf("array");
-        const start = msgArgs.get("start").getIntValue();
-        const stop = msgArgs.get("stop").getIntValue();
-        const stride = msgArgs.get("stride").getIntValue();
-        const dtype = str2dtype(msgArgs.getValueOf("dtype"));
-        var slice: range(strides=strideKind.any) = convertSlice(start, stop, stride);
-        var value = msgArgs.get("value");
+    @arkouda.instantiateAndRegister(prefix="[slice]=pdarray")
+    proc setSliceIndexToPdarray(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+        type array_dtype_a,
+        type array_dtype_b,
+        param array_nd: int
+    ): MsgTuple throws {
+        var a = st[msgArgs["array"]]: SymEntry(array_dtype_a, array_nd);
+        const starts = msgArgs["starts"].getTuple(array_nd),
+              stops = msgArgs["stops"].getTuple(array_nd),
+              strides = msgArgs["strides"].getTuple(array_nd),
+              b = st[msgArgs["value"]]: SymEntry(array_dtype_b, array_nd);
 
-        imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                       "%s %s %i %i %i %s %s".format(cmd, name, start, stop, stride, 
-                                  dtype2str(dtype), value.getValue()));
-        
-        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
-        
-        select (gEnt.dtype, dtype) {
-            when (DType.Int64, DType.Int64) {
-                var e = toSymEntry(gEnt,int);
-                var val = value.getIntValue();
-                e.a[slice] = val;
-            }
-            when (DType.Int64, DType.UInt64) {
-                var e = toSymEntry(gEnt,int);
-                var val = value.getUIntValue();
-                e.a[slice] = val:int;
-            }
-            when (DType.Int64, DType.Float64) {
-                var e = toSymEntry(gEnt,int);
-                var val = value.getRealValue();
-                e.a[slice] = val:int;
-            }
-            when (DType.Int64, DType.Bool) {
-                var e = toSymEntry(gEnt,int);
-                var val = value.getBoolValue();
-                e.a[slice] = val:int;
-            }
-            when (DType.UInt64, DType.Int64) {
-                var e = toSymEntry(gEnt,uint);
-                var val = value.getIntValue();
-                e.a[slice] = val:uint;
-            }
-            when (DType.UInt64, DType.UInt64) {
-                var e = toSymEntry(gEnt,uint);
-                var val = value.getUIntValue();
-                e.a[slice] = val:uint;
-            }
-            when (DType.UInt64, DType.Float64) {
-                var e = toSymEntry(gEnt,uint);
-                var val = value.getRealValue();
-                e.a[slice] = val:uint;
-            }
-            when (DType.UInt64, DType.Bool) {
-                var e = toSymEntry(gEnt,uint);
-                var val = value.getBoolValue();
-                e.a[slice] = val:uint;
-            }
-            when (DType.Float64, DType.Int64) {
-                var e = toSymEntry(gEnt,real);
-                var val = value.getIntValue();
-                e.a[slice] = val;
-            }
-            when (DType.Float64, DType.UInt64) {
-                var e = toSymEntry(gEnt,real);
-                var val = value.getUIntValue();
-                e.a[slice] = val:real;
-            }
-            when (DType.Float64, DType.Float64) {
-                var e = toSymEntry(gEnt,real);
-                var val = value.getRealValue();
-                e.a[slice] = val;
-            }
-            when (DType.Float64, DType.Bool) {
-                var e = toSymEntry(gEnt,real);
-                var b = value.getBoolValue();
-                var val:real;
-                if b {val = 1.0;} else {val = 0.0;}
-                e.a[slice] = val;
-            }
-            when (DType.Bool, DType.Int64) {
-                var e = toSymEntry(gEnt,bool);
-                var val = value.getIntValue();
-                e.a[slice] = val:bool;
-            }
-            when (DType.Bool, DType.UInt64) {
-                var e = toSymEntry(gEnt,bool);
-                var val = value.getUIntValue();
-                e.a[slice] = val:bool;
-            }
-            when (DType.Bool, DType.Float64) {
-                var e = toSymEntry(gEnt,bool);
-                var val = value.getRealValue();
-                e.a[slice] = val:bool;
-            }
-            when (DType.Bool, DType.Bool) {
-                var e = toSymEntry(gEnt,bool);
-                var val = value.getBoolValue();
-                e.a[slice] = val;
-            }
-            when (DType.BigInt, DType.BigInt) {
-                var e = toSymEntry(gEnt,bigint);
-                var val = value.getBigIntValue();
-                if e.max_bits != -1 {
-                    var max_size = 1:bigint;
-                    max_size <<= e.max_bits;
-                    max_size -= 1;
-                    val &= max_size;
-                }
-                e.a[slice] = val;
-             }
-            when (DType.BigInt, DType.Int64) {
-                var e = toSymEntry(gEnt,bigint);
-                var val = value.getIntValue():bigint;
-                if e.max_bits != -1 {
-                    var max_size = 1:bigint;
-                    max_size <<= e.max_bits;
-                    max_size -= 1;
-                    val &= max_size;
-                }
-                e.a[slice] = val;
-             }
-            when (DType.BigInt, DType.UInt64) {
-                var e = toSymEntry(gEnt,bigint);
-                var val = value.getUIntValue():bigint;
-                if e.max_bits != -1 {
-                    var max_size = 1:bigint;
-                    max_size <<= e.max_bits;
-                    max_size -= 1;
-                    val &= max_size;
-                }
-                e.a[slice] = val;
-             }
-            when (DType.BigInt, DType.Bool) {
-                var e = toSymEntry(gEnt,bigint);
-                var val = value.getBoolValue():bigint;
-                if e.max_bits != -1 {
-                    var max_size = 1:bigint;
-                    max_size <<= e.max_bits;
-                    max_size -= 1;
-                    val &= max_size;
-                }
-                e.a[slice] = val;
-             }
-            otherwise {
-                var errorMsg = notImplementedError(pn,
-                                        "("+dtype2str(gEnt.dtype)+","+dtype2str(dtype)+")");
-                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);                                         
-            }
-        }
-
-        repMsg = "%s success".format(pn);
-        imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-        return new MsgTuple(repMsg, MsgType.NORMAL); 
-    }
-
-    @arkouda.registerND(cmd_prefix="[slice]=pdarray-")
-    proc setSliceIndexToPdarrayMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-        // take simplified path for 1D case
-        if nd == 1 then return setSliceIndexToPdarrayMsg1D(cmd, msgArgs, st);
-
-        param pn = Reflection.getRoutineName();
-        const starts = msgArgs.get("starts").getTuple(nd),
-              stops = msgArgs.get("stops").getTuple(nd),
-              strides = msgArgs.get("strides").getTuple(nd),
-              name = msgArgs.getValueOf("array"),
-              yname = msgArgs.getValueOf("value");
-
-        var sliceRanges: nd * range(strides=strideKind.any);
-        for param dim in 0..<nd do
+        var sliceRanges: array_nd * range(strides=strideKind.any);
+        for param dim in 0..<array_nd do
             sliceRanges[dim] = convertSlice(starts[dim], stops[dim], strides[dim]);
         const sliceDom = {(...sliceRanges)};
 
-        imLogger.debug(getModuleName(),pn,getLineNumber(),
-                       "%s into: '%s' over domain: '%?' from: %s''"
-                       .format(cmd, name, sliceDom, yname));
-
-        var gX: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st),
-            gY: borrowed GenSymEntry = getGenericTypedArrayEntry(yname, st);
-
-        proc sliceAssignHelper(type xt, type yt, param adjustMaxSize=false): MsgTuple throws {
-            // note 'value'/'y' needs to be expanded to match 'array'/'x's rank before
-            // calling this command
-            var ex = toSymEntry(gX,xt,nd);
-            const ey = toSymEntry(gY,yt,nd);
-
-            // ensure the slice assignment is valid
-            for dim in 0..<nd {
-                if ey.tupShape[dim] != sliceDom.dim[dim].size {
-                    const errMsg = "shape of slice does not match array in dimension %i".format(dim) +
-                                    " (%i != %i)".format(ey.tupShape[dim], sliceDom.dim[dim].size);
-                    imLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
-                    return new MsgTuple(errMsg, MsgType.ERROR);
-                }
-                if sliceDom.dim[dim].low < 0 || sliceDom.dim[dim].high > ex.tupShape[dim] {
-                    const errMsg = "slice indices out of bounds in dimension %i".format(dim) +
-                                   " (%i..%i not in 0..<%i)".format(sliceDom.dim[dim].low,
-                                                                sliceDom.dim[dim].high, ex.tupShape[dim]);
-                    imLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
-                    return new MsgTuple(errMsg, MsgType.ERROR);
-                }
+        if array_dtype_a == bigint {
+            var bb = b.a:bigint; // TODO: refactor to remove this copy
+            if a.max_bits != -1 {
+                var max_size = 1:bigint;
+                max_size <<= a.max_bits;
+                max_size -= 1;
+                forall x in bb with (const local_max_size = max_size) do
+                    x &= local_max_size;
             }
-
-            // adjust y's max size for bigint arrays
-            if adjustMaxSize {
-                var ya = ey.a:bigint;
-                if ex.max_bits != -1 {
-                    var max_size = 1:bigint;
-                    max_size <<= ex.max_bits;
-                    max_size -= 1;
-                    forall y in ya with (const local_max_size = max_size) {
-                        y &= local_max_size;
-                    }
-                }
-
-                ex.a[sliceDom] = ya;
-            } else {
-                // otherwise, just assign the values
-                ex.a[sliceDom] = ey.a:xt;
-            }
-
-            const repMsg = "%s success".format(pn);
-            imLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
-            return new MsgTuple(repMsg, MsgType.NORMAL);
+            a.a[sliceDom] = bb;
+        } else {
+            a.a[sliceDom] = b.a:array_dtype_a;
         }
 
-        select (gX.dtype, gY.dtype) {
-            when (DType.Int64, DType.Int64) do return sliceAssignHelper(int, int);
-            when (DType.Int64, DType.UInt64) do return sliceAssignHelper(int, uint);
-            when (DType.Int64, DType.Float64) do return sliceAssignHelper(int, real);
-            when (DType.Int64, DType.Bool) do return sliceAssignHelper(int, bool);
-            when (DType.UInt64, DType.Int64) do return sliceAssignHelper(uint, int);
-            when (DType.UInt64, DType.UInt64) do return sliceAssignHelper(uint, uint);
-            when (DType.UInt64, DType.Float64) do return sliceAssignHelper(uint, real);
-            when (DType.UInt64, DType.Bool) do return sliceAssignHelper(uint, bool);
-            when (DType.Float64, DType.Int64) do return sliceAssignHelper(real, int);
-            when (DType.Float64, DType.UInt64) do return sliceAssignHelper(real, uint);
-            when (DType.Float64, DType.Float64) do return sliceAssignHelper(real, real);
-            when (DType.Float64, DType.Bool) do return sliceAssignHelper(real, bool);
-            when (DType.Bool, DType.Int64) do return sliceAssignHelper(bool, int);
-            when (DType.Bool, DType.UInt64) do return sliceAssignHelper(bool, uint);
-            when (DType.Bool, DType.Float64) do return sliceAssignHelper(bool, real);
-            when (DType.Bool, DType.Bool) do return sliceAssignHelper(bool, bool);
-            when (DType.BigInt, DType.BigInt) do return sliceAssignHelper(bigint, bigint, true);
-            when (DType.BigInt, DType.Int64) do return sliceAssignHelper(bigint, int, true);
-            when (DType.BigInt, DType.UInt64) do return sliceAssignHelper(bigint, uint, true);
-            when (DType.BigInt, DType.Bool) do return sliceAssignHelper(bigint, bool, true);
-            otherwise {
-                const errorMsg = notImplementedError(pn,
-                                        "("+dtype2str(gX.dtype)+","+dtype2str(gY.dtype)+")");
-                imLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
-            }
-        }
+        return MsgTuple.success();
     }
 
     /* setSliceIndexToPdarray "a[slice] = pdarray" response to __setitem__(slice, pdarray) */

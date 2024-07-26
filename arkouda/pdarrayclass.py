@@ -1024,12 +1024,12 @@ class pdarray:
                     key += self.size
                 if key >= 0 and key < self.size:
                     generic_msg(
-                        cmd="[int]=val-1D",
+                        cmd=f"[int]=val<{self.dtype},1>",
                         args={
                             "array": self,
                             "idx": key,
-                            "dtype": self.dtype,
                             "value": self.format_other(_value),
+                            "max_bits": self.max_bits,
                         },
                     )
                 else:
@@ -1169,12 +1169,12 @@ class pdarray:
                 elif all_scalar_keys:
                     # use simpler indexing if we got a tuple of only scalars
                     generic_msg(
-                        cmd=f"[int]=val-{self.ndim}D",
+                        cmd=f"[int]=val<{self.dtype},{self.ndim}>",
                         args={
                             "array": self,
                             "idx": key,
-                            "dtype": self.dtype,
                             "value": self.format_other(_value),
+                            "max_bits": self.max_bits,
                         },
                     )
                 else:
@@ -1185,7 +1185,6 @@ class pdarray:
                             "starts": tuple(starts),
                             "stops": tuple(stops),
                             "strides": tuple(strides),
-                            "dtype": self.dtype,
                             "value": self.format_other(_value),
                         },
                     )
