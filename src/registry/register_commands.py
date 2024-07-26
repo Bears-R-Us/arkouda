@@ -3,9 +3,7 @@ import sys
 import json
 import itertools
 
-DEFAULT_MODS = [
-    "MsgProcessing"
-]
+DEFAULT_MODS = ["MsgProcessing"]
 
 registerAttr = ("arkouda.registerCommand", ["name"])
 instAndRegisterAttr = ("arkouda.instantiateAndRegister", ["prefix"])
@@ -117,14 +115,24 @@ def get_formals(fn, require_type_annotations):
                     ten = "<array>"
                     extra_info = [None, None]
 
+                    # TODO: support referencing a domain from another array's domain query
+                    # (e.g., 'proc foo(x: [?d], y: [d])')
+                    # to avoid instantiating all combinations of array ranks for the 2+ arrays
+
                     # record domain query name if any
                     if isinstance(te.iterand(), chapel.TypeQuery):
                         extra_info[0] = te.iterand().name()
 
                     # record element type query if any
                     if isinstance(te.body(), chapel.Block):
-                        # hack: chapel-py doesn't have a way to get the text of a block (I think)
+                        # hack: chapel-py doesn't have a way to get the text/body of a block (I think)
                         block_text = extract_ast_block_text(te.body())
+
+                        # TODO: support referencing a type from another array's dtype query
+                        # (e.g., 'proc foo(x: [] ?t, y: [] t)')
+                        # to avoid instantiating all combinations of array element types
+                        # for the 2+ arrays
+
                         if block_text[0] == "?":
                             extra_info[1] = block_text[1:]
 
@@ -156,11 +164,14 @@ def get_formals(fn, require_type_annotations):
                 actuals = list(te.actuals())
 
                 # check the tuple element type
-                if not (isinstance(actuals[1], chapel.Identifier) and actuals[1].name() in chapel_scalar_types):
+                if not (
+                    isinstance(actuals[1], chapel.Identifier)
+                    and actuals[1].name() in chapel_scalar_types
+                ):
                     error_message(
                         f"registering '{fn.name()}'",
-                        f"unsupported homog_tuple type expression for registration on formal '{formal.name()}'; " +
-                        f"tuple element type must be a scalar (one of {chapel_scalar_types.keys()})",
+                        f"unsupported homog_tuple type expression for registration on formal '{formal.name()}'; "
+                        + f"tuple element type must be a scalar (one of {chapel_scalar_types.keys()})",
                     )
                 else:
                     tuple_elt_type = actuals[1].name()
@@ -168,13 +179,17 @@ def get_formals(fn, require_type_annotations):
                     # check the tuple size (should be an int literal or a queried domain's rank)
                     if isinstance(actuals[0], chapel.IntLiteral):
                         extra_info = (int(actuals[0].text()), tuple_elt_type)
-                    elif isinstance(actuals[0], chapel.Dot) and actuals[0].field() == "rank" and isinstance(actuals[0].receiver(), chapel.Identifier):
+                    elif (
+                        isinstance(actuals[0], chapel.Dot)
+                        and actuals[0].field() == "rank"
+                        and isinstance(actuals[0].receiver(), chapel.Identifier)
+                    ):
                         extra_info = (actuals[0].receiver().name(), tuple_elt_type)
                     else:
                         error_message(
                             f"registering '{fn.name()}'",
-                            f"unsupported homog_tuple type expression for registration on formal '{formal.name()}'; " +
-                            "tuple size must be an int literal or a queried domain's rank",
+                            f"unsupported homog_tuple type expression for registration on formal '{formal.name()}'; "
+                            + "tuple size must be an int literal or a queried domain's rank",
                         )
             else:
                 ten = te.name()
@@ -209,7 +224,9 @@ def clean_stamp_name(name):
     return name.translate(str.maketrans("[](),=", "______"))
 
 
-def stamp_generic_command(generic_proc_name, prefix, module_name, formals, line_num, is_user_proc):
+def stamp_generic_command(
+    generic_proc_name, prefix, module_name, formals, line_num, is_user_proc
+):
     """
     Create code to stamp out and register a generic command using a generic
     procedure, and a set values for its generic formals.
@@ -533,7 +550,9 @@ def gen_arg_unpacking(formals):
             unpack_lines.append(unpack_tuple_arg(fname, tsize, ttype))
         else:
             if ftype in array_dtype_queries.keys():
-                unpack_lines.append(unpack_scalar_arg(fname, array_dtype_queries[ftype]))
+                unpack_lines.append(
+                    unpack_scalar_arg(fname, array_dtype_queries[ftype])
+                )
             else:
                 # TODO: fully handle generic user-defined types
                 unpack_lines.append(unpack_user_symbol(fname, ftype))
@@ -632,7 +651,9 @@ def gen_command_proc(name, return_type, formals, mod_name):
     )
 
     # get the names of the array-elt-type queries in the formals
-    array_type_queries = [f[3][1] for f in formals if (f[2] == "<array>" and f[3] is not None)]
+    array_type_queries = [
+        f[3][1] for f in formals if (f[2] == "<array>" and f[3] is not None)
+    ]
 
     # assume the returned type is a symbol if it's an identifier that is not a scalar or type-query reference
     returns_symbol = (
@@ -663,7 +684,9 @@ def gen_command_proc(name, return_type, formals, mod_name):
     return (command_proc, cmd_name, is_generic_command, command_formals)
 
 
-def stamp_out_command(config, formals, name, cmd_prefix, mod_name, line_num, is_user_proc):
+def stamp_out_command(
+    config, formals, name, cmd_prefix, mod_name, line_num, is_user_proc
+):
     """
     Yield instantiations of a generic command with using the
     values from the configuration file
@@ -685,7 +708,9 @@ def stamp_out_command(config, formals, name, cmd_prefix, mod_name, line_num, is_
     formal_perms = generic_permutations(config, formals)
 
     for fp in formal_perms:
-        stamp = stamp_generic_command(name, cmd_prefix, mod_name, fp, line_num, is_user_proc)
+        stamp = stamp_generic_command(
+            name, cmd_prefix, mod_name, fp, line_num, is_user_proc
+        )
         yield stamp
 
 
@@ -811,17 +836,17 @@ def register_commands(config, source_files):
 
 
 def getModuleFiles(config, src_dir):
-    with open(config, 'r') as cfg_file:
+    with open(config, "r") as cfg_file:
         mods = []
         for line in itertools.chain(cfg_file.readlines(), DEFAULT_MODS):
             mod = line.split("#")[0].strip()
             if mod != "":
-                mods.append(f"{mod}.chpl" if mod[0] == '/' else f"{src_dir}/{mod}.chpl")
+                mods.append(f"{mod}.chpl" if mod[0] == "/" else f"{src_dir}/{mod}.chpl")
         return mods
 
 
 def watermarkConfig(config):
-    return "param regConfig = \"\"\"\n" + json.dumps(config, indent=2) + "\n\"\"\";"
+    return 'param regConfig = """\n' + json.dumps(config, indent=2) + '\n""";'
 
 
 def main():
