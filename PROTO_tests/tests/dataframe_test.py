@@ -6,7 +6,9 @@ import tempfile
 import numpy as np
 import pandas as pd
 import pytest
-from pandas.testing import assert_frame_equal, assert_series_equal
+from pandas.testing import assert_frame_equal
+from pandas.testing import assert_frame_equal as pd_assert_frame_equal
+from pandas.testing import assert_series_equal
 
 import arkouda as ak
 from arkouda import io_util
@@ -240,6 +242,7 @@ class TestDataFrame:
         ak_to_pd = akdf.to_pandas()
         assert_frame_equal(pddf, ak_to_pd)
 
+
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", ["float64", "int64"])
     def test_from_pandas_with_index(self, size, dtype):
@@ -279,6 +282,24 @@ class TestDataFrame:
         round_trip_df = ak.DataFrame(pd_df)
 
         ak.assert_frame_equal(df, round_trip_df)
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_to_pandas_categorical_column(self, size):
+        str_val = ak.random_strings_uniform(9, 10, size)
+        cat_val = ak.Categorical(str_val)
+        num_val = ak.arange(size)
+
+        df = ak.DataFrame({"str_val": str_val, "cat_val": cat_val, "num_val": num_val})
+        expected_df = pd.DataFrame(
+            {
+                "str_val": str_val.to_ndarray(),
+                "cat_val": cat_val.to_pandas(),
+                "num_val": num_val.to_ndarray(),
+            }
+        )
+
+        pd_assert_frame_equal(df.to_pandas(retain_index=True), expected_df)
+
 
     def test_convenience_init(self):
         dict1 = {"0": [1, 2], "1": [True, False], "2": ["foo", "bar"], "3": [2.3, -1.8]}
