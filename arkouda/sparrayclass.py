@@ -46,6 +46,7 @@ class sparray:
         name: str,
         mydtype: Union[np.dtype, str],
         size: int_scalars,
+        nnz: int_scalars,
         ndim: int_scalars,
         shape: Sequence[int],
         layout: str,
@@ -55,6 +56,7 @@ class sparray:
         self.name = name
         self.dtype = dtype(mydtype)
         self.size = size
+        self.nnz = nnz
         self.ndim = ndim
         self.shape = shape
         self.layout = layout
@@ -78,20 +80,20 @@ class sparray:
         return builtins.bool(self[0])
 
     def __len__(self):
-        return reduce(lambda x, y: x * y, self.shape)
+        return self.nnz # This is the number of non-zero elements in the matrix
 
     def __getitem__(self, key):
         raise NotImplementedError("sparray does not support __getitem__")
 
-    # def __str__(self): # This won't work out of the box for sparrays need to add this in later
-    #     from arkouda.client import pdarrayIterThresh
+    def __str__(self): # This won't work out of the box for sparrays need to add this in later
+        from arkouda.client import sparrayIterThresh
+        return generic_msg(cmd="str", args={"array": self, "printThresh": sparrayIterThresh})
 
-    #     return generic_msg(cmd="str", args={"array": self, "printThresh": pdarrayIterThresh})
 
     # def __repr__(self):
-    #     from arkouda.client import pdarrayIterThresh
-
-    #     return generic_msg(cmd="repr", args={"array": self, "printThresh": pdarrayIterThresh})
+    #     from arkouda.client import sparrayIterThresh
+    #     print("Called repr")
+    #     return generic_msg(cmd="repr", args={"array": self, "printThresh": sparrayIterThresh})
 
 
 # creates sparray object
@@ -129,19 +131,20 @@ def create_sparray(repMsg: str, max_bits=None) -> sparray:
         name = fields[1]
         mydtype = fields[2]
         size = int(fields[3])
-        ndim = int(fields[4])
+        nnz = int(fields[4])
+        ndim = int(fields[5])
 
-        if fields[5] == "[]":
+        if fields[6] == "[]":
             shape = []
         else:
-            trailing_comma_offset = -2 if fields[5][len(fields[5]) - 2] == "," else -1
-            shape = [int(el) for el in fields[5][1:trailing_comma_offset].split(",")]
-        layout = fields[6]
-        itemsize = int(fields[7])
+            trailing_comma_offset = -2 if fields[6][len(fields[6]) - 2] == "," else -1
+            shape = [int(el) for el in fields[6][1:trailing_comma_offset].split(",")]
+        layout = fields[7]
+        itemsize = int(fields[8])
     except Exception as e:
         raise ValueError(e)
     logger.debug(
         f"created Chapel sparse array with name: {name} dtype: {mydtype} ndim: {ndim} "
-        + f"shape: {shape} layout: {layout} itemsize: {itemsize}"
+        + f"nnz:{nnz} shape: {shape} layout: {layout} itemsize: {itemsize}"
     )
-    return sparray(name, dtype(mydtype), size, ndim, shape, layout, itemsize, max_bits)
+    return sparray(name, dtype(mydtype), size, nnz, ndim, shape, layout, itemsize, max_bits)

@@ -508,6 +508,7 @@ module MultiTypeSymEntry
         var dtype: DType; // answer to numpy dtype
         var itemsize: int; // answer to numpy itemsize = num bytes per elt
         var size: int = 0; // answer to numpy size == num elts
+        var nnz: int = 0;
         var ndim: int = 2; // answer to numpy ndim == 2-axis for now
         var shape: string = "[0,0]"; // answer to numpy shape
         var layoutStr: string = "UNKNOWN"; // How to initialize
@@ -515,12 +516,13 @@ module MultiTypeSymEntry
         /*
           Create a 1D GenSymEntry from an array element type and length
         */
-        proc init(type etype, size: int = 0, ndim: int = 2, layoutStr: string) {
+        proc init(type etype, size: int = 0, nnz: int, ndim: int = 2, layoutStr: string) {
             this.entryType = SymbolEntryType.SparseSymEntry;
             assignableTypes.add(this.entryType);
             this.dtype = whichDtype(etype);
             this.itemsize = dtypeSize(this.dtype);
             this.size = size;
+            this.nnz = nnz;
             this.ndim = ndim;
             init this;
             if size == 0 then
@@ -541,8 +543,34 @@ module MultiTypeSymEntry
             return try! this :borrowed SparseSymEntry(etype, dimensions, layout);
         }
 
+        /*
+          Formats and returns data in this entry up to the specified threshold.
+          Arrays of size less than threshold will be printed in their entirety.
+          Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements
+
+            :arg thresh: threshold for data to return
+            :type thresh: int
+
+            :arg prefix: String to prepend to the front of the data string
+            :type prefix: string
+
+            :arg suffix: String to append to the tail of the data string
+            :type suffix: string
+
+            :arg baseFormat: String which represents the base format string for the data type
+            :type baseFormat: string
+
+            :returns: s (string) containing the array data
+        */
+        override proc entry__str__(thresh:int=1, prefix:string="", suffix:string="", baseFormat:string=""): string throws {
+            genLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "__str__ invoked");
+            var s = "DType: %s, itemsize: %?, size: %?, nnz: %?, layout: %s".format(this.dtype, this.itemsize, this.size, this.nnz, this.layoutStr);
+            return prefix + s + suffix;
+        }
+
+
         proc attrib(): string throws {
-            return "%s %? %? %s %s %?".format(dtype2str(this.dtype), this.size, this.ndim, this.shape, this.layoutStr, this.itemsize);
+            return "%s %? %? %? %s %s %?".format(dtype2str(this.dtype), this.size, this.nnz, this.ndim, this.shape, this.layoutStr, this.itemsize);
         }
 
     }
@@ -607,10 +635,9 @@ module MultiTypeSymEntry
           :type etype: type
         */
         proc init(a, size, param matLayout, type eltType) {
-            super.init(eltType, size, 2, layoutToStr(matLayout)); // Hardcode a 2D matrix for now
+            super.init(eltType, size, a.domain.getNNZ(), /*ndim*/2, layoutToStr(matLayout)); // Hardcode a 2D matrix for now
             this.entryType = SymbolEntryType.SparseSymEntry;
             assignableTypes.add(this.entryType);
-
             this.etype = eltType;
             this.dimensions = 2; // Hardcode a 2D matrix for now
             this.tupShape = (size,size); // Harcode a 2D matrix for now
@@ -619,6 +646,73 @@ module MultiTypeSymEntry
             init this;
             this.shape = tupShapeString(this.tupShape);
             this.ndim = this.tupShape.size;
+        }
+
+        /*
+        Formats and returns data in this entry up to the specified threshold.
+        Matrices with nnz less than threshold will be printed in their entirety.
+        Matrices with nnz greater than or equal to threshold will print the first 3 and last 3 elements
+
+            :arg thresh: threshold for data to return
+            :type thresh: int
+
+            :arg prefix: String to pre-pend to the front of the data string
+            :type prefix: string
+
+            :arg suffix: String to append to the tail of the data string
+            :type suffix: string
+
+            :arg baseFormat: String which represents the base format string for the data type
+            :type baseFormat: string
+
+            :returns: s (string) containing the array data
+        */
+        override proc entry__str__(thresh:int=6, prefix:string = "noprefix", suffix:string = "nosuffix", baseFormat:string = "%?"): string throws {
+            var s:string;
+            const ref sparseDom = this.a.domain,
+                        denseDom = sparseDom.parentDom;
+            if this.a.domain.getNNZ() >= thresh {
+                var count = 0;
+                // Normal iteration like this is more efficient than
+                // dense iteration, so we prefer that for the first elements
+                for (_, (i, j)) in zip(1..3, sparseDom) {
+                    const idxStr = "  (%?, %?)".format(i, j); // Padding to match SciPy
+                    s += "%<16s%?\n".format(idxStr, this.a[i,j]);
+                }
+
+                s += "  :     :\n"; // Dot dot seperator, but vertical
+
+                // For the last elements, we iterate in dense order
+                // Since sparseArrays cant be strided by -1
+                // We also have to do some i,j swaps for CSC vs CSR differences
+                count = 0;
+                var backString = "";
+                for (i, j) in denseDom by -1 {
+                    var row = i, col = j;
+                    if this.matLayout==layout.CSC {
+                        row = j; // Iterate in Col Major Order for CSC
+                        col = i; // To match SciPy behavior
+                    }
+                    if !sparseDom.contains(row, col) then continue;
+                    const idxStr = "  (%?, %?)".format(row, col); // Padding to match SciPy
+                    backString = "%<16s%?\n".format(idxStr, this.a[row,col]) + backString;
+                    count += 1;
+                    if count == 3 then break;
+                }
+                s+=backString;
+            } else {
+                for (i,j) in sparseDom {
+                    const idxStr = "  (%?, %?)".format(i, j); // Padding to match SciPy
+                    s += "%<16s%?\n".format(idxStr, this.a[i,j]);
+                }
+            }
+
+            if this.etype == bool {
+                s = s.replace("true","True");
+                s = s.replace("false","False");
+            }
+
+            return s;
         }
 
         /*

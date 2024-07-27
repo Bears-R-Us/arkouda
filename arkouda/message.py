@@ -41,7 +41,26 @@ class ParameterObject:
         key : str
             key from the dictionary object
         val
-            pdarray object ot load from the symbol table
+            pdarray object to load from the symbol table
+
+        Returns
+        -------
+        ParameterObject
+        """
+        return ParameterObject(key, str(val.dtype), val.name)
+
+    @staticmethod
+    @typechecked
+    def _build_sparray_param(key: str, val) -> ParameterObject:
+        """
+        Create a ParameterObject from a sparray value
+
+        Parameters
+        ----------
+        key : str
+            key from the dictionary object
+        val
+            sparray object to load from the symbol table
 
         Returns
         -------
@@ -60,7 +79,7 @@ class ParameterObject:
         key : str
             key from the dictionary object
         val
-            Strings object ot load from the symbol table
+            Strings object to load from the symbol table
 
         Returns
         -------
@@ -240,12 +259,17 @@ class ParameterObject:
         ParameterObject - The parameter object formatted to be parsed by the chapel server
         """
         from arkouda.pdarrayclass import pdarray
+        from arkouda.sparrayclass import sparray
 
         dispatch = ParameterObject.generate_dispatch()
         if isinstance(
             val, pdarray
         ):  # this is done here to avoid multiple dispatch entries for the same type
             return cls._build_pdarray_param(key, val)
+        elif isinstance(
+            val, sparray
+        ):  # this is done here to avoid multiple dispatch entries for the same type
+            return cls._build_sparray_param(key, val)
         elif (f := dispatch.get(type(val).__name__)) is not None:
             return f(key, val)
         else:
