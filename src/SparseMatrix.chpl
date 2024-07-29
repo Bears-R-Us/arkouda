@@ -208,6 +208,7 @@ module SparseMatrix {
         inds[i] = idx;
 
       sort(inds);
+
       for ij in inds do
         CDom += ij;
 

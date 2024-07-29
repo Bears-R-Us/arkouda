@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import builtins
-from functools import reduce
 from typing import Optional, Sequence, Union
 
 import numpy as np
@@ -80,15 +79,15 @@ class sparray:
         return builtins.bool(self[0])
 
     def __len__(self):
-        return self.nnz # This is the number of non-zero elements in the matrix
+        return self.nnz  # This is the number of non-zero elements in the matrix
 
     def __getitem__(self, key):
         raise NotImplementedError("sparray does not support __getitem__")
 
-    def __str__(self): # This won't work out of the box for sparrays need to add this in later
+    def __str__(self):  # This won't work out of the box for sparrays need to add this in later
         from arkouda.client import sparrayIterThresh
-        return generic_msg(cmd="str", args={"array": self, "printThresh": sparrayIterThresh})
 
+        return generic_msg(cmd="str", args={"array": self, "printThresh": sparrayIterThresh})
 
     # def __repr__(self):
     #     from arkouda.client import sparrayIterThresh
