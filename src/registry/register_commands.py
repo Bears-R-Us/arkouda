@@ -80,21 +80,20 @@ def annotated_procs(root, attr):
 
 
 def extract_ast_block_text(node):
-    file, loc = str(node.location()).split(":", 1)
-    start, stop = loc.split("-")
-    lstart, bstart = start.split(":")
-    lstop, bstop = stop.split(":")
+    loc = node.location()
+    lstart, cstart = loc.start()
+    lstop, cstop = loc.end()
 
-    with open(file, "r") as f:
+    with open(loc.path(), "r") as f:
         # get to the start line
         for i in range(int(lstart) - 1):
             f.readline()
 
         # get to the start column
-        f.read(int(bstart) - 1)
+        f.read(int(cstart) - 1)
 
         # read the block text
-        return f.read(int(bstop) - int(bstart)).strip()
+        return f.read(int(cstop) - int(cstart)).strip()
 
 
 def get_formals(fn, require_type_annotations):
