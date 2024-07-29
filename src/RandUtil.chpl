@@ -40,6 +40,9 @@ module RandUtil {
       ExponentialGenerator,
     }
 
+    // TODO how to update this to handle randArr being a multi-dim array??
+    // I thought to just do the same randArr[randArr.domain.orderToIndex(i)] trick
+    // but im not sure how randArr.localSubdomain() will differ with multi-dim
     proc uniformStreamPerElem(ref randArr: [?D] ?t, ref rng, param function: GenerationFunction, hasSeed: bool, const lam: scalarOrArray(?) = new scalarOrArray()) throws {
         if hasSeed {
             // use a fixed number of elements per stream instead of relying on number of locales or numTasksPerLoc because these

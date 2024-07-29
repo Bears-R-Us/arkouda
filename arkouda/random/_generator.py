@@ -116,7 +116,7 @@ class Generator:
         name = self._name_dict[to_numpy_dtype(akfloat64 if has_weights else akint64)]
 
         rep_msg = generic_msg(
-            cmd="choice",
+            cmd=f"choice<{dtype.name}>",
             args={
                 "gName": name,
                 "aName": a,
@@ -126,7 +126,6 @@ class Generator:
                 "hasWeights": has_weights,
                 "isDom": is_domain,
                 "popSize": pop_size,
-                "dtype": dtype,
                 "state": self._state,
             },
         )
@@ -257,6 +256,8 @@ class Generator:
         >>> rng.integers(5, size=10)
         array([2, 4, 0, 0, 0, 3, 1, 5, 5, 3])  # random
         """
+        from arkouda.util import _calc_shape
+
         # normalize dtype so things like "int" will work
         dtype = to_numpy_dtype(dtype)
 
@@ -266,25 +267,28 @@ class Generator:
         if size is None:
             # delegate to numpy when return size is 1
             return self._np_generator.integers(low=low, high=high, dtype=dtype, endpoint=endpoint)
+
         if high is None:
             high = low
             low = 0
         elif not endpoint:
             high = high - 1
 
-        name = self._name_dict[dtype]
+        shape, full_size, ndim = _calc_shape(size)
+        if full_size < 0:
+            raise ValueError("The size parameter must be > 0")
+
         rep_msg = generic_msg(
-            cmd="uniformGenerator",
+            cmd=f"uniformGenerator<{dtype.name},{ndim}>",
             args={
-                "name": name,
+                "name": self._name_dict[dtype],
                 "low": low,
                 "high": high,
-                "size": size,
-                "dtype": dtype,
+                "shape": shape,
                 "state": self._state,
             },
         )
-        self._state += size
+        self._state += full_size
         return create_pdarray(rep_msg)
 
     def normal(self, loc=0.0, scale=1.0, size=None):
@@ -373,19 +377,7 @@ class Generator:
         if size is None:
             # delegate to numpy when return size is 1
             return self._np_generator.random()
-        rep_msg = generic_msg(
-            cmd="uniformGenerator",
-            args={
-                "name": self._name_dict[akfloat64],
-                "low": 0.0,
-                "high": 1.0,
-                "size": size,
-                "dtype": akfloat64,
-                "state": self._state,
-            },
-        )
-        self._state += size
-        return create_pdarray(rep_msg)
+        return self.uniform(size=size)
 
     def standard_normal(self, size=None):
         r"""
@@ -420,19 +412,26 @@ class Generator:
         >>> rng.standard_normal(3)
         array([0.8797352989638163, -0.7085325853376141, 0.021728052940979934])  # random
         """
+        from arkouda.util import _calc_shape
+
         if size is None:
             # delegate to numpy when return size is 1
             return self._np_generator.standard_normal()
+
+        shape, full_size, ndim = _calc_shape(size)
+        if full_size < 0:
+            raise ValueError("The size parameter must be > 0")
+
         rep_msg = generic_msg(
-            cmd="standardNormalGenerator",
+            cmd=f"standardNormalGenerator<{ndim}>",
             args={
                 "name": self._name_dict[akfloat64],
-                "size": size,
+                "shape": shape,
                 "state": self._state,
             },
         )
         # since we generate 2*size uniform samples for box-muller transform
-        self._state += size * 2
+        self._state += full_size * 2
         return create_pdarray(rep_msg)
 
     def shuffle(self, x):
@@ -452,13 +451,13 @@ class Generator:
             raise TypeError("shuffle only accepts a pdarray.")
         dtype = to_numpy_dtype(x.dtype)
         name = self._name_dict[to_numpy_dtype(akint64)]
+        ndim = len(x.shape)
         generic_msg(
-            cmd="shuffle",
+            cmd=f"shuffle<{dtype.name},{ndim}>",
             args={
                 "name": name,
                 "x": x,
-                "size": x.size,
-                "dtype": dtype,
+                "shape": x.shape,
                 "state": self._state,
             },
         )
@@ -482,24 +481,27 @@ class Generator:
         if _val_isinstance_of_union(x, int_scalars):
             is_domain_perm = True
             dtype = to_numpy_dtype(akint64)
+            shape = x
             size = x
+            ndim = 1
         elif isinstance(x, pdarray):
             is_domain_perm = False
             dtype = to_numpy_dtype(x.dtype)
+            shape = x.shape
             size = x.size
+            ndim = len(shape)
         else:
             raise TypeError("permutation only accepts a pdarray or int scalar.")
 
         # we have to use the int version since we permute the domain
         name = self._name_dict[to_numpy_dtype(akint64)]
-
         rep_msg = generic_msg(
-            cmd="permutation",
+            cmd=f"permutation<{dtype.name},{ndim}>",
             args={
                 "name": name,
                 "x": x,
+                "shape": shape,
                 "size": size,
-                "dtype": dtype,
                 "isDomPerm": is_domain_perm,
                 "state": self._state,
             },
@@ -617,21 +619,28 @@ class Generator:
         >>> rng.uniform(-1, 1, 3)
         array([0.030785499755523249, 0.08505865366367038, -0.38552048588998722])  # random
         """
+        from arkouda.util import _calc_shape
+
         if size is None:
             # delegate to numpy when return size is 1
             return self._np_generator.uniform(low=low, high=high)
+
+        shape, full_size, ndim = _calc_shape(size)
+        if full_size < 0:
+            raise ValueError("The size parameter must be > 0")
+
+        dt = akfloat64
         rep_msg = generic_msg(
-            cmd="uniformGenerator",
+            cmd=f"uniformGenerator<{dt.name},{ndim}>",
             args={
-                "name": self._name_dict[akfloat64],
+                "name": self._name_dict[dt],
                 "low": low,
                 "high": high,
-                "size": size,
-                "dtype": akfloat64,
+                "shape": shape,
                 "state": self._state,
             },
         )
-        self._state += size
+        self._state += full_size
         return create_pdarray(rep_msg)
 
 
@@ -667,21 +676,12 @@ def default_rng(seed=None):
     # chpl has to know the type of the generator, in order to avoid having to declare
     # the type of the generator beforehand (which is not what numpy does)
     # we declare a generator for each type and fast-forward the state
-    int_name = generic_msg(
-        cmd="createGenerator",
-        args={"dtype": "int64", "has_seed": has_seed, "seed": seed, "state": state},
-    )
-    uint_name = generic_msg(
-        cmd="createGenerator",
-        args={"dtype": "uint64", "has_seed": has_seed, "seed": seed, "state": state},
-    )
-    float_name = generic_msg(
-        cmd="createGenerator",
-        args={"dtype": "float64", "has_seed": has_seed, "seed": seed, "state": state},
-    )
-    bool_name = generic_msg(
-        cmd="createGenerator",
-        args={"dtype": "bool", "has_seed": has_seed, "seed": seed, "state": state},
-    )
-    name_dict = {akint64: int_name, akuint64: uint_name, akfloat64: float_name, akbool: bool_name}
+
+    name_dict = dict()
+    for dt in akint64, akuint64, akfloat64, akbool:
+        name_dict[dt] = generic_msg(
+            cmd=f"createGenerator<{dt.name}>",
+            args={"has_seed": has_seed, "seed": seed, "state": state},
+        ).split()[1]
+
     return Generator(name_dict, seed if has_seed else None, state=state)

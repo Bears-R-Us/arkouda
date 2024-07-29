@@ -608,3 +608,18 @@ def map(
             raise TypeError("Map values must be castable to pdarray or Strings.")
     else:
         raise TypeError("Map must be dict or arkouda.Series.")
+
+
+def _calc_shape(size):
+    shape: Union[int_scalars, Tuple[int_scalars, ...]] = 1
+    if isinstance(size, tuple):
+        shape = cast(Tuple, size)
+        full_size = 1
+        for s in cast(Tuple, shape):
+            full_size *= s
+        ndim = len(shape)
+    else:
+        full_size = cast(int, size)
+        shape = full_size
+        ndim = 1
+    return shape, full_size, ndim
