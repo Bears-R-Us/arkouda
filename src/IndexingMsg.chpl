@@ -151,22 +151,17 @@ module IndexingMsg
     }
 
     /* arrayViewIntIndexAssignMsg "av[int_list]=value" response to __getitem__(int_list) where av is an ArrayView */
-    proc arrayViewIntIndexAssignMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    @arkouda.instantiateAndRegister
+    proc arrayViewIntIndexAssign(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         const pdaName = msgArgs.getValueOf("base");
         const dimProdName = msgArgs.getValueOf("dim_prod");
         const coordsName = msgArgs.getValueOf("coords");
-        const dtypeStr = msgArgs.getValueOf("dtype");
-        var value = msgArgs.getValueOf("value");
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "%s %s %s %s".format(cmd, pdaName, dimProdName, coordsName));
 
         var dimProd: borrowed GenSymEntry = getGenericTypedArrayEntry(dimProdName, st);
         var dimProdEntry = toSymEntry(dimProd, int);
         var coords: borrowed GenSymEntry = getGenericTypedArrayEntry(coordsName, st);
-
-        var arrParam = msgArgs.get("base");
-        arrParam.setKey("array");
-        var idxParam = new ParameterObj("idx", "", "");
 
         // multi-dim to 1D address calculation
         // (dimProd and coords are reversed on python side to account for row_major vs column_major)
@@ -174,16 +169,18 @@ module IndexingMsg
             when (DType.Int64) {
                 var coordsEntry = toSymEntry(coords, int);
                 var idx = + reduce (dimProdEntry.a * coordsEntry.a);
-                idxParam.setVal(idx:string);
-                var subArgs = new MessageArgs(new list([arrParam, msgArgs.get("value"), msgArgs.get("dtype"), idxParam]));
-                return setIntIndexToValueMsg(cmd, subArgs, st, 1);
+
+                var a_array_sym = st[msgArgs['base']]: SymEntry(array_dtype, 1);
+                a_array_sym.a[idx] = msgArgs['value'].toScalar(array_dtype);
+                return MsgTuple.success();
             }
             when (DType.UInt64) {
                 var coordsEntry = toSymEntry(coords, uint);
                 var idx = + reduce (dimProdEntry.a: uint * coordsEntry.a);
-                idxParam.setVal(idx:string);
-                var subArgs = new MessageArgs(new list([arrParam, msgArgs.get("value"), msgArgs.get("dtype"), idxParam]));
-                return setIntIndexToValueMsg(cmd, subArgs, st, 1);
+
+                var a_array_sym = st[msgArgs['base']]: SymEntry(array_dtype, 1);
+                a_array_sym.a[idx:int] = msgArgs['value'].toScalar(array_dtype);
+                return MsgTuple.success();
             }
             otherwise {
                  var errorMsg = notImplementedError(pn, "("+dtype2str(coords.dtype)+")");
@@ -211,7 +208,7 @@ module IndexingMsg
     }
 
     @arkouda.registerCommand("[slice]")
-    proc sliceIndex(const ref array: [?d] ?t, starts: d.rank*int, stops: d.rank*int, strides: d.rank*int): [] t throws {
+    proc sliceIndex(const ref array: [?d] ?t, starts: d.rank*int, stops: d.rank*int, strides: d.rank*int, max_bits: int): SymEntry(t, d.rank) throws {
         var rngs: d.rank*range(strides=strideKind.any),
             outSizes: d.rank*int;
         for param dim in 0..<d.rank {
@@ -224,7 +221,7 @@ module IndexingMsg
         forall (elt,j) in zip(arraySlice, sliceDom) with (var agg = newSrcAggregator(t)) do
             agg.copy(elt,array[j]);
 
-        return arraySlice;
+        return new shared SymEntry(arraySlice, max_bits);
     }
 
     /*
@@ -279,7 +276,7 @@ module IndexingMsg
 
                 agg.copy(ret[idx], a.a[inIdx]);
             }
-            return st.insert(new shared SymEntry(ret));
+            return st.insert(new shared SymEntry(ret, max_bits=a.max_bits));
         } else {
             return MsgTuple.error("Invalid index dimensions: %? for %iD array".format(idxDims, array_nd));
         }
@@ -954,7 +951,7 @@ module IndexingMsg
         const sliceDom = {(...sliceRanges)};
 
         if array_dtype_a == bigint {
-            var bb = b.a:bigint; // TODO: refactor to remove this copy
+            var bb = b.a:bigint;
             if a.max_bits != -1 {
                 var max_size = 1:bigint;
                 max_size <<= a.max_bits;
@@ -970,187 +967,24 @@ module IndexingMsg
         return MsgTuple.success();
     }
 
-    /* setSliceIndexToPdarray "a[slice] = pdarray" response to __setitem__(slice, pdarray) */
-    proc setSliceIndexToPdarrayMsg1D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
-        param pn = Reflection.getRoutineName();
-        var repMsg: string; // response message
-        const start = msgArgs.get("starts").getIntValue();
-        const stop = msgArgs.get("stops").getIntValue();
-        const stride = msgArgs.get("strides").getIntValue();
-        var slice: range(strides=strideKind.any);
+    proc setSliceIndexToPdarray(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+        type array_dtype_a,
+        type array_dtype_b,
+        param array_nd: int
+    ): MsgTuple throws
+        where array_dtype_a != bigint && array_dtype_b == bigint
+    {
+        return MsgTuple.error("Cannot assign bigint pdarray to slice of non-bigint pdarray");
+    }
 
-        const name = msgArgs.getValueOf("array");
-        const yname = msgArgs.getValueOf("value");
-
-        // convert python slice to chapel slice
-        // backwards iteration with negative stride
-        if  (start > stop) & (stride < 0) {slice = (stop+1)..start by stride;}
-        // forward iteration with positive stride
-        else if (start <= stop) & (stride > 0) {slice = start..(stop-1) by stride;}
-        // BAD FORM start < stop and stride is negative
-        else {slice = 1..0;}
-
-        imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                        "%s %s %i %i %i %s".format(cmd, name, start, stop, stride, yname));
-
-        var gX: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
-        var gY: borrowed GenSymEntry = getGenericTypedArrayEntry(yname, st);
-
-        // add check to make sure IV and Y are same size
-        if (slice.size != gY.size) {      
-            var errorMsg = "%s: size mismatch %i %i".format(pn,slice.size, gY.size);
-            imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);        
-            return new MsgTuple(errorMsg, MsgType.ERROR); 
-        }
-
-        select (gX.dtype, gY.dtype) {
-            when (DType.Int64, DType.Int64) {
-                var x = toSymEntry(gX,int);
-                var y = toSymEntry(gY,int);
-                x.a[slice] = y.a;
-            }
-            when (DType.Int64, DType.UInt64) {
-                var x = toSymEntry(gX,int);
-                var y = toSymEntry(gY,uint);
-                x.a[slice] = y.a:int;
-            }
-            when (DType.Int64, DType.Float64) {
-                var x = toSymEntry(gX,int);
-                var y = toSymEntry(gY,real);
-                x.a[slice] = y.a:int;
-            }
-            when (DType.Int64, DType.Bool) {
-                var x = toSymEntry(gX,int);
-                var y = toSymEntry(gY,bool);
-                x.a[slice] = y.a:int;
-            }
-            when (DType.UInt64, DType.Int64) {
-                var x = toSymEntry(gX,uint);
-                var y = toSymEntry(gY,int);
-                x.a[slice] = y.a:uint;
-            }
-            when (DType.UInt64, DType.UInt64) {
-                var x = toSymEntry(gX,uint);
-                var y = toSymEntry(gY,uint);
-                x.a[slice] = y.a:uint;
-            }
-            when (DType.UInt64, DType.Float64) {
-                var x = toSymEntry(gX,uint);
-                var y = toSymEntry(gY,real);
-                x.a[slice] = y.a:uint;
-            }
-            when (DType.UInt64, DType.Bool) {
-                var x = toSymEntry(gX,uint);
-                var y = toSymEntry(gY,bool);
-                x.a[slice] = y.a:uint;
-            }
-            when (DType.Float64, DType.Int64) {
-                var x = toSymEntry(gX,real);
-                var y = toSymEntry(gY,int);
-                x.a[slice] = y.a:real;
-            }
-            when (DType.Float64, DType.UInt64) {
-                var x = toSymEntry(gX,real);
-                var y = toSymEntry(gY,uint);
-                x.a[slice] = y.a:real;
-            }
-            when (DType.Float64, DType.Float64) {
-                var x = toSymEntry(gX,real);
-                var y = toSymEntry(gY,real);
-                x.a[slice] = y.a;
-            }
-            when (DType.Float64, DType.Bool) {
-                var x = toSymEntry(gX,real);
-                var y = toSymEntry(gY,bool);
-                x.a[slice] = y.a:real;
-            }
-            when (DType.Bool, DType.Int64) {
-                var x = toSymEntry(gX,bool);
-                var y = toSymEntry(gY,int);
-                x.a[slice] = y.a:bool;
-            }
-            when (DType.Bool, DType.UInt64) {
-                var x = toSymEntry(gX,bool);
-                var y = toSymEntry(gY,uint);
-                x.a[slice] = y.a:bool;
-            }
-            when (DType.Bool, DType.Float64) {
-                var x = toSymEntry(gX,bool);
-                var y = toSymEntry(gY,real);
-                x.a[slice] = y.a:bool;
-            }
-            when (DType.Bool, DType.Bool) {
-                var x = toSymEntry(gX,bool);
-                var y = toSymEntry(gY,bool);
-                x.a[slice] = y.a;
-            }
-            when (DType.BigInt, DType.BigInt) {
-                var x = toSymEntry(gX,bigint);
-                var y = toSymEntry(gY,bigint);
-                if x.max_bits != -1 {
-                    var max_size = 1:bigint;
-                    max_size <<= x.max_bits;
-                    max_size -= 1;
-                    forall y in y.a with (var local_max_size = max_size) {
-                        y &= local_max_size;
-                    }
-                }
-                x.a[slice] = y.a;
-             }
-            when (DType.BigInt, DType.Int64) {
-                var x = toSymEntry(gX,bigint);
-                var y = toSymEntry(gY,int);
-                var ya = y.a:bigint;
-                if x.max_bits != -1 {
-                    var max_size = 1:bigint;
-                    max_size <<= x.max_bits;
-                    max_size -= 1;
-                    forall y in ya with (var local_max_size = max_size) {
-                        y &= local_max_size;
-                    }
-                }
-                x.a[slice] = ya;
-             }
-            when (DType.BigInt, DType.UInt64) {
-                var x = toSymEntry(gX,bigint);
-                var y = toSymEntry(gY,uint);
-                var ya = y.a:bigint;
-                if x.max_bits != -1 {
-                    var max_size = 1:bigint;
-                    max_size <<= x.max_bits;
-                    max_size -= 1;
-                    forall y in ya with (var local_max_size = max_size) {
-                        y &= local_max_size;
-                    }
-                }
-                x.a[slice] = ya;
-             }
-            when (DType.BigInt, DType.Bool) {
-                var x = toSymEntry(gX,bigint);
-                var y = toSymEntry(gY,bool);
-                // TODO change once we can cast directly from bool to bigint
-                var ya = y.a:int:bigint;
-                if x.max_bits != -1 {
-                    var max_size = 1:bigint;
-                    max_size <<= x.max_bits;
-                    max_size -= 1;
-                    forall y in ya with (var local_max_size = max_size) {
-                        y &= local_max_size;
-                    }
-                }
-                x.a[slice] = ya;
-             }
-            otherwise {
-                var errorMsg = notImplementedError(pn,
-                                     "("+dtype2str(gX.dtype)+","+dtype2str(gY.dtype)+")");
-                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
-            }
-        }
-
-        repMsg = "%s success".format(pn);
-        imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-        return new MsgTuple(repMsg, MsgType.NORMAL);
+    proc setSliceIndexToPdarray(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+        type array_dtype_a,
+        type array_dtype_b,
+        param array_nd: int
+    ): MsgTuple throws
+        where array_dtype_a == bigint && isRealType(array_dtype_b)
+    {
+        return MsgTuple.error("Cannot assign float pdarray to slice of bigint pdarray");
     }
 
     @arkouda.registerND
@@ -1237,7 +1071,6 @@ module IndexingMsg
 
     use CommandMap;
     registerFunction("arrayViewMixedIndex", arrayViewMixedIndexMsg, getModuleName());
-    registerFunction("arrayViewIntIndexAssign", arrayViewIntIndexAssignMsg, getModuleName());
     registerFunction("[pdarray]", pdarrayIndexMsg, getModuleName());
     registerFunction("[pdarray]=val", setPdarrayIndexToValueMsg, getModuleName());
     registerFunction("[pdarray]=pdarray", setPdarrayIndexToPdarrayMsg, getModuleName());

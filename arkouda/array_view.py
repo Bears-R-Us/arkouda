@@ -263,10 +263,9 @@ class ArrayView:
                     )
                 coords = key if self.order is OrderType.COLUMN_MAJOR else key[::-1]
                 generic_msg(
-                    cmd="arrayViewIntIndexAssign",
+                    cmd=f"arrayViewIntIndexAssign<{self.base.dtype}>",
                     args={
                         "base": self.base,
-                        "dtype": self.dtype,
                         "dim_prod": self._dim_prod,
                         "coords": coords,
                         "value": self.base.format_other(value),

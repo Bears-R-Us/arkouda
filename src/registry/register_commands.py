@@ -651,16 +651,25 @@ def gen_command_proc(name, return_type, formals, mod_name):
     )
 
     # get the names of the array-elt-type queries in the formals
-    array_type_queries = [
+    array_etype_queries = [
         f[3][1] for f in formals if (f[2] == "<array>" and f[3] is not None)
     ]
 
     # assume the returned type is a symbol if it's an identifier that is not a scalar or type-query reference
+    # or if it is a `SymEntry` type-constructor call
     returns_symbol = (
         return_type
-        and isinstance(return_type, chapel.Identifier)
-        and return_type.name() not in chapel_scalar_types
-        and return_type.name() not in array_type_queries
+        and (
+            isinstance(return_type, chapel.Identifier)
+            and return_type.name() not in chapel_scalar_types
+            and return_type.name() not in array_etype_queries
+        )
+        or (
+            # TODO: generalize this to any class type identifier or class type-constructor call that
+            # inherits from 'AbstractSymEntry'
+            isinstance(return_type, chapel.FnCall)
+            and return_type.called_expression().name() == "SymEntry"
+        )
     )
     returns_array = (
         return_type
