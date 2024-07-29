@@ -889,7 +889,7 @@ class pdarray:
                     "starts": start,
                     "stops": stop,
                     "strides": stride,
-                    "max_bits": self.max_bits,
+                    "max_bits": self.max_bits if self.max_bits is not None else 0,
                 },
             )
             return create_pdarray(repMsg)
@@ -1031,7 +1031,7 @@ class pdarray:
                             "array": self,
                             "idx": key,
                             "value": self.format_other(_value),
-                            "max_bits": self.max_bits,
+                            "max_bits": self.max_bits if self.max_bits is not None else 0,
                         },
                     )
                 else:
@@ -1074,7 +1074,7 @@ class pdarray:
                             "stops": stop,
                             "strides": stride,
                             "value": self.format_other(_value),
-                            "max_bits": self.max_bits,
+                            "max_bits": self.max_bits if self.max_bits is not None else 0,
                         },
                     )
             else:
@@ -1176,7 +1176,7 @@ class pdarray:
                             "array": self,
                             "idx": key,
                             "value": self.format_other(_value),
-                            "max_bits": self.max_bits,
+                            "max_bits": self.max_bits if self.max_bits is not None else 0,
                         },
                     )
                 else:
@@ -1188,7 +1188,7 @@ class pdarray:
                             "stops": tuple(stops),
                             "strides": tuple(strides),
                             "value": self.format_other(_value),
-                            "max_bits": self.max_bits,
+                            "max_bits": self.max_bits if self.max_bits is not None else 0,
                         },
                     )
             elif isinstance(key, slice):
@@ -1214,7 +1214,7 @@ class pdarray:
                                 "stops": tuple(self.shape),
                                 "strides": tuple([1 for _ in range(self.ndim)]),
                                 "value": self.format_other(_value),
-                                "max_bits": self.max_bits,
+                                "max_bits": self.max_bits if self.max_bits is not None else 0,
                             },
                         )
                 else:
