@@ -12,30 +12,33 @@ h5py>=3.7.0
 hdf5>=1.12.2
 pip
 types-tabulate
-tables>=3.8.0
+pytables>=3.8.0
 pyarrow
 libiconv
 libidn2
+jupyter
 scipy<=1.13.1
+pytest>=6.0
+pytest-env
 
 # Developer dependencies
 pexpect
-pytest>=6.0
-pytest-env
 Sphinx>=5.1.1
 sphinx-argparse
 sphinx-autoapi
-myst-parser
-furo # sphinx theme
-linkify-it-py
-typed-ast
-mypy>=0.931,<0.990
-flake8
-pytest-benchmark
-mathjax
-sphinx-autopackagesummary
 sphinx-design
 sphinx-autodoc-typehints
+sphinx-autopackagesummary
+furo # sphinx theme
+myst-parser
+linkify-it-py
+typed-ast
+flake8
+mypy>=0.931,<0.990
+black
+isort
+pytest-json-report
+pytest-benchmark
+mathjax
 pandas-stubs
 types-python-dateutil
-ipython
