@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from typeguard import typechecked
 
-from arkouda.client import generic_msg
+from arkouda.client import generic_msg, get_max_array_rank
 from arkouda.numpy.dtypes import (
     NUMBER_FORMAT_STRINGS,
     DTypes,
@@ -47,7 +47,19 @@ __all__ = [
     "promote_to_common_dtype",
     "scalar_array",
 ]
-
+def infer_from_size (size) :
+    shape: Union[int_scalars, Tuple[int_scalars, ...]] = 1
+    if isinstance(size, tuple):
+        shape = cast(Tuple, size)
+        full_size = 1
+        for s in cast(Tuple, shape):
+            full_size *= s
+        ndim = len(shape)
+    else:
+        full_size = cast(int, size)
+        shape = full_size
+        ndim = 1
+    return shape, ndim, full_size
 
 @typechecked
 def from_series(series: pd.Series, dtype: Optional[Union[type, str]] = None) -> Union[pdarray, Strings]:
@@ -233,7 +245,9 @@ def array(
             raise TypeError("a must be a pdarray, np.ndarray, or convertible to a numpy array")
 
     # Return multi-dimensional arrayview
-    if a.ndim != 1:
+    #           if a.ndim > get_max_array_rank()
+    #if a.ndim != 1:
+    if a.ndim > get_max_array_rank() :
         # TODO add order
         if a.dtype.name in NumericDTypes:
             flat_a = array(a.flatten(), dtype=dtype)
@@ -430,7 +444,7 @@ def bigint_from_uint_arrays(arrays, max_bits=-1):
 
 @typechecked
 def zeros(
-    size: Union[int_scalars, str],
+    size: Union[int_scalars, Tuple[int_scalars, ...], str],
     dtype: Union[np.dtype, type, str, bigint] = float64,
     max_bits: Optional[int] = None,
 ) -> pdarray:
@@ -472,20 +486,20 @@ def zeros(
     >>> ak.zeros(5, dtype=ak.bool_)
     array([False, False, False, False, False])
     """
-    if not np.isscalar(size):
-        raise TypeError(f"size must be a scalar, not {size.__class__.__name__}")
-    dtype_name = akdtype(dtype).name
+    dtype = akdtype(dtype)  # normalize dtype
+    dtype_name = dtype.name if isinstance(dtype, bigint) else cast(np.dtype, dtype).name
     # check dtype for error
     if dtype_name not in NumericDTypes:
-        raise TypeError(f"unsupported dtype {akdtype(dtype)}")
-    repMsg = generic_msg(cmd=f"create<{dtype_name},1>", args={"shape": size})
+        raise TypeError(f"unsupported dtype {dtype}")
+    shape, ndim, full_size = infer_from_size(size)  # adc
+    repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape })
 
     return create_pdarray(repMsg, max_bits=max_bits)
 
 
 @typechecked
 def ones(
-    size: Union[int_scalars, str],
+    size: Union[int_scalars, Tuple[int_scalars, ...], str],
     dtype: Union[np.dtype, type, str, bigint] = float64,
     max_bits: Optional[int] = None,
 ) -> pdarray:
@@ -527,14 +541,13 @@ def ones(
     >>> ak.ones(5, dtype=ak.bool_)
     array([True, True, True, True, True])
     """
-    if not np.isscalar(size):
-        raise TypeError(f"size must be a scalar, not {size.__class__.__name__}")
     dtype = akdtype(dtype)  # normalize dtype
     dtype_name = dtype.name if isinstance(dtype, bigint) else cast(np.dtype, dtype).name
     # check dtype for error
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-    repMsg = generic_msg(cmd=f"create<{dtype_name},1>", args={"shape": size})
+    shape, ndim, full_size = infer_from_size(size)  # adc
+    repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape })
     a = create_pdarray(repMsg)
     a.fill(1)
     if max_bits:
@@ -544,7 +557,7 @@ def ones(
 
 @typechecked
 def full(
-    size: Union[int_scalars, str],
+    size: Union[int_scalars, Tuple[int_scalars, ...], str],
     fill_value: Union[numeric_scalars, str],
     dtype: Union[np.dtype, type, str, bigint] = float64,
     max_bits: Optional[int] = None,
@@ -589,8 +602,6 @@ def full(
     >>> ak.full(5, 5, dtype=ak.bool_)
     array([True, True, True, True, True])
     """
-    if not np.isscalar(size):
-        raise TypeError(f"size must be a scalar, not {size.__class__.__name__}")
     if isinstance(fill_value, str):
         return _full_string(size, fill_value)
 
@@ -599,7 +610,8 @@ def full(
     # check dtype for error
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-    repMsg = generic_msg(cmd=f"create<{dtype_name},1>", args={"shape": size})
+    shape, ndim, full_size = infer_from_size(size)  # adc
+    repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape })
     a = create_pdarray(repMsg)
     a.fill(fill_value)
     if max_bits:
@@ -702,7 +714,7 @@ def zeros_like(pda: pdarray) -> pdarray:
     >>> ak.zeros_like(zeros)
     array([False, False, False, False, False])
     """
-    return zeros(pda.size, pda.dtype, pda.max_bits)
+    return zeros(tuple(pda.shape), pda.dtype, pda.max_bits)
 
 
 @typechecked
@@ -749,7 +761,7 @@ def ones_like(pda: pdarray) -> pdarray:
     >>> ak.ones_like(ones)
     array([True, True, True, True, True])
     """
-    return ones(pda.size, pda.dtype, pda.max_bits)
+    return ones(tuple(pda.shape), pda.dtype, pda.max_bits)
 
 
 @typechecked
@@ -798,7 +810,7 @@ def full_like(pda: pdarray, fill_value: numeric_scalars) -> pdarray:
     >>> ak.full_like(full)
     array([True, True, True, True, True])
     """
-    return full(pda.size, fill_value, pda.dtype, pda.max_bits)
+    return full(tuple(pda.shape), fill_value, pda.dtype, pda.max_bits)
 
 
 def arange(*args, **kwargs) -> pdarray:
