@@ -188,7 +188,7 @@ def _slice_index(array: pdarray, starts: List[int], stops: List[int], strides: L
                 "starts": tuple(starts) if array.ndim > 1 else starts[0],
                 "stops": tuple(stops) if array.ndim > 1 else stops[0],
                 "strides": tuple(strides) if array.ndim > 1 else strides[0],
-                "max_bits": array.max_bits,
+                "max_bits": array.max_bits if array.max_bits is not None else 0,
             },
         )
     )
@@ -931,9 +931,9 @@ class pdarray:
                     degen_axes = pdarray_axes[1:] + scalar_axes
 
                 # ensure all indexing arrays have the same dtype (either int64 or uint64)
-                idx_dtype = pdarray_axes[0].dtype
+                idx_dtype = clean_key[pdarray_axes[0]].dtype
                 for dim in pdarray_axes:
-                    if dim.dtype != idx_dtype:
+                    if clean_key[dim].dtype != idx_dtype:
                         raise TypeError("all pdarray indices must have the same dtype")
 
                 # apply pdarray indexing (returning an ndim array with degenerate dimensions
