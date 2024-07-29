@@ -2,6 +2,7 @@ import copy
 import glob
 import os
 import tempfile
+from typing import List, Mapping, Union
 
 import h5py
 import numpy as np
@@ -12,7 +13,8 @@ import pytest
 from pandas.testing import assert_series_equal
 
 import arkouda as ak
-from arkouda import io_util
+import arkouda.array_api as Array
+from arkouda import io_util, read_zarr, to_zarr
 
 NUMERIC_TYPES = ["int64", "float64", "bool", "uint64"]
 NUMERIC_AND_STR_TYPES = NUMERIC_TYPES + ["str"]
@@ -20,8 +22,11 @@ NUMERIC_AND_STR_TYPES = NUMERIC_TYPES + ["str"]
 
 @pytest.fixture
 def par_test_base_tmp(request):
-    par_test_base_tmp = "{}/io_test".format(os.getcwd())
+    par_test_base_tmp = "{}/.io_test".format(os.getcwd())
     io_util.get_directory(par_test_base_tmp)
+
+    with open("{}/not-a-file_LOCALE0000".format(hdf_test_base_tmp), "w"):
+        pass
 
     # Define a finalizer function for teardown
     def finalizer():
@@ -35,8 +40,11 @@ def par_test_base_tmp(request):
 
 @pytest.fixture
 def hdf_test_base_tmp(request):
-    hdf_test_base_tmp = "{}/hdf_test".format(os.getcwd())
+    hdf_test_base_tmp = "{}/.hdf_test".format(os.getcwd())
     io_util.get_directory(hdf_test_base_tmp)
+
+    with open("{}/not-a-file_LOCALE0000".format(hdf_test_base_tmp), "w"):
+        pass
 
     # Define a finalizer function for teardown
     def finalizer():
@@ -50,7 +58,7 @@ def hdf_test_base_tmp(request):
 
 @pytest.fixture
 def csv_test_base_tmp(request):
-    csv_test_base_tmp = "{}/csv_test".format(os.getcwd())
+    csv_test_base_tmp = "{}/.csv_test".format(os.getcwd())
     io_util.get_directory(csv_test_base_tmp)
 
     # Define a finalizer function for teardown
@@ -61,6 +69,21 @@ def csv_test_base_tmp(request):
     # Register the finalizer to ensure cleanup
     request.addfinalizer(finalizer)
     return csv_test_base_tmp
+
+
+@pytest.fixture
+def zarr_test_base_tmp(request):
+    zarr_test_base_tmp = "{}/.zarr_test".format(os.getcwd())
+    io_util.get_directory(zarr_test_base_tmp)
+
+    # Define a finalizer function for teardown
+    def finalizer():
+        # Clean up any resources if needed
+        io_util.delete_directory(zarr_test_base_tmp)
+
+    # Register the finalizer to ensure cleanup
+    request.addfinalizer(finalizer)
+    return zarr_test_base_tmp
 
 
 @pytest.fixture
@@ -213,6 +236,7 @@ def par_test_base_tmp(request):
     # Register the finalizer to ensure cleanup
     request.addfinalizer(finalizer)
     return par_test_base_tmp
+
 
 class TestParquet:
     COMPRESSIONS = [None, "snappy", "gzip", "brotli", "zstd", "lz4"]
@@ -792,6 +816,340 @@ class TestParquet:
 
 
 class TestHDF5:
+    @pytest.fixture(autouse=True)
+    def set_attributes(self):
+
+        self.int_tens_pdarray = ak.array(np.random.randint(-100, 100, 1000))
+        self.int_tens_ndarray = self.int_tens_pdarray.to_ndarray()
+        self.int_tens_ndarray.sort()
+        self.int_tens_pdarray_dupe = ak.array(np.random.randint(-100, 100, 1000))
+
+        self.int_hundreds_pdarray = ak.array(np.random.randint(-1000, 1000, 1000))
+        self.int_hundreds_ndarray = self.int_hundreds_pdarray.to_ndarray()
+        self.int_hundreds_ndarray.sort()
+        self.int_hundreds_pdarray_dupe = ak.array(np.random.randint(-1000, 1000, 1000))
+
+        self.float_pdarray = ak.array(np.random.uniform(-100, 100, 1000))
+        self.float_ndarray = self.float_pdarray.to_ndarray()
+        self.float_ndarray.sort()
+        self.float_pdarray_dupe = ak.array(np.random.uniform(-100, 100, 1000))
+
+        self.bool_pdarray = ak.randint(0, 1, 1000, dtype=ak.bool_)
+        self.bool_pdarray_dupe = ak.randint(0, 1, 1000, dtype=ak.bool_)
+
+        self.dict_columns = {
+            "int_tens_pdarray": self.int_tens_pdarray,
+            "int_hundreds_pdarray": self.int_hundreds_pdarray,
+            "float_pdarray": self.float_pdarray,
+            "bool_pdarray": self.bool_pdarray,
+        }
+
+        self.dict_columns_dupe = {
+            "int_tens_pdarray": self.int_tens_pdarray_dupe,
+            "int_hundreds_pdarray": self.int_hundreds_pdarray_dupe,
+            "float_pdarray": self.float_pdarray_dupe,
+            "bool_pdarray": self.bool_pdarray_dupe,
+        }
+
+        self.dict_single_column = {"int_tens_pdarray": self.int_tens_pdarray}
+
+        self.list_columns = [
+            self.int_tens_pdarray,
+            self.int_hundreds_pdarray,
+            self.float_pdarray,
+            self.bool_pdarray,
+        ]
+
+        self.names = ["int_tens_pdarray", "int_hundreds_pdarray", "float_pdarray", "bool_pdarray"]
+
+    def _create_file(
+        self, prefix_path: str, columns: Union[Mapping[str, ak.array]], names: List[str] = None
+    ) -> None:
+        """
+        Creates an hdf5 file with dataset(s) from the specified columns and path prefix
+        via the ak.save_all method. If columns is a List, then the names list is used
+        to create the datasets
+
+        :return: None
+        :raise: ValueError if the names list is None when columns is a list
+        """
+        if isinstance(columns, dict):
+            ak.to_hdf(columns=columns, prefix_path=prefix_path)
+        else:
+            if not names:
+                raise ValueError("the names list must be not None if columns is a list")
+            ak.to_hdf(columns=columns, prefix_path=prefix_path, names=names)
+
+    def test_save_all_load_all_with_dict(self, hdf_test_base_tmp):
+        """
+        Creates 2..n files from an input columns dict depending upon the number of
+        arkouda_server locales, retrieves all datasets and correspoding pdarrays,
+        and confirms they match inputs
+
+        :return: None
+        :raise: AssertionError if the input and returned datasets and pdarrays don't match
+        """
+        self._create_file(
+            columns=self.dict_columns, prefix_path="{}/iotest_dict".format(hdf_test_base_tmp)
+        )
+        retrieved_columns = ak.load_all("{}/iotest_dict".format(hdf_test_base_tmp))
+
+        itp = self.dict_columns["int_tens_pdarray"].to_ndarray()
+        ritp = retrieved_columns["int_tens_pdarray"].to_ndarray()
+        itp.sort()
+        ritp.sort()
+        ihp = self.dict_columns["int_hundreds_pdarray"].to_ndarray()
+        rihp = retrieved_columns["int_hundreds_pdarray"].to_ndarray()
+        ihp.sort()
+        rihp.sort()
+        ifp = self.dict_columns["float_pdarray"].to_ndarray()
+        rifp = retrieved_columns["float_pdarray"].to_ndarray()
+        ifp.sort()
+        rifp.sort()
+
+        assert 4 == len(retrieved_columns)
+        assert itp.tolist() == ritp.tolist()
+        assert ihp.tolist() == rihp.tolist()
+        assert ifp.tolist() == rifp.tolist()
+        assert len(self.dict_columns["bool_pdarray"]) == len(retrieved_columns["bool_pdarray"])
+        assert 4 == len(ak.get_datasets("{}/iotest_dict_LOCALE0000".format(hdf_test_base_tmp)))
+
+    def test_save_all_load_all_with_list(self, hdf_test_base_tmp):
+        """
+        Creates 2..n files from an input columns and names list depending upon the number of
+        arkouda_server locales, retrieves all datasets and correspoding pdarrays, and confirms
+        they match inputs
+
+        :return: None
+        :raise: AssertionError if the input and returned datasets and pdarrays don't match
+        """
+        self._create_file(
+            columns=self.list_columns,
+            prefix_path="{}/iotest_list".format(hdf_test_base_tmp),
+            names=self.names,
+        )
+        retrieved_columns = ak.load_all(path_prefix="{}/iotest_list".format(hdf_test_base_tmp))
+
+        itp = self.list_columns[0].to_ndarray()
+        itp.sort()
+        ritp = retrieved_columns["int_tens_pdarray"].to_ndarray()
+        ritp.sort()
+        ihp = self.list_columns[1].to_ndarray()
+        ihp.sort()
+        rihp = retrieved_columns["int_hundreds_pdarray"].to_ndarray()
+        rihp.sort()
+        fp = self.list_columns[2].to_ndarray()
+        fp.sort()
+        rfp = retrieved_columns["float_pdarray"].to_ndarray()
+        rfp.sort()
+
+        assert 4 == len(retrieved_columns)
+        assert itp.tolist() == ritp.tolist()
+        assert ihp.tolist() == rihp.tolist()
+        assert fp.tolist() == rfp.tolist()
+        assert len(self.list_columns[3]) == len(retrieved_columns["bool_pdarray"])
+        assert 4 == len(ak.get_datasets("{}/iotest_list_LOCALE0000".format(hdf_test_base_tmp)))
+
+    def test_read_hdf(self, hdf_test_base_tmp):
+        """
+        Creates 2..n files depending upon the number of arkouda_server locales, reads the files
+        with an explicit list of file names to the read_all method, and confirms the datasets
+        and embedded pdarrays match the input dataset and pdarrays
+
+        :return: None
+        :raise: AssertionError if the input and returned datasets don't match
+        """
+        self._create_file(
+            columns=self.dict_columns, prefix_path="{}/iotest_dict_columns".format(hdf_test_base_tmp)
+        )
+
+        # test with read_hdf
+        dataset = ak.read_hdf(filenames=["{}/iotest_dict_columns_LOCALE0000".format(hdf_test_base_tmp)])
+        assert 4 == len(list(dataset.keys()))
+
+        # test with generic read function
+        dataset = ak.read(filenames=["{}/iotest_dict_columns_LOCALE0000".format(hdf_test_base_tmp)])
+        assert 4 == len(list(dataset.keys()))
+
+    def test_read_hdf_with_glob(self, hdf_test_base_tmp):
+        """
+        Creates 2..n files depending upon the number of arkouda_server locales with two
+        files each containing different-named datasets with the same pdarrays, reads the files
+        with the glob feature of the read_all method, and confirms the datasets and embedded
+        pdarrays match the input dataset and pdarrays
+
+        :return: None
+        :raise: AssertionError if the input and returned datasets don't match
+        """
+        self._create_file(
+            columns=self.dict_columns, prefix_path="{}/iotest_dict_columns".format(hdf_test_base_tmp)
+        )
+
+        retrieved_columns = ak.read_hdf(filenames="{}/iotest_dict_columns*".format(hdf_test_base_tmp))
+
+        itp = self.list_columns[0].to_ndarray()
+        itp.sort()
+        ritp = retrieved_columns["int_tens_pdarray"].to_ndarray()
+        ritp.sort()
+        ihp = self.list_columns[1].to_ndarray()
+        ihp.sort()
+        rihp = retrieved_columns["int_hundreds_pdarray"].to_ndarray()
+        rihp.sort()
+        fp = self.list_columns[2].to_ndarray()
+        fp.sort()
+        rfp = retrieved_columns["float_pdarray"].to_ndarray()
+        rfp.sort()
+
+        assert 4 == len(list(retrieved_columns.keys()))
+        assert itp.tolist() == ritp.tolist()
+        assert ihp.tolist() == rihp.tolist()
+        assert fp.tolist() == rfp.tolist()
+        assert len(self.bool_pdarray) == len(retrieved_columns["bool_pdarray"])
+
+    def test_load(self, hdf_test_base_tmp):
+        """
+        Creates 1..n files depending upon the number of arkouda_server locales with three columns
+        AKA datasets, loads each corresponding dataset and confirms each corresponding pdarray
+        equals the input pdarray.
+
+        :return: None
+        :raise: AssertionError if the input and returned datasets (pdarrays) don't match
+        """
+        self._create_file(
+            columns=self.dict_columns, prefix_path="{}/iotest_dict_columns".format(hdf_test_base_tmp)
+        )
+        result_array_tens = ak.load(
+            path_prefix="{}/iotest_dict_columns".format(hdf_test_base_tmp), dataset="int_tens_pdarray"
+        )["int_tens_pdarray"]
+        result_array_hundreds = ak.load(
+            path_prefix="{}/iotest_dict_columns".format(hdf_test_base_tmp),
+            dataset="int_hundreds_pdarray",
+        )["int_hundreds_pdarray"]
+        result_array_floats = ak.load(
+            path_prefix="{}/iotest_dict_columns".format(hdf_test_base_tmp), dataset="float_pdarray"
+        )["float_pdarray"]
+        result_array_bools = ak.load(
+            path_prefix="{}/iotest_dict_columns".format(hdf_test_base_tmp), dataset="bool_pdarray"
+        )["bool_pdarray"]
+
+        ratens = result_array_tens.to_ndarray()
+        ratens.sort()
+
+        rahundreds = result_array_hundreds.to_ndarray()
+        rahundreds.sort()
+
+        rafloats = result_array_floats.to_ndarray()
+        rafloats.sort()
+
+        assert self.int_tens_ndarray.tolist() == ratens.tolist()
+        assert self.int_hundreds_ndarray.tolist() == rahundreds.tolist()
+        assert self.float_ndarray.tolist() == rafloats.tolist()
+        assert len(self.bool_pdarray) == len(result_array_bools)
+
+        # test load_all with file_format parameter usage
+        ak.to_parquet(
+            columns=self.dict_columns,
+            prefix_path="{}/iotest_dict_columns_parquet".format(hdf_test_base_tmp),
+        )
+        result_array_tens = ak.load(
+            path_prefix="{}/iotest_dict_columns_parquet".format(hdf_test_base_tmp),
+            dataset="int_tens_pdarray",
+            file_format="Parquet",
+        )["int_tens_pdarray"]
+        result_array_hundreds = ak.load(
+            path_prefix="{}/iotest_dict_columns_parquet".format(hdf_test_base_tmp),
+            dataset="int_hundreds_pdarray",
+            file_format="Parquet",
+        )["int_hundreds_pdarray"]
+        result_array_floats = ak.load(
+            path_prefix="{}/iotest_dict_columns_parquet".format(hdf_test_base_tmp),
+            dataset="float_pdarray",
+            file_format="Parquet",
+        )["float_pdarray"]
+        result_array_bools = ak.load(
+            path_prefix="{}/iotest_dict_columns_parquet".format(hdf_test_base_tmp),
+            dataset="bool_pdarray",
+            file_format="Parquet",
+        )["bool_pdarray"]
+        ratens = result_array_tens.to_ndarray()
+        ratens.sort()
+
+        rahundreds = result_array_hundreds.to_ndarray()
+        rahundreds.sort()
+
+        rafloats = result_array_floats.to_ndarray()
+        rafloats.sort()
+        assert self.int_tens_ndarray.tolist() == ratens.tolist()
+        assert self.int_hundreds_ndarray.tolist() == rahundreds.tolist()
+        assert self.float_ndarray.tolist() == rafloats.tolist()
+        assert len(self.bool_pdarray) == len(result_array_bools)
+
+        # Test load with invalid prefix
+        with pytest.raises(RuntimeError):
+            ak.load(
+                path_prefix="{}/iotest_dict_column".format(hdf_test_base_tmp),
+                dataset="int_tens_pdarray",
+            )["int_tens_pdarray"]
+
+        # Test load with invalid file
+        with pytest.raises(RuntimeError):
+            ak.load(path_prefix="{}/not-a-file".format(hdf_test_base_tmp), dataset="int_tens_pdarray")[
+                "int_tens_pdarray"
+            ]
+
+    def test_load_all(self, hdf_test_base_tmp):
+        self._create_file(
+            columns=self.dict_columns, prefix_path="{}/iotest_dict_columns".format(hdf_test_base_tmp)
+        )
+
+        results = ak.load_all(path_prefix="{}/iotest_dict_columns".format(hdf_test_base_tmp))
+        assert "bool_pdarray" in results
+        assert "float_pdarray" in results
+        assert "int_tens_pdarray" in results
+        assert "int_hundreds_pdarray" in results
+
+        # test load_all with file_format parameter usage
+        ak.to_parquet(
+            columns=self.dict_columns,
+            prefix_path="{}/iotest_dict_columns_parquet".format(hdf_test_base_tmp),
+        )
+        results = ak.load_all(
+            file_format="Parquet",
+            path_prefix="{}/iotest_dict_columns_parquet".format(hdf_test_base_tmp),
+        )
+        assert "bool_pdarray" in results
+        assert "float_pdarray" in results
+        assert "int_tens_pdarray" in results
+        assert "int_hundreds_pdarray" in results
+
+        # # Test load_all with invalid prefix
+        with pytest.raises(ValueError):
+            ak.load_all(path_prefix="{}/iotest_dict_column".format(hdf_test_base_tmp))
+
+        # Test load with invalid file
+        with pytest.raises(RuntimeError):
+            ak.load_all(path_prefix="{}/not-a-file".format(hdf_test_base_tmp))
+
+    def test_get_data_sets(self, hdf_test_base_tmp):
+        """
+        Creates 1..n files depending upon the number of arkouda_server locales containing three
+        datasets and confirms the expected number of datasets along with the dataset names
+
+        :return: None
+        :raise: AssertionError if the input and returned dataset names don't match
+        """
+        self._create_file(
+            columns=self.dict_columns, prefix_path="{}/iotest_dict_columns".format(hdf_test_base_tmp)
+        )
+        datasets = ak.get_datasets("{}/iotest_dict_columns_LOCALE0000".format(hdf_test_base_tmp))
+
+        assert 4 == len(datasets)
+        for dataset in datasets:
+            assert dataset in self.names
+
+        # Test load_all with invalid filename
+        with pytest.raises(RuntimeError):
+            ak.get_datasets("{}/iotest_dict_columns_LOCALE000".format(hdf_test_base_tmp))
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERIC_AND_STR_TYPES)
@@ -996,7 +1354,7 @@ class TestHDF5:
 
             # Test load_all with invalid file
             with pytest.raises(ValueError):
-                ak.load_all(path_prefix=f"{hdf_test_base_tmp}/not-a-file")
+                ak.load_all(path_prefix=f"{hdf_test_base_tmp}/does-not-exist")
 
             # test get_datasets
             datasets = ak.get_datasets(f"{file_name}*")
@@ -1116,6 +1474,129 @@ class TestHDF5:
                 r_strings_dupe = ak.read_hdf(f"{file_name}*", datasets="strings-dupe")["strings-dupe"]
                 assert (r_strings == r_strings_dupe).all()
 
+    def testStringsWithoutOffsets(self, hdf_test_base_tmp):
+        """
+        This tests both saving & reading a strings array without saving and reading the offsets to HDF5.
+        Instead the offsets array will be derived from the values/bytes area by looking for null-byte
+        terminator strings
+        """
+        strings_array = ak.array(["testing string{}".format(num) for num in list(range(0, 25))])
+        strings_array.to_hdf(
+            "{}/strings-test".format(hdf_test_base_tmp), dataset="strings", save_offsets=False
+        )
+        r_strings_array = ak.load(
+            "{}/strings-test".format(hdf_test_base_tmp), dataset="strings", calc_string_offsets=True
+        )["strings"]
+        strings = strings_array.to_ndarray()
+        strings.sort()
+        r_strings = r_strings_array.to_ndarray()
+        r_strings.sort()
+        assert strings.tolist() == r_strings.tolist()
+
+    def testSaveLongStringsDataset(self, hdf_test_base_tmp):
+        # Create, save, and load Strings dataset
+        strings = ak.array(
+            [
+                "testing a longer string{} to be written, loaded and appended".format(num)
+                for num in list(range(0, 26))
+            ]
+        )
+        strings.to_hdf("{}/strings-test".format(hdf_test_base_tmp), dataset="strings")
+
+        n_strings = strings.to_ndarray()
+        n_strings.sort()
+        r_strings = ak.load("{}/strings-test".format(hdf_test_base_tmp), dataset="strings")[
+            "strings"
+        ].to_ndarray()
+        r_strings.sort()
+
+        assert n_strings.tolist() == r_strings.tolist()
+
+    def testSaveMixedStringsDataset(self, hdf_test_base_tmp):
+        strings_array = ak.array(["string {}".format(num) for num in list(range(0, 25))])
+        m_floats = ak.array([x / 10.0 for x in range(0, 10)])
+        m_ints = ak.array(list(range(0, 10)))
+        ak.to_hdf(
+            {"m_strings": strings_array, "m_floats": m_floats, "m_ints": m_ints},
+            "{}/multi-type-test".format(hdf_test_base_tmp),
+        )
+        r_mixed = ak.load_all("{}/multi-type-test".format(hdf_test_base_tmp))
+
+        assert (
+            np.sort(strings_array.to_ndarray()).tolist()
+            == np.sort(r_mixed["m_strings"].to_ndarray()).tolist()
+        )
+
+        assert r_mixed["m_floats"] is not None
+        assert r_mixed["m_ints"] is not None
+
+        r_floats = ak.sort(
+            ak.load("{}/multi-type-test".format(hdf_test_base_tmp), dataset="m_floats")["m_floats"]
+        )
+        assert m_floats.to_list() == r_floats.to_list()
+
+        r_ints = ak.sort(
+            ak.load("{}/multi-type-test".format(hdf_test_base_tmp), dataset="m_ints")["m_ints"]
+        )
+        assert m_ints.to_list() == r_ints.to_list()
+
+        strings = strings_array.to_ndarray()
+        strings.sort()
+        r_strings = ak.load("{}/multi-type-test".format(hdf_test_base_tmp), dataset="m_strings")[
+            "m_strings"
+        ].to_ndarray()
+        r_strings.sort()
+
+        assert strings.tolist() == r_strings.tolist()
+
+    def testAppendStringsDataset(self, hdf_test_base_tmp):
+        strings_array = ak.array(["string {}".format(num) for num in list(range(0, 25))])
+        strings_array.to_hdf("{}/append-strings-test".format(hdf_test_base_tmp), dataset="strings")
+        strings_array.to_hdf(
+            "{}/append-strings-test".format(hdf_test_base_tmp), dataset="strings-dupe", mode="append"
+        )
+
+        r_strings = ak.load("{}/append-strings-test".format(hdf_test_base_tmp), dataset="strings")[
+            "strings"
+        ]
+        r_strings_dupe = ak.load(
+            "{}/append-strings-test".format(hdf_test_base_tmp), dataset="strings-dupe"
+        )["strings-dupe"]
+        assert r_strings.to_list() == r_strings_dupe.to_list()
+
+    def testAppendMixedStringsDataset(self, hdf_test_base_tmp):
+        strings_array = ak.array(["string {}".format(num) for num in list(range(0, 25))])
+        strings_array.to_hdf("{}/append-multi-type-test".format(hdf_test_base_tmp), dataset="m_strings")
+        m_floats = ak.array([x / 10.0 for x in range(0, 10)])
+        m_ints = ak.array(list(range(0, 10)))
+        ak.to_hdf(
+            {"m_floats": m_floats, "m_ints": m_ints},
+            "{}/append-multi-type-test".format(hdf_test_base_tmp),
+            mode="append",
+        )
+        r_mixed = ak.load_all("{}/append-multi-type-test".format(hdf_test_base_tmp))
+
+        assert r_mixed["m_floats"] is not None
+        assert r_mixed["m_ints"] is not None
+
+        r_floats = ak.sort(
+            ak.load("{}/append-multi-type-test".format(hdf_test_base_tmp), dataset="m_floats")[
+                "m_floats"
+            ]
+        )
+        r_ints = ak.sort(
+            ak.load("{}/append-multi-type-test".format(hdf_test_base_tmp), dataset="m_ints")["m_ints"]
+        )
+        assert m_floats.to_list() == r_floats.to_list()
+        assert m_ints.to_list() == r_ints.to_list()
+
+        strings = strings_array.to_ndarray()
+        strings.sort()
+        r_strings = r_mixed["m_strings"].to_ndarray()
+        r_strings.sort()
+
+        assert strings.tolist() == r_strings.tolist()
+
     def test_save_multi_type_dict_dataset(self, hdf_test_base_tmp):
         df_dict = make_multi_dtype_dict()
         # extend to include categoricals
@@ -1197,6 +1678,33 @@ class TestHDF5:
                 arr.to_hdf(f"{tmp_dirname}/small_numeric")
                 ret_arr = ak.read_hdf(f"{tmp_dirname}/small_numeric*").popitem()[1]
                 assert (arr == ret_arr).all()
+
+    def test_uint64_to_from_HDF5(self, hdf_test_base_tmp):
+        """
+        Test our ability to read/write uint64 to HDF5
+        """
+        npa1 = np.array(
+            [18446744073709551500, 18446744073709551501, 18446744073709551502], dtype=np.uint64
+        )
+        pda1 = ak.array(npa1)
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
+            pda1.to_hdf(f"{tmp_dirname}/small_numeric", dataset="pda1")
+            # Now load it back in
+            pda2 = ak.load(f"{tmp_dirname}/small_numeric", dataset="pda1")["pda1"]
+            assert str(pda1) == str(pda2)
+            assert 18446744073709551500 == pda2[0]
+            assert pda2.to_list() == npa1.tolist()
+
+    def test_uint64_to_from_array(self, hdf_test_base_tmp):
+        """
+        Test conversion to and from numpy array / pdarray using unsigned 64bit integer (uint64)
+        """
+        npa1 = np.array(
+            [18446744073709551500, 18446744073709551501, 18446744073709551502], dtype=np.uint64
+        )
+        pda1 = ak.array(npa1)
+        assert 18446744073709551500 == pda1[0]
+        assert pda1.to_list() == npa1.tolist()
 
     def test_bigint(self, hdf_test_base_tmp):
         df_dict = {
@@ -1320,6 +1828,92 @@ class TestHDF5:
                 if c.segments is not None:
                     assert c.segments.to_list() == c_load.segments.to_list()
                     assert c.permutation.to_list() == c_load.permutation.to_list()
+
+    def test_segarray_hdf(self, hdf_test_base_tmp):
+        a = [0, 1, 2, 3]
+        b = [4, 0, 5, 6, 0, 7, 8, 0]
+        c = [9, 0, 0]
+
+        # int64 test
+        flat = a + b + c
+        segments = ak.array([0, len(a), len(a) + len(b)])
+        dtype = ak.dtypes.int64
+        akflat = ak.array(flat, dtype)
+        segarr = ak.SegArray(segments, akflat)
+
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
+            segarr.to_hdf(f"{tmp_dirname}/segarray_int")
+            # Now load it back in
+            seg2 = ak.load(f"{tmp_dirname}/segarray_int", dataset="segarray")["segarray"]
+            assert segarr.segments.to_list() == seg2.segments.to_list()
+            assert segarr.values.to_list() == seg2.values.to_list()
+
+        # uint64 test
+        dtype = ak.dtypes.uint64
+        akflat = ak.array(flat, dtype)
+        segarr = ak.SegArray(segments, akflat)
+
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
+            segarr.to_hdf(f"{tmp_dirname}/segarray_uint")
+            # Now load it back in
+            seg2 = ak.load(f"{tmp_dirname}/segarray_uint", dataset="segarray")["segarray"]
+            assert segarr.segments.to_list() == seg2.segments.to_list()
+            assert segarr.values.to_list() == seg2.values.to_list()
+
+        # float64 test
+        dtype = ak.dtypes.float64
+        akflat = ak.array(flat, dtype)
+        segarr = ak.SegArray(segments, akflat)
+
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
+            segarr.to_hdf(f"{tmp_dirname}/segarray_float")
+            # Now load it back in
+            seg2 = ak.load(f"{tmp_dirname}/segarray_float", dataset="segarray")["segarray"]
+            assert segarr.segments.to_list() == seg2.segments.to_list()
+            assert segarr.values.to_list() == seg2.values.to_list()
+
+        # bool test
+        dtype = ak.dtypes.bool_
+        akflat = ak.array(flat, dtype)
+        segarr = ak.SegArray(segments, akflat)
+
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
+            segarr.to_hdf(f"{tmp_dirname}/segarray_bool")
+            # Now load it back in
+            seg2 = ak.load(f"{tmp_dirname}/segarray_bool", dataset="segarray")["segarray"]
+            assert segarr.segments.to_list() == seg2.segments.to_list()
+            assert segarr.values.to_list() == seg2.values.to_list()
+
+    def test_dataframe_segarr(self, hdf_test_base_tmp):
+        a = [0, 1, 2, 3]
+        b = [4, 0, 5, 6, 0, 7, 8, 0]
+        c = [9, 0, 0]
+
+        # int64 test
+        flat = a + b + c
+        segments = ak.array([0, len(a), len(a) + len(b)])
+        dtype = ak.dtypes.int64
+        akflat = ak.array(flat, dtype)
+        segarr = ak.SegArray(segments, akflat)
+
+        s = ak.array(["abc", "def", "ghi"])
+        df = ak.DataFrame([segarr, s])
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
+            df.to_hdf(f"{tmp_dirname}/dataframe_segarr")
+            df_load = ak.DataFrame.load(f"{tmp_dirname}/dataframe_segarr")
+            assert df.to_pandas().equals(df_load.to_pandas())
+
+    def test_segarray_str_hdf5(self, hdf_test_base_tmp):
+        words = ak.array(["one,two,three", "uno,dos,tres"])
+        strs, segs = words.split(",", return_segments=True)
+
+        x = ak.SegArray(segs, strs)
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
+            x.to_hdf(f"{tmp_dirname}/test_file")
+            rd = ak.read_hdf(f"{tmp_dirname}/test_file*").popitem()[1]
+            assert isinstance(rd, ak.SegArray)
+            assert x.segments.to_list() == rd.segments.to_list()
+            assert x.values.to_list() == rd.values.to_list()
 
     def test_hdf_overwrite_pdarray(self, hdf_test_base_tmp):
         # test repack with a single object
@@ -1493,6 +2087,47 @@ class TestHDF5:
             f2_size = sum(os.path.getsize(f) for f in f_list)
 
             assert f1_size == f2_size
+
+    def test_overwrite_dataframe(self, hdf_test_base_tmp):
+        df = ak.DataFrame(
+            {
+                "a": ak.arange(1000),
+                "b": ak.random_strings_uniform(0, 16, 1000),
+                "c": ak.arange(1000, dtype=bool),
+                "d": ak.randint(0, 50, 1000),
+            }
+        )
+        replace = {
+            "b": ak.randint(0, 25, 50),
+            "c": ak.arange(50, dtype=bool),
+        }
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
+            df.to_hdf(f"{tmp_dirname}/overwrite_test")
+            f_list = glob.glob(f"{tmp_dirname}/overwrite_test_*")
+            orig_size = sum(os.path.getsize(f) for f in f_list)
+            # hdf5 only releases memory if overwritting last dset so overwrite first
+            ak.update_hdf(replace, f"{tmp_dirname}/overwrite_test")
+
+            new_size = sum(os.path.getsize(f) for f in f_list)
+            # ensure that the column was actually overwritten
+            assert new_size < orig_size
+            data = ak.read_hdf(f"{tmp_dirname}/overwrite_test_*")
+            assert data["b"].to_list() == replace["b"].to_list()
+            assert data["c"].to_list() == replace["c"].to_list()
+
+        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
+            df.to_hdf(f"{tmp_dirname}/overwrite_test")
+            f_list = glob.glob(f"{tmp_dirname}/overwrite_test_*")
+            orig_size = sum(os.path.getsize(f) for f in f_list)
+            # hdf5 only releases memory if overwritting last dset so overwrite first
+            ak.update_hdf(replace, f"{tmp_dirname}/overwrite_test", repack=False)
+
+            new_size = sum(os.path.getsize(f) for f in f_list)
+            # ensure that the column was actually overwritten
+            assert new_size >= orig_size
+            data = ak.read_hdf(f"{tmp_dirname}/overwrite_test_*")
+            assert data["b"].to_list() == replace["b"].to_list()
+            assert data["c"].to_list() == replace["c"].to_list()
 
     def test_snapshot(self, hdf_test_base_tmp):
         df = ak.DataFrame(make_multi_dtype_dict())
@@ -1814,3 +2449,18 @@ class TestImportExport:
                     write_file=f"{tmp_dirname}/pd_from_ak.parquet",
                     index=True,
                 )
+
+
+class TestZarr:
+    def test_zarr_read_write(self, zarr_test_base_tmp):
+        pytest.skip()
+        shapes = [(10,), (20,)]
+        chunk_shapes = [(2,), (3,)]
+        dtypes = [ak.int64, ak.float64]
+        for shape, chunk_shape in zip(shapes, chunk_shapes):
+            for dtype in dtypes:
+                a = Array.full(shape, 7, dtype=dtype)
+                with tempfile.TemporaryDirectory(dir=zarr_test_base_tmp) as tmp_dirname:
+                    to_zarr(f"{tmp_dirname}", a._array, chunk_shape)
+                    b = read_zarr(f"{tmp_dirname}", len(shape), dtype)
+                    assert np.allclose(a.to_ndarray(), b.to_ndarray())

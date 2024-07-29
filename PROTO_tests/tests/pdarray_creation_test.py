@@ -766,3 +766,14 @@ class TestPdarrayCreation:
 
         a2 = ak.array([1.0, 2, 3])
         assert a2.inferred_type == "floating"
+
+    def testTo_ndarray(self):
+        ones = ak.ones(10)
+        n_ones = ones.to_ndarray()
+        new_ones = ak.array(n_ones)
+        assert ones.to_list() == new_ones.to_list()
+
+        empty_ones = ak.ones(0)
+        n_empty_ones = empty_ones.to_ndarray()
+        new_empty_ones = ak.array(n_empty_ones)
+        assert empty_ones.to_list() == new_empty_ones.to_list()
