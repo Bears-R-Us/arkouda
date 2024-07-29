@@ -12,11 +12,6 @@ Install Dependencies
 
 1. Follow the `Chapel Quickstart Guide <https://chapel-lang.org/docs/usingchapel/QUICKSTART.html>`_
 2. Follow the `Anaconda Installation Guide <https://docs.anaconda.com/anaconda/install/index.html>`_
-3. Configure your conda environment
-
-   .. substitution-code-block:: bash
-
-       conda env create -f arkouda-env.yml
 
 **********************
 Install Arkouda
