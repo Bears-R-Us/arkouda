@@ -83,7 +83,6 @@ module RandMsg
 
     @arkouda.instantiateAndRegister
     proc randomNormal(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd: int): MsgTuple throws {
-        var pn = Reflection.getRoutineName();
         const shape = msgArgs["shape"].toScalarTuple(int, array_nd),
               seed = msgArgs["seed"].toScalar(string);
 
@@ -100,7 +99,6 @@ module RandMsg
     proc createGenerator(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype): MsgTuple throws
         where array_dtype != BigInteger.bigint
     {
-        const pn = Reflection.getRoutineName();
         const hasSeed = msgArgs["has_seed"].toScalar(bool),
               seed = if hasSeed then msgArgs["seed"].toScalar(int) else -1,
               state = msgArgs["state"].toScalar(int);
