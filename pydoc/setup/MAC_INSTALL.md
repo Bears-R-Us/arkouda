@@ -171,8 +171,7 @@ brew install chapel
 
 ## Next Steps
 
-We've installed Arkouda and its dependencies and built chapel with reasonable defautl environment variables.
-For more information on the options, a complete list of environment variables can be found at [ENVIRONMENT.md](ENVIRONMENT.md).
+We've installed Arkouda and its dependencies and built chapel with reasonable default environment variables.
 
 Now you are ready to build the server! Follow the build instructions at [BUILD.md](BUILD.md).
 

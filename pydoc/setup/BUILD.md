@@ -4,11 +4,6 @@
 
 If you have not yet installed the Arkouda client and prerequisites, please follow the directions in the [Installation Section](install_menu.rst) before proceeding with this build.
 
-## Environment Variables
-
-In order to build the server executable, some environment variables need to be configured.
-For a full list, please refer to [Environment Section](../ENVIRONMENT.md).
-
 ## Dependency Configuration
 
 Dependencies can be configured with a package manager like `Anaconda` or manually.
