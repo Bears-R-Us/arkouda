@@ -987,86 +987,61 @@ module IndexingMsg
         return MsgTuple.error("Cannot assign float pdarray to slice of bigint pdarray");
     }
 
-    @arkouda.registerND
-    proc takeAlongAxisMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-        param pn = Reflection.getRoutineName();
-        const name = msgArgs.getValueOf("x"),
-              idxName = msgArgs.getValueOf("indices"),
-              axis = msgArgs.get("axis").getIntValue();
+    @arkouda.instantiateAndRegister
+    proc takeAlongAxis(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+        type array_dtype_x,
+        type array_dtype_idx,
+        param array_nd: int
+    ): MsgTuple throws
+        where isIntegralType(array_dtype_idx)
+    {
+        const x = st[msgArgs['x']]: SymEntry(array_dtype_x, array_nd),
+              idx = st[msgArgs['indices']]: SymEntry(array_dtype_idx, 1),
+              axis = msgArgs['axis'].getPositiveIntValue(array_nd);
 
-        const rname = st.nextName();
+        var y = makeDistArray((...x.tupShape), array_dtype_x);
 
-        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st),
-            gIEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(idxName, st);
-
-        proc doIndex(type eltType, type idxType, param doCast: bool): MsgTuple throws {
-            var x = toSymEntry(gEnt, eltType, nd),
-                idx = toSymEntry(gIEnt, idxType, 1),
-                y = st.addEntry(rname, (...x.tupShape), eltType);
-
-            if x.tupShape[axis] != idx.size {
-                const errMsg = "Error: %s: index array length (%i) does not match x's length (%i) along the provided axis (%i)"
-                    .format(pn, idx.size, x.tupShape[axis], axis);
-                imLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
-                return new MsgTuple(errMsg, MsgType.ERROR);
-            }
-
-            const minIdx = min reduce idx.a,
-                  maxIdx = max reduce idx.a;
-
-            if minIdx < 0 || maxIdx >= x.a.shape(axis) {
-                const errMsg = "Error: %s: index array contains out-of-bounds indices (%i, %i) along the provided axis (%i)"
-                    .format(pn, minIdx, maxIdx, axis);
-                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errMsg);
-                return new MsgTuple(errMsg, MsgType.ERROR);
-            }
-
-            ref xa = x.a;
-            ref ya = y.a;
-            ref idxa = idx.a;
-
-            if nd == 1 {
-                forall i in idx.a.domain with (var agg = newSrcAggregator(eltType)) {
-                    if doCast
-                        then agg.copy(ya[i], xa[idxa[i]:int]);
-                        else agg.copy(ya[i], xa[idxa[i]]);
-                }
-            } else {
-                for sliceIdx in domOffAxis(x.a.domain, axis) {
-                    forall i in idx.a.domain with (var agg = newSrcAggregator(eltType)) {
-                        var yIdx = sliceIdx,
-                            xIdx = sliceIdx;
-                        yIdx[axis] = i;
-                        xIdx[axis] = if doCast then idxa[i]:int else idxa[i];
-                        agg.copy(ya[yIdx], xa[xIdx]);
-                    }
-                }
-            }
-            y.max_bits = x.max_bits;
-
-            const repMsg = "created " + st.attrib(rname);
-            imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-            return new MsgTuple(repMsg, MsgType.NORMAL);
+        if x.tupShape[axis] != idx.size {
+            return MsgTuple.error("index array length does not match x's length along the provided axis");
         }
 
-        select (gEnt.dtype, gIEnt.dtype) {
-            when (DType.Int64, DType.Int64) do return doIndex(int, int, false);
-            when (DType.Int64, DType.UInt64) do return doIndex(int, uint, true);
-            when (DType.UInt64, DType.Int64) do return doIndex(uint, int, false);
-            when (DType.UInt64, DType.UInt64) do return doIndex(uint, uint, true);
-            when (DType.Float64, DType.Int64) do return doIndex(real, int, false);
-            when (DType.Float64, DType.UInt64) do return doIndex(real, uint, true);
-            when (DType.Bool, DType.Int64) do return doIndex(bool, int, false);
-            when (DType.Bool, DType.UInt64) do return doIndex(bool, uint, true);
-            when (DType.BigInt, DType.Int64) do return doIndex(bigint, int, false);
-            when (DType.BigInt, DType.UInt64) do return doIndex(bigint, uint, true);
-            otherwise {
-                const errMsg = notImplementedError(Reflection.getRoutineName(),
-                    "("+dtype2str(gEnt.dtype)+","+dtype2str(gIEnt.dtype)+")");
-                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errMsg);
-                return new MsgTuple(errMsg, MsgType.ERROR);
+        const minIdx = min reduce idx.a,
+              maxIdx = max reduce idx.a;
+
+        if minIdx < 0 || maxIdx >= x.a.shape(axis) {
+            return MsgTuple.error(
+                "index array contains out-of-bounds indices (%i, %i) along axis %i (0,%i)".format(minIdx, maxIdx, axis, x.a.shape(axis)-1)
+            );
+        }
+
+        ref xa = x.a;
+        ref idxa = idx.a;
+
+        if array_nd == 1 {
+            forall i in idx.a.domain with (var agg = newSrcAggregator(array_dtype_x)) {
+                agg.copy(y[i], xa[idxa[i]:int]);
+            }
+        } else {
+            for sliceIdx in domOffAxis(x.a.domain, axis) {
+                forall i in idx.a.domain with (var agg = newSrcAggregator(array_dtype_x)) {
+                    var yIdx = sliceIdx,
+                        xIdx = sliceIdx;
+                    yIdx[axis] = i;
+                    xIdx[axis] = idxa[i]:int;
+                    agg.copy(y[yIdx], xa[xIdx]);
+                }
             }
         }
+
+        return st.insert(new shared SymEntry(y, x.max_bits));
+    }
+
+    proc takeAlongAxis(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+        type array_dtype_x,
+        type array_dtype_idx,
+        param array_nd: int
+    ): MsgTuple throws {
+        return MsgTuple.error("Cannot take along axis with non-integer index array");
     }
 
     use CommandMap;
