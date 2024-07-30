@@ -889,33 +889,6 @@ class TestNumeric:
                 assert check(npa, ppa, data_type)
 
     # transpose works on ints, floats, or bool
-<<<<<<< HEAD:tests/numeric_test.py
-=======
-
-    @pytest.mark.parametrize("data_type", INT_FLOAT_BOOL)
-    @pytest.mark.parametrize("prob_size", pytest.prob_size)
-    def test_transpose(self, data_type, prob_size):
-
-        size = int(sqrt(prob_size))
-
-        # ints and bools are checked for equality; floats are checked for closeness
-
-        check = lambda a, b, t: (
-            np.allclose(a.tolist(), b.tolist()) if t is ak.float64 else (a == b).all()
-        )
-
-        # test on one square and two non-square matrices
-
-        for rows, cols in [(size, size), (size + 1, size - 1), (size - 1, size + 1)]:
-            pda = ak.randint(1,10,(rows,cols))
-            nda = pda.to_ndarray()
-            npa = np.transpose(nda)
-            ppa = ak.transpose(pda).to_ndarray()
-            assert check(npa, ppa, data_type)
-
-    # eye works on ints, floats, or bool
-    # eye works on ints, floats, or bool
->>>>>>> 3af02d0f3 (Creates interfaces to all linear algebra functions):PROTO_tests/tests/numeric_test.py
 
     @pytest.mark.parametrize("data_type", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
