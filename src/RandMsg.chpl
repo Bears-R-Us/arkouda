@@ -186,7 +186,6 @@ module RandMsg
 
             // AND with 0xFF (255) to get our index into our 256 long const arrays
             var idx = ri & 0xFF;
-            idx = ri & 0xff;
             ri >>= 8;
 
             var rabs = (ri >> 1) & 0x000fffffffffffff;
