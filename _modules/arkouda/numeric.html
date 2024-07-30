@@ -359,16 +359,14 @@
 <span class="kn">from</span> <span class="nn">typeguard</span> <span class="kn">import</span> <span class="n">typechecked</span>
 
 <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
+<span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">DTypes</span><span class="p">,</span> <span class="n">bigint</span>
+<span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">akdtype</span>
 <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">BigInt</span><span class="p">,</span>
-    <span class="n">DTypes</span><span class="p">,</span>
-    <span class="n">_as_dtype</span><span class="p">,</span>
-    <span class="n">bigint</span><span class="p">,</span>
     <span class="n">int_scalars</span><span class="p">,</span>
     <span class="n">isSupportedNumber</span><span class="p">,</span>
     <span class="n">numeric_scalars</span><span class="p">,</span>
     <span class="n">resolve_scalar_dtype</span><span class="p">,</span>
-    <span class="n">str_</span>
+    <span class="n">str_</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">arkouda.groupbyclass</span> <span class="kn">import</span> <span class="n">GroupBy</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="nb">all</span> <span class="k">as</span> <span class="n">ak_all</span>
@@ -444,7 +442,7 @@
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">cast</span><span class="p">(</span>
     <span class="n">pda</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">],</span>  <span class="c1"># type: ignore</span>
-    <span class="n">dt</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">BigInt</span><span class="p">],</span>
+    <span class="n">dt</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">bigint</span><span class="p">],</span>
     <span class="n">errors</span><span class="p">:</span> <span class="n">ErrorMode</span> <span class="o">=</span> <span class="n">ErrorMode</span><span class="o">.</span><span class="n">strict</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]]:</span>  <span class="c1"># type: ignore</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -498,7 +496,7 @@
     <span class="kn">from</span> <span class="nn">arkouda.categorical</span> <span class="kn">import</span> <span class="n">Categorical</span>  <span class="c1"># type: ignore</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="n">Strings</span> <span class="ow">or</span> <span class="n">dt</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Strings&quot;</span><span class="p">,</span> <span class="s2">&quot;str&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">dt</span> <span class="o">==</span> <span class="n">str_</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="n">Strings</span> <span class="ow">or</span> <span class="n">akdtype</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span> <span class="o">==</span> <span class="n">str_</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot cast a multi-dimensional pdarray to Strings&quot;</span><span class="p">)</span>
             <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
@@ -507,7 +505,7 @@
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_parts</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">dt</span> <span class="o">=</span> <span class="n">_as_dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="n">akdtype</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
                 <span class="n">generic_msg</span><span class="p">(</span>
                     <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;cast&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">dt</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
@@ -517,10 +515,10 @@
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">Strings</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="n">Categorical</span> <span class="ow">or</span> <span class="n">dt</span> <span class="o">==</span> <span class="s2">&quot;Categorical&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">Categorical</span><span class="p">(</span><span class="n">pda</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
-        <span class="k">elif</span> <span class="n">dt</span> <span class="ow">is</span> <span class="n">Strings</span> <span class="ow">or</span> <span class="n">dt</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Strings&quot;</span><span class="p">,</span> <span class="s2">&quot;str&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">dt</span> <span class="o">==</span> <span class="n">str_</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">dt</span> <span class="ow">is</span> <span class="n">Strings</span> <span class="ow">or</span> <span class="n">akdtype</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span> <span class="o">==</span> <span class="n">str_</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">pda</span><span class="p">[:]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">dt</span> <span class="o">=</span> <span class="n">_as_dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="n">akdtype</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
             <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
                 <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;castStringsTo&lt;</span><span class="si">{</span><span class="n">dt</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="p">{</span>

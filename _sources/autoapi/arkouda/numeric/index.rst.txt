@@ -244,7 +244,7 @@ Module Contents
    :raises TypeError: Raised if the parameters are not a pdarray or numeric scalar.
 
 
-.. py:function:: cast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], dt: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
+.. py:function:: cast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], dt: Union[numpy.dtype, type, str, arkouda.dtypes.bigint], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
 
    Cast an array to another dtype.
 

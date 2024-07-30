@@ -14,7 +14,6 @@ Attributes
    arkouda.dtypes.DTypes
    arkouda.dtypes.ScalarDTypes
    arkouda.dtypes.all_scalars
-   arkouda.dtypes.bigint
    arkouda.dtypes.bitType
    arkouda.dtypes.bool_
    arkouda.dtypes.bool_scalars
@@ -37,6 +36,14 @@ Attributes
    arkouda.dtypes.uint32
    arkouda.dtypes.uint64
    arkouda.dtypes.uint8
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   arkouda.dtypes.bigint
 
 
 Functions
@@ -68,7 +75,35 @@ Module Contents
 
    The DType enum defines the supported Arkouda data types in string form.
 
-.. py:data:: bigint
+.. py:class:: bigint
+
+   .. py:attribute:: itemsize
+      :value: 128
+
+
+
+   .. py:attribute:: kind
+      :value: 'ui'
+
+
+
+   .. py:attribute:: name
+      :value: 'bigint'
+
+
+
+   .. py:attribute:: ndim
+      :value: 0
+
+
+
+   .. py:attribute:: shape
+      :value: ()
+
+
+
+   .. py:method:: type(x)
+
 
 .. py:data:: bitType
 
@@ -76,7 +111,7 @@ Module Contents
 
 .. py:data:: bool_scalars
 
-.. py:function:: check_np_dtype(dt: Union[numpy.dtype, BigInt]) -> None
+.. py:function:: check_np_dtype(dt: Union[numpy.dtype, bigint]) -> None
 
    Assert that numpy dtype dt is one of the dtypes supported
    by arkouda, otherwise raise TypeError.

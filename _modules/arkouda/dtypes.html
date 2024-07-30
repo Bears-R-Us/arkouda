@@ -413,8 +413,14 @@
 <span class="k">def</span> <span class="nf">dtype</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="c1"># we had to create our own bigint type since numpy</span>
     <span class="c1"># gives them dtype=object there&#39;s no np equivalent</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">==</span> <span class="s2">&quot;bigint&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">BigInt</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">bigint</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">==</span> <span class="s2">&quot;bigint&quot;</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bigint</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;bigint&quot;</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="n">bigint</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Strings&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
 
@@ -453,12 +459,16 @@
     <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">union_type</span><span class="p">,</span> <span class="s2">&quot;__args__&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">union_type</span><span class="o">.</span><span class="n">__args__</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">BigInt</span><span class="p">:</span>
+<div class="viewcode-block" id="bigint">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dtypes.bigint">[docs]</a>
+<span class="k">class</span> <span class="nc">bigint</span><span class="p">:</span>
     <span class="c1"># an estimate of the itemsize of bigint (128 bytes)</span>
     <span class="n">itemsize</span> <span class="o">=</span> <span class="mi">128</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;bigint&quot;</span>
+    <span class="n">ndim</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="p">()</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;bigint&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;ui&quot;</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -467,27 +477,40 @@
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;dtype(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">)&quot;</span>
 
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">(</span><span class="n">other</span><span class="p">),</span> <span class="n">bigint</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">__neq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span> <span class="o">==</span> <span class="n">other</span><span class="p">)</span>
+
+<div class="viewcode-block" id="bigint.type">
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dtypes.bigint.type">[docs]</a>
     <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+</div>
 
 
-<span class="n">uint8</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
-<span class="n">uint16</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">)</span>
-<span class="n">uint32</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
-<span class="n">uint64</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">)</span>
-<span class="n">int8</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span>
-<span class="n">int16</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">)</span>
-<span class="n">int32</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
-<span class="n">int64</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
-<span class="n">float32</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
-<span class="n">float64</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
-<span class="n">complex64</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">complex64</span><span class="p">)</span>
-<span class="n">complex128</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
-<span class="n">bool_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
-<span class="n">str_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">)</span>
-<span class="n">bigint</span> <span class="o">=</span> <span class="n">BigInt</span><span class="p">()</span>
-<span class="n">npstr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
-<span class="n">intTypes</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="n">int64</span><span class="p">,</span> <span class="n">uint64</span><span class="p">,</span> <span class="n">uint8</span><span class="p">))</span>
+
+<span class="n">uint8</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span>
+<span class="n">uint16</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint16</span>
+<span class="n">uint32</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span>
+<span class="n">uint64</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span>
+<span class="n">int8</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span>
+<span class="n">int16</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int16</span>
+<span class="n">int32</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span>
+<span class="n">int64</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span>
+<span class="n">float32</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span>
+<span class="n">float64</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span>
+<span class="n">complex64</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">complex64</span>
+<span class="n">complex128</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">complex128</span>
+<span class="n">bool_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span>
+<span class="n">str_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">str_</span>
+<span class="n">intTypes</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="n">dtype</span><span class="p">(</span><span class="s2">&quot;int64&quot;</span><span class="p">),</span> <span class="n">dtype</span><span class="p">(</span><span class="s2">&quot;uint64&quot;</span><span class="p">),</span> <span class="n">dtype</span><span class="p">(</span><span class="s2">&quot;uint8&quot;</span><span class="p">)))</span>
 <span class="n">bitType</span> <span class="o">=</span> <span class="n">uint64</span>
 
 <span class="c1"># Union aliases used for static and runtime type checking</span>
@@ -573,8 +596,9 @@
     <span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">,</span>
     <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">,</span>
     <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span>
-    <span class="n">BigInt</span><span class="p">,</span>
+    <span class="n">bigint</span><span class="p">,</span>
 <span class="p">)</span>
+
 <span class="n">ARKOUDA_SUPPORTED_FLOATS</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
 <span class="n">ARKOUDA_SUPPORTED_NUMBERS</span> <span class="o">=</span> <span class="p">(</span>
     <span class="nb">int</span><span class="p">,</span>
@@ -589,7 +613,7 @@
     <span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">,</span>
     <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">,</span>
     <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span>
-    <span class="n">BigInt</span><span class="p">,</span>
+    <span class="n">bigint</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="c1"># TODO: bring supported data types into parity with all numpy dtypes</span>
@@ -636,16 +660,10 @@
 
 
 
-<span class="k">def</span> <span class="nf">_as_dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="s2">&quot;BigInt&quot;</span><span class="p">]:</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">dt</span>
-
-
 <div class="viewcode-block" id="check_np_dtype">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dtypes.check_np_dtype">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">check_np_dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="s2">&quot;BigInt&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">check_np_dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="s2">&quot;bigint&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Assert that numpy dtype dt is one of the dtypes supported</span>
 <span class="sd">    by arkouda, otherwise raise TypeError.</span>
@@ -657,7 +675,7 @@
 <span class="sd">        dt is not a np.dtype</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="n">_as_dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">DTypes</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">DTypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported type: </span><span class="si">{</span><span class="n">dt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
@@ -677,7 +695,7 @@
 <span class="sd">        dt is not a np.dtype</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Assert that dt is one of the arkouda supported dtypes</span>
-    <span class="n">dt</span> <span class="o">=</span> <span class="n">_as_dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
     <span class="n">check_np_dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
     <span class="n">trans</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;i&quot;</span><span class="p">:</span> <span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="s2">&quot;bool&quot;</span><span class="p">,</span> <span class="s2">&quot;u&quot;</span><span class="p">:</span> <span class="s2">&quot;uint&quot;</span><span class="p">,</span> <span class="s2">&quot;U&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="s2">&quot;complex&quot;</span><span class="p">}</span>
     <span class="n">kind</span> <span class="o">=</span> <span class="n">trans</span><span class="p">[</span><span class="n">dt</span><span class="o">.</span><span class="n">kind</span><span class="p">]</span>
@@ -691,6 +709,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Try to infer what dtype arkouda_server should treat val as.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1"># Python bool or np.bool</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">builtins</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
         <span class="nb">hasattr</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="s2">&quot;dtype&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">cast</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;b&quot;</span>

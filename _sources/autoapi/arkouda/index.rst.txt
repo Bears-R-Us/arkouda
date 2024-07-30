@@ -83,8 +83,6 @@ Attributes
    arkouda.akuint64
    arkouda.akuint64
    arkouda.all_scalars
-   arkouda.bigint
-   arkouda.bigint
    arkouda.bitType
    arkouda.bool_
    arkouda.bool_scalars
@@ -168,6 +166,8 @@ Classes
    arkouda.Strings
    arkouda.Timedelta
    arkouda.Timedelta
+   arkouda.bigint
+   arkouda.bigint
    arkouda.pdarray
    arkouda.pdarray
    arkouda.pdarray
@@ -26436,9 +26436,65 @@ Package Contents
    >>> b.unregister()
 
 
-.. py:data:: bigint
+.. py:class:: bigint
 
-.. py:data:: bigint
+   .. py:attribute:: itemsize
+      :value: 128
+
+
+
+   .. py:attribute:: kind
+      :value: 'ui'
+
+
+
+   .. py:attribute:: name
+      :value: 'bigint'
+
+
+
+   .. py:attribute:: ndim
+      :value: 0
+
+
+
+   .. py:attribute:: shape
+      :value: ()
+
+
+
+   .. py:method:: type(x)
+
+
+.. py:class:: bigint
+
+   .. py:attribute:: itemsize
+      :value: 128
+
+
+
+   .. py:attribute:: kind
+      :value: 'ui'
+
+
+
+   .. py:attribute:: name
+      :value: 'bigint'
+
+
+
+   .. py:attribute:: ndim
+      :value: 0
+
+
+
+   .. py:attribute:: shape
+      :value: ()
+
+
+
+   .. py:method:: type(x)
+
 
 .. py:function:: bigint_from_uint_arrays(arrays, max_bits=-1)
 
@@ -26623,7 +26679,7 @@ Package Contents
    expand an array's rank to the specified shape using broadcasting
 
 
-.. py:function:: check_np_dtype(dt: Union[numpy.dtype, BigInt]) -> None
+.. py:function:: check_np_dtype(dt: Union[numpy.dtype, bigint]) -> None
 
    Assert that numpy dtype dt is one of the dtypes supported
    by arkouda, otherwise raise TypeError.
@@ -27525,7 +27581,7 @@ Package Contents
    contains strings and sets the dtype to str
 
 
-.. py:function:: full(size: Union[arkouda.dtypes.int_scalars, str], fill_value: Union[arkouda.dtypes.numeric_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64, max_bits: Optional[int] = None) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
+.. py:function:: full(size: Union[arkouda.dtypes.int_scalars, str], fill_value: Union[arkouda.dtypes.numeric_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
 
    Create a pdarray filled with fill_value.
 
@@ -27558,7 +27614,7 @@ Package Contents
    array([True, True, True, True, True])
 
 
-.. py:function:: full(size: Union[arkouda.dtypes.int_scalars, str], fill_value: Union[arkouda.dtypes.numeric_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64, max_bits: Optional[int] = None) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
+.. py:function:: full(size: Union[arkouda.dtypes.int_scalars, str], fill_value: Union[arkouda.dtypes.numeric_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
 
    Create a pdarray filled with fill_value.
 
@@ -28887,7 +28943,7 @@ Package Contents
 
 .. py:data:: numpy_scalars
 
-.. py:function:: ones(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
+.. py:function:: ones(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray filled with ones.
 
@@ -28918,7 +28974,7 @@ Package Contents
    array([True, True, True, True, True])
 
 
-.. py:function:: ones(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
+.. py:function:: ones(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray filled with ones.
 
@@ -28949,7 +29005,7 @@ Package Contents
    array([True, True, True, True, True])
 
 
-.. py:function:: ones(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
+.. py:function:: ones(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray filled with ones.
 
@@ -28980,7 +29036,7 @@ Package Contents
    array([True, True, True, True, True])
 
 
-.. py:function:: ones(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
+.. py:function:: ones(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray filled with ones.
 
@@ -36074,7 +36130,7 @@ Package Contents
    :rtype: pdarray
 
 
-.. py:function:: zeros(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
+.. py:function:: zeros(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray filled with zeros.
 
@@ -36105,7 +36161,7 @@ Package Contents
    array([False, False, False, False, False])
 
 
-.. py:function:: zeros(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
+.. py:function:: zeros(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray filled with zeros.
 
@@ -36136,7 +36192,7 @@ Package Contents
    array([False, False, False, False, False])
 
 
-.. py:function:: zeros(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
+.. py:function:: zeros(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray filled with zeros.
 

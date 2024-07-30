@@ -350,7 +350,7 @@
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.pdarraycreation</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">itertools</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -359,7 +359,6 @@
 <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
 <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">NUMBER_FORMAT_STRINGS</span><span class="p">,</span>
-    <span class="n">BigInt</span><span class="p">,</span>
     <span class="n">DTypes</span><span class="p">,</span>
     <span class="n">NumericDTypes</span><span class="p">,</span>
     <span class="n">SeriesDTypes</span><span class="p">,</span>
@@ -397,7 +396,7 @@
     <span class="s2">&quot;from_series&quot;</span><span class="p">,</span>
     <span class="s2">&quot;bigint_from_uint_arrays&quot;</span><span class="p">,</span>
     <span class="s2">&quot;promote_to_common_dtype&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;scalar_array&quot;</span>
+    <span class="s2">&quot;scalar_array&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -797,7 +796,7 @@
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">zeros</span><span class="p">(</span>
     <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
-    <span class="n">dtype</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">BigInt</span><span class="p">]</span> <span class="o">=</span> <span class="n">float64</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">bigint</span><span class="p">]</span> <span class="o">=</span> <span class="n">float64</span><span class="p">,</span>
     <span class="n">max_bits</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -840,11 +839,10 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;size must be a scalar, not </span><span class="si">{</span><span class="n">size</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">dtype</span> <span class="o">=</span> <span class="n">akdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>  <span class="c1"># normalize dtype</span>
-    <span class="n">dtype_name</span> <span class="o">=</span> <span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">BigInt</span><span class="p">)</span> <span class="k">else</span> <span class="n">cast</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">dtype_name</span> <span class="o">=</span> <span class="n">akdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
     <span class="c1"># check dtype for error</span>
     <span class="k">if</span> <span class="n">dtype_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">NumericDTypes</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported dtype </span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported dtype </span><span class="si">{</span><span class="n">akdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;create&lt;</span><span class="si">{</span><span class="n">dtype_name</span><span class="si">}</span><span class="s2">,1&gt;&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">size</span><span class="p">})</span>
 
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">,</span> <span class="n">max_bits</span><span class="o">=</span><span class="n">max_bits</span><span class="p">)</span></div>
@@ -856,7 +854,7 @@
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">ones</span><span class="p">(</span>
     <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
-    <span class="n">dtype</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">BigInt</span><span class="p">]</span> <span class="o">=</span> <span class="n">float64</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">bigint</span><span class="p">]</span> <span class="o">=</span> <span class="n">float64</span><span class="p">,</span>
     <span class="n">max_bits</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -900,7 +898,7 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;size must be a scalar, not </span><span class="si">{</span><span class="n">size</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">dtype</span> <span class="o">=</span> <span class="n">akdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>  <span class="c1"># normalize dtype</span>
-    <span class="n">dtype_name</span> <span class="o">=</span> <span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">BigInt</span><span class="p">)</span> <span class="k">else</span> <span class="n">cast</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">dtype_name</span> <span class="o">=</span> <span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">bigint</span><span class="p">)</span> <span class="k">else</span> <span class="n">cast</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
     <span class="c1"># check dtype for error</span>
     <span class="k">if</span> <span class="n">dtype_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">NumericDTypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported dtype </span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -919,7 +917,7 @@
 <span class="k">def</span> <span class="nf">full</span><span class="p">(</span>
     <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
     <span class="n">fill_value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numeric_scalars</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
-    <span class="n">dtype</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">BigInt</span><span class="p">]</span> <span class="o">=</span> <span class="n">float64</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">bigint</span><span class="p">]</span> <span class="o">=</span> <span class="n">float64</span><span class="p">,</span>
     <span class="n">max_bits</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -968,7 +966,7 @@
         <span class="k">return</span> <span class="n">_full_string</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">fill_value</span><span class="p">)</span>
 
     <span class="n">dtype</span> <span class="o">=</span> <span class="n">akdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>  <span class="c1"># normalize dtype</span>
-    <span class="n">dtype_name</span> <span class="o">=</span> <span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">BigInt</span><span class="p">)</span> <span class="k">else</span> <span class="n">cast</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">dtype_name</span> <span class="o">=</span> <span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">bigint</span><span class="p">)</span> <span class="k">else</span> <span class="n">cast</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
     <span class="c1"># check dtype for error</span>
     <span class="k">if</span> <span class="n">dtype_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">NumericDTypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported dtype </span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>

@@ -361,11 +361,12 @@
 
 <span class="kn">import</span> <span class="nn">arkouda.dtypes</span>
 <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
+<span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">NUMBER_FORMAT_STRINGS</span>
+<span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">akdtype</span>
 <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">NUMBER_FORMAT_STRINGS</span><span class="p">,</span>
     <span class="n">int_scalars</span><span class="p">,</span>
-    <span class="n">npstr</span><span class="p">,</span>
     <span class="n">resolve_scalar_dtype</span><span class="p">,</span>
+    <span class="n">str_</span><span class="p">,</span>
     <span class="n">str_scalars</span><span class="p">,</span>
     <span class="n">translate_np_dtype</span><span class="p">,</span>
 <span class="p">)</span>
@@ -542,7 +543,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_bytes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_offsets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">npstr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">akdtype</span><span class="p">(</span><span class="n">str_</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_regex_dict</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">getArkoudaLogger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
@@ -2697,9 +2698,9 @@
 
         <span class="c1"># Total number of bytes in the array data</span>
         <span class="n">array_bytes</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">*</span> <span class="n">arkouda</span><span class="o">.</span><span class="n">dtypes</span><span class="o">.</span><span class="n">int64</span><span class="o">.</span><span class="n">itemsize</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">*</span> <span class="n">arkouda</span><span class="o">.</span><span class="n">dtypes</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">arkouda</span><span class="o">.</span><span class="n">dtypes</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span><span class="o">.</span><span class="n">itemsize</span>
             <span class="k">if</span> <span class="n">comp</span> <span class="o">==</span> <span class="s2">&quot;offsets&quot;</span>
-            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">nbytes</span> <span class="o">*</span> <span class="n">arkouda</span><span class="o">.</span><span class="n">dtypes</span><span class="o">.</span><span class="n">uint8</span><span class="o">.</span><span class="n">itemsize</span>
+            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">nbytes</span> <span class="o">*</span> <span class="n">arkouda</span><span class="o">.</span><span class="n">dtypes</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">arkouda</span><span class="o">.</span><span class="n">dtypes</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span><span class="o">.</span><span class="n">itemsize</span>
         <span class="p">)</span>
 
         <span class="c1"># Guard against overflowing client memory</span>
