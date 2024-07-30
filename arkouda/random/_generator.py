@@ -220,6 +220,59 @@ class Generator:
         self._state += full_size if method.upper() == "INV" else 1
         return create_pdarray(rep_msg)
 
+    def logistic(self, loc=0.0, scale=1.0, size=None):
+        if size is None:
+            # delegate to numpy when return size is 1
+            return self._np_generator.logistic(loc=loc, scale=scale, size=size)
+
+        mu = loc
+        if _val_isinstance_of_union(mu, numeric_scalars):
+            is_single_mu = True
+            if not _val_isinstance_of_union(mu, float_scalars):
+                mu = float(mu)
+        elif isinstance(mu, pdarray):
+            is_single_mu = False
+            if size != mu.size:
+                raise TypeError("array of locs must have same size as return size")
+            if mu.dtype != akfloat64:
+                from arkouda.numeric import cast as akcast
+
+                mu = akcast(mu, akfloat64)
+        else:
+            raise TypeError("logistic only accepts a pdarray or float scalar for loc")
+
+        if _val_isinstance_of_union(scale, numeric_scalars):
+            is_single_scale = True
+            if not _val_isinstance_of_union(scale, float_scalars):
+                scale = float(scale)
+        elif isinstance(scale, pdarray):
+            is_single_scale = False
+            if size != scale.size:
+                raise TypeError("array of scales must have same size as return size")
+            if scale.dtype != akfloat64:
+                from arkouda.numeric import cast as akcast
+
+                scale = akcast(scale, akfloat64)
+        else:
+            raise TypeError("logistic only accepts a pdarray or float scalar for scalar")
+
+        rep_msg = generic_msg(
+            cmd="logisticGenerator",
+            args={
+                "name": self._name_dict[akfloat64],
+                "mu": mu,
+                "is_single_mu": is_single_mu,
+                "scale": scale,
+                "is_single_scale": is_single_scale,
+                "size": size,
+                "has_seed": self._seed is not None,
+                "state": self._state,
+            },
+        )
+        # we only generate one val using the generator in the symbol table
+        self._state += 1
+        return create_pdarray(rep_msg)
+
     def integers(self, low, high=None, size=None, dtype=akint64, endpoint=False):
         """
         Return random integers from low (inclusive) to high (exclusive),

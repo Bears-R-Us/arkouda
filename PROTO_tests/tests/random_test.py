@@ -394,6 +394,23 @@ class TestRandom:
         )
         assert ks_res.pvalue > 0.05
 
+    def test_logistic_hypothesis_testing(self):
+        # I tested this many times without a set seed, but with no seed
+        # it's expected to fail one out of every ~20 runs given a pval limit of 0.05.
+        rng = np.random.default_rng(34)
+        num_samples = 10**4
+        mu = rng.uniform(0, 10)
+        scale = rng.uniform(0, 10)
+
+        sample = rng.logistic(loc=mu, scale=scale, size=num_samples)
+        sample_list = sample.tolist()
+
+        # second goodness of fit test against the distribution with proper mean and std
+        good_fit_res = sp_stats.goodness_of_fit(
+            sp_stats.logistic, sample_list, known_params={"loc": mu, "scale": scale}
+        )
+        assert good_fit_res.pvalue > 0.05
+
     def test_legacy_randint(self):
         testArray = ak.random.randint(0, 10, 5)
         assert isinstance(testArray, ak.pdarray)
