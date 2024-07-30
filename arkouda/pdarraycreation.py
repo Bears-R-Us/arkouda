@@ -610,7 +610,7 @@ def full(
 @typechecked
 def scalar_array(
     value: numeric_scalars,
-    dtype: Optional[Union[np.dtype, type, str, BigInt]] = None
+    dtype: Optional[Union[np.dtype, type, str, bigint]] = None
 ) -> pdarray:
     """
     Create a pdarray from a single scalar value.
