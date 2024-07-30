@@ -244,18 +244,11 @@ def array(
         except (RuntimeError, TypeError, ValueError):
             raise TypeError("a must be a pdarray, np.ndarray, or convertible to a numpy array")
 
-    # Return multi-dimensional arrayview
-    #           if a.ndim > get_max_array_rank()
-    #if a.ndim != 1:
+    # Return multi-dimensional pdarray if a.ndim <= get_max_array_rank()
+    # otherwise raise an error
+
     if a.ndim > get_max_array_rank() :
-        # TODO add order
-        if a.dtype.name in NumericDTypes:
-            flat_a = array(a.flatten(), dtype=dtype)
-            if isinstance(flat_a, pdarray):
-                # break into parts so mypy doesn't think we're calling reshape on a Strings
-                return flat_a.reshape(a.shape)
-        else:
-            raise TypeError("Must be an iterable or have a numeric DType")
+        raise ValueError(f"array rank {a.ndim} exceeds maximum of {get_max_array_rank()}")
 
     # Check if array of strings
     # if a.dtype == numpy.object_ need to check first element

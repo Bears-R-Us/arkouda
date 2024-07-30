@@ -1973,6 +1973,7 @@ def histogramdd(
             "num_samples": sample[0].size,
         },
     )
+    print ("*****************************",bins)
     return create_pdarray(type_cast(str, repMsg)).reshape(bins), bin_boundaries
 
 
