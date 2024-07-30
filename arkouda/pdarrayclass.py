@@ -979,7 +979,7 @@ class pdarray:
                         if len(rs) > 0:
                             shape.append(rs.pop(0))
 
-                return _reshape(ret_array, tuple(shape))
+                return ret_array.reshape(shape)
             else:
                 return ret_array
 
@@ -1147,7 +1147,7 @@ class pdarray:
                                     )
 
                             # reshape to add singleton dimensions as needed
-                            _value_r = _reshape(_value, slice_shape)
+                            _value_r = _value.reshape(slice_shape)
                         else:
                             raise ValueError(
                                 f"value array must not have more dimensions ({_value.ndim}) than the"
@@ -1754,10 +1754,9 @@ class pdarray:
 
         Returns
         -------
-        ArrayView
-            An arrayview object with the data from the array but with the new shape
+        pdarray
+            a pdarray with the same data, reshaped to the new shape
         """
-        from arkouda.array_view import ArrayView
 
         # allows the elements of the shape parameter to be passed in as separate arguments
         # For example, a.reshape(10, 11) is equivalent to a.reshape((10, 11))
@@ -1765,7 +1764,15 @@ class pdarray:
             shape = shape[0]
         elif not isinstance(shape, pdarray):
             shape = [i for i in shape]
-        return ArrayView(base=self, shape=shape, order=order)
+        return create_pdarray(
+            generic_msg(
+                cmd=f"reshape<{self.dtype},{self.ndim},{len(shape)}>",
+                args={
+                    "name": self.name,
+                    "shape": shape,
+                },
+            ),
+        )
 
     def to_ndarray(self) -> np.ndarray:
         """
