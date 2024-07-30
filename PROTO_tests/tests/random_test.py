@@ -227,6 +227,20 @@ class TestRandom:
         assert rng.poisson(lam=scal_lam, size=num_samples).to_list() == scal_sample
         assert rng.poisson(lam=arr_lam, size=num_samples).to_list() == arr_sample
 
+    def test_poisson_seed_reproducibility(self):
+        # test resolution of issue #3322, same seed gives same result across machines / num locales
+        seed = 11
+        # test with many orders of magnitude to ensure we test different remainders and case where
+        # all elements are pulled to first locale i.e. total_size < (minimum elemsPerStream = 256)
+        saved_seeded_file_patterns = ["second_order*", "third_order*", "fourth_order*"]
+
+        # directory of this file
+        file_dir = os.path.dirname(os.path.realpath(__file__))
+        for i, f_name in zip(range(2, 5), saved_seeded_file_patterns):
+            generated = ak.random.default_rng(seed=seed).poisson(size=10**i)
+            saved = ak.read_parquet(f"{file_dir}/saved_seeded_random/{f_name}")["array"]
+            assert (generated == saved).all()
+
     def test_exponential(self):
         rng = ak.random.default_rng(17)
         num_samples = 5
@@ -268,6 +282,25 @@ class TestRandom:
         # if pval <= 0.05, the difference from the expected distribution is significant
         assert pval > 0.05
 
+    def test_exponential_hypothesis_testing(self):
+        # I tested this many times without a set seed, but with no seed
+        # it's expected to fail one out of every ~20 runs given a pval limit of 0.05.
+        rng = ak.random.default_rng(43)
+        num_samples = 10**4
+
+        scale = rng.uniform(0, 10)
+        for method in "zig", "inv":
+            sample = rng.exponential(scale=scale, size=num_samples, method=method)
+            sample_list = sample.to_list()
+
+            # do the Kolmogorov-Smirnov test for goodness of fit
+            ks_res = sp_stats.kstest(
+                rvs=sample_list,
+                cdf=sp_stats.expon.cdf,
+                args=(0, scale),
+            )
+            assert ks_res.pvalue > 0.05
+
     @pytest.mark.parametrize("method", ["zig", "box"])
     def test_normal_hypothesis_testing(self, method):
         # I tested this many times without a set seed, but with no seed
@@ -292,19 +325,30 @@ class TestRandom:
         )
         assert good_fit_res.pvalue > 0.05
 
-    def test_poisson_seed_reproducibility(self):
-        # test resolution of issue #3322, same seed gives same result across machines / num locales
-        seed = 11
-        # test with many orders of magnitude to ensure we test different remainders and case where
-        # all elements are pulled to first locale i.e. total_size < (minimum elemsPerStream = 256)
-        saved_seeded_file_patterns = ["second_order*", "third_order*", "fourth_order*"]
+    @pytest.mark.parametrize("method", ["zig", "box"])
+    def test_lognormal_hypothesis_testing(self, method):
+        # I tested this many times without a set seed, but with no seed
+        # it's expected to fail one out of every ~20 runs given a pval limit of 0.05.
+        rng = ak.random.default_rng(43)
+        num_samples = 10**4
 
-        # directory of this file
-        file_dir = os.path.dirname(os.path.realpath(__file__))
-        for i, f_name in zip(range(2, 5), saved_seeded_file_patterns):
-            generated = ak.random.default_rng(seed=seed).poisson(size=10**i)
-            saved = ak.read_parquet(f"{file_dir}/saved_seeded_random/{f_name}")["array"]
-            assert (generated == saved).all()
+        mean = rng.uniform(-10, 10)
+        deviation = rng.uniform(0, 10)
+        sample = rng.lognormal(mean=mean, sigma=deviation, size=num_samples, method=method)
+
+        log_sample_list = np.log(sample.to_ndarray()).tolist()
+
+        # first test if samples are normal at all
+        _, pval = sp_stats.normaltest(log_sample_list)
+
+        # if pval <= 0.05, the difference from the expected distribution is significant
+        assert pval > 0.05
+
+        # second goodness of fit test against the distribution with proper mean and std
+        good_fit_res = sp_stats.goodness_of_fit(
+            sp_stats.norm, log_sample_list, known_params={"loc": mean, "scale": deviation}
+        )
+        assert good_fit_res.pvalue > 0.05
 
     def test_poisson_hypothesis_testing(self):
         # I tested this many times without a set seed, but with no seed

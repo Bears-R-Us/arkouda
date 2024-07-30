@@ -29,6 +29,10 @@ integers
 ---------
 .. autofunction:: arkouda.random.Generator.integers
 
+lognormal
+---------
+.. autofunction:: arkouda.random.Generator.lognormal
+
 normal
 ---------
 .. autofunction:: arkouda.random.Generator.normal
