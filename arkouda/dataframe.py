@@ -17,7 +17,7 @@ from arkouda import sort as aksort
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, maxTransferBytes
 from arkouda.client_dtypes import BitVector, Fields, IPv4
-from arkouda.dtypes import BigInt
+from arkouda.dtypes import bigint
 from arkouda.dtypes import bool_ as akbool
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import int64 as akint64
@@ -138,10 +138,7 @@ class DataFrameGroupBy:
             colnames = [
                 c
                 for c in colnames
-                if (
-                    (self.df.data[c].dtype.type in numerical_dtypes)
-                    or isinstance(self.df.data[c].dtype, BigInt)
-                )
+                if ((self.df.data[c].dtype in numerical_dtypes) or self.df.data[c].dtype == bigint)
                 and (
                     (isinstance(self.gb_key_names, str) and (c != self.gb_key_names))
                     or (isinstance(self.gb_key_names, list) and c not in self.gb_key_names)
@@ -897,12 +894,16 @@ class DataFrame(UserDict):
                 self._set_index(index)
             self.data = {}
             for key in initialdata.columns:
-                self.data[key] = (
-                    SegArray.from_multi_array([array(r) for r in initialdata[key]])
-                    if hasattr(initialdata[key], "values")
-                    and isinstance(initialdata[key].values[0], (list, np.ndarray))
-                    else array(initialdata[key])
-                )
+                if hasattr(initialdata[key], "values") and isinstance(
+                    initialdata[key].values[0], (list, np.ndarray)
+                ):
+                    self.data[key] = SegArray.from_multi_array([array(r) for r in initialdata[key]])
+                elif hasattr(initialdata[key], "values") and isinstance(
+                    initialdata[key].values, pd.Categorical
+                ):
+                    self.data[key] = Categorical(initialdata[key].values)
+                else:
+                    self.data[key] = array(initialdata[key])
 
             self.data.update()
             return
@@ -2888,6 +2889,9 @@ class DataFrame(UserDict):
                 nbytes += (val.dtype).itemsize * self._nrows
             elif isinstance(val, Strings):
                 nbytes += val.nbytes
+            elif isinstance(val, Categorical):
+                nbytes += val.codes.nbytes
+                nbytes += val.categories.nbytes
 
         KB = 1024
         MB = KB * KB
@@ -2919,7 +2923,12 @@ class DataFrame(UserDict):
             try:
                 # in order for proper pandas functionality, SegArrays must be seen as 1d
                 # and therefore need to be converted to list
-                pandas_data[key] = val.to_ndarray() if not isinstance(val, SegArray) else val.to_list()
+                if isinstance(val, SegArray):
+                    pandas_data[key] = val.to_list()
+                elif isinstance(val, Categorical):
+                    pandas_data[key] = val.to_pandas()
+                else:
+                    pandas_data[key] = val.to_ndarray()
             except TypeError:
                 raise IndexError("Bad index type or format.")
 

@@ -1,10 +1,12 @@
 import numpy as np
 import pandas as pd
 import pytest
-from pandas.testing import assert_frame_equal, assert_series_equal
+from pandas.testing import assert_frame_equal as pd_assert_frame_equal
+from pandas.testing import assert_series_equal as pd_assert_series_equal
 
 import arkouda as ak
 from arkouda.series import Series
+from arkouda.testing import assert_series_equal as ak_assert_series_equal
 
 DTYPES = [ak.int64, ak.uint64, ak.bool_, ak.float64, ak.bigint, ak.str_]
 NO_STRING = [ak.int64, ak.uint64, ak.bool_, ak.float64, ak.bigint]
@@ -40,6 +42,35 @@ class TestSeries:
 
         with pytest.raises(ValueError):
             ak.Series(data=ak.arange(3), index=ak.arange(6))
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_series_creation_pandas_series(self, size):
+        str_vals = ak.random_strings_uniform(9, 10, size)
+        idx = ak.arange(size) * -1
+
+        vals = [str_vals, ak.Categorical(str_vals), ak.arange(size) * -2]
+        for val in vals:
+            if isinstance(val, ak.Categorical):
+                pd_ser = pd.Series(val.to_pandas(), idx.to_ndarray())
+            else:
+                pd_ser = pd.Series(val.to_ndarray(), idx.to_ndarray())
+            ak_ser = Series(pd_ser)
+            expected = Series(val, index=idx)
+            ak_assert_series_equal(ak_ser, expected)
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_to_pandas(self, size):
+        str_vals = ak.random_strings_uniform(9, 10, size)
+        idx = ak.arange(size)
+
+        vals = [str_vals, ak.Categorical(str_vals), ak.arange(size) * -2]
+        for val in vals:
+            ak_ser = Series(val, idx)
+            if isinstance(val, ak.Categorical):
+                pd_ser = pd.Series(val.to_pandas(), idx.to_ndarray())
+            else:
+                pd_ser = pd.Series(val.to_ndarray(), idx.to_ndarray())
+            pd_assert_series_equal(ak_ser.to_pandas(), pd_ser)
 
     @pytest.mark.parametrize("dtype", INTEGRAL_TYPES)
     @pytest.mark.parametrize("dtype_index", [ak.int64, ak.uint64])
@@ -171,7 +202,7 @@ class TestSeries:
                 "val_1": [0, 0, 0, 0, 0, 5, 6, 7, 8, 9, 10],
             }
         )
-        assert_frame_equal(ref_df, df.to_pandas())
+        pd_assert_frame_equal(ref_df, df.to_pandas())
 
         def list_helper(arr):
             return arr.to_list() if isinstance(arr, (ak.pdarray, ak.Index)) else arr.tolist()
@@ -188,11 +219,11 @@ class TestSeries:
                     {"idx": [0, 1, 2, 3, 4], "val_0": [0, 1, 2, 3, 4], "val_1": [5, 6, 7, 8, 9]}
                 )
                 assert isinstance(df, ak.DataFrame)
-                assert_frame_equal(ref_df, df.to_pandas())
+                pd_assert_frame_equal(ref_df, df.to_pandas())
             else:
                 ref_df = pd.DataFrame({0: [0, 1, 2, 3, 4], 1: [5, 6, 7, 8, 9]})
                 assert isinstance(df, pd.DataFrame)
-                assert_frame_equal(ref_df, df)
+                pd_assert_frame_equal(ref_df, df)
 
     def test_index_as_index_compat(self):
         # added to validate functionality for issue #1506
@@ -204,21 +235,17 @@ class TestSeries:
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_memory_usage(self, size):
         s = ak.Series(ak.arange(size))
-        assert s.memory_usage(unit="GB", index=False) == size * ak.dtypes.int64.itemsize / (
-            1024 * 1024 * 1024
-        )
-        assert s.memory_usage(unit="MB", index=False) == size * ak.dtypes.int64.itemsize / (1024 * 1024)
-        assert s.memory_usage(unit="KB", index=False) == size * ak.dtypes.int64.itemsize / 1024
-        assert s.memory_usage(unit="B", index=False) == size * ak.dtypes.int64.itemsize
+        int64_size = ak.dtype(ak.int64).itemsize
 
-        assert s.memory_usage(unit="GB", index=True) == 2 * size * ak.dtypes.int64.itemsize / (
-            1024 * 1024 * 1024
-        )
-        assert s.memory_usage(unit="MB", index=True) == 2 * size * ak.dtypes.int64.itemsize / (
-            1024 * 1024
-        )
-        assert s.memory_usage(unit="KB", index=True) == 2 * size * ak.dtypes.int64.itemsize / 1024
-        assert s.memory_usage(unit="B", index=True) == 2 * size * ak.dtypes.int64.itemsize
+        assert s.memory_usage(unit="GB", index=False) == size * int64_size / (1024 * 1024 * 1024)
+        assert s.memory_usage(unit="MB", index=False) == size * int64_size / (1024 * 1024)
+        assert s.memory_usage(unit="KB", index=False) == size * int64_size / 1024
+        assert s.memory_usage(unit="B", index=False) == size * int64_size
+
+        assert s.memory_usage(unit="GB", index=True) == 2 * size * int64_size / (1024 * 1024 * 1024)
+        assert s.memory_usage(unit="MB", index=True) == 2 * size * int64_size / (1024 * 1024)
+        assert s.memory_usage(unit="KB", index=True) == 2 * size * int64_size / 1024
+        assert s.memory_usage(unit="B", index=True) == 2 * size * int64_size
 
     def test_map(self):
         a = ak.Series(ak.array(["1", "1", "4", "4", "4"]))
@@ -367,8 +394,8 @@ class TestSeries:
         akdf = ak.DataFrame({"test": sa})
         pddf = pd.DataFrame({"test": sa.to_list()})
 
-        assert_frame_equal(akdf.to_pandas(), pddf)
-        assert_series_equal(akdf.to_pandas()["test"], pddf["test"], check_names=False)
+        pd_assert_frame_equal(akdf.to_pandas(), pddf)
+        pd_assert_series_equal(akdf.to_pandas()["test"], pddf["test"], check_names=False)
 
     def test_getitem_scalars(self):
         ints = [0, 1, 3, 7, 3]

@@ -17,7 +17,6 @@ from arkouda.groupbyclass import GroupBy, groupable_element_type
 from arkouda.index import Index, MultiIndex
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import isnan, value_counts
-from arkouda.segarray import SegArray
 from arkouda.pdarrayclass import (
     RegistrationError,
     any,
@@ -27,8 +26,9 @@ from arkouda.pdarrayclass import (
 )
 from arkouda.pdarraycreation import arange, array, full, zeros
 from arkouda.pdarraysetops import argsort, concatenate, in1d, indexof1d
+from arkouda.segarray import SegArray
 from arkouda.strings import Strings
-from arkouda.util import convert_if_categorical, get_callback, is_float
+from arkouda.util import get_callback, is_float
 
 # pd.set_option("display.max_colwidth", 65) is being called in DataFrame.py. This will resolve BitVector
 # truncation issues. If issues arise, that's where to look for it.
@@ -133,11 +133,16 @@ class Series:
     @typechecked
     def __init__(
         self,
-        data: Union[Tuple, List, groupable_element_type, Series, SegArray],
+        data: Union[Tuple, List, groupable_element_type, Series, SegArray, pd.Series, pd.Categorical],
         name=None,
         index: Optional[Union[pdarray, Strings, Tuple, List, Index]] = None,
     ):
+
+        if isinstance(data, pd.Categorical):
+            data = Categorical(data)
+
         self.registered_name: Optional[str] = None
+
         if index is None and isinstance(data, (tuple, list)) and len(data) == 2:
             # handles the previous `ar_tuple` case
             if not isinstance(data[0], (pdarray, Index, Strings, Categorical, list, tuple)):
@@ -146,6 +151,13 @@ class Series:
                 raise TypeError("values must be a pdarray, Strings, SegArray, or Categorical")
             self.values = data[1] if not isinstance(data[1], Series) else data[1].values
             self.index = Index.factory(index) if index else Index.factory(data[0])
+        elif isinstance(data, pd.Series):
+            if isinstance(data.values, pd.Categorical):
+                self.values = Categorical(data.values)
+            else:
+                self.values = array(data.values)
+            self.index = Index(data.index)
+            self.name = data.name
         elif isinstance(data, tuple) and len(data) != 2:
             raise TypeError("Series initialization requries a tuple of (index, values)")
         else:
@@ -162,7 +174,10 @@ class Series:
             raise ValueError(
                 "Index size does not match data size: {} != {}".format(self.index.size, self.values.size)
             )
-        self.name = name
+        if name is None and isinstance(data, (Series, pd.Series)):
+            self.name = data.name
+        else:
+            self.name = name
         self.size = self.index.size
 
     def __len__(self):
@@ -251,7 +266,7 @@ class Series:
             if key.dtype == self.index.dtype:
                 if any(~in1d(key, self.index.values)):
                     raise KeyError("{} not in index".format(key[~in1d(key, self.index.values)]))
-            elif key.dtype == bool:
+            elif key.dtype == "bool_":
                 if key.size != self.index.size:
                     raise IndexError(
                         "Boolean index has wrong length: {} instead of {}".format(key.size, self.size)
@@ -299,7 +314,7 @@ class Series:
         if is_supported_scalar(key):
             return self[array([key])]
         assert isinstance(key, (pdarray, Strings))
-        if key.dtype == bool:
+        if key.dtype == "bool_":
             # boolean array indexes without sorting
             return Series(index=self.index[key], data=self.values[key])
         indices = indexof1d(key, self.index.values)
@@ -737,16 +752,21 @@ class Series:
         import copy
 
         idx = self.index.to_pandas()
-        val = convert_if_categorical(self.values)
-        # pandas errors when ndarray formatted like a segarray is
-        # passed into Series but works when it's just a list of lists
-        vals_on_client = val.to_list() if isinstance(val, SegArray) else val.to_ndarray()
+
+        if isinstance(self.values, Categorical):
+            val = self.values.to_pandas()
+        elif isinstance(self.values, SegArray):
+            # pandas errors when ndarray formatted like a segarray is
+            # passed into Series but works when it's just a list of lists
+            val = self.values.to_list()
+        else:
+            val = self.values.to_ndarray()
 
         if isinstance(self.name, str):
             name = copy.copy(self.name)
-            return pd.Series(vals_on_client, index=idx, name=name)
+            return pd.Series(val, index=idx, name=name)
         else:
-            return pd.Series(vals_on_client, index=idx)
+            return pd.Series(val, index=idx)
 
     def to_markdown(self, mode="wt", index=True, tablefmt="grid", storage_options=None, **kwargs):
         r"""
@@ -917,46 +937,50 @@ class Series:
                 "objType": self.objType,
                 "num_idxs": 1,
                 "idx_names": [
+                    (
+                        json.dumps(
+                            {
+                                "codes": self.index.values.codes.name,
+                                "categories": self.index.values.categories.name,
+                                "NA_codes": self.index.values._akNAcode.name,
+                                **(
+                                    {"permutation": self.index.values.permutation.name}
+                                    if self.index.values.permutation is not None
+                                    else {}
+                                ),
+                                **(
+                                    {"segments": self.index.values.segments.name}
+                                    if self.index.values.segments is not None
+                                    else {}
+                                ),
+                            }
+                        )
+                        if isinstance(self.index.values, Categorical)
+                        else self.index.values.name
+                    )
+                ],
+                "idx_types": [self.index.values.objType],
+                "values": (
                     json.dumps(
                         {
-                            "codes": self.index.values.codes.name,
-                            "categories": self.index.values.categories.name,
-                            "NA_codes": self.index.values._akNAcode.name,
+                            "codes": self.values.codes.name,
+                            "categories": self.values.categories.name,
+                            "NA_codes": self.values._akNAcode.name,
                             **(
-                                {"permutation": self.index.values.permutation.name}
-                                if self.index.values.permutation is not None
+                                {"permutation": self.values.permutation.name}
+                                if self.values.permutation is not None
                                 else {}
                             ),
                             **(
-                                {"segments": self.index.values.segments.name}
-                                if self.index.values.segments is not None
+                                {"segments": self.values.segments.name}
+                                if self.values.segments is not None
                                 else {}
                             ),
                         }
                     )
-                    if isinstance(self.index.values, Categorical)
-                    else self.index.values.name
-                ],
-                "idx_types": [self.index.values.objType],
-                "values": json.dumps(
-                    {
-                        "codes": self.values.codes.name,
-                        "categories": self.values.categories.name,
-                        "NA_codes": self.values._akNAcode.name,
-                        **(
-                            {"permutation": self.values.permutation.name}
-                            if self.values.permutation is not None
-                            else {}
-                        ),
-                        **(
-                            {"segments": self.values.segments.name}
-                            if self.values.segments is not None
-                            else {}
-                        ),
-                    }
-                )
-                if isinstance(self.values, Categorical)
-                else self.values.name,
+                    if isinstance(self.values, Categorical)
+                    else self.values.name
+                ),
                 "val_type": self.values.objType,
             },
         )
@@ -1625,7 +1649,7 @@ class _iLocIndexer:
             if key.dtype != int64 and key.dtype != bool:
                 raise TypeError(".{} requires integer keys".format(self.name))
 
-            if key.dtype == bool and key.size != self.series.size:
+            if key.dtype == "bool_" and key.size != self.series.size:
                 raise IndexError(
                     "Boolean index has wrong length: {} instead of {}".format(key.size, self.series.size)
                 )

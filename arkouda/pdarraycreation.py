@@ -1,5 +1,5 @@
 import itertools
-from typing import Iterable, List, Optional, Tuple, Union, cast, Any
+from typing import Any, Iterable, List, Optional, Tuple, Union, cast
 
 import numpy as np
 import pandas as pd
@@ -8,7 +8,6 @@ from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.dtypes import (
     NUMBER_FORMAT_STRINGS,
-    BigInt,
     DTypes,
     NumericDTypes,
     SeriesDTypes,
@@ -46,7 +45,7 @@ __all__ = [
     "from_series",
     "bigint_from_uint_arrays",
     "promote_to_common_dtype",
-    "scalar_array"
+    "scalar_array",
 ]
 
 
@@ -432,7 +431,7 @@ def bigint_from_uint_arrays(arrays, max_bits=-1):
 @typechecked
 def zeros(
     size: Union[int_scalars, str],
-    dtype: Union[np.dtype, type, str, BigInt] = float64,
+    dtype: Union[np.dtype, type, str, bigint] = float64,
     max_bits: Optional[int] = None,
 ) -> pdarray:
     """
@@ -475,11 +474,10 @@ def zeros(
     """
     if not np.isscalar(size):
         raise TypeError(f"size must be a scalar, not {size.__class__.__name__}")
-    dtype = akdtype(dtype)  # normalize dtype
-    dtype_name = dtype.name if isinstance(dtype, BigInt) else cast(np.dtype, dtype).name
+    dtype_name = akdtype(dtype).name
     # check dtype for error
     if dtype_name not in NumericDTypes:
-        raise TypeError(f"unsupported dtype {dtype}")
+        raise TypeError(f"unsupported dtype {akdtype(dtype)}")
     repMsg = generic_msg(cmd=f"create<{dtype_name},1>", args={"shape": size})
 
     return create_pdarray(repMsg, max_bits=max_bits)
@@ -488,7 +486,7 @@ def zeros(
 @typechecked
 def ones(
     size: Union[int_scalars, str],
-    dtype: Union[np.dtype, type, str, BigInt] = float64,
+    dtype: Union[np.dtype, type, str, bigint] = float64,
     max_bits: Optional[int] = None,
 ) -> pdarray:
     """
@@ -532,7 +530,7 @@ def ones(
     if not np.isscalar(size):
         raise TypeError(f"size must be a scalar, not {size.__class__.__name__}")
     dtype = akdtype(dtype)  # normalize dtype
-    dtype_name = dtype.name if isinstance(dtype, BigInt) else cast(np.dtype, dtype).name
+    dtype_name = dtype.name if isinstance(dtype, bigint) else cast(np.dtype, dtype).name
     # check dtype for error
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
@@ -548,7 +546,7 @@ def ones(
 def full(
     size: Union[int_scalars, str],
     fill_value: Union[numeric_scalars, str],
-    dtype: Union[np.dtype, type, str, BigInt] = float64,
+    dtype: Union[np.dtype, type, str, bigint] = float64,
     max_bits: Optional[int] = None,
 ) -> Union[pdarray, Strings]:
     """
@@ -597,7 +595,7 @@ def full(
         return _full_string(size, fill_value)
 
     dtype = akdtype(dtype)  # normalize dtype
-    dtype_name = dtype.name if isinstance(dtype, BigInt) else cast(np.dtype, dtype).name
+    dtype_name = dtype.name if isinstance(dtype, bigint) else cast(np.dtype, dtype).name
     # check dtype for error
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")

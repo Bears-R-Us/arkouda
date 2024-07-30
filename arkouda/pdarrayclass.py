@@ -12,9 +12,9 @@ from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.dtypes import NUMBER_FORMAT_STRINGS, DTypes, bigint
 from arkouda.dtypes import bool_ as akbool
-from arkouda.dtypes import dtype, get_byteorder
+from arkouda.dtypes import dtype
 from arkouda.dtypes import float64 as akfloat64
-from arkouda.dtypes import get_server_byteorder
+from arkouda.dtypes import get_byteorder, get_server_byteorder
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import (
     int_scalars,
@@ -496,7 +496,7 @@ class pdarray:
                 other = int(other)
         except Exception:
             raise TypeError(f"Unable to convert {other} to {self.dtype.name}")
-        if self.dtype == bool:
+        if self.dtype == "bool_":
             return str(other)
         fmt = NUMBER_FORMAT_STRINGS[self.dtype.name]
         return fmt.format(other)
@@ -744,13 +744,13 @@ class pdarray:
     def __eq__(self, other):
         if other is None:
             return False
-        elif (self.dtype == bool) and (isinstance(other, pdarray) and (other.dtype == bool)):
+        elif (self.dtype == "bool_") and (isinstance(other, pdarray) and (other.dtype == "bool_")):
             return ~(self ^ other)
         else:
             return self._binop(other, "==")
 
     def __ne__(self, other):
-        if (self.dtype == bool) and (isinstance(other, pdarray) and (other.dtype == bool)):
+        if (self.dtype == "bool_") and (isinstance(other, pdarray) and (other.dtype == "bool_")):
             return self ^ other
         else:
             return self._binop(other, "!=")
@@ -765,7 +765,7 @@ class pdarray:
             return self._binop(~0, "^")
         if self.dtype == akuint64:
             return self._binop(~np.uint(0), "^")
-        if self.dtype == bool:
+        if self.dtype == "bool_":
             return self._binop(True, "^")
         raise TypeError(f"Unhandled dtype: {self} ({self.dtype})")
 
@@ -2807,7 +2807,7 @@ def prod(pda: pdarray) -> np.float64:
     repMsg = generic_msg(
         cmd=f"reduce{pda.ndim}D", args={"op": "prod", "x": pda, "nAxes": 0, "axis": [], "skipNan": False}
     )
-    return parse_single_value(cast(str, repMsg))
+    return np.float64(parse_single_value(cast(str, repMsg)))
 
 
 def min(pda: pdarray) -> numpy_scalars:

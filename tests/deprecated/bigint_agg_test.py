@@ -4,6 +4,7 @@ from context import arkouda as ak
 
 SIZE = 5
 
+
 class BigIntTest(ArkoudaTest):
     def test_negative(self):
         # test with negative bigint values
@@ -47,8 +48,9 @@ class BigIntTest(ArkoudaTest):
         bi_arr[:] = res
         self.assertListEqual(bi_arr.to_list(), res.to_list())
 
+
 def gather_scatter(a):
-    rev = ak.array(np.arange(len(a)-1, -1, -1))
+    rev = ak.array(np.arange(len(a) - 1, -1, -1))
     a2 = a[rev]
     res = ak.zeros(len(a), dtype=a.dtype)
     res[:] = a2
