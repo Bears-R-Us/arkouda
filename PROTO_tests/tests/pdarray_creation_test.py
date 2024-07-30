@@ -38,7 +38,7 @@ class TestPdarrayCreation:
             ak.array(deque(range(fixed_size)), dtype),
             ak.array([f"{i}" for i in range(fixed_size)], dtype=dtype),
         ]:
-            assert isinstance(pda, ak.pdarray if dtype != str else ak.Strings)
+            assert isinstance(pda, ak.pdarray if ak.dtype(dtype) != "str_" else ak.Strings)
             assert len(pda) == fixed_size
             assert dtype == pda.dtype
 

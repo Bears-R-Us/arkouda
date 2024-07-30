@@ -8,16 +8,14 @@ import numpy as np
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
+from arkouda.dtypes import DTypes, bigint
+from arkouda.dtypes import dtype as akdtype
 from arkouda.dtypes import (
-    BigInt,
-    DTypes,
-    _as_dtype,
-    bigint,
     int_scalars,
     isSupportedNumber,
     numeric_scalars,
     resolve_scalar_dtype,
-    str_
+    str_,
 )
 from arkouda.groupbyclass import GroupBy
 from arkouda.pdarrayclass import all as ak_all
@@ -88,7 +86,7 @@ class ErrorMode(Enum):
 @typechecked
 def cast(
     pda: Union[pdarray, Strings, Categorical],  # type: ignore
-    dt: Union[np.dtype, type, str, BigInt],
+    dt: Union[np.dtype, type, str, bigint],
     errors: ErrorMode = ErrorMode.strict,
 ) -> Union[Union[pdarray, Strings, Categorical], Tuple[pdarray, pdarray]]:  # type: ignore
     """
@@ -142,7 +140,7 @@ def cast(
     from arkouda.categorical import Categorical  # type: ignore
 
     if isinstance(pda, pdarray):
-        if dt is Strings or dt in ["Strings", "str"] or dt == str_:
+        if dt is Strings or akdtype(dt) == str_:
             if pda.ndim > 1:
                 raise ValueError("Cannot cast a multi-dimensional pdarray to Strings")
             repMsg = generic_msg(
@@ -151,7 +149,7 @@ def cast(
             )
             return Strings.from_parts(*(type_cast(str, repMsg).split("+")))
         else:
-            dt = _as_dtype(dt)
+            dt = akdtype(dt)
             return create_pdarray(
                 generic_msg(
                     cmd=f"cast<{pda.dtype},{dt},{pda.ndim}>",
@@ -161,10 +159,10 @@ def cast(
     elif isinstance(pda, Strings):
         if dt is Categorical or dt == "Categorical":
             return Categorical(pda)  # type: ignore
-        elif dt is Strings or dt in ["Strings", "str"] or dt == str_:
+        elif dt is Strings or akdtype(dt) == str_:
             return pda[:]
         else:
-            dt = _as_dtype(dt)
+            dt = akdtype(dt)
             repMsg = generic_msg(
                 cmd=f"castStringsTo<{dt}>",
                 args={
