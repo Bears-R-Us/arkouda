@@ -2304,7 +2304,7 @@ def eye (rows:int_scalars,cols:int_scalars,diag:int_scalars=0,dt:type=int64) :
 
 def triu (pda:pdarray,diag:int_scalars=0) :
     """
-    Return a copy of the pda with the upper triangle zeroed out
+    Return a copy of the pda with the lower triangle zeroed out
 
     Parameters
     ----------
@@ -2318,21 +2318,21 @@ def triu (pda:pdarray,diag:int_scalars=0) :
     Returns
     -------
     pdarray 
-        a copy of pda with zeros in the upper triangle
+        a copy of pda with zeros in the lower triangle
 
     Examples
     --------
     >>> a = ak.array([[1,2,3,4,5],[2,3,4,5,6],[3,4,5,6,7],[4,5,6,7,8],[5,6,7,8,9]])
-    >>> ak.triu(a,diag=4)
-    array([array([1 2 3 4 5]) array([2 3 4 5 6]) array([3 4 5 6 7]) array([4 5 6 7 8]) array([5 6 7 8 9])])
-    >>> ak.triu(a,diag=3)
-    array([array([1 2 3 4 0]) array([2 3 4 5 6]) array([3 4 5 6 7]) array([4 5 6 7 8]) array([5 6 7 8 9])])
-    >>> ak.triu(a,diag=2)
-    array([array([1 2 3 0 0]) array([2 3 4 5 0]) array([3 4 5 6 7]) array([4 5 6 7 8]) array([5 6 7 8 9])])
-    >>> ak.triu(a,diag=1)
-    array([array([1 2 0 0 0]) array([2 3 4 0 0]) array([3 4 5 6 0]) array([4 5 6 7 8]) array([5 6 7 8 9])])
     >>> ak.triu(a,diag=0)
-    array([array([1 0 0 0 0]) array([2 3 0 0 0]) array([3 4 5 0 0]) array([4 5 6 7 0]) array([5 6 7 8 9])])
+    array([array([1 2 3 4 5]) array([0 3 4 5 6]) array([0 0 5 6 7]) array([0 0 0 7 8]) array([0 0 0 0 9])])
+    >>> ak.triu(a,diag=1)
+    array([array([0 2 3 4 5]) array([0 0 4 5 6]) array([0 0 0 6 7]) array([0 0 0 0 8]) array([0 0 0 0 0])])
+    >>> ak.triu(a,diag=2)
+    array([array([0 0 3 4 5]) array([0 0 0 5 6]) array([0 0 0 0 7]) array([0 0 0 0 0]) array([0 0 0 0 0])])
+    >>> ak.triu(a,diag=3)
+    array([array([0 0 0 4 5]) array([0 0 0 0 6]) array([0 0 0 0 0]) array([0 0 0 0 0]) array([0 0 0 0 0])])
+    >>> ak.triu(a,diag=4)
+    array([array([0 0 0 0 5]) array([0 0 0 0 0]) array([0 0 0 0 0]) array([0 0 0 0 0]) array([0 0 0 0 0])])
 
     Notes 
     -----
@@ -2346,7 +2346,7 @@ def triu (pda:pdarray,diag:int_scalars=0) :
 
 def tril (pda:pdarray,diag:int_scalars=0) :
     """
-    Return a copy of the pda with the lower triangle zeroed out
+    Return a copy of the pda with the upper triangle zeroed out
 
     Parameters
     ----------
@@ -2360,21 +2360,21 @@ def tril (pda:pdarray,diag:int_scalars=0) :
     Returns
     -------
     pdarray 
-        a copy of pda with zeros in the lower triangle
+        a copy of pda with zeros in the upper triangle
 
     Examples
     --------
     >>> a = ak.array([[1,2,3,4,5],[2,3,4,5,6],[3,4,5,6,7],[4,5,6,7,8],[5,6,7,8,9]])
-    >>> ak.tril(a,diag=0)
-    array([array([1 2 3 4 5]) array([0 3 4 5 6]) array([0 0 5 6 7]) array([0 0 0 7 8]) array([0 0 0 0 9])])
-    >>> ak.tril(a,diag=1)
-    array([array([0 2 3 4 5]) array([0 0 4 5 6]) array([0 0 0 6 7]) array([0 0 0 0 8]) array([0 0 0 0 0])])
-    >>> ak.tril(a,diag=2)
-    array([array([0 0 3 4 5]) array([0 0 0 5 6]) array([0 0 0 0 7]) array([0 0 0 0 0]) array([0 0 0 0 0])])
-    >>> ak.tril(a,diag=3)
-    array([array([0 0 0 4 5]) array([0 0 0 0 6]) array([0 0 0 0 0]) array([0 0 0 0 0]) array([0 0 0 0 0])])
     >>> ak.tril(a,diag=4)
-    array([array([0 0 0 0 5]) array([0 0 0 0 0]) array([0 0 0 0 0]) array([0 0 0 0 0]) array([0 0 0 0 0])])
+    array([array([1 2 3 4 5]) array([2 3 4 5 6]) array([3 4 5 6 7]) array([4 5 6 7 8]) array([5 6 7 8 9])])
+    >>> ak.tril(a,diag=3)
+    array([array([1 2 3 4 0]) array([2 3 4 5 6]) array([3 4 5 6 7]) array([4 5 6 7 8]) array([5 6 7 8 9])])
+    >>> ak.tril(a,diag=2)
+    array([array([1 2 3 0 0]) array([2 3 4 5 0]) array([3 4 5 6 7]) array([4 5 6 7 8]) array([5 6 7 8 9])])
+    >>> ak.tril(a,diag=1)
+    array([array([1 2 0 0 0]) array([2 3 4 0 0]) array([3 4 5 6 0]) array([4 5 6 7 8]) array([5 6 7 8 9])])
+    >>> ak.tril(a,diag=0)
+    array([array([1 0 0 0 0]) array([2 3 0 0 0]) array([3 4 5 0 0]) array([4 5 6 7 0]) array([5 6 7 8 9])])
 
     Notes 
     -----
