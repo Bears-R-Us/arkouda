@@ -828,7 +828,7 @@ class TestNumeric:
             with pytest.raises(TypeError):
                 ak.putmask(pda, pda > 3, values)
 
-    # In the tests below, the rationale for using size = math.sqrt(prob_size) is that 
+    # In the tests below, the rationale for using size = math.sqrt(prob_size) is that
     # the resulting matrices are on the order of size*size.
 
     # tril works on ints, floats, or bool
@@ -848,7 +848,7 @@ class TestNumeric:
         # test on one square and two non-square matrices
 
         for rows, cols in [(size, size), (size + 1, size - 1), (size - 1, size + 1)]:
-            pda = ak.randint(1,10,(rows,cols))
+            pda = ak.randint(1, 10, (rows, cols))
             nda = pda.to_ndarray()
             sweep = range(-(rows - 2), cols)  # sweeps the diagonal from LL to UR
             for diag in sweep:
@@ -873,7 +873,7 @@ class TestNumeric:
         # test on one square and two non-square matrices
 
         for rows, cols in [(size, size), (size + 1, size - 1), (size - 1, size + 1)]:
-            pda = ak.randint(1,10,(rows,cols))
+            pda = ak.randint(1, 10, (rows, cols))
             nda = pda.to_ndarray()
             sweep = range(-(rows - 1), cols - 1)  # sweeps the diagonal from LL to UR
             for diag in sweep:
@@ -898,13 +898,12 @@ class TestNumeric:
         # test on one square and two non-square matrices
 
         for rows, cols in [(size, size), (size + 1, size - 1), (size - 1, size + 1)]:
-            pda = ak.randint(1,10,(rows,cols))
+            pda = ak.randint(1, 10, (rows, cols))
             nda = pda.to_ndarray()
             npa = np.transpose(nda)
             ppa = ak.transpose(pda).to_ndarray()
             assert check(npa, ppa, data_type)
 
-    # eye works on ints, floats, or bool
     # eye works on ints, floats, or bool
 
     @pytest.mark.parametrize("data_type", INT_FLOAT_BOOL)
@@ -962,7 +961,7 @@ class TestNumeric:
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_vecdot(self, data_type1, data_type2, prob_size):
 
-        depth = np.random.randint(2,10)
+        depth = np.random.randint(2, 10)
         width = prob_size // depth
 
         # ints and bools are checked for equality; floats are checked for closeness
@@ -971,14 +970,14 @@ class TestNumeric:
             np.allclose(a.tolist(), b.tolist()) if t is ak.float64 else (a == b).all()
         )
 
-        pda_a = ak.randint(0,10,(depth,width),dtype=data_type1)
+        pda_a = ak.randint(0, 10, (depth, width), dtype=data_type1)
         nda_a = pda_a.to_ndarray()
-        pda_b = ak.randint(0,10,(depth,width),dtype=data_type2)
+        pda_b = ak.randint(0, 10, (depth, width), dtype=data_type2)
         nda_b = pda_b.to_ndarray()
         akProduct = ak.vecdot(pda_a, pda_b)
 
         # there is no vecdot in numpy (and vdot doesn't do the same thing).
-        # np.add.reduce does. 
+        # np.add.reduce does.
 
-        npProduct = np.add.reduce(nda_a*nda_b)
+        npProduct = np.add.reduce(nda_a * nda_b)
         assert check(npProduct, akProduct.to_ndarray(), akProduct.dtype)
