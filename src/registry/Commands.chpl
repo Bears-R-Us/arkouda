@@ -24,6 +24,32 @@ param regConfig = """
 }
 """;
 
+import ArgSortMsg;
+
+proc ark_argsort_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ArgSortMsg.argsort(cmd, msgArgs, st, array_dtype=int, array_nd=1);
+registerFunction('argsort<int64,1>', ark_argsort_int_1, 'ArgSortMsg', 428);
+
+proc ark_argsort_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ArgSortMsg.argsort(cmd, msgArgs, st, array_dtype=uint, array_nd=1);
+registerFunction('argsort<uint64,1>', ark_argsort_uint_1, 'ArgSortMsg', 428);
+
+proc ark_argsort_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ArgSortMsg.argsort(cmd, msgArgs, st, array_dtype=uint(8), array_nd=1);
+registerFunction('argsort<uint8,1>', ark_argsort_uint8_1, 'ArgSortMsg', 428);
+
+proc ark_argsort_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ArgSortMsg.argsort(cmd, msgArgs, st, array_dtype=real, array_nd=1);
+registerFunction('argsort<float64,1>', ark_argsort_real_1, 'ArgSortMsg', 428);
+
+proc ark_argsort_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ArgSortMsg.argsort(cmd, msgArgs, st, array_dtype=bool, array_nd=1);
+registerFunction('argsort<bool,1>', ark_argsort_bool_1, 'ArgSortMsg', 428);
+
+proc ark_argsort_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ArgSortMsg.argsort(cmd, msgArgs, st, array_dtype=bigint, array_nd=1);
+registerFunction('argsort<bigint,1>', ark_argsort_bigint_1, 'ArgSortMsg', 428);
+
 import CastMsg;
 
 proc ark_cast_int_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
