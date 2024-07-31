@@ -199,21 +199,21 @@ module LinalgMsg {
 	//     else error condition.
 
         select (x1G.dtype, x2G.dtype) {
-            when (DType.Int64, DType.Int64)     do return doMatMult(int,     int,     int);
-            when (DType.Int64, DType.UInt8)     do return doMatMult(int,     uint(8), int);
-            when (DType.Int64, DType.Float64)   do return doMatMult(int,     real,    real);
-            when (DType.Int64, DType.Bool)      do return doMatMult(int,     bool,    int);
-            when (DType.UInt8, DType.Int64)     do return doMatMult(uint(8), int,     int);
-            when (DType.UInt8, DType.UInt8)     do return doMatMult(uint(8), uint(8), uint(8));
-            when (DType.UInt8, DType.Float64)   do return doMatMult(uint(8), real,    real);
-            when (DType.UInt8, DType.Bool)      do return doMatMult(uint(8), bool,    uint(8));
             when (DType.Float64, DType.Int64)   do return doMatMult(real,    int,     real);
             when (DType.Float64, DType.UInt8)   do return doMatMult(real,    uint(8), real);
             when (DType.Float64, DType.Float64) do return doMatMult(real,    real,    real);
             when (DType.Float64, DType.Bool)    do return doMatMult(real,    bool,    real);
-            when (DType.Bool, DType.Int64)      do return doMatMult(bool,    int,     int);
-            when (DType.Bool, DType.UInt8)      do return doMatMult(bool,    uint(8), uint(8));
+            when (DType.Int64, DType.Float64)   do return doMatMult(int,     real,    real);
+            when (DType.UInt8, DType.Float64)   do return doMatMult(uint(8), real,    real);
             when (DType.Bool, DType.Float64)    do return doMatMult(bool,    real,    real);
+            when (DType.Int64, DType.Int64)     do return doMatMult(int,     int,     int);
+            when (DType.Int64, DType.UInt8)     do return doMatMult(int,     uint(8), int);
+            when (DType.Int64, DType.Bool)      do return doMatMult(int,     bool,    int);
+            when (DType.UInt8, DType.Int64)     do return doMatMult(uint(8), int,     int);
+            when (DType.Bool, DType.Int64)      do return doMatMult(bool,    int,     int);
+            when (DType.UInt8, DType.UInt8)     do return doMatMult(uint(8), uint(8), uint(8));
+            when (DType.UInt8, DType.Bool)      do return doMatMult(uint(8), bool,    uint(8));
+            when (DType.Bool, DType.UInt8)      do return doMatMult(bool,    uint(8), uint(8));
             when (DType.Bool, DType.Bool)       do return doMatMult(bool,    bool,    bool);
             otherwise {
                 const errorMsg = notImplementedError(getRoutineName(), "matmul", x1G.dtype, x2G.dtype);
@@ -432,24 +432,25 @@ module LinalgMsg {
         }
 
 	// See the comment in matmul for a description of how this deduces the output type
-	// from the input types.
+	// from the input types.  The one exception here is that "both inputs are bool" is
+	// not allowed.
 
         select (x1G.dtype, x2G.dtype) {
-            when (DType.Int64, DType.Int64)     do return doVecdot(int,     int,     int);
-            when (DType.Int64, DType.UInt8)     do return doVecdot(int,     uint(8), int);
-            when (DType.Int64, DType.Float64)   do return doVecdot(int,     real,    real);
-            when (DType.Int64, DType.Bool)      do return doVecdot(int,     bool,    int);
-            when (DType.UInt8, DType.Int64)     do return doVecdot(uint(8), int,     int);
-            when (DType.UInt8, DType.UInt8)     do return doVecdot(uint(8), uint(8), uint(8));
-            when (DType.UInt8, DType.Float64)   do return doVecdot(uint(8), real,    real);
-            when (DType.UInt8, DType.Bool)      do return doVecdot(uint(8), bool,    uint(8));
             when (DType.Float64, DType.Int64)   do return doVecdot(real,    int,     real);
             when (DType.Float64, DType.UInt8)   do return doVecdot(real,    uint(8), real);
             when (DType.Float64, DType.Float64) do return doVecdot(real,    real,    real);
             when (DType.Float64, DType.Bool)    do return doVecdot(real,    bool,    real);
-            when (DType.Bool, DType.Int64)      do return doVecdot(bool,    int,     int);
-            when (DType.Bool, DType.UInt8)      do return doVecdot(bool,    uint(8), uint(8));
+            when (DType.Int64, DType.Float64)   do return doVecdot(int,     real,    real);
+            when (DType.UInt8, DType.Float64)   do return doVecdot(uint(8), real,    real);
             when (DType.Bool, DType.Float64)    do return doVecdot(bool,    real,    real);
+            when (DType.Int64, DType.Int64)     do return doVecdot(int,     int,     int);
+            when (DType.Int64, DType.UInt8)     do return doVecdot(int,     uint(8), int);
+            when (DType.Int64, DType.Bool)      do return doVecdot(int,     bool,    int);
+            when (DType.UInt8, DType.Int64)     do return doVecdot(uint(8), int,     int);
+            when (DType.Bool, DType.Int64)      do return doVecdot(bool,    int,     int);
+            when (DType.UInt8, DType.UInt8)     do return doVecdot(uint(8), uint(8), uint(8));
+            when (DType.UInt8, DType.Bool)      do return doVecdot(uint(8), bool,    uint(8));
+            when (DType.Bool, DType.UInt8)      do return doVecdot(bool,    uint(8), uint(8));
             otherwise {
                 const errorMsg = notImplementedError(getRoutineName(), "vecdot", x1G.dtype, x2G.dtype);
                 linalgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
