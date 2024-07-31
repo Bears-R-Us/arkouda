@@ -5,7 +5,8 @@ import numpy as np
 import pytest
 
 import arkouda as ak
-from arkouda.dtypes import npstr
+#from arkouda.dtypes import npstr
+from arkouda.dtypes import dtype as akdtype
 from arkouda.client import get_max_array_rank
 from math import isclose, sqrt
 import subprocess
@@ -843,7 +844,7 @@ class TestNumeric:
         # ints and bools are checked for equality; floats are checked for closeness
 
         check = lambda a, b, t: (
-            np.allclose(a.tolist(), b.tolist()) if t is ak.float64 else (a == b).all()
+            np.allclose(a.tolist(), b.tolist()) if akdtype(t).name == 'float64' else (a==b).all()
         )
 
         # test on one square and two non-square matrices
@@ -868,7 +869,7 @@ class TestNumeric:
         # ints and bools are checked for equality; floats are checked for closeness
 
         check = lambda a, b, t: (
-            np.allclose(a.tolist(), b.tolist()) if t is ak.float64 else (a == b).all()
+            np.allclose(a.tolist(), b.tolist()) if akdtype(t).name == 'float64' else (a==b).all()
         )
 
         # test on one square and two non-square matrices
@@ -893,7 +894,7 @@ class TestNumeric:
         # ints and bools are checked for equality; floats are checked for closeness
 
         check = lambda a, b, t: (
-            np.allclose(a.tolist(), b.tolist()) if t is ak.float64 else (a == b).all()
+            np.allclose(a.tolist(), b.tolist()) if akdtype(t).name == 'float64' else (a==b).all()
         )
 
         # test on one square and two non-square matrices
@@ -916,7 +917,7 @@ class TestNumeric:
         # ints and bools are checked for equality; floats are checked for closeness
 
         check = lambda a, b, t: (
-            np.allclose(a.tolist(), b.tolist()) if t is ak.float64 else (a == b).all()
+            np.allclose(a.tolist(), b.tolist()) if akdtype(t).name == 'float64' else (a==b).all()
         )
 
         # test on one square and two non-square matrices
@@ -940,7 +941,7 @@ class TestNumeric:
         # ints and bools are checked for equality; floats are checked for closeness
 
         check = lambda a, b, t: (
-            np.allclose(a.tolist(), b.tolist()) if t is ak.float64 else (a == b).all()
+            np.allclose(a.tolist(), b.tolist()) if akdtype(t).name == 'float64' else (a==b).all()
         )
 
         # test on one square and two non-square products
@@ -951,6 +952,7 @@ class TestNumeric:
             pdaRight = ak.randint(0, 10, (size, cols), dtype=data_type2)
             ndaRight = pdaRight.to_ndarray()
             akProduct = ak.matmul(pdaLeft, pdaRight)
+            print (akProduct.dtype,"******************************************")
             npProduct = np.matmul(ndaLeft, ndaRight)
             assert check(npProduct, akProduct.to_ndarray(), akProduct.dtype)
 
@@ -968,7 +970,7 @@ class TestNumeric:
         # ints and bools are checked for equality; floats are checked for closeness
 
         check = lambda a, b, t: (
-            np.allclose(a.tolist(), b.tolist()) if t is ak.float64 else (a == b).all()
+            np.allclose(a.tolist(), b.tolist()) if akdtype(t).name == 'float64' else (a==b).all()
         )
 
         pda_a = ak.randint(0, 10, (depth, width), dtype=data_type1)
@@ -976,6 +978,7 @@ class TestNumeric:
         pda_b = ak.randint(0, 10, (depth, width), dtype=data_type2)
         nda_b = pda_b.to_ndarray()
         akProduct = ak.vecdot(pda_a, pda_b)
+        print (akProduct.dtype,"******************************************")
 
         # there is no vecdot in numpy (and vdot doesn't do the same thing).
         # np.add.reduce does.

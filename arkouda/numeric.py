@@ -9,12 +9,13 @@ from typeguard import typechecked
 
 from arkouda.client import generic_msg
 from arkouda.dtypes import DTypes, bigint
+from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import dtype as akdtype
 from arkouda.dtypes import (
     int64,
-    BigInt,
+    bigint,
     DTypes,
-    _as_dtype,
+    #_as_dtype,
     bigint,
     int_scalars,
     isSupportedNumber,
@@ -2263,7 +2264,7 @@ def putmask(pda: pdarray, mask: Union[bool, pdarray], values: pdarray):
 
 # after this is working, add comments and docstring
 
-def eye (rows:int_scalars,cols:int_scalars,diag:int_scalars=0,dt:type=int64) :
+def eye (rows:int_scalars,cols:int_scalars,diag:int_scalars=0,dt:type=akint64) :
     """
     Return a pdarray with zeros everywhere except along a diagonal, which is all ones.
     The matrix need not be square.
@@ -2299,7 +2300,8 @@ def eye (rows:int_scalars,cols:int_scalars,diag:int_scalars=0,dt:type=int64) :
 
     """
 
-    cmd = f"eye<{dt.name}>"
+    #cmd = f"eye<{dt.name}>"
+    cmd = f"eye<{akdtype(dt).name}>"
     args = {"rows":rows,"cols":cols,"diag":diag,}
     return (create_pdarray(generic_msg(cmd=cmd,args=args,)))
 
