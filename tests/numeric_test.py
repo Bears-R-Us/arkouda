@@ -28,6 +28,7 @@ def alternate(L, R, n):
     v[::2] = L
     return v
 
+
 #  The following tuples support a simplification of the trigonometric
 #  and hyperbolic testing.
 
