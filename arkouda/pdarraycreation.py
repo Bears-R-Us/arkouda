@@ -439,7 +439,7 @@ def bigint_from_uint_arrays(arrays, max_bits=-1):
 @typechecked
 def zeros(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
-    dtype: Union[np.dtype, type, str, BigInt] = float64,
+    dtype: Union[np.dtype, type, str, bigint] = float64,
     max_bits: Optional[int] = None,
 ) -> pdarray:
     """
@@ -481,7 +481,7 @@ def zeros(
     array([False, False, False, False, False])
     """
     dtype = akdtype(dtype)  # normalize dtype
-    dtype_name = dtype.name if isinstance(dtype, BigInt) else cast(np.dtype, dtype).name
+    dtype_name = dtype.name if isinstance(dtype, bigint) else cast(np.dtype, dtype).name
     # check dtype for error
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
@@ -494,7 +494,7 @@ def zeros(
 @typechecked
 def ones(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
-    dtype: Union[np.dtype, type, str, BigInt] = float64,
+    dtype: Union[np.dtype, type, str, bigint] = float64,
     max_bits: Optional[int] = None,
 ) -> pdarray:
     """
