@@ -21,11 +21,11 @@ dependencies:
   - libidn2
   - jupyter
   - scipy<=1.13.1
+  - pytest>=6.0
+  - pytest-env
 
   # Developer dependencies
   - pexpect
-  - pytest>=6.0
-  - pytest-env
   - Sphinx>=5.1.1
   - sphinx-argparse
   - sphinx-autoapi
@@ -39,16 +39,14 @@ dependencies:
   - pytest-json-report
   - pytest-benchmark
   - mathjax
-  - sphinx-design
-  - sphinx-autodoc-typehints
   - pandas-stubs
   - types-python-dateutil
 
   - pip:
     # Developer dependencies
     - typeguard==2.10.0
+    - sphinx-autopackagesummary
     - furo # sphinx theme
     - myst-parser
     - linkify-it-py
-    - sphinx-autopackagesummary
 
