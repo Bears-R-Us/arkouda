@@ -40,6 +40,9 @@ verbose = verboseDefVal
 # threshold for __iter__() to limit comms to arkouda_server
 pdarrayIterThreshDefVal = 100
 pdarrayIterThresh = pdarrayIterThreshDefVal
+sparrayIterThreshDefVal = 20  # sps print format is longer; we have small thresh
+sparrayIterThresh = sparrayIterThreshDefVal
+
 maxTransferBytesDefVal = 2**30
 maxTransferBytes = maxTransferBytesDefVal
 # maximum number of capture group for regex
