@@ -374,11 +374,15 @@ ifeq ($(shell expr $(CHPL_MINOR) \= 0),1)
 	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/eq-20
 endif
 
-ifeq ($(shell expr $(CHPL_MINOR) \> 0),1)
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/ge-21
+ifeq ($(shell expr $(CHPL_MINOR) \= 1),1)
+	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/eq-21
 endif
 
-ifeq ($(shell expr $(CHPL_MINOR) \>= 0),1)
+ifeq ($(shell expr $(CHPL_MINOR) \>= 2),1)
+	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/ge-22
+endif
+
+ifeq ($(shell expr $(CHPL_MINOR) \<= 1),1)
 	ARKOUDA_RW_DEFAULT_FLAG := -sOpenReaderLockingDefault=false -sOpenWriterLockingDefault=false
 endif
 

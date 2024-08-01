@@ -35,7 +35,7 @@ module ArgSortMsg
     private config const logChannel = ServerConfig.logChannel;
     const asLogger = new Logger(logLevel, logChannel);
 
-    proc dynamicTwoArrayRadixSort(ref Data:[], comparator:?rec=defaultComparator) {
+    proc dynamicTwoArrayRadixSort(ref Data:[], comparator:?rec=new DefaultComparator()) {
       if Data._instance.isDefaultRectangular() {
         Sort.TwoArrayRadixSort.twoArrayRadixSort(Data, comparator);
       } else {
