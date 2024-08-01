@@ -463,9 +463,9 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">mydtype</span> <span class="o">==</span> <span class="n">akbool</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;True&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;True&quot;</span> <span class="ow">or</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">mydtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;False&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;False&quot;</span> <span class="ow">or</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;false&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">mydtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported value from server </span><span class="si">{</span><span class="n">mydtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -533,12 +533,13 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
         <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[slice]</span><span class="si">{</span><span class="n">array</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[slice]&lt;</span><span class="si">{</span><span class="n">array</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">array</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">array</span><span class="p">,</span>
                 <span class="s2">&quot;starts&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">starts</span><span class="p">)</span> <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">starts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
                 <span class="s2">&quot;stops&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">stops</span><span class="p">)</span> <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">stops</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
                 <span class="s2">&quot;strides&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">strides</span><span class="p">)</span> <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">strides</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="n">array</span><span class="o">.</span><span class="n">max_bits</span> <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">max_bits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
     <span class="p">)</span>
@@ -1234,27 +1235,26 @@
                 <span class="n">key</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span>
             <span class="k">if</span> <span class="n">key</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">key</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
                 <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-                    <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;[int]1D&quot;</span><span class="p">,</span>
+                    <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[int]&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,1&gt;&quot;</span><span class="p">,</span>
                     <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                         <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
                         <span class="s2">&quot;idx&quot;</span><span class="p">:</span> <span class="n">key</span><span class="p">,</span>
                     <span class="p">},</span>
                 <span class="p">)</span>
-                <span class="n">fields</span> <span class="o">=</span> <span class="n">repMsg</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-                <span class="c1"># value = fields[2]</span>
-                <span class="k">return</span> <span class="n">parse_single_value</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+                <span class="k">return</span> <span class="n">parse_single_value</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[int] </span><span class="si">{</span><span class="n">orig_key</span><span class="si">}</span><span class="s2"> is out of bounds with size </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
             <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">stride</span><span class="p">)</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
             <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-                <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;[slice]1D&quot;</span><span class="p">,</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[slice]&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,1&gt;&quot;</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                     <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
                     <span class="s2">&quot;starts&quot;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span>
                     <span class="s2">&quot;stops&quot;</span><span class="p">:</span> <span class="n">stop</span><span class="p">,</span>
                     <span class="s2">&quot;strides&quot;</span><span class="p">:</span> <span class="n">stride</span><span class="p">,</span>
+                    <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
                 <span class="p">},</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
@@ -1271,14 +1271,13 @@
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">scalar_axes</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">clean_key</span><span class="p">):</span>
                 <span class="c1"># all scalars: use simpler indexing (and return a scalar)</span>
                 <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-                    <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[int]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+                    <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[int]&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
                     <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                         <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
                         <span class="s2">&quot;idx&quot;</span><span class="p">:</span> <span class="n">clean_key</span><span class="p">,</span>
                     <span class="p">},</span>
                 <span class="p">)</span>
-                <span class="n">fields</span> <span class="o">=</span> <span class="n">repMsg</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-                <span class="n">ret_array</span> <span class="o">=</span> <span class="n">parse_single_value</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+                <span class="n">ret_array</span> <span class="o">=</span> <span class="n">parse_single_value</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
 
             <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">pdarray_axes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pdarray_axes</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">clean_key</span><span class="p">):</span>
@@ -1296,11 +1295,17 @@
                     <span class="c1"># pdarray dimensions are squeezed out</span>
                     <span class="n">degen_axes</span> <span class="o">=</span> <span class="n">pdarray_axes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">+</span> <span class="n">scalar_axes</span>
 
+                <span class="c1"># ensure all indexing arrays have the same dtype (either int64 or uint64)</span>
+                <span class="n">idx_dtype</span> <span class="o">=</span> <span class="n">clean_key</span><span class="p">[</span><span class="n">pdarray_axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">dtype</span>
+                <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="n">pdarray_axes</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">clean_key</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">idx_dtype</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;all pdarray indices must have the same dtype&quot;</span><span class="p">)</span>
+
                 <span class="c1"># apply pdarray indexing (returning an ndim array with degenerate dimensions</span>
                 <span class="c1"># along all the indexed axes except the first one)</span>
                 <span class="n">temp2</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span>
                     <span class="n">generic_msg</span><span class="p">(</span>
-                        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[pdarray]x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+                        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[pdarray]&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">idx_dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
                         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                             <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">temp1</span><span class="p">,</span>
                             <span class="s2">&quot;nIdxArrays&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">pdarray_axes</span><span class="p">),</span>
@@ -1386,12 +1391,12 @@
                     <span class="n">key</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span>
                 <span class="k">if</span> <span class="n">key</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">key</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
                     <span class="n">generic_msg</span><span class="p">(</span>
-                        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;[int]=val-1D&quot;</span><span class="p">,</span>
+                        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[int]=val&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,1&gt;&quot;</span><span class="p">,</span>
                         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                             <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
                             <span class="s2">&quot;idx&quot;</span><span class="p">:</span> <span class="n">key</span><span class="p">,</span>
-                            <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
                             <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_other</span><span class="p">(</span><span class="n">_value</span><span class="p">),</span>
+                            <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
                         <span class="p">},</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -1416,7 +1421,7 @@
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;start: </span><span class="si">{</span><span class="n">start</span><span class="si">}</span><span class="s2"> stop: </span><span class="si">{</span><span class="n">stop</span><span class="si">}</span><span class="s2"> stride: </span><span class="si">{</span><span class="n">stride</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_value</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
                     <span class="n">generic_msg</span><span class="p">(</span>
-                        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;[slice]=pdarray-1D&quot;</span><span class="p">,</span>
+                        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[slice]=pdarray&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">_value</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,1&gt;&quot;</span><span class="p">,</span>
                         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                             <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
                             <span class="s2">&quot;starts&quot;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span>
@@ -1427,14 +1432,14 @@
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">generic_msg</span><span class="p">(</span>
-                        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;[slice]=val-1D&quot;</span><span class="p">,</span>
+                        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[slice]=val&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,1&gt;&quot;</span><span class="p">,</span>
                         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                             <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
-                            <span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span>
-                            <span class="s2">&quot;stop&quot;</span><span class="p">:</span> <span class="n">stop</span><span class="p">,</span>
-                            <span class="s2">&quot;stride&quot;</span><span class="p">:</span> <span class="n">stride</span><span class="p">,</span>
-                            <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+                            <span class="s2">&quot;starts&quot;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span>
+                            <span class="s2">&quot;stops&quot;</span><span class="p">:</span> <span class="n">stop</span><span class="p">,</span>
+                            <span class="s2">&quot;strides&quot;</span><span class="p">:</span> <span class="n">stride</span><span class="p">,</span>
                             <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_other</span><span class="p">(</span><span class="n">_value</span><span class="p">),</span>
+                            <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
                         <span class="p">},</span>
                     <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
@@ -1519,7 +1524,7 @@
                         <span class="p">)</span>
 
                     <span class="n">generic_msg</span><span class="p">(</span>
-                        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[slice]=pdarray-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+                        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[slice]=pdarray&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">_value_r</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
                         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                             <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
                             <span class="s2">&quot;starts&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">starts</span><span class="p">),</span>
@@ -1531,24 +1536,24 @@
                 <span class="k">elif</span> <span class="n">all_scalar_keys</span><span class="p">:</span>
                     <span class="c1"># use simpler indexing if we got a tuple of only scalars</span>
                     <span class="n">generic_msg</span><span class="p">(</span>
-                        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[int]=val-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+                        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[int]=val&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
                         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                             <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
                             <span class="s2">&quot;idx&quot;</span><span class="p">:</span> <span class="n">key</span><span class="p">,</span>
-                            <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
                             <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_other</span><span class="p">(</span><span class="n">_value</span><span class="p">),</span>
+                            <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
                         <span class="p">},</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">generic_msg</span><span class="p">(</span>
-                        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[slice]=val-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+                        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[slice]=val&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
                         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                             <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
                             <span class="s2">&quot;starts&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">starts</span><span class="p">),</span>
                             <span class="s2">&quot;stops&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">stops</span><span class="p">),</span>
                             <span class="s2">&quot;strides&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">strides</span><span class="p">),</span>
-                            <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
                             <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_other</span><span class="p">(</span><span class="n">_value</span><span class="p">),</span>
+                            <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
                         <span class="p">},</span>
                     <span class="p">)</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
@@ -1556,7 +1561,7 @@
                 <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">):</span>
                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_value</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
                         <span class="n">generic_msg</span><span class="p">(</span>
-                            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[slice]=pdarray-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+                            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[slice]=pdarray&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">_value</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
                             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                                 <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
                                 <span class="s2">&quot;starts&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">([</span><span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">)]),</span>
@@ -1567,14 +1572,14 @@
                         <span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">generic_msg</span><span class="p">(</span>
-                            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[slice]=val-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+                            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[slice]=val&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
                             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                                 <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
                                 <span class="s2">&quot;starts&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">([</span><span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">)]),</span>
                                 <span class="s2">&quot;stops&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span>
                                 <span class="s2">&quot;strides&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">([</span><span class="mi">1</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">)]),</span>
-                                <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
                                 <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_other</span><span class="p">(</span><span class="n">_value</span><span class="p">),</span>
+                                <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
                             <span class="p">},</span>
                         <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>

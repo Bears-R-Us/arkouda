@@ -982,7 +982,10 @@
 <div class="viewcode-block" id="scalar_array">
 <a class="viewcode-back" href="../../autoapi/arkouda/pdarraycreation/index.html#arkouda.scalar_array">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">scalar_array</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">numeric_scalars</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">scalar_array</span><span class="p">(</span>
+    <span class="n">value</span><span class="p">:</span> <span class="n">numeric_scalars</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">bigint</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a pdarray from a single scalar value.</span>
 
@@ -997,9 +1000,14 @@
 <span class="sd">        pdarray with a single element</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_dtype</span> <span class="o">=</span> <span class="n">akdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_dtype</span> <span class="o">=</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
         <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;createScalarArray&lt;</span><span class="si">{</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;createScalarArray&lt;</span><span class="si">{</span><span class="n">_dtype</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">},</span>
         <span class="p">)</span>
     <span class="p">)</span></div>

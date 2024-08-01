@@ -504,15 +504,14 @@
                 <span class="p">)</span>
             <span class="n">coords</span> <span class="o">=</span> <span class="n">key</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span> <span class="ow">is</span> <span class="n">OrderType</span><span class="o">.</span><span class="n">COLUMN_MAJOR</span> <span class="k">else</span> <span class="n">key</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-                <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;arrayViewIntIndex&quot;</span><span class="p">,</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;arrayViewIntIndex&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                     <span class="s2">&quot;base&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">,</span>
                     <span class="s2">&quot;dim_prod&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dim_prod</span><span class="p">,</span>
                     <span class="s2">&quot;coords&quot;</span><span class="p">:</span> <span class="n">coords</span><span class="p">,</span>
                 <span class="p">},</span>
             <span class="p">)</span>
-            <span class="n">fields</span> <span class="o">=</span> <span class="n">repMsg</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-            <span class="k">return</span> <span class="n">parse_single_value</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+            <span class="k">return</span> <span class="n">parse_single_value</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="n">indices</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">reshape_dim_list</span> <span class="o">=</span> <span class="p">[]</span>
@@ -617,10 +616,9 @@
                     <span class="p">)</span>
                 <span class="n">coords</span> <span class="o">=</span> <span class="n">key</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span> <span class="ow">is</span> <span class="n">OrderType</span><span class="o">.</span><span class="n">COLUMN_MAJOR</span> <span class="k">else</span> <span class="n">key</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
                 <span class="n">generic_msg</span><span class="p">(</span>
-                    <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;arrayViewIntIndexAssign&quot;</span><span class="p">,</span>
+                    <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;arrayViewIntIndexAssign&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
                     <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                         <span class="s2">&quot;base&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">,</span>
-                        <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
                         <span class="s2">&quot;dim_prod&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dim_prod</span><span class="p">,</span>
                         <span class="s2">&quot;coords&quot;</span><span class="p">:</span> <span class="n">coords</span><span class="p">,</span>
                         <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">format_other</span><span class="p">(</span><span class="n">value</span><span class="p">),</span>

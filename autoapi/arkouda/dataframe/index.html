@@ -409,8 +409,8 @@
 <li><p><strong>initialdata</strong> (<em>List</em><em> or </em><em>dictionary</em><em> of </em><em>lists</em><em>, </em><em>tuples</em><em>, or </em><em>pdarrays</em>) – Each list/dictionary entry corresponds to one column of the data and
 should be a homogenous type. Different columns may have different
 types. If using a dictionary, keys should be strings.</p></li>
-<li><p><strong>index</strong> (<a class="reference internal" href="../../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../index.html#id597" title="arkouda.Strings"><em>Strings</em></a>) – Index for the resulting frame. Defaults to an integer range.</p></li>
-<li><p><strong>columns</strong> (<em>List</em><em>, </em><em>tuple</em><em>, </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../index.html#id597" title="arkouda.Strings"><em>Strings</em></a>) – Column labels to use if the data does not include them. Elements must
+<li><p><strong>index</strong> (<a class="reference internal" href="../../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../index.html#id720" title="arkouda.Strings"><em>Strings</em></a>) – Index for the resulting frame. Defaults to an integer range.</p></li>
+<li><p><strong>columns</strong> (<em>List</em><em>, </em><em>tuple</em><em>, </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../index.html#id720" title="arkouda.Strings"><em>Strings</em></a>) – Column labels to use if the data does not include them. Elements must
 be strings. Defaults to an stringified integer range.</p></li>
 </ul>
 </dd>
@@ -1362,7 +1362,7 @@ arkouda server which was registered using register().</p>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame">arkouda.dataframe.DataFrame</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../index.html#id443" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if user_defined_name is not registered</p>
+<dd class="field-even"><p><a class="reference internal" href="../index.html#id491" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if user_defined_name is not registered</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -2747,7 +2747,7 @@ appending rows.</p>
 <dd class="field-even"><p>bool</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id443" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mismatch of registered components.</p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id491" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mismatch of registered components.</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -3718,7 +3718,7 @@ Please note you cannot register two different DataFrames with the same name.</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str.</p></li>
-<li><p><a class="reference internal" href="../index.html#id443" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the DataFrame with the user_defined_name.</p></li>
+<li><p><a class="reference internal" href="../index.html#id491" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the DataFrame with the user_defined_name.</p></li>
 </ul>
 </dd>
 </dl>
@@ -4982,7 +4982,7 @@ a supported dtype</p></li>
 registered using register() and/or attached to using attach().</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id443" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id491" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
 when attempting to unregister.</p>
 </dd>
 </dl>
@@ -5018,7 +5018,7 @@ with the arkouda server via register().</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – If user_defined_name is not a string.</p></li>
-<li><p><a class="reference internal" href="../index.html#id443" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If there is an issue attempting to unregister any underlying components.</p></li>
+<li><p><a class="reference internal" href="../index.html#id491" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If there is an issue attempting to unregister any underlying components.</p></li>
 </ul>
 </dd>
 </dl>
@@ -6186,8 +6186,8 @@ that the caller gets the indices of values present in both arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<a class="reference internal" href="../index.html#id597" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – An array of strings.</p></li>
-<li><p><strong>b</strong> (<a class="reference internal" href="../index.html#id597" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – An array of strings.</p></li>
+<li><p><strong>a</strong> (<a class="reference internal" href="../index.html#id720" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – An array of strings.</p></li>
+<li><p><strong>b</strong> (<a class="reference internal" href="../index.html#id720" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – An array of strings.</p></li>
 <li><p><strong>positions</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Return tuple of boolean pdarrays that indicate positions in <cite>a</cite> and <cite>b</cite>
 of the intersection values.</p></li>
 <li><p><strong>unique</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If the number of distinct values in <cite>a</cite> (and <cite>b</cite>) is equal to the size of

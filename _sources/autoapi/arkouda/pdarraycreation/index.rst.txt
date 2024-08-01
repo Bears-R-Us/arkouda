@@ -553,7 +553,7 @@ Module Contents
    array(['+5"f', '-P]3', '4k', '~HFF', 'F'])
 
 
-.. py:function:: scalar_array(value: arkouda.dtypes.numeric_scalars)
+.. py:function:: scalar_array(value: arkouda.dtypes.numeric_scalars, dtype: Optional[Union[numpy.dtype, type, str, arkouda.dtypes.bigint]] = None) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray from a single scalar value.
 
