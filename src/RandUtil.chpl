@@ -36,8 +36,9 @@ module RandUtil {
     }
 
     enum GenerationFunction {
-      PoissonGenerator,
       ExponentialGenerator,
+      NormalGenerator,
+      PoissonGenerator,
     }
 
     // TODO how to update this to handle randArr being a multi-dim array??
@@ -75,11 +76,14 @@ module RandUtil {
                             var agg = newDstAggregator(t);
                             for i in startIdx..stopIdx {
                                 select function {
-                                    when GenerationFunction.PoissonGenerator {
-                                        agg.copy(randArr[i], poissonGenerator(lam[i], realRS));
-                                    }
                                     when GenerationFunction.ExponentialGenerator {
                                         agg.copy(randArr[i], standardExponentialZig(realRS, uintRS));
+                                    }
+                                    when GenerationFunction.NormalGenerator {
+                                        agg.copy(randArr[i], standardNormZig(realRS, uintRS));
+                                    }
+                                    when GenerationFunction.PoissonGenerator {
+                                        agg.copy(randArr[i], poissonGenerator(lam[i], realRS));
                                     }
                                     otherwise {
                                         compilerError("Unrecognized generation function");
@@ -94,11 +98,14 @@ module RandUtil {
                         else {
                             for i in startIdx..stopIdx {
                                 select function {
-                                    when GenerationFunction.PoissonGenerator {
-                                        randArr[i] = poissonGenerator(lam[i], realRS);
-                                    }
                                     when GenerationFunction.ExponentialGenerator {
                                         randArr[i] = standardExponentialZig(realRS, uintRS);
+                                    }
+                                    when GenerationFunction.NormalGenerator {
+                                        randArr[i] = standardNormZig(realRS, uintRS);
+                                    }
+                                    when GenerationFunction.PoissonGenerator {
+                                        randArr[i] = poissonGenerator(lam[i], realRS);
                                     }
                                     otherwise {
                                         compilerError("Unrecognized generation function");
@@ -114,11 +121,14 @@ module RandUtil {
             forall (rv, i) in zip(randArr, randArr.domain) with (var realRS = new randomStream(real),
                                                                  var uintRS = new randomStream(uint)) {
                 select function {
-                    when GenerationFunction.PoissonGenerator {
-                        rv = poissonGenerator(lam[i], realRS);
-                    }
                     when GenerationFunction.ExponentialGenerator {
                         rv = standardExponentialZig(realRS, uintRS);
+                    }
+                    when GenerationFunction.NormalGenerator {
+                        rv = standardNormZig(realRS, uintRS);
+                    }
+                    when GenerationFunction.PoissonGenerator {
+                        rv = poissonGenerator(lam[i], realRS);
                     }
                     otherwise {
                         compilerError("Unrecognized generation function");

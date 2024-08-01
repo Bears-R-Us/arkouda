@@ -196,21 +196,27 @@ class Generator:
         pdarray
             Drawn samples from the standard exponential distribution.
         """
+        from arkouda.util import _calc_shape
+
         if size is None:
             # delegate to numpy when return size is 1
             return self._np_generator.standard_exponential(method=method)
 
+        shape, full_size, ndim = _calc_shape(size)
+        if full_size < 0:
+            raise ValueError("The size parameter must be > 0")
+
         rep_msg = generic_msg(
-            cmd="standardExponential",
+            cmd=f"standardExponential<{ndim}>",
             args={
                 "name": self._name_dict[akdtype("float64")],
-                "size": size,
+                "size": shape,
                 "method": method.upper(),
                 "has_seed": self._seed is not None,
                 "state": self._state,
             },
         )
-        self._state += size if method.upper() == "INV" else 1
+        self._state += full_size if method.upper() == "INV" else 1
         return create_pdarray(rep_msg)
 
     def integers(self, low, high=None, size=None, dtype=akint64, endpoint=False):
@@ -290,7 +296,7 @@ class Generator:
         self._state += full_size
         return create_pdarray(rep_msg)
 
-    def normal(self, loc=0.0, scale=1.0, size=None):
+    def normal(self, loc=0.0, scale=1.0, size=None, method="zig"):
         r"""
         Draw samples from a normal (Gaussian) distribution
 
@@ -304,6 +310,10 @@ class Generator:
 
         size: numeric_scalars, optional
             Output shape. Default is None, in which case a single value is returned.
+
+        method : str, optional
+            Either 'box' or 'zig'. 'box' uses the Box–Muller transform
+            'zig' uses the Ziggurat method.
 
         Notes
         -----
@@ -337,7 +347,7 @@ class Generator:
         if (scale < 0).any() if isinstance(scale, pdarray) else scale < 0:
             raise TypeError("scale must be non-negative.")
 
-        return loc + scale * self.standard_normal(size=size)
+        return loc + scale * self.standard_normal(size=size, method=method)
 
     def random(self, size=None):
         """
@@ -378,7 +388,7 @@ class Generator:
             return self._np_generator.random()
         return self.uniform(size=size)
 
-    def standard_normal(self, size=None):
+    def standard_normal(self, size=None, method="zig"):
         r"""
         Draw samples from a standard Normal distribution (mean=0, stdev=1).
 
@@ -386,6 +396,10 @@ class Generator:
         ----------
         size: numeric_scalars, optional
             Output shape. Default is None, in which case a single value is returned.
+
+        method : str, optional
+            Either 'box' or 'zig'. 'box' uses the Box–Muller transform
+            'zig' uses the Ziggurat method.
 
         Returns
         -------
@@ -426,6 +440,8 @@ class Generator:
             args={
                 "name": self._name_dict[akdtype("float64")],
                 "shape": shape,
+                "method": method.upper(),
+                "has_seed": self._seed is not None,
                 "state": self._state,
             },
         )

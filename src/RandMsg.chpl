@@ -157,31 +157,165 @@ module RandMsg
         return MsgTuple.error("uniformGenerator does not support the bigint dtype");
     }
 
+
+    /*
+        Use the ziggurat method (https://en.wikipedia.org/wiki/Ziggurat_algorithm#Theory_of_operation)
+        to generate normally distributed numbers using n (num of rectangles) = 256.
+        The number of rectangles only impacts how quick the algorithm is, not it's accuracy.
+        This is relatively fast because the common case is not computationally expensive
+
+        In this algorithm we choose uniformly and then decide whether to accept the candidate or not
+        depending on whether it falls under the pdf of our distribution
+
+        A good explaination of the ziggurat algorithm is:
+        https://blogs.mathworks.com/cleve/2015/05/18/the-ziggurat-random-normal-generator/
+
+        This implementation based on numpy's:
+        https://github.com/numpy/numpy/blob/main/numpy/random/src/distributions/distributions.c
+
+        Uses constants from lists of size 256 (number of rectangles) found in ZigguratConstants.chpl
+    */
+    inline proc standardNormZig(ref realRng, ref uintRng): real {
+        // modified from numpy to use while loop instead of recusrsion so we can inline the proc
+        var count = 0;
+        // to guarantee completion this should be while true, but limiting to 100 tries will make the chance
+        // of failure near zero while avoiding the possibility of an infinite loop
+        // the odds of failing 100 times in a row is (1 - .993)**100 = 3.2345e-216
+        while count <= 100 {
+            var ri = uintRng.next();
+
+            // AND with 0xFF (255) to get our index into our 256 long const arrays
+            var idx = ri & 0xFF;
+            ri >>= 8;
+
+            var rabs = (ri >> 1) & 0x000fffffffffffff;
+            var x = rabs * wi_double[idx];
+
+            // ziggurat only works on monotonically decreasing, which normal isn't but since stardard normal 
+            // is symmetric about x=0, we can do it on one half and then choose positive or negative
+            var sign = ri & 0x1;
+            if (sign & 0x1) {
+                x = -x;
+            }
+            if (rabs < ki_double[idx]) {
+                // the point fell in the core of one of our rectangular slices, so we're guaranteed
+                // it falls under the pdf curve. We can return it as a sample from our distribution.
+                // We will return here 99.3% of the time on the 1st try
+                return x;
+            }
+
+            // The fall back algorithm for calculating if the sample point lies under the pdf.
+            // Either in the tip of one of the rectangles or in the tail of the distribution.
+            // See https://blogs.mathworks.com/cleve/2015/05/18/the-ziggurat-random-normal-generator/
+
+            // candidate point did not fall in the core of any rectangular slices. Either it lies in the
+            // first slice (which doesn't have a core), in the tail of the distribution, or in the tip of one of slices.
+            if (idx == 0) {
+                // first rectangular slice
+
+                // this was written as an infinite inner loop in numpy, but we want to avoid that possibility
+                //  since we don't have a probability of success, we'll just loop at most 10**6 times
+                var innerCount = 0;
+                while innerCount <= 10**6 {
+                    const xx = -ziggurat_nor_inv_r * log1p(-realRng.next());
+                    const yy = -log1p(-realRng.next());
+                    if (yy + yy > xx * xx) {
+                        return if ((rabs >> 8) & 0x1) then -(ziggurat_nor_r + xx) else ziggurat_nor_r + xx;
+                    }
+                    innerCount += 1;
+                }
+            } else {
+                if (((fi_double[idx - 1] - fi_double[idx]) * realRng.next() + fi_double[idx]) < exp(-0.5 * x * x)) {
+                    // tip calculation
+                    return x;
+                }
+            }
+            // reject sample and retry
+            count += 1;
+        }
+        return -1.0;  // we failed 100 times in a row which should practically never happen
+    }
+
+    inline proc standardNormBoxMuller(shape: ?t, ref rng) throws {
+        // uses Box–Muller transform
+        // generates values drawn from the standard normal distribution using
+        // 2 uniformly distributed random numbers
+
+        var u1 = if t == int then makeDistArray(shape, real) else makeDistArray((...shape), real);
+        var u2 = if t == int then makeDistArray(shape, real) else makeDistArray((...shape), real);
+
+        rng.fill(u1);
+        rng.fill(u2);
+
+        return sqrt(-2*log(u1))*cos(2*pi*u2);
+    }
+
     @arkouda.instantiateAndRegister
-    proc standardNormalGenerator(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd): MsgTuple throws {
-        const name = msgArgs["name"],                                   // generator name
-              shape = msgArgs["shape"].toScalarTuple(int, array_nd),    // population size
-              state = msgArgs["state"].toScalar(int);                   // rng state
+    proc standardNormalGenerator(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd): MsgTuple throws
+        where array_nd == 1
+    {
+        const name = msgArgs["name"],                           // generator name
+              shape = msgArgs["shape"].toScalar(int),           // population size
+              method = msgArgs["method"].toScalar(string),      // method to use to generate exponential samples
+              hasSeed = msgArgs["has_seed"].toScalar(bool),     // boolean indicating if the generator has a seed
+              state = msgArgs["state"].toScalar(int);           // rng state
 
         randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                "name: %? shape %? state %i".format(name, shape, state));
-
+                                "name: %? shape %i state %i".format(name, shape, state));
 
         var generatorEntry= st[name]: borrowed GeneratorSymEntry(real);
         ref rng = generatorEntry.generator;
         if state != 1 then rng.skipTo(state-1);
 
-        // uses Box–Muller transform
-        // generates values drawn from the standard normal distribution using
-        // 2 uniformly distributed random numbers
-        var u1 = makeDistArray((...shape), real);
-        var u2 = makeDistArray((...shape), real);
-        rng.fill(u1);
-        rng.fill(u2);
-
-        var standNorm = sqrt(-2*log(u1))*cos(2*pi*u2);
-        return st.insert(createSymEntry(standNorm));
+        select method {
+            when "ZIG" {
+                // TODO before this can be adapted to handle multidim, we need to figure out how to modify uniformStreamPerElem
+                var standNormArr = makeDistArray(shape, real);
+                uniformStreamPerElem(standNormArr, rng, GenerationFunction.NormalGenerator, hasSeed);
+                return st.insert(createSymEntry(standNormArr));
+            }
+            when "BOX" {
+                const standNormArr = standardNormBoxMuller(shape, rng);
+                return st.insert(createSymEntry(standNormArr));
+            }
+            otherwise {
+                var errorMsg = "Only ZIG and BOX are supported for method. Recieved: %s".format(method);
+                randLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return MsgTuple.error(errorMsg);
+            }
+        }
     }
+
+
+    proc standardNormalGenerator(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd): MsgTuple throws
+        where array_nd > 1
+    {
+        const name = msgArgs["name"],                           // generator name
+              shape = msgArgs["shape"].toScalarTuple(int, array_nd),           // population size
+              method = msgArgs["method"].toScalar(string),      // method to use to generate exponential samples
+              hasSeed = msgArgs["has_seed"].toScalar(bool),     // boolean indicating if the generator has a seed
+              state = msgArgs["state"].toScalar(int);           // rng state
+
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "name: %? shape %? state %i".format(name, shape, state));
+
+        var generatorEntry= st[name]: borrowed GeneratorSymEntry(real);
+        ref rng = generatorEntry.generator;
+        if state != 1 then rng.skipTo(state-1);
+
+        select method {
+            when "BOX" {
+                const standNomr = standardNormBoxMuller(shape, rng);
+                return st.insert(createSymEntry(standNomr));
+            }
+            otherwise {
+                var errorMsg = "Only BOX is supported for method on multidimensional arrays. Recieved: %s".format(method);
+                randLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return MsgTuple.error(errorMsg);
+            }
+        }
+    }
+
 
     /*
         Use the ziggurat method (https://en.wikipedia.org/wiki/Ziggurat_algorithm#Theory_of_operation)
@@ -238,16 +372,28 @@ module RandMsg
                 return x;
             }
             // reject sample and retry
+            count += 1;
         }
         return -1.0;  // we failed 100 times in a row which should practically never happen
     }
 
-    proc standardExponentialMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
-        const name = msgArgs["name"],                        // generator name
-              size = msgArgs["size"].toScalar(int),          // population size
-              method = msgArgs["method"].toScalar(string),   // method to use to generate exponential samples
-              hasSeed = msgArgs["has_seed"].toScalar(bool),  // boolean indicating if the generator has a seed
-              state = msgArgs["state"].toScalar(int);        // rng state
+    inline proc standardExponentialInvCDF(shape: ?t, ref rng) throws {
+        var u1 = if t == int then makeDistArray(shape, real) else makeDistArray((...shape), real);
+        rng.fill(u1);
+
+        // calculate the exponential by doing the inverse of the cdf
+        return -log1p(-u1);
+    }
+
+    @arkouda.instantiateAndRegister
+    proc standardExponential(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd): MsgTuple throws
+        where array_nd == 1
+    {
+        const name = msgArgs["name"],                                   // generator name
+              size = msgArgs["size"].toScalar(int),                     // population size
+              method = msgArgs["method"].toScalar(string),              // method to use to generate exponential samples
+              hasSeed = msgArgs["has_seed"].toScalar(bool),             // boolean indicating if the generator has a seed
+              state = msgArgs["state"].toScalar(int);                   // rng state
 
         randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                 "name: %? size %i method %s state %i".format(name, size, method, state));
@@ -264,15 +410,40 @@ module RandMsg
                 return st.insert(createSymEntry(exponentialArr));
             }
             when "INV" {
-                var u1 = makeDistArray(size, real);
-                rng.fill(u1);
-
-                // calculate the exponential by doing the inverse of the cdf
-                var exponentialArr = -log1p(-u1);
+                const exponentialArr = standardExponentialInvCDF(size, rng);
                 return st.insert(createSymEntry(exponentialArr));
             }
             otherwise {
                 var errorMsg = "Only ZIG and INV are supported for method. Recieved: %s".format(method);
+                randLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return MsgTuple.error(errorMsg);
+            }
+        }
+    }
+
+    proc standardExponential(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd): MsgTuple throws
+        where array_nd > 1
+    {
+        const name = msgArgs["name"],                                   // generator name
+              shape = msgArgs["size"].toScalarTuple(int, array_nd),     // population size
+              method = msgArgs["method"].toScalar(string),              // method to use to generate exponential samples
+              hasSeed = msgArgs["has_seed"].toScalar(bool),             // boolean indicating if the generator has a seed
+              state = msgArgs["state"].toScalar(int);                   // rng state
+
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "name: %? shape %? method %s state %i".format(name, shape, method, state));
+
+        var generatorEntry = st[name]: borrowed GeneratorSymEntry(real);
+        ref rng = generatorEntry.generator;
+        if state != 1 then rng.skipTo(state-1);
+
+        select method {
+            when "INV" {
+                const exponentialArr = standardExponentialInvCDF(shape, rng);
+                return st.insert(createSymEntry(exponentialArr));
+            }
+            otherwise {
+                var errorMsg = "Only INV is supported for method on multidimensional arrays. Recieved: %s".format(method);
                 randLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return MsgTuple.error(errorMsg);
             }
@@ -546,7 +717,6 @@ module RandMsg
     }
 
     use CommandMap;
-    registerFunction("standardExponential", standardExponentialMsg, getModuleName());
     registerFunction("segmentedSample", segmentedSampleMsg, getModuleName());
     registerFunction("poissonGenerator", poissonGeneratorMsg, getModuleName());
 }
