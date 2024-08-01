@@ -740,7 +740,7 @@ def register_commands(config, source_files):
         file_stamps = []
         found_annotation = False
 
-        root = ctx.parse(filename)[0]
+        root, _ = next(chapel.each_matching(ctx.parse(filename), chapel.Module))
         mod_name = filename.split("/")[-1].split(".")[0]
 
         file_stamps.append(f"import {mod_name};")
