@@ -557,21 +557,27 @@
 <span class="sd">        pdarray</span>
 <span class="sd">            Drawn samples from the standard exponential distribution.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">_calc_shape</span>
+
         <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># delegate to numpy when return size is 1</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_np_generator</span><span class="o">.</span><span class="n">standard_exponential</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
 
+        <span class="n">shape</span><span class="p">,</span> <span class="n">full_size</span><span class="p">,</span> <span class="n">ndim</span> <span class="o">=</span> <span class="n">_calc_shape</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">full_size</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The size parameter must be &gt; 0&quot;</span><span class="p">)</span>
+
         <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;standardExponential&quot;</span><span class="p">,</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;standardExponential&lt;</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name_dict</span><span class="p">[</span><span class="n">akdtype</span><span class="p">(</span><span class="s2">&quot;float64&quot;</span><span class="p">)],</span>
-                <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">size</span><span class="p">,</span>
+                <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">shape</span><span class="p">,</span>
                 <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="n">method</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span>
                 <span class="s2">&quot;has_seed&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">+=</span> <span class="n">size</span> <span class="k">if</span> <span class="n">method</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;INV&quot;</span> <span class="k">else</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">+=</span> <span class="n">full_size</span> <span class="k">if</span> <span class="n">method</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;INV&quot;</span> <span class="k">else</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
@@ -657,7 +663,7 @@
 
 <div class="viewcode-block" id="Generator.normal">
 <a class="viewcode-back" href="../../../autoapi/arkouda/random/index.html#arkouda.Generator.normal">[docs]</a>
-    <span class="k">def</span> <span class="nf">normal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">normal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;zig&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draw samples from a normal (Gaussian) distribution</span>
 
@@ -671,6 +677,10 @@
 
 <span class="sd">        size: numeric_scalars, optional</span>
 <span class="sd">            Output shape. Default is None, in which case a single value is returned.</span>
+
+<span class="sd">        method : str, optional</span>
+<span class="sd">            Either &#39;box&#39; or &#39;zig&#39;. &#39;box&#39; uses the Box–Muller transform</span>
+<span class="sd">            &#39;zig&#39; uses the Ziggurat method.</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
@@ -704,7 +714,7 @@
         <span class="k">if</span> <span class="p">(</span><span class="n">scale</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">scale</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;scale must be non-negative.&quot;</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">loc</span> <span class="o">+</span> <span class="n">scale</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">loc</span> <span class="o">+</span> <span class="n">scale</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Generator.random">
@@ -751,7 +761,7 @@
 
 <div class="viewcode-block" id="Generator.standard_normal">
 <a class="viewcode-back" href="../../../autoapi/arkouda/random/index.html#arkouda.Generator.standard_normal">[docs]</a>
-    <span class="k">def</span> <span class="nf">standard_normal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">standard_normal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;zig&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draw samples from a standard Normal distribution (mean=0, stdev=1).</span>
 
@@ -759,6 +769,10 @@
 <span class="sd">        ----------</span>
 <span class="sd">        size: numeric_scalars, optional</span>
 <span class="sd">            Output shape. Default is None, in which case a single value is returned.</span>
+
+<span class="sd">        method : str, optional</span>
+<span class="sd">            Either &#39;box&#39; or &#39;zig&#39;. &#39;box&#39; uses the Box–Muller transform</span>
+<span class="sd">            &#39;zig&#39; uses the Ziggurat method.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -799,6 +813,8 @@
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name_dict</span><span class="p">[</span><span class="n">akdtype</span><span class="p">(</span><span class="s2">&quot;float64&quot;</span><span class="p">)],</span>
                 <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">shape</span><span class="p">,</span>
+                <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="n">method</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span>
+                <span class="s2">&quot;has_seed&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>

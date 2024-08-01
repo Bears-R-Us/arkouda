@@ -135,7 +135,7 @@ Package Contents
 
 
 
-   .. py:method:: normal(loc=0.0, scale=1.0, size=None)
+   .. py:method:: normal(loc=0.0, scale=1.0, size=None, method='zig')
 
       Draw samples from a normal (Gaussian) distribution
 
@@ -145,6 +145,9 @@ Package Contents
       :type scale: float or pdarray of floats, optional
       :param size: Output shape. Default is None, in which case a single value is returned.
       :type size: numeric_scalars, optional
+      :param method: Either 'box' or 'zig'. 'box' uses the Box–Muller transform
+                     'zig' uses the Ziggurat method.
+      :type method: str, optional
 
       .. rubric:: Notes
 
@@ -274,12 +277,15 @@ Package Contents
 
 
 
-   .. py:method:: standard_normal(size=None)
+   .. py:method:: standard_normal(size=None, method='zig')
 
       Draw samples from a standard Normal distribution (mean=0, stdev=1).
 
       :param size: Output shape. Default is None, in which case a single value is returned.
       :type size: numeric_scalars, optional
+      :param method: Either 'box' or 'zig'. 'box' uses the Box–Muller transform
+                     'zig' uses the Ziggurat method.
+      :type method: str, optional
 
       :returns: Pdarray of floats (unless size=None, in which case a single float is returned).
       :rtype: pdarray
