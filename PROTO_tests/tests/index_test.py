@@ -380,24 +380,25 @@ class TestIndex:
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_memory_usage(self, size):
-        from arkouda.dtypes import BigInt
+        from arkouda.dtypes import bigint
         from arkouda.index import Index, MultiIndex
 
         idx = Index(ak.cast(ak.array([1, 2, 3]), dt="bigint"))
-        assert idx.memory_usage() == 3 * BigInt.itemsize
+        assert idx.memory_usage() == 3 * bigint.itemsize
 
+        int64_size = ak.dtype(ak.int64).itemsize
         idx = Index(ak.cast(ak.arange(size), dt="int64"))
-        assert idx.memory_usage(unit="GB") == size * ak.dtypes.int64.itemsize / (1024 * 1024 * 1024)
-        assert idx.memory_usage(unit="MB") == size * ak.dtypes.int64.itemsize / (1024 * 1024)
-        assert idx.memory_usage(unit="KB") == size * ak.dtypes.int64.itemsize / 1024
-        assert idx.memory_usage(unit="B") == size * ak.dtypes.int64.itemsize
+        assert idx.memory_usage(unit="GB") == size * int64_size / (1024 * 1024 * 1024)
+        assert idx.memory_usage(unit="MB") == size * int64_size / (1024 * 1024)
+        assert idx.memory_usage(unit="KB") == size * int64_size / 1024
+        assert idx.memory_usage(unit="B") == size * int64_size
 
         midx = MultiIndex([ak.cast(ak.arange(size), dt="int64"), ak.cast(ak.arange(size), dt="int64")])
-        assert midx.memory_usage(unit="GB") == 2 * size * ak.dtypes.int64.itemsize / (1024 * 1024 * 1024)
+        assert midx.memory_usage(unit="GB") == 2 * size * int64_size / (1024 * 1024 * 1024)
 
-        assert midx.memory_usage(unit="MB") == 2 * size * ak.dtypes.int64.itemsize / (1024 * 1024)
-        assert midx.memory_usage(unit="KB") == 2 * size * ak.dtypes.int64.itemsize / 1024
-        assert midx.memory_usage(unit="B") == 2 * size * ak.dtypes.int64.itemsize
+        assert midx.memory_usage(unit="MB") == 2 * size * int64_size / (1024 * 1024)
+        assert midx.memory_usage(unit="KB") == 2 * size * int64_size / 1024
+        assert midx.memory_usage(unit="B") == 2 * size * int64_size
 
     def test_is_unique(self):
         i = ak.Index(ak.array([0, 1, 2]))

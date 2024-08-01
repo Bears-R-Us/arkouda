@@ -242,7 +242,6 @@ class TestDataFrame:
         ak_to_pd = akdf.to_pandas()
         assert_frame_equal(pddf, ak_to_pd)
 
-
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", ["float64", "int64"])
     def test_from_pandas_with_index(self, size, dtype):
@@ -299,7 +298,6 @@ class TestDataFrame:
         )
 
         pd_assert_frame_equal(df.to_pandas(retain_index=True), expected_df)
-
 
     def test_convenience_init(self):
         dict1 = {"0": [1, 2], "1": [True, False], "2": ["foo", "bar"], "3": [2.3, -1.8]}
@@ -1231,7 +1229,7 @@ class TestDataFrame:
 
     def test_memory_usage(self):
         dtypes = [ak.int64, ak.float64, ak.bool_]
-        data = dict([(str(t), ak.ones(5000, dtype=ak.int64).astype(t)) for t in dtypes])
+        data = dict([(str(ak.dtype(t)), ak.ones(5000, dtype=ak.int64).astype(t)) for t in dtypes])
         df = ak.DataFrame(data)
         ak_memory_usage = df.memory_usage()
         pd_memory_usage = pd.Series(

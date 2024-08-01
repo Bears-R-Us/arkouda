@@ -1,29 +1,29 @@
 from __future__ import annotations
 
-from ._dtypes import (
+from typing import TYPE_CHECKING, Optional, Tuple, Union
+
+from ._dtypes import (  # _complex_floating_dtypes,; complex128,
+    _numeric_dtypes,
     _real_floating_dtypes,
     _real_numeric_dtypes,
-    _numeric_dtypes,
-    # _complex_floating_dtypes,
     _signed_integer_dtypes,
-    uint64,
-    int64,
     float64,
-    # complex128,
+    int64,
+    uint64,
 )
 from .array_object import Array, implements_numpy
 from .manipulation_functions import squeeze
 
-from typing import TYPE_CHECKING, Optional, Tuple, Union
-
 if TYPE_CHECKING:
     from ._typing import Dtype
 
-from arkouda.numeric import cast as akcast
-from arkouda.client import generic_msg
-from arkouda.pdarrayclass import parse_single_value, create_pdarray
-from arkouda.pdarraycreation import scalar_array
 import numpy as np
+
+from arkouda.client import generic_msg
+from arkouda.dtypes import dtype as akdtype
+from arkouda.numeric import cast as akcast
+from arkouda.pdarrayclass import create_pdarray, parse_single_value
+from arkouda.pdarraycreation import scalar_array
 
 
 def max(
@@ -411,15 +411,15 @@ def var(
 
 def _prod_sum_dtype(dtype: Dtype) -> Dtype:
     if dtype == uint64:
-        return dtype
+        return akdtype(dtype)
     elif dtype in _real_floating_dtypes:
-        return float64
+        return akdtype(float64)
     # elif dtype in _complex_floating_dtypes:
     #     return complex128
     elif dtype in _signed_integer_dtypes:
-        return int64
+        return akdtype(int64)
     else:
-        return uint64
+        return akdtype(uint64)
 
 
 def cumulative_sum(

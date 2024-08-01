@@ -2,13 +2,12 @@ import numpy.random as np_random
 
 from arkouda.client import generic_msg
 from arkouda.dtypes import _val_isinstance_of_union
-from arkouda.dtypes import bool_ as akbool
+from arkouda.dtypes import dtype as akdtype
 from arkouda.dtypes import dtype as to_numpy_dtype
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import float_scalars
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import int_scalars, numeric_scalars
-from arkouda.dtypes import uint64 as akuint64
 from arkouda.pdarrayclass import create_pdarray, pdarray
 
 
@@ -210,7 +209,7 @@ class Generator:
         rep_msg = generic_msg(
             cmd=f"standardExponential<{ndim}>",
             args={
-                "name": self._name_dict[akfloat64],
+                "name": self._name_dict[akdtype("float64")],
                 "size": shape,
                 "method": method.upper(),
                 "has_seed": self._seed is not None,
@@ -439,7 +438,7 @@ class Generator:
         rep_msg = generic_msg(
             cmd=f"standardNormalGenerator<{ndim}>",
             args={
-                "name": self._name_dict[akfloat64],
+                "name": self._name_dict[akdtype("float64")],
                 "shape": shape,
                 "method": method.upper(),
                 "has_seed": self._seed is not None,
@@ -587,7 +586,7 @@ class Generator:
         rep_msg = generic_msg(
             cmd="poissonGenerator",
             args={
-                "name": self._name_dict[akfloat64],
+                "name": self._name_dict[akdtype("float64")],
                 "lam": lam,
                 "is_single_lambda": is_single_lambda,
                 "size": size,
@@ -645,7 +644,7 @@ class Generator:
         if full_size < 0:
             raise ValueError("The size parameter must be > 0")
 
-        dt = akfloat64
+        dt = akdtype("float64")
         rep_msg = generic_msg(
             cmd=f"uniformGenerator<{dt.name},{ndim}>",
             args={
@@ -694,7 +693,7 @@ def default_rng(seed=None):
     # we declare a generator for each type and fast-forward the state
 
     name_dict = dict()
-    for dt in akint64, akuint64, akfloat64, akbool:
+    for dt in akdtype("int64"), akdtype("uint64"), akdtype("float64"), akdtype("bool"):
         name_dict[dt] = generic_msg(
             cmd=f"createGenerator<{dt.name}>",
             args={"has_seed": has_seed, "seed": seed, "state": state},

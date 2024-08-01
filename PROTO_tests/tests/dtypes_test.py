@@ -73,8 +73,9 @@ class TestDTypes:
         assert "bigint" == dtypes.resolve_scalar_dtype(2**64)
 
     def test_is_dtype_in_union(self):
-        from arkouda.dtypes import _is_dtype_in_union
         from typing import Union
+
+        from arkouda.dtypes import _is_dtype_in_union
 
         float_scalars = Union[float, np.float64, np.float32]
         assert _is_dtype_in_union(np.float64, float_scalars)
@@ -84,24 +85,22 @@ class TestDTypes:
         assert ~_is_dtype_in_union(np.float64, float)
 
     @pytest.mark.parametrize("size", pytest.prob_size)
-    def test_nbytes(self, size):
-        from arkouda.dtypes import BigInt
-
-        a = ak.cast(ak.arange(size), dt="bigint")
-        assert a.nbytes == size * BigInt.itemsize
-
-        dtype_list = [
+    @pytest.mark.parametrize(
+        "dtype",
+        [
             ak.dtypes.uint8,
             ak.dtypes.uint64,
             ak.dtypes.int64,
             ak.dtypes.float64,
             ak.dtypes.bool_,
-        ]
+            ak.dtypes.bigint,
+        ],
+    )
+    def test_nbytes(self, size, dtype):
+        a = ak.array(ak.arange(size), dtype=dtype)
+        assert a.nbytes == size * ak.dtype(dtype).itemsize
 
-        for dt in dtype_list:
-            a = ak.array(ak.arange(size), dtype=dt)
-            assert a.nbytes == size * dt.itemsize
-
+    def test_nbytes_str(self):
         a = ak.array(["a", "b", "c"])
         c = ak.Categorical(a)
         assert c.nbytes == 82

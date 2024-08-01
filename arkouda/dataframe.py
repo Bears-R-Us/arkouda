@@ -17,7 +17,7 @@ from arkouda import sort as aksort
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, maxTransferBytes
 from arkouda.client_dtypes import BitVector, Fields, IPv4
-from arkouda.dtypes import BigInt
+from arkouda.dtypes import bigint
 from arkouda.dtypes import bool_ as akbool
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import int64 as akint64
@@ -138,10 +138,7 @@ class DataFrameGroupBy:
             colnames = [
                 c
                 for c in colnames
-                if (
-                    (self.df.data[c].dtype.type in numerical_dtypes)
-                    or isinstance(self.df.data[c].dtype, BigInt)
-                )
+                if ((self.df.data[c].dtype in numerical_dtypes) or self.df.data[c].dtype == bigint)
                 and (
                     (isinstance(self.gb_key_names, str) and (c != self.gb_key_names))
                     or (isinstance(self.gb_key_names, list) and c not in self.gb_key_names)

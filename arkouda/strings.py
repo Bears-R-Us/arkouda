@@ -10,11 +10,12 @@ from typeguard import typechecked
 
 import arkouda.dtypes
 from arkouda.client import generic_msg
+from arkouda.dtypes import NUMBER_FORMAT_STRINGS
+from arkouda.dtypes import dtype as akdtype
 from arkouda.dtypes import (
-    NUMBER_FORMAT_STRINGS,
     int_scalars,
-    npstr,
     resolve_scalar_dtype,
+    str_,
     str_scalars,
     translate_np_dtype,
 )
@@ -183,7 +184,7 @@ class Strings:
 
         self._bytes: Optional[pdarray] = None
         self._offsets: Optional[pdarray] = None
-        self.dtype = npstr
+        self.dtype = akdtype(str_)
         self._regex_dict: Dict = dict()
         self.logger = getArkoudaLogger(name=__class__.__name__)  # type: ignore
 
@@ -2206,9 +2207,9 @@ class Strings:
 
         # Total number of bytes in the array data
         array_bytes = (
-            self.size * arkouda.dtypes.int64.itemsize
+            self.size * arkouda.dtypes.dtype(arkouda.dtypes.int64).itemsize
             if comp == "offsets"
-            else self.nbytes * arkouda.dtypes.uint8.itemsize
+            else self.nbytes * arkouda.dtypes.dtype(arkouda.dtypes.uint8).itemsize
         )
 
         # Guard against overflowing client memory

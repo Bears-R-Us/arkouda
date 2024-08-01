@@ -60,8 +60,14 @@ NUMBER_FORMAT_STRINGS = {
 def dtype(x):
     # we had to create our own bigint type since numpy
     # gives them dtype=object there's no np equivalent
-    if (isinstance(x, str) and x == "bigint") or isinstance(x, BigInt):
-        return bigint
+    if (
+        (isinstance(x, str) and x == "bigint")
+        or isinstance(x, bigint)
+        or (hasattr(x, "name") and x.name == "bigint")
+    ):
+        return bigint()
+    if isinstance(x, str) and x in ["Strings"]:
+        return np.dtype(np.str_)
     else:
         return np.dtype(x)
 
@@ -99,12 +105,14 @@ def _val_isinstance_of_union(val, union_type) -> builtins.bool:
     return hasattr(union_type, "__args__") and isinstance(val, union_type.__args__)
 
 
-class BigInt:
+class bigint:
     # an estimate of the itemsize of bigint (128 bytes)
     itemsize = 128
+    name = "bigint"
+    ndim = 0
+    shape = ()
 
     def __init__(self):
-        self.name = "bigint"
         self.kind = "ui"
 
     def __str__(self):
@@ -113,27 +121,36 @@ class BigInt:
     def __repr__(self):
         return f"dtype({self.name})"
 
+    def __hash__(self):
+        return hash(str(self))
+
+    def __eq__(self, other):
+        if isinstance(dtype(other), bigint):
+            return True
+        return False
+
+    def __neq__(self, other):
+        return not (self == other)
+
     def type(self, x):
         return int(x)
 
 
-uint8 = np.dtype(np.uint8)
-uint16 = np.dtype(np.uint16)
-uint32 = np.dtype(np.uint32)
-uint64 = np.dtype(np.uint64)
-int8 = np.dtype(np.int8)
-int16 = np.dtype(np.int16)
-int32 = np.dtype(np.int32)
-int64 = np.dtype(np.int64)
-float32 = np.dtype(np.float32)
-float64 = np.dtype(np.float64)
-complex64 = np.dtype(np.complex64)
-complex128 = np.dtype(np.complex128)
-bool_ = np.dtype(bool)
-str_ = np.dtype(np.str_)
-bigint = BigInt()
-npstr = np.dtype(str)
-intTypes = frozenset((int64, uint64, uint8))
+uint8 = np.uint8
+uint16 = np.uint16
+uint32 = np.uint32
+uint64 = np.uint64
+int8 = np.int8
+int16 = np.int16
+int32 = np.int32
+int64 = np.int64
+float32 = np.float32
+float64 = np.float64
+complex64 = np.complex64
+complex128 = np.complex128
+bool_ = np.bool_
+str_ = np.str_
+intTypes = frozenset((dtype("int64"), dtype("uint64"), dtype("uint8")))
 bitType = uint64
 
 # Union aliases used for static and runtime type checking
@@ -219,8 +236,9 @@ ARKOUDA_SUPPORTED_INTS = (
     np.uint16,
     np.uint32,
     np.uint64,
-    BigInt,
+    bigint,
 )
+
 ARKOUDA_SUPPORTED_FLOATS = (float, np.float64)
 ARKOUDA_SUPPORTED_NUMBERS = (
     int,
@@ -235,7 +253,7 @@ ARKOUDA_SUPPORTED_NUMBERS = (
     np.uint16,
     np.uint32,
     np.uint64,
-    BigInt,
+    bigint,
 )
 
 # TODO: bring supported data types into parity with all numpy dtypes
@@ -276,14 +294,8 @@ def isSupportedNumber(num):
     return isinstance(num, ARKOUDA_SUPPORTED_NUMBERS)
 
 
-def _as_dtype(dt) -> Union[np.dtype, "BigInt"]:
-    if not isinstance(dt, np.dtype):
-        return dtype(dt)
-    return dt
-
-
 @typechecked
-def check_np_dtype(dt: Union[np.dtype, "BigInt"]) -> None:
+def check_np_dtype(dt: Union[np.dtype, "bigint"]) -> None:
     """
     Assert that numpy dtype dt is one of the dtypes supported
     by arkouda, otherwise raise TypeError.
@@ -295,7 +307,7 @@ def check_np_dtype(dt: Union[np.dtype, "BigInt"]) -> None:
         dt is not a np.dtype
     """
 
-    if _as_dtype(dt).name not in DTypes:
+    if dtype(dt).name not in DTypes:
         raise TypeError(f"Unsupported type: {dt}")
 
 
@@ -312,7 +324,7 @@ def translate_np_dtype(dt) -> Tuple[builtins.str, int]:
         dt is not a np.dtype
     """
     # Assert that dt is one of the arkouda supported dtypes
-    dt = _as_dtype(dt)
+    dt = dtype(dt)
     check_np_dtype(dt)
     trans = {"i": "int", "f": "float", "b": "bool", "u": "uint", "U": "str", "c": "complex"}
     kind = trans[dt.kind]
@@ -323,6 +335,7 @@ def resolve_scalar_dtype(val: object) -> str:
     """
     Try to infer what dtype arkouda_server should treat val as.
     """
+
     # Python bool or np.bool
     if isinstance(val, builtins.bool) or (
         hasattr(val, "dtype") and cast(np.bool_, val).dtype.kind == "b"

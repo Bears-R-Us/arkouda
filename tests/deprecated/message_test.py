@@ -123,9 +123,7 @@ class JSONArgs(ArkoudaTest):
         size, args = _json_args_to_str({"list1": [3, 2, 4]})
         self.assertEqual(size, 1)
         self.assertListEqual(
-            [
-                '{"key": "list1", "dtype": "int64", "val": "[\\"3\\", \\"2\\", \\"4\\"]"}'
-            ],
+            ['{"key": "list1", "dtype": "int64", "val": "[\\"3\\", \\"2\\", \\"4\\"]"}'],
             json.loads(args),
         )
 
