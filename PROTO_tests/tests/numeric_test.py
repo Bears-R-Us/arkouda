@@ -5,17 +5,21 @@ import numpy as np
 import pytest
 
 import arkouda as ak
-#from arkouda.dtypes import npstr
+from arkouda.dtypes import str_
 from arkouda.dtypes import dtype as akdtype
 from arkouda.client import get_max_array_rank
 from math import isclose, sqrt
 import subprocess
 
+ARRAY_TYPES = [ak.int64, ak.float64, ak.bool_, ak.uint64, str_]
 NUMERIC_TYPES = [ak.int64, ak.float64, ak.bool_, ak.uint64]
 NO_BOOL = [ak.int64, ak.float64, ak.uint64]
 NO_FLOAT = [ak.int64, ak.bool_, ak.uint64]
 INT_FLOAT = [ak.int64, ak.float64]
 INT_FLOAT_BOOL = [ak.int64, ak.float64, ak.bool_]
+YES_NO = [True, False]
+VOWELS_AND_SUCH = ["a", "e", "i", "o", "u", "AB", 47, 2, 3.14159]
+
 
 # There are many ways to create a vector of alternating values.
 # This is a fairly fast and fairly straightforward approach.
@@ -673,6 +677,53 @@ class TestNumeric:
         assert h1.to_list() == h3.to_list()
         assert h2.to_list() == h4.to_list()
 
+    # Notes about array_equal:
+    #   Strings compared to non-strings are always not equal.
+    #   nan handling is (of course) unique to floating point
+    #   we deliberately test on matched and mismatched arrays
+
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    @pytest.mark.parametrize("data_type", ARRAY_TYPES)
+    @pytest.mark.parametrize("same_size", YES_NO)
+    @pytest.mark.parametrize("matching", YES_NO)
+    @pytest.mark.parametrize("nan_handling", YES_NO)
+    def test_array_equal(self, prob_size, data_type, same_size, matching, nan_handling):
+        seed = pytest.seed if pytest.seed is not None else 8675309
+        if data_type is str_:  # strings require special handling
+            np.random.seed(seed)
+            temp = np.random.choice(VOWELS_AND_SUCH, prob_size)
+            pda_a = ak.array(temp)
+            pda_b = ak.array(temp)
+            assert ak.array_equal(pda_a, pda_b)  # matching string arrays
+            pda_c = pda_b[:-1]
+            assert not (ak.array_equal(pda_a,pda_c))   # matching except c is shorter by 1
+            temp = np.random.choice(VOWELS_AND_SUCH, prob_size)
+            pda_b = ak.array(temp)
+            assert not (ak.array_equal(pda_a, pda_b))  # mismatching string arrays
+            pda_b = ak.randint(0, 100, prob_size, dtype=ak.int64)
+            assert not (ak.array_equal(pda_a, pda_b))  # string to int comparison
+            pda_b = ak.randint(0, 2, prob_size, dtype=ak.bool_)
+            assert not (ak.array_equal(pda_a, pda_b))  # string to bool comparison
+        elif data_type is ak.float64:  # floats also are a special case, because of nan
+            nda_a = np.random.uniform(0, 100, prob_size)
+            if nan_handling:
+                nda_a[-1] = np.nan
+            nda_b = nda_a.copy() if matching else np.random.uniform(0, 100, prob_size)
+            pda_a = ak.array(nda_a)
+            pda_b = ak.array(nda_b) if same_size else ak.array(nda_b[:-1])
+            assert ak.array_equal(pda_a, pda_b, nan_handling) == (matching and same_size)
+        else:  # ints, uints and bools have simpler tests
+            pda_a = ak.random.randint(0, 100, prob_size, dtype=data_type)
+            if matching:  # known to match?
+                pda_b = pda_a if same_size else pda_a[:-1]
+                assert (ak.array_equal(pda_a, pda_b) == (matching and same_size))
+            elif same_size:  # not matching, but same size?
+                pda_b = ak.random.randint(0, 100, prob_size, dtype=data_type)
+                assert not (ak.array_equal(pda_a, pda_b))
+            else: # neither matching nor same size
+                pda_b = ak.random.randint(0, 100, (prob_size if same_size else prob_size-1), dtype=data_type)
+                assert not (ak.array_equal(pda_a, pda_b))
+
     # Notes about median:
     #  prob_size is either even or odd, so one of sample_e, sample_o will have an even
     #  length, and the other an odd length.  Median should be tested with both even and odd
@@ -844,7 +895,7 @@ class TestNumeric:
         # ints and bools are checked for equality; floats are checked for closeness
 
         check = lambda a, b, t: (
-            np.allclose(a.tolist(), b.tolist()) if akdtype(t).name == 'float64' else (a==b).all()
+            np.allclose(a.tolist(), b.tolist()) if akdtype(t) == 'float64' else (a==b).all()
         )
 
         # test on one square and two non-square matrices
@@ -869,7 +920,7 @@ class TestNumeric:
         # ints and bools are checked for equality; floats are checked for closeness
 
         check = lambda a, b, t: (
-            np.allclose(a.tolist(), b.tolist()) if akdtype(t).name == 'float64' else (a==b).all()
+            np.allclose(a.tolist(), b.tolist()) if akdtype(t) == 'float64' else (a==b).all()
         )
 
         # test on one square and two non-square matrices
@@ -894,7 +945,7 @@ class TestNumeric:
         # ints and bools are checked for equality; floats are checked for closeness
 
         check = lambda a, b, t: (
-            np.allclose(a.tolist(), b.tolist()) if akdtype(t).name == 'float64' else (a==b).all()
+            np.allclose(a.tolist(), b.tolist()) if akdtype(t) == 'float64' else (a==b).all()
         )
 
         # test on one square and two non-square matrices
@@ -917,7 +968,7 @@ class TestNumeric:
         # ints and bools are checked for equality; floats are checked for closeness
 
         check = lambda a, b, t: (
-            np.allclose(a.tolist(), b.tolist()) if akdtype(t).name == 'float64' else (a==b).all()
+            np.allclose(a.tolist(), b.tolist()) if akdtype(t) == 'float64' else (a==b).all()
         )
 
         # test on one square and two non-square matrices
@@ -941,7 +992,7 @@ class TestNumeric:
         # ints and bools are checked for equality; floats are checked for closeness
 
         check = lambda a, b, t: (
-            np.allclose(a.tolist(), b.tolist()) if akdtype(t).name == 'float64' else (a==b).all()
+            np.allclose(a.tolist(), b.tolist()) if akdtype(t) == 'float64' else (a==b).all()
         )
 
         # test on one square and two non-square products
@@ -970,7 +1021,7 @@ class TestNumeric:
         # ints and bools are checked for equality; floats are checked for closeness
 
         check = lambda a, b, t: (
-            np.allclose(a.tolist(), b.tolist()) if akdtype(t).name == 'float64' else (a==b).all()
+            np.allclose(a.tolist(), b.tolist()) if akdtype(t) == 'float64' else (a==b).all()
         )
 
         pda_a = ak.randint(0, 10, (depth, width), dtype=data_type1)

@@ -80,6 +80,7 @@ __all__ = [
     "hash",
     "putmask",
     "where",
+    "array_equal",
     "histogram",
     "histogram2d",
     "histogramdd",
@@ -1743,6 +1744,54 @@ def where(
             },
         )
     return create_pdarray(type_cast(str, repMsg))
+
+
+def array_equal(pda_a: pdarray, pda_b: pdarray, equal_nan: bool = False):
+    """
+    Compares two pdarrays for equality.
+    If neither array has any nan elements, then if all elements are pairwise equal,
+    it returns True.
+    If equal_Nan is False, then any nan element in either array gives a False return.
+    If equal_Nan is True, then pairwise-corresponding nans are considered equal.
+
+    Parameters
+    ----------
+        pda_a : pdarray
+        pda_b : pdarray
+        equal_nan : boolean to determine how to handle nans, default False
+
+    Returns
+    -------
+        boolean
+
+        With string data: False if one array is of type str_ and the other isn't,
+                            True is both are str_ and they match.
+        With numeric data: True if neither array has any nan elements, and all elements pairwise equal.
+                            False if equal_Nan is False, and either array has any nan element.
+                            True if equal_Nan is True, all non-nan elements are pairwise equal,
+                                            and all nans in pda_a correspond to nans in pda_b
+
+    Examples
+    --------
+    >>> a = ak.randint(0,10,10,dtype=ak.float64)
+    >>> b = a
+    >>> ak.array_equal(a,b)
+    True
+    >>> b[9] = np.nan
+    >>> ak.array_equal(a,b)
+    False
+    >>> a[9] = np.nan
+    >>> array_equal(a,b)
+    False
+    >>> ak.array_equal(a,b,True)
+    True
+    """
+    if (pda_a.shape != pda_b.shape) or ((pda_a.dtype == "str_") ^ (pda_b.dtype == "str_")):
+        return False
+    elif equal_nan:
+        return ak_all(where(isnan(pda_a), isnan(pda_b), pda_a == pda_b))
+    else:
+        return ak_all(pda_a == pda_b)
 
 
 @typechecked
