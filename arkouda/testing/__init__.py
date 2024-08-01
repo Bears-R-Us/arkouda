@@ -16,6 +16,14 @@ from ._asserters import (
     assert_is_sorted,
     assert_series_equal,
 )
+from ._equivalence_asserters import (
+    assert_almost_equivalent,
+    assert_arkouda_array_equivalent,
+    assert_equivalent,
+    assert_frame_equivalent,
+    assert_index_equivalent,
+    assert_series_equivalent,
+)
 
 __all__ = [
     "assert_almost_equal",
@@ -34,4 +42,10 @@ __all__ = [
     "assert_index_equal",
     "assert_is_sorted",
     "assert_series_equal",
+    "assert_almost_equivalent",
+    "assert_arkouda_array_equivalent",
+    "assert_equivalent",
+    "assert_frame_equivalent",
+    "assert_index_equivalent",
+    "assert_series_equivalent",
 ]

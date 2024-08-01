@@ -11,6 +11,7 @@ from arkouda import (
     DataFrame,
     Index,
     MultiIndex,
+    SegArray,
     Series,
     Strings,
     argsort,
@@ -18,7 +19,6 @@ from arkouda import (
     pdarray,
     sort,
 )
-from arkouda import SegArray
 from arkouda import sum as aksum
 from arkouda.util import is_numeric
 
@@ -539,6 +539,10 @@ def assert_arkouda_pdarray_equal(
     # both classes must be an ak.pdarray
     _check_isinstance(left, right, pdarray)
 
+    assert len(left) == len(
+        right
+    ), f"Arrays were not same size.  left had length {len(left)} and right had length {len(right)}"
+
     def _get_base(obj):
         return obj.base if getattr(obj, "base", None) is not None else obj
 
@@ -715,8 +719,8 @@ def assert_arkouda_strings_equal(
 
 
 def assert_arkouda_array_equal(
-    left: pdarray | Strings | Categorical,
-    right: pdarray | Strings | Categorical,
+    left: pdarray | Strings | Categorical | SegArray,
+    right: pdarray | Strings | Categorical | SegArray,
     check_dtype: bool = True,
     err_msg=None,
     check_same=None,
@@ -724,11 +728,11 @@ def assert_arkouda_array_equal(
     index_values=None,
 ) -> None:
     """
-    Check that 'ak.pdarray' or 'ak.Strings' or 'ak.Categorical' is equivalent.
+    Check that 'ak.pdarray' or 'ak.Strings', 'ak.Categorical', or 'ak.SegArray' is equivalent.
 
     Parameters
     ----------
-    left, right : arkouda.pdarray or arkouda.Strings or arkouda.Categorical
+    left, right : arkouda.pdarray or arkouda.Strings or arkouda.Categorical or arkouda.SegArray
         The two arrays to be compared.
     check_dtype : bool, default True
         Check dtype if both a and b are ak.pdarray.
@@ -1088,7 +1092,7 @@ def assert_equal(left, right, **kwargs) -> None:
 
     Parameters
     ----------
-    left, right : Index, Series, DataFrame, or np.pdarray
+    left, right : Index, Series, DataFrame, or pdarray
         The two items to be compared.
     **kwargs
         All keyword arguments are passed through to the underlying assert method.
@@ -1101,7 +1105,7 @@ def assert_equal(left, right, **kwargs) -> None:
         assert_series_equal(left, right, **kwargs)
     elif isinstance(left, DataFrame):
         assert_frame_equal(left, right, **kwargs)
-    elif isinstance(left, pdarray):
+    elif isinstance(left, (pdarray, Strings, Categorical, SegArray)):
         assert_arkouda_array_equal(left, right, **kwargs)
     elif isinstance(left, str):
         assert kwargs == {}
