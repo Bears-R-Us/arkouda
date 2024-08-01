@@ -391,6 +391,9 @@
 <span class="c1"># threshold for __iter__() to limit comms to arkouda_server</span>
 <span class="n">pdarrayIterThreshDefVal</span> <span class="o">=</span> <span class="mi">100</span>
 <span class="n">pdarrayIterThresh</span> <span class="o">=</span> <span class="n">pdarrayIterThreshDefVal</span>
+<span class="n">sparrayIterThreshDefVal</span> <span class="o">=</span> <span class="mi">20</span>  <span class="c1"># sps print format is longer; we have small thresh</span>
+<span class="n">sparrayIterThresh</span> <span class="o">=</span> <span class="n">sparrayIterThreshDefVal</span>
+
 <span class="n">maxTransferBytesDefVal</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">30</span>
 <span class="n">maxTransferBytes</span> <span class="o">=</span> <span class="n">maxTransferBytesDefVal</span>
 <span class="c1"># maximum number of capture group for regex</span>

@@ -766,6 +766,11 @@ For Example, group by contains multiple SymEntries that are all considered part 
 <dd></dd></dl>
 
 <dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.GenSparseSymEntry.nnz">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">nnz</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSparseSymEntry.nnz" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GenSparseSymEntry.ndim">
 <em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">ndim</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSparseSymEntry.ndim" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -782,7 +787,7 @@ For Example, group by contains multiple SymEntries that are all considered part 
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GenSparseSymEntry.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em>, <em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em>, <em class="sig-param"><span class="pre">ndim:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">2</span></em>, <em class="sig-param"><span class="pre">layoutStr:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.GenSparseSymEntry.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em>, <em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em>, <em class="sig-param"><span class="pre">nnz:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">ndim:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">2</span></em>, <em class="sig-param"><span class="pre">layoutStr:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.GenSparseSymEntry.init" title="Link to this definition">¶</a></dt>
 <dd><p>Create a 1D GenSymEntry from an array element type and length</p>
 </dd></dl>
 
@@ -796,6 +801,45 @@ For Example, group by contains multiple SymEntries that are all considered part 
 <dd class="field-odd"><p><strong>etype</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">type</span></code></span> – <cite>SparseSymEntry</cite> type parameter</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.GenSparseSymEntry.entry__str__">
+<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">entry__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">thresh:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></em>, <em class="sig-param"><span class="pre">prefix:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em>, <em class="sig-param"><span class="pre">suffix:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em>, <em class="sig-param"><span class="pre">baseFormat:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSparseSymEntry.entry__str__" title="Link to this definition">¶</a></dt>
+<dd><p>Formats and returns data in this entry up to the specified threshold.
+Arrays of size less than threshold will be printed in their entirety.
+Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements</p>
+<blockquote>
+<div><dl class="field-list simple">
+<dt class="field-odd">arg thresh<span class="colon">:</span></dt>
+<dd class="field-odd"><p>threshold for data to return</p>
+</dd>
+<dt class="field-even">type thresh<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+<dt class="field-odd">arg prefix<span class="colon">:</span></dt>
+<dd class="field-odd"><p>String to prepend to the front of the data string</p>
+</dd>
+<dt class="field-even">type prefix<span class="colon">:</span></dt>
+<dd class="field-even"><p>string</p>
+</dd>
+<dt class="field-odd">arg suffix<span class="colon">:</span></dt>
+<dd class="field-odd"><p>String to append to the tail of the data string</p>
+</dd>
+<dt class="field-even">type suffix<span class="colon">:</span></dt>
+<dd class="field-even"><p>string</p>
+</dd>
+<dt class="field-odd">arg baseFormat<span class="colon">:</span></dt>
+<dd class="field-odd"><p>String which represents the base format string for the data type</p>
+</dd>
+<dt class="field-even">type baseFormat<span class="colon">:</span></dt>
+<dd class="field-even"><p>string</p>
+</dd>
+<dt class="field-odd">returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>s (string) containing the array data</p>
+</dd>
+</dl>
+</div></blockquote>
 </dd></dl>
 
 <dl class="chpl method">
@@ -860,6 +904,45 @@ For now, each dimension is assumed to be equal.</p>
 <dd class="field-even"><p><strong>etype</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">type</span></code></span> – type to be instantiated</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.SparseSymEntry.entry__str__">
+<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">entry__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">thresh:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">6</span></em>, <em class="sig-param"><span class="pre">prefix:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;noprefix&quot;</span></em>, <em class="sig-param"><span class="pre">suffix:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;nosuffix&quot;</span></em>, <em class="sig-param"><span class="pre">baseFormat:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;%\?&quot;</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.SparseSymEntry.entry__str__" title="Link to this definition">¶</a></dt>
+<dd><p>Formats and returns data in this entry up to the specified threshold.
+Matrices with nnz less than threshold will be printed in their entirety.
+Matrices with nnz greater than or equal to threshold will print the first 3 and last 3 elements</p>
+<blockquote>
+<div><dl class="field-list simple">
+<dt class="field-odd">arg thresh<span class="colon">:</span></dt>
+<dd class="field-odd"><p>threshold for data to return</p>
+</dd>
+<dt class="field-even">type thresh<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+<dt class="field-odd">arg prefix<span class="colon">:</span></dt>
+<dd class="field-odd"><p>String to pre-pend to the front of the data string</p>
+</dd>
+<dt class="field-even">type prefix<span class="colon">:</span></dt>
+<dd class="field-even"><p>string</p>
+</dd>
+<dt class="field-odd">arg suffix<span class="colon">:</span></dt>
+<dd class="field-odd"><p>String to append to the tail of the data string</p>
+</dd>
+<dt class="field-even">type suffix<span class="colon">:</span></dt>
+<dd class="field-even"><p>string</p>
+</dd>
+<dt class="field-odd">arg baseFormat<span class="colon">:</span></dt>
+<dd class="field-odd"><p>String which represents the base format string for the data type</p>
+</dd>
+<dt class="field-even">type baseFormat<span class="colon">:</span></dt>
+<dd class="field-even"><p>string</p>
+</dd>
+<dt class="field-odd">returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>s (string) containing the array data</p>
+</dd>
+</dl>
+</div></blockquote>
 </dd></dl>
 
 <dl class="chpl method">

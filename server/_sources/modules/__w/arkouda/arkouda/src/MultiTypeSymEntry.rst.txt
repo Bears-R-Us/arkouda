@@ -358,13 +358,15 @@ or
 
    .. attribute:: var size: int = 0
 
+   .. attribute:: var nnz: int = 0
+
    .. attribute:: var ndim: int = 2
 
    .. attribute:: var shape: string = "[0,0]"
 
    .. attribute:: var layoutStr: string = "UNKNOWN"
 
-   .. method:: proc init(type etype, size: int = 0, ndim: int = 2, layoutStr: string)
+   .. method:: proc init(type etype, size: int = 0, nnz: int, ndim: int = 2, layoutStr: string)
 
       
       Create a 1D GenSymEntry from an array element type and length
@@ -378,6 +380,28 @@ or
       
       :arg etype: `SparseSymEntry` type parameter
       :type etype: type
+      
+
+   .. method:: override proc entry__str__(thresh: int = 1, prefix: string = "", suffix: string = "", baseFormat: string = ""): string throws
+
+      
+      Formats and returns data in this entry up to the specified threshold.
+      Arrays of size less than threshold will be printed in their entirety.
+      Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements
+      
+        :arg thresh: threshold for data to return
+        :type thresh: int
+      
+        :arg prefix: String to prepend to the front of the data string
+        :type prefix: string
+      
+        :arg suffix: String to append to the tail of the data string
+        :type suffix: string
+      
+        :arg baseFormat: String which represents the base format string for the data type
+        :type baseFormat: string
+      
+        :returns: s (string) containing the array data
       
 
    .. method:: proc attrib(): string throws
@@ -432,6 +456,28 @@ or
       
       :arg etype: type to be instantiated
       :type etype: type
+      
+
+   .. method:: override proc entry__str__(thresh: int = 6, prefix: string = "noprefix", suffix: string = "nosuffix", baseFormat: string = "%\?"): string throws
+
+      
+      Formats and returns data in this entry up to the specified threshold.
+      Matrices with nnz less than threshold will be printed in their entirety.
+      Matrices with nnz greater than or equal to threshold will print the first 3 and last 3 elements
+      
+          :arg thresh: threshold for data to return
+          :type thresh: int
+      
+          :arg prefix: String to pre-pend to the front of the data string
+          :type prefix: string
+      
+          :arg suffix: String to append to the tail of the data string
+          :type suffix: string
+      
+          :arg baseFormat: String which represents the base format string for the data type
+          :type baseFormat: string
+      
+          :returns: s (string) containing the array data
       
 
    .. method:: proc deinit()
