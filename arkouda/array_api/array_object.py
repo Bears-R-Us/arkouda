@@ -941,7 +941,10 @@ class Array:
 
     def _single_elem(self: Array) -> Optional[Union[int, float, complex, bool]]:
         if self._has_single_elem():
-            return self._array[0]
+            if self.ndim > 0:
+                return self._array[(0,)*self.ndim]
+            else:
+                return self._array[0]
         else:
             return None
 

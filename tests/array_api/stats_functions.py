@@ -48,7 +48,7 @@ class StatsFunctionTests(ArkoudaTest):
         a = xp.ones((10, 5, 5))
         a[0, 0, 0] = 251
 
-        self.assertEqual(xp.mean(a), 2)
+        self.assertEqual(int(xp.mean(a)), 2)
 
         a[:, 0, 0] = 26
 
