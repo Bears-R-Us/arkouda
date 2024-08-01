@@ -362,6 +362,7 @@
     <span class="n">DataFrame</span><span class="p">,</span>
     <span class="n">Index</span><span class="p">,</span>
     <span class="n">MultiIndex</span><span class="p">,</span>
+    <span class="n">SegArray</span><span class="p">,</span>
     <span class="n">Series</span><span class="p">,</span>
     <span class="n">Strings</span><span class="p">,</span>
     <span class="n">argsort</span><span class="p">,</span>
@@ -369,7 +370,6 @@
     <span class="n">pdarray</span><span class="p">,</span>
     <span class="n">sort</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">arkouda</span> <span class="kn">import</span> <span class="n">SegArray</span>
 <span class="kn">from</span> <span class="nn">arkouda</span> <span class="kn">import</span> <span class="nb">sum</span> <span class="k">as</span> <span class="n">aksum</span>
 <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">is_numeric</span>
 
@@ -913,6 +913,10 @@
     <span class="c1"># both classes must be an ak.pdarray</span>
     <span class="n">_check_isinstance</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span>
 
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">left</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span>
+        <span class="n">right</span>
+    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Arrays were not same size.  left had length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">left</span><span class="p">)</span><span class="si">}</span><span class="s2"> and right had length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">right</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+
     <span class="k">def</span> <span class="nf">_get_base</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">base</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">obj</span>
 
@@ -1098,8 +1102,8 @@
 <div class="viewcode-block" id="assert_arkouda_array_equal">
 <a class="viewcode-back" href="../../../autoapi/arkouda/testing/index.html#arkouda.assert_arkouda_array_equal">[docs]</a>
 <span class="k">def</span> <span class="nf">assert_arkouda_array_equal</span><span class="p">(</span>
-    <span class="n">left</span><span class="p">:</span> <span class="n">pdarray</span> <span class="o">|</span> <span class="n">Strings</span> <span class="o">|</span> <span class="n">Categorical</span><span class="p">,</span>
-    <span class="n">right</span><span class="p">:</span> <span class="n">pdarray</span> <span class="o">|</span> <span class="n">Strings</span> <span class="o">|</span> <span class="n">Categorical</span><span class="p">,</span>
+    <span class="n">left</span><span class="p">:</span> <span class="n">pdarray</span> <span class="o">|</span> <span class="n">Strings</span> <span class="o">|</span> <span class="n">Categorical</span> <span class="o">|</span> <span class="n">SegArray</span><span class="p">,</span>
+    <span class="n">right</span><span class="p">:</span> <span class="n">pdarray</span> <span class="o">|</span> <span class="n">Strings</span> <span class="o">|</span> <span class="n">Categorical</span> <span class="o">|</span> <span class="n">SegArray</span><span class="p">,</span>
     <span class="n">check_dtype</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">err_msg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">check_same</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1107,11 +1111,11 @@
     <span class="n">index_values</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Check that &#39;ak.pdarray&#39; or &#39;ak.Strings&#39; or &#39;ak.Categorical&#39; is equivalent.</span>
+<span class="sd">    Check that &#39;ak.pdarray&#39; or &#39;ak.Strings&#39;, &#39;ak.Categorical&#39;, or &#39;ak.SegArray&#39; is equivalent.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    left, right : arkouda.pdarray or arkouda.Strings or arkouda.Categorical</span>
+<span class="sd">    left, right : arkouda.pdarray or arkouda.Strings or arkouda.Categorical or arkouda.SegArray</span>
 <span class="sd">        The two arrays to be compared.</span>
 <span class="sd">    check_dtype : bool, default True</span>
 <span class="sd">        Check dtype if both a and b are ak.pdarray.</span>
@@ -1480,7 +1484,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    left, right : Index, Series, DataFrame, or np.pdarray</span>
+<span class="sd">    left, right : Index, Series, DataFrame, or pdarray</span>
 <span class="sd">        The two items to be compared.</span>
 <span class="sd">    **kwargs</span>
 <span class="sd">        All keyword arguments are passed through to the underlying assert method.</span>
@@ -1493,7 +1497,7 @@
         <span class="n">assert_series_equal</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">):</span>
         <span class="n">assert_frame_equal</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">,</span> <span class="n">SegArray</span><span class="p">)):</span>
         <span class="n">assert_arkouda_array_equal</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">assert</span> <span class="n">kwargs</span> <span class="o">==</span> <span class="p">{}</span>
