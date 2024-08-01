@@ -1283,79 +1283,83 @@ registerFunction('uniformGenerator<bigint,1>', ark_uniformGenerator_bigint_1, 'R
 
 proc ark_standardNormalGenerator_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.standardNormalGenerator(cmd, msgArgs, st, array_nd=1);
-registerFunction('standardNormalGenerator<1>', ark_standardNormalGenerator_1, 'RandMsg', 161);
+registerFunction('standardNormalGenerator<1>', ark_standardNormalGenerator_1, 'RandMsg', 254);
+
+proc ark_standardExponential_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return RandMsg.standardExponential(cmd, msgArgs, st, array_nd=1);
+registerFunction('standardExponential<1>', ark_standardExponential_1, 'RandMsg', 389);
 
 proc ark_choice_int(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.choice(cmd, msgArgs, st, array_dtype=int);
-registerFunction('choice<int64>', ark_choice_int, 'RandMsg', 332);
+registerFunction('choice<int64>', ark_choice_int, 'RandMsg', 503);
 
 proc ark_choice_uint(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.choice(cmd, msgArgs, st, array_dtype=uint);
-registerFunction('choice<uint64>', ark_choice_uint, 'RandMsg', 332);
+registerFunction('choice<uint64>', ark_choice_uint, 'RandMsg', 503);
 
 proc ark_choice_uint8(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.choice(cmd, msgArgs, st, array_dtype=uint(8));
-registerFunction('choice<uint8>', ark_choice_uint8, 'RandMsg', 332);
+registerFunction('choice<uint8>', ark_choice_uint8, 'RandMsg', 503);
 
 proc ark_choice_real(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.choice(cmd, msgArgs, st, array_dtype=real);
-registerFunction('choice<float64>', ark_choice_real, 'RandMsg', 332);
+registerFunction('choice<float64>', ark_choice_real, 'RandMsg', 503);
 
 proc ark_choice_bool(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.choice(cmd, msgArgs, st, array_dtype=bool);
-registerFunction('choice<bool>', ark_choice_bool, 'RandMsg', 332);
+registerFunction('choice<bool>', ark_choice_bool, 'RandMsg', 503);
 
 proc ark_choice_bigint(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.choice(cmd, msgArgs, st, array_dtype=bigint);
-registerFunction('choice<bigint>', ark_choice_bigint, 'RandMsg', 332);
+registerFunction('choice<bigint>', ark_choice_bigint, 'RandMsg', 503);
 
 proc ark_permutation_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.permutation(cmd, msgArgs, st, array_dtype=int, array_nd=1);
-registerFunction('permutation<int64,1>', ark_permutation_int_1, 'RandMsg', 406);
+registerFunction('permutation<int64,1>', ark_permutation_int_1, 'RandMsg', 577);
 
 proc ark_permutation_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.permutation(cmd, msgArgs, st, array_dtype=uint, array_nd=1);
-registerFunction('permutation<uint64,1>', ark_permutation_uint_1, 'RandMsg', 406);
+registerFunction('permutation<uint64,1>', ark_permutation_uint_1, 'RandMsg', 577);
 
 proc ark_permutation_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.permutation(cmd, msgArgs, st, array_dtype=uint(8), array_nd=1);
-registerFunction('permutation<uint8,1>', ark_permutation_uint8_1, 'RandMsg', 406);
+registerFunction('permutation<uint8,1>', ark_permutation_uint8_1, 'RandMsg', 577);
 
 proc ark_permutation_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.permutation(cmd, msgArgs, st, array_dtype=real, array_nd=1);
-registerFunction('permutation<float64,1>', ark_permutation_real_1, 'RandMsg', 406);
+registerFunction('permutation<float64,1>', ark_permutation_real_1, 'RandMsg', 577);
 
 proc ark_permutation_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.permutation(cmd, msgArgs, st, array_dtype=bool, array_nd=1);
-registerFunction('permutation<bool,1>', ark_permutation_bool_1, 'RandMsg', 406);
+registerFunction('permutation<bool,1>', ark_permutation_bool_1, 'RandMsg', 577);
 
 proc ark_permutation_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.permutation(cmd, msgArgs, st, array_dtype=bigint, array_nd=1);
-registerFunction('permutation<bigint,1>', ark_permutation_bigint_1, 'RandMsg', 406);
+registerFunction('permutation<bigint,1>', ark_permutation_bigint_1, 'RandMsg', 577);
 
 proc ark_shuffle_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.shuffle(cmd, msgArgs, st, array_dtype=int, array_nd=1);
-registerFunction('shuffle<int64,1>', ark_shuffle_int_1, 'RandMsg', 493);
+registerFunction('shuffle<int64,1>', ark_shuffle_int_1, 'RandMsg', 664);
 
 proc ark_shuffle_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.shuffle(cmd, msgArgs, st, array_dtype=uint, array_nd=1);
-registerFunction('shuffle<uint64,1>', ark_shuffle_uint_1, 'RandMsg', 493);
+registerFunction('shuffle<uint64,1>', ark_shuffle_uint_1, 'RandMsg', 664);
 
 proc ark_shuffle_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.shuffle(cmd, msgArgs, st, array_dtype=uint(8), array_nd=1);
-registerFunction('shuffle<uint8,1>', ark_shuffle_uint8_1, 'RandMsg', 493);
+registerFunction('shuffle<uint8,1>', ark_shuffle_uint8_1, 'RandMsg', 664);
 
 proc ark_shuffle_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.shuffle(cmd, msgArgs, st, array_dtype=real, array_nd=1);
-registerFunction('shuffle<float64,1>', ark_shuffle_real_1, 'RandMsg', 493);
+registerFunction('shuffle<float64,1>', ark_shuffle_real_1, 'RandMsg', 664);
 
 proc ark_shuffle_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.shuffle(cmd, msgArgs, st, array_dtype=bool, array_nd=1);
-registerFunction('shuffle<bool,1>', ark_shuffle_bool_1, 'RandMsg', 493);
+registerFunction('shuffle<bool,1>', ark_shuffle_bool_1, 'RandMsg', 664);
 
 proc ark_shuffle_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.shuffle(cmd, msgArgs, st, array_dtype=bigint, array_nd=1);
-registerFunction('shuffle<bigint,1>', ark_shuffle_bigint_1, 'RandMsg', 493);
+registerFunction('shuffle<bigint,1>', ark_shuffle_bigint_1, 'RandMsg', 664);
 
 import StatsMsg;
 
