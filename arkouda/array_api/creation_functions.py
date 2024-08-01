@@ -373,10 +373,13 @@ def zeros(
         raise ValueError(f"Unsupported device {device!r}")
 
     if isinstance(shape, tuple):
-        ndim = len(shape)
+        if shape == ():
+            return Array._new(scalar_array(0, dtype=dtype))
+        else:
+            ndim = len(shape)
     else:
         if shape == 0:
-            return Array._new(scalar_array(0))
+            return Array._new(scalar_array(0, dtype=dtype))
         else:
             ndim = 1
 

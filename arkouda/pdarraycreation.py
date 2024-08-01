@@ -608,7 +608,10 @@ def full(
 
 
 @typechecked
-def scalar_array(value: numeric_scalars):
+def scalar_array(
+    value: numeric_scalars,
+    dtype: Optional[Union[np.dtype, type, str, bigint]] = None
+) -> pdarray:
     """
     Create a pdarray from a single scalar value.
 
@@ -623,9 +626,14 @@ def scalar_array(value: numeric_scalars):
         pdarray with a single element
     """
 
+    if dtype is not None:
+        _dtype = akdtype(dtype)
+    else:
+        _dtype = resolve_scalar_dtype(value)
+
     return create_pdarray(
         generic_msg(
-            cmd=f"createScalarArray<{resolve_scalar_dtype(value)}>",
+            cmd=f"createScalarArray<{_dtype}>",
             args={"value": value},
         )
     )
