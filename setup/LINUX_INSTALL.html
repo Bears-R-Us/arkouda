@@ -357,14 +357,6 @@
         <article role="main" id="furo-main-content">
           <section id="linux">
 <h1>Linux<a class="headerlink" href="#linux" title="Link to this heading">¶</a></h1>
-<section id="update-kernel">
-<h2>Update Kernel<a class="headerlink" href="#update-kernel" title="Link to this heading">¶</a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Update Linux kernel and install some Chapel dependencies</span>
-sudo<span class="w"> </span>apt-get<span class="w"> </span>update
-sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>gcc<span class="w"> </span>g++<span class="w"> </span>m4<span class="w"> </span>perl<span class="w"> </span>python3<span class="w"> </span>python3-pip<span class="w"> </span>python3-venv<span class="w"> </span>python3-dev<span class="w"> </span>bash<span class="w"> </span>make<span class="w"> </span>mawk<span class="w"> </span>git<span class="w"> </span>pkg-config<span class="w"> </span>cmake<span class="w"> </span>llvm-14-dev<span class="w"> </span>llvm-14<span class="w"> </span>llvm-14-tools<span class="w"> </span>clang-14<span class="w"> </span>libclang-14-dev<span class="w"> </span>libclang-cpp14-dev<span class="w"> </span>libedit-dev
-</pre></div>
-</div>
-</section>
 <section id="clone-arkouda-repository">
 <h2>Clone Arkouda Repository<a class="headerlink" href="#clone-arkouda-repository" title="Link to this heading">¶</a></h2>
 <p>Download, clone, or fork the <a class="reference external" href="https://github.com/Bears-R-Us/arkouda">arkouda repo</a>.</p>
@@ -407,10 +399,11 @@ pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </s
 </section>
 <section id="chapel-installation">
 <h2>Chapel Installation<a class="headerlink" href="#chapel-installation" title="Link to this heading">¶</a></h2>
+<p>The first step is follow the instructions found <a class="reference external" href="https://chapel-lang.org/docs/usingchapel/prereqs.html">here</a>
+to install the Chapel Prerequisites.</p>
 <p>For convenience, the steps to install Chapel from source are detailed below. If you need more information, please visit the
-<a class="reference external" href="https://chapel-lang.org/docs/usingchapel/QUICKSTART.html">Chapel Quickstart Guide</a> and <a class="reference external" href="https://chapel-lang.org/docs/usingchapel/prereqs.html">Chapel Prerequisites</a>.</p>
-<p>The first two steps in the Linux Arkouda install are to install the Chapel dependencies followed by downloading and building Chapel.
-The Ubuntu and RHEL Chapel installations are different for installing Chapel dependencies, particularly regarding older RHEL distro versions.
+<a class="reference external" href="https://chapel-lang.org/docs/usingchapel/QUICKSTART.html">Chapel Quickstart Guide</a>.</p>
+<p>The Ubuntu and RHEL Chapel installations are different for installing Chapel dependencies, particularly regarding older RHEL distro versions.
 Specifically, the gcc compiler on RHEL distros such as CentOS 7 do not support building Chapel.
 Consequently, a newer version of the gcc compiler must be installed via the
 <a class="reference external" href="https://centos.pkgs.org/7/centos-sclo-rh-x86_64/devtoolset-9-gcc-c++-9.1.1-2.6.el7.x86_64.rpm.html">devtoolset-9-gcc-c++</a> package.
@@ -419,9 +412,9 @@ be installed to enable the newer version of gcc to be leveraged for building Cha
 <section id="install-chapel-ubuntu">
 <h3>Install Chapel (Ubuntu)<a class="headerlink" href="#install-chapel-ubuntu" title="Link to this heading">¶</a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download latest Chapel release, explode archive, and navigate to source root directory</span>
-wget<span class="w"> </span>https://github.com/chapel-lang/chapel/releases/download/1.32.0/chapel-1.32.0.tar.gz
-tar<span class="w"> </span>xvf<span class="w"> </span>chapel-1.32.0.tar.gz
-<span class="nb">cd</span><span class="w"> </span>chapel-1.32.0/
+wget<span class="w"> </span>https://github.com/chapel-lang/chapel/releases/download/2.1.0/chapel-2.1.0.tar.gz
+tar<span class="w"> </span>xvf<span class="w"> </span>chapel-2.1.0.tar.gz
+<span class="nb">cd</span><span class="w"> </span>chapel-2.1.0/
 
 <span class="c1"># Set CHPL_HOME</span>
 <span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_HOME</span><span class="o">=</span><span class="nv">$PWD</span>
@@ -553,7 +546,6 @@ the instructions at <a class="reference external" href="https://bears-r-us.githu
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Linux</a><ul>
-<li><a class="reference internal" href="#update-kernel">Update Kernel</a></li>
 <li><a class="reference internal" href="#clone-arkouda-repository">Clone Arkouda Repository</a></li>
 <li><a class="reference internal" href="#python-environment-anaconda-linux">Python Environment - Anaconda (Linux)</a></li>
 <li><a class="reference internal" href="#chapel-installation">Chapel Installation</a><ul>

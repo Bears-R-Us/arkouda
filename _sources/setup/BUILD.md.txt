@@ -4,11 +4,6 @@
 
 If you have not yet installed the Arkouda client and prerequisites, please follow the directions in the [Installation Section](install_menu.rst) before proceeding with this build.
 
-## Environment Variables
-
-In order to build the server executable, some environment variables need to be configured.
-For a full list, please refer to [Environment Section](../ENVIRONMENT.md).
-
 ## Dependency Configuration
 
 Dependencies can be configured with a package manager like `Anaconda` or manually.
@@ -16,12 +11,22 @@ Dependencies can be configured with a package manager like `Anaconda` or manuall
 ### Using Environment Installed Dependencies *(Recommended)*
 
 When utilizing a package manager, like `Anaconda`, to install dependencies (see guides for [Linux](LINUX_INSTALL.md) or [Mac](MAC_INSTALL.md)), you will need to provide
-the path to the location of your installed packages. This is achieved by adding this path to your `Makefile.paths` (Example Below).
+the path to the location of your installed packages. This is achieved by adding this path to your `Makefile.paths`.
+
+In most cases you will only provide a single path for your environment.
+However, if you have manually installed dependencies (such as ZeroMQ or HDF5), you will need to provide each install location.
+
+#### Using `conda`
+
+If you are using a conda environment to manage your dependencies. All you need to do is `conda activate` that
+environment and run this command:
+```commandline
+echo -e "\$(eval \$(call add-path,$CONDA_PREFIX))" >> Makefile.paths
+```
+
+#### Using `pip`
 
 You might need create a `Makefile.paths` file in the top level of the arkouda directly if it doesn't already exist.
-
-It is important to note that in most cases you will only provide a single path for your environment.
-However, if you have manually installed dependencies (such as ZeroMQ or HDF5), you will need to provide each install location.
 
 ```make
 # Makefile.paths
@@ -31,19 +36,13 @@ $(eval $(call add-path,/home/user/anaconda3/envs/arkouda))
 #                      ^ Note: No space after comma.
 ```
 
-The path may vary based on the installation location of Anaconda or pip and your environment name. Here are some tips to locate the path.
+The path may vary based on the installation location of pip and your environment name.
+Here are some tips to locate the path.
 
 ```commandline
-# when installing via pip
+# when installing via pip, run `pip show` on a package you've installed with pip
 % pip show hdf5 | grep Location
-Location: /opt/homebrew/Caskroom/miniforge/base/envs/ak-base/lib/python3.10/site-packages
-
-# when using conda
-% conda env list
-# conda environments:
-#
-base                /opt/homebrew/Caskroom/miniforge/base
-ak-base          *  /opt/homebrew/Caskroom/miniforge/base/envs/ak-base
+Location: /opt/homebrew/Caskroom/miniforge/base/envs/arkouda/lib/python3.12/site-packages
 ```
 
 The `chpl` compiler will be executed with `-I`, `-L` and `-rpath` for each path in your `Makefile.paths`

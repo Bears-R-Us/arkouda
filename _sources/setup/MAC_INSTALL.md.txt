@@ -7,7 +7,7 @@ Prerequisites for Arkouda can be installed using `Homebrew` or manually.
 Download, clone, or fork the [arkouda repo](https://github.com/Bears-R-Us/arkouda).
 
 We encourage developers to fork the repo if they expect to make any changes to arkouda.
-They can then their fork and add the Bears-R-Us repo as a remote:
+They can then clone their fork and add the Bears-R-Us repo as a remote:
 ```bash
 git clone https://github.com/YOUR_FORK/arkouda.git
 git remote add upstream https://github.com/Bears-R-Us/arkouda.git
@@ -88,13 +88,13 @@ If you need more information, please visit the [Chapel Quickstart Guide](https:/
 **Step 3**
 > Unpack the release
 > ```bash
-> tar xzf chapel-1.32.0.tar.gz
+> tar xzf chapel-2.1.0.tar.gz
 > ```
 
 **Step 4**
 > Access the directory created when the release was unpacked
 > ```bash
-> cd chapel-1.32.0
+> cd chapel-2.1.0
 > ```
 
 **Step 5**
@@ -106,7 +106,7 @@ If you need more information, please visit the [Chapel Quickstart Guide](https:/
 **Step 6**
 > Update environment variables to the recommended settings. 
 > ```bash
-> brew install llvm@15
+> brew install llvm
 > export CHPL_LLVM=system
 >
 > brew install gmp
@@ -128,7 +128,7 @@ If you need more information, please visit the [Chapel Quickstart Guide](https:/
 > Add the following to your `rc` file.
 > ```bash
 > # update paths to reflect where chapel and arkouda live on your machine
-> export CHPL_HOME=/Users/USER/PATH_TO_CHPL/chapel-1.32.0
+> export CHPL_HOME=/Users/USER/PATH_TO_CHPL/chapel-2.1.0
 > # your binary might differ especially if you have a different chipset
 > export PATH=$PATH:$CHPL_HOME/bin/darwin-arm64
 > source ${CHPL_HOME}/util/setchplenv.bash
@@ -171,8 +171,7 @@ brew install chapel
 
 ## Next Steps
 
-We've installed Arkouda and its dependencies and built chapel with reasonable defautl environment variables.
-For more information on the options, a complete list of environment variables can be found at [ENVIRONMENT.md](ENVIRONMENT.md).
+We've installed Arkouda and its dependencies and built chapel with reasonable default environment variables.
 
 Now you are ready to build the server! Follow the build instructions at [BUILD.md](BUILD.md).
 

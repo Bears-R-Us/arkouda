@@ -360,27 +360,33 @@
 <p>This guide is intended to instruct users on the installation Arkouda. It will also walk through launching and shutting down the server. For usage information, visit our <a class="reference internal" href="usage.html#usage-label"><span class="std std-ref">Usage Guide</span></a></p>
 <section id="install-dependencies">
 <h2>Install Dependencies<a class="headerlink" href="#install-dependencies" title="Link to this heading">¶</a></h2>
-<ol class="arabic">
+<ol class="arabic simple">
 <li><p>Follow the <a class="reference external" href="https://chapel-lang.org/docs/usingchapel/QUICKSTART.html">Chapel Quickstart Guide</a></p></li>
 <li><p>Follow the <a class="reference external" href="https://docs.anaconda.com/anaconda/install/index.html">Anaconda Installation Guide</a></p></li>
-<li><p>Configure your conda environment</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>arkouda-env.yml
-</pre></div>
-</div>
-</li>
 </ol>
 </section>
 <section id="install-arkouda">
 <h2>Install Arkouda<a class="headerlink" href="#install-arkouda" title="Link to this heading">¶</a></h2>
 <ol class="arabic">
-<li><p>Download Arkouda <a class="reference external" href="https://github.com/Bears-R-Us/arkouda/archive/refs/tags/v2023.05.05.tar.gz">v2023.05.05</a></p></li>
+<li><p>Download either zip file from assets section of the <a class="reference external" href="https://github.com/Bears-R-Us/arkouda/releases/latest">latest Arkouda release</a></p></li>
 <li><p>Unpack the source files:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>tar<span class="w"> </span>xzf<span class="w"> </span>arkouda-2023.05.05.tar.gz
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>tar<span class="w"> </span>xzf<span class="w"> </span>arkouda-RELEASE_DATE.tar.gz
 </pre></div>
 </div>
 </li>
 <li><p>Change to the arkouda directory</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>arkouda-2023.05.05
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>arkouda-RELEASE_DATE
+</pre></div>
+</div>
+</li>
+<li><p>Create a conda env from <cite>arkouda-env.yml</cite> and activate it</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>arkouda-env.yml
+conda<span class="w"> </span>activate<span class="w"> </span>arkouda
+</pre></div>
+</div>
+</li>
+<li><p>Add your conda env to <cite>Makefile.paths</cite>, so <cite>make</cite> knows where to find dependencies</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;\$(eval \$(call add-path,</span><span class="nv">$CONDA_PREFIX</span><span class="s2">))&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>Makefile.paths
 </pre></div>
 </div>
 </li>
@@ -390,7 +396,7 @@
 </div>
 </li>
 <li><p>Test Arkouda functionality</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span><span class="nb">test</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>test-proto
 </pre></div>
 </div>
 </li>
@@ -430,8 +436,6 @@ bytes<span class="w"> </span>of<span class="w"> </span>memory<span class="w"> </
 </pre></div>
 </div>
 <p>Substituting the hostname and port appropriately (defaults are ‘localhost’ and 5555).</p>
-<p>When working on machines running macOS, the code block above may cause the program to hang.
-This problem is resolved by running the command without the optional argument: <code class="docutils literal notranslate"><span class="pre">ak.connect()</span></code>.</p>
 </section>
 <section id="shutdown-disconnect">
 <h2>Shutdown/Disconnect<a class="headerlink" href="#shutdown-disconnect" title="Link to this heading">¶</a></h2>

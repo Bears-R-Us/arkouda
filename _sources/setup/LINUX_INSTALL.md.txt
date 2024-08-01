@@ -1,12 +1,5 @@
 # Linux
 
-## Update Kernel
-```bash
-# Update Linux kernel and install some Chapel dependencies
-sudo apt-get update
-sudo apt-get install gcc g++ m4 perl python3 python3-pip python3-venv python3-dev bash make mawk git pkg-config cmake llvm-14-dev llvm-14 llvm-14-tools clang-14 libclang-14-dev libclang-cpp14-dev libedit-dev
-```
-
 ## Clone Arkouda Repository
 
 Download, clone, or fork the [arkouda repo](https://github.com/Bears-R-Us/arkouda).
@@ -52,10 +45,12 @@ export PYTHONPATH="${PYTHONPATH}:${PWD}"
 ```
 
 ## Chapel Installation
-For convenience, the steps to install Chapel from source are detailed below. If you need more information, please visit the
-[Chapel Quickstart Guide](https://chapel-lang.org/docs/usingchapel/QUICKSTART.html) and [Chapel Prerequisites](https://chapel-lang.org/docs/usingchapel/prereqs.html).
+The first step is follow the instructions found [here](https://chapel-lang.org/docs/usingchapel/prereqs.html)
+to install the Chapel Prerequisites.
 
-The first two steps in the Linux Arkouda install are to install the Chapel dependencies followed by downloading and building Chapel.
+For convenience, the steps to install Chapel from source are detailed below. If you need more information, please visit the
+[Chapel Quickstart Guide](https://chapel-lang.org/docs/usingchapel/QUICKSTART.html).
+
 The Ubuntu and RHEL Chapel installations are different for installing Chapel dependencies, particularly regarding older RHEL distro versions.
 Specifically, the gcc compiler on RHEL distros such as CentOS 7 do not support building Chapel.
 Consequently, a newer version of the gcc compiler must be installed via the
@@ -67,9 +62,9 @@ be installed to enable the newer version of gcc to be leveraged for building Cha
 
 ```bash
 # Download latest Chapel release, explode archive, and navigate to source root directory
-wget https://github.com/chapel-lang/chapel/releases/download/1.32.0/chapel-1.32.0.tar.gz
-tar xvf chapel-1.32.0.tar.gz
-cd chapel-1.32.0/
+wget https://github.com/chapel-lang/chapel/releases/download/2.1.0/chapel-2.1.0.tar.gz
+tar xvf chapel-2.1.0.tar.gz
+cd chapel-2.1.0/
 
 # Set CHPL_HOME
 export CHPL_HOME=$PWD

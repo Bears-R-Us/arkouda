@@ -362,7 +362,7 @@
 <h2>Clone Arkouda Repository<a class="headerlink" href="#clone-arkouda-repository" title="Link to this heading">¶</a></h2>
 <p>Download, clone, or fork the <a class="reference external" href="https://github.com/Bears-R-Us/arkouda">arkouda repo</a>.</p>
 <p>We encourage developers to fork the repo if they expect to make any changes to arkouda.
-They can then their fork and add the Bears-R-Us repo as a remote:</p>
+They can then clone their fork and add the Bears-R-Us repo as a remote:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/YOUR_FORK/arkouda.git
 git<span class="w"> </span>remote<span class="w"> </span>add<span class="w"> </span>upstream<span class="w"> </span>https://github.com/Bears-R-Us/arkouda.git
 </pre></div>
@@ -439,14 +439,14 @@ You should not install Chapel in the arkouda directory</p>
 <p><strong>Step 3</strong></p>
 <blockquote>
 <div><p>Unpack the release</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>tar<span class="w"> </span>xzf<span class="w"> </span>chapel-1.32.0.tar.gz
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>tar<span class="w"> </span>xzf<span class="w"> </span>chapel-2.1.0.tar.gz
 </pre></div>
 </div>
 </div></blockquote>
 <p><strong>Step 4</strong></p>
 <blockquote>
 <div><p>Access the directory created when the release was unpacked</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>chapel-1.32.0
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>chapel-2.1.0
 </pre></div>
 </div>
 </div></blockquote>
@@ -460,7 +460,7 @@ You should not install Chapel in the arkouda directory</p>
 <p><strong>Step 6</strong></p>
 <blockquote>
 <div><p>Update environment variables to the recommended settings.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>llvm@15
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>llvm
 <span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_LLVM</span><span class="o">=</span>system
 
 brew<span class="w"> </span>install<span class="w"> </span>gmp
@@ -484,7 +484,7 @@ brew<span class="w"> </span>install<span class="w"> </span>gmp
 <blockquote>
 <div><p>Add the following to your <code class="docutils literal notranslate"><span class="pre">rc</span></code> file.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># update paths to reflect where chapel and arkouda live on your machine</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_HOME</span><span class="o">=</span>/Users/USER/PATH_TO_CHPL/chapel-1.32.0
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_HOME</span><span class="o">=</span>/Users/USER/PATH_TO_CHPL/chapel-2.1.0
 <span class="c1"># your binary might differ especially if you have a different chipset</span>
 <span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:<span class="nv">$CHPL_HOME</span>/bin/darwin-arm64
 <span class="nb">source</span><span class="w"> </span><span class="si">${</span><span class="nv">CHPL_HOME</span><span class="si">}</span>/util/setchplenv.bash
@@ -532,8 +532,7 @@ conda<span class="w"> </span>activate<span class="w"> </span>arkouda-dev<span cl
 </section>
 <section id="next-steps">
 <h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading">¶</a></h2>
-<p>We’ve installed Arkouda and its dependencies and built chapel with reasonable defautl environment variables.
-For more information on the options, a complete list of environment variables can be found at <a class="reference internal" href="#ENVIRONMENT.md"><span class="xref myst">ENVIRONMENT.md</span></a>.</p>
+<p>We’ve installed Arkouda and its dependencies and built chapel with reasonable default environment variables.</p>
 <p>Now you are ready to build the server! Follow the build instructions at <a class="reference internal" href="BUILD.html"><span class="std std-doc">BUILD.md</span></a>.</p>
 <p>We’ve set up chapel and arkouda to run locally with no communication! If you want to simulate running on a distributed machine follow
 the instructions at <a class="reference external" href="https://bears-r-us.github.io/arkouda/developer/GASNET.html">GASNet Development</a>.</p>
