@@ -1,10 +1,13 @@
 import math
+import os
+import tempfile
 from string import ascii_letters, digits
 
 import numpy as np
 import pytest
 
 import arkouda as ak
+from arkouda import io_util
 
 DTYPES = [ak.int64, ak.uint64, ak.bigint, ak.float64, ak.bool_, ak.str_]
 NO_BOOL = [ak.int64, ak.uint64, ak.bigint, ak.float64, ak.str_]
@@ -12,6 +15,21 @@ NO_STR = [ak.int64, ak.uint64, ak.bigint, ak.float64, ak.bool_]
 NO_FLOAT = [ak.int64, ak.uint64, ak.bigint, ak.str_, ak.bool_]
 NO_FLOAT_STR = [ak.int64, ak.uint64, ak.bigint, ak.bool_]
 SETOPS = ["intersect", "union", "setdiff", "setxor"]
+
+
+@pytest.fixture
+def seg_test_base_tmp(request):
+    seg_test_base_tmp = "{}/.seg_test".format(os.getcwd())
+    io_util.get_directory(seg_test_base_tmp)
+
+    # Define a finalizer function for teardown
+    def finalizer():
+        # Clean up any resources if needed
+        io_util.delete_directory(seg_test_base_tmp)
+
+    # Register the finalizer to ensure cleanup
+    request.addfinalizer(finalizer)
+    return seg_test_base_tmp
 
 
 class TestSegArray:
@@ -187,6 +205,32 @@ class TestSegArray:
 
         with pytest.raises(TypeError):
             ak.SegArray(ak.array(segs_np), vals_np)
+
+    def test_creation_empty_segment(self):
+        a = [10, 11]
+        b = [20, 21, 22]
+        c = [30]
+
+        # test empty as first elements
+        flat = ak.array(b + c)
+        segs = ak.array([0, 0, len(b)])
+        segarr = ak.SegArray(segs, flat)
+        assert isinstance(segarr, ak.SegArray)
+        assert segarr.lengths.to_list() == [0, 3, 1]
+
+        # test empty as middle element
+        flat = ak.array(a + c)
+        segs = ak.array([0, len(a), len(a)])
+        segarr = ak.SegArray(segs, flat)
+        assert isinstance(segarr, ak.SegArray)
+        assert segarr.lengths.to_list() == [2, 0, 1]
+
+        # test empty as last
+        flat = ak.array(a + b + c)
+        segs = ak.array([0, len(a), len(a) + len(b), len(a) + len(b) + len(c)])
+        segarr = ak.SegArray(segs, flat)
+        assert isinstance(segarr, ak.SegArray)
+        assert segarr.lengths.to_list() == [2, 3, 1, 0]
 
     def test_empty_creation(self):
         sa = ak.SegArray(ak.array([], dtype=ak.int64), ak.array([]))
@@ -367,8 +411,8 @@ class TestSegArray:
         for i in range(sa.size):
             seg = sa[i]
             if len(seg) > 1:
-                for j in range(len(seg)-1):
-                    exp_list.append((seg[j], seg[j+1]))
+                for j in range(len(seg) - 1):
+                    exp_list.append((seg[j], seg[j + 1]))
                     exp_origin.append(i)
         assert ng_tuple == exp_list
         assert origin.to_list() == exp_origin
@@ -607,6 +651,34 @@ class TestSegArray:
 
         # TODO - empty segments testing
 
+    def test_segarray_load(self, seg_test_base_tmp):
+        segarr = ak.SegArray(ak.array([0, 9, 14]), ak.arange(20))
+        with tempfile.TemporaryDirectory(dir=seg_test_base_tmp) as tmp_dirname:
+            segarr.to_hdf(f"{tmp_dirname}/seg_test.h5")
+
+            seg_load = ak.SegArray.read_hdf(f"{tmp_dirname}/seg_test*").popitem()[1]
+            assert ak.all(segarr == seg_load)
+
+    def test_bigint(self):
+        a = [2**80, 2**81]
+        b = [2**82, 2**83]
+        c = [2**84]
+
+        flat = a + b + c
+        akflat = ak.array(flat)
+        segments = ak.array([0, len(a), len(a) + len(b)])
+        segarr = ak.SegArray(segments, akflat)
+
+        assert isinstance(segarr, ak.SegArray)
+        assert segarr.lengths.to_list() == [2, 2, 1]
+        assert segarr[0].to_list() == a
+        assert segarr[1].to_list() == b
+        assert segarr[2].to_list() == c
+        assert segarr[ak.array([1, 2])].values.to_list() == b + c
+        assert segarr.__eq__(ak.array([1])) == NotImplemented
+        assert segarr.__eq__(segarr).all()
+        assert segarr._non_empty_count == 3
+
     @staticmethod
     def get_filter(dtype):
         if dtype in [ak.int64, ak.uint64]:
@@ -686,3 +758,76 @@ class TestSegArray:
                 assert v.to_list() == filter_result[i - offset].to_list()
             else:
                 offset += 1
+
+    def test_equality(self):
+        # reproducer for issue #2617
+        # verify equality no matter position of empty seg
+        for has_empty_seg in [0, 0, 9, 14], [0, 9, 9, 14, 14], [0, 0, 7, 9, 14, 14, 17, 20]:
+            sa = ak.SegArray(ak.array(has_empty_seg), ak.arange(-10, 10))
+            assert (sa == sa).all()
+
+        s1 = ak.SegArray(ak.array([0, 4, 14, 14]), ak.arange(-10, 10))
+        s2 = ak.SegArray(ak.array([0, 9, 14, 14]), ak.arange(-10, 10))
+        assert (s1 == s2).to_list() == [False, False, True, True]
+
+        # test segarrays with empty segments, multiple types, and edge cases
+        df = ak.DataFrame(
+            {
+                "c_1": ak.SegArray(ak.array([0, 0, 9, 14]), ak.arange(-10, 10)),
+                "c_2": ak.SegArray(
+                    ak.array([0, 5, 10, 10]), ak.arange(2**63, 2**63 + 15, dtype=ak.uint64)
+                ),
+                "c_3": ak.SegArray(ak.array([0, 0, 5, 10]), ak.randint(0, 1, 15, dtype=ak.bool_)),
+                "c_4": ak.SegArray(
+                    ak.array([0, 9, 14, 14]),
+                    ak.array(
+                        [
+                            np.nan,
+                            np.finfo(np.float64).min,
+                            -np.inf,
+                            -7.0,
+                            -3.14,
+                            -0.0,
+                            0.0,
+                            3.14,
+                            7.0,
+                            np.finfo(np.float64).max,
+                            np.inf,
+                            np.nan,
+                            np.nan,
+                            np.nan,
+                        ]
+                    ),
+                ),
+                "c_5": ak.SegArray(
+                    ak.array([0, 2, 5, 5]), ak.array(["a", "b", "c", "d", "e", "f", "g", "h", "i"])
+                ),
+                "c_6": ak.SegArray(
+                    ak.array([0, 2, 2, 2]), ak.array(["a", "b", "", "c", "d", "e", "f", "g", "h", "i"])
+                ),
+                "c_7": ak.SegArray(
+                    ak.array([0, 0, 2, 2]), ak.array(["a", "b", "c", "d", "e", "f", "g", "h", "i"])
+                ),
+                "c_8": ak.SegArray(
+                    ak.array([0, 2, 3, 3]), ak.array(["", "'", " ", "test", "", "'", "", " ", ""])
+                ),
+                "c_9": ak.SegArray(
+                    ak.array([0, 5, 5, 8]), ak.array(["a", "b", "c", "d", "e", "f", "g", "h", "i"])
+                ),
+                "c_10": ak.SegArray(
+                    ak.array([0, 5, 8, 8]),
+                    ak.array(["abc", "123", "xyz", "l", "m", "n", "o", "p", "arkouda"]),
+                ),
+            }
+        )
+
+        for col in df.columns:
+            a = df[col]
+            if a.dtype == ak.float64:
+                a = a.to_ndarray()
+                if isinstance(a[0], np.ndarray):
+                    assert all(np.allclose(a1, b1, equal_nan=True) for a1, b1 in zip(a, a))
+                else:
+                    assert np.allclose(a, a, equal_nan=True)
+            else:
+                assert (a == a).all()
