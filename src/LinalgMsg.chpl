@@ -32,7 +32,9 @@ module LinalgMsg {
               diag = msgArgs.get("diag").getIntValue();
 
 	// rows, cols = dimensions of 2 dimensional matrix.
-	// diag = 0 gives ones along center diagonal, > 0 upper diagonal, < 0 lower diagonal
+	// diag = 0 gives ones along center diagonal
+	// diag = nonzero moves the diagonal up/right for diag > 0, and down/left for diag < 0
+	//        See comment below
 
         const dtype = type2str(array_dtype),
               rname = st.nextName();
@@ -70,10 +72,10 @@ module LinalgMsg {
         return MsgTuple.error("eye does not support the bigint dtype");
     }
 
-    //  Create an array from an existing array with its upper triangle zeroed out
-
     //  tril and triu are identical except for the argument they pass to triluHandler (true for upper, false for lower)
     //  The zeros are written into the upper (or lower) triangle of the array, offset by the value of diag.
+
+    //  Create an array from an existing array with its upper triangle zeroed out
 
     @arkouda.instantiateAndRegister
     proc tril(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws {
@@ -361,7 +363,7 @@ module LinalgMsg {
     proc doTranspose(ref A: [?D], ref B) {
         forall idx in D {
             var bIdx = idx;
-            bIdx[D.rank-1] <=> bIdx[D.rank-2];  // bIdx is the reverse of idx
+            bIdx[D.rank-1] <=> bIdx[D.rank-2];  // bIdx is now the reverse of idx
             B[bIdx] = A[idx];			// making B the transpose of A
         }
     }

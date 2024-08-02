@@ -3337,6 +3337,8 @@ module HDF5Msg {
         st.addEntry(sname, createSymEntry(shape));
         var rname = readPdarrayFromFile(filenames, dset, dataclass, bytesize, isSigned, validFiles, st);
         return (dset, ObjType.ARRAYVIEW, "%s+%s".format(rname, sname));
+        // return (dset, ObjType.PDARRAY, "%s+%s".format(rname, sname));
+	//               Placeholder -- will eventually switch to PDARRAY as part of eliminating ArrayView
     }
 
     proc readBigIntPdarrayFromFile(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, validFiles: [] bool, st: borrowed SymTab): string throws {
