@@ -7,6 +7,10 @@ import pytest
 
 import arkouda as ak
 
+ak.verbose = False
+N = 100
+UNIQUE = N // 4
+
 
 class TestString:
     Gremlins = namedtuple(
@@ -816,7 +820,9 @@ class TestString:
             assert [x[len(x) - n :] for x in a if len(x) >= n] == suffix.to_list()
 
     def test_encoding(self):
-        idna_strings = ak.array(["Bücher.example", "ドメイン.テスト", "домен.испытание", "Königsgäßchen"])
+        idna_strings = ak.array(
+            ["Bücher.example", "ドメイン.テスト", "домен.испытание", "Königsgäßchen"]
+        )
         expected = ak.array(
             [
                 "xn--bcher-kva.example",
@@ -879,3 +885,24 @@ class TestString:
         manual_broadcasted = ak.broadcast(g.segments, str_vals, permutation=g.permutation)
         assert (gb_broadcasted == str_broadcast_ans).all()
         assert (manual_broadcasted == str_broadcast_ans).all()
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_in1d(self, size):
+        base_words, _ = self.base_words(size)
+        strings = self.get_strings(size, base_words)
+        cat = ak.Categorical(strings)
+
+        more_choices = ak.randint(0, UNIQUE, 100)
+        akwords = strings
+        more_words = akwords.to_ndarray()
+        matches = ak.in1d(strings, akwords)
+        catmatches = ak.in1d(cat, akwords)
+        assert (matches == catmatches).all()
+        # Every word in matches should be in the target set
+        for word in strings[matches].to_ndarray():
+            assert word in more_words
+        # Exhaustively find all matches to make sure we didn't miss any
+        inds = ak.zeros(size, dtype=ak.bool_)
+        for word in more_words:
+            inds |= strings == word
+        assert (inds == matches).all()
