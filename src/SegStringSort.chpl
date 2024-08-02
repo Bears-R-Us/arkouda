@@ -29,7 +29,7 @@ module SegStringSort {
   record StringIntComparator {
     proc keyPart((a0,_): (string, int), in i: int) {
       // Just run the default comparator on the string
-      return Sort.defaultComparator.keyPart(a0, i);
+      return (new DefaultComparator()).keyPart(a0, i);
     }
   }
   
