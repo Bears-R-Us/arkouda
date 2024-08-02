@@ -484,7 +484,7 @@ def zeros(
     # check dtype for error
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-    shape, ndim, full_size = infer_from_size(size)  # adc
+    shape, ndim, full_size = infer_from_size(size)
     repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape })
 
     return create_pdarray(repMsg, max_bits=max_bits)
@@ -539,7 +539,7 @@ def ones(
     # check dtype for error
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-    shape, ndim, full_size = infer_from_size(size)  # adc
+    shape, ndim, full_size = infer_from_size(size)
     repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape })
     a = create_pdarray(repMsg)
     a.fill(1)
@@ -603,7 +603,7 @@ def full(
     # check dtype for error
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-    shape, ndim, full_size = infer_from_size(size)  # adc
+    shape, ndim, full_size = infer_from_size(size)
     repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape })
     a = create_pdarray(repMsg)
     a.fill(fill_value)
