@@ -29,6 +29,10 @@ module HDF5Msg {
     use Regex;
     use IOUtils;
 
+    /*
+     In analyzing this file to deprecate ArrayViews, I am not at first concerned with anything that writes
+     ArrayViews to a file.  We'll start by making sure nothing creates an ArrayView.  --- adc
+     */
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -3287,6 +3291,11 @@ module HDF5Msg {
     /*
         Read an ArrayView object from the files provided into a distributed array
     */
+    /*
+     The return statement from this function has been altered to return a pdarray.  Haven't yet tested to see if it's
+     that simple. --- adc
+     */
+
     proc arrayView_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, ref validFiles: [] bool, st: borrowed SymTab): (string, ObjType, string) throws {
         var file_id = C_HDF5.H5Fopen(filenames[0].c_str(), C_HDF5.H5F_ACC_RDONLY, 
                                            C_HDF5.H5P_DEFAULT);
@@ -3336,9 +3345,8 @@ module HDF5Msg {
         var sname = st.nextName();
         st.addEntry(sname, createSymEntry(shape));
         var rname = readPdarrayFromFile(filenames, dset, dataclass, bytesize, isSigned, validFiles, st);
-        return (dset, ObjType.ARRAYVIEW, "%s+%s".format(rname, sname));
-        // return (dset, ObjType.PDARRAY, "%s+%s".format(rname, sname));
-	//               Placeholder -- will eventually switch to PDARRAY as part of eliminating ArrayView
+        // return (dset, ObjType.ARRAYVIEW, "%s+%s".format(rname, sname));
+        return (dset, ObjType.PDARRAY, "%s+%s".format(rname, sname));
     }
 
     proc readBigIntPdarrayFromFile(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, validFiles: [] bool, st: borrowed SymTab): string throws {
