@@ -1705,10 +1705,13 @@ class TestHDF5:
         assert 18446744073709551500 == pda1[0]
         assert pda1.to_list() == npa1.tolist()
 
+#   The ArrayView portion of this test is commented out.  When we get to the actual PR, that section
+#   (and the individual line in the df_dict definition) and this comment will be deleted. --- adc
+
     def test_bigint(self, hdf_test_base_tmp):
         df_dict = {
             "pdarray": ak.arange(2**200, 2**200 + 3, max_bits=201),
-            "arrayview": ak.arange(2**200, 2**200 + 27, max_bits=201).reshape((3, 3, 3)),
+#           "arrayview": ak.arange(2**200, 2**200 + 27, max_bits=201).reshape((3, 3, 3)),
             "groupby": ak.GroupBy(ak.arange(2**200, 2**200 + 5)),
             "segarray": ak.SegArray(ak.arange(0, 10, 2), ak.arange(2**200, 2**200 + 10, max_bits=212)),
         }
@@ -1724,12 +1727,12 @@ class TestHDF5:
                 assert a.to_list() == rd_a.to_list()
                 assert a.max_bits == rd_a.max_bits
 
-            av_loaded = ak.read_hdf(f"{tmp_dirname}/bigint_test*", datasets="arrayview")["arrayview"]
-            av = df_dict["arrayview"]
-            for rd_av in [ret_dict["arrayview"], av_loaded]:
-                assert isinstance(rd_av, ak.ArrayView)
-                assert av.base.to_list() == rd_av.base.to_list()
-                assert av.base.max_bits == rd_av.base.max_bits
+#           av_loaded = ak.read_hdf(f"{tmp_dirname}/bigint_test*", datasets="arrayview")["arrayview"]
+#           av = df_dict["arrayview"]
+#           for rd_av in [ret_dict["arrayview"], av_loaded]:
+#               assert isinstance(rd_av, ak.ArrayView)
+#               assert av.base.to_list() == rd_av.base.to_list()
+#               assert av.base.max_bits == rd_av.base.max_bits
 
             g_loaded = ak.read_hdf(f"{tmp_dirname}/bigint_test*", datasets="groupby")["groupby"]
             g = df_dict["groupby"]
@@ -1777,14 +1780,19 @@ class TestHDF5:
         assert 50 == v0.size
         assert 50 == v1.size
 
-    def test_multi_dim_read_write(self, hdf_test_base_tmp):
-        av = ak.ArrayView(ak.arange(27), ak.array([3, 3, 3]))
-        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
-            av.to_hdf(f"{tmp_dirname}/multi_dim_test", dataset="MultiDimObj", mode="append")
-            read_av = ak.read_hdf(f"{tmp_dirname}/multi_dim_test*", datasets="MultiDimObj")[
-                "MultiDimObj"
-            ]
-            assert np.array_equal(av.to_ndarray(), read_av.to_ndarray())
+#   The test below is commented out, since it was entirely in support of ArrayView.
+#   It will remain commented out for the draft PR, but come the official PR,both it
+#   and this comment will be deleted. --- adc
+
+#   def test_multi_dim_read_write(self, hdf_test_base_tmp):
+#       av = ak.ArrayView(ak.arange(27), ak.array([3, 3, 3]))
+#       av = ak.array(ak.arange(27)).reshape((3, 3, 3))
+#       with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
+#           av.to_hdf(f"{tmp_dirname}/multi_dim_test", dataset="MultiDimObj", mode="append")
+#           read_av = ak.read_hdf(f"{tmp_dirname}/multi_dim_test*", datasets="MultiDimObj")[
+#               "MultiDimObj"
+#           ]
+#           assert np.array_equal(av.to_ndarray(), read_av.to_ndarray())
 
     def test_hdf_groupby(self, hdf_test_base_tmp):
         # test for categorical and multiple keys
@@ -2060,15 +2068,15 @@ class TestHDF5:
                 assert (data["segarray"].values == sa2.values).all()
                 assert (data["segarray"].segments == sa2.segments).all()
 
-    def test_overwrite_arrayview(self, hdf_test_base_tmp):
-        av = ak.arange(27).reshape((3, 3, 3))
-        av2 = ak.arange(8).reshape((2, 2, 2))
-        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
-            file_name = f"{tmp_dirname}/array_view_test"
-            av.to_hdf(file_name)
-            av2.update_hdf(file_name, repack=False)
-            data = ak.read_hdf(f"{file_name}*").popitem()[1]
-            assert av2.to_list() == data.to_list()
+#   def test_overwrite_arrayview(self, hdf_test_base_tmp):
+#       av = ak.arange(27).reshape((3, 3, 3))
+#       av2 = ak.arange(8).reshape((2, 2, 2))
+#       with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
+#           file_name = f"{tmp_dirname}/array_view_test"
+#           av.to_hdf(file_name)
+#           av2.update_hdf(file_name, repack=False)
+#           data = ak.read_hdf(f"{file_name}*").popitem()[1]
+#           assert av2.to_list() == data.to_list()
 
     def test_overwrite_single_dset(self, hdf_test_base_tmp):
         # we need to test that both repack=False and repack=True generate the same file size here

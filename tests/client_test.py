@@ -1,8 +1,16 @@
 import pytest
 
 import arkouda as ak
+
+<<<<<<< HEAD:tests/client_test.py
 from arkouda.client import generic_msg
 from server_util.test.server_test_util import TestRunningMode, start_arkouda_server
+
+=======
+from arkouda.client import generic_msg, get_max_array_rank
+from server_util.test.server_test_util import start_arkouda_server
+
+>>>>>>> 81da36904 (Possibly ready for Draft PR):PROTO_tests/tests/client_test.py
 
 
 class TestClient:
@@ -71,6 +79,7 @@ class TestClient:
         assert "arkoudaVersion" in config
         assert "INFO" == config["logLevel"]
 
+
         import json
 
         def get_server_max_array_dims():
@@ -82,6 +91,7 @@ class TestClient:
                 return 1
 
         assert get_server_max_array_dims() == ak.client.get_max_array_rank()
+
 
     def test_get_mem_used(self):
         """
@@ -156,6 +166,10 @@ class TestClient:
         for cmd in ["connect", "info", "str"]:
             assert cmd in cmds
 
+#   The test below had been hardwired to expect an error message that maximum array dimensionality is 1.
+#   Now that we have multidimensional arrays, it had to be rewritten to check for the actual maximum
+#   rank allowed.  This comment is here as a draft, and will be removed for the actual PR. ---adc
+
     def test_client_array_dim_cmd_error(self):
         """
         Tests that a user will get a helpful error message if they attempt to
@@ -164,6 +178,7 @@ class TestClient:
         """
         with pytest.raises(RuntimeError) as cm:
             resp = generic_msg("reduce10D")
+            print ("******************************************* ",resp)
 
         err_msg = (
             f"Error: Command 'reduce10D' is not supported with the current server configuration as the maximum array dimensionality is {ak.client.get_max_array_rank()}. "
