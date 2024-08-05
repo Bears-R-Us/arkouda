@@ -13,7 +13,6 @@ import pytest
 from pandas.testing import assert_series_equal
 
 import arkouda as ak
-import arkouda.array_api as Array
 from arkouda import io_util, read_zarr, to_zarr
 
 NUMERIC_TYPES = ["int64", "float64", "bool", "uint64"]
@@ -621,8 +620,8 @@ class TestParquet:
             pd.testing.assert_frame_equal(akdf.to_pandas(), rd_df.to_pandas())
 
             # test save with index true
-            akdf.to_parquet(f"{tmp_dirname}/multi_col_parquet", index=True, compression=comp)
-            rd_data = ak.read_parquet(f"{tmp_dirname}/multi_col_parquet*")
+            akdf.to_parquet(f"{tmp_dirname}/idx_multi_col_parquet", index=True, compression=comp)
+            rd_data = ak.read_parquet(f"{tmp_dirname}/idx_multi_col_parquet*")
             rd_df = ak.DataFrame(rd_data)
             pd.testing.assert_frame_equal(akdf.to_pandas(), rd_df.to_pandas())
 
@@ -2378,13 +2377,13 @@ class TestImportExport:
         with tempfile.TemporaryDirectory(dir=import_export_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/import_hdf_test"
 
-            self.pddf.to_hdf(f"{file_name}_table.h5", "dataframe", format="Table", mode="w")
+            self.pddf.to_hdf(f"{file_name}_table.h5", key="dataframe", format="table", mode="w")
             akdf = ak.import_data(f"{file_name}_table.h5", write_file=f"{file_name}_ak_table.h5")
             assert len(glob.glob(f"{file_name}_ak_table*.h5")) == locales
             assert self.pddf.equals(akdf.to_pandas())
 
             self.pddf.to_hdf(
-                f"{file_name}_table_cols.h5", "dataframe", format="Table", data_columns=True, mode="w"
+                f"{file_name}_table_cols.h5", key="dataframe", format="table", data_columns=True, mode="w"
             )
             akdf = ak.import_data(
                 f"{file_name}_table_cols.h5", write_file=f"{file_name}_ak_table_cols.h5"
@@ -2393,7 +2392,7 @@ class TestImportExport:
             assert self.pddf.equals(akdf.to_pandas())
 
             self.pddf.to_hdf(
-                f"{file_name}_fixed.h5", "dataframe", format="fixed", data_columns=True, mode="w"
+                f"{file_name}_fixed.h5", key="dataframe", format="fixed", data_columns=True, mode="w"
             )
             akdf = ak.import_data(f"{file_name}_fixed.h5", write_file=f"{file_name}_ak_fixed.h5")
             assert len(glob.glob(f"{file_name}_ak_fixed*.h5")) == locales
@@ -2452,8 +2451,11 @@ class TestImportExport:
 
 
 class TestZarr:
+
+    @pytest.mark.skip
     def test_zarr_read_write(self, zarr_test_base_tmp):
-        pytest.skip()
+        import arkouda.array_api as Array
+
         shapes = [(10,), (20,)]
         chunk_shapes = [(2,), (3,)]
         dtypes = [ak.int64, ak.float64]
