@@ -282,24 +282,24 @@ class TestRandom:
         # if pval <= 0.05, the difference from the expected distribution is significant
         assert pval > 0.05
 
-    def test_exponential_hypothesis_testing(self):
+    @pytest.mark.parametrize("method", ["zig", "box"])
+    def test_exponential_hypothesis_testing(self, method):
         # I tested this many times without a set seed, but with no seed
         # it's expected to fail one out of every ~20 runs given a pval limit of 0.05.
         rng = ak.random.default_rng(43)
         num_samples = 10**4
 
         scale = rng.uniform(0, 10)
-        for method in "zig", "inv":
-            sample = rng.exponential(scale=scale, size=num_samples, method=method)
-            sample_list = sample.to_list()
+        sample = rng.exponential(scale=scale, size=num_samples, method=method)
+        sample_list = sample.to_list()
 
-            # do the Kolmogorov-Smirnov test for goodness of fit
-            ks_res = sp_stats.kstest(
-                rvs=sample_list,
-                cdf=sp_stats.expon.cdf,
-                args=(0, scale),
-            )
-            assert ks_res.pvalue > 0.05
+        # do the Kolmogorov-Smirnov test for goodness of fit
+        ks_res = sp_stats.kstest(
+            rvs=sample_list,
+            cdf=sp_stats.expon.cdf,
+            args=(0, scale),
+        )
+        assert ks_res.pvalue > 0.05
 
     @pytest.mark.parametrize("method", ["zig", "box"])
     def test_normal_hypothesis_testing(self, method):
