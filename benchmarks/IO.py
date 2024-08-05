@@ -226,7 +226,7 @@ def create_parser():
         "-n", "--size", type=int, default=10**8, help="Problem size: length of array to write/read"
     )
     parser.add_argument(
-        "-f", "--fixed-size", type=int, default=-1, help="Fixed size length of string for Parquet"
+        "--fixed-size", type=int, default=-1, help="Fixed size length of string for Parquet"
     )
     parser.add_argument(
         "-t", "--trials", type=int, default=1, help="Number of times to run the benchmark"
