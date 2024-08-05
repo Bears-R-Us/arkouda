@@ -1,3 +1,4 @@
+import numpy as np
 import numpy.random as np_random
 
 from arkouda.client import generic_msg
@@ -296,6 +297,63 @@ class Generator:
         self._state += full_size
         return create_pdarray(rep_msg)
 
+    def lognormal(self, mean=0.0, sigma=1.0, size=None, method="zig"):
+        r"""
+        Draw samples from a log-normal distribution with specified mean,
+        standard deviation, and array shape.
+
+        Note that the mean and standard deviation are not the values for the distribution itself,
+        but of the underlying normal distribution it is derived from.
+
+        Parameters
+        ----------
+        mean: float or pdarray of floats, optional
+            Mean of the distribution. Default of 0.
+
+        sigma: float or pdarray of floats, optional
+            Standard deviation of the distribution. Must be non-negative. Default of 1.
+
+        size: numeric_scalars, optional
+            Output shape. Default is None, in which case a single value is returned.
+
+        method : str, optional
+            Either 'box' or 'zig'. 'box' uses the Box–Muller transform
+            'zig' uses the Ziggurat method.
+
+        Notes
+        -----
+        A variable `x` has a log-normal distribution if `log(x)` is normally distributed.
+        The probability density for the log-normal distribution is:
+
+        .. math::
+           p(x) = \frac{1}{\sigma x \sqrt{2\pi}} e^{-\frac{(\ln(x)-\mu)^2}{2\sigma^2}}
+
+        where :math:`\mu` is the mean and :math:`\sigma` the standard deviation of the normally
+        distributed logarithm of the variable.
+        A log-normal distribution results if a random variable is the product of a
+        large number of independent, identically-distributed variables in the same
+        way that a normal distribution results if the variable is
+        the sum of a large number of independent, identically-distributed variables.
+
+        Returns
+        -------
+        pdarray
+            Pdarray of floats (unless size=None, in which case a single float is returned).
+
+        See Also
+        --------
+        normal
+
+        Examples
+        --------
+        >>> ak.random.default_rng(17).lognormal(3, 2.5, 3)
+        array([7.3866978126031091 106.20159494048757 4.5424399190667666])
+        """
+        from arkouda.numeric import exp
+
+        norm_arr = self.normal(loc=mean, scale=sigma, size=size, method=method)
+        return exp(norm_arr) if size is not None else np.exp(norm_arr)
+
     def normal(self, loc=0.0, scale=1.0, size=None, method="zig"):
         r"""
         Draw samples from a normal (Gaussian) distribution
@@ -337,7 +395,7 @@ class Generator:
 
         Examples
         --------
-        >>> ak.random.default_rng(17).normal(3, 2.5, 10)
+        >>> ak.random.default_rng(17).normal(3, 2.5, 3)
         array([2.3673425816523577 4.0532529435624589 2.0598322696795694])
         """
         if size is None:
