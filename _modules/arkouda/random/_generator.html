@@ -349,7 +349,8 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.random._generator</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy.random</span> <span class="k">as</span> <span class="nn">np_random</span>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy.random</span> <span class="k">as</span> <span class="nn">np_random</span>
 
 <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
 <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">_val_isinstance_of_union</span>
@@ -661,6 +662,66 @@
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="Generator.lognormal">
+<a class="viewcode-back" href="../../../autoapi/arkouda/random/index.html#arkouda.Generator.lognormal">[docs]</a>
+    <span class="k">def</span> <span class="nf">lognormal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;zig&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Draw samples from a log-normal distribution with specified mean,</span>
+<span class="sd">        standard deviation, and array shape.</span>
+
+<span class="sd">        Note that the mean and standard deviation are not the values for the distribution itself,</span>
+<span class="sd">        but of the underlying normal distribution it is derived from.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        mean: float or pdarray of floats, optional</span>
+<span class="sd">            Mean of the distribution. Default of 0.</span>
+
+<span class="sd">        sigma: float or pdarray of floats, optional</span>
+<span class="sd">            Standard deviation of the distribution. Must be non-negative. Default of 1.</span>
+
+<span class="sd">        size: numeric_scalars, optional</span>
+<span class="sd">            Output shape. Default is None, in which case a single value is returned.</span>
+
+<span class="sd">        method : str, optional</span>
+<span class="sd">            Either &#39;box&#39; or &#39;zig&#39;. &#39;box&#39; uses the Box–Muller transform</span>
+<span class="sd">            &#39;zig&#39; uses the Ziggurat method.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        A variable `x` has a log-normal distribution if `log(x)` is normally distributed.</span>
+<span class="sd">        The probability density for the log-normal distribution is:</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           p(x) = \frac{1}{\sigma x \sqrt{2\pi}} e^{-\frac{(\ln(x)-\mu)^2}{2\sigma^2}}</span>
+
+<span class="sd">        where :math:`\mu` is the mean and :math:`\sigma` the standard deviation of the normally</span>
+<span class="sd">        distributed logarithm of the variable.</span>
+<span class="sd">        A log-normal distribution results if a random variable is the product of a</span>
+<span class="sd">        large number of independent, identically-distributed variables in the same</span>
+<span class="sd">        way that a normal distribution results if the variable is</span>
+<span class="sd">        the sum of a large number of independent, identically-distributed variables.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pdarray</span>
+<span class="sd">            Pdarray of floats (unless size=None, in which case a single float is returned).</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        normal</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; ak.random.default_rng(17).lognormal(3, 2.5, 3)</span>
+<span class="sd">        array([7.3866978126031091 106.20159494048757 4.5424399190667666])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">arkouda.numeric</span> <span class="kn">import</span> <span class="n">exp</span>
+
+        <span class="n">norm_arr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="n">mean</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">sigma</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">exp</span><span class="p">(</span><span class="n">norm_arr</span><span class="p">)</span> <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">norm_arr</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="Generator.normal">
 <a class="viewcode-back" href="../../../autoapi/arkouda/random/index.html#arkouda.Generator.normal">[docs]</a>
     <span class="k">def</span> <span class="nf">normal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;zig&quot;</span><span class="p">):</span>
@@ -704,7 +765,7 @@
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; ak.random.default_rng(17).normal(3, 2.5, 10)</span>
+<span class="sd">        &gt;&gt;&gt; ak.random.default_rng(17).normal(3, 2.5, 3)</span>
 <span class="sd">        array([2.3673425816523577 4.0532529435624589 2.0598322696795694])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

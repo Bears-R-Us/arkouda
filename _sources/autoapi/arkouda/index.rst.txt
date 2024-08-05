@@ -10472,6 +10472,51 @@ Package Contents
 
 
 
+   .. py:method:: lognormal(mean=0.0, sigma=1.0, size=None, method='zig')
+
+      Draw samples from a log-normal distribution with specified mean,
+      standard deviation, and array shape.
+
+      Note that the mean and standard deviation are not the values for the distribution itself,
+      but of the underlying normal distribution it is derived from.
+
+      :param mean: Mean of the distribution. Default of 0.
+      :type mean: float or pdarray of floats, optional
+      :param sigma: Standard deviation of the distribution. Must be non-negative. Default of 1.
+      :type sigma: float or pdarray of floats, optional
+      :param size: Output shape. Default is None, in which case a single value is returned.
+      :type size: numeric_scalars, optional
+      :param method: Either 'box' or 'zig'. 'box' uses the Box–Muller transform
+                     'zig' uses the Ziggurat method.
+      :type method: str, optional
+
+      .. rubric:: Notes
+
+      A variable `x` has a log-normal distribution if `log(x)` is normally distributed.
+      The probability density for the log-normal distribution is:
+
+      .. math::
+         p(x) = \frac{1}{\sigma x \sqrt{2\pi}} e^{-\frac{(\ln(x)-\mu)^2}{2\sigma^2}}
+
+      where :math:`\mu` is the mean and :math:`\sigma` the standard deviation of the normally
+      distributed logarithm of the variable.
+      A log-normal distribution results if a random variable is the product of a
+      large number of independent, identically-distributed variables in the same
+      way that a normal distribution results if the variable is
+      the sum of a large number of independent, identically-distributed variables.
+
+      :returns: Pdarray of floats (unless size=None, in which case a single float is returned).
+      :rtype: pdarray
+
+      .. seealso:: :obj:`normal`
+
+      .. rubric:: Examples
+
+      >>> ak.random.default_rng(17).lognormal(3, 2.5, 3)
+      array([7.3866978126031091 106.20159494048757 4.5424399190667666])
+
+
+
    .. py:method:: normal(loc=0.0, scale=1.0, size=None, method='zig')
 
       Draw samples from a normal (Gaussian) distribution
@@ -10503,7 +10548,7 @@ Package Contents
 
       .. rubric:: Examples
 
-      >>> ak.random.default_rng(17).normal(3, 2.5, 10)
+      >>> ak.random.default_rng(17).normal(3, 2.5, 3)
       array([2.3673425816523577 4.0532529435624589 2.0598322696795694])
 
 

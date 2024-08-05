@@ -513,6 +513,56 @@ or a single such random int if size not provided.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.random.Generator.lognormal">
+<span class="sig-name descname"><span class="pre">lognormal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'zig'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/random/_generator.html#Generator.lognormal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.random.Generator.lognormal" title="Link to this definition">¶</a></dt>
+<dd><p>Draw samples from a log-normal distribution with specified mean,
+standard deviation, and array shape.</p>
+<p>Note that the mean and standard deviation are not the values for the distribution itself,
+but of the underlying normal distribution it is derived from.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mean</strong> (<em>float</em><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> of </em><em>floats</em><em>, </em><em>optional</em>) – Mean of the distribution. Default of 0.</p></li>
+<li><p><strong>sigma</strong> (<em>float</em><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> of </em><em>floats</em><em>, </em><em>optional</em>) – Standard deviation of the distribution. Must be non-negative. Default of 1.</p></li>
+<li><p><strong>size</strong> (<em>numeric_scalars</em><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
+<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – Either ‘box’ or ‘zig’. ‘box’ uses the Box–Muller transform
+‘zig’ uses the Ziggurat method.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>A variable <cite>x</cite> has a log-normal distribution if <cite>log(x)</cite> is normally distributed.
+The probability density for the log-normal distribution is:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[p(x) = \frac{1}{\sigma x \sqrt{2\pi}} e^{-\frac{(\ln(x)-\mu)^2}{2\sigma^2}}\]</div>
+</div>
+<p>where <span class="math notranslate nohighlight">\(\mu\)</span> is the mean and <span class="math notranslate nohighlight">\(\sigma\)</span> the standard deviation of the normally
+distributed logarithm of the variable.
+A log-normal distribution results if a random variable is the product of a
+large number of independent, identically-distributed variables in the same
+way that a normal distribution results if the variable is
+the sum of a large number of independent, identically-distributed variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Pdarray of floats (unless size=None, in which case a single float is returned).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../../../usage/random.html#arkouda.random.Generator.normal" title="arkouda.random.Generator.normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normal</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span><span class="o">.</span><span class="n">lognormal</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="go">array([7.3866978126031091 106.20159494048757 4.5424399190667666])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.random.Generator.normal">
 <span class="sig-name descname"><span class="pre">normal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'zig'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/random/_generator.html#Generator.normal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.random.Generator.normal" title="Link to this definition">¶</a></dt>
 <dd><p>Draw samples from a normal (Gaussian) distribution</p>
@@ -548,7 +598,7 @@ The square of the standard deviation, <span class="math notranslate nohighlight"
 <p><a class="reference internal" href="#arkouda.random.standard_normal" title="arkouda.random.standard_normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">standard_normal</span></code></a>, <a class="reference internal" href="#arkouda.random.uniform" title="arkouda.random.uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniform</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 <span class="go">array([2.3673425816523577 4.0532529435624589 2.0598322696795694])</span>
 </pre></div>
 </div>
@@ -966,6 +1016,7 @@ is invoked with a dtype of float64</p>
 <li><a class="reference internal" href="#arkouda.random.Generator.choice"><code class="docutils literal notranslate"><span class="pre">Generator.choice()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.random.Generator.exponential"><code class="docutils literal notranslate"><span class="pre">Generator.exponential()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.random.Generator.integers"><code class="docutils literal notranslate"><span class="pre">Generator.integers()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.random.Generator.lognormal"><code class="docutils literal notranslate"><span class="pre">Generator.lognormal()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.random.Generator.normal"><code class="docutils literal notranslate"><span class="pre">Generator.normal()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.random.Generator.permutation"><code class="docutils literal notranslate"><span class="pre">Generator.permutation()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.random.Generator.poisson"><code class="docutils literal notranslate"><span class="pre">Generator.poisson()</span></code></a></li>
