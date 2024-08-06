@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from typeguard import typechecked
 
-#from arkouda.client import generic_msg
+# from arkouda.client import generic_msg
 from arkouda.client import generic_msg, get_max_array_rank
 from arkouda.dtypes import (
     NUMBER_FORMAT_STRINGS,
@@ -48,7 +48,9 @@ __all__ = [
     "promote_to_common_dtype",
     "scalar_array",
 ]
-def infer_from_size (size) :
+
+
+def infer_from_size(size):
     shape: Union[int_scalars, Tuple[int_scalars, ...]] = 1
     if isinstance(size, tuple):
         shape = cast(Tuple, size)
@@ -61,6 +63,7 @@ def infer_from_size (size) :
         shape = full_size
         ndim = 1
     return shape, ndim, full_size
+
 
 @typechecked
 def from_series(series: pd.Series, dtype: Optional[Union[type, str]] = None) -> Union[pdarray, Strings]:
@@ -248,7 +251,7 @@ def array(
     # Return multi-dimensional pdarray if a.ndim <= get_max_array_rank()
     # otherwise raise an error
 
-    if a.ndim > get_max_array_rank() :
+    if a.ndim > get_max_array_rank():
         raise ValueError(f"array rank {a.ndim} exceeds maximum of {get_max_array_rank()}")
 
     # Check if array of strings
@@ -486,7 +489,7 @@ def zeros(
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
     shape, ndim, full_size = infer_from_size(size)
-    repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape })
+    repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape})
 
     return create_pdarray(repMsg, max_bits=max_bits)
 
@@ -541,7 +544,7 @@ def ones(
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
     shape, ndim, full_size = infer_from_size(size)
-    repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape })
+    repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape})
     a = create_pdarray(repMsg)
     a.fill(1)
     if max_bits:
@@ -605,7 +608,7 @@ def full(
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
     shape, ndim, full_size = infer_from_size(size)
-    repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape })
+    repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape})
     a = create_pdarray(repMsg)
     a.fill(fill_value)
     if max_bits:
@@ -615,8 +618,7 @@ def full(
 
 @typechecked
 def scalar_array(
-    value: numeric_scalars,
-    dtype: Optional[Union[np.dtype, type, str, bigint]] = None
+    value: numeric_scalars, dtype: Optional[Union[np.dtype, type, str, bigint]] = None
 ) -> pdarray:
     """
     Create a pdarray from a single scalar value.

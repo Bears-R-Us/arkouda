@@ -8,15 +8,11 @@ import numpy as np
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
-from arkouda.dtypes import DTypes, bigint
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import dtype as akdtype
 from arkouda.dtypes import (
-    int64,
     bigint,
     DTypes,
-    #_as_dtype,
-    bigint,
     int_scalars,
     isSupportedNumber,
     numeric_scalars,
@@ -2310,9 +2306,11 @@ def putmask(pda: pdarray, mask: Union[bool, pdarray], values: pdarray):
 
     pda[:] = where(mask, result, pda)  # pda[:] = allows us to return modified value
 
+
 # after this is working, add comments and docstring
 
-def eye (rows:int_scalars,cols:int_scalars,diag:int_scalars=0,dt:type=akint64) :
+
+def eye(rows: int_scalars, cols: int_scalars, diag: int_scalars = 0, dt: type = akint64):
     """
     Return a pdarray with zeros everywhere except along a diagonal, which is all ones.
     The matrix need not be square.
@@ -2329,7 +2327,7 @@ def eye (rows:int_scalars,cols:int_scalars,diag:int_scalars=0,dt:type=akint64) :
 
     Returns
     -------
-    pdarray 
+    pdarray
         an array of zeros with ones along the specified diagonal
 
     Examples
@@ -2341,19 +2339,29 @@ def eye (rows:int_scalars,cols:int_scalars,diag:int_scalars=0,dt:type=akint64) :
     >>> ak.eye(rows=4,cols=4,diag=-1,dt=ak.bool_)
     array([array([False False False False]) array([True False False False]) array([False True False False]) array([False False True False])]
 
-    Notes 
+    Notes
     -----
     if rows = cols and diag = 0, the result is an identity matrix
     Server returns an error if rank of pda < 2
 
     """
 
-    #cmd = f"eye<{dt.name}>"
+    # cmd = f"eye<{dt.name}>"
     cmd = f"eye<{akdtype(dt).name}>"
-    args = {"rows":rows,"cols":cols,"diag":diag,}
-    return (create_pdarray(generic_msg(cmd=cmd,args=args,)))
+    args = {
+        "rows": rows,
+        "cols": cols,
+        "diag": diag,
+    }
+    return create_pdarray(
+        generic_msg(
+            cmd=cmd,
+            args=args,
+        )
+    )
 
-def triu (pda:pdarray,diag:int_scalars=0) :
+
+def triu(pda: pdarray, diag: int_scalars = 0):
     """
     Return a copy of the pda with the lower triangle zeroed out
 
@@ -2368,7 +2376,7 @@ def triu (pda:pdarray,diag:int_scalars=0) :
 
     Returns
     -------
-    pdarray 
+    pdarray
         a copy of pda with zeros in the lower triangle
 
     Examples
@@ -2385,17 +2393,26 @@ def triu (pda:pdarray,diag:int_scalars=0) :
     >>> ak.triu(a,diag=4)
     array([array([0 0 0 0 5]) array([0 0 0 0 0]) array([0 0 0 0 0]) array([0 0 0 0 0]) array([0 0 0 0 0])])
 
-    Notes 
+    Notes
     -----
     Server returns an error if rank of pda < 2
 
     """
 
     cmd = f"triu<{pda.dtype},{pda.ndim}>"
-    args = {"array":pda,"diag":diag,}
-    return (create_pdarray(generic_msg(cmd=cmd,args=args,)))
+    args = {
+        "array": pda,
+        "diag": diag,
+    }
+    return create_pdarray(
+        generic_msg(
+            cmd=cmd,
+            args=args,
+        )
+    )
 
-def tril (pda:pdarray,diag:int_scalars=0) :
+
+def tril(pda: pdarray, diag: int_scalars = 0):
     """
     Return a copy of the pda with the upper triangle zeroed out
 
@@ -2410,7 +2427,7 @@ def tril (pda:pdarray,diag:int_scalars=0) :
 
     Returns
     -------
-    pdarray 
+    pdarray
         a copy of pda with zeros in the upper triangle
 
     Examples
@@ -2427,16 +2444,25 @@ def tril (pda:pdarray,diag:int_scalars=0) :
     >>> ak.tril(a,diag=0)
     array([array([1 0 0 0 0]) array([2 3 0 0 0]) array([3 4 5 0 0]) array([4 5 6 7 0]) array([5 6 7 8 9])])
 
-    Notes 
+    Notes
     -----
     Server returns an error if rank of pda < 2
 
     """
     cmd = f"tril<{pda.dtype},{pda.ndim}>"
-    args = {"array":pda,"diag":diag,}
-    return (create_pdarray(generic_msg(cmd=cmd,args=args,)))
+    args = {
+        "array": pda,
+        "diag": diag,
+    }
+    return create_pdarray(
+        generic_msg(
+            cmd=cmd,
+            args=args,
+        )
+    )
 
-def transpose (pda:pdarray) :
+
+def transpose(pda: pdarray):
     """
     Compute the transpose of a matrix.
 
@@ -2446,7 +2472,7 @@ def transpose (pda:pdarray) :
 
     Returns
     -------
-    pdarray 
+    pdarray
         the transpose of the input matrix
 
     Examples
@@ -2456,16 +2482,24 @@ def transpose (pda:pdarray) :
     array([array([1 1]) array([2 2]) array([3 3]) array([4 4]) array([5 5])])
 
 
-    Notes 
+    Notes
     -----
     Server returns an error if rank of pda < 2
 
     """
     cmd = f"transpose<{pda.dtype},{pda.ndim}>"
-    args = {"array":pda,}
-    return (create_pdarray(generic_msg(cmd=cmd,args=args,)))
+    args = {
+        "array": pda,
+    }
+    return create_pdarray(
+        generic_msg(
+            cmd=cmd,
+            args=args,
+        )
+    )
 
-def matmul (pdaLeft:pdarray, pdaRight:pdarray) :
+
+def matmul(pdaLeft: pdarray, pdaRight: pdarray):
     """
     Compute the product of two matrices.
 
@@ -2491,18 +2525,28 @@ def matmul (pdaLeft:pdarray, pdaRight:pdarray) :
     >>> ak.matmul(x,y)
     array([array([1.00000000000000000 5.00000000000000000 14.00000000000000000]) array([1.1000000000000001 5.3000000000000007 14.600000000000001])])
 
-    Notes 
+    Notes
     -----
-    Server returns an error if shapes of pdaLeft and pdaRight are incompatible with matrix multiplication.
+    Server returns an error if shapes of pdaLeft and pdaRight
+    are incompatible with matrix multiplication.
 
     """
-    if pdaLeft.ndim != pdaRight.ndim :
-         raise ValueError("matmul requires matrices of matching rank.")
+    if pdaLeft.ndim != pdaRight.ndim:
+        raise ValueError("matmul requires matrices of matching rank.")
     cmd = f"matmul<{pdaLeft.ndim}>"
-    args = {"x1":pdaLeft,"x2":pdaRight,}
-    return (create_pdarray(generic_msg(cmd=cmd,args=args,)))
+    args = {
+        "x1": pdaLeft,
+        "x2": pdaRight,
+    }
+    return create_pdarray(
+        generic_msg(
+            cmd=cmd,
+            args=args,
+        )
+    )
 
-def vecdot (x1:pdarray, x2:pdarray) :
+
+def vecdot(x1: pdarray, x2: pdarray):
     """
     Compute the generalized dot product of two vectors along the given axis.
     Assumes that both tensors have already been broadcast to the same shape.
@@ -2533,10 +2577,20 @@ def vecdot (x1:pdarray, x2:pdarray) :
 
     """
 
-    if x1.shape != x2.shape :
-         raise ValueError("vecdot requires matrices of matching rank.")
-    if x1.ndim < 2 :
+    if x1.shape != x2.shape:
+        raise ValueError("vecdot requires matrices of matching rank.")
+    if x1.ndim < 2:
         raise ValueError("vector requires matrices of rank 2 or more.")
     cmd = f"vecdot<{x1.ndim}>"
-    args = {"x1":x1,"x2":x2,"bcShape":tuple(x1.shape),"axis":0,}
-    return (create_pdarray(generic_msg(cmd=cmd,args=args,)))
+    args = {
+        "x1": x1,
+        "x2": x2,
+        "bcShape": tuple(x1.shape),
+        "axis": 0,
+    }
+    return create_pdarray(
+        generic_msg(
+            cmd=cmd,
+            args=args,
+        )
+    )
