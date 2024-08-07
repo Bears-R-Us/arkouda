@@ -559,8 +559,8 @@ module RandMsg
             const arrEntry = st[aName]: borrowed SymEntry(array_dtype, array_nd);
             const myArr = arrEntry.a;
 
-            forall (idx, arrIdx) in zip(choiceIdx, 0..) with (var agg = newSrcAggregator(array_dtype)) {
-                agg.copy(choiceArr[choiceArr.domain.orderToIndex(arrIdx)], myArr[idx]);
+            forall (c, idx) in zip(choiceArr, choiceIdx) with (var agg = newSrcAggregator(array_dtype)) {
+                agg.copy(c, myArr[idx]);
             }
 
             return st.insert(createSymEntry(choiceArr));
