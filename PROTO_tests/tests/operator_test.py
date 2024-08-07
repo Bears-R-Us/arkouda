@@ -411,6 +411,54 @@ class TestOperator:
         assert np.allclose((ak_bool[0] >> ak_int).to_ndarray(), np_bool[0] >> np_int)
         assert np.allclose((ak_bool[0] << ak_int).to_ndarray(), np_bool[0] << np_int)
 
+    def test_shift_equals_scalar_binops(self):
+        vector_pairs = [
+            (ak.arange(0, 5, dtype=ak.int64), np.arange(5, dtype=np.int64)),
+            (ak.arange(0, 5, dtype=ak.uint64), np.arange(5, dtype=np.uint64)),
+        ]
+        shift_scalars = [np.int64(1), np.int64(5), np.uint64(1), np.uint64(5), True, False]
+
+        for ak_vector, np_vector in vector_pairs:
+            for x in shift_scalars:
+                assert ak_vector.to_list() == np_vector.tolist()
+
+                ak_vector <<= x
+                np_vector <<= x
+                assert ak_vector.to_list() == np_vector.tolist()
+
+                ak_vector >>= x
+                np_vector >>= x
+                assert ak_vector.to_list() == np_vector.tolist()
+
+    def test_shift_equals_vector_binops(self):
+        vector_pairs = [
+            (ak.arange(0, 5, dtype=ak.int64), np.arange(5, dtype=np.int64)),
+            (ak.arange(0, 5, dtype=ak.uint64), np.arange(5, dtype=np.uint64)),
+        ]
+        shift_vectors = [
+            ak.ones(5, dtype=ak.int64),
+            ak.zeros(5, dtype=ak.int64),
+            ak.ones(5, dtype=ak.uint64),
+            ak.zeros(5, dtype=ak.uint64),
+            ak.array([1, 0, 1, 0, 1], dtype=bool),
+            ak.array([1, 1, 1, 1, 1], dtype=bool),
+        ]
+
+        for ak_vector, np_vector in vector_pairs:
+            for v in shift_vectors:
+                if (v[0].dtype.kind != "b") and (ak_vector[0].dtype.kind != v[0].dtype.kind):
+                    continue
+
+                assert ak_vector.to_list() == np_vector.tolist()
+
+                ak_vector <<= v
+                np_vector <<= v.to_ndarray()
+                assert ak_vector.to_list() == np_vector.tolist()
+
+                ak_vector >>= v
+                np_vector >>= v.to_ndarray()
+                assert ak_vector.to_list() == np_vector.tolist()
+
     def test_concatenate_type_preservation(self):
         # Test that concatenate preserves special pdarray types (IPv4, Datetime, BitVector, ...)
         from arkouda.util import generic_concat as akuconcat
