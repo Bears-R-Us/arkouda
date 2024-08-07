@@ -424,15 +424,26 @@
         <span class="k">return</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">bigint</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">coargsort</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">bigint_to_uint_arrays</span><span class="p">(),</span> <span class="n">algorithm</span><span class="p">)</span>
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;argsort</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
-        <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="o">.</span><span class="n">entry</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">Strings</span><span class="p">)</span> <span class="k">else</span> <span class="n">pda</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-            <span class="s2">&quot;algoName&quot;</span><span class="p">:</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-            <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span>
-            <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="n">axis</span><span class="p">,</span>
-        <span class="p">},</span>
-    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">Strings</span><span class="p">):</span>
+        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;argsortStrings&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="o">.</span><span class="n">entry</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s2">&quot;algoName&quot;</span><span class="p">:</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;argsort&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,1&gt;&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s2">&quot;algoName&quot;</span><span class="p">:</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span>
+                <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="n">axis</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span></div>
 
 
