@@ -798,7 +798,10 @@ class pdarray:
         # pdarray binop scalar
         # opeq requires scalar to be cast as pdarray dtype
         try:
-            other = self.dtype.type(other)
+            if self.dtype != bigint:
+                other = np.array([other]).astype(self.dtype)[0]
+            else:
+                other = self.dtype.type(other)
         except Exception:
             # Can't cast other as dtype of pdarray
             raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")

@@ -300,8 +300,8 @@ class TestDatetime:
             ak.Datetime(ak.date_range("2000-01-01 12:00:00", periods=100, freq="d")),
         )
         self.date_time_attribute_helper(
-            pd.Series(pd.date_range("1980-01-01 12:00:00", periods=100, freq="y")).dt,
-            ak.Datetime(ak.date_range("1980-01-01 12:00:00", periods=100, freq="y")),
+            pd.Series(pd.date_range("1980-01-01 12:00:00", periods=100, freq="YE")).dt,
+            ak.Datetime(ak.date_range("1980-01-01 12:00:00", periods=100, freq="YE")),
         )
 
     def time_delta_attribute_helper(self, pd_td, ak_td):
@@ -328,9 +328,9 @@ class TestDatetime:
         # make sure weeks at year boundaries are correct, modified version of pandas test at
         # https://github.com/pandas-dev/pandas/blob/main/pandas/tests/scalar/timestamp/test_timestamp.py
         for date in "2013-12-31", "2008-12-28", "2009-12-31", "2010-01-01", "2010-01-03":
-            ak_week = ak.Datetime(ak.date_range(date, periods=10, freq="w")).week.to_list()
+            ak_week = ak.Datetime(ak.date_range(date, periods=10, freq="W")).week.to_list()
             pd_week = (
-                pd.Series(pd.date_range(date, periods=10, freq="w")).dt.isocalendar().week.to_list()
+                pd.Series(pd.date_range(date, periods=10, freq="W")).dt.isocalendar().week.to_list()
             )
             assert ak_week == pd_week
 
