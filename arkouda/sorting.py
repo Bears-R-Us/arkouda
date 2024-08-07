@@ -71,15 +71,26 @@ def argsort(
         return zeros(0, dtype=pda.dtype)
     if isinstance(pda, pdarray) and pda.dtype == bigint:
         return coargsort(pda.bigint_to_uint_arrays(), algorithm)
-    repMsg = generic_msg(
-        cmd=f"argsort{pda.ndim}D",
-        args={
-            "name": pda.entry.name if isinstance(pda, Strings) else pda.name,
-            "algoName": algorithm.name,
-            "objType": pda.objType,
-            "axis": axis,
-        },
-    )
+
+    if isinstance(pda, Strings):
+        repMsg = generic_msg(
+            cmd="argsortStrings",
+            args={
+                "name": pda.entry.name,
+                "algoName": algorithm.name,
+            },
+        )
+    else:
+        repMsg = generic_msg(
+            cmd=f"argsort<{pda.dtype.name},1>",
+            args={
+                "name": pda.name,
+                "algoName": algorithm.name,
+                "objType": pda.objType,
+                "axis": axis,
+            },
+        )
+
     return create_pdarray(cast(str, repMsg))
 
 
