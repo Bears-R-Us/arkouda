@@ -532,9 +532,6 @@ define TEST_HELP_TEXT
 endef
 $(eval $(call create_help_target,test-help,TEST_HELP_TEXT))
 
-.PHONY: test
-test: test-python
-
 .PHONY: test-proto
 test-proto: test-python-proto
 
@@ -543,7 +540,7 @@ test-chapel:
 	start_test $(TEST_SOURCE_DIR)
 
 .PHONY: test-all
-test-all: test-python test-python-proto test-chapel
+test-all: test-python-proto test-chapel
 
 mypy:
 	python3 -m mypy arkouda
@@ -556,10 +553,7 @@ $(TEST_TARGETS): $(TEST_BINARY_DIR)/$(TEST_BINARY_SIGIL)%: $(TEST_SOURCE_DIR)/%.
 	$(CHPL) $(TEST_CHPL_FLAGS) -M $(ARKOUDA_SOURCE_DIR) $(ARKOUDA_COMPAT_MODULES) $< -o $@
 
 print-%:
-	$(info $($*)) @true
-
-test-python:
-	python3 -m pytest $(ARKOUDA_PYTEST_OPTIONS) -c pytest.ini
+	$(info $($*)) @trues
 
 size=100
 test-python-proto:
