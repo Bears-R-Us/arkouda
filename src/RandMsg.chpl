@@ -750,7 +750,6 @@ module RandMsg
 
     use CommandMap;
     registerFunction("logisticGenerator", logisticGeneratorMsg, getModuleName());
-    registerFunction("standardExponential", standardExponentialMsg, getModuleName());
     registerFunction("segmentedSample", segmentedSampleMsg, getModuleName());
     registerFunction("poissonGenerator", poissonGeneratorMsg, getModuleName());
 }

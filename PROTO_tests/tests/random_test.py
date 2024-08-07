@@ -1,5 +1,6 @@
 import os
 from collections import Counter
+from itertools import product
 
 import numpy as np
 import pytest
@@ -193,6 +194,30 @@ class TestRandom:
                         previous = choice_arrays.pop(0)
                         current = rng.choice(a, size, replace, p)
                         assert np.allclose(previous.to_list(), current.to_list())
+
+    def test_logistic(self):
+        scal = 2
+        arr = ak.arange(5)
+
+        for loc, scale in product([scal, arr], [scal, arr]):
+            rng = ak.random.default_rng(17)
+            num_samples = 5
+            log_sample = rng.logistic(loc=loc, scale=scale, size=num_samples).to_list()
+
+            rng = ak.random.default_rng(17)
+            assert rng.logistic(loc=loc, scale=scale, size=num_samples).to_list() == log_sample
+
+    def test_lognormal(self):
+        scal = 2
+        arr = ak.arange(5)
+
+        for mean, sigma in product([scal, arr], [scal, arr]):
+            rng = ak.random.default_rng(17)
+            num_samples = 5
+            log_sample = rng.lognormal(mean=mean, sigma=sigma, size=num_samples).to_list()
+
+            rng = ak.random.default_rng(17)
+            assert rng.lognormal(mean=mean, sigma=sigma, size=num_samples).to_list() == log_sample
 
     def test_normal(self):
         rng = ak.random.default_rng(17)
