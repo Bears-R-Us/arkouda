@@ -38,6 +38,8 @@ or
    :type shape: int
    
 
+.. function:: proc makeDistDom(dom: domain(?))
+
 .. function:: proc makeDistArray(shape: int ...?N, type etype) throws where N == 1
 
    
