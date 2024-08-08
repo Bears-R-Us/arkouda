@@ -573,6 +573,38 @@ module RandMsg
         return MsgTuple.error("choice does not support the bigint dtype");
     }
 
+    inline proc logisticGenerator(mu: real, scale: real, ref rs) {
+        var U = rs.next(0, 1);
+
+        while U <= 0.0 {
+            /* Reject U == 0.0 and call again to get next value */
+            U = rs.next(0, 1);
+        }
+        return mu + scale * log(U / (1.0 - U));
+    }
+
+    proc logisticGeneratorMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        const name = msgArgs["name"],
+              isSingleMu = msgArgs["is_single_mu"].toScalar(bool),
+              muStr = msgArgs["mu"].toScalar(string),
+              isSingleScale = msgArgs["is_single_scale"].toScalar(bool),
+              scaleStr = msgArgs["scale"].toScalar(string),
+              size = msgArgs["size"].toScalar(int),
+              hasSeed = msgArgs["has_seed"].toScalar(bool),
+              state = msgArgs["state"].toScalar(int);
+
+        var generatorEntry = st[name]: borrowed GeneratorSymEntry(real);
+        ref rng = generatorEntry.generator;
+        if state != 1 then rng.skipTo(state-1);
+
+        var logisticArr = makeDistArray(size, real);
+        const mu = new scalarOrArray(muStr, !isSingleMu, st),
+              scale = new scalarOrArray(scaleStr, !isSingleScale, st);
+
+        uniformStreamPerElem(logisticArr, rng, GenerationFunction.LogisticGenerator, hasSeed, mu=mu, scale=scale);
+        return st.insert(createSymEntry(logisticArr));
+    }
+
     @arkouda.instantiateAndRegister
     proc permutation(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws {
         const name = msgArgs["name"],
@@ -656,7 +688,7 @@ module RandMsg
         var poissonArr = makeDistArray(size, int);
         const lam = new scalarOrArray(lamStr, !isSingleLam, st);
 
-        uniformStreamPerElem(poissonArr, rng, GenerationFunction.PoissonGenerator, hasSeed, lam);
+        uniformStreamPerElem(poissonArr, rng, GenerationFunction.PoissonGenerator, hasSeed, lam=lam);
         return st.insert(createSymEntry(poissonArr));
     }
 
@@ -717,6 +749,7 @@ module RandMsg
     }
 
     use CommandMap;
+    registerFunction("logisticGenerator", logisticGeneratorMsg, getModuleName());
     registerFunction("segmentedSample", segmentedSampleMsg, getModuleName());
     registerFunction("poissonGenerator", poissonGeneratorMsg, getModuleName());
 }
