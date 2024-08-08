@@ -107,7 +107,7 @@ setup(
     # and refuse to install the project if the version does not match. If you
     # do not support Python 2, you can simplify this to '>=3.5' or similar, see
     # https://packaging.python.org/guides/distributing-packages-using-setuptools/#python-requires
-    python_requires=">=3.9,<3.12.4",
+    python_requires=">=3.9,!=3.12.4",
     # This field lists other packages that your project depends on to run.
     # Any package you put here will be installed by pip when your project is
     # installed, so they must be valid existing projects.
@@ -146,7 +146,7 @@ setup(
             "Sphinx>=5.1.1",
             "sphinx-argparse",
             "sphinx-autoapi",
-            "mypy>=0.931,<0.990",
+            "mypy>=0.931",
             "typed-ast",
             "black",
             "isort",

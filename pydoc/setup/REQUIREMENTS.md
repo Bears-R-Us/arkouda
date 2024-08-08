@@ -17,7 +17,7 @@ The installation instructions for the dependencies listed here may vary dependin
 
 The following python packages are required by the Arkouda client package.
 
-- `python>=3.9,<3.12.4`
+- `python>=3.9,!=3.12.4`
 - `numpy>=1.24.1,<2.0`
 - `pandas>=1.4.0,!=2.2.0`
 - `pyzmq>=20.0.0`
@@ -55,7 +55,7 @@ The dependencies listed here are only required if you will be doing development 
 - `linkify-it-py`
 - `typed-ast`
 - `flake8`
-- `mypy>=0.931,<0.990`
+- `mypy>=0.931`
 - `black`
 - `isort`
 - `pytest-json-report`
