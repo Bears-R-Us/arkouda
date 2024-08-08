@@ -522,6 +522,54 @@ or a single such random int if size not provided.</p>
 </dd></dl>
 
 </section>
+<section id="logistic">
+<h3>logistic<a class="headerlink" href="#logistic" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.random.Generator.logistic">
+<span class="sig-prename descclassname"><span class="pre">arkouda.random.Generator.</span></span><span class="sig-name descname"><span class="pre">logistic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.random.Generator.logistic" title="Link to this definition">¶</a></dt>
+<dd><p>Draw samples from a logistic distribution.</p>
+<p>Samples are drawn from a logistic distribution with specified parameters,
+loc (location or mean, also median), and scale (&gt;0).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>loc</strong> (<em>float</em><em> or </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> of </em><em>floats</em><em>, </em><em>optional</em>) – Parameter of the distribution. Default of 0.</p></li>
+<li><p><strong>scale</strong> (<em>float</em><em> or </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> of </em><em>floats</em><em>, </em><em>optional</em>) – Parameter of the distribution. Must be non-negative. Default is 1.</p></li>
+<li><p><strong>size</strong> (<em>numeric_scalars</em><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The probability density for the Logistic distribution is</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[P(x) = \frac{e^{-(x - \mu)/s}}{s( 1 + e^{-(x - \mu)/s})^2}\]</div>
+</div>
+<p>where <span class="math notranslate nohighlight">\(\mu\)</span> is the location and <span class="math notranslate nohighlight">\(s\)</span> is the scale.</p>
+<p>The Logistic distribution is used in Extreme Value problems where it can act
+as a mixture of Gumbel distributions, in Epidemiology, and by the World Chess Federation (FIDE)
+where it is used in the Elo ranking system, assuming the performance of each player
+is a logistically distributed random variable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Pdarray of floats (unless size=None, in which case a single float is returned).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.random.Generator.normal" title="arkouda.random.Generator.normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normal</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span><span class="o">.</span><span class="n">logistic</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="go">array([1.1319566682702642 -7.1665150633720014 7.7208667145173608])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
 <section id="lognormal">
 <h3>lognormal<a class="headerlink" href="#lognormal" title="Link to this heading">¶</a></h3>
 <dl class="py function">
@@ -919,6 +967,10 @@ high must be greater than or equal to low. The default value is 1.0.</p></li>
 </li>
 <li><a class="reference internal" href="#integers">integers</a><ul>
 <li><a class="reference internal" href="#arkouda.random.Generator.integers"><code class="docutils literal notranslate"><span class="pre">integers()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#logistic">logistic</a><ul>
+<li><a class="reference internal" href="#arkouda.random.Generator.logistic"><code class="docutils literal notranslate"><span class="pre">logistic()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#lognormal">lognormal</a><ul>

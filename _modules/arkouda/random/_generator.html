@@ -525,14 +525,9 @@
 <span class="sd">        pdarray</span>
 <span class="sd">            Drawn samples from the parameterized exponential distribution.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">scale</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;scale cannot be less then 0&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">_val_isinstance_of_union</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">scale</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;scale cannot be less then 0&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;scale must be either a float scalar or pdarray&quot;</span><span class="p">)</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="n">float_array_or_scalar_helper</span><span class="p">(</span><span class="s2">&quot;exponential&quot;</span><span class="p">,</span> <span class="s2">&quot;scale&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">scale</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">scale</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;scale must be non-negative.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">scale</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">standard_exponential</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span></div>
 
 
@@ -659,6 +654,81 @@
             <span class="p">},</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">+=</span> <span class="n">full_size</span>
+        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Generator.logistic">
+<a class="viewcode-back" href="../../../autoapi/arkouda/random/index.html#arkouda.Generator.logistic">[docs]</a>
+    <span class="k">def</span> <span class="nf">logistic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Draw samples from a logistic distribution.</span>
+
+<span class="sd">        Samples are drawn from a logistic distribution with specified parameters,</span>
+<span class="sd">        loc (location or mean, also median), and scale (&gt;0).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        loc: float or pdarray of floats, optional</span>
+<span class="sd">            Parameter of the distribution. Default of 0.</span>
+
+<span class="sd">        scale: float or pdarray of floats, optional</span>
+<span class="sd">            Parameter of the distribution. Must be non-negative. Default is 1.</span>
+
+<span class="sd">        size: numeric_scalars, optional</span>
+<span class="sd">            Output shape. Default is None, in which case a single value is returned.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The probability density for the Logistic distribution is</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           P(x) = \frac{e^{-(x - \mu)/s}}{s( 1 + e^{-(x - \mu)/s})^2}</span>
+
+<span class="sd">        where :math:`\mu` is the location and :math:`s` is the scale.</span>
+
+<span class="sd">        The Logistic distribution is used in Extreme Value problems where it can act</span>
+<span class="sd">        as a mixture of Gumbel distributions, in Epidemiology, and by the World Chess Federation (FIDE)</span>
+<span class="sd">        where it is used in the Elo ranking system, assuming the performance of each player</span>
+<span class="sd">        is a logistically distributed random variable.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pdarray</span>
+<span class="sd">            Pdarray of floats (unless size=None, in which case a single float is returned).</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        normal</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; ak.random.default_rng(17).logistic(3, 2.5, 3)</span>
+<span class="sd">        array([1.1319566682702642 -7.1665150633720014 7.7208667145173608])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># delegate to numpy when return size is 1</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_np_generator</span><span class="o">.</span><span class="n">logistic</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
+
+        <span class="n">is_single_mu</span><span class="p">,</span> <span class="n">mu</span> <span class="o">=</span> <span class="n">float_array_or_scalar_helper</span><span class="p">(</span><span class="s2">&quot;logistic&quot;</span><span class="p">,</span> <span class="s2">&quot;loc&quot;</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+        <span class="n">is_single_scale</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="n">float_array_or_scalar_helper</span><span class="p">(</span><span class="s2">&quot;logistic&quot;</span><span class="p">,</span> <span class="s2">&quot;scale&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">scale</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">scale</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;scale must be non-negative.&quot;</span><span class="p">)</span>
+
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;logisticGenerator&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name_dict</span><span class="p">[</span><span class="n">akdtype</span><span class="p">(</span><span class="s2">&quot;float64&quot;</span><span class="p">)],</span>
+                <span class="s2">&quot;mu&quot;</span><span class="p">:</span> <span class="n">mu</span><span class="p">,</span>
+                <span class="s2">&quot;is_single_mu&quot;</span><span class="p">:</span> <span class="n">is_single_mu</span><span class="p">,</span>
+                <span class="s2">&quot;scale&quot;</span><span class="p">:</span> <span class="n">scale</span><span class="p">,</span>
+                <span class="s2">&quot;is_single_scale&quot;</span><span class="p">:</span> <span class="n">is_single_scale</span><span class="p">,</span>
+                <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">size</span><span class="p">,</span>
+                <span class="s2">&quot;has_seed&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="c1"># we only generate one val using the generator in the symbol table</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
@@ -1007,24 +1077,9 @@
             <span class="c1"># delegate to numpy when return size is 1</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_np_generator</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">lam</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">_val_isinstance_of_union</span><span class="p">(</span><span class="n">lam</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">):</span>
-            <span class="n">is_single_lambda</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">_val_isinstance_of_union</span><span class="p">(</span><span class="n">lam</span><span class="p">,</span> <span class="n">float_scalars</span><span class="p">):</span>
-                <span class="n">lam</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">lam</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">lam</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;lambda must be &gt;=0&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lam</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-            <span class="n">is_single_lambda</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">if</span> <span class="n">size</span> <span class="o">!=</span> <span class="n">lam</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;array of lambdas must have same size as return size&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">lam</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">akfloat64</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">arkouda.numeric</span> <span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
-
-                <span class="n">lam</span> <span class="o">=</span> <span class="n">akcast</span><span class="p">(</span><span class="n">lam</span><span class="p">,</span> <span class="n">akfloat64</span><span class="p">)</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">lam</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;all lambdas must be &gt;=0&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;poisson only accepts a pdarray or float scalar for lam&quot;</span><span class="p">)</span>
+        <span class="n">is_single_lambda</span><span class="p">,</span> <span class="n">lam</span> <span class="o">=</span> <span class="n">float_array_or_scalar_helper</span><span class="p">(</span><span class="s2">&quot;poisson&quot;</span><span class="p">,</span> <span class="s2">&quot;lam&quot;</span><span class="p">,</span> <span class="n">lam</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">lam</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lam</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">lam</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;lam must be non-negative.&quot;</span><span class="p">)</span>
 
         <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;poissonGenerator&quot;</span><span class="p">,</span>
@@ -1151,6 +1206,24 @@
 
     <span class="k">return</span> <span class="n">Generator</span><span class="p">(</span><span class="n">name_dict</span><span class="p">,</span> <span class="n">seed</span> <span class="k">if</span> <span class="n">has_seed</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">)</span></div>
 
+
+
+<span class="k">def</span> <span class="nf">float_array_or_scalar_helper</span><span class="p">(</span><span class="n">func_name</span><span class="p">,</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">_val_isinstance_of_union</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">):</span>
+        <span class="n">is_scalar</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_val_isinstance_of_union</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">float_scalars</span><span class="p">):</span>
+            <span class="n">var</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="n">is_scalar</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">size</span> <span class="o">!=</span> <span class="n">var</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;array of </span><span class="si">{</span><span class="n">var_name</span><span class="si">}</span><span class="s2"> must have same size as return size&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">akfloat64</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">arkouda.numeric</span> <span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
+
+            <span class="n">var</span> <span class="o">=</span> <span class="n">akcast</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">akfloat64</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">func_name</span><span class="si">}</span><span class="s2"> only accepts a pdarray or float scalar for </span><span class="si">{</span><span class="n">var_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">is_scalar</span><span class="p">,</span> <span class="n">var</span>
 </pre></div>
         </article>
       </div>

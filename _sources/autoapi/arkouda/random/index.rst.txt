@@ -135,6 +135,46 @@ Package Contents
 
 
 
+   .. py:method:: logistic(loc=0.0, scale=1.0, size=None)
+
+      Draw samples from a logistic distribution.
+
+      Samples are drawn from a logistic distribution with specified parameters,
+      loc (location or mean, also median), and scale (>0).
+
+      :param loc: Parameter of the distribution. Default of 0.
+      :type loc: float or pdarray of floats, optional
+      :param scale: Parameter of the distribution. Must be non-negative. Default is 1.
+      :type scale: float or pdarray of floats, optional
+      :param size: Output shape. Default is None, in which case a single value is returned.
+      :type size: numeric_scalars, optional
+
+      .. rubric:: Notes
+
+      The probability density for the Logistic distribution is
+
+      .. math::
+         P(x) = \frac{e^{-(x - \mu)/s}}{s( 1 + e^{-(x - \mu)/s})^2}
+
+      where :math:`\mu` is the location and :math:`s` is the scale.
+
+      The Logistic distribution is used in Extreme Value problems where it can act
+      as a mixture of Gumbel distributions, in Epidemiology, and by the World Chess Federation (FIDE)
+      where it is used in the Elo ranking system, assuming the performance of each player
+      is a logistically distributed random variable.
+
+      :returns: Pdarray of floats (unless size=None, in which case a single float is returned).
+      :rtype: pdarray
+
+      .. seealso:: :obj:`normal`
+
+      .. rubric:: Examples
+
+      >>> ak.random.default_rng(17).logistic(3, 2.5, 3)
+      array([1.1319566682702642 -7.1665150633720014 7.7208667145173608])
+
+
+
    .. py:method:: lognormal(mean=0.0, sigma=1.0, size=None, method='zig')
 
       Draw samples from a log-normal distribution with specified mean,
