@@ -26,7 +26,6 @@ from arkouda.dtypes import (
     resolve_scalar_dtype,
 )
 from arkouda.dtypes import str_ as akstr_
-from arkouda.dtypes import translate_np_dtype
 from arkouda.dtypes import uint64 as akuint64
 from arkouda.infoclass import information, pretty_print_information
 from arkouda.logger import getArkoudaLogger
@@ -221,8 +220,7 @@ def _parse_index_tuple(key, shape):
                 slices.append((k, k + 1, 1))
         elif isinstance(k, pdarray):
             pdarray_axes.append(dim)
-            kind, _ = translate_np_dtype(k.dtype)
-            if kind not in ("bool", "int", "uint"):
+            if k.dtype not in ("bool", "int", "uint"):
                 raise TypeError(f"unsupported pdarray index type {k.dtype}")
             # select all indices (needed for mixed slice+pdarray indexing)
             slices.append((0, shape[dim], 1))
@@ -987,10 +985,9 @@ class pdarray:
                 return ret_array
 
         if isinstance(key, pdarray) and self.ndim == 1:
-            kind, _ = translate_np_dtype(key.dtype)
-            if kind not in ("bool", "int", "uint"):
+            if key.dtype not in ("bool", "int", "uint"):
                 raise TypeError(f"unsupported pdarray index type {key.dtype}")
-            if kind == "bool" and self.size != key.size:
+            if key.dtype == "bool" and self.size != key.size:
                 raise ValueError(f"size mismatch {self.size} {key.size}")
             repMsg = generic_msg(
                 cmd="[pdarray]",

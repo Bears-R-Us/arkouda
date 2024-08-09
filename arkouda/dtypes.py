@@ -3,10 +3,9 @@ from __future__ import annotations
 import builtins
 import sys
 from enum import Enum
-from typing import Tuple, Union, cast
+from typing import Union, cast
 
 import numpy as np
-from typeguard import typechecked
 
 __all__ = [
     "DTypes",
@@ -30,8 +29,6 @@ __all__ = [
     "bigint",
     "intTypes",
     "bitType",
-    "check_np_dtype",
-    "translate_np_dtype",
     "resolve_scalar_dtype",
     "ARKOUDA_SUPPORTED_DTYPES",
     "bool_scalars",
@@ -292,43 +289,6 @@ def isSupportedFloat(num):
 
 def isSupportedNumber(num):
     return isinstance(num, ARKOUDA_SUPPORTED_NUMBERS)
-
-
-@typechecked
-def check_np_dtype(dt: Union[np.dtype, "bigint"]) -> None:
-    """
-    Assert that numpy dtype dt is one of the dtypes supported
-    by arkouda, otherwise raise TypeError.
-
-    Raises
-    ------
-    TypeError
-        Raised if the dtype is not in supported dtypes or if
-        dt is not a np.dtype
-    """
-
-    if dtype(dt).name not in DTypes:
-        raise TypeError(f"Unsupported type: {dt}")
-
-
-@typechecked
-def translate_np_dtype(dt) -> Tuple[builtins.str, int]:
-    """
-    Split numpy dtype dt into its kind and byte size, raising
-    TypeError for unsupported dtypes.
-
-    Raises
-    ------
-    TypeError
-        Raised if the dtype is not in supported dtypes or if
-        dt is not a np.dtype
-    """
-    # Assert that dt is one of the arkouda supported dtypes
-    dt = dtype(dt)
-    check_np_dtype(dt)
-    trans = {"i": "int", "f": "float", "b": "bool", "u": "uint", "U": "str", "c": "complex"}
-    kind = trans[dt.kind]
-    return kind, dt.itemsize
 
 
 def resolve_scalar_dtype(val: object) -> str:
