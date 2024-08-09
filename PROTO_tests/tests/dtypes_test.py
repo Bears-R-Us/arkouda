@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from typeguard import TypeCheckError
 
 import arkouda as ak
 from arkouda import dtypes
@@ -29,7 +30,7 @@ class TestDTypes:
 
     @pytest.mark.parametrize("dtype", ["np.str"])
     def test_check_np_dtype_errors(self, dtype):
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             dtypes.check_np_dtype(dtype)
 
     def test_translate_np_dtype(self):
@@ -80,9 +81,9 @@ class TestDTypes:
         float_scalars = Union[float, np.float64, np.float32]
         assert _is_dtype_in_union(np.float64, float_scalars)
         # Test with a type not present in the union
-        assert ~_is_dtype_in_union(np.int64, float_scalars)
+        assert not _is_dtype_in_union(np.int64, float_scalars)
         # Test with a non-Union type
-        assert ~_is_dtype_in_union(np.float64, float)
+        assert not _is_dtype_in_union(np.float64, float)
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize(

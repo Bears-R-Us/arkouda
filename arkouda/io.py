@@ -1773,7 +1773,6 @@ def load(
             raise RuntimeError(re)
 
 
-@typechecked
 def load_all(
     path_prefix: str, file_format: str = "INFER", column_delim: str = ",", read_nested=True
 ) -> Mapping[str, Union[pdarray, Strings, SegArray, Categorical]]:

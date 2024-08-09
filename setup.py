@@ -107,7 +107,7 @@ setup(
     # and refuse to install the project if the version does not match. If you
     # do not support Python 2, you can simplify this to '>=3.5' or similar, see
     # https://packaging.python.org/guides/distributing-packages-using-setuptools/#python-requires
-    python_requires=">=3.9,!=3.12.4",
+    python_requires=">=3.9",
     # This field lists other packages that your project depends on to run.
     # Any package you put here will be installed by pip when your project is
     # installed, so they must be valid existing projects.
@@ -118,7 +118,7 @@ setup(
         "numpy>=1.24.1,<2.0",
         "pandas>=1.4.0,!=2.2.0",
         "pyzmq>=20.0.0",
-        "typeguard==2.10.0",
+        "typeguard",
         "tabulate",
         "pyfiglet",
         "versioneer",

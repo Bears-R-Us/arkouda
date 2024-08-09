@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import pytest
+from typeguard import TypeCheckError
 
 import arkouda as ak
 from arkouda import GroupBy, concatenate
@@ -456,7 +457,7 @@ class TestGroupBy:
         with pytest.raises(TypeError):
             ak.GroupBy(ak.arange(4), ak.arange(4))
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             gb.broadcast([])
 
         with pytest.raises(TypeError):

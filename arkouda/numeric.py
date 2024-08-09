@@ -2,10 +2,9 @@ import json
 from enum import Enum
 from typing import ForwardRef, List, Optional, Sequence, Tuple, Union
 from typing import cast as type_cast
-from typing import no_type_check
 
 import numpy as np
-from typeguard import typechecked
+from typeguard import check_type, typechecked, typeguard_ignore
 
 from arkouda.client import generic_msg
 from arkouda.dtypes import DTypes, bigint
@@ -83,12 +82,11 @@ class ErrorMode(Enum):
     return_validity = "return_validity"
 
 
-@typechecked
 def cast(
-    pda: Union[pdarray, Strings, Categorical],  # type: ignore
+    pda: Union[pdarray, Strings, Categorical],
     dt: Union[np.dtype, type, str, bigint],
     errors: ErrorMode = ErrorMode.strict,
-) -> Union[Union[pdarray, Strings, Categorical], Tuple[pdarray, pdarray]]:  # type: ignore
+) -> Union[Union[pdarray, Strings, Categorical], Tuple[pdarray, pdarray]]:
     """
     Cast an array to another dtype.
 
@@ -1503,13 +1501,13 @@ def _hash_single(pda: pdarray, full: bool = True):
         return create_pdarray(repMsg)
 
 
-@no_type_check
+@typeguard_ignore
 def _str_cat_where(
     condition: pdarray,
     A: Union[str, Strings, Categorical],
     B: Union[str, Strings, Categorical],
 ) -> Union[Strings, Categorical]:
-    # added @no_type_check because mypy can't handle Categorical not being declared
+    # added @typeguard_ignore because mypy can't handle Categorical not being declared
     # sooner, but there are circular dependencies preventing that
     from arkouda.categorical import Categorical
     from arkouda.pdarraysetops import concatenate
@@ -1574,12 +1572,11 @@ def _str_cat_where(
     raise TypeError("ak.where is not supported between Strings and Categorical")
 
 
-@typechecked
 def where(
     condition: pdarray,
-    A: Union[str, numeric_scalars, pdarray, Strings, Categorical],  # type: ignore
-    B: Union[str, numeric_scalars, pdarray, Strings, Categorical],  # type: ignore
-) -> Union[pdarray, Strings, Categorical]:  # type: ignore
+    A: Union[str, numeric_scalars, pdarray, Strings, Categorical],
+    B: Union[str, numeric_scalars, pdarray, Strings, Categorical],
+) -> Union[pdarray, Strings, Categorical]:
     """
     Returns an array with elements chosen from A and B based upon a
     conditioning array. As is the case with numpy.where, the return array
@@ -1650,6 +1647,8 @@ def where(
     is supported e.g., n < 5, n > 1, which is supported in numpy
     is not currently supported in Arkouda
     """
+    check_type(condition, pdarray)
+
     if (not isSupportedNumber(A) and not isinstance(A, pdarray)) or (
         not isSupportedNumber(B) and not isinstance(B, pdarray)
     ):
@@ -2017,8 +2016,8 @@ def value_counts(
 @typechecked
 def clip(
     pda: pdarray,
-    lo: Union[numeric_scalars, pdarray],
-    hi: Union[numeric_scalars, pdarray],
+    lo: Optional[Union[numeric_scalars, pdarray]],
+    hi: Optional[Union[numeric_scalars, pdarray]],
 ) -> pdarray:
     """
     Clip (limit) the values in an array to a given range [lo,hi]

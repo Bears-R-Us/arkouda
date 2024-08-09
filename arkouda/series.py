@@ -130,7 +130,6 @@ class Series:
 
     objType = "Series"
 
-    @typechecked
     def __init__(
         self,
         data: Union[Tuple, List, groupable_element_type, Series, SegArray, pd.Series, pd.Categorical],

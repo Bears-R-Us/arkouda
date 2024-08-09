@@ -6,6 +6,7 @@ from collections import deque
 import numpy as np
 import pandas as pd
 import pytest
+from typeguard import TypeCheckError
 
 import arkouda as ak
 
@@ -228,13 +229,13 @@ class TestPdarrayCreation:
         with pytest.raises(ValueError):
             ak.randint(low=1, high=0, size=1, dtype=ak.float64)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.randint(0, 1, "1000")
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.randint("0", 1, 1000)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.randint(0, "1", 1000)
 
     def test_randint_with_seed(self):
@@ -284,13 +285,13 @@ class TestPdarrayCreation:
         u_array = ak.uniform(size=np.int64(3), low=np.int64(0), high=np.int64(5), seed=np.int64(0))
         assert [0.30013431967121934, 0.47383036230759112, 1.0441791878997098] == u_array.to_list()
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.uniform(low="0", high=5, size=size)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.uniform(low=0, high="5", size=size)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.uniform(low=0, high=5, size="100")
 
         # Test that int_scalars covers uint8, uint16, uint32
@@ -433,13 +434,13 @@ class TestPdarrayCreation:
         assert 0.0000 == pda[5]
         assert (pda.to_ndarray() == np.linspace(float(5.0), float(0.0), np.int64(6))).all()
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.linspace(0, "100", 1000)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.linspace("0", 100, 1000)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.linspace(0, 100, "1000")
 
         # Test that int_scalars covers uint8, uint16, uint32
@@ -474,10 +475,10 @@ class TestPdarrayCreation:
         assert npda.tolist() == pda.to_list()
 
     def test_standard_normal_errors(self):
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.standard_normal("100")
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.standard_normal(100.0)
 
         with pytest.raises(ValueError):
@@ -512,13 +513,13 @@ class TestPdarrayCreation:
         with pytest.raises(ValueError):
             ak.random_strings_uniform(maxlen=5, minlen=5, size=10)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.random_strings_uniform(minlen="1", maxlen=5, size=10)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.random_strings_uniform(minlen=1, maxlen="5", size=10)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.random_strings_uniform(minlen=1, maxlen=5, size="10")
 
         # Test that int_scalars covers uint8, uint16, uint32
@@ -558,13 +559,13 @@ class TestPdarrayCreation:
         assert str == pda.dtype
 
     def test_random_strings_lognormal_errors(self):
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.random_strings_lognormal("2", 0.25, 100)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.random_strings_lognormal(2, 0.25, "100")
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.random_strings_lognormal(2, 0.25, 100, 1000000)
 
         # Test that int_scalars covers uint8, uint16, uint32
@@ -655,7 +656,7 @@ class TestPdarrayCreation:
         assert isinstance(p_array, ak.pdarray)
         assert np.int64 == p_array.dtype
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.from_series(np.ones(10))
 
         with pytest.raises(ValueError):

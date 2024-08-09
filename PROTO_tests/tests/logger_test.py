@@ -3,6 +3,7 @@ import tempfile
 from logging import DEBUG, INFO, WARN, FileHandler, StreamHandler
 
 import pytest
+from typeguard import TypeCheckError
 
 import arkouda as ak
 from arkouda import io_util
@@ -96,5 +97,5 @@ class TestLogger:
         with pytest.raises(ValueError):
             logger.getHandler("not-a-handler")
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             logger.disableVerbose(logLevel="INFO")

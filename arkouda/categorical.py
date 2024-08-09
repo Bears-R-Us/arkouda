@@ -1473,7 +1473,6 @@ class Categorical:
         return unregister(user_defined_name)
 
     @staticmethod
-    @typechecked
     def parse_hdf_categoricals(
         d: Mapping[str, Union[pdarray, Strings]]
     ) -> Tuple[List[str], Dict[str, Categorical]]:

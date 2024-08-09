@@ -32,7 +32,7 @@ class TestUtilFunctions:
         assert xp.all(a)
 
         a[3, 4] = False
-        assert ~xp.all(a)
+        assert not xp.all(a)
 
     @pytest.mark.skipif(
         get_server_max_array_dims() < 2,
@@ -40,7 +40,7 @@ class TestUtilFunctions:
     )
     def test_any(self):
         a = xp.zeros((10, 10), dtype=ak.bool_)
-        assert ~xp.any(a)
+        assert not xp.any(a)
 
         a[3, 4] = True
         assert xp.any(a)
