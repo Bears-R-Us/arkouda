@@ -11,7 +11,6 @@ from typing import (
     Tuple,
     Union,
     cast,
-    no_type_check,
 )
 
 from arkouda.dtypes import dtype as akdtype
@@ -20,7 +19,7 @@ if TYPE_CHECKING:
     from arkouda.categorical import Categorical
 
 import numpy as np
-from typeguard import typechecked
+from typeguard import typechecked, typeguard_ignore
 
 from arkouda.client import generic_msg
 from arkouda.dtypes import _val_isinstance_of_union, bigint
@@ -2029,7 +2028,7 @@ class GroupBy:
 
         return {piece_name: getattr(self, piece_name) for piece_name in requiredPieces}
 
-    @no_type_check
+    @typeguard_ignore
     def register(self, user_defined_name: str) -> GroupBy:
         """
         Register this GroupBy object and underlying components with the Arkouda server

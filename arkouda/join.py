@@ -187,7 +187,6 @@ def compute_join_size(a: pdarray, b: pdarray) -> Tuple[int, int]:
     return nelem, nbytes
 
 
-@typechecked
 def inner_join(
     left: Union[pdarray, Strings, Categorical, Sequence[Union[pdarray, Strings]]],
     right: Union[pdarray, Strings, Categorical, Sequence[Union[pdarray, Strings]]],

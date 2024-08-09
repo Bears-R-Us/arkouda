@@ -2,6 +2,7 @@ from itertools import permutations
 
 import numpy as np
 import pytest
+from typeguard import TypeCheckError
 
 import arkouda as ak
 from arkouda.sorting import SortingAlgorithm
@@ -105,5 +106,5 @@ class TestCoargsort:
         with pytest.raises(ValueError):
             ak.coargsort([ones, short_ones], algo)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.coargsort([list(range(0, 10)), [0]], algo)

@@ -64,7 +64,7 @@ def argsort(
     if axis == -1:
         axis = pda.ndim - 1
 
-    check_type(argname="argsort", value=pda, expected_type=Union[pdarray, Strings, Categorical])
+    check_type(value=pda, expected_type=Union[pdarray, Strings, Categorical])
     if hasattr(pda, "argsort"):
         return cast(Categorical, pda).argsort()
     if pda.size == 0 and hasattr(pda, "dtype"):
@@ -149,7 +149,7 @@ def coargsort(
     from arkouda.numeric import cast as akcast
 
     check_type(
-        argname="coargsort", value=arrays, expected_type=Sequence[Union[pdarray, Strings, Categorical]]
+        value=arrays, expected_type=Sequence[Union[pdarray, Strings, Categorical]]
     )
     size: int_scalars = -1
     anames = []

@@ -9,6 +9,7 @@ import arkouda as ak
 from arkouda import io, io_util
 from arkouda.categorical import Categorical
 from arkouda.testing import assert_categorical_equal
+from typeguard import TypeCheckError
 
 @pytest.fixture
 def df_test_base_tmp(request):
@@ -227,7 +228,7 @@ class TestCategorical:
         with pytest.raises(NotImplementedError):
             cat._binop("string 1", "===")
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             cat._binop(1, "==")
 
     def test_in1d(self):

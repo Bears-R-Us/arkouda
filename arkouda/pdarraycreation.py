@@ -20,6 +20,7 @@ from arkouda.dtypes import (
     int_scalars,
     isSupportedInt,
     isSupportedNumber,
+    numeric_and_bool_scalars,
     numeric_scalars,
     resolve_scalar_dtype,
 )
@@ -545,7 +546,7 @@ def ones(
 @typechecked
 def full(
     size: Union[int_scalars, str],
-    fill_value: Union[numeric_scalars, str],
+    fill_value: Union[numeric_and_bool_scalars, str],
     dtype: Union[np.dtype, type, str, bigint] = float64,
     max_bits: Optional[int] = None,
 ) -> Union[pdarray, Strings]:
@@ -641,7 +642,7 @@ def scalar_array(
 
 @typechecked
 def _full_string(
-    size: Union[int_scalars, str],
+    size: Union[numeric_and_bool_scalars, str],
     fill_value: str,
 ) -> Strings:
     """

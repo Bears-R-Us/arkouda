@@ -41,7 +41,7 @@ class TestUtil:
             Index(categoricals),
             Series(categoricals),
         ]:
-            assert ~is_numeric(item)
+            assert not is_numeric(item)
 
         for item in [ints, Index(ints), Series(ints), floats, Index(floats), Series(floats)]:
             assert is_numeric(item)
@@ -57,7 +57,7 @@ class TestUtil:
             Index(floats),
             Series(floats),
         ]:
-            assert ~is_int(item)
+            assert not is_int(item)
 
         for item in [ints, Index(ints), Series(ints)]:
             assert is_int(item)
@@ -73,7 +73,7 @@ class TestUtil:
             Index(categoricals),
             Series(categoricals),
         ]:
-            assert ~is_float(item)
+            assert not is_float(item)
 
         for item in [floats, Index(floats), Series(floats)]:
             assert is_float(item)

@@ -1239,7 +1239,7 @@ class pdarray:
         return self.size * self.dtype.itemsize
 
     @typechecked
-    def fill(self, value: numeric_scalars) -> None:
+    def fill(self, value: numeric_and_bool_scalars) -> None:
         """
         Fill the array (in place) with a constant value.
 
