@@ -67,11 +67,15 @@ class TestClient:
         assert "arkoudaVersion" in config
         assert "INFO" == config["logLevel"]
 
-        try:
-            mar = ak.client.get_max_array_rank()
-            assert mar == 1
-        except Exception as e:
-            raise AssertionError(e)
+        import json
+
+        def get_server_max_array_dims():
+            try:
+                return json.load(open("serverConfig.json", "r"))["max_array_dims"]
+            except (ValueError, FileNotFoundError, TypeError, KeyError):
+                return 1
+
+        assert get_server_max_array_dims() == ak.client.get_max_array_rank()
 
     def test_get_mem_used(self):
         """
@@ -155,7 +159,10 @@ class TestClient:
         with pytest.raises(RuntimeError) as cm:
             resp = generic_msg("reduce10D")
 
-        err_msg = "Error: Command 'reduce10D' is not supported with the current server configuration as the maximum array dimensionality is 1. Please recompile with support for at least 10D arrays"
+        err_msg = (
+            f"Error: Command 'reduce10D' is not supported with the current server configuration as the maximum array dimensionality is {ak.client.get_max_array_rank()}. "
+            f"Please recompile with support for at least 10D arrays"
+        )
         cm.match(err_msg)  #   Asserts the error msg matches the expected value
 
     def test_client_nd_unimplemented_error(self):
