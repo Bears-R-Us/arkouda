@@ -10,101 +10,101 @@ module LinalgMsg {
     use ServerErrorStrings;
     use AryUtil;
 
+    import BigInteger;
+
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const linalgLogger = new Logger(logLevel, logChannel);
 
     /*
-        Create an identity matrix of a given size with ones along a given diagonal
+        Create an 'identity' matrix of a given size with ones along a given diagonal
+        This only creates two dimensional arrays, so the array_nd parameter isn't used.
+     	The matrix doesn't have to be square.  The row and col counts are supplied as
+     	arguments.
     */
-    proc eyeMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
-        const rows = msgArgs.get("rows").getIntValue(), // matrix height
-              cols = msgArgs.get("cols").getIntValue(), // matrix width
-              diag = msgArgs.get("diag").getIntValue(); // diagonal to set to 1
-                                                        // 0  : center diag
-                                                        // >0 : upper triangle
-                                                        // <0 : lower triangle
+    @arkouda.instantiateAndRegister
+    proc eye(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype): MsgTuple throws 
+	where array_dtype != BigInteger.bigint
+    {
 
-        const dtype = str2dtype(msgArgs.getValueOf("dtype")),
+        const rows = msgArgs.get("rows").getIntValue(),
+              cols = msgArgs.get("cols").getIntValue(),
+              diag = msgArgs.get("diag").getIntValue();
+
+	// rows, cols = dimensions of 2 dimensional matrix.
+	// diag = 0 gives ones along center diagonal
+	// diag = nonzero moves the diagonal up/right for diag > 0, and down/left for diag < 0
+	//        See comment below
+
+        const dtype = type2str(array_dtype),
               rname = st.nextName();
 
         linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
             "cmd: %s dtype: %s rname: %s aRows: %i: aCols: %i aDiag: %i".format(
-            cmd,dtype2str(dtype),rname,rows,cols,diag));
+            cmd,type2str(array_dtype),rname,rows,cols,diag));
 
-        proc setDiag(ref a: [?d] ?t, k: int, param one: t) where d.rank == 2 {
-            // TODO: (this is very inefficient) develop a parallel iterator
-            //  for diagonals to ensure computation occurs on the correct locale
-            if k == 0 {
-                forall ij in 0..<min(rows, cols) do
-                    a[ij, ij] = one;
-            } else if k > 0 {
-                forall i in 0..<min(rows, cols-k) do
-                    a[i, i+k] = one;
-            } else if k < 0 {
-                forall j in 0..<min(rows+k, cols) do
-                    a[j-k, j] = one;
-            }
+        var e = st.addEntry(rname, rows, cols, array_dtype); // all elements initialize to zero
+
+	// Now put the ones where they go, on the main diagonal if diag == 0, otherise
+	// up-and-right by 'diag' spaces if diag > 0,
+	// or down-and-left by abs(diag) spaces if diag < 0
+
+        if diag == 0 {
+            forall ij in 0..<min(rows, cols) do
+                e.a[ij, ij] = 1 : array_dtype;
+        } else if diag > 0 {
+            forall i in 0..<min(rows, cols-diag) do
+                e.a[i, i+diag] = 1 : array_dtype;
+        } else if diag < 0 {
+            forall j in 0..<min(rows+diag, cols) do
+                e.a[j-diag, j] = 1 : array_dtype;
         }
 
-        proc makeEye(type dtype, param one: dtype): MsgTuple throws {
-            var e = st.addEntry(rname, rows, cols, dtype);
-            setDiag(e.a, diag, one);
-
-            const repMsg = "created " + st.attrib(rname);
-            linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-            return new MsgTuple(repMsg, MsgType.NORMAL);
-        }
-
-        select dtype {
-            when DType.Int64 do return makeEye(int, 1);
-            when DType.UInt8 do return makeEye(uint(8), 1:uint(8));
-            when DType.UInt64 do return makeEye(uint, 1:uint(8));
-            when DType.Float64 do return makeEye(real, 1.0);
-            when DType.Bool do return makeEye(bool, true);
-            otherwise {
-                var errorMsg = notImplementedError(getRoutineName(), "eye", dtype);
-                linalgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
-            }
-        }
+        const repMsg = "created " + st.attrib(rname);
+        linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    registerFunction("eye", eyeMsg, getModuleName());
 
-    /*
-        Create an array from an existing array with its upper triangle zeroed out
-    */
-    @arkouda.registerND
-    proc trilMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-        if nd < 2 {
+    proc eye(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype): MsgTuple throws 
+       where array_dtype == BigInteger.bigint
+    {
+        return MsgTuple.error("eye does not support the bigint dtype");
+    }
+
+    //  tril and triu are identical except for the argument they pass to triluHandler (true for upper, false for lower)
+    //  The zeros are written into the upper (or lower) triangle of the array, offset by the value of diag.
+
+    //  Create an array from an existing array with its upper triangle zeroed out
+
+    @arkouda.instantiateAndRegister
+    proc tril(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws {
+        if array_nd < 2 {
             const errorMsg = "Array must be at least 2 dimensional for 'tril'";
             linalgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR);
         }
 
-        return triluHandler(cmd, msgArgs, st, nd, false);
+        return triluHandler(cmd, msgArgs, st, array_dtype, array_nd, false);
     }
 
-    /*
-        Create an array from an existing array with its lower triangle zeroed out
-    */
-    @arkouda.registerND
-    proc triuMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-        if nd < 2 {
+    //  Create an array from an existing array with its lower triangle zeroed out
+
+    @arkouda.instantiateAndRegister
+    proc triu(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws {
+        if array_nd < 2 {
             const errorMsg = "Array must be at least 2 dimensional for 'triu'";
             linalgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR);
         }
 
-        return triluHandler(cmd, msgArgs, st, nd, true);
+        return triluHandler(cmd, msgArgs, st, array_dtype, array_nd, true);
     }
 
-    /*
-        Get the lower or upper triangular part of a matrix or a stack of matrices
-    */
+    //  Fetch the arguments, call zeroTri, return result. 
+
     proc triluHandler(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
-                      param nd: int, param upper: bool
+                      type array_dtype, param array_nd: int, param upper: bool
     ): MsgTuple throws {
         const name = msgArgs.getValueOf("array"),
               diag = msgArgs.get("diag").getIntValue();
@@ -117,47 +117,20 @@ module LinalgMsg {
 
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
-        proc doTrilu(type dtype, param zero: dtype): MsgTuple throws {
-            var eIn = toSymEntry(gEnt, dtype, nd),
-                eOut = st.addEntry(rname, (...eIn.tupShape), dtype);
+        var eIn = toSymEntry(gEnt, array_dtype, array_nd),
+            eOut = st.addEntry(rname, (...eIn.tupShape), array_dtype);
 
-            eOut.a = eIn.a;
-            zeroTri(eOut.a, diag, zero, upper);
+        eOut.a = eIn.a;
+        zeroTri(eOut.a, diag, upper);
 
-            const repMsg = "created " + st.attrib(rname);
-            linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-            return new MsgTuple(repMsg, MsgType.NORMAL);
-        }
-
-        select gEnt.dtype {
-            when DType.Int64 do return doTrilu(int, 0);
-            when DType.UInt8 do return doTrilu(uint(8), 0:uint(8));
-            when DType.UInt64 do return doTrilu(uint, 0:uint);
-            when DType.Float64 do return doTrilu(real, 0.0);
-            when DType.Bool do return doTrilu(bool, false);
-            otherwise {
-                const errorMsg = notImplementedError(getRoutineName(), "trilu", gEnt.dtype);
-                linalgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
-            }
-        }
+        const repMsg = "created " + st.attrib(rname);
+        linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    private proc zeroTri(ref a: [?d] ?t, diag: int, param zero: t, param upper: bool)
-        where d.rank >= 2 && upper == true
-    {
-        const iThresh = if diag < 0 then abs(diag) else 0,
-              jThresh = if diag > 0 then diag else 0;
+    // When upper = false, zero out the upper diagonal.
 
-        forall idx in d {
-            const i = idx[d.rank-2],
-                  j = idx[d.rank-1];
-
-            if i - iThresh < j - jThresh then a[idx] = zero;
-        }
-    }
-
-    private proc zeroTri(ref a: [?d] ?t, diag: int, param zero: t, param upper: bool)
+    private proc zeroTri(ref a: [?d] ?t, diag: int, param upper: bool)
         where d.rank >= 2 && upper == false
     {
         const iThresh = if diag < 0 then abs(diag) else 0,
@@ -167,7 +140,23 @@ module LinalgMsg {
             const i = idx[d.rank-2],
                   j = idx[d.rank-1];
 
-            if i - iThresh > j - jThresh then a[idx] = zero;
+            if i - iThresh < j - jThresh then a[idx] = 0 : t;
+        }
+    }
+
+    // When upper = true, zero out the lower diagonal.
+
+    private proc zeroTri(ref a: [?d] ?t, diag: int, param upper: bool)
+        where d.rank >= 2 && upper == true
+    {
+        const iThresh = if diag < 0 then abs(diag) else 0,
+              jThresh = if diag > 0 then diag else 0;
+
+        forall idx in d {
+            const i = idx[d.rank-2],
+                  j = idx[d.rank-1];
+
+            if i - iThresh > j - jThresh then a[idx] = 0 : t;
         }
     }
 
@@ -181,13 +170,16 @@ module LinalgMsg {
         and then removing the degenerate method. This procedure expects that such a
         transformation is handled on the server side.
     */
-    @arkouda.registerND
-    proc matMulMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-        if nd < 2 {
+
+    @arkouda.instantiateAndRegister
+    proc matmul(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd: int): MsgTuple throws {
+        if array_nd < 2 {
             const errorMsg = "Matrix multiplication with arrays of dimension < 2 is not supported";
             linalgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR);
         }
+
+	// Get the left and right arguments.
 
         const x1Name = msgArgs.getValueOf("x1"),
               x2Name = msgArgs.getValueOf("x2");
@@ -201,19 +193,56 @@ module LinalgMsg {
             "cmd: %s dtype1: %s dtype2: %s rname: %s".format(
             cmd,dtype2str(x1G.dtype),dtype2str(x2G.dtype),rname));
 
+	//  The select block below (and in vecdot) implements the rule:
+	//     if either input is real, the output is real
+	//     else if either input is integer, the output is integer
+	//     else if either input is uint(8), the output is uint(8)
+	//     else if both inputs are bool, the output is bool
+	//     else error condition.
+
+        select (x1G.dtype, x2G.dtype) {
+		// real cases
+            when (DType.Float64, DType.Int64)   do return doMatMult(real,    int,     real);
+            when (DType.Float64, DType.UInt8)   do return doMatMult(real,    uint(8), real);
+            when (DType.Float64, DType.Float64) do return doMatMult(real,    real,    real);
+            when (DType.Float64, DType.Bool)    do return doMatMult(real,    bool,    real);
+            when (DType.Int64, DType.Float64)   do return doMatMult(int,     real,    real);
+            when (DType.UInt8, DType.Float64)   do return doMatMult(uint(8), real,    real);
+            when (DType.Bool, DType.Float64)    do return doMatMult(bool,    real,    real);
+	    	// int cases
+            when (DType.Int64, DType.Int64)     do return doMatMult(int,     int,     int);
+            when (DType.Int64, DType.UInt8)     do return doMatMult(int,     uint(8), int);
+            when (DType.Int64, DType.Bool)      do return doMatMult(int,     bool,    int);
+            when (DType.UInt8, DType.Int64)     do return doMatMult(uint(8), int,     int);
+            when (DType.Bool, DType.Int64)      do return doMatMult(bool,    int,     int);
+	    	// uint cases
+            when (DType.UInt8, DType.UInt8)     do return doMatMult(uint(8), uint(8), uint(8));
+            when (DType.UInt8, DType.Bool)      do return doMatMult(uint(8), bool,    uint(8));
+            when (DType.Bool, DType.UInt8)      do return doMatMult(bool,    uint(8), uint(8)); 
+	    	// bool case
+            when (DType.Bool, DType.Bool)       do return doMatMult(bool,    bool,    bool);
+            otherwise {
+                const errorMsg = notImplementedError(getRoutineName(), "matmul", x1G.dtype, x2G.dtype);
+                linalgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+        }
+
+	// doMatMult is called once the types are worked out.
+
         proc doMatMult(type x1Type, type x2Type, type resultType): MsgTuple throws {
-            var x1E = toSymEntry(x1G, x1Type, nd),
-                x2E = toSymEntry(x2G, x2Type, nd);
+            var x1E = toSymEntry(x1G, x1Type, array_nd),
+                x2E = toSymEntry(x2G, x2Type, array_nd);
 
             const (valid, outDims, err) = assertValidDims(x1E, x2E);
             if !valid then return err;
 
-            var eOut = st.addEntry(rname, (...outDims), resultType);
+            var eOut = st.addEntry(rname, (...outDims), resultType); // create entry of deduced output type
 
             const x1 = x1E.a : resultType,
                   x2 = x2E.a : resultType;
 
-            if nd == 2
+            if array_nd == 2
                 then matMult(x1, x2, eOut.a);
                 else batchedMatMult(x1, x2, eOut.a);
 
@@ -222,29 +251,9 @@ module LinalgMsg {
             return new MsgTuple(repMsg, MsgType.NORMAL);
         }
 
-        select (x1G.dtype, x2G.dtype) {
-            when (DType.Int64, DType.Int64)     do return doMatMult(int,     int,     int);
-            when (DType.Int64, DType.UInt8)     do return doMatMult(int,     uint(8), int);
-            when (DType.Int64, DType.Float64)   do return doMatMult(int,     real,    real);
-            when (DType.Int64, DType.Bool)      do return doMatMult(int,     bool,    int);
-            when (DType.UInt8, DType.Int64)     do return doMatMult(uint(8), int,     int);
-            when (DType.UInt8, DType.UInt8)     do return doMatMult(uint(8), uint(8), uint(8));
-            when (DType.UInt8, DType.Float64)   do return doMatMult(uint(8), real,    real);
-            when (DType.UInt8, DType.Bool)      do return doMatMult(uint(8), bool,    uint(8));
-            when (DType.Float64, DType.Int64)   do return doMatMult(real,    int,     real);
-            when (DType.Float64, DType.UInt8)   do return doMatMult(real,    uint(8), real);
-            when (DType.Float64, DType.Float64) do return doMatMult(real,    real,    real);
-            when (DType.Float64, DType.Bool)    do return doMatMult(real,    bool,    real);
-            when (DType.Bool, DType.Int64)      do return doMatMult(bool,    int,     int);
-            when (DType.Bool, DType.UInt8)      do return doMatMult(bool,    uint(8), uint(8));
-            when (DType.Bool, DType.Float64)    do return doMatMult(bool,    real,    real);
-            otherwise {
-                const errorMsg = notImplementedError(getRoutineName(), "matmul", x1G.dtype, x2G.dtype);
-                linalgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
-            }
-        }
     }
+
+    // Check that dimensions are valid for matrix multiplication.
 
     proc assertValidDims(ref x1, ref x2) throws {
         const (validInputDims, outDims) = matMultDims(x1.tupShape, x2.tupShape);
@@ -297,6 +306,7 @@ module LinalgMsg {
 
     // TODO: not performant at all -- use tiled and parallel matrix multiplication
     //  or maybe use the linear algebra module? (do we want to compile Arkouda with that?)
+
     proc matMult(in A: [?D1] ?t, in B: [?D2] t, ref C: [?D3] t)
         where D1.rank == 2 && D2.rank == 2 && D3.rank == 2
     {
@@ -307,12 +317,18 @@ module LinalgMsg {
         for i in 0..<m do
             for j in 0..<n do
                 for l in 0..<k do
-                    C[i, j] += A[i, l] * B[l, j];
+		    if t != bool {
+                    	C[i, j] += A[i, l] * B[l, j];
+		    } else {
+			C[i,j] |= A[i, l] & B[l, j];
+		    }
     }
 
-    @arkouda.registerND
-    proc transposeMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-        if nd < 2 {
+    // Transpose an array.
+
+    @arkouda.instantiateAndRegister
+    proc transpose(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws {
+        if array_nd < 2 {
             const errorMsg = "Matrix transpose with arrays of dimension < 2 is not supported";
             linalgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR);
@@ -325,42 +341,34 @@ module LinalgMsg {
 
         linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
             "cmd: %s dtype: %s rname: %s".format(
-            cmd,dtype2str(gEnt.dtype),rname));
+            cmd,type2str(array_dtype),rname));
 
-        proc doTranspose(type t): MsgTuple throws {
-            var eIn = toSymEntry(gEnt, t, nd),
-                outShape: eIn.tupShape.type;
+	// get the input array, copy its shape
 
-            outShape[outShape.size-2] <=> outShape[outShape.size-1];
+        var eIn = toSymEntry(gEnt, array_dtype, array_nd),
+            outShape = eIn.tupShape;
 
-            var eOut = st.addEntry(rname, (...outShape), t);
-            transpose(eIn.a, eOut.a);
+	// switch the indices of the output shape
 
-            const repMsg = "created " + st.attrib(rname);
-            linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-            return new MsgTuple(repMsg, MsgType.NORMAL);
-        }
+        outShape[outShape.size-2] <=> outShape[outShape.size-1];
 
-        select gEnt.dtype {
-            when DType.Int64 do return doTranspose(int);
-            when DType.UInt8 do return doTranspose(uint(8));
-            when DType.UInt64 do return doTranspose(uint);
-            when DType.Float64 do return doTranspose(real);
-            when DType.Bool do return doTranspose(bool);
-            otherwise {
-                const errorMsg = notImplementedError(getRoutineName(), "transpose", gEnt.dtype);
-                linalgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
-            }
-        }
+	// create the output array
+
+        var eOut = st.addEntry(rname, (...outShape), array_dtype);
+        doTranspose(eIn.a, eOut.a); // do the transpose
+
+        const repMsg = "created " + st.attrib(rname);
+        linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
     // TODO: performance improvements. Should use tiling to keep data local
-    proc transpose(ref A: [?D], ref B) {
+
+    proc doTranspose(ref A: [?D], ref B) {
         forall idx in D {
             var bIdx = idx;
-            bIdx[D.rank-1] <=> bIdx[D.rank-2];
-            B[bIdx] = A[idx];
+            bIdx[D.rank-1] <=> bIdx[D.rank-2];  // bIdx is now the reverse of idx
+            B[bIdx] = A[idx];			// making B the transpose of A
         }
     }
 
@@ -370,9 +378,10 @@ module LinalgMsg {
         Assumes that both tensors have already been broadcasted to have the same shape
         with 'nd' dimensions.
     */
-    @arkouda.registerND
-    proc vecdotMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-        if nd < 2 {
+
+    @arkouda.instantiateAndRegister
+    proc vecdot(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd: int): MsgTuple throws {
+        if array_nd < 2 {
             const errorMsg = "VecDot with arrays of dimension < 2 is not supported";
             linalgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR);
@@ -380,7 +389,7 @@ module LinalgMsg {
 
         const x1Name = msgArgs.getValueOf("x1"),
               x2Name = msgArgs.getValueOf("x2"),
-              bcShape = msgArgs.get("bcShape").getTuple(nd),
+              bcShape = msgArgs.get("bcShape").getTuple(array_nd),
               axis = msgArgs.get("axis").getIntValue(),
               rname = st.nextName();
 
@@ -392,9 +401,41 @@ module LinalgMsg {
             cmd,dtype2str(x1G.dtype),dtype2str(x2G.dtype),rname));
 
         // assumes both arrays have been broadcasted to ND dimensions
+
+	// See the comment in matmul for a description of how this deduces the output type
+	// from the input types.  The one exception here is that "both inputs are bool" is
+	// not allowed.
+
+        select (x1G.dtype, x2G.dtype) {
+		// real cases
+            when (DType.Float64, DType.Int64)   do return doVecdot(real,    int,     real);
+            when (DType.Float64, DType.UInt8)   do return doVecdot(real,    uint(8), real);
+            when (DType.Float64, DType.Float64) do return doVecdot(real,    real,    real);
+            when (DType.Float64, DType.Bool)    do return doVecdot(real,    bool,    real);
+            when (DType.Int64, DType.Float64)   do return doVecdot(int,     real,    real);
+            when (DType.UInt8, DType.Float64)   do return doVecdot(uint(8), real,    real);
+            when (DType.Bool, DType.Float64)    do return doVecdot(bool,    real,    real);
+	    	// int cases
+            when (DType.Int64, DType.Int64)     do return doVecdot(int,     int,     int);
+            when (DType.Int64, DType.UInt8)     do return doVecdot(int,     uint(8), int);
+            when (DType.Int64, DType.Bool)      do return doVecdot(int,     bool,    int);
+            when (DType.UInt8, DType.Int64)     do return doVecdot(uint(8), int,     int);
+            when (DType.Bool, DType.Int64)      do return doVecdot(bool,    int,     int);
+	    	// uint cases
+            when (DType.UInt8, DType.UInt8)     do return doVecdot(uint(8), uint(8), uint(8));
+            when (DType.UInt8, DType.Bool)      do return doVecdot(uint(8), bool,    uint(8));
+	    	// bool case
+            when (DType.Bool, DType.UInt8)      do return doVecdot(bool,    uint(8), uint(8));
+            otherwise {
+                const errorMsg = notImplementedError(getRoutineName(), "vecdot", x1G.dtype, x2G.dtype);
+                linalgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+        }
+
         proc doVecdot(type x1Type, type x2Type, type resultType): MsgTuple throws {
-            var ex1 = toSymEntry(x1G, x1Type, nd),
-                ex2 = toSymEntry(x2G, x2Type, nd);
+            var ex1 = toSymEntry(x1G, x1Type, array_nd),
+                ex2 = toSymEntry(x2G, x2Type, array_nd);
 
             if ex1.tupShape != bcShape || ex2.tupShape != bcShape {
                 const errorMsg = "Incompatible array shapes for VecDot: " + ex1.tupShape:string + ", " + ex2.tupShape:string +
@@ -403,8 +444,8 @@ module LinalgMsg {
                 return new MsgTuple(errorMsg, MsgType.ERROR);
             }
 
-            const _axis = if axis < 0 then nd + axis else axis;
-            if _axis < 0 || _axis >= nd {
+            const _axis = if axis < 0 then array_nd + axis else axis;
+            if _axis < 0 || _axis >= array_nd {
                 const errorMsg = "Invalid axis for VecDot: " + axis:string;
                 linalgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR);
@@ -426,29 +467,6 @@ module LinalgMsg {
             const repMsg = "created " + st.attrib(rname);
             linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
             return new MsgTuple(repMsg, MsgType.NORMAL);
-        }
-
-        select (x1G.dtype, x2G.dtype) {
-            when (DType.Int64, DType.Int64)     do return doVecdot(int,     int,     int);
-            when (DType.Int64, DType.UInt8)     do return doVecdot(int,     uint(8), int);
-            when (DType.Int64, DType.Float64)   do return doVecdot(int,     real,    real);
-            when (DType.Int64, DType.Bool)      do return doVecdot(int,     bool,    int);
-            when (DType.UInt8, DType.Int64)     do return doVecdot(uint(8), int,     int);
-            when (DType.UInt8, DType.UInt8)     do return doVecdot(uint(8), uint(8), uint(8));
-            when (DType.UInt8, DType.Float64)   do return doVecdot(uint(8), real,    real);
-            when (DType.UInt8, DType.Bool)      do return doVecdot(uint(8), bool,    uint(8));
-            when (DType.Float64, DType.Int64)   do return doVecdot(real,    int,     real);
-            when (DType.Float64, DType.UInt8)   do return doVecdot(real,    uint(8), real);
-            when (DType.Float64, DType.Float64) do return doVecdot(real,    real,    real);
-            when (DType.Float64, DType.Bool)    do return doVecdot(real,    bool,    real);
-            when (DType.Bool, DType.Int64)      do return doVecdot(bool,    int,     int);
-            when (DType.Bool, DType.UInt8)      do return doVecdot(bool,    uint(8), uint(8));
-            when (DType.Bool, DType.Float64)    do return doVecdot(bool,    real,    real);
-            otherwise {
-                const errorMsg = notImplementedError(getRoutineName(), "vecdot", x1G.dtype, x2G.dtype);
-                linalgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
-            }
         }
     }
 

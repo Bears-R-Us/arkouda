@@ -9,6 +9,8 @@ import pytest
 
 import arkouda as ak
 
+from arkouda.client import get_max_array_rank
+
 INT_SCALARS = list(ak.dtypes.int_scalars.__args__)
 NUMERIC_SCALARS = list(ak.dtypes.numeric_scalars.__args__)
 
@@ -70,18 +72,22 @@ class TestPdarrayCreation:
             assert isinstance(pda, ak.pdarray if pda.dtype != str else ak.Strings)
             assert len(pda) == size
 
-    def test_array_creation_misc(self):
-        av = ak.array(np.array([[0, 1], [0, 1]]))
-        assert isinstance(av, ak.ArrayView)
+#   The below test, test_array_creation_misc, tests creation of ArrayViews.  This is no longer
+#   needed.  At the draft level, I have it commented out, bufor an actual PR, it will be
+#   deleted. -- adc
 
-        with pytest.raises(TypeError):
-            ak.array({range(0, 10)})
+#   def test_array_creation_misc(self):
+#       av = ak.array(np.array([[0, 1], [0, 1]]))
+#      assert isinstance(av, ak.ArrayView)
 
-        with pytest.raises(TypeError):
-            ak.array("not an iterable")
+#       with pytest.raises(TypeError):
+#           ak.array({range(0, 10)})
 
-        with pytest.raises(TypeError):
-            ak.array(list(list(0)))
+#       with pytest.raises(TypeError):
+#           ak.array("not an iterable")
+
+#       with pytest.raises(TypeError):
+#           ak.array(list(list(0)))
 
     def test_bigint_creation(self):
         bi = 2**200
@@ -611,9 +617,18 @@ class TestPdarrayCreation:
         )
         assert printable_randoms == pda.to_list()
 
+#   The function below tests the ability to create multidimensional ArrayViews.  I've rewritten it
+#   to create a pdarray of the maximum possible rank.  This comment and the two commented out statements
+#   will be deleted for the official PR, and the typo in the function name will be fixed.  -- adc
+
     def test_mulitdimensional_array_creation(self):
-        av = ak.array([[0, 0], [0, 1], [1, 1]])
-        assert isinstance(av, ak.ArrayView)
+        n = get_max_array_rank()
+        test_shape = 2 + np.arange(n)
+        test_size = np.prod(test_shape)
+        av = ak.array(np.arange(test_size)).reshape(tuple(test_shape))
+#       av = ak.array([[0, 0], [0, 1], [1, 1]])
+#       assert isinstance(av, ak.ArrayView)
+        assert isinstance(av, ak.pdarray)
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [bool, np.float64, np.int64, str])
