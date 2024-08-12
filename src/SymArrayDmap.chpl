@@ -31,7 +31,13 @@ module SymArrayDmap {
           return dom;
         }
         when Dmap.blockDist {
-          return blockDist.createDomain(dom);
+          if dom.size > 0 {
+              return blockDist.createDomain(dom);
+          }
+          // fix the annoyance about boundingBox being empty
+          else {
+            return dom dmapped new blockDist(boundingBox=dom.expand(1));
+          }
         }
       }
     }
