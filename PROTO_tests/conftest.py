@@ -63,11 +63,12 @@ def pytest_configure(config):
     pytest.nl = _get_test_locales(config)
     pytest.seed = None if config.getoption("seed") == "" else eval(config.getoption("seed"))
     pytest.prob_size = [eval(x) for x in config.getoption("size").split(",")]
+    pytest.test_running_mode = TestRunningMode(os.getenv("ARKOUDA_RUNNING_MODE", "CLASS_SERVER"))
 
 
 @pytest.fixture(scope="session", autouse=True)
 def startup_teardown():
-    test_running_mode = TestRunningMode(os.getenv("ARKOUDA_RUNNING_MODE", "CLASS_SERVER"))
+    test_running_mode = pytest.test_running_mode
 
     if not importlib.util.find_spec("pytest") or not importlib.util.find_spec("pytest_env"):
         raise EnvironmentError("pytest and pytest-env must be installed")

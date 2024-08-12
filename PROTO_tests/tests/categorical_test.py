@@ -10,6 +10,7 @@ from arkouda import io, io_util
 from arkouda.categorical import Categorical
 from arkouda.testing import assert_categorical_equal
 
+
 @pytest.fixture
 def df_test_base_tmp(request):
     df_test_base_tmp = "{}/.categorical_test".format(os.getcwd())
@@ -126,7 +127,6 @@ class TestCategorical:
         ak_cat2 = ak.Categorical(ak.Categorical(strings1))
         expected_cat = ak.Categorical(strings1)
         assert_categorical_equal(ak_cat2, expected_cat)
-
 
     def test_substring_search(self):
         cat = self.create_basic_categorical()
