@@ -19,7 +19,7 @@ from arkouda.pdarraycreation import arange, array
 from arkouda.segarray import SegArray
 from arkouda.strings import Strings
 from arkouda.timeclass import Datetime, Timedelta
-from arkouda.dtypes import float32, float64, int32, int64
+from arkouda.numpy.dtypes import float32, float64, int32, int64
 
 __all__ = [
     "get_filetype",

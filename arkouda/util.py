@@ -10,7 +10,7 @@ from typeguard import typechecked
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, get_config, get_mem_used
 from arkouda.client_dtypes import BitVector, BitVectorizer, IPv4
-from arkouda.dtypes import (
+from arkouda.numpy.dtypes import (
     _is_dtype_in_union,
     dtype,
     float_scalars,

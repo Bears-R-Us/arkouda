@@ -11,7 +11,7 @@ from pandas.testing import assert_index_equal as pd_assert_index_equal
 
 import arkouda as ak
 from arkouda import io_util
-from arkouda.dtypes import dtype
+from arkouda.numpy.dtypes import dtype
 from arkouda.index import Index
 from arkouda.pdarrayclass import pdarray
 from arkouda.testing import assert_index_equal
@@ -380,7 +380,7 @@ class TestIndex:
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_memory_usage(self, size):
-        from arkouda.dtypes import bigint
+        from arkouda.numpy.dtypes import bigint
         from arkouda.index import Index, MultiIndex
 
         idx = Index(ak.cast(ak.array([1, 2, 3]), dt="bigint"))

@@ -8,17 +8,17 @@ import numpy as np
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
-from arkouda.dtypes import DTypes, bigint
-from arkouda.dtypes import dtype as akdtype
-from arkouda.dtypes import int64 as akint64
-from arkouda.dtypes import (
+from arkouda.groupbyclass import GroupBy
+from arkouda.numpy.dtypes import DTypes, bigint
+from arkouda.numpy.dtypes import dtype as akdtype
+from arkouda.numpy.dtypes import int64 as akint64
+from arkouda.numpy.dtypes import (
     int_scalars,
     isSupportedNumber,
     numeric_scalars,
     resolve_scalar_dtype,
     str_,
 )
-from arkouda.groupbyclass import GroupBy
 from arkouda.pdarrayclass import all as ak_all
 from arkouda.pdarrayclass import any as ak_any
 from arkouda.pdarrayclass import argmax, create_pdarray, pdarray, sum

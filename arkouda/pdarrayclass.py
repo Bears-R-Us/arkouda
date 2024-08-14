@@ -10,13 +10,13 @@ import numpy as np
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
-from arkouda.dtypes import NUMBER_FORMAT_STRINGS, DTypes, bigint
-from arkouda.dtypes import bool_ as akbool
-from arkouda.dtypes import dtype
-from arkouda.dtypes import float64 as akfloat64
-from arkouda.dtypes import get_byteorder, get_server_byteorder
-from arkouda.dtypes import int64 as akint64
-from arkouda.dtypes import (
+from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, DTypes, bigint
+from arkouda.numpy.dtypes import bool_ as akbool
+from arkouda.numpy.dtypes import dtype
+from arkouda.numpy.dtypes import float64 as akfloat64
+from arkouda.numpy.dtypes import get_byteorder, get_server_byteorder
+from arkouda.numpy.dtypes import int64 as akint64
+from arkouda.numpy.dtypes import (
     int_scalars,
     isSupportedInt,
     isSupportedNumber,
@@ -25,8 +25,8 @@ from arkouda.dtypes import (
     numpy_scalars,
     resolve_scalar_dtype,
 )
-from arkouda.dtypes import str_ as akstr_
-from arkouda.dtypes import uint64 as akuint64
+from arkouda.numpy.dtypes import str_ as akstr_
+from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.infoclass import information, pretty_print_information
 from arkouda.logger import getArkoudaLogger
 
@@ -772,7 +772,7 @@ class pdarray:
         """
         Return a string of the type inferred from the values.
         """
-        from arkouda.dtypes import float_scalars, int_scalars
+        from arkouda.numpy.dtypes import float_scalars, int_scalars
         from arkouda.util import _is_dtype_in_union
 
         if _is_dtype_in_union(self.dtype, int_scalars):

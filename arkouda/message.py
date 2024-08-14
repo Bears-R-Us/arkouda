@@ -7,7 +7,7 @@ from typing import Dict, Optional
 
 from typeguard import typechecked
 
-from arkouda.dtypes import isSupportedNumber, resolve_scalar_dtype
+from arkouda.numpy.dtypes import isSupportedNumber, resolve_scalar_dtype
 
 
 class ParameterObject:

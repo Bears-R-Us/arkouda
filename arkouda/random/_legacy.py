@@ -3,10 +3,10 @@ from typing import Optional, Tuple, Union, cast
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
-from arkouda.dtypes import NUMBER_FORMAT_STRINGS, DTypes
-from arkouda.dtypes import dtype as akdtype
-from arkouda.dtypes import int64 as akint64
-from arkouda.dtypes import int_scalars, numeric_scalars
+from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, DTypes
+from arkouda.numpy.dtypes import dtype as akdtype
+from arkouda.numpy.dtypes import int64 as akint64
+from arkouda.numpy.dtypes import int_scalars, numeric_scalars
 from arkouda.pdarrayclass import create_pdarray, pdarray
 
 

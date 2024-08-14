@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 import numpy as np
 
 from arkouda.client import generic_msg
-from arkouda.dtypes import dtype as akdtype
+from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numeric import cast as akcast
 from arkouda.pdarrayclass import create_pdarray, parse_single_value
 from arkouda.pdarraycreation import scalar_array

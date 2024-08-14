@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 import arkouda as ak
-from arkouda import dtypes
+from arkouda.numpy import dtypes
 
 """
 DtypesTest encapsulates arkouda dtypes module methods
@@ -55,7 +55,7 @@ class TestDTypes:
     def test_is_dtype_in_union(self):
         from typing import Union
 
-        from arkouda.dtypes import _is_dtype_in_union
+        from arkouda.numpy.dtypes import _is_dtype_in_union
 
         float_scalars = Union[float, np.float64, np.float32]
         assert _is_dtype_in_union(np.float64, float_scalars)

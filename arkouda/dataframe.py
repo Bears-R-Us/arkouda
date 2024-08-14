@@ -17,11 +17,11 @@ from arkouda import sort as aksort
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, maxTransferBytes
 from arkouda.client_dtypes import BitVector, Fields, IPv4
-from arkouda.dtypes import bigint
-from arkouda.dtypes import bool_ as akbool
-from arkouda.dtypes import float64 as akfloat64
-from arkouda.dtypes import int64 as akint64
-from arkouda.dtypes import uint64 as akuint64
+from arkouda.numpy.dtypes import bigint
+from arkouda.numpy.dtypes import bool_ as akbool
+from arkouda.numpy.dtypes import float64 as akfloat64
+from arkouda.numpy.dtypes import int64 as akint64
+from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.groupbyclass import GROUPBY_REDUCTION_TYPES
 from arkouda.groupbyclass import GroupBy as akGroupBy
 from arkouda.groupbyclass import unique

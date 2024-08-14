@@ -6,7 +6,7 @@ from typing import Sequence, Union, cast
 from typeguard import check_type, typechecked
 
 from arkouda.client import generic_msg
-from arkouda.dtypes import bigint, bool_, dtype, float64, int64, int_scalars, uint64
+from arkouda.numpy.dtypes import bigint, bool_, dtype, float64, int64, int_scalars, uint64
 from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import zeros
 from arkouda.strings import Strings
