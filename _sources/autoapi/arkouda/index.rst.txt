@@ -259,7 +259,6 @@ Functions
    arkouda.cast
    arkouda.cast
    arkouda.ceil
-   arkouda.check_np_dtype
    arkouda.chisquare
    arkouda.clear
    arkouda.clip
@@ -440,7 +439,6 @@ Functions
    arkouda.to_hdf
    arkouda.to_parquet
    arkouda.to_zarr
-   arkouda.translate_np_dtype
    arkouda.trunc
    arkouda.uniform
    arkouda.uniform
@@ -30675,15 +30673,6 @@ Package Contents
    array([2, 3, 4, 5, 6])
 
 
-.. py:function:: check_np_dtype(dt: Union[numpy.dtype, bigint]) -> None
-
-   Assert that numpy dtype dt is one of the dtypes supported
-   by arkouda, otherwise raise TypeError.
-
-   :raises TypeError: Raised if the dtype is not in supported dtypes or if
-       dt is not a np.dtype
-
-
 .. py:function:: chisquare(f_obs, f_exp=None, ddof=0)
 
    Computes the chi square statistic and p-value.
@@ -41632,15 +41621,6 @@ Package Contents
 
    :raises ValueError: Raised if the number of dimensions in the chunk shape does not match
        the number of dimensions in the array or if the array is not a 32 or 64 bit numeric type
-
-
-.. py:function:: translate_np_dtype(dt) -> Tuple[str, int]
-
-   Split numpy dtype dt into its kind and byte size, raising
-   TypeError for unsupported dtypes.
-
-   :raises TypeError: Raised if the dtype is not in supported dtypes or if
-       dt is not a np.dtype
 
 
 .. py:function:: trunc(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray

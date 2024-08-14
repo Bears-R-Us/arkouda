@@ -464,26 +464,20 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.dtypes.check_np_dtype" title="arkouda.dtypes.check_np_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_np_dtype</span></code></a>(→ None)</p></td>
-<td><p>Assert that numpy dtype dt is one of the dtypes supported</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.dtypes.dtype" title="arkouda.dtypes.dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dtype</span></code></a>(x)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.dtypes.dtype" title="arkouda.dtypes.dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dtype</span></code></a>(x)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.dtypes.get_byteorder" title="arkouda.dtypes.get_byteorder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_byteorder</span></code></a>(→ str)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.dtypes.get_byteorder" title="arkouda.dtypes.get_byteorder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_byteorder</span></code></a>(→ str)</p></td>
 <td><p>Get a concrete byteorder (turns '=' into '&lt;' or '&gt;')</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.dtypes.get_server_byteorder" title="arkouda.dtypes.get_server_byteorder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_server_byteorder</span></code></a>(→ str)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.dtypes.get_server_byteorder" title="arkouda.dtypes.get_server_byteorder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_server_byteorder</span></code></a>(→ str)</p></td>
 <td><p>Get the server's byteorder</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.dtypes.isSupportedNumber" title="arkouda.dtypes.isSupportedNumber"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedNumber</span></code></a>(num)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.dtypes.isSupportedNumber" title="arkouda.dtypes.isSupportedNumber"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedNumber</span></code></a>(num)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.dtypes.resolve_scalar_dtype" title="arkouda.dtypes.resolve_scalar_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resolve_scalar_dtype</span></code></a>(→ str)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.dtypes.resolve_scalar_dtype" title="arkouda.dtypes.resolve_scalar_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resolve_scalar_dtype</span></code></a>(→ str)</p></td>
 <td><p>Try to infer what dtype arkouda_server should treat val as.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.dtypes.translate_np_dtype" title="arkouda.dtypes.translate_np_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">translate_np_dtype</span></code></a>(→ Tuple[str, int])</p></td>
-<td><p>Split numpy dtype dt into its kind and byte size, raising</p></td>
 </tr>
 </tbody>
 </table>
@@ -566,19 +560,6 @@
 <dt class="sig sig-object py" id="arkouda.dtypes.bool_scalars">
 <span class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></span><span class="sig-name descname"><span class="pre">bool_scalars</span></span><a class="headerlink" href="#arkouda.dtypes.bool_scalars" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.dtypes.check_np_dtype">
-<span class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></span><span class="sig-name descname"><span class="pre">check_np_dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.dtype</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.dtypes.bigint" title="arkouda.dtypes.bigint"><span class="pre">bigint</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/arkouda/dtypes.html#check_np_dtype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.dtypes.check_np_dtype" title="Link to this definition">¶</a></dt>
-<dd><p>Assert that numpy dtype dt is one of the dtypes supported
-by arkouda, otherwise raise TypeError.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>TypeError</strong> – Raised if the dtype is not in supported dtypes or if
-dt is not a np.dtype</p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="arkouda.dtypes.complex128">
@@ -683,19 +664,6 @@ dt is not a np.dtype</p>
 <span class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></span><span class="sig-name descname"><span class="pre">str_scalars</span></span><a class="headerlink" href="#arkouda.dtypes.str_scalars" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.dtypes.translate_np_dtype">
-<span class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></span><span class="sig-name descname"><span class="pre">translate_np_dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/arkouda/dtypes.html#translate_np_dtype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.dtypes.translate_np_dtype" title="Link to this definition">¶</a></dt>
-<dd><p>Split numpy dtype dt into its kind and byte size, raising
-TypeError for unsupported dtypes.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>TypeError</strong> – Raised if the dtype is not in supported dtypes or if
-dt is not a np.dtype</p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py data">
 <dt class="sig sig-object py" id="arkouda.dtypes.uint16">
 <span class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></span><span class="sig-name descname"><span class="pre">uint16</span></span><a class="headerlink" href="#arkouda.dtypes.uint16" title="Link to this definition">¶</a></dt>
@@ -796,7 +764,6 @@ dt is not a np.dtype</p>
 <li><a class="reference internal" href="#arkouda.dtypes.bitType"><code class="docutils literal notranslate"><span class="pre">bitType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dtypes.bool_"><code class="docutils literal notranslate"><span class="pre">bool_</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dtypes.bool_scalars"><code class="docutils literal notranslate"><span class="pre">bool_scalars</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.dtypes.check_np_dtype"><code class="docutils literal notranslate"><span class="pre">check_np_dtype()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dtypes.complex128"><code class="docutils literal notranslate"><span class="pre">complex128</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dtypes.complex64"><code class="docutils literal notranslate"><span class="pre">complex64</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dtypes.dtype"><code class="docutils literal notranslate"><span class="pre">dtype()</span></code></a></li>
@@ -817,7 +784,6 @@ dt is not a np.dtype</p>
 <li><a class="reference internal" href="#arkouda.dtypes.resolve_scalar_dtype"><code class="docutils literal notranslate"><span class="pre">resolve_scalar_dtype()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dtypes.str_"><code class="docutils literal notranslate"><span class="pre">str_</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dtypes.str_scalars"><code class="docutils literal notranslate"><span class="pre">str_scalars</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.dtypes.translate_np_dtype"><code class="docutils literal notranslate"><span class="pre">translate_np_dtype()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dtypes.uint16"><code class="docutils literal notranslate"><span class="pre">uint16</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dtypes.uint32"><code class="docutils literal notranslate"><span class="pre">uint32</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dtypes.uint64"><code class="docutils literal notranslate"><span class="pre">uint64</span></code></a></li>

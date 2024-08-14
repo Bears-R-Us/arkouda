@@ -51,13 +51,11 @@ Functions
 
 .. autoapisummary::
 
-   arkouda.dtypes.check_np_dtype
    arkouda.dtypes.dtype
    arkouda.dtypes.get_byteorder
    arkouda.dtypes.get_server_byteorder
    arkouda.dtypes.isSupportedNumber
    arkouda.dtypes.resolve_scalar_dtype
-   arkouda.dtypes.translate_np_dtype
 
 
 Module Contents
@@ -111,15 +109,6 @@ Module Contents
 
 .. py:data:: bool_scalars
 
-.. py:function:: check_np_dtype(dt: Union[numpy.dtype, bigint]) -> None
-
-   Assert that numpy dtype dt is one of the dtypes supported
-   by arkouda, otherwise raise TypeError.
-
-   :raises TypeError: Raised if the dtype is not in supported dtypes or if
-       dt is not a np.dtype
-
-
 .. py:data:: complex128
 
 .. py:data:: complex64
@@ -168,15 +157,6 @@ Module Contents
 .. py:data:: str_
 
 .. py:data:: str_scalars
-
-.. py:function:: translate_np_dtype(dt) -> Tuple[str, int]
-
-   Split numpy dtype dt into its kind and byte size, raising
-   TypeError for unsupported dtypes.
-
-   :raises TypeError: Raised if the dtype is not in supported dtypes or if
-       dt is not a np.dtype
-
 
 .. py:data:: uint16
 
