@@ -59,7 +59,7 @@ jobs:
         run: |
           flake8 arkouda          
 
-  arkouda_proto_python_portability:
+  arkouda_python_portability:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
@@ -92,9 +92,9 @@ jobs:
         python3 -m pip install -e .[dev]
     - name: Arkouda unit tests
       run: |
-        make test-python-proto size=100
+        make test-python size=100
 
-  arkouda_proto_chpl_portability:
+  arkouda_chpl_portability:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -123,9 +123,9 @@ jobs:
         python3 -m pip install -e .[dev]
     - name: Arkouda unit tests
       run: |
-        make test-python-proto size=100
+        make test-python size=100
 
-  arkouda_proto_multi-dim:
+  arkouda_multi-dim:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -158,9 +158,9 @@ jobs:
         python3 -m pip install -e .[dev]
     - name: Arkouda unit tests
       run: |
-        make test-python-proto size=100
+        make test-python size=100
 
-  arkouda_proto_tests_linux:
+  arkouda_tests_linux:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -198,7 +198,7 @@ jobs:
       env:
         ARKOUDA_PYTEST_OPTIONS: "--durations=0 --durations-min=5.0"
       run: |
-        make test-python-proto size=100
+        make test-python size=100
     - name: Arkouda benchmark --correctness-only
       if: matrix.image != 'chapel-gasnet-smp'
       run: |
