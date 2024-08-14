@@ -54,7 +54,7 @@ module Message {
         this.payload = b"";
     }
 
-    proc MsgTuple.init(msg: string, msgType: MsgType, msgFormat: MsgFormat, user = "", payload = b"") {
+    proc MsgTuple.init(msg: string, msgType: MsgType, msgFormat: MsgFormat, user = "", in payload = b"") {
         this.msg = msg;
         this.msgType = msgType;
         this.msgFormat = msgFormat;
@@ -135,7 +135,7 @@ module Message {
         );
     }
 
-    proc type MsgTuple.payload(data: bytes): MsgTuple {
+    proc type MsgTuple.payload(in data: bytes): MsgTuple {
         return new MsgTuple(
             msg = "",
             msgType = MsgType.NORMAL,

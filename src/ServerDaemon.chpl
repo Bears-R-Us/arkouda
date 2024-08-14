@@ -570,8 +570,8 @@ module ServerDaemon {
                     msgArgs = new owned MessageArgs();
                 }
 
-                const payload = if reqMsgRaw.endsWith(b"BINARY_PAYLOAD") then socket.recv(bytes) else b"";
-                msgArgs.addPayload(payload);
+                if reqMsgRaw.endsWith(b"BINARY_PAYLOAD") then
+                    msgArgs.addPayload(socket.recv(bytes));
 
                 sdLogger.info(getModuleName(),
                                 getRoutineName(),
