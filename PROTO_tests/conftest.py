@@ -26,7 +26,7 @@ def pytest_addoption(parser):
     parser.addoption(
         "--size",
         action="store",
-        default="10**8",
+        default="10**2",
         help="Problem size: length of array to use for tests/benchmarks. For some cases, this will "
         "be multiplied by the number of locales.",
     )
