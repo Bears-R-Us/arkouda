@@ -2,7 +2,7 @@ import pytest
 
 import arkouda as ak
 from arkouda.client import generic_msg
-from server_util.test.server_test_util import start_arkouda_server
+from server_util.test.server_test_util import TestRunningMode, start_arkouda_server
 
 
 class TestClient:
@@ -42,6 +42,10 @@ class TestClient:
         ak.disconnect()
         ak.connect(server=pytest.server, port=pytest.port)
 
+    @pytest.mark.skipif(
+        pytest.test_running_mode == TestRunningMode.CLIENT,
+        reason="start_arkouda_server won't restart if running mode is client",
+    )
     def test_shutdown(self):
         """
         Tests the ak.shutdown() method

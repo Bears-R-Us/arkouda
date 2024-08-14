@@ -557,7 +557,7 @@ print-%:
 
 size=100
 test-python-proto:
-	python3 -m pytest -c pytest_PROTO.ini PROTO_tests/ --size=$(size) $(ARKOUDA_PYTEST_OPTIONS)
+	python3 -m pytest -c pytest.ini --size=$(size) $(ARKOUDA_PYTEST_OPTIONS)
 
 CLEAN_TARGETS += test-clean
 .PHONY: test-clean
