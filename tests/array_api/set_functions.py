@@ -10,13 +10,6 @@ SEED = 314159
 s = SEED
 
 
-def get_server_max_array_dims():
-    try:
-        return json.load(open("serverConfig.json", "r"))["max_array_dims"]
-    except (ValueError, FileNotFoundError, TypeError, KeyError):
-        return 1
-
-
 def randArr(shape):
     global s
     s += 2
@@ -25,10 +18,7 @@ def randArr(shape):
 
 class TestSetFunction:
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_set_functions requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_set_functions(self):
 
         for shape in [(1000), (20, 50), (2, 10, 50)]:

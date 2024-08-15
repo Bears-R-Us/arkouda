@@ -10,12 +10,6 @@ SEED = 314159
 s = SEED
 
 
-def get_server_max_array_dims():
-    try:
-        return json.load(open('serverConfig.json', 'r'))['max_array_dims']
-    except (ValueError, FileNotFoundError, TypeError, KeyError):
-        return 1
-
 def randArr(shape):
     global s
     s += 2
@@ -23,10 +17,8 @@ def randArr(shape):
 
 
 class TestUtilFunctions:
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 2,
-        reason="test_all requires server with 'max_array_dims' >= 2",
-    )
+
+    @pytest.mark.skip_if_max_rank_less_than(2)
     def test_all(self):
         a = xp.ones((10, 10), dtype=ak.bool_)
         assert xp.all(a)
@@ -34,10 +26,7 @@ class TestUtilFunctions:
         a[3, 4] = False
         assert ~xp.all(a)
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 2,
-        reason="test_any requires server with 'max_array_dims' >= 2",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(2)
     def test_any(self):
         a = xp.zeros((10, 10), dtype=ak.bool_)
         assert ~xp.any(a)
@@ -45,7 +34,7 @@ class TestUtilFunctions:
         a[3, 4] = True
         assert xp.any(a)
 
-    @pytest.mark.skipif(get_server_max_array_dims() < 3, reason="test_clip requires server with 'max_array_dims' >= 3")
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_clip(self):
         a = randArr((5, 6, 7))
         anp = a.to_ndarray()
@@ -54,10 +43,7 @@ class TestUtilFunctions:
         anp_c = np.clip(anp, 10, 90)
         assert a_c.tolist() == anp_c.tolist()
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_diff requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_diff(self):
         a = randArr((5, 6, 7))
         anp = a.to_ndarray()
@@ -71,10 +57,7 @@ class TestUtilFunctions:
 
         assert a_d.tolist() == anp_d.tolist()
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_pad requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_pad(self):
         a = xp.ones((5, 6, 7))
         anp = np.ones((5, 6, 7))
