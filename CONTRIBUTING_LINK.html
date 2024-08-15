@@ -460,7 +460,6 @@ $<span class="w"> </span>flake8<span class="w"> </span>arkouda/example_feature.p
 <ul class="simple">
 <li><p>If you make a new test, be sure to include <code class="docutils literal notranslate"><span class="pre">test_</span></code> at the beginning. Otherwise <code class="docutils literal notranslate"><span class="pre">pytest</span></code> will not run it.</p></li>
 <li><p>If you make a new file of tests, be sure to include the file in <code class="docutils literal notranslate"><span class="pre">pytest.ini</span></code>, so it will be run during a <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">test</span></code>.</p></li>
-<li><p>If you make a new file of PROTO_tests, be sure to also include the file in <code class="docutils literal notranslate"><span class="pre">pytest_PROTO.ini</span></code>, so it will be run during a <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">test-proto</span> <span class="pre">size=&lt;size&gt;</span></code>.</p></li>
 </ul>
 <p>See our wiki for more info on how to run our tests and create your own:
 <a class="reference external" href="https://github.com/Bears-R-Us/arkouda/wiki/Unit-Testing">https://github.com/Bears-R-Us/arkouda/wiki/Unit-Testing</a></p>
@@ -468,9 +467,6 @@ $<span class="w"> </span>flake8<span class="w"> </span>arkouda/example_feature.p
 <h4>Running python tests<a class="headerlink" href="#running-python-tests" title="Link to this heading">¶</a></h4>
 <div class="highlight-terminal notranslate"><div class="highlight"><pre><span></span># Run all tests in pytest.ini
 make test
-
-# Run all tests in pytest_PROTO.ini
-make test-proto size=&lt;size&gt;
 
 # Run all tests in the CategoricalTest class (-v will print out the test name)
 python3 -m pytest tests/categorical_test.py::CategoricalTest -v
@@ -493,7 +489,6 @@ python3 -m pytest tests/categorical_test.py::CategoricalTest::foo_test
 This usually includes running:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">test</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">test-proto</span> <span class="pre">size=&lt;size&gt;</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">mypy</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">flake8</span> <span class="pre">arkouda</span></code></p></li>
 </ul>
