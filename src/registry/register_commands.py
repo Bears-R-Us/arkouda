@@ -162,34 +162,31 @@ def get_formals(fn, require_type_annotations):
                 ten = "<homog_tuple>"
                 actuals = list(te.actuals())
 
-                # check the tuple element type
-                if not (
-                    isinstance(actuals[1], chapel.Identifier)
-                    and actuals[1].name() in chapel_scalar_types
-                ):
+                # check the tuple element type (must be an identifier - either corresponding to a scalar type or a dtype query)
+                if isinstance(actuals[1], chapel.Identifier):
+                    tuple_elt_type = actuals[1].name()
+                else:
                     error_message(
                         f"registering '{fn.name()}'",
                         f"unsupported homog_tuple type expression for registration on formal '{formal.name()}'; "
-                        + f"tuple element type must be a scalar (one of {chapel_scalar_types.keys()})",
+                        + f"tuple element type must be an identifier (either a scalar type or a queried dtype)",
                     )
-                else:
-                    tuple_elt_type = actuals[1].name()
 
-                    # check the tuple size (should be an int literal or a queried domain's rank)
-                    if isinstance(actuals[0], chapel.IntLiteral):
-                        extra_info = (int(actuals[0].text()), tuple_elt_type)
-                    elif (
-                        isinstance(actuals[0], chapel.Dot)
-                        and actuals[0].field() == "rank"
-                        and isinstance(actuals[0].receiver(), chapel.Identifier)
-                    ):
-                        extra_info = (actuals[0].receiver().name(), tuple_elt_type)
-                    else:
-                        error_message(
-                            f"registering '{fn.name()}'",
-                            f"unsupported homog_tuple type expression for registration on formal '{formal.name()}'; "
-                            + "tuple size must be an int literal or a queried domain's rank",
-                        )
+                # check the tuple size (should be an int literal or a queried domain's rank)
+                if isinstance(actuals[0], chapel.IntLiteral):
+                    extra_info = (int(actuals[0].text()), tuple_elt_type)
+                elif (
+                    isinstance(actuals[0], chapel.Dot)
+                    and actuals[0].field() == "rank"
+                    and isinstance(actuals[0].receiver(), chapel.Identifier)
+                ):
+                    extra_info = (actuals[0].receiver().name(), tuple_elt_type)
+                else:
+                    error_message(
+                        f"registering '{fn.name()}'",
+                        f"unsupported homog_tuple type expression for registration on formal '{formal.name()}'; "
+                        + "tuple size must be an int literal or a queried domain's rank",
+                    )
             else:
                 ten = te.name()
         return (formal.name(), formal.storage_kind(), ten, extra_info)
@@ -545,6 +542,16 @@ def gen_arg_unpacking(formals):
             # if the tuple size is a domain query, use the corresponding generic rank argument
             if isinstance(tsize, str):
                 tsize = array_domain_queries[tsize]
+
+            # if the tuple type is a dtype query, use the corresponding generic dtype argument
+            if ttype in array_dtype_queries:
+                ttype = array_dtype_queries[ttype]
+            elif ttype not in chapel_scalar_types:
+                error_message(
+                    f"registering '{fname}'",
+                    f"unsupported homog_tuple type expression for registration on formal '{fname}'; "
+                    + f"tuple element type must be a scalar (one of {chapel_scalar_types.keys()}) or a dtype from a query",
+                )
 
             unpack_lines.append(unpack_tuple_arg(fname, tsize, ttype))
         else:
