@@ -1940,6 +1940,102 @@ proc ark_cumSum_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowe
   return ark_reg_cumSum_generic(cmd, msgArgs, st, array_dtype_0=bigint, array_nd_0=1);
 registerFunction('cumSum<bigint,1>', ark_cumSum_bigint_1, 'StatsMsg', 120);
 
+import UtilMsg;
+
+proc ark_reg_clip_generic(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype_0, param array_nd_0: int): MsgTuple throws {
+  var x_array_sym = st[msgArgs['x']]: SymEntry(array_dtype_0, array_nd_0);
+  ref x = x_array_sym.a;
+  var min = msgArgs['min'].toScalar(real);
+  var max = msgArgs['max'].toScalar(real);
+  var ark_result = UtilMsg.clip(x,min,max);
+  var ark_result_symbol = new shared SymEntry(ark_result);
+
+  return st.insert(ark_result_symbol);
+}
+
+proc ark_clip_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_clip_generic(cmd, msgArgs, st, array_dtype_0=int, array_nd_0=1);
+registerFunction('clip<int64,1>', ark_clip_int_1, 'UtilMsg', 27);
+
+proc ark_clip_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_clip_generic(cmd, msgArgs, st, array_dtype_0=uint, array_nd_0=1);
+registerFunction('clip<uint64,1>', ark_clip_uint_1, 'UtilMsg', 27);
+
+proc ark_clip_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_clip_generic(cmd, msgArgs, st, array_dtype_0=uint(8), array_nd_0=1);
+registerFunction('clip<uint8,1>', ark_clip_uint8_1, 'UtilMsg', 27);
+
+proc ark_clip_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_clip_generic(cmd, msgArgs, st, array_dtype_0=real, array_nd_0=1);
+registerFunction('clip<float64,1>', ark_clip_real_1, 'UtilMsg', 27);
+
+proc ark_clip_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_clip_generic(cmd, msgArgs, st, array_dtype_0=bool, array_nd_0=1);
+registerFunction('clip<bool,1>', ark_clip_bool_1, 'UtilMsg', 27);
+
+proc ark_clip_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_clip_generic(cmd, msgArgs, st, array_dtype_0=bigint, array_nd_0=1);
+registerFunction('clip<bigint,1>', ark_clip_bigint_1, 'UtilMsg', 27);
+
+proc ark_reg_diff_generic(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype_0, param array_nd_0: int): MsgTuple throws {
+  var x_array_sym = st[msgArgs['x']]: SymEntry(array_dtype_0, array_nd_0);
+  ref x = x_array_sym.a;
+  var n = msgArgs['n'].toScalar(int);
+  var axis = msgArgs['axis'].toScalar(int);
+  var ark_result = UtilMsg.diff(x,n,axis);
+  var ark_result_symbol = new shared SymEntry(ark_result);
+
+  return st.insert(ark_result_symbol);
+}
+
+proc ark_diff_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_diff_generic(cmd, msgArgs, st, array_dtype_0=int, array_nd_0=1);
+registerFunction('diff<int64,1>', ark_diff_int_1, 'UtilMsg', 58);
+
+proc ark_diff_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_diff_generic(cmd, msgArgs, st, array_dtype_0=uint, array_nd_0=1);
+registerFunction('diff<uint64,1>', ark_diff_uint_1, 'UtilMsg', 58);
+
+proc ark_diff_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_diff_generic(cmd, msgArgs, st, array_dtype_0=uint(8), array_nd_0=1);
+registerFunction('diff<uint8,1>', ark_diff_uint8_1, 'UtilMsg', 58);
+
+proc ark_diff_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_diff_generic(cmd, msgArgs, st, array_dtype_0=real, array_nd_0=1);
+registerFunction('diff<float64,1>', ark_diff_real_1, 'UtilMsg', 58);
+
+proc ark_diff_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_diff_generic(cmd, msgArgs, st, array_dtype_0=bool, array_nd_0=1);
+registerFunction('diff<bool,1>', ark_diff_bool_1, 'UtilMsg', 58);
+
+proc ark_diff_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_diff_generic(cmd, msgArgs, st, array_dtype_0=bigint, array_nd_0=1);
+registerFunction('diff<bigint,1>', ark_diff_bigint_1, 'UtilMsg', 58);
+
+proc ark_pad_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return UtilMsg.pad(cmd, msgArgs, st, array_dtype=int, array_nd=1);
+registerFunction('pad<int64,1>', ark_pad_int_1, 'UtilMsg', 125);
+
+proc ark_pad_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return UtilMsg.pad(cmd, msgArgs, st, array_dtype=uint, array_nd=1);
+registerFunction('pad<uint64,1>', ark_pad_uint_1, 'UtilMsg', 125);
+
+proc ark_pad_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return UtilMsg.pad(cmd, msgArgs, st, array_dtype=uint(8), array_nd=1);
+registerFunction('pad<uint8,1>', ark_pad_uint8_1, 'UtilMsg', 125);
+
+proc ark_pad_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return UtilMsg.pad(cmd, msgArgs, st, array_dtype=real, array_nd=1);
+registerFunction('pad<float64,1>', ark_pad_real_1, 'UtilMsg', 125);
+
+proc ark_pad_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return UtilMsg.pad(cmd, msgArgs, st, array_dtype=bool, array_nd=1);
+registerFunction('pad<bool,1>', ark_pad_bool_1, 'UtilMsg', 125);
+
+proc ark_pad_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return UtilMsg.pad(cmd, msgArgs, st, array_dtype=bigint, array_nd=1);
+registerFunction('pad<bigint,1>', ark_pad_bigint_1, 'UtilMsg', 125);
+
 import MsgProcessing;
 
 proc ark_create_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
