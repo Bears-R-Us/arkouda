@@ -1992,50 +1992,74 @@ import GenSymIO;
 
 proc ark_array_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return GenSymIO.array(cmd, msgArgs, st, array_dtype=int, array_nd=1);
-registerFunction('array<int64,1>', ark_array_int_1, 'GenSymIO', 36);
+registerFunction('array<int64,1>', ark_array_int_1, 'GenSymIO', 35);
 
 proc ark_array_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return GenSymIO.array(cmd, msgArgs, st, array_dtype=uint, array_nd=1);
-registerFunction('array<uint64,1>', ark_array_uint_1, 'GenSymIO', 36);
+registerFunction('array<uint64,1>', ark_array_uint_1, 'GenSymIO', 35);
 
 proc ark_array_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return GenSymIO.array(cmd, msgArgs, st, array_dtype=uint(8), array_nd=1);
-registerFunction('array<uint8,1>', ark_array_uint8_1, 'GenSymIO', 36);
+registerFunction('array<uint8,1>', ark_array_uint8_1, 'GenSymIO', 35);
 
 proc ark_array_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return GenSymIO.array(cmd, msgArgs, st, array_dtype=real, array_nd=1);
-registerFunction('array<float64,1>', ark_array_real_1, 'GenSymIO', 36);
+registerFunction('array<float64,1>', ark_array_real_1, 'GenSymIO', 35);
 
 proc ark_array_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return GenSymIO.array(cmd, msgArgs, st, array_dtype=bool, array_nd=1);
-registerFunction('array<bool,1>', ark_array_bool_1, 'GenSymIO', 36);
+registerFunction('array<bool,1>', ark_array_bool_1, 'GenSymIO', 35);
 
 proc ark_array_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return GenSymIO.array(cmd, msgArgs, st, array_dtype=bigint, array_nd=1);
-registerFunction('array<bigint,1>', ark_array_bigint_1, 'GenSymIO', 36);
+registerFunction('array<bigint,1>', ark_array_bigint_1, 'GenSymIO', 35);
+
+proc ark_arraySegString_int(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return GenSymIO.arraySegString(cmd, msgArgs, st, array_dtype=int);
+registerFunction('arraySegString<int64>', ark_arraySegString_int, 'GenSymIO', 70);
+
+proc ark_arraySegString_uint(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return GenSymIO.arraySegString(cmd, msgArgs, st, array_dtype=uint);
+registerFunction('arraySegString<uint64>', ark_arraySegString_uint, 'GenSymIO', 70);
+
+proc ark_arraySegString_uint8(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return GenSymIO.arraySegString(cmd, msgArgs, st, array_dtype=uint(8));
+registerFunction('arraySegString<uint8>', ark_arraySegString_uint8, 'GenSymIO', 70);
+
+proc ark_arraySegString_real(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return GenSymIO.arraySegString(cmd, msgArgs, st, array_dtype=real);
+registerFunction('arraySegString<float64>', ark_arraySegString_real, 'GenSymIO', 70);
+
+proc ark_arraySegString_bool(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return GenSymIO.arraySegString(cmd, msgArgs, st, array_dtype=bool);
+registerFunction('arraySegString<bool>', ark_arraySegString_bool, 'GenSymIO', 70);
+
+proc ark_arraySegString_bigint(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return GenSymIO.arraySegString(cmd, msgArgs, st, array_dtype=bigint);
+registerFunction('arraySegString<bigint>', ark_arraySegString_bigint, 'GenSymIO', 70);
 
 proc ark_tondarray_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return GenSymIO.tondarray(cmd, msgArgs, st, array_dtype=int, array_nd=1);
-registerFunction('tondarray<int64,1>', ark_tondarray_int_1, 'GenSymIO', 112);
+registerFunction('tondarray<int64,1>', ark_tondarray_int_1, 'GenSymIO', 122);
 
 proc ark_tondarray_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return GenSymIO.tondarray(cmd, msgArgs, st, array_dtype=uint, array_nd=1);
-registerFunction('tondarray<uint64,1>', ark_tondarray_uint_1, 'GenSymIO', 112);
+registerFunction('tondarray<uint64,1>', ark_tondarray_uint_1, 'GenSymIO', 122);
 
 proc ark_tondarray_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return GenSymIO.tondarray(cmd, msgArgs, st, array_dtype=uint(8), array_nd=1);
-registerFunction('tondarray<uint8,1>', ark_tondarray_uint8_1, 'GenSymIO', 112);
+registerFunction('tondarray<uint8,1>', ark_tondarray_uint8_1, 'GenSymIO', 122);
 
 proc ark_tondarray_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return GenSymIO.tondarray(cmd, msgArgs, st, array_dtype=real, array_nd=1);
-registerFunction('tondarray<float64,1>', ark_tondarray_real_1, 'GenSymIO', 112);
+registerFunction('tondarray<float64,1>', ark_tondarray_real_1, 'GenSymIO', 122);
 
 proc ark_tondarray_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return GenSymIO.tondarray(cmd, msgArgs, st, array_dtype=bool, array_nd=1);
-registerFunction('tondarray<bool,1>', ark_tondarray_bool_1, 'GenSymIO', 112);
+registerFunction('tondarray<bool,1>', ark_tondarray_bool_1, 'GenSymIO', 122);
 
 proc ark_tondarray_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return GenSymIO.tondarray(cmd, msgArgs, st, array_dtype=bigint, array_nd=1);
-registerFunction('tondarray<bigint,1>', ark_tondarray_bigint_1, 'GenSymIO', 112);
+registerFunction('tondarray<bigint,1>', ark_tondarray_bigint_1, 'GenSymIO', 122);
 
 }

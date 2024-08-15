@@ -21,7 +21,6 @@ module GenSymIO {
     use CommAggregation;
     use IOUtils;
     use BigInteger;
-    use CommandMap;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -38,23 +37,10 @@ module GenSymIO {
     {
         const shape = msgArgs["shape"].toScalarTuple(int, array_nd);
 
-        var size = 1;
-        for s in shape do size *= s;
-        overMemLimit(2*size*typeSize(array_dtype));
-
         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                       "dtype: %? shape: %? size: %i".format(array_dtype:string,shape,size));
+                       "dtype: %? shape: %?".format(array_dtype:string,shape));
 
-        var ret = makeDistArray((...shape), array_dtype),
-            localA = makeArrayFromPtr(msgArgs.payload.c_str():c_ptr(void):c_ptr(array_dtype), num_elts=size:uint);
-        if array_nd == 1 {
-            ret = localA;
-        } else {
-            forall (i, a) in zip(localA.domain, localA) with (var agg = newDstAggregator(array_dtype)) do
-                agg.copy(ret[ret.domain.orderToIndex(i)], a);
-        }
-
-        return st.insert(new shared SymEntry(ret));
+        return st.insert(new shared SymEntry(makeArrayFromBytes(msgArgs.payload, shape, array_dtype)));
     }
 
     proc array(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
@@ -63,8 +49,33 @@ module GenSymIO {
         return MsgTuple.error("Array creation from binary payload is not supported for bigint arrays");
     }
 
-    proc arraySegStringMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
-        const rname = st.nextName();
+    proc makeArrayFromBytes(ref payload: bytes, shape: ?N*int, type t): [] t throws {
+        var size = 1;
+        for s in shape do size *= s;
+        overMemLimit(2*size*typeSize(t));
+
+        var ret = makeDistArray((...shape), t),
+            localA = makeArrayFromPtr(payload.c_str():c_ptr(void):c_ptr(t), num_elts=size:uint);
+        if N == 1 {
+            ret = localA;
+        } else {
+            forall (i, a) in zip(localA.domain, localA) with (var agg = newDstAggregator(t)) do
+                agg.copy(ret[ret.domain.orderToIndex(i)], a);
+        }
+
+        return ret;
+    }
+
+    @arkouda.instantiateAndRegister()
+    proc arraySegString(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype): MsgTuple throws {
+        const size = msgArgs["size"].toScalar(int),
+              rname = st.nextName();
+
+        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                       "dtype: %? size: %?".format(array_dtype:string,size));
+
+        const a = makeArrayFromBytes(msgArgs.payload, (size,), array_dtype);
+        st.addEntry(rname, createSymEntry(a));
         
         try {
             st.checkTable(rname, "arrayMsg");
@@ -87,7 +98,6 @@ module GenSymIO {
             return new MsgTuple(msg, MsgType.ERROR);
         }
     }
-    registerFunction('arraySegString', arraySegStringMsg, 'GenSymIO');
 
     /**
      * For creating the Strings/SegString object we can calculate the offsets array on the server
@@ -122,7 +132,7 @@ module GenSymIO {
             localA = array.a;
         } else {
             forall (i, a) in zip(localA.domain, localA) with (var agg = newSrcAggregator(array_dtype)) do
-                agg.copy(localA[i], A[array.a.domain.orderToIndex(i)]);
+                agg.copy(localA[i], array.a[array.a.domain.orderToIndex(i)]);
         }
         const size = array.size*c_sizeof(array_dtype):int;
         return MsgTuple.payload(bytes.createAdoptingBuffer(ptr:c_ptr(uint(8)), size, size));
