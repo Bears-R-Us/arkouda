@@ -1827,7 +1827,11 @@ class pdarray:
         # The reply from the server will be binary data
         data = cast(
             memoryview,
-            generic_msg(cmd=f"tondarray<{self.dtype},{self.ndim}>", args={"array": self}, recv_binary=True),
+            generic_msg(
+                cmd=f"tondarray<{self.dtype},{self.ndim}>",
+                args={"array": self},
+                recv_binary=True
+            ),
         )
         # Make sure the received data has the expected length
         if len(data) != self.size * self.dtype.itemsize:
