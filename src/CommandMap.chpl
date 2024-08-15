@@ -75,17 +75,11 @@ module CommandMap {
   }
 
   proc executeCommand(cmd: string, msgArgs, st): MsgTuple throws {
-    var response: MsgTuple;
     if commandMap.contains(cmd) {
       if moduleMap.contains(cmd) then usedModules.add(moduleMap[cmd][0]);
-      try {
-        response = commandMap[cmd](cmd, msgArgs, st);
-      } catch e {
-        response = MsgTuple.error("Error executing command: %s".format(e.message()));
-      }
+      return commandMap[cmd](cmd, msgArgs, st);
     } else {
-      response = MsgTuple.error("Unrecognized command: %s".format(cmd));
+      return MsgTuple.error("Unrecognized command: %s".format(cmd));
     }
-    return response;
   }
 }

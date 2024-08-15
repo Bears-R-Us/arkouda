@@ -564,14 +564,13 @@ module ServerDaemon {
 
                 var msgArgs: owned MessageArgs;
                 if size > 0 {
-                    msgArgs = parseMessageArgs(args, size);
+                    if reqMsgRaw.endsWith(b"BINARY_PAYLOAD")
+                        then msgArgs = parseMessageArgs(args, size, socket.recv(bytes));
+                        else msgArgs = parseMessageArgs(args, size);
                 }
                 else {
                     msgArgs = new owned MessageArgs();
                 }
-
-                if reqMsgRaw.endsWith(b"BINARY_PAYLOAD") then
-                    msgArgs.addPayload(socket.recv(bytes));
 
                 sdLogger.info(getModuleName(),
                                 getRoutineName(),
@@ -610,11 +609,11 @@ module ServerDaemon {
                     }
                 }
 
-                    // If cmd is shutdown, don't bother generating a repMsg
-                    if cmd == "shutdown" {
-                        sendShutdownRequest(user=user);
-                        break;
-                    }
+                // If cmd is shutdown, don't bother generating a repMsg
+                if cmd == "shutdown" {
+                    sendShutdownRequest(user=user);
+                    break;
+                }
 
                 /*
                 * If logCommands is true, log incoming request to the .arkouda/commands.log file
@@ -623,89 +622,96 @@ module ServerDaemon {
                     appendFile(filePath="%s/commands.log".format(this.arkDirectory), formatJson(msg));
                 }
 
+
                 /*
                 * For messages that return a string repTuple is filled. For binary
                 * messages the message is sent directly to minimize copies.
                 */
                 var repMsg: MsgTuple;
+                try {
 
-                /**
-                * Command processing: Look for our specialized, default commands first, then check the command maps
-                * Note: Our specialized commands have been added to the commandMap with dummy signatures so they show
-                *  up in the client.print_server_commands() function, but we need to intercept & process them as appropriate
-                */
-                select cmd {
-                    when "connect" {
-                        if authenticate {
-                            repMsg = new MsgTuple("connected to arkouda server tcp://*:%i as user %s with token %s".format(
-                                                            ServerPort,user,token), MsgType.NORMAL);
-                        } else {
-                            repMsg = new MsgTuple("connected to arkouda server tcp://*:%i".format(ServerPort), MsgType.NORMAL);
-                        }
-                    }
-                    when "disconnect" {
-                        if autoShutdown {
-                            sendShutdownRequest(user=user);
-                            break;
-                        }
-
-                        repMsg = new MsgTuple("disconnected from arkouda server tcp://*:%i".format(ServerPort), MsgType.NORMAL);
-                    }
-                    when "noop" {
-                        repMsg = new MsgTuple("noop", MsgType.NORMAL);
-                    }
-                    when "ruok" {
-                        repMsg = new MsgTuple("imok", MsgType.NORMAL);
-                    }
-                    otherwise { // Look up in CommandMap or Binary CommandMap (or array CommandMap for special handling)
-                        if commandMap.contains(cmd) {
-                            repMsg = executeCommand(cmd, msgArgs, st);
-                        } else {
-                            const (multiDimCommand, nd, rawCmd) = getNDSpec(cmd),
-                                command1D = rawCmd + "1D";
-                            if multiDimCommand && nd > ServerConfig.MaxArrayDims && commandMap.contains(command1D) {
-                                const errMsg = "Error: Command '%s' is not supported with the current server configuration "
-                                                .format(cmd) +
-                                                "as the maximum array dimensionality is %i. Please recompile with support for at least %iD arrays"
-                                                .format(ServerConfig.MaxArrayDims, nd);
-                                repMsg = new MsgTuple(errMsg, MsgType.ERROR);
-                                sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errMsg);
-                            } else if multiDimCommand && commandMap.contains(rawCmd) {
-                                const errMsg = "Error: Command '%s' is not supported for multidimensional arrays".format(rawCmd);
-                                repMsg = new MsgTuple(errMsg, MsgType.ERROR);
-                                sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errMsg);
+                    /**
+                    * Command processing: Look for our specialized, default commands first, then check the command maps
+                    * Note: Our specialized commands have been added to the commandMap with dummy signatures so they show
+                    *  up in the client.print_server_commands() function, but we need to intercept & process them as appropriate
+                    */
+                    select cmd {
+                        when "connect" {
+                            if authenticate {
+                                repMsg = new MsgTuple("connected to arkouda server tcp://*:%i as user %s with token %s".format(
+                                                                ServerPort,user,token), MsgType.NORMAL);
                             } else {
-                                repMsg = new MsgTuple("Unrecognized command: %s".format(cmd), MsgType.ERROR);
-                                sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),repMsg.msg);
+                                repMsg = new MsgTuple("connected to arkouda server tcp://*:%i".format(ServerPort), MsgType.NORMAL);
+                            }
+                        }
+                        when "disconnect" {
+                            if autoShutdown {
+                                sendShutdownRequest(user=user);
+                                break;
                             }
 
+                            repMsg = new MsgTuple("disconnected from arkouda server tcp://*:%i".format(ServerPort), MsgType.NORMAL);
+                        }
+                        when "noop" {
+                            repMsg = new MsgTuple("noop", MsgType.NORMAL);
+                        }
+                        when "ruok" {
+                            repMsg = new MsgTuple("imok", MsgType.NORMAL);
+                        }
+                        otherwise { // Look up in CommandMap or Binary CommandMap (or array CommandMap for special handling)
+                            if commandMap.contains(cmd) {
+                                sendRepMsg(executeCommand(cmd, msgArgs, st), user);
+                                continue;
+                            } else {
+                                const (multiDimCommand, nd, rawCmd) = getNDSpec(cmd),
+                                    command1D = rawCmd + "1D";
+                                if multiDimCommand && nd > ServerConfig.MaxArrayDims && commandMap.contains(command1D) {
+                                    const errMsg = "Error: Command '%s' is not supported with the current server configuration "
+                                                    .format(cmd) +
+                                                    "as the maximum array dimensionality is %i. Please recompile with support for at least %iD arrays"
+                                                    .format(ServerConfig.MaxArrayDims, nd);
+                                    repMsg = new MsgTuple(errMsg, MsgType.ERROR);
+                                    sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errMsg);
+                                } else if multiDimCommand && commandMap.contains(rawCmd) {
+                                    const errMsg = "Error: Command '%s' is not supported for multidimensional arrays".format(rawCmd);
+                                    repMsg = new MsgTuple(errMsg, MsgType.ERROR);
+                                    sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errMsg);
+                                } else {
+                                    repMsg = new MsgTuple("Unrecognized command: %s".format(cmd), MsgType.ERROR);
+                                    sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),repMsg.msg);
+                                }
+
+                            }
                         }
                     }
+
+                    sendRepMsg(repMsg, user);
+                } catch e {
+                    sendRepMsg(MsgTuple.error("Error executing command: %s".format(e.message())), user);
                 }
 
-                // send response message
-                sendRepMsg(repMsg, user);
+                    // send response message
 
-                    var elapsedTime = timeSinceEpoch().totalSeconds() - s0;
+                var elapsedTime = timeSinceEpoch().totalSeconds() - s0;
 
                 /*
                 * log that the request message has been handled and reply message has been sent 
                 * along with the time to do so
-                */
-                if trace {
-                    if repMsg.msgType == MsgType.ERROR {
-                        if metricsEnabled() {
-                            processErrorMessageMetrics(user, cmd, repMsg.msg);
-                        }
+                // */
+                // if trace {
+                //     if repMsg.msgType == MsgType.ERROR {
+                //         if metricsEnabled() {
+                //             processErrorMessageMetrics(user, cmd, repMsg.msg);
+                //         }
 
-                        sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                                        "<<< %s resulted in error %s in  %.17r sec".format(
-                                        cmd, repMsg.msg, timeSinceEpoch().totalSeconds() - s0));
-                    } else {
-                        sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
-                                      "<<< %s took %.17r sec".format(cmd, elapsedTime));
-                    }
-                }
+                //         sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                //                         "<<< %s resulted in error %s in  %.17r sec".format(
+                //                         cmd, repMsg.msg, timeSinceEpoch().totalSeconds() - s0));
+                //     } else {
+                //         sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
+                //                       "<<< %s took %.17r sec".format(cmd, elapsedTime));
+                //     }
+                // }
 
                 if (trace && memTrack) {
                     var memUsed = getMemUsed():uint * numLocales:uint;

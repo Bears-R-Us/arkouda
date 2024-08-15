@@ -297,8 +297,8 @@ def array(
         # native endian bytes
         aview = _array_memview(a)
         rep_msg = generic_msg(
-            cmd="array1D",
-            args={"dtype": a.dtype.name, "shape": size, "seg_string": False},
+            cmd=f"array<{a.dtype.name},1>",
+            args={"shape": size},
             payload=aview,
             send_binary=True,
         )
