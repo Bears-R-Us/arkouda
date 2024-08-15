@@ -222,7 +222,7 @@ This will start the server, run a few computations, and shut the server down. In
 against a running server by running the following Python command:
 
 ```bash
-python3 PROTO_tests/tests/check.py localhost 5555
+python3 tests/check.py localhost 5555
 ```
 
 <a id="run-ak-token-auth"></a>
