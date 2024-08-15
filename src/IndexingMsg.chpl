@@ -215,13 +215,15 @@ module IndexingMsg
             rngs[dim] = convertSlice(starts[dim], stops[dim], strides[dim]);
             outSizes[dim] = rngs[dim].size;
         }
-        const sliceDom = {(...rngs)};
+
+        const sliceDom = makeDistDom({(...rngs)});
         var arraySlice = makeDistArray((...outSizes), t);
 
-        forall (elt,j) in zip(arraySlice, sliceDom) with (var agg = newSrcAggregator(t)) do
+        forall (elt,j) in zip(arraySlice, sliceDom) with (var agg = newSrcAggregator(t)) {
             agg.copy(elt,array[j]);
+        }
 
-        return new shared SymEntry(arraySlice, max_bits);
+        return new shared SymEntry(arraySlice, max_bits=max_bits);
     }
 
     /*
@@ -917,7 +919,7 @@ module IndexingMsg
         var rngs: d.rank*range(strides=strideKind.any);
         for param dim in 0..<d.rank do
             rngs[dim] = convertSlice(starts[dim], stops[dim], strides[dim]);
-        const sliceDom = {(...rngs)};
+        const sliceDom = makeDistDom({(...rngs)});
 
         if t == bigint {
             var val_mb = value;
@@ -948,7 +950,7 @@ module IndexingMsg
         var sliceRanges: array_nd * range(strides=strideKind.any);
         for param dim in 0..<array_nd do
             sliceRanges[dim] = convertSlice(starts[dim], stops[dim], strides[dim]);
-        const sliceDom = {(...sliceRanges)};
+        const sliceDom = makeDistDom({(...sliceRanges)});
 
         if array_dtype_a == bigint {
             var bb = b.a:bigint;

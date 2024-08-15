@@ -246,7 +246,7 @@ module MultiTypeSymEntry
           :type a: [] ?etype
         */
         proc init(a: [?D] ?etype, max_bits=-1) where MyDmap != Dmap.defaultRectangular && a.isDefaultRectangular() {
-            this.init(D.size, etype, D.rank);
+            this.init((...D.shape), etype);
             this.tupShape = D.shape;
             this.a = a;
             this.shape = tupShapeString(this.tupShape);

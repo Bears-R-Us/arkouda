@@ -1,5 +1,6 @@
 import os
 from collections import Counter
+from itertools import product
 
 import numpy as np
 import pytest
@@ -193,6 +194,30 @@ class TestRandom:
                         previous = choice_arrays.pop(0)
                         current = rng.choice(a, size, replace, p)
                         assert np.allclose(previous.to_list(), current.to_list())
+
+    def test_logistic(self):
+        scal = 2
+        arr = ak.arange(5)
+
+        for loc, scale in product([scal, arr], [scal, arr]):
+            rng = ak.random.default_rng(17)
+            num_samples = 5
+            log_sample = rng.logistic(loc=loc, scale=scale, size=num_samples).to_list()
+
+            rng = ak.random.default_rng(17)
+            assert rng.logistic(loc=loc, scale=scale, size=num_samples).to_list() == log_sample
+
+    def test_lognormal(self):
+        scal = 2
+        arr = ak.arange(5)
+
+        for mean, sigma in product([scal, arr], [scal, arr]):
+            rng = ak.random.default_rng(17)
+            num_samples = 5
+            log_sample = rng.lognormal(mean=mean, sigma=sigma, size=num_samples).to_list()
+
+            rng = ak.random.default_rng(17)
+            assert rng.lognormal(mean=mean, sigma=sigma, size=num_samples).to_list() == log_sample
 
     def test_normal(self):
         rng = ak.random.default_rng(17)
@@ -393,6 +418,23 @@ class TestRandom:
             args=(0, scale),
         )
         assert ks_res.pvalue > 0.05
+
+    def test_logistic_hypothesis_testing(self):
+        # I tested this many times without a set seed, but with no seed
+        # it's expected to fail one out of every ~20 runs given a pval limit of 0.05.
+        rng = np.random.default_rng(34)
+        num_samples = 10**4
+        mu = rng.uniform(0, 10)
+        scale = rng.uniform(0, 10)
+
+        sample = rng.logistic(loc=mu, scale=scale, size=num_samples)
+        sample_list = sample.tolist()
+
+        # second goodness of fit test against the distribution with proper mean and std
+        good_fit_res = sp_stats.goodness_of_fit(
+            sp_stats.logistic, sample_list, known_params={"loc": mu, "scale": scale}
+        )
+        assert good_fit_res.pvalue > 0.05
 
     def test_legacy_randint(self):
         testArray = ak.random.randint(0, 10, 5)

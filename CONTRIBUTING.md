@@ -105,7 +105,6 @@ If adding a new feature, add a test to make sure it behaves properly.
 Things to note:
 - If you make a new test, be sure to include `test_` at the beginning. Otherwise `pytest` will not run it.
 - If you make a new file of tests, be sure to include the file in `pytest.ini`, so it will be run during a `make test`.
-- If you make a new file of PROTO_tests, be sure to also include the file in `pytest_PROTO.ini`, so it will be run during a `make test-proto size=<size>`.
 
 See our wiki for more info on how to run our tests and create your own:
 https://github.com/Bears-R-Us/arkouda/wiki/Unit-Testing
@@ -115,9 +114,6 @@ https://github.com/Bears-R-Us/arkouda/wiki/Unit-Testing
 ```terminal
 # Run all tests in pytest.ini
 make test
-
-# Run all tests in pytest_PROTO.ini
-make test-proto size=<size>
 
 # Run all tests in the CategoricalTest class (-v will print out the test name)
 python3 -m pytest tests/categorical_test.py::CategoricalTest -v
@@ -137,7 +133,6 @@ python3 server_util/test/parallel_start_test.py -d test
 Before posting a pull request, be sure to test locally to catch common CI failures early.
 This usually includes running:
 - `make test`
-- `make test-proto size=<size>`
 - `make mypy`
 - `flake8 arkouda`
 

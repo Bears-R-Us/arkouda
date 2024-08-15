@@ -53,7 +53,7 @@ Install Arkouda
 
    .. substitution-code-block:: bash
 
-       make test-proto
+       make test
 
 **********************
 Launching the Server

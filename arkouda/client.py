@@ -4,8 +4,6 @@ import warnings
 from enum import Enum
 from typing import Dict, List, Mapping, Optional, Tuple, Union, cast
 
-import pyfiglet  # type: ignore
-
 from arkouda import __version__, io_util, security
 from arkouda.logger import LogLevel, getArkoudaLogger
 from arkouda.message import (
@@ -200,6 +198,8 @@ mode = ClientMode(os.getenv("ARKOUDA_CLIENT_MODE", "UI").upper())
 
 # Print splash message if in UI mode
 if mode == ClientMode.UI:
+    import pyfiglet  # type: ignore
+
     print("{}".format(pyfiglet.figlet_format("Arkouda")))
     print(f"Client Version: {__version__}")  # type: ignore
 

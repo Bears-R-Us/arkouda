@@ -18,30 +18,29 @@ module SymArrayDmap {
         :type shape: int
     */
     proc makeDistDom(shape: int ...?N) {
-        var rngs: N*range;
-        for i in 0..#N do rngs[i] = 0..#shape[i];
-        const dom = {(...rngs)};
+      var rngs: N*range;
+      for i in 0..#N do rngs[i] = 0..#shape[i];
+      const dom = {(...rngs)};
 
-        select MyDmap
-        {
-            when Dmap.defaultRectangular {
-                return dom;
-            }
-            when Dmap.blockDist {
-                if dom.size > 0 {
-                    return blockDist.createDomain(dom);
-                }
-                // fix the annoyance about boundingBox being empty
-                else {
-                  return dom dmapped new blockDist(boundingBox=dom.expand(1));
-                }
-            }
-            otherwise {
-                halt("Unsupported distribution " + MyDmap:string);
-            }
-        }
+      return makeDistDom(dom);
     }
 
+    proc makeDistDom(dom: domain(?)) {
+      select MyDmap {
+        when Dmap.defaultRectangular {
+          return dom;
+        }
+        when Dmap.blockDist {
+          if dom.size > 0 {
+              return blockDist.createDomain(dom);
+          }
+          // fix the annoyance about boundingBox being empty
+          else {
+            return dom dmapped new blockDist(boundingBox=dom.expand(1));
+          }
+        }
+      }
+    }
 
     /*
         Makes an array of specified type over a distributed domain

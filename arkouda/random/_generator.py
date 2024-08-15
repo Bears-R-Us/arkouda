@@ -167,14 +167,9 @@ class Generator:
         pdarray
             Drawn samples from the parameterized exponential distribution.
         """
-        if isinstance(scale, pdarray):
-            if (scale < 0).any():
-                raise ValueError("scale cannot be less then 0")
-        elif _val_isinstance_of_union(scale, numeric_scalars):
-            if scale < 0:
-                raise ValueError("scale cannot be less then 0")
-        else:
-            raise TypeError("scale must be either a float scalar or pdarray")
+        _, scale = float_array_or_scalar_helper("exponential", "scale", scale, size)
+        if (scale < 0).any() if isinstance(scale, pdarray) else scale < 0:
+            raise TypeError("scale must be non-negative.")
         return scale * self.standard_exponential(size, method=method)
 
     def standard_exponential(self, size=None, method="zig"):
@@ -295,6 +290,78 @@ class Generator:
             },
         )
         self._state += full_size
+        return create_pdarray(rep_msg)
+
+    def logistic(self, loc=0.0, scale=1.0, size=None):
+        r"""
+        Draw samples from a logistic distribution.
+
+        Samples are drawn from a logistic distribution with specified parameters,
+        loc (location or mean, also median), and scale (>0).
+
+        Parameters
+        ----------
+        loc: float or pdarray of floats, optional
+            Parameter of the distribution. Default of 0.
+
+        scale: float or pdarray of floats, optional
+            Parameter of the distribution. Must be non-negative. Default is 1.
+
+        size: numeric_scalars, optional
+            Output shape. Default is None, in which case a single value is returned.
+
+        Notes
+        -----
+        The probability density for the Logistic distribution is
+
+        .. math::
+           P(x) = \frac{e^{-(x - \mu)/s}}{s( 1 + e^{-(x - \mu)/s})^2}
+
+        where :math:`\mu` is the location and :math:`s` is the scale.
+
+        The Logistic distribution is used in Extreme Value problems where it can act
+        as a mixture of Gumbel distributions, in Epidemiology, and by the World Chess Federation (FIDE)
+        where it is used in the Elo ranking system, assuming the performance of each player
+        is a logistically distributed random variable.
+
+        Returns
+        -------
+        pdarray
+            Pdarray of floats (unless size=None, in which case a single float is returned).
+
+        See Also
+        --------
+        normal
+
+        Examples
+        --------
+        >>> ak.random.default_rng(17).logistic(3, 2.5, 3)
+        array([1.1319566682702642 -7.1665150633720014 7.7208667145173608])
+        """
+        if size is None:
+            # delegate to numpy when return size is 1
+            return self._np_generator.logistic(loc=loc, scale=scale, size=size)
+
+        is_single_mu, mu = float_array_or_scalar_helper("logistic", "loc", loc, size)
+        is_single_scale, scale = float_array_or_scalar_helper("logistic", "scale", scale, size)
+        if (scale < 0).any() if isinstance(scale, pdarray) else scale < 0:
+            raise TypeError("scale must be non-negative.")
+
+        rep_msg = generic_msg(
+            cmd="logisticGenerator",
+            args={
+                "name": self._name_dict[akdtype("float64")],
+                "mu": mu,
+                "is_single_mu": is_single_mu,
+                "scale": scale,
+                "is_single_scale": is_single_scale,
+                "size": size,
+                "has_seed": self._seed is not None,
+                "state": self._state,
+            },
+        )
+        # we only generate one val using the generator in the symbol table
+        self._state += 1
         return create_pdarray(rep_msg)
 
     def lognormal(self, mean=0.0, sigma=1.0, size=None, method="zig"):
@@ -622,24 +689,9 @@ class Generator:
             # delegate to numpy when return size is 1
             return self._np_generator.poisson(lam, size)
 
-        if _val_isinstance_of_union(lam, numeric_scalars):
-            is_single_lambda = True
-            if not _val_isinstance_of_union(lam, float_scalars):
-                lam = float(lam)
-            if lam < 0:
-                raise TypeError("lambda must be >=0")
-        elif isinstance(lam, pdarray):
-            is_single_lambda = False
-            if size != lam.size:
-                raise TypeError("array of lambdas must have same size as return size")
-            if lam.dtype != akfloat64:
-                from arkouda.numeric import cast as akcast
-
-                lam = akcast(lam, akfloat64)
-            if (lam < 0).any():
-                raise TypeError("all lambdas must be >=0")
-        else:
-            raise TypeError("poisson only accepts a pdarray or float scalar for lam")
+        is_single_lambda, lam = float_array_or_scalar_helper("poisson", "lam", lam, size)
+        if (lam < 0).any() if isinstance(lam, pdarray) else lam < 0:
+            raise TypeError("lam must be non-negative.")
 
         rep_msg = generic_msg(
             cmd="poissonGenerator",
@@ -758,3 +810,21 @@ def default_rng(seed=None):
         ).split()[1]
 
     return Generator(name_dict, seed if has_seed else None, state=state)
+
+
+def float_array_or_scalar_helper(func_name, var_name, var, size):
+    if _val_isinstance_of_union(var, numeric_scalars):
+        is_scalar = True
+        if not _val_isinstance_of_union(var, float_scalars):
+            var = float(var)
+    elif isinstance(var, pdarray):
+        is_scalar = False
+        if size != var.size:
+            raise TypeError(f"array of {var_name} must have same size as return size")
+        if var.dtype != akfloat64:
+            from arkouda.numeric import cast as akcast
+
+            var = akcast(var, akfloat64)
+    else:
+        raise TypeError(f"{func_name} only accepts a pdarray or float scalar for {var_name}")
+    return is_scalar, var
