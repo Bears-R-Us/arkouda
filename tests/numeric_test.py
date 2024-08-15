@@ -867,10 +867,8 @@ class TestNumeric:
 
     @pytest.mark.parametrize("data_type", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    @pytest.mark.skip_if_max_rank_less_than(2)
     def test_triu(self, data_type, prob_size):
-        if get_max_array_rank() < 2:
-            pytest.skip()
-
         size = int(sqrt(prob_size))
 
         # ints and bools are checked for equality; floats are checked for closeness

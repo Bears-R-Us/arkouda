@@ -9,16 +9,12 @@ import arkouda.array_api as xp
 SHAPES = [(1,), (25,), (5, 10), (10, 5)]
 SEED = 12345
 SCALAR_TYPES = list(ak.ScalarDTypes)
-SCALAR_TYPES.remove('bool_')
+SCALAR_TYPES.remove("bool_")
 
-def get_server_max_array_dims():
-    try:
-        return json.load(open('serverConfig.json', 'r'))['max_array_dims']
-    except (ValueError, FileNotFoundError, TypeError, KeyError):
-        return 1
+
 class TestArrayCreation:
 
-    @pytest.mark.skipif(get_server_max_array_dims() < 2, reason="test_argsort requires server with 'max_array_dims' >= 2")
+    @pytest.mark.skip_if_max_rank_less_than(2)
     def test_argsort(self):
         for shape in SHAPES:
             for dtype in ak.ScalarDTypes:
@@ -50,7 +46,7 @@ class TestArrayCreation:
                                 for j in range(shape[1] - 1):
                                     assert a[i, b[i, j]] <= a[i, b[i, j + 1]]
 
-    @pytest.mark.skipif(get_server_max_array_dims() < 2, reason="test_sort requires server with 'max_array_dims' >= 2")
+    @pytest.mark.skip_if_max_rank_less_than(2)
     @pytest.mark.parametrize("dtype", SCALAR_TYPES)
     @pytest.mark.parametrize("shape", SHAPES)
     def test_sort(self, dtype, shape):

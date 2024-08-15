@@ -12,24 +12,16 @@ s = SEED
 DTYPES = [ak.int64, ak.float64, ak.uint64, ak.uint8]
 
 
-def get_server_max_array_dims():
-    try:
-        return json.load(open("serverConfig.json", "r"))["max_array_dims"]
-    except (ValueError, FileNotFoundError, TypeError, KeyError):
-        return 1
-
-
 def randArr(shape, dtype):
+
     global s
     s += 2
     return xp.asarray(ak.randint(0, 100, shape, dtype=ak.int64, seed=s), dtype=dtype)
 
 
 class TestUtilFunctions:
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 2,
-        reason="test_all requires server with 'max_array_dims' >= 2",
-    )
+
+    @pytest.mark.skip_if_max_rank_less_than(2)
     def test_all(self):
         a = xp.ones((10, 10), dtype=ak.bool_)
         assert xp.all(a)
@@ -37,10 +29,7 @@ class TestUtilFunctions:
         a[3, 4] = False
         assert ~xp.all(a)
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 2,
-        reason="test_any requires server with 'max_array_dims' >= 2",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(2)
     def test_any(self):
         a = xp.zeros((10, 10), dtype=ak.bool_)
         assert ~xp.any(a)
@@ -49,21 +38,17 @@ class TestUtilFunctions:
         assert xp.any(a)
 
     @pytest.mark.parametrize("dtype", DTYPES)
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3, reason="test_clip requires server with 'max_array_dims' >= 3"
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_clip(self, dtype):
         a = randArr((5, 6, 7), dtype)
+
         anp = a.to_ndarray()
 
         a_c = xp.clip(a, 10, 90)
         anp_c = np.clip(anp, 10, 90)
         assert a_c.tolist() == anp_c.tolist()
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_diff requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_clip_errors(self):
         # bool
         a = xp.asarray(ak.randint(0, 100, (5, 6, 7), dtype=ak.bool_, seed=s), dtype=ak.bool_)
@@ -85,10 +70,7 @@ class TestUtilFunctions:
             xp.clip(a, 10, 90)
 
     @pytest.mark.parametrize("dtype", DTYPES)
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_diff requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_diff(self, dtype):
         a = randArr((5, 6, 7), dtype)
         anp = a.to_ndarray()
@@ -102,10 +84,7 @@ class TestUtilFunctions:
 
         assert a_d.tolist() == anp_d.tolist()
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_diff requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_diff_error(self):
         # bool
         a = xp.asarray(ak.randint(0, 100, (5, 6, 7), dtype=ak.bool_, seed=s), dtype=ak.bool_)
@@ -126,10 +105,7 @@ class TestUtilFunctions:
         ):
             xp.diff(a, n=2, axis=0)
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_pad requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_pad(self):
         a = xp.ones((5, 6, 7))
         anp = np.ones((5, 6, 7))
@@ -161,7 +137,5 @@ class TestUtilFunctions:
         with pytest.raises(
             RuntimeError, match="Error executing command: pad does not support dtype bigint"
         ):
-            xp.pad(
-                a, ((1, 1)), mode="constant", constant_values=((-1, 1))
-            )
+            xp.pad(a, ((1, 1)), mode="constant", constant_values=((-1, 1)))
             xp.diff(a, n=2, axis=0)
