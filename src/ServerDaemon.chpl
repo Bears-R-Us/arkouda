@@ -297,7 +297,7 @@ module ServerDaemon {
         Following processing of incoming message, sends a message back to the client.
 
         */
-        proc sendRepMsg(in response: MsgTuple, user: string) throws {
+        proc sendRepMsg(in response: MsgTuple, user: string): (string, bool) throws {
             this.repCount += 1;
 
             if response.msgFormat == MsgFormat.BINARY {
@@ -310,6 +310,7 @@ module ServerDaemon {
                                           "repMsg: " + repMsg);
                 this.socket.send(repMsg);
             }
+            return (response.msg, response.msgType == MsgType.ERROR);
         }
 
         /*
@@ -622,12 +623,9 @@ module ServerDaemon {
                     appendFile(filePath="%s/commands.log".format(this.arkDirectory), formatJson(msg));
                 }
 
-
-                /*
-                * For messages that return a string repTuple is filled. For binary
-                * messages the message is sent directly to minimize copies.
-                */
                 var repMsg: MsgTuple;
+                var response: string;
+                var wasError: bool;
                 try {
 
                     /**
@@ -660,8 +658,7 @@ module ServerDaemon {
                         }
                         otherwise { // Look up in CommandMap or Binary CommandMap (or array CommandMap for special handling)
                             if commandMap.contains(cmd) {
-                                sendRepMsg(executeCommand(cmd, msgArgs, st), user);
-                                continue;
+                                repMsg = executeCommand(cmd, msgArgs, st);
                             } else {
                                 const (multiDimCommand, nd, rawCmd) = getNDSpec(cmd),
                                     command1D = rawCmd + "1D";
@@ -685,33 +682,31 @@ module ServerDaemon {
                         }
                     }
 
-                    sendRepMsg(repMsg, user);
+                    (response, wasError) = sendRepMsg(repMsg, user);
                 } catch e {
-                    sendRepMsg(MsgTuple.error("Error executing command: %s".format(e.message())), user);
+                    (response, wasError) = sendRepMsg(MsgTuple.error("Error executing command: %s".format(e.message())), user);
                 }
-
-                    // send response message
 
                 var elapsedTime = timeSinceEpoch().totalSeconds() - s0;
 
                 /*
                 * log that the request message has been handled and reply message has been sent 
                 * along with the time to do so
-                // */
-                // if trace {
-                //     if repMsg.msgType == MsgType.ERROR {
-                //         if metricsEnabled() {
-                //             processErrorMessageMetrics(user, cmd, repMsg.msg);
-                //         }
+                */
+                if trace {
+                    if wasError {
+                        if metricsEnabled() {
+                            processErrorMessageMetrics(user, cmd, response);
+                        }
 
-                //         sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                //                         "<<< %s resulted in error %s in  %.17r sec".format(
-                //                         cmd, repMsg.msg, timeSinceEpoch().totalSeconds() - s0));
-                //     } else {
-                //         sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
-                //                       "<<< %s took %.17r sec".format(cmd, elapsedTime));
-                //     }
-                // }
+                        sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                                        "<<< %s resulted in error %s in  %.17r sec".format(
+                                        cmd, response, timeSinceEpoch().totalSeconds() - s0));
+                    } else {
+                        sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
+                                      "<<< %s took %.17r sec".format(cmd, elapsedTime));
+                    }
+                }
 
                 if (trace && memTrack) {
                     var memUsed = getMemUsed():uint * numLocales:uint;
