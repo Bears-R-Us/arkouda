@@ -82,7 +82,7 @@ def argsort(
         )
     else:
         repMsg = generic_msg(
-            cmd=f"argsort<{pda.dtype.name},1>",
+            cmd=f"argsort<{pda.dtype.name},{pda.ndim}>",
             args={
                 "name": pda.name,
                 "algoName": algorithm.name,
