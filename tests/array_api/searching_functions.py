@@ -13,7 +13,7 @@ def get_server_max_array_dims():
     try:
         return json.load(open("serverConfig.json", "r"))["max_array_dims"]
     except (ValueError, FileNotFoundError, TypeError, KeyError):
-        return 3
+        return 1
 
 
 class TestSearchingFunctions:
