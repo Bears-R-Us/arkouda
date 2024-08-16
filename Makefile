@@ -532,15 +532,15 @@ define TEST_HELP_TEXT
 endef
 $(eval $(call create_help_target,test-help,TEST_HELP_TEXT))
 
-.PHONY: test-proto
-test-proto: test-python-proto
+.PHONY: test
+test: test-python
 
 .PHONY: test-chapel
 test-chapel:
 	start_test $(TEST_SOURCE_DIR)
 
 .PHONY: test-all
-test-all: test-python-proto test-chapel
+test-all: test-python test-chapel
 
 mypy:
 	python3 -m mypy arkouda
@@ -556,7 +556,7 @@ print-%:
 	$(info $($*)) @trues
 
 size=100
-test-python-proto:
+test-python:
 	python3 -m pytest -c pytest.ini --size=$(size) $(ARKOUDA_PYTEST_OPTIONS)
 
 CLEAN_TARGETS += test-clean
