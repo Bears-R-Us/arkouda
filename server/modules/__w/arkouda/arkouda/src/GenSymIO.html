@@ -134,13 +134,28 @@
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt class="sig sig-object chpl" id="GenSymIO.arrayMsg">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">arrayMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">nd:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#GenSymIO.arrayMsg" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="GenSymIO.array">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">array_dtype</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">array_nd:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">array_dtype</span> <span class="pre">!=</span> <span class="pre">bigint</span></em><a class="headerlink" href="#GenSymIO.array" title="Link to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li><p>Creates a pdarray server-side and returns the SymTab name used to</p></li>
 <li><p>retrieve the pdarray from the SymTab.</p></li>
 </ul>
 </dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">array_dtype</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">array_nd:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">array_dtype</span> <span class="pre">==</span> <span class="pre">bigint</span></em></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="GenSymIO.makeArrayFromBytes">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">makeArrayFromBytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">payload:</span> <span class="pre">bytes</span></em>, <em class="sig-param"><span class="pre">shape:</span> <span class="pre">?N*int</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">[]</span> <span class="pre">t</span> <span class="pre">throws</span></em><a class="headerlink" href="#GenSymIO.makeArrayFromBytes" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="GenSymIO.arraySegString">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">arraySegString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">array_dtype</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#GenSymIO.arraySegString" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="GenSymIO.segmentedCalcOffsets">
@@ -154,13 +169,18 @@
 </dd></dl>
 
 <dl class="chpl function">
-<dt class="sig sig-object chpl" id="GenSymIO.tondarrayMsg">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">tondarrayMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">nd:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#GenSymIO.tondarrayMsg" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="GenSymIO.tondarray">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">tondarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">array_dtype</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">array_nd:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">array_dtype</span> <span class="pre">!=</span> <span class="pre">bigint</span></em><a class="headerlink" href="#GenSymIO.tondarray" title="Link to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li><p>Outputs the pdarray as a Numpy ndarray in the form of a</p></li>
 <li><p>Chapel Bytes object</p></li>
 </ul>
 </dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">tondarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">array_dtype</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">array_nd:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">array_dtype</span> <span class="pre">==</span> <span class="pre">bigint</span></em></dt>
+<dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="GenSymIO.checkCast">

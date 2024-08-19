@@ -69,7 +69,7 @@ or
 
 .. method:: proc MsgTuple.init(msg: string, msgType: MsgType)
 
-.. method:: proc MsgTuple.init(msg: string, msgType: MsgType, msgFormat: MsgFormat, user = "", payload = b"")
+.. method:: proc MsgTuple.init(msg: string, msgType: MsgType, msgFormat: MsgFormat, user = "", in payload = b"")
 
 .. method:: proc type MsgTuple.success(msg: string = ""): MsgTuple
 
@@ -94,7 +94,7 @@ or
 
 .. method:: proc type MsgTuple.error(msg: string): MsgTuple
 
-.. method:: proc type MsgTuple.payload(data: bytes): MsgTuple
+.. method:: proc type MsgTuple.payload(in data: bytes): MsgTuple
 
 .. method:: proc ref MsgTuple.serialize(user: string) throws
 
@@ -231,7 +231,7 @@ or
 
    .. method:: proc init(param_list: list(ParameterObj))
 
-   .. method:: proc init(param_list: list(ParameterObj, parSafe = true))
+   .. method:: proc init(param_list: list(ParameterObj, parSafe = true), in payload: bytes)
 
    .. method:: proc addPayload(in p: bytes)
 
@@ -271,7 +271,7 @@ or
    Parse and individual parameter components into a ParameterObj
    
 
-.. function:: proc parseMessageArgs(json_str: string, size: int) throws
+.. function:: proc parseMessageArgs(json_str: string, size: int, in payload = b"") throws
 
    
    Parse arguments formatted as json string into objects

@@ -142,7 +142,7 @@ or
       Deletes the serverConnetionFile on arkouda_server shutdown
       
 
-   .. method:: proc sendRepMsg(in response: MsgTuple, user: string) throws
+   .. method:: proc sendRepMsg(in response: MsgTuple, user: string): (string, bool) throws
 
       
       Following processing of incoming message, sends a message back to the client.
