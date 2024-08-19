@@ -344,8 +344,6 @@ class TestManipulation:
     def test_tile(self):
         a = randArr((2, 3))
 
-        print(a)
-
         for reps in [(2, 1), (1, 2), (2, 2), (1, 1, 3), (3,)]:
             at = xp.tile(a, reps)
             npat = np.tile(np.asarray(a), reps)
