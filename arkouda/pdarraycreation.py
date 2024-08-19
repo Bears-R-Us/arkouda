@@ -256,8 +256,8 @@ def array(
             )
         encoded_np = np.array(encoded, dtype=np.uint8)
         rep_msg = generic_msg(
-            cmd="array1D",
-            args={"dtype": encoded_np.dtype.name, "shape": encoded_np.size, "seg_string": True},
+            cmd=f"arraySegString<{encoded_np.dtype.name}>",
+            args={"size": encoded_np.size},
             payload=_array_memview(encoded_np),
             send_binary=True,
         )
@@ -297,8 +297,8 @@ def array(
         # native endian bytes
         aview = _array_memview(a)
         rep_msg = generic_msg(
-            cmd="array1D",
-            args={"dtype": a.dtype.name, "shape": size, "seg_string": False},
+            cmd=f"array<{a.dtype.name},1>",
+            args={"shape": size},
             payload=aview,
             send_binary=True,
         )

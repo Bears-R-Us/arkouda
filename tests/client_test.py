@@ -151,7 +151,7 @@ class TestClient:
         sample of commands.
         """
         cmds = ak.client.get_server_commands()
-        for cmd in ["connect", "tondarray1D", "info", "str"]:
+        for cmd in ["connect", "info", "str"]:
             assert cmd in cmds
 
     def test_client_array_dim_cmd_error(self):

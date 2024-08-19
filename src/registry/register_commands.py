@@ -3,7 +3,7 @@ import sys
 import json
 import itertools
 
-DEFAULT_MODS = ["MsgProcessing"]
+DEFAULT_MODS = ["MsgProcessing", "GenSymIO"]
 
 registerAttr = ("arkouda.registerCommand", ["name"])
 instAndRegisterAttr = ("arkouda.instantiateAndRegister", ["prefix"])
