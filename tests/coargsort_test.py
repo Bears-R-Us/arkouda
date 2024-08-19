@@ -51,23 +51,23 @@ class TestCoargsort:
                 arr_list[0] = ak.cast(arr_list[0] - 2**200, ak.int64)
             assert ak.is_cosorted([arr[perm] for arr in arr_list])
 
-    # @pytest.mark.parametrize("prob_size", pytest.prob_size)
-    # @pytest.mark.parametrize("algo", SortingAlgorithm)
-    # def test_coargsort_mixed_types(self, prob_size, algo):
-    #     for dt in NUMERIC_TYPES:
-    #         dtypes = [dt] + np.random.choice(
-    #             list(set(NUMERIC_TYPES) - {dt}), size=len(NUMERIC_TYPES) - 1, replace=False
-    #         ).tolist()
-    #         arr_list = [make_ak_arrays(prob_size, dt, 0, 2**63) for dt in dtypes]
-    #         if not isinstance(arr_list, list):
-    #             arr_list = list(arr_list)
-    #         perm = ak.coargsort(arr_list, algo)
-    #         # TODO remove once ak.is_sorted is implemented for bigint
-    #         if arr_list[0].dtype == ak.bigint:
-    #             # shift it down for is_cosorted check
-    #             arr_list[0] = ak.cast(arr_list[0] - 2**200, ak.int64)
-    #         assert ak.is_cosorted([arr[perm] for arr in arr_list])
-    #
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    @pytest.mark.parametrize("algo", SortingAlgorithm)
+    def test_coargsort_mixed_types(self, prob_size, algo):
+        for dt in NUMERIC_TYPES:
+            dtypes = [dt] + np.random.choice(
+                list(set(NUMERIC_TYPES) - {dt}), size=len(NUMERIC_TYPES) - 1, replace=False
+            ).tolist()
+            arr_list = [make_ak_arrays(prob_size, dt, 0, 2**63) for dt in dtypes]
+            if not isinstance(arr_list, list):
+                arr_list = list(arr_list)
+            perm = ak.coargsort(arr_list, algo)
+            # TODO remove once ak.is_sorted is implemented for bigint
+            if arr_list[0].dtype == ak.bigint:
+                # shift it down for is_cosorted check
+                arr_list[0] = ak.cast(arr_list[0] - 2**200, ak.int64)
+            assert ak.is_cosorted([arr[perm] for arr in arr_list])
+
     # @pytest.mark.parametrize("algo", SortingAlgorithm)
     # def test_coargsort_categorical_and_strings(self, algo):
     #     string = ak.array(["a", "b", "a", "b", "c"])
