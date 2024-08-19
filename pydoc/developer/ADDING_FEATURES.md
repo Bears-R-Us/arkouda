@@ -40,7 +40,7 @@ def times2(pda: pdarray) -> pdarray:
         The doubled array
     """
     if isinstance(pda, pdarray):
-        repMsg = generic_msg(cmd="times2", args={"arg1" : pda})
+        repMsg = generic_msg(cmd=f"times2<{pda.dtype},{pda.ndim}>", args={"arg1" : pda})
         return create_pdarray(repMsg)
     else:
         raise TypeError("times2 only supports pdarrays.")
@@ -59,7 +59,7 @@ __all__ = ["in1d", "concatenate", "union1d", "intersect1d", "setdiff1d", "setxor
 
 Your contribution must include all the machinery to process a command from the client, in addition to the logic of the computation. 
 This is broken into function(s) that implement the actual operation, a function that processes the command message and calls the appropriate implementation, and code to register the message processing function with the message dispatch system.
-For the `times2` example, we will add our functions to the `ArraySetOps` and `ArraySetOpsMsg` modules for the sake of simplicity.
+For the `times2` example, we will add a function to the`ArraySetOpsMsg` module for the sake of simplicity.
 
 When the client issues a command `times2 arg1` to the arkouda server, this is what typically happens:
 
@@ -94,63 +94,16 @@ When the client issues a command `times2 arg1` to the arkouda server, this is wh
 Example
 -------
 
-First, define your message processing logic in `src/ArraySetopsMsg.chpl` in the following manner:
+Define a function in `src/ArraySetopsMsg.chpl` that takes an array argument and
+multiplies it by `2` using a promoted operation:
 
-```
+```chapel
 module ArraySetopsMsg {
-
-    ...
-    /* 
-    Parse, execute, and respond to a times2 message 
-    :arg cmd: request command
-    :type reqMsg: string 
-    :arg msgArgs: request arguments
-    :type msgArgs: borrowed MessageArgs
-    :arg st: SymTab to act on
-    :type st: borrowed SymTab 
-    :returns: (MsgTuple) response message
-    */
-    proc times2Msg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
-        var repMsg: string; // response message
-        
-        var vName = st.nextName(); // symbol table key for resulting array
-
-        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("arg1"), st);
-
-        select gEnt.dtype {
-            when DType.Int64 {
-                var e = toSymEntry(gEnt,int);
-
-                var aV = times2(e.a);
-                st.addEntry(vName, createSymEntry(aV));
-
-                repMsg = "created " + st.attrib(vName);
-                asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-                return new MsgTuple(repMsg, MsgType.NORMAL);
-            }
-            // add additional when blocks for different data types...
-            otherwise {
-                var errorMsg = notImplementedError("times2",gEnt.dtype);
-                asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);           
-                return new MsgTuple(errorMsg, MsgType.ERROR);
-            }
-        }
-    }
-
-    ...
-}
-```
-
-Second, define your operation implementation in `src/ArraySetops.chpl` in the following manner:
-
-```
-module ArraySetops {
-    
     ...
 
-    // returns input array, doubled.
-    proc times2(a: [] ?t) throws {
-        var ret = a * 2; //scalar promotion
+    @arkouda.registerCommand
+    proc times2(const ref arg1: [?d] ?t): [d] t {
+        var ret = a * 2;
         return ret;
     }
 
@@ -158,20 +111,72 @@ module ArraySetops {
 }
 ```
 
-Finally, register your new function within the commandMap back in `src/ArraySetopsMsg.chpl` in the following manner:
+Notice that the function is annotated with `@arkouda.registerCommand`. This
+will tell Arkouda's build system to generate and register several commands in
+the server's CommandMap. One command will be created for each combination of
+array rank and dtype specified in the `registration-config.json` file. For
+example, if the file has the following settings for `"array"`:
 
-
-```
-module ArraySetopsMsg {
-    ...
-
-    use CommandMap;
-    ...
-    resisterFunction("times2", times2Msg, getModuleName());
+```json
+"array": {
+    "nd": [1,2],
+    "dtype": ["int","real"]
 }
 ```
 
-Now, you should be able to rebuild and launch the server and use your new feature. We close with a client-side python script that uses the new feature.
+then, these commands will be generated:
+* "times2<int64,1>"
+* "times2<int64,2>"
+* "times2<float64,1>"
+* "times2<float64,2>"
+
+Note that the configuration file specifies Chapel type names, while the command
+names contain their Python/Numpy counterparts.
+
+Occasionally, the `registerCommand` annotation doesn't provide fine enough
+control over a command's behavior. To gain lower-level access to Arkouda's
+internal infrastructure the `instantiateAndRegister` annotation is also
+provided. For an example of why it may be needed, look at `castArray` in
+"castMsg.chpl" where the commands need to have two type arguments (one for the
+array being cast, and another for the type it's cast to).
+
+If we wanted to use `instantiateAndRegister` for `times2`, we could write:
+
+```chapel
+module ArraySetopsMsg {
+    ...
+
+    @arkouda.instantiateAndRegister
+    proc times2(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws {
+        const x = st[msgArgs['arg1']]: borrowed SymEntry(array_dtype, array_nd);
+        const y = new SymEntry(x.a * 2);
+        return st.insert(y);
+    }
+
+    ...
+}
+```
+
+For this kind of procedure, the first three arguments must always have the same
+names and types as above, and the return type must be `MsgTuple`. This
+procedure manually pull's the array's name from the JSON arguments provided to
+the command: `msgArgs['arg1']`. It then pulls the array symbol (a class that
+wraps a Chapel array from the server's symbol table), and casts it to a
+`SymEntry` with our array's particular type and rank (remember that the command
+is called as `f"times2<{pda.dtype},{pda.ndim}>)`). We then create a new
+SymEntry with the result of our computation, and store its value in a new
+variable `y`. Finally, a response for the server is generated and returned by
+adding the new symbol to the symbol table with the `insert` method.
+
+Notice that the names of the `type` and `param` arguments correspond to the
+parameter-class fields in the configuration file (separated by an `_`). This
+tells Arkouda's build system that the procedure should be instantiated for all
+combinations of the values in the `dtype` and `nd` lists. As such, this
+approach will generate the same commands as the `registerCommand` annotation.
+
+Using a command written with either of the above annotations, you should be
+able to rebuild and launch the server and use your new feature. We close with a
+client-side python script that uses the new feature:
 
 ```
 import arkouda as ak
