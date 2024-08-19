@@ -877,6 +877,10 @@ class TestString:
 
     def test_string_broadcast(self):
         keys = ak.randint(0, 10, 100, int)
+        while ak.unique(keys).size != 10:
+            # keep generating until every element appears at least once
+            keys = ak.randint(0, 10, 100, int)
+
         g = ak.GroupBy(keys)
         str_vals = ak.random_strings_uniform(0, 3, 10, characters="printable")
         str_broadcast_ans = str_vals[keys]
