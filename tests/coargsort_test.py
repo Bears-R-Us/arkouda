@@ -93,18 +93,10 @@ class TestCoargsort:
 
     def test_coargsort_bool(self):
         # Reproducer for issue #2675
-        args = [ak.arange(5) % 2 == 0, ak.arange(5, 0, -1)]  # passes
-        perm = ak.coargsort(args)  # passes
-
-        print(args)  # passes
-        print(perm)  # passes
-        print(args[0][perm].to_list())  # passes
-        assert True # passes
-        print(args[0][perm].to_list() == [False, False, True, True, True])  # passed
-        assert args[0][perm].to_list() == [False, False, True, True, True]  # passed
-        assert args[1][perm].to_list() == [2, 4, 1, 3, 5]   # hangs
-        print("TEST")
-
+        args = [ak.arange(5) % 2 == 0, ak.arange(5, 0, -1)]
+        perm = ak.coargsort(args)
+        assert args[0][perm].to_list() == [False, False, True, True, True]
+        assert args[1][perm].to_list() == [2, 4, 1, 3, 5]
 
     @pytest.mark.parametrize("algo", SortingAlgorithm)
     def test_error_handling(self, algo):
