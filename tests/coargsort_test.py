@@ -101,8 +101,8 @@ class TestCoargsort:
         print(args[0][perm].to_list())  # passes
         assert True # passes
         print(args[0][perm].to_list() == [False, False, True, True, True])  # passed
-        assert args[0][perm].to_list() == [False, False, True, True, True]
-        # assert args[1][perm].to_list() == [2, 4, 1, 3, 5]
+        assert args[0][perm].to_list() == [False, False, True, True, True]  # passed
+        assert args[1][perm].to_list() == [2, 4, 1, 3, 5]
 
 
     @pytest.mark.parametrize("algo", SortingAlgorithm)
