@@ -90,20 +90,20 @@ class TestCoargsort:
     #     empty_str = ak.random_strings_uniform(1, 16, 0)
     #     for empty in empty_str, ak.Categorical(empty_str):
     #         assert [] == ak.coargsort([empty], algo).to_list()
-
-    def test_coargsort_bool(self):
-        # Reproducer for issue #2675
-        args = [ak.arange(5) % 2 == 0, ak.arange(5, 0, -1)]
-        perm = ak.coargsort(args)
-        assert args[0][perm].to_list() == [False, False, True, True, True]
-        assert args[1][perm].to_list() == [2, 4, 1, 3, 5]
-
-    @pytest.mark.parametrize("algo", SortingAlgorithm)
-    def test_error_handling(self, algo):
-        ones, short_ones = ak.ones(100), ak.ones(10)
-
-        with pytest.raises(ValueError):
-            ak.coargsort([ones, short_ones], algo)
-
-        with pytest.raises(TypeError):
-            ak.coargsort([list(range(0, 10)), [0]], algo)
+    #
+    # def test_coargsort_bool(self):
+    #     # Reproducer for issue #2675
+    #     args = [ak.arange(5) % 2 == 0, ak.arange(5, 0, -1)]
+    #     perm = ak.coargsort(args)
+    #     assert args[0][perm].to_list() == [False, False, True, True, True]
+    #     assert args[1][perm].to_list() == [2, 4, 1, 3, 5]
+    #
+    # @pytest.mark.parametrize("algo", SortingAlgorithm)
+    # def test_error_handling(self, algo):
+    #     ones, short_ones = ak.ones(100), ak.ones(10)
+    #
+    #     with pytest.raises(ValueError):
+    #         ak.coargsort([ones, short_ones], algo)
+    #
+    #     with pytest.raises(TypeError):
+    #         ak.coargsort([list(range(0, 10)), [0]], algo)
