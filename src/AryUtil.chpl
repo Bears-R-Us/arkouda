@@ -14,6 +14,8 @@ module AryUtil
     use OS.POSIX;
     use List;
     use CommAggregation;
+    use CommPrimitives;
+
 
     param bitsPerDigit = RSLSD_bitsPerDigit;
     private param numBuckets = 1 << bitsPerDigit; // these need to be const for comms/performance reasons
@@ -902,7 +904,7 @@ module AryUtil
             // flat region sits within a single locale, do a single get
             get(
               c_ptrTo(unflat[low]),
-              c_ptrToConst(a[flatSlice.low]):c_ptr(t),
+              getAddr(a[flatSlice.low]),
               locInStart,
               c_sizeof(t) * flatSlice.size
             );
@@ -913,7 +915,7 @@ module AryUtil
 
               get(
                 c_ptrTo(unflat[dufc.orderToIndex(flatSubSlice.low)]),
-                c_ptrToConst(a[flatSubSlice.low]):c_ptr(t),
+                getAddr(a[flatSubSlice.low]),
                 locInID,
                 c_sizeof(t) * flatSubSlice.size
               );
@@ -963,7 +965,7 @@ module AryUtil
           if locOutStart == locOutStop {
             // flat region sits within a single locale, do a single put
             put(
-                c_ptrTo(flat[flatSlice.low]),
+                getAddr(flat[flatSlice.low]),
                 c_ptrToConst(a[low]):c_ptr(t),
                 locOutStart,
                 c_sizeof(t) * flatSlice.size
@@ -974,7 +976,7 @@ module AryUtil
               const flatSubSlice = flatSlice[flatLocRanges[locOutID]];
 
               put(
-                c_ptrTo(flat[flatSubSlice.low]),
+                getAddr(flat[flatSubSlice.low]),
                 c_ptrToConst(a[dc.orderToIndex(flatSubSlice.low)]):c_ptr(t),
                 locOutID,
                 c_sizeof(t) * flatSubSlice.size
