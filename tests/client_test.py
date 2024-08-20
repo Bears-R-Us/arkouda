@@ -50,10 +50,12 @@ class TestClient:
         """
         Tests the ak.shutdown() method
         """
+        print("pytest.max_rank: ", pytest.max_rank)
         ak.shutdown()
         start_arkouda_server(numlocales=pytest.nl)
         # reconnect to server so subsequent tests will pass
         ak.connect(server=pytest.server, port=pytest.port, timeout=pytest.timeout)
+        print("pytest.max_rank: ", pytest.max_rank)
 
     def test_client_get_config(self):
         """
