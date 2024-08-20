@@ -68,28 +68,28 @@ class TestCoargsort:
                 arr_list[0] = ak.cast(arr_list[0] - 2**200, ak.int64)
             assert ak.is_cosorted([arr[perm] for arr in arr_list])
 
-    # @pytest.mark.parametrize("algo", SortingAlgorithm)
-    # def test_coargsort_categorical_and_strings(self, algo):
-    #     string = ak.array(["a", "b", "a", "b", "c"])
-    #     cat = ak.Categorical(string)
-    #     cat_from_codes = ak.Categorical.from_codes(
-    #         codes=ak.array([0, 1, 0, 1, 2]), categories=ak.array(["a", "b", "c"])
-    #     )
-    #     # coargsort sorts using codes, the order isn't guaranteed, only grouping
-    #     cat_ans, str_ans = ["a", "a", "b", "b", "c"], ["b", "b", "a", "a", "c"]
-    #
-    #     for cat_list in [
-    #         [cat],
-    #         [cat_from_codes],
-    #         [cat, cat_from_codes],
-    #         *permutations([cat_from_codes, string, cat]),
-    #     ]:
-    #         ans = cat_ans if isinstance(cat_list[0], ak.Categorical) else str_ans
-    #         assert ans == cat_list[0][ak.coargsort(cat_list, algo)].to_list()
-    #
-    #     empty_str = ak.random_strings_uniform(1, 16, 0)
-    #     for empty in empty_str, ak.Categorical(empty_str):
-    #         assert [] == ak.coargsort([empty], algo).to_list()
+    @pytest.mark.parametrize("algo", SortingAlgorithm)
+    def test_coargsort_categorical_and_strings(self, algo):
+        string = ak.array(["a", "b", "a", "b", "c"])
+        cat = ak.Categorical(string)
+        cat_from_codes = ak.Categorical.from_codes(
+            codes=ak.array([0, 1, 0, 1, 2]), categories=ak.array(["a", "b", "c"])
+        )
+        # coargsort sorts using codes, the order isn't guaranteed, only grouping
+        cat_ans, str_ans = ["a", "a", "b", "b", "c"], ["b", "b", "a", "a", "c"]
+
+        for cat_list in [
+            [cat],
+            [cat_from_codes],
+            [cat, cat_from_codes],
+            *permutations([cat_from_codes, string, cat]),
+        ]:
+            ans = cat_ans if isinstance(cat_list[0], ak.Categorical) else str_ans
+            assert ans == cat_list[0][ak.coargsort(cat_list, algo)].to_list()
+
+        empty_str = ak.random_strings_uniform(1, 16, 0)
+        for empty in empty_str, ak.Categorical(empty_str):
+            assert [] == ak.coargsort([empty], algo).to_list()
     #
     # def test_coargsort_bool(self):
     #     # Reproducer for issue #2675
