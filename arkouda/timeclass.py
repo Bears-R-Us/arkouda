@@ -11,7 +11,7 @@ from pandas import timedelta_range as pd_timedelta_range
 from pandas import to_datetime, to_timedelta
 
 from arkouda.client import generic_msg
-from arkouda.dtypes import int64, int_scalars, intTypes, isSupportedInt
+from arkouda.numpy.dtypes import int64, int_scalars, intTypes, isSupportedInt
 from arkouda.numeric import abs as akabs
 from arkouda.numeric import cast
 from arkouda.pdarrayclass import RegistrationError, create_pdarray, pdarray

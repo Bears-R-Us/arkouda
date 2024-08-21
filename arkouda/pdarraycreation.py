@@ -6,24 +6,24 @@ import pandas as pd
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
-from arkouda.dtypes import (
+from arkouda.numpy.dtypes import (
     NUMBER_FORMAT_STRINGS,
     DTypes,
     NumericDTypes,
     SeriesDTypes,
     bigint,
 )
-from arkouda.dtypes import dtype as akdtype
-from arkouda.dtypes import float64, get_byteorder, get_server_byteorder
-from arkouda.dtypes import int64 as akint64
-from arkouda.dtypes import (
+from arkouda.numpy.dtypes import dtype as akdtype
+from arkouda.numpy.dtypes import float64, get_byteorder, get_server_byteorder
+from arkouda.numpy.dtypes import int64 as akint64
+from arkouda.numpy.dtypes import (
     int_scalars,
     isSupportedInt,
     isSupportedNumber,
     numeric_scalars,
     resolve_scalar_dtype,
 )
-from arkouda.dtypes import uint64 as akuint64
+from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.strings import Strings
 

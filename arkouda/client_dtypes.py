@@ -5,8 +5,8 @@ from typing import Optional, Union
 import numpy as np
 from typeguard import typechecked
 
-from arkouda.dtypes import bitType, intTypes, isSupportedInt
-from arkouda.dtypes import uint64 as akuint64
+from arkouda.numpy.dtypes import bitType, intTypes, isSupportedInt
+from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import where

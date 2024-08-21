@@ -6,42 +6,72 @@ from enum import Enum
 from typing import Union, cast
 
 import numpy as np
+from numpy import (
+    bool_,
+    complex64,
+    complex128,
+    float16,
+    float32,
+    float64,
+    int8,
+    int16,
+    int32,
+    int64,
+    str_,
+    uint8,
+    uint16,
+    uint32,
+    uint64,
+)
 
 __all__ = [
-    "DTypes",
+    "ARKOUDA_SUPPORTED_DTYPES",
+    "DType",
     "DTypeObjects",
+    "DTypes",
+    "NUMBER_FORMAT_STRINGS",
+    "NumericDTypes",
     "ScalarDTypes",
+    "SeriesDTypes",
+    "_is_dtype_in_union",
+    "_val_isinstance_of_union",
+    "all_scalars",
+    "bigint",
+    "bitType",
+    "bool_",
+    "bool_scalars",
+    "complex128",
+    "complex64",
     "dtype",
-    "uint8",
-    "uint16",
-    "uint32",
-    "uint64",
-    "int8",
+    "float16",
+    "float32",
+    "float64",
+    "float_scalars",
+    "get_byteorder",
+    "get_server_byteorder",
     "int16",
     "int32",
     "int64",
-    "float32",
-    "float64",
-    "complex64",
-    "complex128",
-    "bool_",
-    "str_",
-    "bigint",
+    "int8",
     "intTypes",
-    "bitType",
-    "resolve_scalar_dtype",
-    "ARKOUDA_SUPPORTED_DTYPES",
-    "bool_scalars",
-    "float_scalars",
     "int_scalars",
+    "isSupportedFloat",
+    "isSupportedInt",
+    "isSupportedNumber",
+    "numeric_and_bool_scalars",
+    "numeric_and_bool_scalars",
     "numeric_scalars",
     "numpy_scalars",
+    "resolve_scalar_dtype",
+    "resolve_scalar_dtype",
+    "str_",
     "str_scalars",
-    "all_scalars",
-    "get_byteorder",
-    "get_server_byteorder",
-    "isSupportedNumber",
+    "uint16",
+    "uint32",
+    "uint64",
+    "uint8",
 ]
+
 
 NUMBER_FORMAT_STRINGS = {
     "bool": "{}",
@@ -133,20 +163,6 @@ class bigint:
         return int(x)
 
 
-uint8 = np.uint8
-uint16 = np.uint16
-uint32 = np.uint32
-uint64 = np.uint64
-int8 = np.int8
-int16 = np.int16
-int32 = np.int32
-int64 = np.int64
-float32 = np.float32
-float64 = np.float64
-complex64 = np.complex64
-complex128 = np.complex128
-bool_ = np.bool_
-str_ = np.str_
 intTypes = frozenset((dtype("int64"), dtype("uint64"), dtype("uint8")))
 bitType = uint64
 

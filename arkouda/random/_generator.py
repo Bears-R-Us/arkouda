@@ -2,13 +2,13 @@ import numpy as np
 import numpy.random as np_random
 
 from arkouda.client import generic_msg
-from arkouda.dtypes import _val_isinstance_of_union
-from arkouda.dtypes import dtype as akdtype
-from arkouda.dtypes import dtype as to_numpy_dtype
-from arkouda.dtypes import float64 as akfloat64
-from arkouda.dtypes import float_scalars
-from arkouda.dtypes import int64 as akint64
-from arkouda.dtypes import int_scalars, numeric_scalars
+from arkouda.numpy.dtypes import _val_isinstance_of_union
+from arkouda.numpy.dtypes import dtype as akdtype
+from arkouda.numpy.dtypes import dtype as to_numpy_dtype
+from arkouda.numpy.dtypes import float64 as akfloat64
+from arkouda.numpy.dtypes import float_scalars
+from arkouda.numpy.dtypes import int64 as akint64
+from arkouda.numpy.dtypes import int_scalars, numeric_scalars
 from arkouda.pdarrayclass import create_pdarray, pdarray
 
 
