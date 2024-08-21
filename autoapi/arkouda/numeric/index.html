@@ -431,41 +431,47 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.expm1" title="arkouda.numeric.expm1"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expm1</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise exponential of the array minus one.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.floor" title="arkouda.numeric.floor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">floor</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.eye" title="arkouda.numeric.eye"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eye</span></code></a>(rows, cols[, diag, dt])</p></td>
+<td><p>Return a pdarray with zeros everywhere except along a diagonal, which is all ones.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.floor" title="arkouda.numeric.floor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">floor</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Alias of arkouda.numpy.floor</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.hash" title="arkouda.numeric.hash"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hash</span></code></a>(→ Union[Tuple[arkouda.pdarrayclass.pdarray, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.hash" title="arkouda.numeric.hash"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hash</span></code></a>(→ Union[Tuple[arkouda.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Return an element-wise hash of the array or list of arrays.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.histogram" title="arkouda.numeric.histogram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">histogram</span></code></a>(→ Tuple[arkouda.pdarrayclass.pdarray, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.histogram" title="arkouda.numeric.histogram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">histogram</span></code></a>(→ Tuple[arkouda.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Compute a histogram of evenly spaced bins over the range of an array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.histogram2d" title="arkouda.numeric.histogram2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">histogram2d</span></code></a>(→ Tuple[arkouda.pdarrayclass.pdarray, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.histogram2d" title="arkouda.numeric.histogram2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">histogram2d</span></code></a>(→ Tuple[arkouda.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Compute the bi-dimensional histogram of two data samples with evenly spaced bins</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.histogramdd" title="arkouda.numeric.histogramdd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">histogramdd</span></code></a>(→ Tuple[arkouda.pdarrayclass.pdarray, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.histogramdd" title="arkouda.numeric.histogramdd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">histogramdd</span></code></a>(→ Tuple[arkouda.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Compute the multidimensional histogram of data in sample with evenly spaced bins.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.isfinite" title="arkouda.numeric.isfinite"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isfinite</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.isfinite" title="arkouda.numeric.isfinite"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isfinite</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise isfinite check applied to the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.isinf" title="arkouda.numeric.isinf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isinf</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.isinf" title="arkouda.numeric.isinf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isinf</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise isinf check applied to the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.isnan" title="arkouda.numeric.isnan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isnan</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.isnan" title="arkouda.numeric.isnan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isnan</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise isnan check applied to the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.log" title="arkouda.numeric.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.log" title="arkouda.numeric.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise natural log of the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.log10" title="arkouda.numeric.log10"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log10</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.log10" title="arkouda.numeric.log10"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log10</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise base 10 log of the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.log1p" title="arkouda.numeric.log1p"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log1p</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.log1p" title="arkouda.numeric.log1p"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log1p</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise natural log of one plus the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.log2" title="arkouda.numeric.log2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log2</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.log2" title="arkouda.numeric.log2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log2</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise base 2 log of the array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.matmul" title="arkouda.numeric.matmul"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matmul</span></code></a>(pdaLeft, pdaRight)</p></td>
+<td><p>Compute the product of two matrices.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.median" title="arkouda.numeric.median"><code class="xref py py-obj docutils literal notranslate"><span class="pre">median</span></code></a>(pda)</p></td>
 <td><p>Compute the median of a given array.  1d case only, for now.</p></td>
@@ -497,11 +503,23 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.tanh" title="arkouda.numeric.tanh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tanh</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise hyperbolic tangent of the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.trunc" title="arkouda.numeric.trunc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trunc</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.transpose" title="arkouda.numeric.transpose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transpose</span></code></a>(pda)</p></td>
+<td><p>Compute the transpose of a matrix.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.tril" title="arkouda.numeric.tril"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tril</span></code></a>(pda[, diag])</p></td>
+<td><p>Return a copy of the pda with the upper triangle zeroed out</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.triu" title="arkouda.numeric.triu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">triu</span></code></a>(pda[, diag])</p></td>
+<td><p>Return a copy of the pda with the lower triangle zeroed out</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.trunc" title="arkouda.numeric.trunc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trunc</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise truncation of the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.value_counts" title="arkouda.numeric.value_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">value_counts</span></code></a>(→ Union[Categorical, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.value_counts" title="arkouda.numeric.value_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">value_counts</span></code></a>(→ Union[Categorical, ...)</p></td>
 <td><p>Count the occurrences of the unique values of an array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.vecdot" title="arkouda.numeric.vecdot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vecdot</span></code></a>(x1, x2)</p></td>
+<td><p>Compute the generalized dot product of two vectors along the given axis.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.where" title="arkouda.numeric.where"><code class="xref py py-obj docutils literal notranslate"><span class="pre">where</span></code></a>(→ Union[arkouda.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Returns an array with elements chosen from A and B based upon a</p></td>
@@ -1139,6 +1157,46 @@ array elements minus one</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numeric.eye">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numeric.</span></span><span class="sig-name descname"><span class="pre">eye</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rows</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.dtypes.int_scalars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cols</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.dtypes.int_scalars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.dtypes.int_scalars</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">akint64</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numeric.html#eye"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numeric.eye" title="Link to this definition">¶</a></dt>
+<dd><p>Return a pdarray with zeros everywhere except along a diagonal, which is all ones.
+The matrix need not be square.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rows</strong> (<em>int_scalars</em>)</p></li>
+<li><p><strong>cols</strong> (<em>int_scalars</em>)</p></li>
+<li><p><strong>diag</strong> (<em>int_scalars</em>) – if diag = 0, zeros start at element [0,0] and proceed along diagonal
+if diag &gt; 0, zeros start at element [0,diag] and proceed along diagonal
+if diag &lt; 0, zeros start at element [diag,0] and proceed along diagonal
+etc.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>an array of zeros with ones along the specified diagonal</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">rows</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">cols</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">diag</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">dt</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+<span class="go">array([array([1 0 0 0]) array([0 1 0 0]) array([0 0 1 0]) array([0 0 0 1])])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">rows</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span><span class="n">cols</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span><span class="n">diag</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">dt</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="go">array([array([0.00000000000000000 1.00000000000000000 0.00000000000000000])</span>
+<span class="go">array([0.00000000000000000  0.00000000000000000 1.00000000000000000])</span>
+<span class="go">array([0.00000000000000000 0.00000000000000000 0.00000000000000000])])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">rows</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">cols</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">diag</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span><span class="n">dt</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">bool_</span><span class="p">)</span>
+<span class="go">array([array([False False False False]) array([True False False False])</span>
+<span class="go">array([False True False False]) array([False False True False])]</span>
+</pre></div>
+</div>
+<p class="rubric">Notes</p>
+<p>if rows = cols and diag = 0, the result is an identity matrix
+Server returns an error if rank of pda &lt; 2</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numeric.floor">
 <span class="sig-prename descclassname"><span class="pre">arkouda.numeric.</span></span><span class="sig-name descname"><span class="pre">floor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/numeric.html#floor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numeric.floor" title="Link to this definition">¶</a></dt>
 <dd><p>Alias of arkouda.numpy.floor</p>
@@ -1522,6 +1580,43 @@ array elements</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numeric.matmul">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numeric.</span></span><span class="sig-name descname"><span class="pre">matmul</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pdaLeft</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pdaRight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numeric.html#matmul"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numeric.matmul" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the product of two matrices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pdaLeft</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
+<li><p><strong>pdaRight</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the matrix product pdaLeft x pdaRight</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">(([</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">],[</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span>
+<span class="go">array([array([30 30]) array([45 45])])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mf">1.1</span><span class="p">,</span><span class="mf">2.1</span><span class="p">,</span><span class="mf">3.1</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+<span class="go">array([array([1.00000000000000000 5.00000000000000000 14.00000000000000000])</span>
+<span class="go">array([1.1000000000000001 5.3000000000000007 14.600000000000001])])</span>
+</pre></div>
+</div>
+<p class="rubric">Notes</p>
+<p>Server returns an error if shapes of pdaLeft and pdaRight
+are incompatible with matrix multiplication.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numeric.median">
 <span class="sig-prename descclassname"><span class="pre">arkouda.numeric.</span></span><span class="sig-name descname"><span class="pre">median</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numeric.html#median"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numeric.median" title="Link to this definition">¶</a></dt>
 <dd><p>Compute the median of a given array.  1d case only, for now.</p>
@@ -1798,6 +1893,119 @@ of the original pdarray</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numeric.transpose">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numeric.</span></span><span class="sig-name descname"><span class="pre">transpose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numeric.html#transpose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numeric.transpose" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the transpose of a matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the transpose of the input matrix</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="go">array([array([1 1]) array([2 2]) array([3 3]) array([4 4]) array([5 5])])</span>
+</pre></div>
+</div>
+<p class="rubric">Notes</p>
+<p>Server returns an error if rank of pda &lt; 2</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numeric.tril">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numeric.</span></span><span class="sig-name descname"><span class="pre">tril</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">diag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.dtypes.int_scalars</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numeric.html#tril"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numeric.tril" title="Link to this definition">¶</a></dt>
+<dd><p>Return a copy of the pda with the upper triangle zeroed out</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
+<li><p><strong>diag</strong> (<em>int_scalars</em>) – if diag = 0, zeros start just below the main diagonal
+if diag = 1, zeros start at the main diagonal
+if diag = 2, zeros start just above the main diagonal
+etc.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a copy of pda with zeros in the upper triangle</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">],[</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">tril</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">diag</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="go">array([array([1 2 3 4 5]) array([2 3 4 5 6]) array([3 4 5 6 7])</span>
+<span class="go">array([4 5 6 7 8]) array([5 6 7 8 9])])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">tril</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">diag</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="go">array([array([1 2 3 4 0]) array([2 3 4 5 6]) array([3 4 5 6 7])</span>
+<span class="go">array([4 5 6 7 8]) array([5 6 7 8 9])])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">tril</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">diag</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">array([array([1 2 3 0 0]) array([2 3 4 5 0]) array([3 4 5 6 7])</span>
+<span class="go">array([4 5 6 7 8]) array([5 6 7 8 9])])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">tril</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">diag</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">array([array([1 2 0 0 0]) array([2 3 4 0 0]) array([3 4 5 6 0])</span>
+<span class="go">array([4 5 6 7 8]) array([5 6 7 8 9])])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">tril</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">diag</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">array([array([1 0 0 0 0]) array([2 3 0 0 0]) array([3 4 5 0 0])</span>
+<span class="go">array([4 5 6 7 0]) array([5 6 7 8 9])])</span>
+</pre></div>
+</div>
+<p class="rubric">Notes</p>
+<p>Server returns an error if rank of pda &lt; 2</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numeric.triu">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numeric.</span></span><span class="sig-name descname"><span class="pre">triu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">diag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.dtypes.int_scalars</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numeric.html#triu"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numeric.triu" title="Link to this definition">¶</a></dt>
+<dd><p>Return a copy of the pda with the lower triangle zeroed out</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
+<li><p><strong>diag</strong> (<em>int_scalars</em>) – if diag = 0, zeros start just above the main diagonal
+if diag = 1, zeros start at the main diagonal
+if diag = 2, zeros start just below the main diagonal
+etc.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a copy of pda with zeros in the lower triangle</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">],[</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">triu</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">diag</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">array([array([1 2 3 4 5]) array([0 3 4 5 6]) array([0 0 5 6 7])</span>
+<span class="go">array([0 0 0 7 8]) array([0 0 0 0 9])])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">triu</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">diag</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">array([array([0 2 3 4 5]) array([0 0 4 5 6]) array([0 0 0 6 7])</span>
+<span class="go">array([0 0 0 0 8]) array([0 0 0 0 0])])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">triu</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">diag</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">array([array([0 0 3 4 5]) array([0 0 0 5 6]) array([0 0 0 0 7])</span>
+<span class="go">array([0 0 0 0 0]) array([0 0 0 0 0])])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">triu</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">diag</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="go">array([array([0 0 0 4 5]) array([0 0 0 0 6]) array([0 0 0 0 0])</span>
+<span class="go">array([0 0 0 0 0]) array([0 0 0 0 0])])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">triu</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">diag</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="go">array([array([0 0 0 0 5]) array([0 0 0 0 0]) array([0 0 0 0 0])</span>
+<span class="go">array([0 0 0 0 0]) array([0 0 0 0 0])])</span>
+</pre></div>
+</div>
+<p class="rubric">Notes</p>
+<p>Server returns an error if rank of pda &lt; 2</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numeric.trunc">
 <span class="sig-prename descclassname"><span class="pre">arkouda.numeric.</span></span><span class="sig-name descname"><span class="pre">trunc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/numeric.html#trunc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numeric.trunc" title="Link to this definition">¶</a></dt>
 <dd><p>Return the element-wise truncation of the array.</p>
@@ -1856,6 +2064,41 @@ return_counts parameter is set to True.</p>
 <span class="go">(array([0, 2, 4]), array([3, 2, 1]))</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numeric.vecdot">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numeric.</span></span><span class="sig-name descname"><span class="pre">vecdot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">x2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numeric.html#vecdot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numeric.vecdot" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the generalized dot product of two vectors along the given axis.
+Assumes that both tensors have already been broadcast to the same shape.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x1</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
+<li><p><strong>x2</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>x1 vecdot x2</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">(([</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">vecdot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span>
+<span class="go">array([5 10 15 20 25])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">vecdot</span><span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="n">a</span><span class="p">)</span>
+<span class="go">array([5 10 15 20 25])</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueTypeError</strong> – Raised if x1 and x2 are not of matching shape or if rank of x1 &lt; 2</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -2020,6 +2263,7 @@ is not currently supported in Arkouda</p>
 <li><a class="reference internal" href="#arkouda.numeric.deg2rad"><code class="docutils literal notranslate"><span class="pre">deg2rad()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numeric.exp"><code class="docutils literal notranslate"><span class="pre">exp()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numeric.expm1"><code class="docutils literal notranslate"><span class="pre">expm1()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numeric.eye"><code class="docutils literal notranslate"><span class="pre">eye()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numeric.floor"><code class="docutils literal notranslate"><span class="pre">floor()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numeric.hash"><code class="docutils literal notranslate"><span class="pre">hash()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numeric.histogram"><code class="docutils literal notranslate"><span class="pre">histogram()</span></code></a></li>
@@ -2032,6 +2276,7 @@ is not currently supported in Arkouda</p>
 <li><a class="reference internal" href="#arkouda.numeric.log10"><code class="docutils literal notranslate"><span class="pre">log10()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numeric.log1p"><code class="docutils literal notranslate"><span class="pre">log1p()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numeric.log2"><code class="docutils literal notranslate"><span class="pre">log2()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numeric.matmul"><code class="docutils literal notranslate"><span class="pre">matmul()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numeric.median"><code class="docutils literal notranslate"><span class="pre">median()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numeric.putmask"><code class="docutils literal notranslate"><span class="pre">putmask()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numeric.rad2deg"><code class="docutils literal notranslate"><span class="pre">rad2deg()</span></code></a></li>
@@ -2042,8 +2287,12 @@ is not currently supported in Arkouda</p>
 <li><a class="reference internal" href="#arkouda.numeric.square"><code class="docutils literal notranslate"><span class="pre">square()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numeric.tan"><code class="docutils literal notranslate"><span class="pre">tan()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numeric.tanh"><code class="docutils literal notranslate"><span class="pre">tanh()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numeric.transpose"><code class="docutils literal notranslate"><span class="pre">transpose()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numeric.tril"><code class="docutils literal notranslate"><span class="pre">tril()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numeric.triu"><code class="docutils literal notranslate"><span class="pre">triu()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numeric.trunc"><code class="docutils literal notranslate"><span class="pre">trunc()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numeric.value_counts"><code class="docutils literal notranslate"><span class="pre">value_counts()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numeric.vecdot"><code class="docutils literal notranslate"><span class="pre">vecdot()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numeric.where"><code class="docutils literal notranslate"><span class="pre">where()</span></code></a></li>
 </ul>
 </li>

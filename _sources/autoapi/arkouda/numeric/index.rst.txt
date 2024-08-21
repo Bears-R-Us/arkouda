@@ -36,6 +36,7 @@ Functions
    arkouda.numeric.deg2rad
    arkouda.numeric.exp
    arkouda.numeric.expm1
+   arkouda.numeric.eye
    arkouda.numeric.floor
    arkouda.numeric.hash
    arkouda.numeric.histogram
@@ -48,6 +49,7 @@ Functions
    arkouda.numeric.log10
    arkouda.numeric.log1p
    arkouda.numeric.log2
+   arkouda.numeric.matmul
    arkouda.numeric.median
    arkouda.numeric.putmask
    arkouda.numeric.rad2deg
@@ -58,8 +60,12 @@ Functions
    arkouda.numeric.square
    arkouda.numeric.tan
    arkouda.numeric.tanh
+   arkouda.numeric.transpose
+   arkouda.numeric.tril
+   arkouda.numeric.triu
    arkouda.numeric.trunc
    arkouda.numeric.value_counts
+   arkouda.numeric.vecdot
    arkouda.numeric.where
 
 
@@ -542,6 +548,42 @@ Module Contents
           32.494295836924771, 12.478894913238722])
 
 
+.. py:function:: eye(rows: arkouda.dtypes.int_scalars, cols: arkouda.dtypes.int_scalars, diag: arkouda.dtypes.int_scalars = 0, dt: type = akint64)
+
+   Return a pdarray with zeros everywhere except along a diagonal, which is all ones.
+   The matrix need not be square.
+
+   :param rows:
+   :type rows: int_scalars
+   :param cols:
+   :type cols: int_scalars
+   :param diag: if diag = 0, zeros start at element [0,0] and proceed along diagonal
+                if diag > 0, zeros start at element [0,diag] and proceed along diagonal
+                if diag < 0, zeros start at element [diag,0] and proceed along diagonal
+                etc.
+   :type diag: int_scalars
+
+   :returns: an array of zeros with ones along the specified diagonal
+   :rtype: pdarray
+
+   .. rubric:: Examples
+
+   >>> ak.eye(rows=4,cols=4,diag=0,dt=ak.int64)
+   array([array([1 0 0 0]) array([0 1 0 0]) array([0 0 1 0]) array([0 0 0 1])])
+   >>> ak.eye(rows=3,cols=3,diag=1,dt=ak.float64)
+   array([array([0.00000000000000000 1.00000000000000000 0.00000000000000000])
+   array([0.00000000000000000  0.00000000000000000 1.00000000000000000])
+   array([0.00000000000000000 0.00000000000000000 0.00000000000000000])])
+   >>> ak.eye(rows=4,cols=4,diag=-1,dt=ak.bool_)
+   array([array([False False False False]) array([True False False False])
+   array([False True False False]) array([False False True False])]
+
+   .. rubric:: Notes
+
+   if rows = cols and diag = 0, the result is an identity matrix
+   Server returns an error if rank of pda < 2
+
+
 .. py:function:: floor(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
 
    Alias of arkouda.numpy.floor
@@ -841,6 +883,37 @@ Module Contents
    :rtype: pdarray contain values of the base 2 log
 
 
+.. py:function:: matmul(pdaLeft: arkouda.pdarrayclass.pdarray, pdaRight: arkouda.pdarrayclass.pdarray)
+
+   Compute the product of two matrices.
+
+   :param pdaLeft:
+   :type pdaLeft: pdarray
+   :param pdaRight:
+   :type pdaRight: pdarray
+
+   :returns: the matrix product pdaLeft x pdaRight
+   :rtype: pdarray
+
+   .. rubric:: Examples
+
+   >>> a = ak.array([[1,2,3,4,5],[1,2,3,4,5]])
+   >>> b = ak.array(([1,1],[2,2],[3,3],[4,4],[5,5]])
+   >>> ak.matmul(a,b)
+   array([array([30 30]) array([45 45])])
+
+   >>> x = ak.array([[1,2,3],[1.1,2.1,3.1]])
+   >>> y = ak.array([[1,1,1],[0,2,2],[0,0,3]])
+   >>> ak.matmul(x,y)
+   array([array([1.00000000000000000 5.00000000000000000 14.00000000000000000])
+   array([1.1000000000000001 5.3000000000000007 14.600000000000001])])
+
+   .. rubric:: Notes
+
+   Server returns an error if shapes of pdaLeft and pdaRight
+   are incompatible with matrix multiplication.
+
+
 .. py:function:: median(pda)
 
    Compute the median of a given array.  1d case only, for now.
@@ -1041,6 +1114,105 @@ Module Contents
    :raises TypeError: Raised if the parameter is not a pdarray
 
 
+.. py:function:: transpose(pda: arkouda.pdarrayclass.pdarray)
+
+   Compute the transpose of a matrix.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: the transpose of the input matrix
+   :rtype: pdarray
+
+   .. rubric:: Examples
+
+   >>> a = ak.array([[1,2,3,4,5],[1,2,3,4,5]])
+   >>> ak.transpose(a)
+   array([array([1 1]) array([2 2]) array([3 3]) array([4 4]) array([5 5])])
+
+   .. rubric:: Notes
+
+   Server returns an error if rank of pda < 2
+
+
+.. py:function:: tril(pda: arkouda.pdarrayclass.pdarray, diag: arkouda.dtypes.int_scalars = 0)
+
+   Return a copy of the pda with the upper triangle zeroed out
+
+   :param pda:
+   :type pda: pdarray
+   :param diag: if diag = 0, zeros start just below the main diagonal
+                if diag = 1, zeros start at the main diagonal
+                if diag = 2, zeros start just above the main diagonal
+                etc.
+   :type diag: int_scalars
+
+   :returns: a copy of pda with zeros in the upper triangle
+   :rtype: pdarray
+
+   .. rubric:: Examples
+
+   >>> a = ak.array([[1,2,3,4,5],[2,3,4,5,6],[3,4,5,6,7],[4,5,6,7,8],[5,6,7,8,9]])
+   >>> ak.tril(a,diag=4)
+   array([array([1 2 3 4 5]) array([2 3 4 5 6]) array([3 4 5 6 7])
+   array([4 5 6 7 8]) array([5 6 7 8 9])])
+   >>> ak.tril(a,diag=3)
+   array([array([1 2 3 4 0]) array([2 3 4 5 6]) array([3 4 5 6 7])
+   array([4 5 6 7 8]) array([5 6 7 8 9])])
+   >>> ak.tril(a,diag=2)
+   array([array([1 2 3 0 0]) array([2 3 4 5 0]) array([3 4 5 6 7])
+   array([4 5 6 7 8]) array([5 6 7 8 9])])
+   >>> ak.tril(a,diag=1)
+   array([array([1 2 0 0 0]) array([2 3 4 0 0]) array([3 4 5 6 0])
+   array([4 5 6 7 8]) array([5 6 7 8 9])])
+   >>> ak.tril(a,diag=0)
+   array([array([1 0 0 0 0]) array([2 3 0 0 0]) array([3 4 5 0 0])
+   array([4 5 6 7 0]) array([5 6 7 8 9])])
+
+   .. rubric:: Notes
+
+   Server returns an error if rank of pda < 2
+
+
+.. py:function:: triu(pda: arkouda.pdarrayclass.pdarray, diag: arkouda.dtypes.int_scalars = 0)
+
+   Return a copy of the pda with the lower triangle zeroed out
+
+   :param pda:
+   :type pda: pdarray
+   :param diag: if diag = 0, zeros start just above the main diagonal
+                if diag = 1, zeros start at the main diagonal
+                if diag = 2, zeros start just below the main diagonal
+                etc.
+   :type diag: int_scalars
+
+   :returns: a copy of pda with zeros in the lower triangle
+   :rtype: pdarray
+
+   .. rubric:: Examples
+
+   >>> a = ak.array([[1,2,3,4,5],[2,3,4,5,6],[3,4,5,6,7],[4,5,6,7,8],[5,6,7,8,9]])
+   >>> ak.triu(a,diag=0)
+   array([array([1 2 3 4 5]) array([0 3 4 5 6]) array([0 0 5 6 7])
+   array([0 0 0 7 8]) array([0 0 0 0 9])])
+   >>> ak.triu(a,diag=1)
+   array([array([0 2 3 4 5]) array([0 0 4 5 6]) array([0 0 0 6 7])
+   array([0 0 0 0 8]) array([0 0 0 0 0])])
+   >>> ak.triu(a,diag=2)
+   array([array([0 0 3 4 5]) array([0 0 0 5 6]) array([0 0 0 0 7])
+   array([0 0 0 0 0]) array([0 0 0 0 0])])
+   >>> ak.triu(a,diag=3)
+   array([array([0 0 0 4 5]) array([0 0 0 0 6]) array([0 0 0 0 0])
+   array([0 0 0 0 0]) array([0 0 0 0 0])])
+   >>> ak.triu(a,diag=4)
+   array([array([0 0 0 0 5]) array([0 0 0 0 0]) array([0 0 0 0 0])
+   array([0 0 0 0 0]) array([0 0 0 0 0])])
+
+   .. rubric:: Notes
+
+   Server returns an error if rank of pda < 2
+
+
 .. py:function:: trunc(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
 
    Return the element-wise truncation of the array.
@@ -1085,6 +1257,31 @@ Module Contents
    >>> A = ak.array([2, 0, 2, 4, 0, 0])
    >>> ak.value_counts(A)
    (array([0, 2, 4]), array([3, 2, 1]))
+
+
+.. py:function:: vecdot(x1: arkouda.pdarrayclass.pdarray, x2: arkouda.pdarrayclass.pdarray)
+
+   Compute the generalized dot product of two vectors along the given axis.
+   Assumes that both tensors have already been broadcast to the same shape.
+
+   :param x1:
+   :type x1: pdarray
+   :param x2:
+   :type x2: pdarray
+
+   :returns: x1 vecdot x2
+   :rtype: pdarray
+
+   .. rubric:: Examples
+
+   >>> a = ak.array([[1,2,3,4,5],[1,2,3,4,5]])
+   >>> b = ak.array(([2,2,2,2,2],[2,2,2,2,2]])
+   >>> ak.vecdot(a,b)
+   array([5 10 15 20 25])
+   >>> ak.vecdot(b,a)
+   array([5 10 15 20 25])
+
+   :raises ValueTypeError: Raised if x1 and x2 are not of matching shape or if rank of x1 < 2
 
 
 .. py:function:: where(condition: arkouda.pdarrayclass.pdarray, A: Union[str, arkouda.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], B: Union[str, arkouda.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]
