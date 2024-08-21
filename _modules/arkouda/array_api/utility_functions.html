@@ -430,9 +430,9 @@
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span>
         <span class="n">create_pdarray</span><span class="p">(</span>
             <span class="n">generic_msg</span><span class="p">(</span>
-                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;clip</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;clip&lt;</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span>
+                    <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span>
                     <span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="n">a_min</span><span class="p">,</span>
                     <span class="s2">&quot;max&quot;</span><span class="p">:</span> <span class="n">a_max</span><span class="p">,</span>
                 <span class="p">},</span>
@@ -473,9 +473,9 @@
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span>
         <span class="n">create_pdarray</span><span class="p">(</span>
             <span class="n">generic_msg</span><span class="p">(</span>
-                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;diff</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;diff&lt;</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">a_</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span>
+                    <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">a_</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span>
                     <span class="s2">&quot;n&quot;</span><span class="p">:</span> <span class="n">n</span><span class="p">,</span>
                     <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="n">axis</span><span class="p">,</span>
                 <span class="p">},</span>
@@ -541,7 +541,7 @@
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span>
         <span class="n">create_pdarray</span><span class="p">(</span>
             <span class="n">generic_msg</span><span class="p">(</span>
-                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;pad</span><span class="si">{</span><span class="n">array</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;pad&lt;</span><span class="si">{</span><span class="n">array</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">array</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                     <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">array</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span>
                     <span class="s2">&quot;padWidthBefore&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">pad_widths_b</span><span class="p">),</span>
