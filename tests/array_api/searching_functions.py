@@ -52,11 +52,9 @@ class TestSearchingFunctions:
 
         nz = xp.nonzero(a)
 
-        print(nz)
-
-        assert sorted(nz[0].tolist()) == sorted([0, 1, 2, 3])
-        assert sorted(nz[1].tolist()) == sorted([1, 2, 2, 2])
-        assert sorted(nz[2].tolist()) == sorted([0, 3, 2, 1])
+        assert nz[0].tolist() == [0, 1, 2, 3]
+        assert nz[1].tolist() == [1, 2, 2, 2]
+        assert nz[2].tolist() == [0, 3, 2, 1]
 
     @pytest.mark.skip_if_max_rank_less_than(3)
     def test_where(self):
