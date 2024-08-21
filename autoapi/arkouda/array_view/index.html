@@ -257,6 +257,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../array_api/utility_functions/index.html">arkouda.array_api.utility_functions</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../dtypes/index.html">arkouda.dtypes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../random/index.html">arkouda.random</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../testing/index.html">arkouda.testing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../accessor/index.html">arkouda.accessor</a></li>
@@ -266,7 +267,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../client/index.html">arkouda.client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../client_dtypes/index.html">arkouda.client_dtypes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dataframe/index.html">arkouda.dataframe</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dtypes/index.html">arkouda.dtypes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../groupbyclass/index.html">arkouda.groupbyclass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../history/index.html">arkouda.history</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../index/index.html">arkouda.index</a></li>
@@ -278,14 +278,17 @@
 <li class="toctree-l3"><a class="reference internal" href="../match/index.html">arkouda.match</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../matcher/index.html">arkouda.matcher</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../numeric/index.html">arkouda.numeric</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../numpy/index.html">arkouda.numpy</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../numpy/index.html">arkouda.numpy</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.numpy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../numpy/dtypes/index.html">arkouda.numpy.dtypes</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../pdarrayclass/index.html">arkouda.pdarrayclass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pdarraycreation/index.html">arkouda.pdarraycreation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pdarraymanipulation/index.html">arkouda.pdarraymanipulation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pdarraysetops/index.html">arkouda.pdarraysetops</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../plotting/index.html">arkouda.plotting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../row/index.html">arkouda.row</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../scipy/index.html">arkouda.scipy</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.scipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../scipy/index.html">arkouda.scipy</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of arkouda.scipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../scipy/special/index.html">arkouda.scipy.special</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../scipy/stats/index.html">arkouda.scipy.stats</a></li>
 </ul>
@@ -305,7 +308,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../server/index.html">Chapel API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
@@ -405,7 +408,7 @@ as if it were multi-dimensional</p>
 <dd><p>The number of elements in the base pdarray (equivalent to base.size)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>int_scalars</p>
+<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int_scalars" title="arkouda.dtypes.int_scalars">int_scalars</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -427,7 +430,7 @@ as if it were multi-dimensional</p>
 <dd><p>Number of dimensions (equivalent to shape.size)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>int_scalars</p>
+<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int_scalars" title="arkouda.dtypes.int_scalars">int_scalars</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -438,7 +441,7 @@ as if it were multi-dimensional</p>
 <dd><p>The size in bytes of each element (equivalent to base.itemsize)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>int_scalars</p>
+<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int_scalars" title="arkouda.dtypes.int_scalars">int_scalars</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -503,7 +506,7 @@ If ‘F’/’column_major’, read and write data in column_major order</p>
 <li><p><strong>mode</strong> (<em>str</em><em> (</em><em>truncate</em><em> | </em><em>append</em><em>)</em>) – Default: truncate
 Mode to write the dataset in. Truncate will overwrite any existing files.
 Append will add the dataset to an existing file.</p></li>
-<li><p><strong>file_type</strong> (<em>str</em><em> (</em><a class="reference internal" href="../numpy/index.html#arkouda.numpy.single" title="arkouda.numpy.single"><em>single</em></a><em>|</em><em>distribute</em><em>)</em>) – Default: distribute
+<li><p><strong>file_type</strong> (<em>str</em><em> (</em><a class="reference internal" href="../index.html#arkouda.single" title="arkouda.single"><em>single</em></a><em>|</em><em>distribute</em><em>)</em>) – Default: distribute
 Indicates the format to save the file. Single will store in a single file.
 Distribute will store the date in a file per locale.</p></li>
 </ul>

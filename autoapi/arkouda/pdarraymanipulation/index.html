@@ -257,6 +257,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../array_api/utility_functions/index.html">arkouda.array_api.utility_functions</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../dtypes/index.html">arkouda.dtypes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../random/index.html">arkouda.random</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../testing/index.html">arkouda.testing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../accessor/index.html">arkouda.accessor</a></li>
@@ -266,7 +267,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../client/index.html">arkouda.client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../client_dtypes/index.html">arkouda.client_dtypes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dataframe/index.html">arkouda.dataframe</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dtypes/index.html">arkouda.dtypes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../groupbyclass/index.html">arkouda.groupbyclass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../history/index.html">arkouda.history</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../index/index.html">arkouda.index</a></li>
@@ -278,14 +278,17 @@
 <li class="toctree-l3"><a class="reference internal" href="../match/index.html">arkouda.match</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../matcher/index.html">arkouda.matcher</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../numeric/index.html">arkouda.numeric</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../numpy/index.html">arkouda.numpy</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../numpy/index.html">arkouda.numpy</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.numpy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../numpy/dtypes/index.html">arkouda.numpy.dtypes</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../pdarrayclass/index.html">arkouda.pdarrayclass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pdarraycreation/index.html">arkouda.pdarraycreation</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">arkouda.pdarraymanipulation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pdarraysetops/index.html">arkouda.pdarraysetops</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../plotting/index.html">arkouda.plotting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../row/index.html">arkouda.row</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../scipy/index.html">arkouda.scipy</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.scipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../scipy/index.html">arkouda.scipy</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of arkouda.scipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../scipy/special/index.html">arkouda.scipy.special</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../scipy/stats/index.html">arkouda.scipy.stats</a></li>
 </ul>
@@ -305,7 +308,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../server/index.html">Chapel API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
@@ -382,7 +385,7 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>arr</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The array to remove elements from</p></li>
-<li><p><strong>obj</strong> (<em>Union</em><em>[</em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>slice</em><em>, </em><em>int</em><em>]</em>) – The indices to remove from ‘arr’. If obj is a pdarray, it must
+<li><p><strong>obj</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>slice</em><em>, </em><em>int</em><em>]</em>) – The indices to remove from ‘arr’. If obj is a pdarray, it must
 have an integer dtype.</p></li>
 <li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – The axis along which to remove elements. If None, the array will
 be flattened before removing elements. Defaults to None.</p></li>
@@ -407,7 +410,7 @@ shape <cite>(N,)</cite> have been reshaped to <cite>(1,N)</cite>.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>tup</strong> (<em>Tuple</em><em>[</em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>]</em>) – The arrays to be stacked</p></li>
-<li><p><strong>dtype</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>type</em><em>, </em><em>str</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – The data-type of the output array. If not provided, the output
+<li><p><strong>dtype</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union"><em>Union</em></a><em>[</em><em>type</em><em>, </em><em>str</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – The data-type of the output array. If not provided, the output
 array will be determined using <cite>np.common_type</cite> on the
 input arrays Defaults to None</p></li>
 <li><p><strong>casting</strong> (<em>{&quot;no&quot;</em><em>, </em><em>&quot;equiv&quot;</em><em>, </em><em>&quot;safe&quot;</em><em>, </em><em>&quot;same_kind&quot;</em><em>, </em><em>&quot;unsafe&quot;</em><em>]</em><em>, </em><em>optional</em>) – Controls what kind of data casting may occur - currently unused</p></li>

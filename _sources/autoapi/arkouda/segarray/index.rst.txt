@@ -683,7 +683,7 @@ Module Contents
 
 
 
-   .. py:method:: transfer(hostname: str, port: arkouda.dtypes.int_scalars)
+   .. py:method:: transfer(hostname: str, port: arkouda.numpy.dtypes.int_scalars)
 
       Sends a Segmented Array to a different Arkouda server
 

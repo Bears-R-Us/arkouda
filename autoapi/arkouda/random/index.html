@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="arkouda.testing" href="../testing/index.html" /><link rel="prev" title="arkouda.array_api.utility_functions" href="../array_api/utility_functions/index.html" />
+<link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="arkouda.testing" href="../testing/index.html" /><link rel="prev" title="arkouda.dtypes" href="../dtypes/index.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>arkouda.random - arkouda documentation</title>
@@ -257,6 +257,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../array_api/utility_functions/index.html">arkouda.array_api.utility_functions</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../dtypes/index.html">arkouda.dtypes</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">arkouda.random</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../testing/index.html">arkouda.testing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../accessor/index.html">arkouda.accessor</a></li>
@@ -266,7 +267,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../client/index.html">arkouda.client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../client_dtypes/index.html">arkouda.client_dtypes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dataframe/index.html">arkouda.dataframe</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dtypes/index.html">arkouda.dtypes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../groupbyclass/index.html">arkouda.groupbyclass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../history/index.html">arkouda.history</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../index/index.html">arkouda.index</a></li>
@@ -278,14 +278,17 @@
 <li class="toctree-l3"><a class="reference internal" href="../match/index.html">arkouda.match</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../matcher/index.html">arkouda.matcher</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../numeric/index.html">arkouda.numeric</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../numpy/index.html">arkouda.numpy</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../numpy/index.html">arkouda.numpy</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.numpy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../numpy/dtypes/index.html">arkouda.numpy.dtypes</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../pdarrayclass/index.html">arkouda.pdarrayclass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pdarraycreation/index.html">arkouda.pdarraycreation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pdarraymanipulation/index.html">arkouda.pdarraymanipulation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pdarraysetops/index.html">arkouda.pdarraysetops</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../plotting/index.html">arkouda.plotting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../row/index.html">arkouda.row</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../scipy/index.html">arkouda.scipy</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.scipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../scipy/index.html">arkouda.scipy</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of arkouda.scipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../scipy/special/index.html">arkouda.scipy.special</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../scipy/stats/index.html">arkouda.scipy.stats</a></li>
 </ul>
@@ -305,7 +308,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../server/index.html">Chapel API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
@@ -460,7 +463,7 @@ of the exponential distribution.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>scale</strong> (<em>float</em><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The scale parameter, <span class="math notranslate nohighlight">\(\beta = 1/\lambda\)</span>. Must be
 non-negative. An array must have the same size as the size argument.</p></li>
-<li><p><strong>size</strong> (<em>numeric_scalars</em><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.numeric_scalars" title="arkouda.dtypes.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
 <li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – Either ‘inv’ or ‘zig’. ‘inv’ uses the default inverse CDF method.
 ‘zig’ uses the Ziggurat method.</p></li>
 </ul>
@@ -484,11 +487,11 @@ If high is None (the default), then results are from 0 to low.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>low</strong> (<em>numeric_scalars</em>) – Lowest (signed) integers to be drawn from the distribution (unless high=None,
+<li><p><strong>low</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.numeric_scalars" title="arkouda.dtypes.numeric_scalars"><em>numeric_scalars</em></a>) – Lowest (signed) integers to be drawn from the distribution (unless high=None,
 in which case this parameter is 0 and this value is used for high).</p></li>
-<li><p><strong>high</strong> (<em>numeric_scalars</em>) – If provided, one above the largest (signed) integer to be drawn from the distribution
+<li><p><strong>high</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.numeric_scalars" title="arkouda.dtypes.numeric_scalars"><em>numeric_scalars</em></a>) – If provided, one above the largest (signed) integer to be drawn from the distribution
 (see above for behavior if high=None)</p></li>
-<li><p><strong>size</strong> (<em>numeric_scalars</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.numeric_scalars" title="arkouda.dtypes.numeric_scalars"><em>numeric_scalars</em></a>) – Output shape. Default is None, in which case a single value is returned.</p></li>
 <li><p><strong>dtype</strong> (<em>dtype</em><em>, </em><em>optional</em>) – Desired dtype of the result. The default value is ak.int64.</p></li>
 <li><p><strong>endpoint</strong> (<em>bool</em><em>, </em><em>optional</em>) – If true, sample from the interval [low, high] instead of the default [low, high).
 Defaults to False</p></li>
@@ -523,7 +526,7 @@ loc (location or mean, also median), and scale (&gt;0).</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>loc</strong> (<em>float</em><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> of </em><em>floats</em><em>, </em><em>optional</em>) – Parameter of the distribution. Default of 0.</p></li>
 <li><p><strong>scale</strong> (<em>float</em><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> of </em><em>floats</em><em>, </em><em>optional</em>) – Parameter of the distribution. Must be non-negative. Default is 1.</p></li>
-<li><p><strong>size</strong> (<em>numeric_scalars</em><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.numeric_scalars" title="arkouda.dtypes.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
 </ul>
 </dd>
 </dl>
@@ -569,7 +572,7 @@ but of the underlying normal distribution it is derived from.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>mean</strong> (<em>float</em><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> of </em><em>floats</em><em>, </em><em>optional</em>) – Mean of the distribution. Default of 0.</p></li>
 <li><p><strong>sigma</strong> (<em>float</em><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> of </em><em>floats</em><em>, </em><em>optional</em>) – Standard deviation of the distribution. Must be non-negative. Default of 1.</p></li>
-<li><p><strong>size</strong> (<em>numeric_scalars</em><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.numeric_scalars" title="arkouda.dtypes.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
 <li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – Either ‘box’ or ‘zig’. ‘box’ uses the Box–Muller transform
 ‘zig’ uses the Ziggurat method.</p></li>
 </ul>
@@ -616,7 +619,7 @@ the sum of a large number of independent, identically-distributed variables.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>loc</strong> (<em>float</em><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> of </em><em>floats</em><em>, </em><em>optional</em>) – Mean of the distribution. Default of 0.</p></li>
 <li><p><strong>scale</strong> (<em>float</em><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> of </em><em>floats</em><em>, </em><em>optional</em>) – Standard deviation of the distribution. Must be non-negative. Default of 1.</p></li>
-<li><p><strong>size</strong> (<em>numeric_scalars</em><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.numeric_scalars" title="arkouda.dtypes.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
 <li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – Either ‘box’ or ‘zig’. ‘box’ uses the Box–Muller transform
 ‘zig’ uses the Ziggurat method.</p></li>
 </ul>
@@ -677,7 +680,7 @@ make a copy and shuffle the elements randomly.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>lam</strong> (<em>float</em><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Expected number of events occurring in a fixed-time interval, must be &gt;= 0.
 An array must have the same size as the size argument.</p></li>
-<li><p><strong>size</strong> (<em>numeric_scalars</em><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.numeric_scalars" title="arkouda.dtypes.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
 </ul>
 </dd>
 </dl>
@@ -713,7 +716,7 @@ within the observed interval <span class="math notranslate nohighlight">\(\lambd
 <p>Results are from the uniform distribution over the stated interval.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>size</strong> (<em>numeric_scalars</em><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p>
+<dd class="field-odd"><p><strong>size</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.numeric_scalars" title="arkouda.dtypes.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Pdarray of random floats (unless size=None, in which case a single float is returned).</p>
@@ -764,7 +767,7 @@ with a scale parameter of 1.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>size</strong> (<em>numeric_scalars</em><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.numeric_scalars" title="arkouda.dtypes.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
 <li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – Either ‘inv’ or ‘zig’. ‘inv’ uses the default inverse CDF method.
 ‘zig’ uses the Ziggurat method.</p></li>
 </ul>
@@ -785,7 +788,7 @@ with a scale parameter of 1.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>size</strong> (<em>numeric_scalars</em><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.numeric_scalars" title="arkouda.dtypes.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
 <li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – Either ‘box’ or ‘zig’. ‘box’ uses the Box–Muller transform
 ‘zig’ uses the Ziggurat method.</p></li>
 </ul>
@@ -830,7 +833,7 @@ In other words, any value within the given interval is equally likely to be draw
 equal to low. The default value is 0.</p></li>
 <li><p><strong>high</strong> (<em>float</em><em>, </em><em>optional</em>) – Upper boundary of the output interval. All values generated will be less than high.
 high must be greater than or equal to low. The default value is 1.0.</p></li>
-<li><p><strong>size</strong> (<em>numeric_scalars</em><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.numeric_scalars" title="arkouda.dtypes.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -856,17 +859,17 @@ high must be greater than or equal to low. The default value is 1.0.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.random.randint">
-<span class="sig-prename descclassname"><span class="pre">arkouda.random.</span></span><span class="sig-name descname"><span class="pre">randint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.dtypes.numeric_scalars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.dtypes.numeric_scalars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.dtypes.int_scalars</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">arkouda.dtypes.int_scalars</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">akint64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.dtypes.int_scalars</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/random/_legacy.html#randint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.random.randint" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.random.</span></span><span class="sig-name descname"><span class="pre">randint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_scalars</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_scalars</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">akint64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/random/_legacy.html#randint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.random.randint" title="Link to this definition">¶</a></dt>
 <dd><p>Generate a pdarray of randomized int, float, or bool values in a
 specified range bounded by the low and high parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>low</strong> (<em>numeric_scalars</em>) – The low value (inclusive) of the range</p></li>
-<li><p><strong>high</strong> (<em>numeric_scalars</em>) – The high value (exclusive for int, inclusive for float) of the range</p></li>
-<li><p><strong>size</strong> (<em>int_scalars</em>) – The length of the returned array</p></li>
-<li><p><strong>dtype</strong> (<em>Union</em><em>[</em><a class="reference internal" href="../numpy/index.html#arkouda.numpy.int64" title="arkouda.numpy.int64"><em>int64</em></a><em>, </em><a class="reference internal" href="../numpy/index.html#arkouda.numpy.float64" title="arkouda.numpy.float64"><em>float64</em></a><em>, </em><em>bool</em><em>]</em>) – The dtype of the array</p></li>
-<li><p><strong>seed</strong> (<em>int_scalars</em><em>, </em><em>optional</em>) – Seed to allow for reproducible random number generation</p></li>
+<li><p><strong>low</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.numeric_scalars" title="arkouda.dtypes.numeric_scalars"><em>numeric_scalars</em></a>) – The low value (inclusive) of the range</p></li>
+<li><p><strong>high</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.numeric_scalars" title="arkouda.dtypes.numeric_scalars"><em>numeric_scalars</em></a>) – The high value (exclusive for int, inclusive for float) of the range</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int_scalars" title="arkouda.dtypes.int_scalars"><em>int_scalars</em></a>) – The length of the returned array</p></li>
+<li><p><strong>dtype</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int64" title="arkouda.dtypes.int64"><em>int64</em></a><em>, </em><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.float64" title="arkouda.dtypes.float64"><em>float64</em></a><em>, </em><em>bool</em><em>]</em>) – The dtype of the array</p></li>
+<li><p><strong>seed</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int_scalars" title="arkouda.dtypes.int_scalars"><em>int_scalars</em></a><em>, </em><em>optional</em>) – Seed to allow for reproducible random number generation</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -917,20 +920,20 @@ it exceeds the maximum value that can be stored on the server (uint64)</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.random.standard_normal">
-<span class="sig-prename descclassname"><span class="pre">arkouda.random.</span></span><span class="sig-name descname"><span class="pre">standard_normal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.dtypes.int_scalars</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">arkouda.dtypes.int_scalars</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">arkouda.dtypes.int_scalars</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/random/_legacy.html#standard_normal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.random.standard_normal" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.random.</span></span><span class="sig-name descname"><span class="pre">standard_normal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/random/_legacy.html#standard_normal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.random.standard_normal" title="Link to this definition">¶</a></dt>
 <dd><p>Draw real numbers from the standard normal distribution.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>size</strong> (<em>int_scalars</em>) – The number of samples to draw (size of the returned array)</p></li>
-<li><p><strong>seed</strong> (<em>int_scalars</em>) – Value used to initialize the random number generator</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int_scalars" title="arkouda.dtypes.int_scalars"><em>int_scalars</em></a>) – The number of samples to draw (size of the returned array)</p></li>
+<li><p><strong>seed</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int_scalars" title="arkouda.dtypes.int_scalars"><em>int_scalars</em></a>) – Value used to initialize the random number generator</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The array of random numbers</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../numpy/index.html#arkouda.numpy.float64" title="arkouda.numpy.float64">float64</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.float64" title="arkouda.dtypes.float64">float64</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -955,23 +958,23 @@ it exceeds the maximum value that can be stored on the server (uint64)</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.random.uniform">
-<span class="sig-prename descclassname"><span class="pre">arkouda.random.</span></span><span class="sig-name descname"><span class="pre">uniform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.dtypes.int_scalars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.dtypes.numeric_scalars</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">float(0.0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.dtypes.numeric_scalars</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">arkouda.dtypes.int_scalars</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/random/_legacy.html#uniform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.random.uniform" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.random.</span></span><span class="sig-name descname"><span class="pre">uniform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_scalars</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">float(0.0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_scalars</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/random/_legacy.html#uniform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.random.uniform" title="Link to this definition">¶</a></dt>
 <dd><p>Generate a pdarray with uniformly distributed random float values
 in a specified range.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>low</strong> (<em>float_scalars</em>) – The low value (inclusive) of the range, defaults to 0.0</p></li>
-<li><p><strong>high</strong> (<em>float_scalars</em>) – The high value (inclusive) of the range, defaults to 1.0</p></li>
-<li><p><strong>size</strong> (<em>int_scalars</em>) – The length of the returned array</p></li>
-<li><p><strong>seed</strong> (<em>int_scalars</em><em>, </em><em>optional</em>) – Value used to initialize the random number generator</p></li>
+<li><p><strong>low</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.float_scalars" title="arkouda.dtypes.float_scalars"><em>float_scalars</em></a>) – The low value (inclusive) of the range, defaults to 0.0</p></li>
+<li><p><strong>high</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.float_scalars" title="arkouda.dtypes.float_scalars"><em>float_scalars</em></a>) – The high value (inclusive) of the range, defaults to 1.0</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int_scalars" title="arkouda.dtypes.int_scalars"><em>int_scalars</em></a>) – The length of the returned array</p></li>
+<li><p><strong>seed</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int_scalars" title="arkouda.dtypes.int_scalars"><em>int_scalars</em></a><em>, </em><em>optional</em>) – Value used to initialize the random number generator</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Values drawn uniformly from the specified range</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../numpy/index.html#arkouda.numpy.float64" title="arkouda.numpy.float64">float64</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.float64" title="arkouda.dtypes.float64">float64</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1012,14 +1015,14 @@ is invoked with a dtype of float64</p>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../array_api/utility_functions/index.html">
+          <a class="prev-page" href="../dtypes/index.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">arkouda.array_api.utility_functions</div>
+                <div class="title">arkouda.dtypes</div>
                 
               </div>
             </a>

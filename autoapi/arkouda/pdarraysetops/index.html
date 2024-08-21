@@ -257,6 +257,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../array_api/utility_functions/index.html">arkouda.array_api.utility_functions</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../dtypes/index.html">arkouda.dtypes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../random/index.html">arkouda.random</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../testing/index.html">arkouda.testing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../accessor/index.html">arkouda.accessor</a></li>
@@ -266,7 +267,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../client/index.html">arkouda.client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../client_dtypes/index.html">arkouda.client_dtypes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dataframe/index.html">arkouda.dataframe</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dtypes/index.html">arkouda.dtypes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../groupbyclass/index.html">arkouda.groupbyclass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../history/index.html">arkouda.history</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../index/index.html">arkouda.index</a></li>
@@ -278,14 +278,17 @@
 <li class="toctree-l3"><a class="reference internal" href="../match/index.html">arkouda.match</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../matcher/index.html">arkouda.matcher</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../numeric/index.html">arkouda.numeric</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../numpy/index.html">arkouda.numpy</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../numpy/index.html">arkouda.numpy</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.numpy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../numpy/dtypes/index.html">arkouda.numpy.dtypes</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../pdarrayclass/index.html">arkouda.pdarrayclass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pdarraycreation/index.html">arkouda.pdarraycreation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pdarraymanipulation/index.html">arkouda.pdarraymanipulation</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">arkouda.pdarraysetops</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../plotting/index.html">arkouda.plotting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../row/index.html">arkouda.row</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../scipy/index.html">arkouda.scipy</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.scipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../scipy/index.html">arkouda.scipy</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of arkouda.scipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../scipy/special/index.html">arkouda.scipy.special</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../scipy/stats/index.html">arkouda.scipy.stats</a></li>
 </ul>
@@ -305,7 +308,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../server/index.html">Chapel API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
@@ -397,7 +400,7 @@ one <code class="docutils literal notranslate"><span class="pre">pdarray</span><
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>arrays</strong> (<em>Sequence</em><em>[</em><em>Union</em><em>[</em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>,</em><a class="reference internal" href="../index.html#id720" title="arkouda.Strings"><em>Strings</em></a><em>,</em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>]</em><em>]</em>) – The arrays to concatenate. Must all have same dtype.</p></li>
+<li><p><strong>arrays</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>,</em><a class="reference internal" href="../index.html#id724" title="arkouda.Strings"><em>Strings</em></a><em>,</em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>]</em><em>]</em>) – The arrays to concatenate. Must all have same dtype.</p></li>
 <li><p><strong>ordered</strong> (<em>bool</em>) – If True (default), the arrays will be appended in the
 order given. If False, array data may be interleaved
 in blocks, which can greatly improve performance but
@@ -409,7 +412,7 @@ results in non-deterministic ordering of elements.</p></li>
 the original order</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Union[<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>,<a class="reference internal" href="../index.html#id720" title="arkouda.Strings">Strings</a>,<a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical">Categorical</a>]</p>
+<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union">Union</a>[<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>,<a class="reference internal" href="../index.html#id724" title="arkouda.Strings">Strings</a>,<a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical">Categorical</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -447,8 +450,8 @@ where an element of <cite>pda1</cite> is in <cite>pda2</cite> and False otherwis
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id720" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – Rows are elements for which to test membership in b</p></li>
-<li><p><strong>b</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id720" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – Rows are elements of the set in which to test membership</p></li>
+<li><p><strong>a</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id724" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – Rows are elements for which to test membership in b</p></li>
+<li><p><strong>b</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id724" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – Rows are elements of the set in which to test membership</p></li>
 <li><p><strong>assume_unique</strong> (<em>bool</em>) – If true, assume rows of a and b are each unique and sorted.
 By default, sort and unique them explicitly.</p></li>
 <li><p><strong>symmetric</strong> (<em>bool</em>) – Return in1d(pda1, pda2), in1d(pda2, pda1) when pda1 and 2 are single items.</p></li>
@@ -479,15 +482,15 @@ When duplicate terms are present in search space return indices of all occurrenc
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>query</strong> (<em>(</em><em>sequence of</em><em>) </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#id720" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – The items to search for. If multiple arrays, each “row” is an item.</p></li>
-<li><p><strong>space</strong> (<em>(</em><em>sequence of</em><em>) </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#id720" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – The set of items in which to search. Must have same shape/dtype as query.</p></li>
+<li><p><strong>query</strong> (<em>(</em><em>sequence of</em><em>) </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#id724" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – The items to search for. If multiple arrays, each “row” is an item.</p></li>
+<li><p><strong>space</strong> (<em>(</em><em>sequence of</em><em>) </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#id724" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – The set of items in which to search. Must have same shape/dtype as query.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>indices</strong> – For each item in query, its index in space.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../numpy/index.html#arkouda.numpy.int64" title="arkouda.numpy.int64">int64</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int64" title="arkouda.dtypes.int64">int64</a></p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -526,7 +529,7 @@ Categorical object</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda1</strong> (<em>pdarray/Sequence</em><em>[</em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id720" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>]</em>) – Input array/Sequence of groupable objects</p></li>
+<li><p><strong>pda1</strong> (<em>pdarray/Sequence</em><em>[</em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id724" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>]</em>) – Input array/Sequence of groupable objects</p></li>
 <li><p><strong>pda2</strong> (<em>pdarray/List</em>) – Input array/sequence of groupable objects</p></li>
 <li><p><strong>assume_unique</strong> (<em>bool</em>) – If True, the input arrays are both assumed to be unique, which
 can speed up the calculation.  Default is False.</p></li>
@@ -577,7 +580,7 @@ can speed up the calculation.  Default is False.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda1</strong> (<em>pdarray/Sequence</em><em>[</em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id720" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>]</em>) – Input array/Sequence of groupable objects</p></li>
+<li><p><strong>pda1</strong> (<em>pdarray/Sequence</em><em>[</em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id724" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>]</em>) – Input array/Sequence of groupable objects</p></li>
 <li><p><strong>pda2</strong> (<em>pdarray/List</em>) – Input array/sequence of groupable objects</p></li>
 <li><p><strong>assume_unique</strong> (<em>bool</em>) – If True, the input arrays are both assumed to be unique, which
 can speed up the calculation.  Default is False.</p></li>
@@ -629,7 +632,7 @@ input arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda1</strong> (<em>pdarray/Sequence</em><em>[</em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id720" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>]</em>) – Input array/Sequence of groupable objects</p></li>
+<li><p><strong>pda1</strong> (<em>pdarray/Sequence</em><em>[</em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id724" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>]</em>) – Input array/Sequence of groupable objects</p></li>
 <li><p><strong>pda2</strong> (<em>pdarray/List</em>) – Input array/sequence of groupable objects</p></li>
 <li><p><strong>assume_unique</strong> (<em>bool</em>) – If True, the input arrays are both assumed to be unique, which
 can speed up the calculation.  Default is False.</p></li>
@@ -678,7 +681,7 @@ of the two input arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda1</strong> (<em>pdarray/Sequence</em><em>[</em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id720" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>]</em>) – Input array/Sequence of groupable objects</p></li>
+<li><p><strong>pda1</strong> (<em>pdarray/Sequence</em><em>[</em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id724" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>]</em>) – Input array/Sequence of groupable objects</p></li>
 <li><p><strong>pda2</strong> (<em>pdarray/List</em>) – Input array/sequence of groupable objects</p></li>
 </ul>
 </dd>

@@ -132,7 +132,7 @@ Module Contents
 
 
 
-   .. py:method:: contains(substr: Union[bytes, arkouda.dtypes.str_scalars], regex: bool = False) -> arkouda.pdarrayclass.pdarray
+   .. py:method:: contains(substr: Union[bytes, arkouda.numpy.dtypes.str_scalars], regex: bool = False) -> arkouda.pdarrayclass.pdarray
 
       Check whether each element contains the given substring.
 
@@ -163,7 +163,7 @@ Module Contents
    .. py:attribute:: dtype
 
 
-   .. py:method:: endswith(substr: Union[bytes, arkouda.dtypes.str_scalars], regex: bool = False) -> arkouda.pdarrayclass.pdarray
+   .. py:method:: endswith(substr: Union[bytes, arkouda.numpy.dtypes.str_scalars], regex: bool = False) -> arkouda.pdarrayclass.pdarray
 
       Check whether each element ends with the given substring.
 
@@ -543,7 +543,7 @@ Module Contents
 
 
    .. py:attribute:: size
-      :type:  arkouda.dtypes.int_scalars
+      :type:  arkouda.numpy.dtypes.int_scalars
 
 
    .. py:method:: sort_values()
@@ -565,7 +565,7 @@ Module Contents
 
 
 
-   .. py:method:: startswith(substr: Union[bytes, arkouda.dtypes.str_scalars], regex: bool = False) -> arkouda.pdarrayclass.pdarray
+   .. py:method:: startswith(substr: Union[bytes, arkouda.numpy.dtypes.str_scalars], regex: bool = False) -> arkouda.pdarrayclass.pdarray
 
       Check whether each element starts with the given substring.
 
@@ -734,7 +734,7 @@ Module Contents
 
 
 
-   .. py:method:: transfer(hostname: str, port: arkouda.dtypes.int_scalars)
+   .. py:method:: transfer(hostname: str, port: arkouda.numpy.dtypes.int_scalars)
 
       Sends a Categorical object to a different Arkouda server
 

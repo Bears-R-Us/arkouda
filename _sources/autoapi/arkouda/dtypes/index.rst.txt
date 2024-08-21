@@ -4,21 +4,33 @@ arkouda.dtypes
 .. py:module:: arkouda.dtypes
 
 
-Attributes
-----------
+Classes
+-------
 
 .. autoapisummary::
 
    arkouda.dtypes.ARKOUDA_SUPPORTED_DTYPES
+   arkouda.dtypes.ARKOUDA_SUPPORTED_FLOATS
+   arkouda.dtypes.ARKOUDA_SUPPORTED_INTS
+   arkouda.dtypes.ARKOUDA_SUPPORTED_NUMBERS
+   arkouda.dtypes.DType
    arkouda.dtypes.DTypeObjects
    arkouda.dtypes.DTypes
+   arkouda.dtypes.Enum
+   arkouda.dtypes.NUMBER_FORMAT_STRINGS
+   arkouda.dtypes.NumericDTypes
    arkouda.dtypes.ScalarDTypes
+   arkouda.dtypes.SeriesDTypes
+   arkouda.dtypes.Union
    arkouda.dtypes.all_scalars
+   arkouda.dtypes.annotations
+   arkouda.dtypes.bigint
    arkouda.dtypes.bitType
    arkouda.dtypes.bool_
    arkouda.dtypes.bool_scalars
    arkouda.dtypes.complex128
    arkouda.dtypes.complex64
+   arkouda.dtypes.float16
    arkouda.dtypes.float32
    arkouda.dtypes.float64
    arkouda.dtypes.float_scalars
@@ -28,6 +40,7 @@ Attributes
    arkouda.dtypes.int8
    arkouda.dtypes.intTypes
    arkouda.dtypes.int_scalars
+   arkouda.dtypes.numeric_and_bool_scalars
    arkouda.dtypes.numeric_scalars
    arkouda.dtypes.numpy_scalars
    arkouda.dtypes.str_
@@ -38,92 +51,1313 @@ Attributes
    arkouda.dtypes.uint8
 
 
-Classes
--------
-
-.. autoapisummary::
-
-   arkouda.dtypes.bigint
-
-
 Functions
 ---------
 
 .. autoapisummary::
 
+   arkouda.dtypes.cast
    arkouda.dtypes.dtype
    arkouda.dtypes.get_byteorder
    arkouda.dtypes.get_server_byteorder
+   arkouda.dtypes.isSupportedFloat
+   arkouda.dtypes.isSupportedInt
    arkouda.dtypes.isSupportedNumber
    arkouda.dtypes.resolve_scalar_dtype
 
 
-Module Contents
----------------
+Package Contents
+----------------
 
-.. py:data:: ARKOUDA_SUPPORTED_DTYPES
+.. py:class:: ARKOUDA_SUPPORTED_DTYPES
 
-.. py:data:: DTypeObjects
+   frozenset() -> empty frozenset object
+   frozenset(iterable) -> frozenset object
 
-.. py:data:: DTypes
+   Build an immutable unordered collection of unique elements.
 
-.. py:data:: ScalarDTypes
 
-.. py:data:: all_scalars
 
-   The DType enum defines the supported Arkouda data types in string form.
+   .. py:method:: copy(*args, **kwargs)
+
+      Return a shallow copy of a set.
+
+
+
+
+   .. py:method:: difference(*args, **kwargs)
+
+      Return the difference of two or more sets as a new set.
+
+      (i.e. all elements that are in this set but not the others.)
+
+
+
+
+   .. py:method:: intersection(*args, **kwargs)
+
+      Return the intersection of two sets as a new set.
+
+      (i.e. all elements that are in both sets.)
+
+
+
+
+   .. py:method:: isdisjoint(*args, **kwargs)
+
+      Return True if two sets have a null intersection.
+
+
+
+
+   .. py:method:: issubset(*args, **kwargs)
+
+      Report whether another set contains this set.
+
+
+
+
+   .. py:method:: issuperset(*args, **kwargs)
+
+      Report whether this set contains another set.
+
+
+
+
+   .. py:method:: symmetric_difference(*args, **kwargs)
+
+      Return the symmetric difference of two sets as a new set.
+
+      (i.e. all elements that are in exactly one of the sets.)
+
+
+
+
+   .. py:method:: union(*args, **kwargs)
+
+      Return the union of sets as a new set.
+
+      (i.e. all elements that are in either set.)
+
+
+
+
+.. py:class:: ARKOUDA_SUPPORTED_FLOATS
+
+   Built-in immutable sequence.
+
+   If no argument is given, the constructor returns an empty tuple.
+   If iterable is specified the tuple is initialized from iterable's items.
+
+   If the argument is a tuple, the return value is the same object.
+
+
+
+   .. py:method:: count(value, /)
+
+      Return number of occurrences of value.
+
+
+
+
+   .. py:method:: index(value, start=0, stop=9223372036854775807, /)
+
+      Return first index of value.
+
+      Raises ValueError if the value is not present.
+
+
+
+
+.. py:class:: ARKOUDA_SUPPORTED_INTS
+
+   Built-in immutable sequence.
+
+   If no argument is given, the constructor returns an empty tuple.
+   If iterable is specified the tuple is initialized from iterable's items.
+
+   If the argument is a tuple, the return value is the same object.
+
+
+
+   .. py:method:: count(value, /)
+
+      Return number of occurrences of value.
+
+
+
+
+   .. py:method:: index(value, start=0, stop=9223372036854775807, /)
+
+      Return first index of value.
+
+      Raises ValueError if the value is not present.
+
+
+
+
+.. py:class:: ARKOUDA_SUPPORTED_NUMBERS
+
+   Built-in immutable sequence.
+
+   If no argument is given, the constructor returns an empty tuple.
+   If iterable is specified the tuple is initialized from iterable's items.
+
+   If the argument is a tuple, the return value is the same object.
+
+
+
+   .. py:method:: count(value, /)
+
+      Return number of occurrences of value.
+
+
+
+
+   .. py:method:: index(value, start=0, stop=9223372036854775807, /)
+
+      Return first index of value.
+
+      Raises ValueError if the value is not present.
+
+
+
+
+.. py:class:: DType
+
+   An enumeration.
+
+
+
+   .. py:method:: BIGINT(*args, **kwargs)
+
+      An enumeration.
+
+
+
+
+   .. py:method:: BOOL(*args, **kwargs)
+
+      An enumeration.
+
+
+
+
+   .. py:method:: COMPLEX128(*args, **kwargs)
+
+      An enumeration.
+
+
+
+
+   .. py:method:: COMPLEX64(*args, **kwargs)
+
+      An enumeration.
+
+
+
+
+   .. py:method:: FLOAT(*args, **kwargs)
+
+      An enumeration.
+
+
+
+
+   .. py:method:: FLOAT32(*args, **kwargs)
+
+      An enumeration.
+
+
+
+
+   .. py:method:: FLOAT64(*args, **kwargs)
+
+      An enumeration.
+
+
+
+
+   .. py:method:: INT(*args, **kwargs)
+
+      An enumeration.
+
+
+
+
+   .. py:method:: INT16(*args, **kwargs)
+
+      An enumeration.
+
+
+
+
+   .. py:method:: INT32(*args, **kwargs)
+
+      An enumeration.
+
+
+
+
+   .. py:method:: INT64(*args, **kwargs)
+
+      An enumeration.
+
+
+
+
+   .. py:method:: INT8(*args, **kwargs)
+
+      An enumeration.
+
+
+
+
+   .. py:method:: STR(*args, **kwargs)
+
+      An enumeration.
+
+
+
+
+   .. py:method:: UINT(*args, **kwargs)
+
+      An enumeration.
+
+
+
+
+   .. py:method:: UINT16(*args, **kwargs)
+
+      An enumeration.
+
+
+
+
+   .. py:method:: UINT32(*args, **kwargs)
+
+      An enumeration.
+
+
+
+
+   .. py:method:: UINT64(*args, **kwargs)
+
+      An enumeration.
+
+
+
+
+   .. py:method:: UINT8(*args, **kwargs)
+
+      An enumeration.
+
+
+
+
+   .. py:method:: name(*args, **kwargs)
+
+      The name of the Enum member.
+
+
+
+
+   .. py:method:: value(*args, **kwargs)
+
+      The value of the Enum member.
+
+
+
+
+.. py:class:: DTypeObjects
+
+   frozenset() -> empty frozenset object
+   frozenset(iterable) -> frozenset object
+
+   Build an immutable unordered collection of unique elements.
+
+
+
+   .. py:method:: copy(*args, **kwargs)
+
+      Return a shallow copy of a set.
+
+
+
+
+   .. py:method:: difference(*args, **kwargs)
+
+      Return the difference of two or more sets as a new set.
+
+      (i.e. all elements that are in this set but not the others.)
+
+
+
+
+   .. py:method:: intersection(*args, **kwargs)
+
+      Return the intersection of two sets as a new set.
+
+      (i.e. all elements that are in both sets.)
+
+
+
+
+   .. py:method:: isdisjoint(*args, **kwargs)
+
+      Return True if two sets have a null intersection.
+
+
+
+
+   .. py:method:: issubset(*args, **kwargs)
+
+      Report whether another set contains this set.
+
+
+
+
+   .. py:method:: issuperset(*args, **kwargs)
+
+      Report whether this set contains another set.
+
+
+
+
+   .. py:method:: symmetric_difference(*args, **kwargs)
+
+      Return the symmetric difference of two sets as a new set.
+
+      (i.e. all elements that are in exactly one of the sets.)
+
+
+
+
+   .. py:method:: union(*args, **kwargs)
+
+      Return the union of sets as a new set.
+
+      (i.e. all elements that are in either set.)
+
+
+
+
+.. py:class:: DTypes
+
+   frozenset() -> empty frozenset object
+   frozenset(iterable) -> frozenset object
+
+   Build an immutable unordered collection of unique elements.
+
+
+
+   .. py:method:: copy(*args, **kwargs)
+
+      Return a shallow copy of a set.
+
+
+
+
+   .. py:method:: difference(*args, **kwargs)
+
+      Return the difference of two or more sets as a new set.
+
+      (i.e. all elements that are in this set but not the others.)
+
+
+
+
+   .. py:method:: intersection(*args, **kwargs)
+
+      Return the intersection of two sets as a new set.
+
+      (i.e. all elements that are in both sets.)
+
+
+
+
+   .. py:method:: isdisjoint(*args, **kwargs)
+
+      Return True if two sets have a null intersection.
+
+
+
+
+   .. py:method:: issubset(*args, **kwargs)
+
+      Report whether another set contains this set.
+
+
+
+
+   .. py:method:: issuperset(*args, **kwargs)
+
+      Report whether this set contains another set.
+
+
+
+
+   .. py:method:: symmetric_difference(*args, **kwargs)
+
+      Return the symmetric difference of two sets as a new set.
+
+      (i.e. all elements that are in exactly one of the sets.)
+
+
+
+
+   .. py:method:: union(*args, **kwargs)
+
+      Return the union of sets as a new set.
+
+      (i.e. all elements that are in either set.)
+
+
+
+
+.. py:class:: Enum
+
+   Generic enumeration.
+
+   Derive from this class to define new enumerations.
+
+
+
+.. py:class:: NUMBER_FORMAT_STRINGS
+
+   dict() -> new empty dictionary
+   dict(mapping) -> new dictionary initialized from a mapping object's
+       (key, value) pairs
+   dict(iterable) -> new dictionary initialized as if via:
+       d = {}
+       for k, v in iterable:
+           d[k] = v
+   dict(**kwargs) -> new dictionary initialized with the name=value pairs
+       in the keyword argument list.  For example:  dict(one=1, two=2)
+
+
+
+   .. py:method:: clear(*args, **kwargs)
+
+      D.clear() -> None.  Remove all items from D.
+
+
+
+
+   .. py:method:: copy(*args, **kwargs)
+
+      D.copy() -> a shallow copy of D
+
+
+
+
+   .. py:method:: fromkeys(iterable, value=None, /)
+
+      Create a new dictionary with keys from iterable and values set to value.
+
+
+
+
+   .. py:method:: get(key, default=None, /)
+
+      Return the value for key if key is in the dictionary, else default.
+
+
+
+
+   .. py:method:: items(*args, **kwargs)
+
+      D.items() -> a set-like object providing a view on D's items
+
+
+
+
+   .. py:method:: keys(*args, **kwargs)
+
+      D.keys() -> a set-like object providing a view on D's keys
+
+
+
+
+   .. py:method:: pop(*args, **kwargs)
+
+      D.pop(k[,d]) -> v, remove specified key and return the corresponding value.
+
+      If key is not found, default is returned if given, otherwise KeyError is raised
+
+
+
+
+   .. py:method:: popitem()
+
+      Remove and return a (key, value) pair as a 2-tuple.
+
+      Pairs are returned in LIFO (last-in, first-out) order.
+      Raises KeyError if the dict is empty.
+
+
+
+
+   .. py:method:: setdefault(key, default=None, /)
+
+      Insert key with a value of default if key is not in the dictionary.
+
+      Return the value for key if key is in the dictionary, else default.
+
+
+
+
+   .. py:method:: update(*args, **kwargs)
+
+      D.update([E, ]**F) -> None.  Update D from dict/iterable E and F.
+      If E is present and has a .keys() method, then does:  for k in E: D[k] = E[k]
+      If E is present and lacks a .keys() method, then does:  for k, v in E: D[k] = v
+      In either case, this is followed by: for k in F:  D[k] = F[k]
+
+
+
+
+   .. py:method:: values(*args, **kwargs)
+
+      D.values() -> an object providing a view on D's values
+
+
+
+
+.. py:class:: NumericDTypes
+
+   frozenset() -> empty frozenset object
+   frozenset(iterable) -> frozenset object
+
+   Build an immutable unordered collection of unique elements.
+
+
+
+   .. py:method:: copy(*args, **kwargs)
+
+      Return a shallow copy of a set.
+
+
+
+
+   .. py:method:: difference(*args, **kwargs)
+
+      Return the difference of two or more sets as a new set.
+
+      (i.e. all elements that are in this set but not the others.)
+
+
+
+
+   .. py:method:: intersection(*args, **kwargs)
+
+      Return the intersection of two sets as a new set.
+
+      (i.e. all elements that are in both sets.)
+
+
+
+
+   .. py:method:: isdisjoint(*args, **kwargs)
+
+      Return True if two sets have a null intersection.
+
+
+
+
+   .. py:method:: issubset(*args, **kwargs)
+
+      Report whether another set contains this set.
+
+
+
+
+   .. py:method:: issuperset(*args, **kwargs)
+
+      Report whether this set contains another set.
+
+
+
+
+   .. py:method:: symmetric_difference(*args, **kwargs)
+
+      Return the symmetric difference of two sets as a new set.
+
+      (i.e. all elements that are in exactly one of the sets.)
+
+
+
+
+   .. py:method:: union(*args, **kwargs)
+
+      Return the union of sets as a new set.
+
+      (i.e. all elements that are in either set.)
+
+
+
+
+.. py:class:: ScalarDTypes
+
+   frozenset() -> empty frozenset object
+   frozenset(iterable) -> frozenset object
+
+   Build an immutable unordered collection of unique elements.
+
+
+
+   .. py:method:: copy(*args, **kwargs)
+
+      Return a shallow copy of a set.
+
+
+
+
+   .. py:method:: difference(*args, **kwargs)
+
+      Return the difference of two or more sets as a new set.
+
+      (i.e. all elements that are in this set but not the others.)
+
+
+
+
+   .. py:method:: intersection(*args, **kwargs)
+
+      Return the intersection of two sets as a new set.
+
+      (i.e. all elements that are in both sets.)
+
+
+
+
+   .. py:method:: isdisjoint(*args, **kwargs)
+
+      Return True if two sets have a null intersection.
+
+
+
+
+   .. py:method:: issubset(*args, **kwargs)
+
+      Report whether another set contains this set.
+
+
+
+
+   .. py:method:: issuperset(*args, **kwargs)
+
+      Report whether this set contains another set.
+
+
+
+
+   .. py:method:: symmetric_difference(*args, **kwargs)
+
+      Return the symmetric difference of two sets as a new set.
+
+      (i.e. all elements that are in exactly one of the sets.)
+
+
+
+
+   .. py:method:: union(*args, **kwargs)
+
+      Return the union of sets as a new set.
+
+      (i.e. all elements that are in either set.)
+
+
+
+
+.. py:class:: SeriesDTypes
+
+   dict() -> new empty dictionary
+   dict(mapping) -> new dictionary initialized from a mapping object's
+       (key, value) pairs
+   dict(iterable) -> new dictionary initialized as if via:
+       d = {}
+       for k, v in iterable:
+           d[k] = v
+   dict(**kwargs) -> new dictionary initialized with the name=value pairs
+       in the keyword argument list.  For example:  dict(one=1, two=2)
+
+
+
+   .. py:method:: clear(*args, **kwargs)
+
+      D.clear() -> None.  Remove all items from D.
+
+
+
+
+   .. py:method:: copy(*args, **kwargs)
+
+      D.copy() -> a shallow copy of D
+
+
+
+
+   .. py:method:: fromkeys(iterable, value=None, /)
+
+      Create a new dictionary with keys from iterable and values set to value.
+
+
+
+
+   .. py:method:: get(key, default=None, /)
+
+      Return the value for key if key is in the dictionary, else default.
+
+
+
+
+   .. py:method:: items(*args, **kwargs)
+
+      D.items() -> a set-like object providing a view on D's items
+
+
+
+
+   .. py:method:: keys(*args, **kwargs)
+
+      D.keys() -> a set-like object providing a view on D's keys
+
+
+
+
+   .. py:method:: pop(*args, **kwargs)
+
+      D.pop(k[,d]) -> v, remove specified key and return the corresponding value.
+
+      If key is not found, default is returned if given, otherwise KeyError is raised
+
+
+
+
+   .. py:method:: popitem()
+
+      Remove and return a (key, value) pair as a 2-tuple.
+
+      Pairs are returned in LIFO (last-in, first-out) order.
+      Raises KeyError if the dict is empty.
+
+
+
+
+   .. py:method:: setdefault(key, default=None, /)
+
+      Insert key with a value of default if key is not in the dictionary.
+
+      Return the value for key if key is in the dictionary, else default.
+
+
+
+
+   .. py:method:: update(*args, **kwargs)
+
+      D.update([E, ]**F) -> None.  Update D from dict/iterable E and F.
+      If E is present and has a .keys() method, then does:  for k in E: D[k] = E[k]
+      If E is present and lacks a .keys() method, then does:  for k, v in E: D[k] = v
+      In either case, this is followed by: for k in F:  D[k] = F[k]
+
+
+
+
+   .. py:method:: values(*args, **kwargs)
+
+      D.values() -> an object providing a view on D's values
+
+
+
+
+.. py:class:: Union
+
+   Bases: :py:obj:`_Final`
+
+
+   Union type; Union[X, Y] means either X or Y.
+
+       To define a union, use e.g. Union[int, str].  Details:
+       - The arguments must be types and there must be at least one.
+       - None as an argument is a special case and is replaced by
+         type(None).
+       - Unions of unions are flattened, e.g.::
+
+           Union[Union[int, str], float] == Union[int, str, float]
+
+       - Unions of a single argument vanish, e.g.::
+
+           Union[int] == int  # The constructor actually returns int
+
+       - Redundant arguments are skipped, e.g.::
+
+           Union[int, str, int] == Union[int, str]
+
+       - When comparing unions, the argument order is ignored, e.g.::
+
+           Union[int, str] == Union[str, int]
+
+       - You cannot subclass or instantiate a union.
+       - You can use Optional[X] as a shorthand for Union[X, None].
+
+
+
+
+.. py:class:: all_scalars(origin, params, *, inst=True, name=None)
+
+   Bases: :py:obj:`_GenericAlias`
+
+
+   The central part of internal API.
+
+   This represents a generic version of type 'origin' with type arguments 'params'.
+   There are two kind of these aliases: user defined and special. The special ones
+   are wrappers around builtin collections and ABCs in collections.abc. These must
+   have 'name' always set. If 'inst' is False, then the alias can't be instantiated,
+   this is used by e.g. typing.List and typing.Dict.
+
+
+.. py:class:: annotations
+
+   .. py:method:: compiler_flag(*args, **kwargs)
+
+      int([x]) -> integer
+      int(x, base=10) -> integer
+
+      Convert a number or string to an integer, or return 0 if no arguments
+      are given.  If x is a number, return x.__int__().  For floating point
+      numbers, this truncates towards zero.
+
+      If x is not a number or if base is given, then x must be a string,
+      bytes, or bytearray instance representing an integer literal in the
+      given base.  The literal can be preceded by '+' or '-' and be surrounded
+      by whitespace.  The base defaults to 10.  Valid bases are 0 and 2-36.
+      Base 0 means to interpret the base from the string as an integer literal.
+      >>> int('0b100', base=0)
+      4
+
+
+
+
+   .. py:method:: getMandatoryRelease()
+
+      Return release in which this feature will become mandatory.
+
+              This is a 5-tuple, of the same form as sys.version_info, or, if
+              the feature was dropped, is None.
+
+
+
+
+
+   .. py:method:: getOptionalRelease()
+
+      Return first release in which this feature was recognized.
+
+              This is a 5-tuple, of the same form as sys.version_info.
+
+
+
+
+
+   .. py:method:: mandatory(*args, **kwargs)
+
+      Built-in immutable sequence.
+
+      If no argument is given, the constructor returns an empty tuple.
+      If iterable is specified the tuple is initialized from iterable's items.
+
+      If the argument is a tuple, the return value is the same object.
+
+
+
+
+   .. py:method:: optional(*args, **kwargs)
+
+      Built-in immutable sequence.
+
+      If no argument is given, the constructor returns an empty tuple.
+      If iterable is specified the tuple is initialized from iterable's items.
+
+      If the argument is a tuple, the return value is the same object.
+
+
+
 
 .. py:class:: bigint
 
-   .. py:attribute:: itemsize
-      :value: 128
+   .. py:method:: itemsize(*args, **kwargs)
+
+      int([x]) -> integer
+      int(x, base=10) -> integer
+
+      Convert a number or string to an integer, or return 0 if no arguments
+      are given.  If x is a number, return x.__int__().  For floating point
+      numbers, this truncates towards zero.
+
+      If x is not a number or if base is given, then x must be a string,
+      bytes, or bytearray instance representing an integer literal in the
+      given base.  The literal can be preceded by '+' or '-' and be surrounded
+      by whitespace.  The base defaults to 10.  Valid bases are 0 and 2-36.
+      Base 0 means to interpret the base from the string as an integer literal.
+      >>> int('0b100', base=0)
+      4
 
 
 
-   .. py:attribute:: kind
-      :value: 'ui'
+
+   .. py:method:: name(*args, **kwargs)
+
+      str(object='') -> str
+      str(bytes_or_buffer[, encoding[, errors]]) -> str
+
+      Create a new string object from the given object. If encoding or
+      errors is specified, then the object must expose a data buffer
+      that will be decoded using the given encoding and error handler.
+      Otherwise, returns the result of object.__str__() (if defined)
+      or repr(object).
+      encoding defaults to sys.getdefaultencoding().
+      errors defaults to 'strict'.
 
 
 
-   .. py:attribute:: name
-      :value: 'bigint'
+
+   .. py:method:: ndim(*args, **kwargs)
+
+      int([x]) -> integer
+      int(x, base=10) -> integer
+
+      Convert a number or string to an integer, or return 0 if no arguments
+      are given.  If x is a number, return x.__int__().  For floating point
+      numbers, this truncates towards zero.
+
+      If x is not a number or if base is given, then x must be a string,
+      bytes, or bytearray instance representing an integer literal in the
+      given base.  The literal can be preceded by '+' or '-' and be surrounded
+      by whitespace.  The base defaults to 10.  Valid bases are 0 and 2-36.
+      Base 0 means to interpret the base from the string as an integer literal.
+      >>> int('0b100', base=0)
+      4
 
 
 
-   .. py:attribute:: ndim
-      :value: 0
 
+   .. py:method:: shape(*args, **kwargs)
 
+      Built-in immutable sequence.
 
-   .. py:attribute:: shape
-      :value: ()
+      If no argument is given, the constructor returns an empty tuple.
+      If iterable is specified the tuple is initialized from iterable's items.
+
+      If the argument is a tuple, the return value is the same object.
+
 
 
 
    .. py:method:: type(x)
 
 
-.. py:data:: bitType
+.. py:class:: bitType(value)
 
-.. py:data:: bool_
+   Bases: :py:obj:`numpy.unsignedinteger`
 
-.. py:data:: bool_scalars
 
-.. py:data:: complex128
+   Unsigned integer type, compatible with C ``unsigned long``.
 
-.. py:data:: complex64
+       :Character code: ``'L'``
+       :Canonical name: `numpy.uint`
+       :Alias on this platform (Linux x86_64): `numpy.uint64`: 64-bit unsigned integer (``0`` to ``18_446_744_073_709_551_615``).
+       :Alias on this platform (Linux x86_64): `numpy.uintp`: Unsigned integer large enough to fit pointer, compatible with C ``uintptr_t``.
+
+
+
+   .. py:method:: bit_count(*args, **kwargs)
+
+      uint64.bit_count() -> int
+
+              Computes the number of 1-bits in the absolute value of the input.
+              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+
+              Examples
+              --------
+              >>> np.uint64(127).bit_count()
+              7
+
+
+
+
+.. py:class:: bool_(value)
+
+   Bases: :py:obj:`numpy.generic`
+
+
+   Boolean type (True or False), stored as a byte.
+
+       .. warning::
+
+          The :class:`bool_` type is not a subclass of the :class:`int_` type
+          (the :class:`bool_` is not even a number type). This is different
+          than Python's default implementation of :class:`bool` as a
+          sub-class of :class:`int`.
+
+       :Character code: ``'?'``
+
+
+
+.. py:class:: bool_scalars(origin, params, *, inst=True, name=None)
+
+   Bases: :py:obj:`_GenericAlias`
+
+
+   The central part of internal API.
+
+   This represents a generic version of type 'origin' with type arguments 'params'.
+   There are two kind of these aliases: user defined and special. The special ones
+   are wrappers around builtin collections and ABCs in collections.abc. These must
+   have 'name' always set. If 'inst' is False, then the alias can't be instantiated,
+   this is used by e.g. typing.List and typing.Dict.
+
+
+.. py:function:: cast(typ, val)
+
+   Cast a value to a type.
+
+       This returns the value unchanged.  To the type checker this
+       signals that the return value has the designated type, but at
+       runtime we intentionally don't check anything (we want this
+       to be as fast as possible).
+
+
+
+
+.. py:class:: complex128(value)
+
+   Bases: :py:obj:`numpy.complexfloating`
+
+
+   Complex number type composed of two double-precision floating-point
+       numbers, compatible with Python `complex`.
+
+       :Character code: ``'D'``
+       :Canonical name: `numpy.cdouble`
+       :Alias: `numpy.cfloat`
+       :Alias: `numpy.complex_`
+       :Alias on this platform (Linux x86_64): `numpy.complex128`: Complex number type composed of 2 64-bit-precision floating-point numbers.
+
+
+
+.. py:class:: complex64(value)
+
+   Bases: :py:obj:`numpy.complexfloating`
+
+
+   Complex number type composed of two single-precision floating-point
+       numbers.
+
+       :Character code: ``'F'``
+       :Canonical name: `numpy.csingle`
+       :Alias: `numpy.singlecomplex`
+       :Alias on this platform (Linux x86_64): `numpy.complex64`: Complex number type composed of 2 32-bit-precision floating-point numbers.
+
+
 
 .. py:function:: dtype(x)
 
-.. py:data:: float32
+.. py:class:: float16(value)
 
-.. py:data:: float64
+   Bases: :py:obj:`numpy.floating`
 
-.. py:data:: float_scalars
 
-.. py:function:: get_byteorder(dt: numpy.dtype) -> str
+   Half-precision floating-point number type.
+
+       :Character code: ``'e'``
+       :Canonical name: `numpy.half`
+       :Alias on this platform (Linux x86_64): `numpy.float16`: 16-bit-precision floating-point number type: sign bit, 5 bits exponent, 10 bits mantissa.
+
+
+
+   .. py:method:: as_integer_ratio(*args, **kwargs)
+
+      half.as_integer_ratio() -> (int, int)
+
+              Return a pair of integers, whose ratio is exactly equal to the original
+              floating point number, and with a positive denominator.
+              Raise `OverflowError` on infinities and a `ValueError` on NaNs.
+
+              >>> np.half(10.0).as_integer_ratio()
+              (10, 1)
+              >>> np.half(0.0).as_integer_ratio()
+              (0, 1)
+              >>> np.half(-.25).as_integer_ratio()
+              (-1, 4)
+
+
+
+
+   .. py:method:: is_integer(*args, **kwargs)
+
+      half.is_integer() -> bool
+
+              Return ``True`` if the floating point number is finite with integral
+              value, and ``False`` otherwise.
+
+              .. versionadded:: 1.22
+
+              Examples
+              --------
+              >>> np.half(-2.0).is_integer()
+              True
+              >>> np.half(3.2).is_integer()
+              False
+
+
+
+
+.. py:class:: float32(value)
+
+   Bases: :py:obj:`numpy.floating`
+
+
+   Single-precision floating-point number type, compatible with C ``float``.
+
+       :Character code: ``'f'``
+       :Canonical name: `numpy.single`
+       :Alias on this platform (Linux x86_64): `numpy.float32`: 32-bit-precision floating-point number type: sign bit, 8 bits exponent, 23 bits mantissa.
+
+
+
+   .. py:method:: as_integer_ratio(*args, **kwargs)
+
+      single.as_integer_ratio() -> (int, int)
+
+              Return a pair of integers, whose ratio is exactly equal to the original
+              floating point number, and with a positive denominator.
+              Raise `OverflowError` on infinities and a `ValueError` on NaNs.
+
+              >>> np.single(10.0).as_integer_ratio()
+              (10, 1)
+              >>> np.single(0.0).as_integer_ratio()
+              (0, 1)
+              >>> np.single(-.25).as_integer_ratio()
+              (-1, 4)
+
+
+
+
+   .. py:method:: is_integer(*args, **kwargs)
+
+      single.is_integer() -> bool
+
+              Return ``True`` if the floating point number is finite with integral
+              value, and ``False`` otherwise.
+
+              .. versionadded:: 1.22
+
+              Examples
+              --------
+              >>> np.single(-2.0).is_integer()
+              True
+              >>> np.single(3.2).is_integer()
+              False
+
+
+
+
+.. py:class:: float64(value)
+
+   Bases: :py:obj:`numpy.floating`
+
+
+   Double-precision floating-point number type, compatible with Python `float`
+       and C ``double``.
+
+       :Character code: ``'d'``
+       :Canonical name: `numpy.double`
+       :Alias: `numpy.float_`
+       :Alias on this platform (Linux x86_64): `numpy.float64`: 64-bit precision floating-point number type: sign bit, 11 bits exponent, 52 bits mantissa.
+
+
+
+   .. py:method:: as_integer_ratio(*args, **kwargs)
+
+      double.as_integer_ratio() -> (int, int)
+
+              Return a pair of integers, whose ratio is exactly equal to the original
+              floating point number, and with a positive denominator.
+              Raise `OverflowError` on infinities and a `ValueError` on NaNs.
+
+              >>> np.double(10.0).as_integer_ratio()
+              (10, 1)
+              >>> np.double(0.0).as_integer_ratio()
+              (0, 1)
+              >>> np.double(-.25).as_integer_ratio()
+              (-1, 4)
+
+
+
+
+   .. py:method:: fromhex(string, /)
+
+      Create a floating-point number from a hexadecimal string.
+
+      >>> float.fromhex('0x1.ffffp10')
+      2047.984375
+      >>> float.fromhex('-0x1p-1074')
+      -5e-324
+
+
+
+
+   .. py:method:: hex(/)
+
+      Return a hexadecimal representation of a floating-point number.
+
+      >>> (-0.1).hex()
+      '-0x1.999999999999ap-4'
+      >>> 3.14159.hex()
+      '0x1.921f9f01b866ep+1'
+
+
+
+
+   .. py:method:: is_integer(*args, **kwargs)
+
+      double.is_integer() -> bool
+
+              Return ``True`` if the floating point number is finite with integral
+              value, and ``False`` otherwise.
+
+              .. versionadded:: 1.22
+
+              Examples
+              --------
+              >>> np.double(-2.0).is_integer()
+              True
+              >>> np.double(3.2).is_integer()
+              False
+
+
+
+
+.. py:class:: float_scalars(origin, params, *, inst=True, name=None)
+
+   Bases: :py:obj:`_GenericAlias`
+
+
+   The central part of internal API.
+
+   This represents a generic version of type 'origin' with type arguments 'params'.
+   There are two kind of these aliases: user defined and special. The special ones
+   are wrappers around builtin collections and ABCs in collections.abc. These must
+   have 'name' always set. If 'inst' is False, then the alias can't be instantiated,
+   this is used by e.g. typing.List and typing.Dict.
+
+
+.. py:function:: get_byteorder(dt: np.dtype) -> str
 
    Get a concrete byteorder (turns '=' into '<' or '>')
+
 
 
 .. py:function:: get_server_byteorder() -> str
@@ -131,38 +1365,1007 @@ Module Contents
    Get the server's byteorder
 
 
-.. py:data:: int16
 
-.. py:data:: int32
+.. py:class:: int16(value)
 
-.. py:data:: int64
+   Bases: :py:obj:`numpy.signedinteger`
 
-.. py:data:: int8
 
-.. py:data:: intTypes
+   Signed integer type, compatible with C ``short``.
 
-.. py:data:: int_scalars
+       :Character code: ``'h'``
+       :Canonical name: `numpy.short`
+       :Alias on this platform (Linux x86_64): `numpy.int16`: 16-bit signed integer (``-32_768`` to ``32_767``).
+
+
+
+   .. py:method:: bit_count(*args, **kwargs)
+
+      int16.bit_count() -> int
+
+              Computes the number of 1-bits in the absolute value of the input.
+              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+
+              Examples
+              --------
+              >>> np.int16(127).bit_count()
+              7
+              >>> np.int16(-127).bit_count()
+              7
+
+
+
+
+.. py:class:: int32(value)
+
+   Bases: :py:obj:`numpy.signedinteger`
+
+
+   Signed integer type, compatible with C ``int``.
+
+       :Character code: ``'i'``
+       :Canonical name: `numpy.intc`
+       :Alias on this platform (Linux x86_64): `numpy.int32`: 32-bit signed integer (``-2_147_483_648`` to ``2_147_483_647``).
+
+
+
+   .. py:method:: bit_count(*args, **kwargs)
+
+      int32.bit_count() -> int
+
+              Computes the number of 1-bits in the absolute value of the input.
+              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+
+              Examples
+              --------
+              >>> np.int32(127).bit_count()
+              7
+              >>> np.int32(-127).bit_count()
+              7
+
+
+
+
+.. py:class:: int64(value)
+
+   Bases: :py:obj:`numpy.signedinteger`
+
+
+   Signed integer type, compatible with Python `int` and C ``long``.
+
+       :Character code: ``'l'``
+       :Canonical name: `numpy.int_`
+       :Alias on this platform (Linux x86_64): `numpy.int64`: 64-bit signed integer (``-9_223_372_036_854_775_808`` to ``9_223_372_036_854_775_807``).
+       :Alias on this platform (Linux x86_64): `numpy.intp`: Signed integer large enough to fit pointer, compatible with C ``intptr_t``.
+
+
+
+   .. py:method:: bit_count(*args, **kwargs)
+
+      int64.bit_count() -> int
+
+              Computes the number of 1-bits in the absolute value of the input.
+              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+
+              Examples
+              --------
+              >>> np.int64(127).bit_count()
+              7
+              >>> np.int64(-127).bit_count()
+              7
+
+
+
+
+.. py:class:: int8(value)
+
+   Bases: :py:obj:`numpy.signedinteger`
+
+
+   Signed integer type, compatible with C ``char``.
+
+       :Character code: ``'b'``
+       :Canonical name: `numpy.byte`
+       :Alias on this platform (Linux x86_64): `numpy.int8`: 8-bit signed integer (``-128`` to ``127``).
+
+
+
+   .. py:method:: bit_count(*args, **kwargs)
+
+      int8.bit_count() -> int
+
+              Computes the number of 1-bits in the absolute value of the input.
+              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+
+              Examples
+              --------
+              >>> np.int8(127).bit_count()
+              7
+              >>> np.int8(-127).bit_count()
+              7
+
+
+
+
+.. py:class:: intTypes
+
+   frozenset() -> empty frozenset object
+   frozenset(iterable) -> frozenset object
+
+   Build an immutable unordered collection of unique elements.
+
+
+
+   .. py:method:: copy(*args, **kwargs)
+
+      Return a shallow copy of a set.
+
+
+
+
+   .. py:method:: difference(*args, **kwargs)
+
+      Return the difference of two or more sets as a new set.
+
+      (i.e. all elements that are in this set but not the others.)
+
+
+
+
+   .. py:method:: intersection(*args, **kwargs)
+
+      Return the intersection of two sets as a new set.
+
+      (i.e. all elements that are in both sets.)
+
+
+
+
+   .. py:method:: isdisjoint(*args, **kwargs)
+
+      Return True if two sets have a null intersection.
+
+
+
+
+   .. py:method:: issubset(*args, **kwargs)
+
+      Report whether another set contains this set.
+
+
+
+
+   .. py:method:: issuperset(*args, **kwargs)
+
+      Report whether this set contains another set.
+
+
+
+
+   .. py:method:: symmetric_difference(*args, **kwargs)
+
+      Return the symmetric difference of two sets as a new set.
+
+      (i.e. all elements that are in exactly one of the sets.)
+
+
+
+
+   .. py:method:: union(*args, **kwargs)
+
+      Return the union of sets as a new set.
+
+      (i.e. all elements that are in either set.)
+
+
+
+
+.. py:class:: int_scalars(origin, params, *, inst=True, name=None)
+
+   Bases: :py:obj:`_GenericAlias`
+
+
+   The central part of internal API.
+
+   This represents a generic version of type 'origin' with type arguments 'params'.
+   There are two kind of these aliases: user defined and special. The special ones
+   are wrappers around builtin collections and ABCs in collections.abc. These must
+   have 'name' always set. If 'inst' is False, then the alias can't be instantiated,
+   this is used by e.g. typing.List and typing.Dict.
+
+
+.. py:function:: isSupportedFloat(num)
+
+.. py:function:: isSupportedInt(num)
 
 .. py:function:: isSupportedNumber(num)
 
-.. py:data:: numeric_scalars
+.. py:class:: numeric_and_bool_scalars(origin, params, *, inst=True, name=None)
 
-.. py:data:: numpy_scalars
+   Bases: :py:obj:`_GenericAlias`
+
+
+   The central part of internal API.
+
+   This represents a generic version of type 'origin' with type arguments 'params'.
+   There are two kind of these aliases: user defined and special. The special ones
+   are wrappers around builtin collections and ABCs in collections.abc. These must
+   have 'name' always set. If 'inst' is False, then the alias can't be instantiated,
+   this is used by e.g. typing.List and typing.Dict.
+
+
+.. py:class:: numeric_scalars(origin, params, *, inst=True, name=None)
+
+   Bases: :py:obj:`_GenericAlias`
+
+
+   The central part of internal API.
+
+   This represents a generic version of type 'origin' with type arguments 'params'.
+   There are two kind of these aliases: user defined and special. The special ones
+   are wrappers around builtin collections and ABCs in collections.abc. These must
+   have 'name' always set. If 'inst' is False, then the alias can't be instantiated,
+   this is used by e.g. typing.List and typing.Dict.
+
+
+.. py:class:: numpy_scalars(origin, params, *, inst=True, name=None)
+
+   Bases: :py:obj:`_GenericAlias`
+
+
+   The central part of internal API.
+
+   This represents a generic version of type 'origin' with type arguments 'params'.
+   There are two kind of these aliases: user defined and special. The special ones
+   are wrappers around builtin collections and ABCs in collections.abc. These must
+   have 'name' always set. If 'inst' is False, then the alias can't be instantiated,
+   this is used by e.g. typing.List and typing.Dict.
+
 
 .. py:function:: resolve_scalar_dtype(val: object) -> str
 
    Try to infer what dtype arkouda_server should treat val as.
 
 
-.. py:data:: str_
 
-.. py:data:: str_scalars
+.. py:class:: str_
 
-.. py:data:: uint16
+   A unicode string.
 
-.. py:data:: uint32
+       This type strips trailing null codepoints.
 
-.. py:data:: uint64
+       >>> s = np.str_("abc\x00")
+       >>> s
+       'abc'
 
-.. py:data:: uint8
+       Unlike the builtin `str`, this supports the :ref:`python:bufferobjects`, exposing its
+       contents as UCS4:
+
+       >>> m = memoryview(np.str_("abc"))
+       >>> m.format
+       '3w'
+       >>> m.tobytes()
+       b'a\x00\x00\x00b\x00\x00\x00c\x00\x00\x00'
+
+       :Character code: ``'U'``
+       :Alias: `numpy.unicode_`
+
+
+
+   .. py:method:: T(*args, **kwargs)
+
+      Scalar attribute identical to the corresponding array attribute.
+
+          Please see `ndarray.T`.
+
+
+
+
+   .. py:method:: all(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.all`.
+
+
+
+
+   .. py:method:: any(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.any`.
+
+
+
+
+   .. py:method:: argmax(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.argmax`.
+
+
+
+
+   .. py:method:: argmin(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.argmin`.
+
+
+
+
+   .. py:method:: argsort(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.argsort`.
+
+
+
+
+   .. py:method:: astype(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.astype`.
+
+
+
+
+   .. py:method:: base(*args, **kwargs)
+
+      Scalar attribute identical to the corresponding array attribute.
+
+          Please see `ndarray.base`.
+
+
+
+
+   .. py:method:: byteswap(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.byteswap`.
+
+
+
+
+   .. py:method:: choose(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.choose`.
+
+
+
+
+   .. py:method:: clip(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.clip`.
+
+
+
+
+   .. py:method:: compress(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.compress`.
+
+
+
+
+   .. py:method:: conj(*args, **kwargs)
+
+
+   .. py:method:: conjugate(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.conjugate`.
+
+
+
+
+   .. py:method:: copy(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.copy`.
+
+
+
+
+   .. py:method:: cumprod(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.cumprod`.
+
+
+
+
+   .. py:method:: cumsum(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.cumsum`.
+
+
+
+
+   .. py:method:: data(*args, **kwargs)
+
+      Pointer to start of data.
+
+
+
+
+   .. py:method:: diagonal(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.diagonal`.
+
+
+
+
+   .. py:method:: dtype(*args, **kwargs)
+
+      Get array data-descriptor.
+
+
+
+
+   .. py:method:: dump(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.dump`.
+
+
+
+
+   .. py:method:: dumps(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.dumps`.
+
+
+
+
+   .. py:method:: fill(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.fill`.
+
+
+
+
+   .. py:method:: flags(*args, **kwargs)
+
+      The integer value of flags.
+
+
+
+
+   .. py:method:: flat(*args, **kwargs)
+
+      A 1-D view of the scalar.
+
+
+
+
+   .. py:method:: flatten(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.flatten`.
+
+
+
+
+   .. py:method:: getfield(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.getfield`.
+
+
+
+
+   .. py:method:: imag(*args, **kwargs)
+
+      The imaginary part of the scalar.
+
+
+
+
+   .. py:method:: item(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.item`.
+
+
+
+
+   .. py:method:: itemset(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.itemset`.
+
+
+
+
+   .. py:method:: itemsize(*args, **kwargs)
+
+      The length of one element in bytes.
+
+
+
+
+   .. py:method:: max(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.max`.
+
+
+
+
+   .. py:method:: mean(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.mean`.
+
+
+
+
+   .. py:method:: min(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.min`.
+
+
+
+
+   .. py:method:: nbytes(*args, **kwargs)
+
+      The length of the scalar in bytes.
+
+
+
+
+   .. py:method:: ndim(*args, **kwargs)
+
+      The number of array dimensions.
+
+
+
+
+   .. py:method:: newbyteorder(*args, **kwargs)
+
+      newbyteorder(new_order='S', /)
+
+          Return a new `dtype` with a different byte order.
+
+          Changes are also made in all fields and sub-arrays of the data type.
+
+          The `new_order` code can be any from the following:
+
+          * 'S' - swap dtype from current to opposite endian
+          * {'<', 'little'} - little endian
+          * {'>', 'big'} - big endian
+          * {'=', 'native'} - native order
+          * {'|', 'I'} - ignore (no change to byte order)
+
+          Parameters
+          ----------
+          new_order : str, optional
+              Byte order to force; a value from the byte order specifications
+              above.  The default value ('S') results in swapping the current
+              byte order.
+
+
+          Returns
+          -------
+          new_dtype : dtype
+              New `dtype` object with the given change to the byte order.
+
+
+
+
+   .. py:method:: nonzero(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.nonzero`.
+
+
+
+
+   .. py:method:: prod(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.prod`.
+
+
+
+
+   .. py:method:: ptp(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.ptp`.
+
+
+
+
+   .. py:method:: put(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.put`.
+
+
+
+
+   .. py:method:: ravel(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.ravel`.
+
+
+
+
+   .. py:method:: real(*args, **kwargs)
+
+      The real part of the scalar.
+
+
+
+
+   .. py:method:: repeat(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.repeat`.
+
+
+
+
+   .. py:method:: reshape(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.reshape`.
+
+
+
+
+   .. py:method:: resize(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.resize`.
+
+
+
+
+   .. py:method:: round(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.round`.
+
+
+
+
+   .. py:method:: searchsorted(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.searchsorted`.
+
+
+
+
+   .. py:method:: setfield(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.setfield`.
+
+
+
+
+   .. py:method:: setflags(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.setflags`.
+
+
+
+
+   .. py:method:: shape(*args, **kwargs)
+
+      Tuple of array dimensions.
+
+
+
+
+   .. py:method:: size(*args, **kwargs)
+
+      The number of elements in the gentype.
+
+
+
+
+   .. py:method:: sort(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.sort`.
+
+
+
+
+   .. py:method:: squeeze(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.squeeze`.
+
+
+
+
+   .. py:method:: std(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.std`.
+
+
+
+
+   .. py:method:: strides(*args, **kwargs)
+
+      Tuple of bytes steps in each dimension.
+
+
+
+
+   .. py:method:: sum(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.sum`.
+
+
+
+
+   .. py:method:: swapaxes(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.swapaxes`.
+
+
+
+
+   .. py:method:: take(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.take`.
+
+
+
+
+   .. py:method:: tobytes(*args, **kwargs)
+
+
+   .. py:method:: tofile(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.tofile`.
+
+
+
+
+   .. py:method:: tolist(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.tolist`.
+
+
+
+
+   .. py:method:: tostring(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.tostring`.
+
+
+
+
+   .. py:method:: trace(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.trace`.
+
+
+
+
+   .. py:method:: transpose(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.transpose`.
+
+
+
+
+   .. py:method:: var(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.var`.
+
+
+
+
+   .. py:method:: view(*args, **kwargs)
+
+      Scalar method identical to the corresponding array attribute.
+
+          Please see `ndarray.view`.
+
+
+
+
+.. py:class:: str_scalars(origin, params, *, inst=True, name=None)
+
+   Bases: :py:obj:`_GenericAlias`
+
+
+   The central part of internal API.
+
+   This represents a generic version of type 'origin' with type arguments 'params'.
+   There are two kind of these aliases: user defined and special. The special ones
+   are wrappers around builtin collections and ABCs in collections.abc. These must
+   have 'name' always set. If 'inst' is False, then the alias can't be instantiated,
+   this is used by e.g. typing.List and typing.Dict.
+
+
+.. py:class:: uint16(value)
+
+   Bases: :py:obj:`numpy.unsignedinteger`
+
+
+   Unsigned integer type, compatible with C ``unsigned short``.
+
+       :Character code: ``'H'``
+       :Canonical name: `numpy.ushort`
+       :Alias on this platform (Linux x86_64): `numpy.uint16`: 16-bit unsigned integer (``0`` to ``65_535``).
+
+
+
+   .. py:method:: bit_count(*args, **kwargs)
+
+      uint16.bit_count() -> int
+
+              Computes the number of 1-bits in the absolute value of the input.
+              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+
+              Examples
+              --------
+              >>> np.uint16(127).bit_count()
+              7
+
+
+
+
+.. py:class:: uint32(value)
+
+   Bases: :py:obj:`numpy.unsignedinteger`
+
+
+   Unsigned integer type, compatible with C ``unsigned int``.
+
+       :Character code: ``'I'``
+       :Canonical name: `numpy.uintc`
+       :Alias on this platform (Linux x86_64): `numpy.uint32`: 32-bit unsigned integer (``0`` to ``4_294_967_295``).
+
+
+
+   .. py:method:: bit_count(*args, **kwargs)
+
+      uint32.bit_count() -> int
+
+              Computes the number of 1-bits in the absolute value of the input.
+              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+
+              Examples
+              --------
+              >>> np.uint32(127).bit_count()
+              7
+
+
+
+
+.. py:class:: uint64(value)
+
+   Bases: :py:obj:`numpy.unsignedinteger`
+
+
+   Unsigned integer type, compatible with C ``unsigned long``.
+
+       :Character code: ``'L'``
+       :Canonical name: `numpy.uint`
+       :Alias on this platform (Linux x86_64): `numpy.uint64`: 64-bit unsigned integer (``0`` to ``18_446_744_073_709_551_615``).
+       :Alias on this platform (Linux x86_64): `numpy.uintp`: Unsigned integer large enough to fit pointer, compatible with C ``uintptr_t``.
+
+
+
+   .. py:method:: bit_count(*args, **kwargs)
+
+      uint64.bit_count() -> int
+
+              Computes the number of 1-bits in the absolute value of the input.
+              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+
+              Examples
+              --------
+              >>> np.uint64(127).bit_count()
+              7
+
+
+
+
+.. py:class:: uint8(value)
+
+   Bases: :py:obj:`numpy.unsignedinteger`
+
+
+   Unsigned integer type, compatible with C ``unsigned char``.
+
+       :Character code: ``'B'``
+       :Canonical name: `numpy.ubyte`
+       :Alias on this platform (Linux x86_64): `numpy.uint8`: 8-bit unsigned integer (``0`` to ``255``).
+
+
+
+   .. py:method:: bit_count(*args, **kwargs)
+
+      uint8.bit_count() -> int
+
+              Computes the number of 1-bits in the absolute value of the input.
+              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+
+              Examples
+              --------
+              >>> np.uint8(127).bit_count()
+              7
+
+
+
 

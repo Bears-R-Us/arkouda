@@ -15,7 +15,7 @@ Classes
 Module Contents
 ---------------
 
-.. py:class:: Matcher(pattern: arkouda.dtypes.str_scalars, parent_entry_name: str)
+.. py:class:: Matcher(pattern: arkouda.numpy.dtypes.str_scalars, parent_entry_name: str)
 
    .. py:attribute:: LocationsInfo
 

@@ -114,7 +114,7 @@ Module Contents
    :raises RuntimeError: Raised if there's a server-side error thrown
 
 
-.. py:function:: argmaxk(pda: pdarray, k: arkouda.dtypes.int_scalars) -> pdarray
+.. py:function:: argmaxk(pda: pdarray, k: arkouda.numpy.dtypes.int_scalars) -> pdarray
 
    Find the indices corresponding to the `k` maximum values of an array.
 
@@ -166,7 +166,7 @@ Module Contents
    :raises RuntimeError: Raised if there's a server-side error thrown
 
 
-.. py:function:: argmink(pda: pdarray, k: arkouda.dtypes.int_scalars) -> pdarray
+.. py:function:: argmink(pda: pdarray, k: arkouda.numpy.dtypes.int_scalars) -> pdarray
 
    Finds the indices corresponding to the `k` minimum values of an array.
 
@@ -335,7 +335,7 @@ Module Contents
    array([0, 0, 1, 0, 2, 0, 1, 0, 3, 0])
 
 
-.. py:function:: divmod(x: Union[arkouda.dtypes.numeric_scalars, pdarray], y: Union[arkouda.dtypes.numeric_scalars, pdarray], where: Union[bool, pdarray] = True) -> Tuple[pdarray, pdarray]
+.. py:function:: divmod(x: Union[arkouda.numpy.dtypes.numeric_scalars, pdarray], y: Union[arkouda.numpy.dtypes.numeric_scalars, pdarray], where: Union[bool, pdarray] = True) -> Tuple[pdarray, pdarray]
 
    :param x: The dividend array, the values that will be the numerator of the floordivision and will be
              acted on by the bases for modular division.
@@ -396,7 +396,7 @@ Module Contents
    array([4 6])
 
 
-.. py:function:: fmod(dividend: Union[pdarray, arkouda.dtypes.numeric_scalars], divisor: Union[pdarray, arkouda.dtypes.numeric_scalars]) -> pdarray
+.. py:function:: fmod(dividend: Union[pdarray, arkouda.numpy.dtypes.numeric_scalars], divisor: Union[pdarray, arkouda.numpy.dtypes.numeric_scalars]) -> pdarray
 
    Returns the element-wise remainder of division.
 
@@ -425,7 +425,7 @@ Module Contents
    :raises RuntimeError: Raised if there's a server-side error thrown
 
 
-.. py:function:: max(pda: pdarray) -> arkouda.dtypes.numpy_scalars
+.. py:function:: max(pda: pdarray) -> arkouda.numpy.dtypes.numpy_scalars
 
    Return the maximum value of the array.
 
@@ -439,7 +439,7 @@ Module Contents
    :raises RuntimeError: Raised if there's a server-side error thrown
 
 
-.. py:function:: maxk(pda: pdarray, k: arkouda.dtypes.int_scalars) -> pdarray
+.. py:function:: maxk(pda: pdarray, k: arkouda.numpy.dtypes.int_scalars) -> pdarray
 
    Find the `k` maximum values of an array.
 
@@ -491,7 +491,7 @@ Module Contents
    :raises RuntimeError: Raised if there's a server-side error thrown
 
 
-.. py:function:: min(pda: pdarray) -> arkouda.dtypes.numpy_scalars
+.. py:function:: min(pda: pdarray) -> arkouda.numpy.dtypes.numpy_scalars
 
    Return the minimum value of the array.
 
@@ -505,7 +505,7 @@ Module Contents
    :raises RuntimeError: Raised if there's a server-side error thrown
 
 
-.. py:function:: mink(pda: pdarray, k: arkouda.dtypes.int_scalars) -> pdarray
+.. py:function:: mink(pda: pdarray, k: arkouda.numpy.dtypes.int_scalars) -> pdarray
 
    Find the `k` minimum values of an array.
 
@@ -576,7 +576,7 @@ Module Contents
    array([0, 1, 1, 0, 1, 0, 0, 1, 1, 0])
 
 
-.. py:class:: pdarray(name: str, mydtype: Union[numpy.dtype, str], size: arkouda.dtypes.int_scalars, ndim: arkouda.dtypes.int_scalars, shape: Sequence[int], itemsize: arkouda.dtypes.int_scalars, max_bits: Optional[int] = None)
+.. py:class:: pdarray(name: str, mydtype: Union[numpy.dtype, str], size: arkouda.numpy.dtypes.int_scalars, ndim: arkouda.numpy.dtypes.int_scalars, shape: Sequence[int], itemsize: arkouda.numpy.dtypes.int_scalars, max_bits: Optional[int] = None)
 
    The basic arkouda array class. This class contains only the
    attributies of the array; the data resides on the arkouda
@@ -646,7 +646,7 @@ Module Contents
 
 
 
-   .. py:method:: argmaxk(k: arkouda.dtypes.int_scalars) -> pdarray
+   .. py:method:: argmaxk(k: arkouda.numpy.dtypes.int_scalars) -> pdarray
 
       Finds the indices corresponding to the maximum "k" values.
 
@@ -666,7 +666,7 @@ Module Contents
 
 
 
-   .. py:method:: argmink(k: arkouda.dtypes.int_scalars) -> pdarray
+   .. py:method:: argmink(k: arkouda.numpy.dtypes.int_scalars) -> pdarray
 
       Compute the minimum "k" values.
 
@@ -826,7 +826,7 @@ Module Contents
 
 
 
-   .. py:method:: fill(value: arkouda.dtypes.numeric_scalars) -> None
+   .. py:method:: fill(value: arkouda.numpy.dtypes.numeric_scalars) -> None
 
       Fill the array (in place) with a constant value.
 
@@ -905,7 +905,7 @@ Module Contents
    .. py:attribute:: itemsize
 
 
-   .. py:method:: max() -> arkouda.dtypes.numpy_scalars
+   .. py:method:: max() -> arkouda.numpy.dtypes.numpy_scalars
 
       Return the maximum value of the array.
 
@@ -914,7 +914,7 @@ Module Contents
    .. py:property:: max_bits
 
 
-   .. py:method:: maxk(k: arkouda.dtypes.int_scalars) -> pdarray
+   .. py:method:: maxk(k: arkouda.numpy.dtypes.int_scalars) -> pdarray
 
       Compute the maximum "k" values.
 
@@ -934,13 +934,13 @@ Module Contents
 
 
 
-   .. py:method:: min() -> arkouda.dtypes.numpy_scalars
+   .. py:method:: min() -> arkouda.numpy.dtypes.numpy_scalars
 
       Return the minimum value of the array.
 
 
 
-   .. py:method:: mink(k: arkouda.dtypes.int_scalars) -> pdarray
+   .. py:method:: mink(k: arkouda.numpy.dtypes.int_scalars) -> pdarray
 
       Compute the minimum "k" values.
 
@@ -1186,7 +1186,7 @@ Module Contents
 
 
 
-   .. py:method:: std(ddof: arkouda.dtypes.int_scalars = 0) -> numpy.float64
+   .. py:method:: std(ddof: arkouda.numpy.dtypes.int_scalars = 0) -> numpy.float64
 
       Compute the standard deviation. See ``arkouda.std`` for details.
 
@@ -1201,7 +1201,7 @@ Module Contents
 
 
 
-   .. py:method:: sum() -> arkouda.dtypes.numeric_and_bool_scalars
+   .. py:method:: sum() -> arkouda.numpy.dtypes.numeric_and_bool_scalars
 
       Return the sum of all elements in the array.
 
@@ -1462,7 +1462,7 @@ Module Contents
 
 
 
-   .. py:method:: transfer(hostname: str, port: arkouda.dtypes.int_scalars)
+   .. py:method:: transfer(hostname: str, port: arkouda.numpy.dtypes.int_scalars)
 
       Sends a pdarray to a different Arkouda server
 
@@ -1559,7 +1559,7 @@ Module Contents
 
 
 
-   .. py:method:: var(ddof: arkouda.dtypes.int_scalars = 0) -> numpy.float64
+   .. py:method:: var(ddof: arkouda.numpy.dtypes.int_scalars = 0) -> numpy.float64
 
       Compute the variance. See ``arkouda.var`` for details.
 
@@ -1705,7 +1705,7 @@ Module Contents
              * *array([0, 1, 2, 3, 2])*
 
 
-.. py:function:: std(pda: pdarray, ddof: arkouda.dtypes.int_scalars = 0) -> numpy.float64
+.. py:function:: std(pda: pdarray, ddof: arkouda.numpy.dtypes.int_scalars = 0) -> numpy.float64
 
    Return the standard deviation of values in the array. The standard
    deviation is implemented as the square root of the variance.
@@ -1740,7 +1740,7 @@ Module Contents
    unbiased estimate of the standard deviation per se.
 
 
-.. py:function:: sum(pda: pdarray) -> arkouda.dtypes.numeric_and_bool_scalars
+.. py:function:: sum(pda: pdarray) -> arkouda.numpy.dtypes.numeric_and_bool_scalars
 
    Return the sum of all elements in the array.
 
@@ -1783,7 +1783,7 @@ Module Contents
    >>> ak.unregister_pdarray_by_name(b)
 
 
-.. py:function:: var(pda: pdarray, ddof: arkouda.dtypes.int_scalars = 0) -> numpy.float64
+.. py:function:: var(pda: pdarray, ddof: arkouda.numpy.dtypes.int_scalars = 0) -> numpy.float64
 
    Return the variance of values in the array.
 

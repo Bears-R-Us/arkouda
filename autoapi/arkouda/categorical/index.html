@@ -257,6 +257,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../array_api/utility_functions/index.html">arkouda.array_api.utility_functions</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../dtypes/index.html">arkouda.dtypes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../random/index.html">arkouda.random</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../testing/index.html">arkouda.testing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../accessor/index.html">arkouda.accessor</a></li>
@@ -266,7 +267,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../client/index.html">arkouda.client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../client_dtypes/index.html">arkouda.client_dtypes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dataframe/index.html">arkouda.dataframe</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dtypes/index.html">arkouda.dtypes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../groupbyclass/index.html">arkouda.groupbyclass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../history/index.html">arkouda.history</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../index/index.html">arkouda.index</a></li>
@@ -278,14 +278,17 @@
 <li class="toctree-l3"><a class="reference internal" href="../match/index.html">arkouda.match</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../matcher/index.html">arkouda.matcher</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../numeric/index.html">arkouda.numeric</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../numpy/index.html">arkouda.numpy</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../numpy/index.html">arkouda.numpy</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.numpy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../numpy/dtypes/index.html">arkouda.numpy.dtypes</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../pdarrayclass/index.html">arkouda.pdarrayclass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pdarraycreation/index.html">arkouda.pdarraycreation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pdarraymanipulation/index.html">arkouda.pdarraymanipulation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pdarraysetops/index.html">arkouda.pdarraysetops</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../plotting/index.html">arkouda.plotting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../row/index.html">arkouda.row</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../scipy/index.html">arkouda.scipy</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.scipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../scipy/index.html">arkouda.scipy</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of arkouda.scipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../scipy/special/index.html">arkouda.scipy.special</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../scipy/stats/index.html">arkouda.scipy.stats</a></li>
 </ul>
@@ -305,7 +308,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../server/index.html">Chapel API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
@@ -381,7 +384,7 @@ work in initialization.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>values</strong> (<a class="reference internal" href="../index.html#id720" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>, </em><em>pd.Categorical</em>) – Values to convert to categories</p></li>
+<li><p><strong>values</strong> (<a class="reference internal" href="../index.html#id724" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>, </em><em>pd.Categorical</em>) – Values to convert to categories</p></li>
 <li><p><strong>NAvalue</strong> (<em>str scalar</em>) – The value to use to represent missing/null data</p></li>
 </ul>
 </dd>
@@ -392,7 +395,7 @@ work in initialization.</p>
 <dd><p>The set of category labels (determined automatically)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id720" title="arkouda.Strings">Strings</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id724" title="arkouda.Strings">Strings</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -403,7 +406,7 @@ work in initialization.</p>
 <dd><p>The category indices of the values or -1 for N/A</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../numpy/index.html#arkouda.numpy.int64" title="arkouda.numpy.int64">int64</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int64" title="arkouda.dtypes.int64">int64</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -414,7 +417,7 @@ work in initialization.</p>
 <dd><p>The permutation that groups the values in the same order as categories</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../numpy/index.html#arkouda.numpy.int64" title="arkouda.numpy.int64">int64</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int64" title="arkouda.dtypes.int64">int64</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -425,7 +428,7 @@ work in initialization.</p>
 <dd><p>When values are grouped, the starting offset of each group</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../numpy/index.html#arkouda.numpy.int64" title="arkouda.numpy.int64">int64</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int64" title="arkouda.dtypes.int64">int64</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -436,7 +439,7 @@ work in initialization.</p>
 <dd><p>The number of items in the array</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Union[int,np.int64]</p>
+<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union">Union</a>[int,np.int64]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -447,7 +450,7 @@ work in initialization.</p>
 <dd><p>The number of distinct categories</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Union[int,np.int64]</p>
+<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union">Union</a>[int,np.int64]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -458,7 +461,7 @@ work in initialization.</p>
 <dd><p>The rank of the array (currently only rank 1 arrays supported)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Union[int,np.int64]</p>
+<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union">Union</a>[int,np.int64]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -551,12 +554,12 @@ results in non-deterministic ordering of elements.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.categorical.Categorical.contains">
-<span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">substr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">arkouda.dtypes.str_scalars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/categorical.html#Categorical.contains"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.categorical.Categorical.contains" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">substr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><span class="pre">arkouda.numpy.dtypes.str_scalars</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/categorical.html#Categorical.contains"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.categorical.Categorical.contains" title="Link to this definition">¶</a></dt>
 <dd><p>Check whether each element contains the given substring.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>substr</strong> (<em>Union</em><em>[</em><em>bytes</em><em>, </em><em>str_scalars</em><em>]</em>) – The substring to search for</p></li>
+<li><p><strong>substr</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union"><em>Union</em></a><em>[</em><em>bytes</em><em>, </em><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.str_scalars" title="arkouda.dtypes.str_scalars"><em>str_scalars</em></a><em>]</em>) – The substring to search for</p></li>
 <li><p><strong>regex</strong> (<em>bool</em>) – Indicates whether substr is a regular expression
 Note: only handles regular expressions supported by re2
 (does not support lookaheads/lookbehinds)</p></li>
@@ -593,12 +596,12 @@ instead of the full array.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.categorical.Categorical.endswith">
-<span class="sig-name descname"><span class="pre">endswith</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">substr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">arkouda.dtypes.str_scalars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/categorical.html#Categorical.endswith"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.categorical.Categorical.endswith" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">endswith</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">substr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><span class="pre">arkouda.numpy.dtypes.str_scalars</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/categorical.html#Categorical.endswith"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.categorical.Categorical.endswith" title="Link to this definition">¶</a></dt>
 <dd><p>Check whether each element ends with the given substring.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>substr</strong> (<em>Union</em><em>[</em><em>bytes</em><em>, </em><em>str_scalars</em><em>]</em>) – The substring to search for</p></li>
+<li><p><strong>substr</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union"><em>Union</em></a><em>[</em><em>bytes</em><em>, </em><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.str_scalars" title="arkouda.dtypes.str_scalars"><em>str_scalars</em></a><em>]</em>) – The substring to search for</p></li>
 <li><p><strong>regex</strong> (<em>bool</em>) – Indicates whether substr is a regular expression
 Note: only handles regular expressions supported by re2
 (does not support lookaheads/lookbehinds)</p></li>
@@ -666,11 +669,11 @@ time. If not, please use the normal constructor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>codes</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../numpy/index.html#arkouda.numpy.int64" title="arkouda.numpy.int64"><em>int64</em></a>) – Category indices of each value</p></li>
-<li><p><strong>categories</strong> (<a class="reference internal" href="../index.html#id720" title="arkouda.Strings"><em>Strings</em></a>) – Unique category labels</p></li>
-<li><p><strong>permutation</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../numpy/index.html#arkouda.numpy.int64" title="arkouda.numpy.int64"><em>int64</em></a>) – The permutation that groups the values in the same order
+<li><p><strong>codes</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int64" title="arkouda.dtypes.int64"><em>int64</em></a>) – Category indices of each value</p></li>
+<li><p><strong>categories</strong> (<a class="reference internal" href="../index.html#id724" title="arkouda.Strings"><em>Strings</em></a>) – Unique category labels</p></li>
+<li><p><strong>permutation</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int64" title="arkouda.dtypes.int64"><em>int64</em></a>) – The permutation that groups the values in the same order
 as categories</p></li>
-<li><p><strong>segments</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../numpy/index.html#arkouda.numpy.int64" title="arkouda.numpy.int64"><em>int64</em></a>) – When values are grouped, the starting offset of each group</p></li>
+<li><p><strong>segments</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int64" title="arkouda.dtypes.int64"><em>int64</em></a>) – When values are grouped, the starting offset of each group</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -751,7 +754,7 @@ also present in the test Strings or Categorical object.</p>
 where an element of <cite>self</cite> is in <cite>test</cite> and False otherwise.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>test</strong> (<em>Union</em><em>[</em><a class="reference internal" href="../index.html#id720" title="arkouda.Strings"><em>Strings</em></a><em>,</em><a class="reference internal" href="#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>]</em>) – The values against which to test each value of ‘self`.</p>
+<dd class="field-odd"><p><strong>test</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../index.html#id724" title="arkouda.Strings"><em>Strings</em></a><em>,</em><a class="reference internal" href="#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>]</em>) – The values against which to test each value of ‘self`.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The values <cite>self[in1d]</cite> are in the <cite>test</cite> Strings or Categorical object.</p>
@@ -823,7 +826,7 @@ registered object.</p>
 <dd class="field-even"><p>numpy.bool</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id491" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mis-match of registered components</p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id493" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mis-match of registered components</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -942,7 +945,7 @@ Please note you cannot register two different Categoricals with the same name.</
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
-<li><p><a class="reference internal" href="../index.html#id491" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Categorical with the user_defined_name</p></li>
+<li><p><a class="reference internal" href="../index.html#id493" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Categorical with the user_defined_name</p></li>
 </ul>
 </dd>
 </dl>
@@ -1042,7 +1045,7 @@ via the dataset parameter.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>new_categories</strong> (<a class="reference internal" href="../index.html#id720" title="arkouda.Strings"><em>Strings</em></a>) – The array of new categories to use. Must be unique.</p></li>
+<li><p><strong>new_categories</strong> (<a class="reference internal" href="../index.html#id724" title="arkouda.Strings"><em>Strings</em></a>) – The array of new categories to use. Must be unique.</p></li>
 <li><p><strong>NAvalue</strong> (<em>str scalar</em>) – The value to use to represent missing/null data</p></li>
 </ul>
 </dd>
@@ -1064,7 +1067,7 @@ be assigned the NA value.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id5">
-<span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">arkouda.dtypes.int_scalars</span></em><a class="headerlink" href="#id5" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></em><a class="headerlink" href="#id5" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1094,12 +1097,12 @@ be assigned the NA value.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.categorical.Categorical.startswith">
-<span class="sig-name descname"><span class="pre">startswith</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">substr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">arkouda.dtypes.str_scalars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/categorical.html#Categorical.startswith"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.categorical.Categorical.startswith" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">startswith</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">substr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><span class="pre">arkouda.numpy.dtypes.str_scalars</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/categorical.html#Categorical.startswith"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.categorical.Categorical.startswith" title="Link to this definition">¶</a></dt>
 <dd><p>Check whether each element starts with the given substring.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>substr</strong> (<em>Union</em><em>[</em><em>bytes</em><em>, </em><em>str_scalars</em><em>]</em>) – The substring to search for</p></li>
+<li><p><strong>substr</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union"><em>Union</em></a><em>[</em><em>bytes</em><em>, </em><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.str_scalars" title="arkouda.dtypes.str_scalars"><em>str_scalars</em></a><em>]</em>) – The substring to search for</p></li>
 <li><p><strong>regex</strong> (<em>bool</em>) – Indicates whether substr is a regular expression
 Note: only handles regular expressions supported by re2
 (does not support lookaheads/lookbehinds)</p></li>
@@ -1293,14 +1296,14 @@ this Categorical.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.categorical.Categorical.transfer">
-<span class="sig-name descname"><span class="pre">transfer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hostname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.dtypes.int_scalars</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/categorical.html#Categorical.transfer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.categorical.Categorical.transfer" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">transfer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hostname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/categorical.html#Categorical.transfer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.categorical.Categorical.transfer" title="Link to this definition">¶</a></dt>
 <dd><p>Sends a Categorical object to a different Arkouda server</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>hostname</strong> (<em>str</em>) – The hostname where the Arkouda server intended to
 receive the Categorical is running.</p></li>
-<li><p><strong>port</strong> (<em>int_scalars</em>) – The port to send the array over. This needs to be an
+<li><p><strong>port</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int_scalars" title="arkouda.dtypes.int_scalars"><em>int_scalars</em></a>) – The port to send the array over. This needs to be an
 open port (i.e., not one that the Arkouda server is
 running on). This will open up <cite>numLocales</cite> ports,
 each of which in succession, so will use ports of the
@@ -1337,7 +1340,7 @@ a supported dtype</p></li>
 registered using register() and/or attached to using attach()</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id491" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id493" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
 when attempting to unregister</p>
 </dd>
 </dl>
@@ -1362,7 +1365,7 @@ with the arkouda server via register()</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – if user_defined_name is not a string</p></li>
-<li><p><a class="reference internal" href="../index.html#id491" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if there is an issue attempting to unregister any underlying components</p></li>
+<li><p><a class="reference internal" href="../index.html#id493" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if there is an issue attempting to unregister any underlying components</p></li>
 </ul>
 </dd>
 </dl>

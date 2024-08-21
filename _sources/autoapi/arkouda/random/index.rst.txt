@@ -423,7 +423,7 @@ Package Contents
 
 
 
-.. py:function:: randint(low: arkouda.dtypes.numeric_scalars, high: arkouda.dtypes.numeric_scalars, size: Union[arkouda.dtypes.int_scalars, Tuple[arkouda.dtypes.int_scalars, Ellipsis]] = 1, dtype=akint64, seed: Optional[arkouda.dtypes.int_scalars] = None) -> arkouda.pdarrayclass.pdarray
+.. py:function:: randint(low: arkouda.numpy.dtypes.numeric_scalars, high: arkouda.numpy.dtypes.numeric_scalars, size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]] = 1, dtype=akint64, seed: Optional[arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.pdarrayclass.pdarray
 
    Generate a pdarray of randomized int, float, or bool values in a
    specified range bounded by the low and high parameters.
@@ -475,7 +475,7 @@ Package Contents
    array([False, True, True, True, True, False, True, True, True, True])
 
 
-.. py:function:: standard_normal(size: Union[arkouda.dtypes.int_scalars, Tuple[arkouda.dtypes.int_scalars, Ellipsis]], seed: Union[None, arkouda.dtypes.int_scalars] = None) -> arkouda.pdarrayclass.pdarray
+.. py:function:: standard_normal(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]], seed: Union[None, arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.pdarrayclass.pdarray
 
    Draw real numbers from the standard normal distribution.
 
@@ -504,7 +504,7 @@ Package Contents
    array([-0.68586185091150265, 1.1723810583573375, 0.567584107142031])
 
 
-.. py:function:: uniform(size: arkouda.dtypes.int_scalars, low: arkouda.dtypes.numeric_scalars = float(0.0), high: arkouda.dtypes.numeric_scalars = 1.0, seed: Union[None, arkouda.dtypes.int_scalars] = None) -> arkouda.pdarrayclass.pdarray
+.. py:function:: uniform(size: arkouda.numpy.dtypes.int_scalars, low: arkouda.numpy.dtypes.numeric_scalars = float(0.0), high: arkouda.numpy.dtypes.numeric_scalars = 1.0, seed: Union[None, arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.pdarrayclass.pdarray
 
    Generate a pdarray with uniformly distributed random float values
    in a specified range.
