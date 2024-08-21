@@ -1,10 +1,14 @@
-import pytest
-import os
 import importlib
+import os
 
+import pytest
+
+from arkouda import get_max_array_rank
+from server_util.test.server_test_util import (
+    is_multilocale_arkouda,  # TODO probably not needed
+)
 from server_util.test.server_test_util import (
     TestRunningMode,
-    is_multilocale_arkouda,  # TODO probably not needed
     start_arkouda_server,
     stop_arkouda_server,
 )
@@ -102,6 +106,9 @@ def manage_connection():
 
     try:
         ak.connect(server=pytest.server, port=pytest.port, timeout=pytest.timeout)
+
+        pytest.max_rank = get_max_array_rank()
+
     except Exception as e:
         raise ConnectionError(e)
 
@@ -111,3 +118,14 @@ def manage_connection():
         ak.disconnect()
     except Exception as e:
         raise ConnectionError(e)
+
+
+@pytest.fixture(autouse=True)
+def skip_by_rank(request):
+    if request.node.get_closest_marker("skip_if_max_rank_less_than"):
+        if request.node.get_closest_marker("skip_if_max_rank_less_than").args[0] > pytest.max_rank:
+            pytest.skip("this test requires server with max_array_dims >= {}".format(pytest.max_rank))
+
+    if request.node.get_closest_marker("skip_if_max_rank_greater_than"):
+        if request.node.get_closest_marker("skip_if_max_rank_greater_than").args[0] < pytest.max_rank:
+            pytest.skip("this test requires server with max_array_dims =< {}".format(pytest.max_rank))

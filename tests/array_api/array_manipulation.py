@@ -10,13 +10,6 @@ SEED = 12345
 s = SEED
 
 
-def get_server_max_array_dims():
-    try:
-        return json.load(open("serverConfig.json", "r"))["max_array_dims"]
-    except (ValueError, FileNotFoundError, TypeError, KeyError):
-        return 1
-
-
 def randArr(shape):
     global s
     s += 2
@@ -25,10 +18,7 @@ def randArr(shape):
 
 class TestManipulation:
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_broadcast requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_broadcast(self):
         a = xp.ones((1, 6, 1))
         b = xp.ones((5, 1, 10))
@@ -47,10 +37,7 @@ class TestManipulation:
         assert (abcd[2] == 1).all()
         assert (abcd[3] == 1).all()
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_concat requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_concat(self):
         a = randArr((5, 3, 10))
         b = randArr((5, 3, 2))
@@ -83,10 +70,7 @@ class TestManipulation:
         assert hijConcat.shape == (18,)
         assert hijConcat.tolist() == hijNP.tolist()
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_expand_dims requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_expand_dims(self):
         a = randArr((5, 3))
         alist = a.tolist()
@@ -121,10 +105,7 @@ class TestManipulation:
         with pytest.raises(IndexError):
             xp.expand_dims(a, axis=-4)
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_flip requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_flip(self):
         # 1D case
         a = xp.arange(10)
@@ -164,10 +145,7 @@ class TestManipulation:
         with pytest.raises(IndexError):
             xp.flip(r, axis=-4)
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_permute_dims requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_permute_dims(self):
         r = randArr((7, 8, 9))
 
@@ -194,10 +172,7 @@ class TestManipulation:
         with pytest.raises(IndexError):
             xp.permute_dims(r, (0, 1, -4))
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_reshape requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_reshape(self):
         r = randArr((2, 6, 12))
         nr = np.asarray(r.tolist())
@@ -226,10 +201,7 @@ class TestManipulation:
             # more than one dimension can't be inferred
             xp.reshape(r, (2, -1, -1))
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_roll requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_roll(self):
         # 1D case
         a = xp.arange(10)
@@ -272,10 +244,7 @@ class TestManipulation:
         with pytest.raises(IndexError):
             xp.roll(r, 3, axis=-4)
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_squeeze requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_squeeze(self):
         r1 = randArr((1, 2, 3))
         r2 = randArr((2, 1, 3))
@@ -308,10 +277,7 @@ class TestManipulation:
         with pytest.raises(ValueError):
             xp.squeeze(r4, axis=1)
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_stack_unstack requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_stack_unstack(self):
         a = randArr((5, 4))
         b = randArr((5, 4))
@@ -337,10 +303,7 @@ class TestManipulation:
         assert bp.tolist() == b.tolist()
         assert cp.tolist() == c.tolist()
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_tile requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(2)
     def test_tile(self):
         a = randArr((2, 3))
 
@@ -350,10 +313,7 @@ class TestManipulation:
             assert at.shape == npat.shape
             assert at.tolist() == npat.tolist()
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_repeat requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_repeat(self):
         a = randArr((5, 10))
         r = randArr((50,))
