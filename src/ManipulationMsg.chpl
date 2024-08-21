@@ -933,11 +933,11 @@ module ManipulationMsg {
         const lsd = aFlat.localSubdomain(),
               indicesPerTask = lsd.size / nTasksPerLoc;
         coforall tid in 0..<nTasksPerLoc with (ref nRepsPerTask) {
-          const startIdx = tid * indicesPerTask,
-                stopIdx = if tid == nTasksPerLoc - 1 then lsd.size else (tid + 1) * indicesPerTask;
+          const startIdx = tid * indicesPerTask + lsd.low,
+                stopIdx = if tid == nTasksPerLoc - 1 then lsd.high else indicesPerTask + startIdx - 1;
 
           var sum = 0;
-          for i in startIdx..<stopIdx do
+          for i in startIdx..stopIdx do
             sum += eRepeats.a[i];
           nRepsPerTask[loc.id][tid] = sum;
         }
@@ -959,13 +959,12 @@ module ManipulationMsg {
         // its repeated elements
         const taskStarts = ((+ scan nRepsPerTask[loc.id]) - nRepsPerTask[loc.id]) + locStarts[loc.id];
         coforall tid in 0..<nTasksPerLoc {
-          const startIdx = tid * indicesPerTask,
-                stopIdx = if tid == nTasksPerLoc - 1 then lsd.size else (tid + 1) * indicesPerTask;
+          const startIdx = tid * indicesPerTask + lsd.low,
+                stopIdx = if tid == nTasksPerLoc - 1 then lsd.high else indicesPerTask + startIdx - 1;
 
           // copy this task's repeated elements into the output array
           var outStart = taskStarts[tid];
-
-          for i in startIdx..<stopIdx {
+          for i in startIdx..stopIdx {
             eOut.a[outStart..#eRepeats.a[i]] = aFlat[i];
             outStart += eRepeats.a[i];
           }
