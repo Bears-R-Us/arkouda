@@ -330,13 +330,20 @@ module ReductionMsg
       where array_dtype != bigint
     {
       var x = st[msgArgs['x']]: SymEntry(array_dtype, array_nd);
-
       const nTasks = here.maxTaskPar;
+
+      // split the input array into 'nTasks' chunks per locale
+      // and count the number of non-zero elements in each chunk
       var nnzPerTask: [0..<numLocales] [0..<nTasks] int;
       coforall loc in Locales with (ref nnzPerTask) do on loc {
         const locDom = x.a.localSubdomain();
         coforall tid in 0..<nTasks with (ref nnzPerTask) {
           var nnzTaskCount = 0;
+
+          // TODO: evaluate whether 'subDomChunk' chunking along the largest dimension
+          // is the best choice. Perhaps it would be better to always chunk along the
+          // zeroth dimension for best cache locality (or to use some other technique to
+          // split work among tasks).
           for idx in subDomChunk(locDom, tid, nTasks) do
             if x.a[idx] != 0 then nnzTaskCount += 1;
           nnzPerTask[loc.id][tid] = nnzTaskCount;
@@ -348,8 +355,11 @@ module ReductionMsg
             // where in the 1D output arrays should each locale start depositing its non-zero indices
             locStarts = (+ scan nnzPerLocale) - nnzPerLocale;
 
+      // create an index array for each dimension of the input array
       var dimIndices = for d in 0..<array_nd do createSymEntry(nnzTotalCount, int);
 
+      // populate the arrays with the indices of the non-zero elements
+      // TODO: refactor to use aggregation or bulk assignment to avoid fine-grained communication
       coforall loc in Locales with (const ref nnzPerTask, const ref locStarts) do on loc {
         // where in the 1D output arrays does each of this locale's tasks start depositing its non-zero indices
         const taskStarts = ((+ scan nnzPerTask[loc.id]) - nnzPerTask[loc.id]) + locStarts[loc.id],
