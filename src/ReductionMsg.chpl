@@ -383,6 +383,16 @@ module ReductionMsg
       return MsgTuple.fromResponses(responses);
     }
 
+    proc nonzero(
+      cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+      type array_dtype,
+      param array_nd: int
+    ): MsgTuple throws
+      where array_dtype == bigint
+    {
+      return MsgTuple.error("nonzero is not supported for bigint arrays");
+    }
+
     private module SliceReductionOps {
       private proc isArgandType(type t) param: bool do
         return isRealType(t) || isImagType(t) || isComplexType(t);
