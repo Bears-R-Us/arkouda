@@ -85,7 +85,7 @@ module RadixSortLSD
                     coforall task in Tasks with (ref tasksBucketCounts) {
                         ref taskBucketCounts = tasksBucketCounts[task];
                         // get local domain's indices
-                        var lD = aD.localSubdomain();
+                        var lD = temp.localSubdomain();
                         // calc task's indices from local domain's indices
                         var tD = calcBlock(task, lD.low, lD.high);
                         // count digits in this task's part of the array
@@ -137,7 +137,7 @@ module RadixSortLSD
                     coforall task in Tasks with (ref tasksBucketPos, ref a) {
                         ref taskBucketPos = tasksBucketPos[task];
                         // get local domain's indices
-                        var lD = aD.localSubdomain();
+                        var lD = temp.localSubdomain();
                         // calc task's indices from local domain's indices
                         var tD = calcBlock(task, lD.low, lD.high);
                         // calc new position and put data there in temp
