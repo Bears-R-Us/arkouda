@@ -8,7 +8,7 @@ from typing import Optional, Tuple, Literal, cast
 from .manipulation_functions import squeeze, reshape, broadcast_arrays
 
 from arkouda.client import generic_msg
-from arkouda.pdarrayclass import parse_single_value, create_pdarray
+from arkouda.pdarrayclass import parse_single_value, create_pdarray, create_pdarrays
 from arkouda.pdarraycreation import scalar_array
 from arkouda.numeric import cast as akcast
 import arkouda as ak
@@ -110,12 +110,12 @@ def nonzero(x: Array, /) -> Tuple[Array, ...]:
     resp = cast(
         str,
         generic_msg(
-            cmd=f"nonzero{x.ndim}D",
+            cmd=f"nonzero<{x.dtype},{x.ndim}>",
             args={"x": x._array},
         ),
     )
 
-    return tuple([Array._new(create_pdarray(a)) for a in resp.split("+")])
+    return tuple([Array._new(a) for a in create_pdarrays(resp)])
 
 
 def where(condition: Array, x1: Array, x2: Array, /) -> Array:
