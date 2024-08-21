@@ -56,40 +56,16 @@ __all__ = ["in1d", "concatenate", "union1d", "intersect1d", "setdiff1d", "setxor
 
 ## Adding Functionality to the Arkouda Server
 
+we will add a procedure called `times2` to the`ArraySetOpsMsg` module that will execute our command.
 
-Your contribution must include all the machinery to process a command from the client, in addition to the logic of the computation. 
-This is broken into function(s) that implement the actual operation, a function that processes the command message and calls the appropriate implementation, and code to register the message processing function with the message dispatch system.
-For the `times2` example, we will add a function to the`ArraySetOpsMsg` module for the sake of simplicity.
+When the client issues a command like `times2<int64,1> arg1` to the arkouda server, this is what typically happens:
 
-When the client issues a command `times2 arg1` to the arkouda server, this is what typically happens:
+1. The `select` block in `ServerDaemon.chpl` sees the command "times2<int64,1>", looks it up in the `commandMap`, and calls the function responsible for processing the message.
+    - This will call an instantiation of our `times2` procedure for 1D arrays with element type `int(64)`.
 
-1. The `select` block in `ServerDaemon.chpl` sees "times2", looks it up in the `commandMap`, and calls the function responsible for processing the message: `times2Msg`.
+1. The `times2()` function (in the `ArraySetopsMsg` module) applies our operation to the array, returning a new array
 
-1. The `times2Msg` function is found via the `ArraySetopsMsg` module, which contains `use ArraySetops` and thus gets all symbols from the `ArraySetops` module where the implementation function `times2()` is defined.
-
-1. The `times2Msg()` function (in the `ArraySetopsMsg` module) parses and executes the command by
-
-   1. Casting any scalar args
-
-   1. Looking up `pdarray` (`GenSymEntry`) args in the symbol table with `getGenericTypeArrayEntry`
-
-   1. Checking dtypes of arrays and branching to corresponding code
-
-   1. Casting `GenSymEntry` objects to correct types with `toSymEntry()`
-
-   1. Executing the operation, usually on the array data `entry.a`
-
-   1. If necessary, creating new `SymEntry` and adding it to the symbol table with `st.addEntry()`
-
-   1. Returning an appropriate message string
-
-      1. If the return is an array, "created <attributes>"
-
-      1. If the return is multiple arrays, one creation string per array, joined by "+"
-
-      1. If the return is a scalar, "<dtype> <value>"
-
-      1. If any error occurred, then "Error: <message>" (see `ServerErrorStrings.chpl` for functions to generate common error strings)
+1. The server generates a response to the client with a handle to the new array and its meta-data
 
 Example
 -------
@@ -157,22 +133,15 @@ module ArraySetopsMsg {
 }
 ```
 
-For this kind of procedure, the first three arguments must always have the same
+With this annotation, the first three arguments must always have the same
 names and types as above, and the return type must be `MsgTuple`. This
 procedure manually pull's the array's name from the JSON arguments provided to
-the command: `msgArgs['arg1']`. It then pulls the array symbol (a class that
+the command: `msgArgs['arg1']`. It then acquires the array symbol (a class that
 wraps a Chapel array from the server's symbol table), and casts it to a
-`SymEntry` with our array's particular type and rank (remember that the command
-is called as `f"times2<{pda.dtype},{pda.ndim}>)`). We then create a new
+`SymEntry` with our array's particular type and rank. We then create a new
 SymEntry with the result of our computation, and store its value in a new
 variable `y`. Finally, a response for the server is generated and returned by
 adding the new symbol to the symbol table with the `insert` method.
-
-Notice that the names of the `type` and `param` arguments correspond to the
-parameter-class fields in the configuration file (separated by an `_`). This
-tells Arkouda's build system that the procedure should be instantiated for all
-combinations of the values in the `dtype` and `nd` lists. As such, this
-approach will generate the same commands as the `registerCommand` annotation.
 
 Using a command written with either of the above annotations, you should be
 able to rebuild and launch the server and use your new feature. We close with a
