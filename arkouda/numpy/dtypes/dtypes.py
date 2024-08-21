@@ -3,48 +3,75 @@ from __future__ import annotations
 import builtins
 import sys
 from enum import Enum
-from typing import Tuple, Union, cast
+from typing import Union, cast
 
 import numpy as np
-from typeguard import typechecked
+from numpy import (
+    bool_,
+    complex64,
+    complex128,
+    float16,
+    float32,
+    float64,
+    int8,
+    int16,
+    int32,
+    int64,
+    str_,
+    uint8,
+    uint16,
+    uint32,
+    uint64,
+)
 
 __all__ = [
-    "DTypes",
+    "ARKOUDA_SUPPORTED_DTYPES",
+    "DType",
     "DTypeObjects",
+    "DTypes",
+    "NUMBER_FORMAT_STRINGS",
+    "NumericDTypes",
     "ScalarDTypes",
+    "SeriesDTypes",
+    "_is_dtype_in_union",
+    "_val_isinstance_of_union",
+    "all_scalars",
+    "bigint",
+    "bitType",
+    "bool_",
+    "bool_scalars",
+    "complex128",
+    "complex64",
     "dtype",
-    "uint8",
-    "uint16",
-    "uint32",
-    "uint64",
-    "int8",
+    "float16",
+    "float32",
+    "float64",
+    "float_scalars",
+    "get_byteorder",
+    "get_server_byteorder",
     "int16",
     "int32",
     "int64",
-    "float32",
-    "float64",
-    "complex64",
-    "complex128",
-    "bool_",
-    "str_",
-    "bigint",
+    "int8",
     "intTypes",
-    "bitType",
-    "check_np_dtype",
-    "translate_np_dtype",
-    "resolve_scalar_dtype",
-    "ARKOUDA_SUPPORTED_DTYPES",
-    "bool_scalars",
-    "float_scalars",
     "int_scalars",
+    "isSupportedFloat",
+    "isSupportedInt",
+    "isSupportedNumber",
+    "numeric_and_bool_scalars",
+    "numeric_and_bool_scalars",
     "numeric_scalars",
     "numpy_scalars",
+    "resolve_scalar_dtype",
+    "resolve_scalar_dtype",
+    "str_",
     "str_scalars",
-    "all_scalars",
-    "get_byteorder",
-    "get_server_byteorder",
-    "isSupportedNumber",
+    "uint16",
+    "uint32",
+    "uint64",
+    "uint8",
 ]
+
 
 NUMBER_FORMAT_STRINGS = {
     "bool": "{}",
@@ -136,20 +163,6 @@ class bigint:
         return int(x)
 
 
-uint8 = np.uint8
-uint16 = np.uint16
-uint32 = np.uint32
-uint64 = np.uint64
-int8 = np.int8
-int16 = np.int16
-int32 = np.int32
-int64 = np.int64
-float32 = np.float32
-float64 = np.float64
-complex64 = np.complex64
-complex128 = np.complex128
-bool_ = np.bool_
-str_ = np.str_
 intTypes = frozenset((dtype("int64"), dtype("uint64"), dtype("uint8")))
 bitType = uint64
 
@@ -292,43 +305,6 @@ def isSupportedFloat(num):
 
 def isSupportedNumber(num):
     return isinstance(num, ARKOUDA_SUPPORTED_NUMBERS)
-
-
-@typechecked
-def check_np_dtype(dt: Union[np.dtype, "bigint"]) -> None:
-    """
-    Assert that numpy dtype dt is one of the dtypes supported
-    by arkouda, otherwise raise TypeError.
-
-    Raises
-    ------
-    TypeError
-        Raised if the dtype is not in supported dtypes or if
-        dt is not a np.dtype
-    """
-
-    if dtype(dt).name not in DTypes:
-        raise TypeError(f"Unsupported type: {dt}")
-
-
-@typechecked
-def translate_np_dtype(dt) -> Tuple[builtins.str, int]:
-    """
-    Split numpy dtype dt into its kind and byte size, raising
-    TypeError for unsupported dtypes.
-
-    Raises
-    ------
-    TypeError
-        Raised if the dtype is not in supported dtypes or if
-        dt is not a np.dtype
-    """
-    # Assert that dt is one of the arkouda supported dtypes
-    dt = dtype(dt)
-    check_np_dtype(dt)
-    trans = {"i": "int", "f": "float", "b": "bool", "u": "uint", "U": "str", "c": "complex"}
-    kind = trans[dt.kind]
-    return kind, dt.itemsize
 
 
 def resolve_scalar_dtype(val: object) -> str:

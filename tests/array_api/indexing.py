@@ -10,13 +10,6 @@ SEED = 12345
 s = SEED
 
 
-def get_server_max_array_dims():
-    try:
-        return json.load(open("serverConfig.json", "r"))["max_array_dims"]
-    except (ValueError, FileNotFoundError, TypeError, KeyError):
-        return 1
-
-
 def randArr(shape):
     global s
     s += 2
@@ -24,10 +17,7 @@ def randArr(shape):
 
 
 class TestIndexing:
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_rank_changing_assignment requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_rank_changing_assignment(self):
         a = randArr((5, 6, 7))
         b = randArr((5, 6))
@@ -47,10 +37,7 @@ class TestIndexing:
         a[:, :, :] = e
         assert a.tolist() == e.tolist()
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_nd_assignment requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_nd_assignment(self):
         a = randArr((5, 6, 7))
         bnp = randArr((5, 6, 7)).to_ndarray()
@@ -64,10 +51,7 @@ class TestIndexing:
         a[:] = 5
         assert (a == 5).all()
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_pdarray_index requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_pdarray_index(self):
         a = randArr((5, 6, 7))
         anp = np.asarray(a.tolist())
@@ -98,10 +82,7 @@ class TestIndexing:
         xnp = anp[:]
         assert x.tolist() == xnp.tolist()
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_none_index requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_none_index(self):
         a = randArr((10, 10))
         anp = np.asarray(a.tolist())

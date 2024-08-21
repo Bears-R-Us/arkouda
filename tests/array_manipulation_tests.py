@@ -1,19 +1,14 @@
-import arkouda as ak
-import numpy as np
-
-import pytest
 import json
 
+import numpy as np
+import pytest
 
-def get_server_max_array_dims():
-    try:
-        return json.load(open('serverConfig.json', 'r'))['max_array_dims']
-    except (ValueError, FileNotFoundError, TypeError, KeyError):
-        return 1
+import arkouda as ak
 
 
 class TestManipulationFunctions:
-    @pytest.mark.skipif(get_server_max_array_dims() < 2, reason="vstack requires server with 'max_array_dims' >= 2")
+
+    @pytest.mark.skip_if_max_rank_less_than(2)
     def test_vstack(self):
         a = [ak.random.randint(0, 10, 25) for _ in range(4)]
         n = [x.to_ndarray() for x in a]
@@ -23,7 +18,7 @@ class TestManipulationFunctions:
 
         assert n_vstack.tolist() == a_vstack.to_list()
 
-    @pytest.mark.skipif(get_server_max_array_dims() < 2, reason="delete requires server with 'max_array_dims' >= 2")
+    @pytest.mark.skip_if_max_rank_less_than(2)
     def test_delete(self):
         a = ak.randint(0, 100, (10, 10))
         n = a.to_ndarray()

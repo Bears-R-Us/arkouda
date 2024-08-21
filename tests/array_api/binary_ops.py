@@ -14,18 +14,8 @@ SCALAR_TYPES = list(ak.ScalarDTypes)
 SCALAR_TYPES.remove("bool_")
 
 
-def get_server_max_array_dims():
-    try:
-        return json.load(open("serverConfig.json", "r"))["max_array_dims"]
-    except (ValueError, FileNotFoundError, TypeError, KeyError):
-        return 1
-
-
 class TestArrayCreation:
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 2,
-        reason="test_binops requires server with 'max_array_dims' >= 2",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(2)
     @pytest.mark.parametrize("op", ["+", "-", "*", "/"])
     @pytest.mark.parametrize("dtype", SCALAR_TYPES)
     def test_binops(self, op, dtype):

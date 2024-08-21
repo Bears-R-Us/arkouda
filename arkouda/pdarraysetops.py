@@ -7,10 +7,10 @@ from typeguard import typechecked
 
 from arkouda.client import generic_msg
 from arkouda.client_dtypes import BitVector
-from arkouda.dtypes import bigint
-from arkouda.dtypes import bool_ as akbool
-from arkouda.dtypes import int64 as akint64
-from arkouda.dtypes import uint64 as akuint64
+from arkouda.numpy.dtypes import bigint
+from arkouda.numpy.dtypes import bool_ as akbool
+from arkouda.numpy.dtypes import int64 as akint64
+from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.groupbyclass import GroupBy, groupable, groupable_element_type, unique
 from arkouda.logger import getArkoudaLogger
 from arkouda.pdarrayclass import create_pdarray, pdarray
@@ -339,7 +339,7 @@ def concatenate(
 
     """
     from arkouda.categorical import Categorical as Categorical_
-    from arkouda.dtypes import int_scalars
+    from arkouda.numpy.dtypes import int_scalars
     from arkouda.util import get_callback
 
     size: int_scalars = 0

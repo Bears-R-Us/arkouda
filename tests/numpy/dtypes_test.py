@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 import arkouda as ak
-from arkouda import dtypes
+from arkouda.numpy import dtypes
 
 """
 DtypesTest encapsulates arkouda dtypes module methods
@@ -23,26 +23,6 @@ SUPPORTED_NP_DTYPES = [
 
 
 class TestDTypes:
-    @pytest.mark.parametrize("dtype", SUPPORTED_NP_DTYPES)
-    def test_check_np_dtype(self, dtype):
-        dtypes.check_np_dtype(np.dtype(dtype))
-
-    @pytest.mark.parametrize("dtype", ["np.str"])
-    def test_check_np_dtype_errors(self, dtype):
-        with pytest.raises(TypeError):
-            dtypes.check_np_dtype(dtype)
-
-    def test_translate_np_dtype(self):
-        for b in [np.bool_, bool]:
-            assert ("bool", 1) == dtypes.translate_np_dtype(np.dtype(b))
-
-        for s in [np.str_, str]:
-            assert ("str", 0) == dtypes.translate_np_dtype(np.dtype(s))
-
-        assert ("int", 8) == dtypes.translate_np_dtype(np.dtype(np.int64))
-        assert ("uint", 8) == dtypes.translate_np_dtype(np.dtype(np.uint64))
-        assert ("float", 8) == dtypes.translate_np_dtype(np.dtype(np.float64))
-        assert ("uint", 1) == dtypes.translate_np_dtype(np.dtype(np.uint8))
 
     def test_resolve_scalar_dtype(self):
         for b in True, False:
@@ -75,7 +55,7 @@ class TestDTypes:
     def test_is_dtype_in_union(self):
         from typing import Union
 
-        from arkouda.dtypes import _is_dtype_in_union
+        from arkouda.numpy.dtypes import _is_dtype_in_union
 
         float_scalars = Union[float, np.float64, np.float32]
         assert _is_dtype_in_union(np.float64, float_scalars)

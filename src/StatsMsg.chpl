@@ -144,6 +144,6 @@ module StatsMsg {
       for param i in 0..<d.rank do rngs[i] = if i == axis
         then d.dim(i).low..(d.dim(i).high + 1)
         else d.dim(i);
-      return {(...rngs)};
+      return makeDistDom({(...rngs)});
     }
 }

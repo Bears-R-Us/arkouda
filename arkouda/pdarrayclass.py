@@ -10,13 +10,13 @@ import numpy as np
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
-from arkouda.dtypes import NUMBER_FORMAT_STRINGS, DTypes, bigint
-from arkouda.dtypes import bool_ as akbool
-from arkouda.dtypes import dtype
-from arkouda.dtypes import float64 as akfloat64
-from arkouda.dtypes import get_byteorder, get_server_byteorder
-from arkouda.dtypes import int64 as akint64
-from arkouda.dtypes import (
+from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, DTypes, bigint
+from arkouda.numpy.dtypes import bool_ as akbool
+from arkouda.numpy.dtypes import dtype
+from arkouda.numpy.dtypes import float64 as akfloat64
+from arkouda.numpy.dtypes import get_byteorder, get_server_byteorder
+from arkouda.numpy.dtypes import int64 as akint64
+from arkouda.numpy.dtypes import (
     int_scalars,
     isSupportedInt,
     isSupportedNumber,
@@ -25,9 +25,8 @@ from arkouda.dtypes import (
     numpy_scalars,
     resolve_scalar_dtype,
 )
-from arkouda.dtypes import str_ as akstr_
-from arkouda.dtypes import translate_np_dtype
-from arkouda.dtypes import uint64 as akuint64
+from arkouda.numpy.dtypes import str_ as akstr_
+from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.infoclass import information, pretty_print_information
 from arkouda.logger import getArkoudaLogger
 
@@ -221,8 +220,7 @@ def _parse_index_tuple(key, shape):
                 slices.append((k, k + 1, 1))
         elif isinstance(k, pdarray):
             pdarray_axes.append(dim)
-            kind, _ = translate_np_dtype(k.dtype)
-            if kind not in ("bool", "int", "uint"):
+            if k.dtype not in ("bool", "int", "uint"):
                 raise TypeError(f"unsupported pdarray index type {k.dtype}")
             # select all indices (needed for mixed slice+pdarray indexing)
             slices.append((0, shape[dim], 1))
@@ -297,8 +295,8 @@ def _to_pdarray(value: np.ndarray, dt=None) -> pdarray:
         value_flat = value.flatten()
         return create_pdarray(
             generic_msg(
-                cmd=f"array{value.ndim}D",
-                args={"dtype": _dtype, "shape": np.shape(value), "seg_string": False},
+                cmd=f"array<{_dtype},{value.ndim}>",
+                args={"shape": np.shape(value)},
                 payload=_array_memview(value_flat),
                 send_binary=True,
             )
@@ -774,7 +772,7 @@ class pdarray:
         """
         Return a string of the type inferred from the values.
         """
-        from arkouda.dtypes import float_scalars, int_scalars
+        from arkouda.numpy.dtypes import float_scalars, int_scalars
         from arkouda.util import _is_dtype_in_union
 
         if _is_dtype_in_union(self.dtype, int_scalars):
@@ -987,10 +985,9 @@ class pdarray:
                 return ret_array
 
         if isinstance(key, pdarray) and self.ndim == 1:
-            kind, _ = translate_np_dtype(key.dtype)
-            if kind not in ("bool", "int", "uint"):
+            if key.dtype not in ("bool", "int", "uint"):
                 raise TypeError(f"unsupported pdarray index type {key.dtype}")
-            if kind == "bool" and self.size != key.size:
+            if key.dtype == "bool" and self.size != key.size:
                 raise ValueError(f"size mismatch {self.size} {key.size}")
             repMsg = generic_msg(
                 cmd="[pdarray]",
@@ -1830,7 +1827,11 @@ class pdarray:
         # The reply from the server will be binary data
         data = cast(
             memoryview,
-            generic_msg(cmd=f"tondarray{self.ndim}D", args={"array": self}, recv_binary=True),
+            generic_msg(
+                cmd=f"tondarray<{self.dtype},{self.ndim}>",
+                args={"array": self},
+                recv_binary=True
+            ),
         )
         # Make sure the received data has the expected length
         if len(data) != self.size * self.dtype.itemsize:

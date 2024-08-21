@@ -71,9 +71,9 @@ def clip(a: Array, a_min, a_max, /) -> Array:
     return Array._new(
         create_pdarray(
             generic_msg(
-                cmd=f"clip{a.ndim}D",
+                cmd=f"clip<{a.dtype},{a.ndim}>",
                 args={
-                    "name": a._array,
+                    "x": a._array,
                     "min": a_min,
                     "max": a_max,
                 },
@@ -111,9 +111,9 @@ def diff(a: Array, /, n: int = 1, axis: int = -1, prepend=None, append=None) -> 
     return Array._new(
         create_pdarray(
             generic_msg(
-                cmd=f"diff{a.ndim}D",
+                cmd=f"diff<{a.dtype},{a.ndim}>",
                 args={
-                    "name": a_._array,
+                    "x": a_._array,
                     "n": n,
                     "axis": axis,
                 },
@@ -176,7 +176,7 @@ def pad(
     return Array._new(
         create_pdarray(
             generic_msg(
-                cmd=f"pad{array.ndim}D",
+                cmd=f"pad<{array.dtype},{array.ndim}>",
                 args={
                     "name": array._array,
                     "padWidthBefore": tuple(pad_widths_b),

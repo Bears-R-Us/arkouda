@@ -6,10 +6,10 @@ import numpy as np
 
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg
-from arkouda.dtypes import bigint
-from arkouda.dtypes import float64 as akfloat64
-from arkouda.dtypes import int64 as akint64
-from arkouda.dtypes import uint64 as akuint64
+from arkouda.numpy.dtypes import bigint
+from arkouda.numpy.dtypes import float64 as akfloat64
+from arkouda.numpy.dtypes import int64 as akint64
+from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.groupbyclass import GroupBy, broadcast, unique
 from arkouda.numeric import cumsum, where
 from arkouda.pdarrayclass import create_pdarray, pdarray

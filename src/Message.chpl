@@ -54,7 +54,7 @@ module Message {
         this.payload = b"";
     }
 
-    proc MsgTuple.init(msg: string, msgType: MsgType, msgFormat: MsgFormat, user = "", payload = b"") {
+    proc MsgTuple.init(msg: string, msgType: MsgType, msgFormat: MsgFormat, user = "", in payload = b"") {
         this.msg = msg;
         this.msgType = msgType;
         this.msgFormat = msgFormat;
@@ -135,7 +135,7 @@ module Message {
         );
     }
 
-    proc type MsgTuple.payload(data: bytes): MsgTuple {
+    proc type MsgTuple.payload(in data: bytes): MsgTuple {
         return new MsgTuple(
             msg = "",
             msgType = MsgType.NORMAL,
@@ -458,7 +458,7 @@ module Message {
             this.payload = b"";
         }
 
-        proc init(param_list: list(ParameterObj, parSafe=true)) {
+        proc init(param_list: list(ParameterObj, parSafe=true), in payload: bytes) {
             // Intentionally initializes the param_list with `parSafe=false`.
             // It would be initialized that way anyways due to the field
             // declaration relying on the default value, this just makes it
@@ -467,7 +467,7 @@ module Message {
             this.size = param_list.size;
 
             this.param_list = param_list;
-            this.payload = b"";
+            this.payload = payload;
         }
 
         /*
@@ -557,13 +557,13 @@ module Message {
     /*
     Parse arguments formatted as json string into objects
     */
-    proc parseMessageArgs(json_str: string, size: int) throws {
+    proc parseMessageArgs(json_str: string, size: int, in payload = b"") throws {
         var pArr = jsonToArray(json_str, string, size);
         var param_list = new list(ParameterObj, parSafe=true);
         forall j_str in pArr with (ref param_list) {
             param_list.pushBack(parseParameter(j_str));
         }
-        return new owned MessageArgs(param_list);
+        return new owned MessageArgs(param_list, payload);
     }
 
     /*

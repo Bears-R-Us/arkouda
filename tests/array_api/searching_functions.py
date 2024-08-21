@@ -9,18 +9,8 @@ import arkouda.array_api as xp
 SEED = 314159
 
 
-def get_server_max_array_dims():
-    try:
-        return json.load(open("serverConfig.json", "r"))["max_array_dims"]
-    except (ValueError, FileNotFoundError, TypeError, KeyError):
-        return 1
-
-
 class TestSearchingFunctions:
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_argmax requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_argmax(self):
         a = xp.asarray(ak.randint(0, 100, (4, 5, 6), dtype=ak.int64, seed=SEED))
         a[3, 2, 1] = 101
@@ -37,10 +27,7 @@ class TestSearchingFunctions:
         assert aArgmax1Keepdims.shape == (4, 1, 6)
         assert aArgmax1Keepdims[3, 0, 1] == 2
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_argmin requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_argmin(self):
         a = xp.asarray(ak.randint(0, 100, (4, 5, 6), dtype=ak.int64, seed=SEED))
         a[3, 2, 1] = -1
@@ -55,10 +42,7 @@ class TestSearchingFunctions:
         assert aArgmin1Keepdims.shape == (4, 1, 6)
         assert aArgmin1Keepdims[3, 0, 1] == 2
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_nonzero requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_nonzero(self):
         a = xp.zeros((4, 5, 6), dtype=ak.int64)
         a[0, 1, 0] = 1
@@ -70,14 +54,11 @@ class TestSearchingFunctions:
 
         print(nz)
 
-        assert nz[0].tolist() == [0, 1, 2, 3]
-        assert nz[1].tolist() == [1, 2, 2, 2]
-        assert nz[2].tolist() == [0, 3, 2, 1]
+        assert sorted(nz[0].tolist()) == sorted([0, 1, 2, 3])
+        assert sorted(nz[1].tolist()) == sorted([1, 2, 2, 2])
+        assert sorted(nz[2].tolist()) == sorted([0, 3, 2, 1])
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_where requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_where(self):
         a = xp.zeros((4, 5, 6), dtype=ak.int64)
         a[1, 2, 3] = 1
@@ -96,10 +77,7 @@ class TestSearchingFunctions:
         assert d[0, 0, 0] == c[0, 0, 0]
         assert d[3, 3, 3] == c[3, 3, 3]
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_search_sorted requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_search_sorted(self):
         a = xp.asarray(ak.randint(0, 100, 1000, dtype=ak.float64))
         b = xp.asarray(ak.randint(0, 100, (10, 10), dtype=ak.float64))

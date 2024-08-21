@@ -1,92 +1,41 @@
+import importlib
 import os
 
 import pytest
 
-from server_util.test.server_test_util import TestRunningMode, get_arkouda_numlocales, start_arkouda_server
+from arkouda import get_max_array_rank
+from server_util.test.server_test_util import (
+    is_multilocale_arkouda,  # TODO probably not needed
+)
+from server_util.test.server_test_util import (
+    TestRunningMode,
+    start_arkouda_server,
+    stop_arkouda_server,
+)
+
+os.environ["ARKOUDA_CLIENT_MODE"] = "API"
 
 
 def pytest_addoption(parser):
     parser.addoption(
         "--optional-parquet", action="store_true", default=False, help="run optional parquet tests"
     )
-
-    # due to the order pytest looks for conftest in, options for our benchmarks are added here
-    # this has no impact on testing, but allows quick and easy access to settings without the need
-    # for env vars. Everything below is for workflows in arkouda/benchmark_v2
     parser.addoption(
-        "--size", action="store", default="10**8",
-        help="Benchmark only option. Problem size: length of array to use for benchmarks."
+        "--nl",
+        action="store",
+        default="2",
+        help="Number of Locales to run Arkouda with. "
+        "Defaults to 2. If Arkouda is not configured for multi_locale, 1 locale is used",
     )
     parser.addoption(
-        "--trials", action="store", default="5",
-        help="Benchmark only option. Number of times to run each test before averaging results. For tests that run "
-             "as many trials as possible in a given time, will be treated as number of seconds to run for."
+        "--size",
+        action="store",
+        default="10**2",
+        help="Problem size: length of array to use for tests/benchmarks. For some cases, this will "
+        "be multiplied by the number of locales.",
     )
     parser.addoption(
-        "--seed", action="store", default="",
-        help="Benchmark only option. Value to initialize random number generator."
-    )
-    parser.addoption(
-        "--dtype", action="store", default="",
-        help="Benchmark only option. Dtypes to run benchmarks against. Comma separated list "
-             "(NO SPACES) allowing for multiple. Accepted values: int64, uint64, bigint, float64, bool, str and mixed."
-             "Mixed is used to generate sets of multiple types."
-    )
-    parser.addoption(
-        "--numpy", action="store_true", default=False,
-        help="Benchmark only option. When set, runs numpy comparison benchmarks."
-    )
-    parser.addoption(
-        "--maxbits", action="store", default="-1",
-        help="Benchmark only option. Only applies to bigint testing."
-             "Maximum number of bits, so values > 2**max_bits will wraparound. -1 is interpreted as no maximum."
-    )
-    parser.addoption(
-        "--alpha", action="store", default="1.0",
-        help="Benchmark only option. Scalar multiple"
-    )
-    parser.addoption(
-        "--randomize", action="store_true", default=False,
-        help="Benchmark only option. Fill arrays with random values instead of ones"
-    )
-    parser.addoption(
-        "--index_size", action="store", default="",
-        help="Benchmark only option. Length of index array (number of gathers to perform)"
-    )
-    parser.addoption(
-        "--value_size", action="store", default="",
-        help="Benchmark only option. Length of array from which values are gathered"
-    )
-    parser.addoption(
-        "--encoding", action="store", default="",
-        help="Benchmark only option. Only applies to encoding benchmarks."
-             "Comma separated list (NO SPACES) allowing for multiple"
-             "Encoding to be used. Accepted values: idna, ascii"
-    )
-    parser.addoption(
-        "--io_only_write", action="store_true", default=False,
-        help="Benchmark only option. Only write the files; files will not be removed"
-    )
-    parser.addoption(
-        "--io_only_read", action="store_true", default=False,
-        help="Benchmark only option. Only read the files; files will not be removed"
-    )
-    parser.addoption(
-        "--io_only_delete", action="store_true", default=False,
-        help="Benchmark only option. Only delete files created from writing with this benchmark"
-    )
-    parser.addoption(
-        "--io_files_per_loc", action="store", default="1",
-        help="Benchmark only option. Number of files to create per locale"
-    )
-    parser.addoption(
-        "--io_compression", action="store", default="",
-        help="Benchmark only option. Compression types to run IO benchmarks against. Comma delimited list"
-             "(NO SPACES) allowing for multiple. Accepted values: none, snappy, gzip, brotli, zstd, and lz4"
-    )
-    parser.addoption(
-        "--io_path", action="store", default=os.path.join(os.getcwd(), "ak_io_benchmark"),
-        help="Benchmark only option. Target path for measuring read/write rates",
+        "--seed", action="store", default="", help="Value to initialize random number generator."
     )
 
 
@@ -100,27 +49,83 @@ def pytest_collection_modifyitems(config, items):
             item.add_marker(skip_parquet)
 
 
+def _get_test_locales(config):
+    """
+    Set the number of locales to run Arkouda with.
+    The default is 2 provided Arkouda is configured for multi-locale.
+    Otherwise, 1 locale will be used
+    """
+    return eval(config.getoption("nl")) if is_multilocale_arkouda() else 1
+
+
 def pytest_configure(config):
     config.addinivalue_line("markers", "optional_parquet: mark test as slow to run")
-    port = int(os.getenv("ARKOUDA_SERVER_PORT", 5555))
-    server = os.getenv("ARKOUDA_SERVER_HOST", "localhost")
-    test_server_mode = TestRunningMode(os.getenv("ARKOUDA_RUNNING_MODE", "GLOBAL_SERVER"))
+    pytest.port = int(os.getenv("ARKOUDA_SERVER_PORT", 5555))
+    pytest.server = os.getenv("ARKOUDA_SERVER_HOST", "localhost")
+    pytest.timeout = int(os.getenv("ARKOUDA_CLIENT_TIMEOUT", 5))
+    pytest.verbose = bool(os.getenv("ARKOUDA_VERBOSE", False))
+    pytest.nl = _get_test_locales(config)
+    pytest.seed = None if config.getoption("seed") == "" else eval(config.getoption("seed"))
+    pytest.prob_size = [eval(x) for x in config.getoption("size").split(",")]
+    pytest.test_running_mode = TestRunningMode(os.getenv("ARKOUDA_RUNNING_MODE", "CLASS_SERVER"))
 
-    if TestRunningMode.GLOBAL_SERVER == test_server_mode:
+
+@pytest.fixture(scope="session", autouse=True)
+def startup_teardown():
+    test_running_mode = pytest.test_running_mode
+
+    if not importlib.util.find_spec("pytest") or not importlib.util.find_spec("pytest_env"):
+        raise EnvironmentError("pytest and pytest-env must be installed")
+    if TestRunningMode.CLASS_SERVER == test_running_mode:
         try:
-            nl = get_arkouda_numlocales()
-            server, _, _ = start_arkouda_server(numlocales=nl, port=port)
+            pytest.server, _, _ = start_arkouda_server(numlocales=pytest.nl, port=pytest.port)
             print(
-                (
-                    "Started arkouda_server in GLOBAL_SERVER running mode host: {} "
-                    + "port: {} locales: {}"
-                ).format(server, port, nl)
+                "Started arkouda_server in TEST_CLASS mode with "
+                "host: {} port: {} locales: {}".format(pytest.server, pytest.port, pytest.nl)
             )
         except Exception as e:
             raise RuntimeError(
-                "in configuring or starting the arkouda_server: {}, check "
-                + "environment and/or arkouda_server installation",
-                e,
+                f"in configuring or starting the arkouda_server: {e}, check "
+                + "environment and/or arkouda_server installation"
             )
     else:
-        print("in client stack test mode with host: {} port: {}".format(server, port))
+        print("in client stack test mode with host: {} port: {}".format(pytest.server, pytest.port))
+
+    yield
+
+    if TestRunningMode.CLASS_SERVER == test_running_mode:
+        try:
+            stop_arkouda_server()
+        except Exception:
+            pass
+
+
+@pytest.fixture(scope="class", autouse=True)
+def manage_connection():
+    import arkouda as ak
+
+    try:
+        ak.connect(server=pytest.server, port=pytest.port, timeout=pytest.timeout)
+
+        pytest.max_rank = get_max_array_rank()
+
+    except Exception as e:
+        raise ConnectionError(e)
+
+    yield
+
+    try:
+        ak.disconnect()
+    except Exception as e:
+        raise ConnectionError(e)
+
+
+@pytest.fixture(autouse=True)
+def skip_by_rank(request):
+    if request.node.get_closest_marker("skip_if_max_rank_less_than"):
+        if request.node.get_closest_marker("skip_if_max_rank_less_than").args[0] > pytest.max_rank:
+            pytest.skip("this test requires server with max_array_dims >= {}".format(pytest.max_rank))
+
+    if request.node.get_closest_marker("skip_if_max_rank_greater_than"):
+        if request.node.get_closest_marker("skip_if_max_rank_greater_than").args[0] < pytest.max_rank:
+            pytest.skip("this test requires server with max_array_dims =< {}".format(pytest.max_rank))

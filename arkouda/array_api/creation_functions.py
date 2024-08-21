@@ -6,8 +6,8 @@ from arkouda.client import generic_msg
 import numpy as np
 from arkouda.pdarrayclass import create_pdarray, pdarray, _to_pdarray
 from arkouda.pdarraycreation import scalar_array
-from arkouda.dtypes import dtype as akdtype
-from arkouda.dtypes import resolve_scalar_dtype
+from arkouda.numpy.dtypes import dtype as akdtype
+from arkouda.numpy.dtypes import resolve_scalar_dtype
 
 if TYPE_CHECKING:
     from ._typing import (

@@ -10,9 +10,9 @@ from numpy import dtype as npdtype
 from typeguard import typechecked
 
 from arkouda import Categorical, Strings
-from arkouda.dtypes import bool_ as akbool
-from arkouda.dtypes import float64 as akfloat64
-from arkouda.dtypes import int64 as akint64
+from arkouda.numpy.dtypes import bool_ as akbool
+from arkouda.numpy.dtypes import float64 as akfloat64
+from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.groupbyclass import GroupBy, unique
 from arkouda.numeric import cast as akcast
 from arkouda.pdarrayclass import RegistrationError, pdarray
@@ -179,7 +179,7 @@ class Index:
         return values != other_values
 
     def _dtype_of_list_values(self, lst):
-        from arkouda.dtypes import dtype
+        from arkouda.numpy.dtypes import dtype
 
         if isinstance(lst, list):
             d = dtype(type(lst[0]))
@@ -220,7 +220,7 @@ class Index:
         Return a string of the type inferred from the values.
         """
         if isinstance(self.values, list):
-            from arkouda.dtypes import float_scalars, int_scalars
+            from arkouda.numpy.dtypes import float_scalars, int_scalars
             from arkouda.util import _is_dtype_in_union
 
             if _is_dtype_in_union(self.dtype, int_scalars):

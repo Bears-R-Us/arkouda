@@ -6,7 +6,7 @@ does not shut down the server. Any unknown arguments are passed to the client
 script. Example usage:
 
 # run checks wih 2 locales for CHPL_COMM!=none, 1 otherwise
-./runClient PROTO_tests/tests/check.py
+./runClient tests/check.py
 
 # run stream with 4 locales, passing size to stream
 ./server_util/test/runClient ./benchmarks/stream.py -nl 4 --size=100

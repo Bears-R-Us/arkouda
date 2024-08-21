@@ -1225,10 +1225,15 @@ module HDF5Msg {
      */
     private proc writeSegmentedComponentToHdf(fileId: int, group: string, component: string, ref items: [] ?etype) throws {
         var numItems = items.size: uint(64);
-        C_HDF5.H5LTmake_dataset_WAR(fileId, "/%s/%s".format(group, component).c_str(), 1,
+        if numItems > 0 {
+            C_HDF5.H5LTmake_dataset_WAR(fileId, "/%s/%s".format(group, component).c_str(), 1,
                 c_ptrTo(numItems), getDataType(etype), c_ptrTo(items));
-
-        writeArkoudaMetaData(fileId, "%s/%s".format(group, component), "pdarray", getDataType(etype));
+            writeArkoudaMetaData(fileId, "%s/%s".format(group, component), "pdarray", getDataType(etype));
+        }
+        else {
+            // writeOffsets=false because they will be written after
+            writeNilSegmentedGroupToHdf(fileId, group, false, getDataType(etype));
+        }
     }
 
     /*

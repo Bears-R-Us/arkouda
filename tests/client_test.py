@@ -2,7 +2,7 @@ import pytest
 
 import arkouda as ak
 from arkouda.client import generic_msg
-from server_util.test.server_test_util import start_arkouda_server
+from server_util.test.server_test_util import TestRunningMode, start_arkouda_server
 
 
 class TestClient:
@@ -42,6 +42,10 @@ class TestClient:
         ak.disconnect()
         ak.connect(server=pytest.server, port=pytest.port)
 
+    @pytest.mark.skipif(
+        pytest.test_running_mode == TestRunningMode.CLIENT,
+        reason="start_arkouda_server won't restart if running mode is client",
+    )
     def test_shutdown(self):
         """
         Tests the ak.shutdown() method
@@ -67,11 +71,15 @@ class TestClient:
         assert "arkoudaVersion" in config
         assert "INFO" == config["logLevel"]
 
-        try:
-            mar = ak.client.get_max_array_rank()
-            assert mar == 1
-        except Exception as e:
-            raise AssertionError(e)
+        import json
+
+        def get_server_max_array_dims():
+            try:
+                return json.load(open("serverConfig.json", "r"))["max_array_dims"]
+            except (ValueError, FileNotFoundError, TypeError, KeyError):
+                return 1
+
+        assert get_server_max_array_dims() == ak.client.get_max_array_rank()
 
     def test_get_mem_used(self):
         """
@@ -143,7 +151,7 @@ class TestClient:
         sample of commands.
         """
         cmds = ak.client.get_server_commands()
-        for cmd in ["connect", "tondarray1D", "info", "str"]:
+        for cmd in ["connect", "info", "str"]:
             assert cmd in cmds
 
     def test_client_array_dim_cmd_error(self):
@@ -155,7 +163,10 @@ class TestClient:
         with pytest.raises(RuntimeError) as cm:
             resp = generic_msg("reduce10D")
 
-        err_msg = "Error: Command 'reduce10D' is not supported with the current server configuration as the maximum array dimensionality is 1. Please recompile with support for at least 10D arrays"
+        err_msg = (
+            f"Error: Command 'reduce10D' is not supported with the current server configuration as the maximum array dimensionality is {ak.client.get_max_array_rank()}. "
+            f"Please recompile with support for at least 10D arrays"
+        )
         cm.match(err_msg)  #   Asserts the error msg matches the expected value
 
     def test_client_nd_unimplemented_error(self):
