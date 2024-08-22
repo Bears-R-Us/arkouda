@@ -108,3 +108,125 @@ class TestIndexing:
         a = ak.arange(2**200 - 1, 2**200 + 11, max_bits=3)
         a[:] = ak.arange(2**200 - 1, 2**200 + 11)
         assert [7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2] == a.to_list()
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_compare_get_slice(self, size):
+        # create np version
+        a = np.arange(size)
+        a = a[::2]
+        # create ak version
+        b = ak.arange(size)
+        b = b[::2]
+        assert np.allclose(a, b.to_ndarray())
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_compare_set_slice_value(self, size):
+        # create np version
+        a = np.ones(size)
+        a[::2] = -1
+        # create ak version
+        b = ak.ones(size)
+        b[::2] = -1
+        assert np.allclose(a, b.to_ndarray())
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_compare_set_slice(self, size):
+        # create np version
+        a = np.ones(size)
+        a[::2] = a[::2] * -1
+        # create ak version
+        b = ak.ones(size)
+        b[::2] = b[::2] * -1
+        assert np.allclose(a, b.to_ndarray())
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_compare_get_bool_iv(self, size):
+        # create np version
+        a = np.arange(size)
+        a = a[a < size // 2]
+        # create ak version
+        b = ak.arange(size)
+        b = b[b < size // 2]
+        assert np.allclose(a, b.to_ndarray())
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_compare_set_bool_iv_value(self, size):
+        # create np version
+        a = np.arange(size)
+        a[a < size // 2] = -1
+        # create ak version
+        b = ak.arange(size)
+        b[b < size // 2] = -1
+        assert np.allclose(a, b.to_ndarray())
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def check_set_bool_iv(self, size):
+        # create np version
+        a = np.arange(size)
+        a[a < size // 2] = a[: size // 2] * -1
+        # create ak version
+        b = ak.arange(size)
+        b[b < size // 2] = b[: size // 2] * -1
+        assert np.allclose(a, b.to_ndarray())
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def check_get_integer_iv(self, size):
+        # create np version
+        a = np.arange(size)
+        iv = np.arange(size // 2)
+        a = a[iv]
+        # create ak version
+        b = ak.arange(size)
+        iv = ak.arange(size // 2)
+        b = b[iv]
+        assert np.allclose(a, b.to_ndarray())
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_compare_set_integer_iv_val(self, size):
+        # create np version
+        a = np.arange(size)
+        iv = np.arange(size // 2)
+        a[iv] = -1
+        # create ak version
+        b = ak.arange(size)
+        iv = ak.arange(size // 2)
+        b[iv] = -1
+        assert np.allclose(a, b.to_ndarray())
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_compare_set_integer_iv(self, size):
+        # create np version
+        a = np.arange(size)
+        iv = np.arange(size // 2)
+        a[iv] = iv * 10
+        # create ak version
+        b = ak.arange(size)
+        iv = ak.arange(size // 2)
+        b[iv] = iv * 10
+        assert np.allclose(a, b.to_ndarray())
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_compare_get_integer_idx(self, size):
+        # create np version
+        a = np.arange(size)
+        v1 = a[size // 2]
+        # create ak version
+        b = ak.arange(size)
+        v2 = b[size // 2]
+        assert v1 == v2
+        assert a[-1] == b[-1]
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_compare_set_integer_idx(self, size):
+        # create np version
+        a = np.arange(size)
+        a[size // 2] = -1
+        a[-1] = -1
+        v1 = a[size // 2]
+        # create ak version
+        b = ak.arange(size)
+        b[size // 2] = -1
+        b[-1] = -1
+        v2 = b[size // 2]
+        assert v1 == v2
+        assert a[-1] == b[-1]

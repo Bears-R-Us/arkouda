@@ -184,6 +184,17 @@ class TestPdarrayCreation:
         assert (uint_array == int_array).all()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", [ak.float64, ak.uint64, ak.float64])
+    @pytest.mark.parametrize("start", [0, 2, 5])
+    @pytest.mark.parametrize("stride", [1, 3])
+    def test_compare_arange(self, size, dtype, start, stride):
+        # create np version
+        nArange = np.arange(start, size, stride, dtype=dtype)
+        # create ak version
+        aArange = ak.arange(start, size, stride, dtype=dtype)
+        assert np.allclose(nArange, aArange.to_ndarray())
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("array_type", [ak.int64, ak.float64, bool])
     def test_randint_array_dtype(self, size, array_type):
         test_array = ak.randint(0, size, size, array_type)
@@ -450,6 +461,16 @@ class TestPdarrayCreation:
             (np.uint16(0), np.uint32(100), np.uint8(1000 % 256)),
         ]:
             assert (int_arr == ak.linspace(*args)).all()
+
+    @pytest.mark.parametrize("start", [0, 0.5, 2])
+    @pytest.mark.parametrize("stop", [50, 101])
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_compare_linspace(self, size, start, stop):
+        # create np version
+        a = np.linspace(start, stop, size)
+        # create ak version
+        b = ak.linspace(start, stop, size)
+        assert np.allclose(a, b.to_ndarray())
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", INT_SCALARS)
