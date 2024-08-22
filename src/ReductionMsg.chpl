@@ -465,7 +465,7 @@ module ReductionMsg
       return MsgTuple.error("nonzero is not supported for bigint arrays");
     }
 
-    proc nonzero1D(x: [?d] ?t): [] t throws {
+    proc nonzero1D(x: [?d] ?t): [] int throws {
       const nTasksPerLoc = here.maxTaskPar;
       var nnzPerTask: [0..<numLocales] [0..<nTasksPerLoc] int;
 
