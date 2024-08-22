@@ -261,29 +261,26 @@ module AryUtil
     }
 
     /*
-      Naively create a domain over a chunk of the input domain
+      Create a domain over a chunk of the input domain
 
-      Chunks are created by splitting the largest dimension of the input domain
+      Chunks are created by splitting the 0th dimension of the input domain
       into 'nChunks' roughly equal-sized chunks, and then taking the
       'chunkIdx'-th chunk
 
-      (if 'nChunks' is greater than the size of the largest dimension, the
+      (if 'nChunks' is greater than the size of the first dimension, the
       first 'nChunks-1' chunks will be empty, and the last chunk will contain
-      the entire set of indices along that dimension)
+      the entire set of indices)
     */
     proc subDomChunk(dom: domain(?), chunkIdx: int, nChunks: int): domain(?) {
-      const dimSizes = [i in 0..<dom.rank] dom.dim(i).size,
-            (maxDim, maxDimIdx) = maxloc reduce zip(dimSizes, dimSizes.domain);
-
-      const chunkSize = maxDim / nChunks,
-            start = chunkIdx * chunkSize + dom.dim(maxDimIdx).low,
+      const chunkSize = dom.dim(0).size / nChunks,
+            start = chunkIdx * chunkSize + dom.dim(0).low,
             end = if chunkIdx == nChunks-1
-              then dom.dim(maxDimIdx).high
-              else (chunkIdx+1) * chunkSize + dom.dim(maxDimIdx).low - 1;
+              then dom.dim(0).high
+              else (chunkIdx+1) * chunkSize + dom.dim(0).low - 1;
 
       var rngs: dom.rank*range;
-      for i in 0..<dom.rank do rngs[i] = dom.dim(i);
-      rngs[maxDimIdx] = start..end;
+      for i in 1..<dom.rank do rngs[i] = dom.dim(i);
+      rngs[0] = start..end;
       return {(...rngs)};
     }
 
