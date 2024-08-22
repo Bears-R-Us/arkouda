@@ -261,6 +261,70 @@ module AryUtil
     }
 
     /*
+      Split a distributed domain into roughly equally sized chunks along
+      the 0th dimension. Returns the chunks in a row-major order.
+
+      // First, splits the domain into 'numLocales' slabs, then finds each slab's
+      // intersections with the domain's local subdomains on each locale.
+
+      First, splits the domain into 'numLocales' slabs, then finds each locale's
+      subdomain's intersection with each slab.
+
+      Returns an array of `domChunk` records which contain the domain and the ID
+      of the locale where it resides. Each chunk domain is a (non-distributed)
+      subdomain of the input domain that resides only on the specified locale.
+    */
+    proc rowMajorChunks(D: domain(?)): [] domChunk(D.rank) {
+      // note: nothing special about using 'numLocales' slabs here.
+      // just assuming that if arrays are large enough to split across
+      // 10 locales, say, then 10-ish slabs would be a reasonable number to use.
+      const numSlabs = if D.dim(D.rank-1).size <= numLocales then 1 else numLocales,
+      // const numSlabs = D.dim(0).size,
+            slabDomains = for i in 0..<numSlabs do subDomChunkLast(D, i, numSlabs);
+
+      // writeln("-------------------");
+      // writeln("full domain: ", D);
+      // writeln("-------------------");
+      // writeln("slabDomains: ", slabDomains);
+      // writeln("-------------------");
+      // writeln("targetLocales: ", D.targetLocales());
+      // writeln("-------------------");
+
+      var slabSubdomIntersections = new list(domChunk(D.rank));
+
+      for slab in slabDomains {
+        for loc in D.targetLocales() {
+          const inter = slab[D.localSubdomain(loc)];
+          if inter.size > 0 {
+            slabSubdomIntersections.pushBack(new domChunk(inter, loc.id));
+          }
+        }
+      }
+
+      return slabSubdomIntersections.toArray();
+    }
+
+    // (default initialization of tuple: '(domain(...), int)' not yet supported)
+    record domChunk {
+      param rank: int;
+      var dom: domain(rank=rank, idxType=int, strides=strideKind.one);
+      var locID: int;
+
+      proc init(param rank: int) {
+        this.rank = rank;
+        var rngs: rank*range;
+        this.dom = {(...rngs)};
+        this.locID = 0;
+      }
+
+      proc init(d: domain(?), locID: int) {
+        this.rank = d.rank;
+        this.dom = d;
+        this.locID = locID;
+      }
+    }
+
+    /*
       Create a domain over a chunk of the input domain
 
       Chunks are created by splitting the 0th dimension of the input domain
@@ -281,6 +345,21 @@ module AryUtil
       var rngs: dom.rank*range;
       for i in 1..<dom.rank do rngs[i] = dom.dim(i);
       rngs[0] = start..end;
+      return {(...rngs)};
+    }
+
+    proc subDomChunkLast(dom: domain(?), chunkIdx: int, nChunks: int): domain(?) {
+      const dimIdx = dom.rank - 1;
+
+      const chunkSize = dom.dim(dimIdx).size / nChunks,
+            start = chunkIdx * chunkSize + dom.dim(dimIdx).low,
+            end = if chunkIdx == nChunks-1
+              then dom.dim(dimIdx).high
+              else (chunkIdx+1) * chunkSize + dom.dim(dimIdx).low - 1;
+
+      var rngs: dom.rank*range;
+      for i in 0..<dimIdx do rngs[i] = dom.dim(i);
+      rngs[dimIdx] = start..end;
       return {(...rngs)};
     }
 

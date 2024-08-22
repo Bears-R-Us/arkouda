@@ -44,17 +44,29 @@ class TestSearchingFunctions:
 
     @pytest.mark.skip_if_max_rank_less_than(3)
     def test_nonzero(self):
-        a = xp.zeros((4, 5, 6), dtype=ak.int64)
+        a = xp.zeros((40, 15, 16), dtype=ak.int64)
         a[0, 1, 0] = 1
         a[1, 2, 3] = 1
         a[2, 2, 2] = 1
         a[3, 2, 1] = 1
 
+        a[10, 10, 10] = 1
+        a[30, 12, 11] = 1
+        a[2, 13, 14] = 1
+        a[3, 14, 15] = 1
+
         nz = xp.nonzero(a)
 
-        assert nz[0].tolist() == [0, 1, 2, 3]
-        assert nz[1].tolist() == [1, 2, 2, 2]
-        assert nz[2].tolist() == [0, 3, 2, 1]
+        a_np = a.to_ndarray()
+        nz_np = np.nonzero(a_np)
+
+        assert nz[0].tolist() == nz_np[0].tolist()
+        assert nz[1].tolist() == nz_np[1].tolist()
+        assert nz[2].tolist() == nz_np[2].tolist()
+
+        # assert nz[0].tolist() == [0, 1, 2, 3]
+        # assert nz[1].tolist() == [1, 2, 2, 2]
+        # assert nz[2].tolist() == [0, 3, 2, 1]
 
     @pytest.mark.skip_if_max_rank_less_than(3)
     def test_where(self):
