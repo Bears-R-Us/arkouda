@@ -1109,9 +1109,149 @@ proc ark_transpose_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borr
   return LinalgMsg.transpose(cmd, msgArgs, st, array_dtype=bigint, array_nd=1);
 registerFunction('transpose<bigint,1>', ark_transpose_bigint_1, 'LinalgMsg', 289);
 
-proc ark_vecdot_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return LinalgMsg.vecdot(cmd, msgArgs, st, array_nd=1);
-registerFunction('vecdot<1>', ark_vecdot_1, 'LinalgMsg', 337);
+proc ark_vecdot_int_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=int, array_dtype_x2=int, array_nd=1);
+registerFunction('vecdot<int64,int64,1>', ark_vecdot_int_int_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_int_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=int, array_dtype_x2=uint, array_nd=1);
+registerFunction('vecdot<int64,uint64,1>', ark_vecdot_int_uint_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_int_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=int, array_dtype_x2=uint(8), array_nd=1);
+registerFunction('vecdot<int64,uint8,1>', ark_vecdot_int_uint8_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_int_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=int, array_dtype_x2=real, array_nd=1);
+registerFunction('vecdot<int64,float64,1>', ark_vecdot_int_real_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_int_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=int, array_dtype_x2=bool, array_nd=1);
+registerFunction('vecdot<int64,bool,1>', ark_vecdot_int_bool_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_int_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=int, array_dtype_x2=bigint, array_nd=1);
+registerFunction('vecdot<int64,bigint,1>', ark_vecdot_int_bigint_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_uint_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=uint, array_dtype_x2=int, array_nd=1);
+registerFunction('vecdot<uint64,int64,1>', ark_vecdot_uint_int_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_uint_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=uint, array_dtype_x2=uint, array_nd=1);
+registerFunction('vecdot<uint64,uint64,1>', ark_vecdot_uint_uint_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_uint_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=uint, array_dtype_x2=uint(8), array_nd=1);
+registerFunction('vecdot<uint64,uint8,1>', ark_vecdot_uint_uint8_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_uint_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=uint, array_dtype_x2=real, array_nd=1);
+registerFunction('vecdot<uint64,float64,1>', ark_vecdot_uint_real_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_uint_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=uint, array_dtype_x2=bool, array_nd=1);
+registerFunction('vecdot<uint64,bool,1>', ark_vecdot_uint_bool_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_uint_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=uint, array_dtype_x2=bigint, array_nd=1);
+registerFunction('vecdot<uint64,bigint,1>', ark_vecdot_uint_bigint_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_uint8_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=uint(8), array_dtype_x2=int, array_nd=1);
+registerFunction('vecdot<uint8,int64,1>', ark_vecdot_uint8_int_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_uint8_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=uint(8), array_dtype_x2=uint, array_nd=1);
+registerFunction('vecdot<uint8,uint64,1>', ark_vecdot_uint8_uint_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_uint8_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=uint(8), array_dtype_x2=uint(8), array_nd=1);
+registerFunction('vecdot<uint8,uint8,1>', ark_vecdot_uint8_uint8_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_uint8_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=uint(8), array_dtype_x2=real, array_nd=1);
+registerFunction('vecdot<uint8,float64,1>', ark_vecdot_uint8_real_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_uint8_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=uint(8), array_dtype_x2=bool, array_nd=1);
+registerFunction('vecdot<uint8,bool,1>', ark_vecdot_uint8_bool_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_uint8_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=uint(8), array_dtype_x2=bigint, array_nd=1);
+registerFunction('vecdot<uint8,bigint,1>', ark_vecdot_uint8_bigint_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_real_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=real, array_dtype_x2=int, array_nd=1);
+registerFunction('vecdot<float64,int64,1>', ark_vecdot_real_int_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_real_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=real, array_dtype_x2=uint, array_nd=1);
+registerFunction('vecdot<float64,uint64,1>', ark_vecdot_real_uint_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_real_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=real, array_dtype_x2=uint(8), array_nd=1);
+registerFunction('vecdot<float64,uint8,1>', ark_vecdot_real_uint8_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_real_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=real, array_dtype_x2=real, array_nd=1);
+registerFunction('vecdot<float64,float64,1>', ark_vecdot_real_real_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_real_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=real, array_dtype_x2=bool, array_nd=1);
+registerFunction('vecdot<float64,bool,1>', ark_vecdot_real_bool_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_real_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=real, array_dtype_x2=bigint, array_nd=1);
+registerFunction('vecdot<float64,bigint,1>', ark_vecdot_real_bigint_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_bool_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=bool, array_dtype_x2=int, array_nd=1);
+registerFunction('vecdot<bool,int64,1>', ark_vecdot_bool_int_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_bool_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=bool, array_dtype_x2=uint, array_nd=1);
+registerFunction('vecdot<bool,uint64,1>', ark_vecdot_bool_uint_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_bool_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=bool, array_dtype_x2=uint(8), array_nd=1);
+registerFunction('vecdot<bool,uint8,1>', ark_vecdot_bool_uint8_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_bool_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=bool, array_dtype_x2=real, array_nd=1);
+registerFunction('vecdot<bool,float64,1>', ark_vecdot_bool_real_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_bool_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=bool, array_dtype_x2=bool, array_nd=1);
+registerFunction('vecdot<bool,bool,1>', ark_vecdot_bool_bool_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_bool_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=bool, array_dtype_x2=bigint, array_nd=1);
+registerFunction('vecdot<bool,bigint,1>', ark_vecdot_bool_bigint_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_bigint_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=bigint, array_dtype_x2=int, array_nd=1);
+registerFunction('vecdot<bigint,int64,1>', ark_vecdot_bigint_int_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_bigint_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=bigint, array_dtype_x2=uint, array_nd=1);
+registerFunction('vecdot<bigint,uint64,1>', ark_vecdot_bigint_uint_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_bigint_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=bigint, array_dtype_x2=uint(8), array_nd=1);
+registerFunction('vecdot<bigint,uint8,1>', ark_vecdot_bigint_uint8_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_bigint_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=bigint, array_dtype_x2=real, array_nd=1);
+registerFunction('vecdot<bigint,float64,1>', ark_vecdot_bigint_real_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_bigint_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=bigint, array_dtype_x2=bool, array_nd=1);
+registerFunction('vecdot<bigint,bool,1>', ark_vecdot_bigint_bool_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_bigint_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=bigint, array_dtype_x2=bigint, array_nd=1);
+registerFunction('vecdot<bigint,bigint,1>', ark_vecdot_bigint_bigint_1, 'LinalgMsg', 337);
 
 import ManipulationMsg;
 
