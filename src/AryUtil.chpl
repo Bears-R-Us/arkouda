@@ -301,21 +301,6 @@ module AryUtil
       return {(...rngs)};
     }
 
-    proc subDomChunkLast(dom: domain(?), chunkIdx: int, nChunks: int): domain(?) {
-      const dimIdx = dom.rank - 1;
-
-      const chunkSize = dom.dim(dimIdx).size / nChunks,
-            start = chunkIdx * chunkSize + dom.dim(dimIdx).low,
-            end = if chunkIdx == nChunks-1
-              then dom.dim(dimIdx).high
-              else (chunkIdx+1) * chunkSize + dom.dim(dimIdx).low - 1;
-
-      var rngs: dom.rank*range;
-      for i in 0..<dimIdx do rngs[i] = dom.dim(i);
-      rngs[dimIdx] = start..end;
-      return {(...rngs)};
-    }
-
     /*
       Modify an array shape by making the specified axes degenerate.
 
