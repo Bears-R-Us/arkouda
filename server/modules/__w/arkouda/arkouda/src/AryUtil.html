@@ -285,16 +285,26 @@ Then, domOffAxis(D, 0, 1) will return D sliced with {0..0, 0..0, 1..1000}
 <em class="property"><span class="pre">iter</span> </em><span class="sig-name descname"><span class="pre">axisSlices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">param</span> <span class="pre">tag:</span> <span class="pre">iterKind</span></em>, <em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">axes:</span> <span class="pre">list(int)</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">(domain(?),</span> <span class="pre">D.rank*int)</span> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">tag</span> <span class="pre">==</span> <span class="pre">iterKind.standalone</span></em></dt>
 <dd></dd></dl>
 
+<dl class="chpl iterfunction">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">iter</span> </em><span class="sig-name descname"><span class="pre">axisSlices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">int</span> <span class="pre">...?N</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">(domain(?),</span> <span class="pre">D.rank*int)</span> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">N</span> <span class="pre">&lt;=</span> <span class="pre">D.rank</span></em></dt>
+<dd></dd></dl>
+
+<dl class="chpl iterfunction">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">iter</span> </em><span class="sig-name descname"><span class="pre">axisSlices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">param</span> <span class="pre">tag:</span> <span class="pre">iterKind</span></em>, <em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">int</span> <span class="pre">...?N</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">(domain(?),</span> <span class="pre">D.rank*int)</span> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">tag</span> <span class="pre">==</span> <span class="pre">iterKind.standalone</span> <span class="pre">&amp;&amp;</span> <span class="pre">N</span> <span class="pre">&lt;=</span> <span class="pre">D.rank</span></em></dt>
+<dd></dd></dl>
+
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.subDomChunk">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">subDomChunk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dom:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">chunkIdx:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">nChunks:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">domain(?)</span></em><a class="headerlink" href="#AryUtil.subDomChunk" title="Link to this definition">¶</a></dt>
-<dd><p>Naively create a domain over a chunk of the input domain</p>
-<p>Chunks are created by splitting the largest dimension of the input domain
+<dd><p>Create a domain over a chunk of the input domain</p>
+<p>Chunks are created by splitting the 0th dimension of the input domain
 into ‘nChunks’ roughly equal-sized chunks, and then taking the
 ‘chunkIdx’-th chunk</p>
-<p>(if ‘nChunks’ is greater than the size of the largest dimension, the
+<p>(if ‘nChunks’ is greater than the size of the first dimension, the
 first ‘nChunks-1’ chunks will be empty, and the last chunk will contain
-the entire set of indices along that dimension)</p>
+the entire set of indices)</p>
 </dd></dl>
 
 <dl class="chpl function">
