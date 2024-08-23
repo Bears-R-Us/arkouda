@@ -1773,6 +1773,32 @@ proc ark_shuffle_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrow
   return RandMsg.shuffle(cmd, msgArgs, st, array_dtype=bigint, array_nd=1);
 registerFunction('shuffle<bigint,1>', ark_shuffle_bigint_1, 'RandMsg', 696);
 
+import ReductionMsg;
+
+proc ark_nonzero_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ReductionMsg.nonzero(cmd, msgArgs, st, array_dtype=int, array_nd=1);
+registerFunction('nonzero<int64,1>', ark_nonzero_int_1, 'ReductionMsg', 325);
+
+proc ark_nonzero_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ReductionMsg.nonzero(cmd, msgArgs, st, array_dtype=uint, array_nd=1);
+registerFunction('nonzero<uint64,1>', ark_nonzero_uint_1, 'ReductionMsg', 325);
+
+proc ark_nonzero_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ReductionMsg.nonzero(cmd, msgArgs, st, array_dtype=uint(8), array_nd=1);
+registerFunction('nonzero<uint8,1>', ark_nonzero_uint8_1, 'ReductionMsg', 325);
+
+proc ark_nonzero_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ReductionMsg.nonzero(cmd, msgArgs, st, array_dtype=real, array_nd=1);
+registerFunction('nonzero<float64,1>', ark_nonzero_real_1, 'ReductionMsg', 325);
+
+proc ark_nonzero_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ReductionMsg.nonzero(cmd, msgArgs, st, array_dtype=bool, array_nd=1);
+registerFunction('nonzero<bool,1>', ark_nonzero_bool_1, 'ReductionMsg', 325);
+
+proc ark_nonzero_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ReductionMsg.nonzero(cmd, msgArgs, st, array_dtype=bigint, array_nd=1);
+registerFunction('nonzero<bigint,1>', ark_nonzero_bigint_1, 'ReductionMsg', 325);
+
 import StatsMsg;
 
 proc ark_reg_mean_generic(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype_0, param array_nd_0: int): MsgTuple throws {
