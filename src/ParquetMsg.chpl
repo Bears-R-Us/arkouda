@@ -1029,7 +1029,8 @@ module ParquetMsg {
             byteSizes = calcStrSizesAndOffset(entrySeg.a, filenames, sizes, dsetname);
           } else {
             entrySeg.a = fixedLen;
-            byteSizes = fixedLen*len;
+            for i in sizes.domain do
++              byteSizes[i] = fixedLen*sizes[i];
           }
           entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
 
