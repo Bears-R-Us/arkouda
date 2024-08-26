@@ -24,6 +24,32 @@ param regConfig = """
 }
 """;
 
+import ArgSortMsg;
+
+proc ark_argsort_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ArgSortMsg.argsort(cmd, msgArgs, st, array_dtype=int, array_nd=1);
+registerFunction('argsort<int64,1>', ark_argsort_int_1, 'ArgSortMsg', 428);
+
+proc ark_argsort_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ArgSortMsg.argsort(cmd, msgArgs, st, array_dtype=uint, array_nd=1);
+registerFunction('argsort<uint64,1>', ark_argsort_uint_1, 'ArgSortMsg', 428);
+
+proc ark_argsort_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ArgSortMsg.argsort(cmd, msgArgs, st, array_dtype=uint(8), array_nd=1);
+registerFunction('argsort<uint8,1>', ark_argsort_uint8_1, 'ArgSortMsg', 428);
+
+proc ark_argsort_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ArgSortMsg.argsort(cmd, msgArgs, st, array_dtype=real, array_nd=1);
+registerFunction('argsort<float64,1>', ark_argsort_real_1, 'ArgSortMsg', 428);
+
+proc ark_argsort_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ArgSortMsg.argsort(cmd, msgArgs, st, array_dtype=bool, array_nd=1);
+registerFunction('argsort<bool,1>', ark_argsort_bool_1, 'ArgSortMsg', 428);
+
+proc ark_argsort_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ArgSortMsg.argsort(cmd, msgArgs, st, array_dtype=bigint, array_nd=1);
+registerFunction('argsort<bigint,1>', ark_argsort_bigint_1, 'ArgSortMsg', 428);
+
 import CastMsg;
 
 proc ark_cast_int_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
@@ -302,27 +328,27 @@ proc ark_reg_setIndexToValue_generic(cmd: string, msgArgs: borrowed MessageArgs,
 
 proc ark__int__val_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ark_reg_setIndexToValue_generic(cmd, msgArgs, st, array_dtype_0=int, array_nd_0=1);
-registerFunction('[int]=val<int64,1>', ark__int__val_int_1, 'IndexingMsg', 504);
+registerFunction('[int]=val<int64,1>', ark__int__val_int_1, 'IndexingMsg', 506);
 
 proc ark__int__val_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ark_reg_setIndexToValue_generic(cmd, msgArgs, st, array_dtype_0=uint, array_nd_0=1);
-registerFunction('[int]=val<uint64,1>', ark__int__val_uint_1, 'IndexingMsg', 504);
+registerFunction('[int]=val<uint64,1>', ark__int__val_uint_1, 'IndexingMsg', 506);
 
 proc ark__int__val_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ark_reg_setIndexToValue_generic(cmd, msgArgs, st, array_dtype_0=uint(8), array_nd_0=1);
-registerFunction('[int]=val<uint8,1>', ark__int__val_uint8_1, 'IndexingMsg', 504);
+registerFunction('[int]=val<uint8,1>', ark__int__val_uint8_1, 'IndexingMsg', 506);
 
 proc ark__int__val_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ark_reg_setIndexToValue_generic(cmd, msgArgs, st, array_dtype_0=real, array_nd_0=1);
-registerFunction('[int]=val<float64,1>', ark__int__val_real_1, 'IndexingMsg', 504);
+registerFunction('[int]=val<float64,1>', ark__int__val_real_1, 'IndexingMsg', 506);
 
 proc ark__int__val_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ark_reg_setIndexToValue_generic(cmd, msgArgs, st, array_dtype_0=bool, array_nd_0=1);
-registerFunction('[int]=val<bool,1>', ark__int__val_bool_1, 'IndexingMsg', 504);
+registerFunction('[int]=val<bool,1>', ark__int__val_bool_1, 'IndexingMsg', 506);
 
 proc ark__int__val_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ark_reg_setIndexToValue_generic(cmd, msgArgs, st, array_dtype_0=bigint, array_nd_0=1);
-registerFunction('[int]=val<bigint,1>', ark__int__val_bigint_1, 'IndexingMsg', 504);
+registerFunction('[int]=val<bigint,1>', ark__int__val_bigint_1, 'IndexingMsg', 506);
 
 proc ark_reg_setSliceIndexToValue_generic(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype_0, param array_nd_0: int): MsgTuple throws {
   var array_array_sym = st[msgArgs['array']]: SymEntry(array_dtype_0, array_nd_0);
@@ -339,27 +365,27 @@ proc ark_reg_setSliceIndexToValue_generic(cmd: string, msgArgs: borrowed Message
 
 proc ark__slice__val_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ark_reg_setSliceIndexToValue_generic(cmd, msgArgs, st, array_dtype_0=int, array_nd_0=1);
-registerFunction('[slice]=val<int64,1>', ark__slice__val_int_1, 'IndexingMsg', 916);
+registerFunction('[slice]=val<int64,1>', ark__slice__val_int_1, 'IndexingMsg', 918);
 
 proc ark__slice__val_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ark_reg_setSliceIndexToValue_generic(cmd, msgArgs, st, array_dtype_0=uint, array_nd_0=1);
-registerFunction('[slice]=val<uint64,1>', ark__slice__val_uint_1, 'IndexingMsg', 916);
+registerFunction('[slice]=val<uint64,1>', ark__slice__val_uint_1, 'IndexingMsg', 918);
 
 proc ark__slice__val_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ark_reg_setSliceIndexToValue_generic(cmd, msgArgs, st, array_dtype_0=uint(8), array_nd_0=1);
-registerFunction('[slice]=val<uint8,1>', ark__slice__val_uint8_1, 'IndexingMsg', 916);
+registerFunction('[slice]=val<uint8,1>', ark__slice__val_uint8_1, 'IndexingMsg', 918);
 
 proc ark__slice__val_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ark_reg_setSliceIndexToValue_generic(cmd, msgArgs, st, array_dtype_0=real, array_nd_0=1);
-registerFunction('[slice]=val<float64,1>', ark__slice__val_real_1, 'IndexingMsg', 916);
+registerFunction('[slice]=val<float64,1>', ark__slice__val_real_1, 'IndexingMsg', 918);
 
 proc ark__slice__val_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ark_reg_setSliceIndexToValue_generic(cmd, msgArgs, st, array_dtype_0=bool, array_nd_0=1);
-registerFunction('[slice]=val<bool,1>', ark__slice__val_bool_1, 'IndexingMsg', 916);
+registerFunction('[slice]=val<bool,1>', ark__slice__val_bool_1, 'IndexingMsg', 918);
 
 proc ark__slice__val_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ark_reg_setSliceIndexToValue_generic(cmd, msgArgs, st, array_dtype_0=bigint, array_nd_0=1);
-registerFunction('[slice]=val<bigint,1>', ark__slice__val_bigint_1, 'IndexingMsg', 916);
+registerFunction('[slice]=val<bigint,1>', ark__slice__val_bigint_1, 'IndexingMsg', 918);
 
 proc ark_arrayViewIntIndex_int(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.arrayViewIntIndex(cmd, msgArgs, st, array_dtype=int);
@@ -411,435 +437,821 @@ registerFunction('arrayViewIntIndexAssign<bigint>', ark_arrayViewIntIndexAssign_
 
 proc ark__pdarray__int_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=int, array_dtype_idx=int, array_nd=1);
-registerFunction('[pdarray]<int64,int64,1>', ark__pdarray__int_int_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<int64,int64,1>', ark__pdarray__int_int_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__int_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=int, array_dtype_idx=uint, array_nd=1);
-registerFunction('[pdarray]<int64,uint64,1>', ark__pdarray__int_uint_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<int64,uint64,1>', ark__pdarray__int_uint_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__int_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=int, array_dtype_idx=uint(8), array_nd=1);
-registerFunction('[pdarray]<int64,uint8,1>', ark__pdarray__int_uint8_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<int64,uint8,1>', ark__pdarray__int_uint8_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__int_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=int, array_dtype_idx=real, array_nd=1);
-registerFunction('[pdarray]<int64,float64,1>', ark__pdarray__int_real_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<int64,float64,1>', ark__pdarray__int_real_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__int_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=int, array_dtype_idx=bool, array_nd=1);
-registerFunction('[pdarray]<int64,bool,1>', ark__pdarray__int_bool_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<int64,bool,1>', ark__pdarray__int_bool_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__int_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=int, array_dtype_idx=bigint, array_nd=1);
-registerFunction('[pdarray]<int64,bigint,1>', ark__pdarray__int_bigint_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<int64,bigint,1>', ark__pdarray__int_bigint_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__uint_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=uint, array_dtype_idx=int, array_nd=1);
-registerFunction('[pdarray]<uint64,int64,1>', ark__pdarray__uint_int_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<uint64,int64,1>', ark__pdarray__uint_int_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__uint_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=uint, array_dtype_idx=uint, array_nd=1);
-registerFunction('[pdarray]<uint64,uint64,1>', ark__pdarray__uint_uint_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<uint64,uint64,1>', ark__pdarray__uint_uint_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__uint_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=uint, array_dtype_idx=uint(8), array_nd=1);
-registerFunction('[pdarray]<uint64,uint8,1>', ark__pdarray__uint_uint8_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<uint64,uint8,1>', ark__pdarray__uint_uint8_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__uint_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=uint, array_dtype_idx=real, array_nd=1);
-registerFunction('[pdarray]<uint64,float64,1>', ark__pdarray__uint_real_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<uint64,float64,1>', ark__pdarray__uint_real_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__uint_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=uint, array_dtype_idx=bool, array_nd=1);
-registerFunction('[pdarray]<uint64,bool,1>', ark__pdarray__uint_bool_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<uint64,bool,1>', ark__pdarray__uint_bool_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__uint_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=uint, array_dtype_idx=bigint, array_nd=1);
-registerFunction('[pdarray]<uint64,bigint,1>', ark__pdarray__uint_bigint_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<uint64,bigint,1>', ark__pdarray__uint_bigint_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__uint8_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=uint(8), array_dtype_idx=int, array_nd=1);
-registerFunction('[pdarray]<uint8,int64,1>', ark__pdarray__uint8_int_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<uint8,int64,1>', ark__pdarray__uint8_int_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__uint8_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=uint(8), array_dtype_idx=uint, array_nd=1);
-registerFunction('[pdarray]<uint8,uint64,1>', ark__pdarray__uint8_uint_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<uint8,uint64,1>', ark__pdarray__uint8_uint_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__uint8_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=uint(8), array_dtype_idx=uint(8), array_nd=1);
-registerFunction('[pdarray]<uint8,uint8,1>', ark__pdarray__uint8_uint8_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<uint8,uint8,1>', ark__pdarray__uint8_uint8_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__uint8_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=uint(8), array_dtype_idx=real, array_nd=1);
-registerFunction('[pdarray]<uint8,float64,1>', ark__pdarray__uint8_real_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<uint8,float64,1>', ark__pdarray__uint8_real_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__uint8_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=uint(8), array_dtype_idx=bool, array_nd=1);
-registerFunction('[pdarray]<uint8,bool,1>', ark__pdarray__uint8_bool_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<uint8,bool,1>', ark__pdarray__uint8_bool_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__uint8_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=uint(8), array_dtype_idx=bigint, array_nd=1);
-registerFunction('[pdarray]<uint8,bigint,1>', ark__pdarray__uint8_bigint_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<uint8,bigint,1>', ark__pdarray__uint8_bigint_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__real_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=real, array_dtype_idx=int, array_nd=1);
-registerFunction('[pdarray]<float64,int64,1>', ark__pdarray__real_int_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<float64,int64,1>', ark__pdarray__real_int_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__real_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=real, array_dtype_idx=uint, array_nd=1);
-registerFunction('[pdarray]<float64,uint64,1>', ark__pdarray__real_uint_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<float64,uint64,1>', ark__pdarray__real_uint_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__real_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=real, array_dtype_idx=uint(8), array_nd=1);
-registerFunction('[pdarray]<float64,uint8,1>', ark__pdarray__real_uint8_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<float64,uint8,1>', ark__pdarray__real_uint8_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__real_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=real, array_dtype_idx=real, array_nd=1);
-registerFunction('[pdarray]<float64,float64,1>', ark__pdarray__real_real_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<float64,float64,1>', ark__pdarray__real_real_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__real_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=real, array_dtype_idx=bool, array_nd=1);
-registerFunction('[pdarray]<float64,bool,1>', ark__pdarray__real_bool_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<float64,bool,1>', ark__pdarray__real_bool_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__real_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=real, array_dtype_idx=bigint, array_nd=1);
-registerFunction('[pdarray]<float64,bigint,1>', ark__pdarray__real_bigint_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<float64,bigint,1>', ark__pdarray__real_bigint_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__bool_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=bool, array_dtype_idx=int, array_nd=1);
-registerFunction('[pdarray]<bool,int64,1>', ark__pdarray__bool_int_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<bool,int64,1>', ark__pdarray__bool_int_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__bool_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=bool, array_dtype_idx=uint, array_nd=1);
-registerFunction('[pdarray]<bool,uint64,1>', ark__pdarray__bool_uint_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<bool,uint64,1>', ark__pdarray__bool_uint_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__bool_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=bool, array_dtype_idx=uint(8), array_nd=1);
-registerFunction('[pdarray]<bool,uint8,1>', ark__pdarray__bool_uint8_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<bool,uint8,1>', ark__pdarray__bool_uint8_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__bool_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=bool, array_dtype_idx=real, array_nd=1);
-registerFunction('[pdarray]<bool,float64,1>', ark__pdarray__bool_real_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<bool,float64,1>', ark__pdarray__bool_real_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__bool_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=bool, array_dtype_idx=bool, array_nd=1);
-registerFunction('[pdarray]<bool,bool,1>', ark__pdarray__bool_bool_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<bool,bool,1>', ark__pdarray__bool_bool_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__bool_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=bool, array_dtype_idx=bigint, array_nd=1);
-registerFunction('[pdarray]<bool,bigint,1>', ark__pdarray__bool_bigint_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<bool,bigint,1>', ark__pdarray__bool_bigint_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__bigint_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=bigint, array_dtype_idx=int, array_nd=1);
-registerFunction('[pdarray]<bigint,int64,1>', ark__pdarray__bigint_int_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<bigint,int64,1>', ark__pdarray__bigint_int_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__bigint_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=bigint, array_dtype_idx=uint, array_nd=1);
-registerFunction('[pdarray]<bigint,uint64,1>', ark__pdarray__bigint_uint_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<bigint,uint64,1>', ark__pdarray__bigint_uint_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__bigint_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=bigint, array_dtype_idx=uint(8), array_nd=1);
-registerFunction('[pdarray]<bigint,uint8,1>', ark__pdarray__bigint_uint8_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<bigint,uint8,1>', ark__pdarray__bigint_uint8_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__bigint_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=bigint, array_dtype_idx=real, array_nd=1);
-registerFunction('[pdarray]<bigint,float64,1>', ark__pdarray__bigint_real_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<bigint,float64,1>', ark__pdarray__bigint_real_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__bigint_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=bigint, array_dtype_idx=bool, array_nd=1);
-registerFunction('[pdarray]<bigint,bool,1>', ark__pdarray__bigint_bool_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<bigint,bool,1>', ark__pdarray__bigint_bool_1, 'IndexingMsg', 248);
 
 proc ark__pdarray__bigint_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.multiPDArrayIndex(cmd, msgArgs, st, array_dtype_a=bigint, array_dtype_idx=bigint, array_nd=1);
-registerFunction('[pdarray]<bigint,bigint,1>', ark__pdarray__bigint_bigint_1, 'IndexingMsg', 246);
+registerFunction('[pdarray]<bigint,bigint,1>', ark__pdarray__bigint_bigint_1, 'IndexingMsg', 248);
 
 proc ark__slice__pdarray_int_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=int, array_dtype_b=int, array_nd=1);
-registerFunction('[slice]=pdarray<int64,int64,1>', ark__slice__pdarray_int_int_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<int64,int64,1>', ark__slice__pdarray_int_int_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_int_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=int, array_dtype_b=uint, array_nd=1);
-registerFunction('[slice]=pdarray<int64,uint64,1>', ark__slice__pdarray_int_uint_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<int64,uint64,1>', ark__slice__pdarray_int_uint_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_int_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=int, array_dtype_b=uint(8), array_nd=1);
-registerFunction('[slice]=pdarray<int64,uint8,1>', ark__slice__pdarray_int_uint8_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<int64,uint8,1>', ark__slice__pdarray_int_uint8_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_int_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=int, array_dtype_b=real, array_nd=1);
-registerFunction('[slice]=pdarray<int64,float64,1>', ark__slice__pdarray_int_real_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<int64,float64,1>', ark__slice__pdarray_int_real_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_int_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=int, array_dtype_b=bool, array_nd=1);
-registerFunction('[slice]=pdarray<int64,bool,1>', ark__slice__pdarray_int_bool_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<int64,bool,1>', ark__slice__pdarray_int_bool_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_int_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=int, array_dtype_b=bigint, array_nd=1);
-registerFunction('[slice]=pdarray<int64,bigint,1>', ark__slice__pdarray_int_bigint_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<int64,bigint,1>', ark__slice__pdarray_int_bigint_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_uint_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=uint, array_dtype_b=int, array_nd=1);
-registerFunction('[slice]=pdarray<uint64,int64,1>', ark__slice__pdarray_uint_int_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<uint64,int64,1>', ark__slice__pdarray_uint_int_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_uint_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=uint, array_dtype_b=uint, array_nd=1);
-registerFunction('[slice]=pdarray<uint64,uint64,1>', ark__slice__pdarray_uint_uint_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<uint64,uint64,1>', ark__slice__pdarray_uint_uint_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_uint_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=uint, array_dtype_b=uint(8), array_nd=1);
-registerFunction('[slice]=pdarray<uint64,uint8,1>', ark__slice__pdarray_uint_uint8_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<uint64,uint8,1>', ark__slice__pdarray_uint_uint8_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_uint_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=uint, array_dtype_b=real, array_nd=1);
-registerFunction('[slice]=pdarray<uint64,float64,1>', ark__slice__pdarray_uint_real_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<uint64,float64,1>', ark__slice__pdarray_uint_real_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_uint_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=uint, array_dtype_b=bool, array_nd=1);
-registerFunction('[slice]=pdarray<uint64,bool,1>', ark__slice__pdarray_uint_bool_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<uint64,bool,1>', ark__slice__pdarray_uint_bool_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_uint_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=uint, array_dtype_b=bigint, array_nd=1);
-registerFunction('[slice]=pdarray<uint64,bigint,1>', ark__slice__pdarray_uint_bigint_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<uint64,bigint,1>', ark__slice__pdarray_uint_bigint_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_uint8_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=uint(8), array_dtype_b=int, array_nd=1);
-registerFunction('[slice]=pdarray<uint8,int64,1>', ark__slice__pdarray_uint8_int_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<uint8,int64,1>', ark__slice__pdarray_uint8_int_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_uint8_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=uint(8), array_dtype_b=uint, array_nd=1);
-registerFunction('[slice]=pdarray<uint8,uint64,1>', ark__slice__pdarray_uint8_uint_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<uint8,uint64,1>', ark__slice__pdarray_uint8_uint_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_uint8_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=uint(8), array_dtype_b=uint(8), array_nd=1);
-registerFunction('[slice]=pdarray<uint8,uint8,1>', ark__slice__pdarray_uint8_uint8_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<uint8,uint8,1>', ark__slice__pdarray_uint8_uint8_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_uint8_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=uint(8), array_dtype_b=real, array_nd=1);
-registerFunction('[slice]=pdarray<uint8,float64,1>', ark__slice__pdarray_uint8_real_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<uint8,float64,1>', ark__slice__pdarray_uint8_real_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_uint8_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=uint(8), array_dtype_b=bool, array_nd=1);
-registerFunction('[slice]=pdarray<uint8,bool,1>', ark__slice__pdarray_uint8_bool_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<uint8,bool,1>', ark__slice__pdarray_uint8_bool_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_uint8_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=uint(8), array_dtype_b=bigint, array_nd=1);
-registerFunction('[slice]=pdarray<uint8,bigint,1>', ark__slice__pdarray_uint8_bigint_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<uint8,bigint,1>', ark__slice__pdarray_uint8_bigint_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_real_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=real, array_dtype_b=int, array_nd=1);
-registerFunction('[slice]=pdarray<float64,int64,1>', ark__slice__pdarray_real_int_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<float64,int64,1>', ark__slice__pdarray_real_int_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_real_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=real, array_dtype_b=uint, array_nd=1);
-registerFunction('[slice]=pdarray<float64,uint64,1>', ark__slice__pdarray_real_uint_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<float64,uint64,1>', ark__slice__pdarray_real_uint_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_real_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=real, array_dtype_b=uint(8), array_nd=1);
-registerFunction('[slice]=pdarray<float64,uint8,1>', ark__slice__pdarray_real_uint8_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<float64,uint8,1>', ark__slice__pdarray_real_uint8_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_real_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=real, array_dtype_b=real, array_nd=1);
-registerFunction('[slice]=pdarray<float64,float64,1>', ark__slice__pdarray_real_real_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<float64,float64,1>', ark__slice__pdarray_real_real_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_real_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=real, array_dtype_b=bool, array_nd=1);
-registerFunction('[slice]=pdarray<float64,bool,1>', ark__slice__pdarray_real_bool_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<float64,bool,1>', ark__slice__pdarray_real_bool_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_real_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=real, array_dtype_b=bigint, array_nd=1);
-registerFunction('[slice]=pdarray<float64,bigint,1>', ark__slice__pdarray_real_bigint_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<float64,bigint,1>', ark__slice__pdarray_real_bigint_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_bool_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=bool, array_dtype_b=int, array_nd=1);
-registerFunction('[slice]=pdarray<bool,int64,1>', ark__slice__pdarray_bool_int_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<bool,int64,1>', ark__slice__pdarray_bool_int_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_bool_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=bool, array_dtype_b=uint, array_nd=1);
-registerFunction('[slice]=pdarray<bool,uint64,1>', ark__slice__pdarray_bool_uint_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<bool,uint64,1>', ark__slice__pdarray_bool_uint_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_bool_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=bool, array_dtype_b=uint(8), array_nd=1);
-registerFunction('[slice]=pdarray<bool,uint8,1>', ark__slice__pdarray_bool_uint8_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<bool,uint8,1>', ark__slice__pdarray_bool_uint8_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_bool_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=bool, array_dtype_b=real, array_nd=1);
-registerFunction('[slice]=pdarray<bool,float64,1>', ark__slice__pdarray_bool_real_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<bool,float64,1>', ark__slice__pdarray_bool_real_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_bool_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=bool, array_dtype_b=bool, array_nd=1);
-registerFunction('[slice]=pdarray<bool,bool,1>', ark__slice__pdarray_bool_bool_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<bool,bool,1>', ark__slice__pdarray_bool_bool_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_bool_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=bool, array_dtype_b=bigint, array_nd=1);
-registerFunction('[slice]=pdarray<bool,bigint,1>', ark__slice__pdarray_bool_bigint_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<bool,bigint,1>', ark__slice__pdarray_bool_bigint_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_bigint_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=bigint, array_dtype_b=int, array_nd=1);
-registerFunction('[slice]=pdarray<bigint,int64,1>', ark__slice__pdarray_bigint_int_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<bigint,int64,1>', ark__slice__pdarray_bigint_int_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_bigint_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=bigint, array_dtype_b=uint, array_nd=1);
-registerFunction('[slice]=pdarray<bigint,uint64,1>', ark__slice__pdarray_bigint_uint_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<bigint,uint64,1>', ark__slice__pdarray_bigint_uint_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_bigint_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=bigint, array_dtype_b=uint(8), array_nd=1);
-registerFunction('[slice]=pdarray<bigint,uint8,1>', ark__slice__pdarray_bigint_uint8_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<bigint,uint8,1>', ark__slice__pdarray_bigint_uint8_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_bigint_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=bigint, array_dtype_b=real, array_nd=1);
-registerFunction('[slice]=pdarray<bigint,float64,1>', ark__slice__pdarray_bigint_real_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<bigint,float64,1>', ark__slice__pdarray_bigint_real_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_bigint_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=bigint, array_dtype_b=bool, array_nd=1);
-registerFunction('[slice]=pdarray<bigint,bool,1>', ark__slice__pdarray_bigint_bool_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<bigint,bool,1>', ark__slice__pdarray_bigint_bool_1, 'IndexingMsg', 939);
 
 proc ark__slice__pdarray_bigint_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.setSliceIndexToPdarray(cmd, msgArgs, st, array_dtype_a=bigint, array_dtype_b=bigint, array_nd=1);
-registerFunction('[slice]=pdarray<bigint,bigint,1>', ark__slice__pdarray_bigint_bigint_1, 'IndexingMsg', 937);
+registerFunction('[slice]=pdarray<bigint,bigint,1>', ark__slice__pdarray_bigint_bigint_1, 'IndexingMsg', 939);
 
 proc ark_takeAlongAxis_int_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=int, array_dtype_idx=int, array_nd=1);
-registerFunction('takeAlongAxis<int64,int64,1>', ark_takeAlongAxis_int_int_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<int64,int64,1>', ark_takeAlongAxis_int_int_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_int_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=int, array_dtype_idx=uint, array_nd=1);
-registerFunction('takeAlongAxis<int64,uint64,1>', ark_takeAlongAxis_int_uint_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<int64,uint64,1>', ark_takeAlongAxis_int_uint_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_int_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=int, array_dtype_idx=uint(8), array_nd=1);
-registerFunction('takeAlongAxis<int64,uint8,1>', ark_takeAlongAxis_int_uint8_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<int64,uint8,1>', ark_takeAlongAxis_int_uint8_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_int_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=int, array_dtype_idx=real, array_nd=1);
-registerFunction('takeAlongAxis<int64,float64,1>', ark_takeAlongAxis_int_real_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<int64,float64,1>', ark_takeAlongAxis_int_real_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_int_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=int, array_dtype_idx=bool, array_nd=1);
-registerFunction('takeAlongAxis<int64,bool,1>', ark_takeAlongAxis_int_bool_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<int64,bool,1>', ark_takeAlongAxis_int_bool_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_int_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=int, array_dtype_idx=bigint, array_nd=1);
-registerFunction('takeAlongAxis<int64,bigint,1>', ark_takeAlongAxis_int_bigint_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<int64,bigint,1>', ark_takeAlongAxis_int_bigint_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_uint_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=uint, array_dtype_idx=int, array_nd=1);
-registerFunction('takeAlongAxis<uint64,int64,1>', ark_takeAlongAxis_uint_int_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<uint64,int64,1>', ark_takeAlongAxis_uint_int_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_uint_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=uint, array_dtype_idx=uint, array_nd=1);
-registerFunction('takeAlongAxis<uint64,uint64,1>', ark_takeAlongAxis_uint_uint_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<uint64,uint64,1>', ark_takeAlongAxis_uint_uint_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_uint_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=uint, array_dtype_idx=uint(8), array_nd=1);
-registerFunction('takeAlongAxis<uint64,uint8,1>', ark_takeAlongAxis_uint_uint8_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<uint64,uint8,1>', ark_takeAlongAxis_uint_uint8_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_uint_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=uint, array_dtype_idx=real, array_nd=1);
-registerFunction('takeAlongAxis<uint64,float64,1>', ark_takeAlongAxis_uint_real_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<uint64,float64,1>', ark_takeAlongAxis_uint_real_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_uint_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=uint, array_dtype_idx=bool, array_nd=1);
-registerFunction('takeAlongAxis<uint64,bool,1>', ark_takeAlongAxis_uint_bool_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<uint64,bool,1>', ark_takeAlongAxis_uint_bool_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_uint_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=uint, array_dtype_idx=bigint, array_nd=1);
-registerFunction('takeAlongAxis<uint64,bigint,1>', ark_takeAlongAxis_uint_bigint_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<uint64,bigint,1>', ark_takeAlongAxis_uint_bigint_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_uint8_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=uint(8), array_dtype_idx=int, array_nd=1);
-registerFunction('takeAlongAxis<uint8,int64,1>', ark_takeAlongAxis_uint8_int_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<uint8,int64,1>', ark_takeAlongAxis_uint8_int_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_uint8_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=uint(8), array_dtype_idx=uint, array_nd=1);
-registerFunction('takeAlongAxis<uint8,uint64,1>', ark_takeAlongAxis_uint8_uint_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<uint8,uint64,1>', ark_takeAlongAxis_uint8_uint_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_uint8_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=uint(8), array_dtype_idx=uint(8), array_nd=1);
-registerFunction('takeAlongAxis<uint8,uint8,1>', ark_takeAlongAxis_uint8_uint8_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<uint8,uint8,1>', ark_takeAlongAxis_uint8_uint8_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_uint8_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=uint(8), array_dtype_idx=real, array_nd=1);
-registerFunction('takeAlongAxis<uint8,float64,1>', ark_takeAlongAxis_uint8_real_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<uint8,float64,1>', ark_takeAlongAxis_uint8_real_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_uint8_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=uint(8), array_dtype_idx=bool, array_nd=1);
-registerFunction('takeAlongAxis<uint8,bool,1>', ark_takeAlongAxis_uint8_bool_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<uint8,bool,1>', ark_takeAlongAxis_uint8_bool_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_uint8_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=uint(8), array_dtype_idx=bigint, array_nd=1);
-registerFunction('takeAlongAxis<uint8,bigint,1>', ark_takeAlongAxis_uint8_bigint_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<uint8,bigint,1>', ark_takeAlongAxis_uint8_bigint_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_real_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=real, array_dtype_idx=int, array_nd=1);
-registerFunction('takeAlongAxis<float64,int64,1>', ark_takeAlongAxis_real_int_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<float64,int64,1>', ark_takeAlongAxis_real_int_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_real_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=real, array_dtype_idx=uint, array_nd=1);
-registerFunction('takeAlongAxis<float64,uint64,1>', ark_takeAlongAxis_real_uint_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<float64,uint64,1>', ark_takeAlongAxis_real_uint_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_real_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=real, array_dtype_idx=uint(8), array_nd=1);
-registerFunction('takeAlongAxis<float64,uint8,1>', ark_takeAlongAxis_real_uint8_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<float64,uint8,1>', ark_takeAlongAxis_real_uint8_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_real_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=real, array_dtype_idx=real, array_nd=1);
-registerFunction('takeAlongAxis<float64,float64,1>', ark_takeAlongAxis_real_real_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<float64,float64,1>', ark_takeAlongAxis_real_real_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_real_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=real, array_dtype_idx=bool, array_nd=1);
-registerFunction('takeAlongAxis<float64,bool,1>', ark_takeAlongAxis_real_bool_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<float64,bool,1>', ark_takeAlongAxis_real_bool_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_real_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=real, array_dtype_idx=bigint, array_nd=1);
-registerFunction('takeAlongAxis<float64,bigint,1>', ark_takeAlongAxis_real_bigint_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<float64,bigint,1>', ark_takeAlongAxis_real_bigint_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_bool_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=bool, array_dtype_idx=int, array_nd=1);
-registerFunction('takeAlongAxis<bool,int64,1>', ark_takeAlongAxis_bool_int_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<bool,int64,1>', ark_takeAlongAxis_bool_int_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_bool_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=bool, array_dtype_idx=uint, array_nd=1);
-registerFunction('takeAlongAxis<bool,uint64,1>', ark_takeAlongAxis_bool_uint_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<bool,uint64,1>', ark_takeAlongAxis_bool_uint_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_bool_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=bool, array_dtype_idx=uint(8), array_nd=1);
-registerFunction('takeAlongAxis<bool,uint8,1>', ark_takeAlongAxis_bool_uint8_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<bool,uint8,1>', ark_takeAlongAxis_bool_uint8_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_bool_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=bool, array_dtype_idx=real, array_nd=1);
-registerFunction('takeAlongAxis<bool,float64,1>', ark_takeAlongAxis_bool_real_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<bool,float64,1>', ark_takeAlongAxis_bool_real_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_bool_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=bool, array_dtype_idx=bool, array_nd=1);
-registerFunction('takeAlongAxis<bool,bool,1>', ark_takeAlongAxis_bool_bool_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<bool,bool,1>', ark_takeAlongAxis_bool_bool_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_bool_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=bool, array_dtype_idx=bigint, array_nd=1);
-registerFunction('takeAlongAxis<bool,bigint,1>', ark_takeAlongAxis_bool_bigint_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<bool,bigint,1>', ark_takeAlongAxis_bool_bigint_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_bigint_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=bigint, array_dtype_idx=int, array_nd=1);
-registerFunction('takeAlongAxis<bigint,int64,1>', ark_takeAlongAxis_bigint_int_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<bigint,int64,1>', ark_takeAlongAxis_bigint_int_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_bigint_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=bigint, array_dtype_idx=uint, array_nd=1);
-registerFunction('takeAlongAxis<bigint,uint64,1>', ark_takeAlongAxis_bigint_uint_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<bigint,uint64,1>', ark_takeAlongAxis_bigint_uint_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_bigint_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=bigint, array_dtype_idx=uint(8), array_nd=1);
-registerFunction('takeAlongAxis<bigint,uint8,1>', ark_takeAlongAxis_bigint_uint8_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<bigint,uint8,1>', ark_takeAlongAxis_bigint_uint8_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_bigint_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=bigint, array_dtype_idx=real, array_nd=1);
-registerFunction('takeAlongAxis<bigint,float64,1>', ark_takeAlongAxis_bigint_real_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<bigint,float64,1>', ark_takeAlongAxis_bigint_real_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_bigint_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=bigint, array_dtype_idx=bool, array_nd=1);
-registerFunction('takeAlongAxis<bigint,bool,1>', ark_takeAlongAxis_bigint_bool_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<bigint,bool,1>', ark_takeAlongAxis_bigint_bool_1, 'IndexingMsg', 993);
 
 proc ark_takeAlongAxis_bigint_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return IndexingMsg.takeAlongAxis(cmd, msgArgs, st, array_dtype_x=bigint, array_dtype_idx=bigint, array_nd=1);
-registerFunction('takeAlongAxis<bigint,bigint,1>', ark_takeAlongAxis_bigint_bigint_1, 'IndexingMsg', 991);
+registerFunction('takeAlongAxis<bigint,bigint,1>', ark_takeAlongAxis_bigint_bigint_1, 'IndexingMsg', 993);
+
+import LinalgMsg;
+
+proc ark_eye_int(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.eye(cmd, msgArgs, st, array_dtype=int);
+registerFunction('eye<int64>', ark_eye_int, 'LinalgMsg', 26);
+
+proc ark_eye_uint(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.eye(cmd, msgArgs, st, array_dtype=uint);
+registerFunction('eye<uint64>', ark_eye_uint, 'LinalgMsg', 26);
+
+proc ark_eye_uint8(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.eye(cmd, msgArgs, st, array_dtype=uint(8));
+registerFunction('eye<uint8>', ark_eye_uint8, 'LinalgMsg', 26);
+
+proc ark_eye_real(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.eye(cmd, msgArgs, st, array_dtype=real);
+registerFunction('eye<float64>', ark_eye_real, 'LinalgMsg', 26);
+
+proc ark_eye_bool(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.eye(cmd, msgArgs, st, array_dtype=bool);
+registerFunction('eye<bool>', ark_eye_bool, 'LinalgMsg', 26);
+
+proc ark_eye_bigint(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.eye(cmd, msgArgs, st, array_dtype=bigint);
+registerFunction('eye<bigint>', ark_eye_bigint, 'LinalgMsg', 26);
+
+proc ark_tril_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.tril(cmd, msgArgs, st, array_dtype=int, array_nd=1);
+registerFunction('tril<int64,1>', ark_tril_int_1, 'LinalgMsg', 77);
+
+proc ark_tril_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.tril(cmd, msgArgs, st, array_dtype=uint, array_nd=1);
+registerFunction('tril<uint64,1>', ark_tril_uint_1, 'LinalgMsg', 77);
+
+proc ark_tril_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.tril(cmd, msgArgs, st, array_dtype=uint(8), array_nd=1);
+registerFunction('tril<uint8,1>', ark_tril_uint8_1, 'LinalgMsg', 77);
+
+proc ark_tril_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.tril(cmd, msgArgs, st, array_dtype=real, array_nd=1);
+registerFunction('tril<float64,1>', ark_tril_real_1, 'LinalgMsg', 77);
+
+proc ark_tril_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.tril(cmd, msgArgs, st, array_dtype=bool, array_nd=1);
+registerFunction('tril<bool,1>', ark_tril_bool_1, 'LinalgMsg', 77);
+
+proc ark_tril_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.tril(cmd, msgArgs, st, array_dtype=bigint, array_nd=1);
+registerFunction('tril<bigint,1>', ark_tril_bigint_1, 'LinalgMsg', 77);
+
+proc ark_triu_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.triu(cmd, msgArgs, st, array_dtype=int, array_nd=1);
+registerFunction('triu<int64,1>', ark_triu_int_1, 'LinalgMsg', 90);
+
+proc ark_triu_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.triu(cmd, msgArgs, st, array_dtype=uint, array_nd=1);
+registerFunction('triu<uint64,1>', ark_triu_uint_1, 'LinalgMsg', 90);
+
+proc ark_triu_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.triu(cmd, msgArgs, st, array_dtype=uint(8), array_nd=1);
+registerFunction('triu<uint8,1>', ark_triu_uint8_1, 'LinalgMsg', 90);
+
+proc ark_triu_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.triu(cmd, msgArgs, st, array_dtype=real, array_nd=1);
+registerFunction('triu<float64,1>', ark_triu_real_1, 'LinalgMsg', 90);
+
+proc ark_triu_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.triu(cmd, msgArgs, st, array_dtype=bool, array_nd=1);
+registerFunction('triu<bool,1>', ark_triu_bool_1, 'LinalgMsg', 90);
+
+proc ark_triu_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.triu(cmd, msgArgs, st, array_dtype=bigint, array_nd=1);
+registerFunction('triu<bigint,1>', ark_triu_bigint_1, 'LinalgMsg', 90);
+
+proc ark_matmul_int_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=int, array_dtype_x2=int, array_nd=1);
+registerFunction('matmul<int64,int64,1>', ark_matmul_int_int_1, 'LinalgMsg', 165);
+
+proc ark_matmul_int_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=int, array_dtype_x2=uint, array_nd=1);
+registerFunction('matmul<int64,uint64,1>', ark_matmul_int_uint_1, 'LinalgMsg', 165);
+
+proc ark_matmul_int_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=int, array_dtype_x2=uint(8), array_nd=1);
+registerFunction('matmul<int64,uint8,1>', ark_matmul_int_uint8_1, 'LinalgMsg', 165);
+
+proc ark_matmul_int_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=int, array_dtype_x2=real, array_nd=1);
+registerFunction('matmul<int64,float64,1>', ark_matmul_int_real_1, 'LinalgMsg', 165);
+
+proc ark_matmul_int_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=int, array_dtype_x2=bool, array_nd=1);
+registerFunction('matmul<int64,bool,1>', ark_matmul_int_bool_1, 'LinalgMsg', 165);
+
+proc ark_matmul_int_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=int, array_dtype_x2=bigint, array_nd=1);
+registerFunction('matmul<int64,bigint,1>', ark_matmul_int_bigint_1, 'LinalgMsg', 165);
+
+proc ark_matmul_uint_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=uint, array_dtype_x2=int, array_nd=1);
+registerFunction('matmul<uint64,int64,1>', ark_matmul_uint_int_1, 'LinalgMsg', 165);
+
+proc ark_matmul_uint_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=uint, array_dtype_x2=uint, array_nd=1);
+registerFunction('matmul<uint64,uint64,1>', ark_matmul_uint_uint_1, 'LinalgMsg', 165);
+
+proc ark_matmul_uint_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=uint, array_dtype_x2=uint(8), array_nd=1);
+registerFunction('matmul<uint64,uint8,1>', ark_matmul_uint_uint8_1, 'LinalgMsg', 165);
+
+proc ark_matmul_uint_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=uint, array_dtype_x2=real, array_nd=1);
+registerFunction('matmul<uint64,float64,1>', ark_matmul_uint_real_1, 'LinalgMsg', 165);
+
+proc ark_matmul_uint_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=uint, array_dtype_x2=bool, array_nd=1);
+registerFunction('matmul<uint64,bool,1>', ark_matmul_uint_bool_1, 'LinalgMsg', 165);
+
+proc ark_matmul_uint_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=uint, array_dtype_x2=bigint, array_nd=1);
+registerFunction('matmul<uint64,bigint,1>', ark_matmul_uint_bigint_1, 'LinalgMsg', 165);
+
+proc ark_matmul_uint8_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=uint(8), array_dtype_x2=int, array_nd=1);
+registerFunction('matmul<uint8,int64,1>', ark_matmul_uint8_int_1, 'LinalgMsg', 165);
+
+proc ark_matmul_uint8_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=uint(8), array_dtype_x2=uint, array_nd=1);
+registerFunction('matmul<uint8,uint64,1>', ark_matmul_uint8_uint_1, 'LinalgMsg', 165);
+
+proc ark_matmul_uint8_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=uint(8), array_dtype_x2=uint(8), array_nd=1);
+registerFunction('matmul<uint8,uint8,1>', ark_matmul_uint8_uint8_1, 'LinalgMsg', 165);
+
+proc ark_matmul_uint8_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=uint(8), array_dtype_x2=real, array_nd=1);
+registerFunction('matmul<uint8,float64,1>', ark_matmul_uint8_real_1, 'LinalgMsg', 165);
+
+proc ark_matmul_uint8_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=uint(8), array_dtype_x2=bool, array_nd=1);
+registerFunction('matmul<uint8,bool,1>', ark_matmul_uint8_bool_1, 'LinalgMsg', 165);
+
+proc ark_matmul_uint8_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=uint(8), array_dtype_x2=bigint, array_nd=1);
+registerFunction('matmul<uint8,bigint,1>', ark_matmul_uint8_bigint_1, 'LinalgMsg', 165);
+
+proc ark_matmul_real_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=real, array_dtype_x2=int, array_nd=1);
+registerFunction('matmul<float64,int64,1>', ark_matmul_real_int_1, 'LinalgMsg', 165);
+
+proc ark_matmul_real_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=real, array_dtype_x2=uint, array_nd=1);
+registerFunction('matmul<float64,uint64,1>', ark_matmul_real_uint_1, 'LinalgMsg', 165);
+
+proc ark_matmul_real_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=real, array_dtype_x2=uint(8), array_nd=1);
+registerFunction('matmul<float64,uint8,1>', ark_matmul_real_uint8_1, 'LinalgMsg', 165);
+
+proc ark_matmul_real_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=real, array_dtype_x2=real, array_nd=1);
+registerFunction('matmul<float64,float64,1>', ark_matmul_real_real_1, 'LinalgMsg', 165);
+
+proc ark_matmul_real_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=real, array_dtype_x2=bool, array_nd=1);
+registerFunction('matmul<float64,bool,1>', ark_matmul_real_bool_1, 'LinalgMsg', 165);
+
+proc ark_matmul_real_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=real, array_dtype_x2=bigint, array_nd=1);
+registerFunction('matmul<float64,bigint,1>', ark_matmul_real_bigint_1, 'LinalgMsg', 165);
+
+proc ark_matmul_bool_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=bool, array_dtype_x2=int, array_nd=1);
+registerFunction('matmul<bool,int64,1>', ark_matmul_bool_int_1, 'LinalgMsg', 165);
+
+proc ark_matmul_bool_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=bool, array_dtype_x2=uint, array_nd=1);
+registerFunction('matmul<bool,uint64,1>', ark_matmul_bool_uint_1, 'LinalgMsg', 165);
+
+proc ark_matmul_bool_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=bool, array_dtype_x2=uint(8), array_nd=1);
+registerFunction('matmul<bool,uint8,1>', ark_matmul_bool_uint8_1, 'LinalgMsg', 165);
+
+proc ark_matmul_bool_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=bool, array_dtype_x2=real, array_nd=1);
+registerFunction('matmul<bool,float64,1>', ark_matmul_bool_real_1, 'LinalgMsg', 165);
+
+proc ark_matmul_bool_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=bool, array_dtype_x2=bool, array_nd=1);
+registerFunction('matmul<bool,bool,1>', ark_matmul_bool_bool_1, 'LinalgMsg', 165);
+
+proc ark_matmul_bool_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=bool, array_dtype_x2=bigint, array_nd=1);
+registerFunction('matmul<bool,bigint,1>', ark_matmul_bool_bigint_1, 'LinalgMsg', 165);
+
+proc ark_matmul_bigint_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=bigint, array_dtype_x2=int, array_nd=1);
+registerFunction('matmul<bigint,int64,1>', ark_matmul_bigint_int_1, 'LinalgMsg', 165);
+
+proc ark_matmul_bigint_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=bigint, array_dtype_x2=uint, array_nd=1);
+registerFunction('matmul<bigint,uint64,1>', ark_matmul_bigint_uint_1, 'LinalgMsg', 165);
+
+proc ark_matmul_bigint_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=bigint, array_dtype_x2=uint(8), array_nd=1);
+registerFunction('matmul<bigint,uint8,1>', ark_matmul_bigint_uint8_1, 'LinalgMsg', 165);
+
+proc ark_matmul_bigint_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=bigint, array_dtype_x2=real, array_nd=1);
+registerFunction('matmul<bigint,float64,1>', ark_matmul_bigint_real_1, 'LinalgMsg', 165);
+
+proc ark_matmul_bigint_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=bigint, array_dtype_x2=bool, array_nd=1);
+registerFunction('matmul<bigint,bool,1>', ark_matmul_bigint_bool_1, 'LinalgMsg', 165);
+
+proc ark_matmul_bigint_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.matmul(cmd, msgArgs, st, array_dtype_x1=bigint, array_dtype_x2=bigint, array_nd=1);
+registerFunction('matmul<bigint,bigint,1>', ark_matmul_bigint_bigint_1, 'LinalgMsg', 165);
+
+proc ark_transpose_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.transpose(cmd, msgArgs, st, array_dtype=int, array_nd=1);
+registerFunction('transpose<int64,1>', ark_transpose_int_1, 'LinalgMsg', 289);
+
+proc ark_transpose_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.transpose(cmd, msgArgs, st, array_dtype=uint, array_nd=1);
+registerFunction('transpose<uint64,1>', ark_transpose_uint_1, 'LinalgMsg', 289);
+
+proc ark_transpose_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.transpose(cmd, msgArgs, st, array_dtype=uint(8), array_nd=1);
+registerFunction('transpose<uint8,1>', ark_transpose_uint8_1, 'LinalgMsg', 289);
+
+proc ark_transpose_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.transpose(cmd, msgArgs, st, array_dtype=real, array_nd=1);
+registerFunction('transpose<float64,1>', ark_transpose_real_1, 'LinalgMsg', 289);
+
+proc ark_transpose_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.transpose(cmd, msgArgs, st, array_dtype=bool, array_nd=1);
+registerFunction('transpose<bool,1>', ark_transpose_bool_1, 'LinalgMsg', 289);
+
+proc ark_transpose_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.transpose(cmd, msgArgs, st, array_dtype=bigint, array_nd=1);
+registerFunction('transpose<bigint,1>', ark_transpose_bigint_1, 'LinalgMsg', 289);
+
+proc ark_vecdot_int_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=int, array_dtype_x2=int, array_nd=1);
+registerFunction('vecdot<int64,int64,1>', ark_vecdot_int_int_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_int_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=int, array_dtype_x2=uint, array_nd=1);
+registerFunction('vecdot<int64,uint64,1>', ark_vecdot_int_uint_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_int_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=int, array_dtype_x2=uint(8), array_nd=1);
+registerFunction('vecdot<int64,uint8,1>', ark_vecdot_int_uint8_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_int_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=int, array_dtype_x2=real, array_nd=1);
+registerFunction('vecdot<int64,float64,1>', ark_vecdot_int_real_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_int_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=int, array_dtype_x2=bool, array_nd=1);
+registerFunction('vecdot<int64,bool,1>', ark_vecdot_int_bool_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_int_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=int, array_dtype_x2=bigint, array_nd=1);
+registerFunction('vecdot<int64,bigint,1>', ark_vecdot_int_bigint_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_uint_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=uint, array_dtype_x2=int, array_nd=1);
+registerFunction('vecdot<uint64,int64,1>', ark_vecdot_uint_int_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_uint_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=uint, array_dtype_x2=uint, array_nd=1);
+registerFunction('vecdot<uint64,uint64,1>', ark_vecdot_uint_uint_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_uint_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=uint, array_dtype_x2=uint(8), array_nd=1);
+registerFunction('vecdot<uint64,uint8,1>', ark_vecdot_uint_uint8_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_uint_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=uint, array_dtype_x2=real, array_nd=1);
+registerFunction('vecdot<uint64,float64,1>', ark_vecdot_uint_real_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_uint_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=uint, array_dtype_x2=bool, array_nd=1);
+registerFunction('vecdot<uint64,bool,1>', ark_vecdot_uint_bool_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_uint_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=uint, array_dtype_x2=bigint, array_nd=1);
+registerFunction('vecdot<uint64,bigint,1>', ark_vecdot_uint_bigint_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_uint8_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=uint(8), array_dtype_x2=int, array_nd=1);
+registerFunction('vecdot<uint8,int64,1>', ark_vecdot_uint8_int_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_uint8_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=uint(8), array_dtype_x2=uint, array_nd=1);
+registerFunction('vecdot<uint8,uint64,1>', ark_vecdot_uint8_uint_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_uint8_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=uint(8), array_dtype_x2=uint(8), array_nd=1);
+registerFunction('vecdot<uint8,uint8,1>', ark_vecdot_uint8_uint8_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_uint8_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=uint(8), array_dtype_x2=real, array_nd=1);
+registerFunction('vecdot<uint8,float64,1>', ark_vecdot_uint8_real_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_uint8_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=uint(8), array_dtype_x2=bool, array_nd=1);
+registerFunction('vecdot<uint8,bool,1>', ark_vecdot_uint8_bool_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_uint8_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=uint(8), array_dtype_x2=bigint, array_nd=1);
+registerFunction('vecdot<uint8,bigint,1>', ark_vecdot_uint8_bigint_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_real_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=real, array_dtype_x2=int, array_nd=1);
+registerFunction('vecdot<float64,int64,1>', ark_vecdot_real_int_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_real_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=real, array_dtype_x2=uint, array_nd=1);
+registerFunction('vecdot<float64,uint64,1>', ark_vecdot_real_uint_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_real_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=real, array_dtype_x2=uint(8), array_nd=1);
+registerFunction('vecdot<float64,uint8,1>', ark_vecdot_real_uint8_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_real_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=real, array_dtype_x2=real, array_nd=1);
+registerFunction('vecdot<float64,float64,1>', ark_vecdot_real_real_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_real_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=real, array_dtype_x2=bool, array_nd=1);
+registerFunction('vecdot<float64,bool,1>', ark_vecdot_real_bool_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_real_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=real, array_dtype_x2=bigint, array_nd=1);
+registerFunction('vecdot<float64,bigint,1>', ark_vecdot_real_bigint_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_bool_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=bool, array_dtype_x2=int, array_nd=1);
+registerFunction('vecdot<bool,int64,1>', ark_vecdot_bool_int_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_bool_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=bool, array_dtype_x2=uint, array_nd=1);
+registerFunction('vecdot<bool,uint64,1>', ark_vecdot_bool_uint_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_bool_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=bool, array_dtype_x2=uint(8), array_nd=1);
+registerFunction('vecdot<bool,uint8,1>', ark_vecdot_bool_uint8_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_bool_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=bool, array_dtype_x2=real, array_nd=1);
+registerFunction('vecdot<bool,float64,1>', ark_vecdot_bool_real_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_bool_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=bool, array_dtype_x2=bool, array_nd=1);
+registerFunction('vecdot<bool,bool,1>', ark_vecdot_bool_bool_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_bool_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=bool, array_dtype_x2=bigint, array_nd=1);
+registerFunction('vecdot<bool,bigint,1>', ark_vecdot_bool_bigint_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_bigint_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=bigint, array_dtype_x2=int, array_nd=1);
+registerFunction('vecdot<bigint,int64,1>', ark_vecdot_bigint_int_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_bigint_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=bigint, array_dtype_x2=uint, array_nd=1);
+registerFunction('vecdot<bigint,uint64,1>', ark_vecdot_bigint_uint_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_bigint_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=bigint, array_dtype_x2=uint(8), array_nd=1);
+registerFunction('vecdot<bigint,uint8,1>', ark_vecdot_bigint_uint8_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_bigint_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=bigint, array_dtype_x2=real, array_nd=1);
+registerFunction('vecdot<bigint,float64,1>', ark_vecdot_bigint_real_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_bigint_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=bigint, array_dtype_x2=bool, array_nd=1);
+registerFunction('vecdot<bigint,bool,1>', ark_vecdot_bigint_bool_1, 'LinalgMsg', 337);
+
+proc ark_vecdot_bigint_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return LinalgMsg.vecdot(cmd, msgArgs, st, array_dtype_x1=bigint, array_dtype_x2=bigint, array_nd=1);
+registerFunction('vecdot<bigint,bigint,1>', ark_vecdot_bigint_bigint_1, 'LinalgMsg', 337);
 
 import ManipulationMsg;
 
@@ -1315,51 +1727,77 @@ registerFunction('choice<bigint>', ark_choice_bigint, 'RandMsg', 503);
 
 proc ark_permutation_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.permutation(cmd, msgArgs, st, array_dtype=int, array_nd=1);
-registerFunction('permutation<int64,1>', ark_permutation_int_1, 'RandMsg', 577);
+registerFunction('permutation<int64,1>', ark_permutation_int_1, 'RandMsg', 609);
 
 proc ark_permutation_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.permutation(cmd, msgArgs, st, array_dtype=uint, array_nd=1);
-registerFunction('permutation<uint64,1>', ark_permutation_uint_1, 'RandMsg', 577);
+registerFunction('permutation<uint64,1>', ark_permutation_uint_1, 'RandMsg', 609);
 
 proc ark_permutation_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.permutation(cmd, msgArgs, st, array_dtype=uint(8), array_nd=1);
-registerFunction('permutation<uint8,1>', ark_permutation_uint8_1, 'RandMsg', 577);
+registerFunction('permutation<uint8,1>', ark_permutation_uint8_1, 'RandMsg', 609);
 
 proc ark_permutation_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.permutation(cmd, msgArgs, st, array_dtype=real, array_nd=1);
-registerFunction('permutation<float64,1>', ark_permutation_real_1, 'RandMsg', 577);
+registerFunction('permutation<float64,1>', ark_permutation_real_1, 'RandMsg', 609);
 
 proc ark_permutation_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.permutation(cmd, msgArgs, st, array_dtype=bool, array_nd=1);
-registerFunction('permutation<bool,1>', ark_permutation_bool_1, 'RandMsg', 577);
+registerFunction('permutation<bool,1>', ark_permutation_bool_1, 'RandMsg', 609);
 
 proc ark_permutation_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.permutation(cmd, msgArgs, st, array_dtype=bigint, array_nd=1);
-registerFunction('permutation<bigint,1>', ark_permutation_bigint_1, 'RandMsg', 577);
+registerFunction('permutation<bigint,1>', ark_permutation_bigint_1, 'RandMsg', 609);
 
 proc ark_shuffle_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.shuffle(cmd, msgArgs, st, array_dtype=int, array_nd=1);
-registerFunction('shuffle<int64,1>', ark_shuffle_int_1, 'RandMsg', 664);
+registerFunction('shuffle<int64,1>', ark_shuffle_int_1, 'RandMsg', 696);
 
 proc ark_shuffle_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.shuffle(cmd, msgArgs, st, array_dtype=uint, array_nd=1);
-registerFunction('shuffle<uint64,1>', ark_shuffle_uint_1, 'RandMsg', 664);
+registerFunction('shuffle<uint64,1>', ark_shuffle_uint_1, 'RandMsg', 696);
 
 proc ark_shuffle_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.shuffle(cmd, msgArgs, st, array_dtype=uint(8), array_nd=1);
-registerFunction('shuffle<uint8,1>', ark_shuffle_uint8_1, 'RandMsg', 664);
+registerFunction('shuffle<uint8,1>', ark_shuffle_uint8_1, 'RandMsg', 696);
 
 proc ark_shuffle_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.shuffle(cmd, msgArgs, st, array_dtype=real, array_nd=1);
-registerFunction('shuffle<float64,1>', ark_shuffle_real_1, 'RandMsg', 664);
+registerFunction('shuffle<float64,1>', ark_shuffle_real_1, 'RandMsg', 696);
 
 proc ark_shuffle_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.shuffle(cmd, msgArgs, st, array_dtype=bool, array_nd=1);
-registerFunction('shuffle<bool,1>', ark_shuffle_bool_1, 'RandMsg', 664);
+registerFunction('shuffle<bool,1>', ark_shuffle_bool_1, 'RandMsg', 696);
 
 proc ark_shuffle_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return RandMsg.shuffle(cmd, msgArgs, st, array_dtype=bigint, array_nd=1);
-registerFunction('shuffle<bigint,1>', ark_shuffle_bigint_1, 'RandMsg', 664);
+registerFunction('shuffle<bigint,1>', ark_shuffle_bigint_1, 'RandMsg', 696);
+
+import ReductionMsg;
+
+proc ark_nonzero_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ReductionMsg.nonzero(cmd, msgArgs, st, array_dtype=int, array_nd=1);
+registerFunction('nonzero<int64,1>', ark_nonzero_int_1, 'ReductionMsg', 325);
+
+proc ark_nonzero_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ReductionMsg.nonzero(cmd, msgArgs, st, array_dtype=uint, array_nd=1);
+registerFunction('nonzero<uint64,1>', ark_nonzero_uint_1, 'ReductionMsg', 325);
+
+proc ark_nonzero_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ReductionMsg.nonzero(cmd, msgArgs, st, array_dtype=uint(8), array_nd=1);
+registerFunction('nonzero<uint8,1>', ark_nonzero_uint8_1, 'ReductionMsg', 325);
+
+proc ark_nonzero_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ReductionMsg.nonzero(cmd, msgArgs, st, array_dtype=real, array_nd=1);
+registerFunction('nonzero<float64,1>', ark_nonzero_real_1, 'ReductionMsg', 325);
+
+proc ark_nonzero_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ReductionMsg.nonzero(cmd, msgArgs, st, array_dtype=bool, array_nd=1);
+registerFunction('nonzero<bool,1>', ark_nonzero_bool_1, 'ReductionMsg', 325);
+
+proc ark_nonzero_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ReductionMsg.nonzero(cmd, msgArgs, st, array_dtype=bigint, array_nd=1);
+registerFunction('nonzero<bigint,1>', ark_nonzero_bigint_1, 'ReductionMsg', 325);
 
 import StatsMsg;
 
@@ -1914,6 +2352,102 @@ proc ark_cumSum_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowe
   return ark_reg_cumSum_generic(cmd, msgArgs, st, array_dtype_0=bigint, array_nd_0=1);
 registerFunction('cumSum<bigint,1>', ark_cumSum_bigint_1, 'StatsMsg', 120);
 
+import UtilMsg;
+
+proc ark_reg_clip_generic(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype_0, param array_nd_0: int): MsgTuple throws {
+  var x_array_sym = st[msgArgs['x']]: SymEntry(array_dtype_0, array_nd_0);
+  ref x = x_array_sym.a;
+  var min = msgArgs['min'].toScalar(real);
+  var max = msgArgs['max'].toScalar(real);
+  var ark_result = UtilMsg.clip(x,min,max);
+  var ark_result_symbol = new shared SymEntry(ark_result);
+
+  return st.insert(ark_result_symbol);
+}
+
+proc ark_clip_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_clip_generic(cmd, msgArgs, st, array_dtype_0=int, array_nd_0=1);
+registerFunction('clip<int64,1>', ark_clip_int_1, 'UtilMsg', 27);
+
+proc ark_clip_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_clip_generic(cmd, msgArgs, st, array_dtype_0=uint, array_nd_0=1);
+registerFunction('clip<uint64,1>', ark_clip_uint_1, 'UtilMsg', 27);
+
+proc ark_clip_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_clip_generic(cmd, msgArgs, st, array_dtype_0=uint(8), array_nd_0=1);
+registerFunction('clip<uint8,1>', ark_clip_uint8_1, 'UtilMsg', 27);
+
+proc ark_clip_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_clip_generic(cmd, msgArgs, st, array_dtype_0=real, array_nd_0=1);
+registerFunction('clip<float64,1>', ark_clip_real_1, 'UtilMsg', 27);
+
+proc ark_clip_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_clip_generic(cmd, msgArgs, st, array_dtype_0=bool, array_nd_0=1);
+registerFunction('clip<bool,1>', ark_clip_bool_1, 'UtilMsg', 27);
+
+proc ark_clip_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_clip_generic(cmd, msgArgs, st, array_dtype_0=bigint, array_nd_0=1);
+registerFunction('clip<bigint,1>', ark_clip_bigint_1, 'UtilMsg', 27);
+
+proc ark_reg_diff_generic(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype_0, param array_nd_0: int): MsgTuple throws {
+  var x_array_sym = st[msgArgs['x']]: SymEntry(array_dtype_0, array_nd_0);
+  ref x = x_array_sym.a;
+  var n = msgArgs['n'].toScalar(int);
+  var axis = msgArgs['axis'].toScalar(int);
+  var ark_result = UtilMsg.diff(x,n,axis);
+  var ark_result_symbol = new shared SymEntry(ark_result);
+
+  return st.insert(ark_result_symbol);
+}
+
+proc ark_diff_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_diff_generic(cmd, msgArgs, st, array_dtype_0=int, array_nd_0=1);
+registerFunction('diff<int64,1>', ark_diff_int_1, 'UtilMsg', 58);
+
+proc ark_diff_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_diff_generic(cmd, msgArgs, st, array_dtype_0=uint, array_nd_0=1);
+registerFunction('diff<uint64,1>', ark_diff_uint_1, 'UtilMsg', 58);
+
+proc ark_diff_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_diff_generic(cmd, msgArgs, st, array_dtype_0=uint(8), array_nd_0=1);
+registerFunction('diff<uint8,1>', ark_diff_uint8_1, 'UtilMsg', 58);
+
+proc ark_diff_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_diff_generic(cmd, msgArgs, st, array_dtype_0=real, array_nd_0=1);
+registerFunction('diff<float64,1>', ark_diff_real_1, 'UtilMsg', 58);
+
+proc ark_diff_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_diff_generic(cmd, msgArgs, st, array_dtype_0=bool, array_nd_0=1);
+registerFunction('diff<bool,1>', ark_diff_bool_1, 'UtilMsg', 58);
+
+proc ark_diff_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_diff_generic(cmd, msgArgs, st, array_dtype_0=bigint, array_nd_0=1);
+registerFunction('diff<bigint,1>', ark_diff_bigint_1, 'UtilMsg', 58);
+
+proc ark_pad_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return UtilMsg.pad(cmd, msgArgs, st, array_dtype=int, array_nd=1);
+registerFunction('pad<int64,1>', ark_pad_int_1, 'UtilMsg', 125);
+
+proc ark_pad_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return UtilMsg.pad(cmd, msgArgs, st, array_dtype=uint, array_nd=1);
+registerFunction('pad<uint64,1>', ark_pad_uint_1, 'UtilMsg', 125);
+
+proc ark_pad_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return UtilMsg.pad(cmd, msgArgs, st, array_dtype=uint(8), array_nd=1);
+registerFunction('pad<uint8,1>', ark_pad_uint8_1, 'UtilMsg', 125);
+
+proc ark_pad_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return UtilMsg.pad(cmd, msgArgs, st, array_dtype=real, array_nd=1);
+registerFunction('pad<float64,1>', ark_pad_real_1, 'UtilMsg', 125);
+
+proc ark_pad_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return UtilMsg.pad(cmd, msgArgs, st, array_dtype=bool, array_nd=1);
+registerFunction('pad<bool,1>', ark_pad_bool_1, 'UtilMsg', 125);
+
+proc ark_pad_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return UtilMsg.pad(cmd, msgArgs, st, array_dtype=bigint, array_nd=1);
+registerFunction('pad<bigint,1>', ark_pad_bigint_1, 'UtilMsg', 125);
+
 import MsgProcessing;
 
 proc ark_create_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
@@ -1987,5 +2521,79 @@ registerFunction('set<bool,1>', ark_set_bool_1, 'MsgProcessing', 299);
 proc ark_set_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return MsgProcessing.setMsg(cmd, msgArgs, st, array_dtype=bigint, array_nd=1);
 registerFunction('set<bigint,1>', ark_set_bigint_1, 'MsgProcessing', 299);
+
+import GenSymIO;
+
+proc ark_array_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return GenSymIO.array(cmd, msgArgs, st, array_dtype=int, array_nd=1);
+registerFunction('array<int64,1>', ark_array_int_1, 'GenSymIO', 35);
+
+proc ark_array_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return GenSymIO.array(cmd, msgArgs, st, array_dtype=uint, array_nd=1);
+registerFunction('array<uint64,1>', ark_array_uint_1, 'GenSymIO', 35);
+
+proc ark_array_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return GenSymIO.array(cmd, msgArgs, st, array_dtype=uint(8), array_nd=1);
+registerFunction('array<uint8,1>', ark_array_uint8_1, 'GenSymIO', 35);
+
+proc ark_array_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return GenSymIO.array(cmd, msgArgs, st, array_dtype=real, array_nd=1);
+registerFunction('array<float64,1>', ark_array_real_1, 'GenSymIO', 35);
+
+proc ark_array_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return GenSymIO.array(cmd, msgArgs, st, array_dtype=bool, array_nd=1);
+registerFunction('array<bool,1>', ark_array_bool_1, 'GenSymIO', 35);
+
+proc ark_array_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return GenSymIO.array(cmd, msgArgs, st, array_dtype=bigint, array_nd=1);
+registerFunction('array<bigint,1>', ark_array_bigint_1, 'GenSymIO', 35);
+
+proc ark_arraySegString_int(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return GenSymIO.arraySegString(cmd, msgArgs, st, array_dtype=int);
+registerFunction('arraySegString<int64>', ark_arraySegString_int, 'GenSymIO', 70);
+
+proc ark_arraySegString_uint(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return GenSymIO.arraySegString(cmd, msgArgs, st, array_dtype=uint);
+registerFunction('arraySegString<uint64>', ark_arraySegString_uint, 'GenSymIO', 70);
+
+proc ark_arraySegString_uint8(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return GenSymIO.arraySegString(cmd, msgArgs, st, array_dtype=uint(8));
+registerFunction('arraySegString<uint8>', ark_arraySegString_uint8, 'GenSymIO', 70);
+
+proc ark_arraySegString_real(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return GenSymIO.arraySegString(cmd, msgArgs, st, array_dtype=real);
+registerFunction('arraySegString<float64>', ark_arraySegString_real, 'GenSymIO', 70);
+
+proc ark_arraySegString_bool(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return GenSymIO.arraySegString(cmd, msgArgs, st, array_dtype=bool);
+registerFunction('arraySegString<bool>', ark_arraySegString_bool, 'GenSymIO', 70);
+
+proc ark_arraySegString_bigint(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return GenSymIO.arraySegString(cmd, msgArgs, st, array_dtype=bigint);
+registerFunction('arraySegString<bigint>', ark_arraySegString_bigint, 'GenSymIO', 70);
+
+proc ark_tondarray_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return GenSymIO.tondarray(cmd, msgArgs, st, array_dtype=int, array_nd=1);
+registerFunction('tondarray<int64,1>', ark_tondarray_int_1, 'GenSymIO', 122);
+
+proc ark_tondarray_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return GenSymIO.tondarray(cmd, msgArgs, st, array_dtype=uint, array_nd=1);
+registerFunction('tondarray<uint64,1>', ark_tondarray_uint_1, 'GenSymIO', 122);
+
+proc ark_tondarray_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return GenSymIO.tondarray(cmd, msgArgs, st, array_dtype=uint(8), array_nd=1);
+registerFunction('tondarray<uint8,1>', ark_tondarray_uint8_1, 'GenSymIO', 122);
+
+proc ark_tondarray_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return GenSymIO.tondarray(cmd, msgArgs, st, array_dtype=real, array_nd=1);
+registerFunction('tondarray<float64,1>', ark_tondarray_real_1, 'GenSymIO', 122);
+
+proc ark_tondarray_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return GenSymIO.tondarray(cmd, msgArgs, st, array_dtype=bool, array_nd=1);
+registerFunction('tondarray<bool,1>', ark_tondarray_bool_1, 'GenSymIO', 122);
+
+proc ark_tondarray_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return GenSymIO.tondarray(cmd, msgArgs, st, array_dtype=bigint, array_nd=1);
+registerFunction('tondarray<bigint,1>', ark_tondarray_bigint_1, 'GenSymIO', 122);
 
 }

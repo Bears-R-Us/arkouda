@@ -287,6 +287,7 @@ class TestNumeric:
     host = subprocess.check_output("hostname").decode("utf-8").strip()
 
     @pytest.mark.skipif(host == "horizon", reason="Fails on horizon")
+    @pytest.mark.skip_if_max_rank_less_than(2)
     def test_histogram_multidim(self):
         # test 2d histogram
         seed = 1

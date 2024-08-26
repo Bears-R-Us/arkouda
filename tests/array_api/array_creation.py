@@ -23,6 +23,7 @@ class TestArrayCreation:
                 assert a.shape == shape
                 assert a.dtype == dtype
                 assert a.tolist() == np.zeros(shape, dtype=dtype).tolist()
+                assert isinstance(a, xp.Array)
 
     @pytest.mark.skip_if_max_rank_less_than(2)
     def test_ones(self):
@@ -34,6 +35,7 @@ class TestArrayCreation:
                 assert a.shape == shape
                 assert a.dtype == dtype
                 assert a.tolist() == np.ones(shape, dtype=dtype).tolist()
+                assert isinstance(a, xp.Array)
 
     @pytest.mark.skip_if_max_rank_less_than(2)
     def test_from_numpy(self):
@@ -46,3 +48,4 @@ class TestArrayCreation:
             assert b.ndim == a.ndim
             assert b.shape == a.shape
             assert b.tolist() == a.tolist()
+            assert isinstance(b, xp.Array)

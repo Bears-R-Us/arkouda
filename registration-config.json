@@ -1,7 +1,7 @@
 {
     "parameter_classes": {
         "array": {
-            "nd": [1,2,3,4],
+            "nd": [1],
             "dtype": [
                 "int",
                 "uint",

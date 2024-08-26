@@ -10,6 +10,8 @@ import numpy as np
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
+from arkouda.infoclass import information, pretty_print_information
+from arkouda.logger import getArkoudaLogger
 from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, DTypes, bigint
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import dtype
@@ -27,8 +29,6 @@ from arkouda.numpy.dtypes import (
 )
 from arkouda.numpy.dtypes import str_ as akstr_
 from arkouda.numpy.dtypes import uint64 as akuint64
-from arkouda.infoclass import information, pretty_print_information
-from arkouda.logger import getArkoudaLogger
 
 __all__ = [
     "pdarray",
@@ -1757,6 +1757,7 @@ class pdarray:
         pdarray
             a pdarray with the same data, reshaped to the new shape
         """
+        import arkouda.array_api as xp
 
         # allows the elements of the shape parameter to be passed in as separate arguments
         # For example, a.reshape(10, 11) is equivalent to a.reshape((10, 11))
@@ -1764,15 +1765,24 @@ class pdarray:
             shape = shape[0]
         elif not isinstance(shape, pdarray):
             shape = [i for i in shape]
-        return create_pdarray(
-            generic_msg(
-                cmd=f"reshape<{self.dtype},{self.ndim},{len(shape)}>",
-                args={
-                    "name": self.name,
-                    "shape": shape,
-                },
-            ),
-        )
+
+        try:
+            return xp.Array._new(
+                create_pdarray(
+                    cast(
+                        str,
+                        generic_msg(
+                            cmd=f"reshape<{self.dtype},{self.ndim},{len(shape)}>",
+                            args={
+                                "name": self.name,
+                                "shape": shape,
+                            },
+                        ),
+                    )
+                )
+            )
+        except RuntimeError as e:
+            raise ValueError(f"Failed to reshape array: {e}")
 
     def to_ndarray(self) -> np.ndarray:
         """
@@ -1835,9 +1845,7 @@ class pdarray:
         data = cast(
             memoryview,
             generic_msg(
-                cmd=f"tondarray<{self.dtype},{self.ndim}>",
-                args={"array": self},
-                recv_binary=True
+                cmd=f"tondarray<{self.dtype},{self.ndim}>", args={"array": self}, recv_binary=True
             ),
         )
         # Make sure the received data has the expected length
@@ -2608,7 +2616,7 @@ def create_pdarrays(repMsg: str) -> List[pdarray]:
     # TODO: maybe add more robust json parsing here
     try:
         repMsg = repMsg.strip("[]")
-        responses = [r.strip().strip('\"') for r in repMsg.split("\",")]
+        responses = [r.strip().strip('"') for r in repMsg.split('",')]
         return [create_pdarray(response) for response in responses]
     except Exception as e:
         raise ValueError(e)
@@ -3106,10 +3114,7 @@ def cov(x: pdarray, y: pdarray) -> np.float64:
     ``cov = ((x - x.mean()) * (y - y.mean())).sum() / (x.size - 1)``.
     """
     return parse_single_value(
-        generic_msg(
-            cmd=f"cov<{x.dtype},{x.ndim},{y.dtype},{y.ndim}>",
-            args={"x": x, "y": y}
-        )
+        generic_msg(cmd=f"cov<{x.dtype},{x.ndim},{y.dtype},{y.ndim}>", args={"x": x, "y": y})
     )
 
 
@@ -3147,10 +3152,7 @@ def corr(x: pdarray, y: pdarray) -> np.float64:
     cov(x, y) / (x.std(ddof=1) * y.std(ddof=1))
     """
     return parse_single_value(
-        generic_msg(
-            cmd=f"corr<{x.dtype},{x.ndim},{y.dtype},{y.ndim}>",
-            args={"x": x, "y": y}
-        )
+        generic_msg(cmd=f"corr<{x.dtype},{x.ndim},{y.dtype},{y.ndim}>", args={"x": x, "y": y})
     )
 
 
