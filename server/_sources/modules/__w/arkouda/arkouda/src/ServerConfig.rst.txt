@@ -62,7 +62,7 @@ arkouda server config param and config const
 
    
    maximum array dimensionality supported by the server
-   set by 'serverModuleGen.py' based on 'serverConfig.json'
+   set in 'registration-config.json'
    
 
 .. data:: config const deployment = Deployment.STANDARD
