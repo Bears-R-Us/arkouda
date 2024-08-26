@@ -285,39 +285,23 @@ module LinalgMsg {
 
     // Transpose an array.
 
-    @arkouda.instantiateAndRegister
-    proc transpose(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws 
-        where array_nd >= 2 {
-
-        const name = msgArgs.getValueOf("array");
-
-        linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-            "cmd: %s dtype: %s".format(cmd,type2str(array_dtype)));
-
-        // get the input array, copy its shape
-
-        var eIn = st[name]: borrowed SymEntry(array_dtype, array_nd),
-            outShape = eIn.tupShape;
-
-        // switch the indices of the output shape
-
+    @arkouda.registerCommand
+    proc transpose(array: [?d] ?t): [] t throws
+    where d.rank >= 2 {
+        var outShape = array.shape;
         outShape[outShape.size-2] <=> outShape[outShape.size-1];
-
-        // create the output array
-
-        var eOut = createSymEntry((...outShape), array_dtype);
-        doTranspose(eIn.a, eOut.a); // do the transpose
-
-        return st.insert(eOut);
+        var ret = makeDistArray((...outShape), t);
+        doTranspose(array, ret);
+        return ret;
     }
 
-    proc transpose(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws 
-        where  array_nd < 2 {
-        return MsgTuple.error("Matrix transpose with arrays of dimension < 2 is not supported");
+    proc transpose(array: [?d] ?t): [d] t throws
+    where d.rank < 2 {
+      throw new Error("Matrix transpose with arrays of dimension < 2 is not supported");
     }
 
-    // TODO: performance improvements. Should use tiling to keep data local
-
+    // // TODO: performance improvements. Should use tiling to keep data local
+    
     proc doTranspose(ref A: [?D], ref B) {
         forall idx in D {
             var bIdx = idx;
