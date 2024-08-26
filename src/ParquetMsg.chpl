@@ -1030,7 +1030,7 @@ module ParquetMsg {
           } else {
             entrySeg.a = fixedLen;
             for i in sizes.domain do
-+              byteSizes[i] = fixedLen*sizes[i];
+              byteSizes[i] = fixedLen*sizes[i];
           }
           entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
 
