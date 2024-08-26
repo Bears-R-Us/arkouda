@@ -40,7 +40,7 @@ module ServerConfig
 
     /*
       maximum array dimensionality supported by the server
-      set by 'serverModuleGen.py' based on 'serverConfig.json'
+      set in 'registration-config.json'
     */
     config param MaxArrayDims: int = 1;
 

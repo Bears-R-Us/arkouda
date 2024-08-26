@@ -90,7 +90,7 @@ class TestMessage:
 class TestJSONArgs:
     # TODO numpy dtypes are not supported by json, we probably want to add an issue to handle this
     SCALAR_TYPES = [int, float, bool, str]
-#   The types below are support in arkouda, as noted in serverConfig.json.  This may be
+#   The types below are support in arkouda, as noted in registration-config.json.  This may be
 #   the same issue noted in the above comment.
     SUPPORTED_TYPES = [ak.bool_, ak.uint64, ak.int64, ak.bigint, ak.uint8, ak.float64]
 

@@ -58,7 +58,7 @@ INFINITY_EDGE_CASES = (
     (np.arccosh, ak.arccosh),
 )
 
-# as noted in serverConfig.json, only these types are supported
+# as noted in registration-config.json, only these types are supported
 
 SUPPORTED_TYPES = [ak.bool_, ak.uint64, ak.int64, ak.bigint, ak.uint8, ak.float64]
 
