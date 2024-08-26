@@ -394,7 +394,7 @@ To demonstrate this process, this guide walks through the process of implementin
 <span class="sd">        The doubled array</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;times2&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;arg1&quot;</span> <span class="p">:</span> <span class="n">pda</span><span class="p">})</span>
+        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;times2&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;arg1&quot;</span> <span class="p">:</span> <span class="n">pda</span><span class="p">})</span>
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;times2 only supports pdarrays.&quot;</span><span class="p">)</span>
@@ -410,106 +410,88 @@ You can learn more about Python type checking in (this documentation)[<a class="
 </section>
 <section id="adding-functionality-to-the-arkouda-server">
 <h2>Adding Functionality to the Arkouda Server<a class="headerlink" href="#adding-functionality-to-the-arkouda-server" title="Link to this heading">¶</a></h2>
-<p>Your contribution must include all the machinery to process a command from the client, in addition to the logic of the computation.
-This is broken into function(s) that implement the actual operation, a function that processes the command message and calls the appropriate implementation, and code to register the message processing function with the message dispatch system.
-For the <code class="docutils literal notranslate"><span class="pre">times2</span></code> example, we will add our functions to the <code class="docutils literal notranslate"><span class="pre">ArraySetOps</span></code> and <code class="docutils literal notranslate"><span class="pre">ArraySetOpsMsg</span></code> modules for the sake of simplicity.</p>
-<p>When the client issues a command <code class="docutils literal notranslate"><span class="pre">times2</span> <span class="pre">arg1</span></code> to the arkouda server, this is what typically happens:</p>
+<p>we will add a procedure called <code class="docutils literal notranslate"><span class="pre">times2</span></code> to the<code class="docutils literal notranslate"><span class="pre">ArraySetOpsMsg</span></code> module that will execute our command.</p>
+<p>When the client issues a command like <code class="docutils literal notranslate"><span class="pre">times2&lt;int64,1&gt;</span> <span class="pre">arg1</span></code> to the arkouda server, this is what typically happens:</p>
 <ol class="arabic simple">
-<li><p>The <code class="docutils literal notranslate"><span class="pre">select</span></code> block in <code class="docutils literal notranslate"><span class="pre">ServerDaemon.chpl</span></code> sees “times2”, looks it up in the <code class="docutils literal notranslate"><span class="pre">commandMap</span></code>, and calls the function responsible for processing the message: <code class="docutils literal notranslate"><span class="pre">times2Msg</span></code>.</p></li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">times2Msg</span></code> function is found via the <code class="docutils literal notranslate"><span class="pre">ArraySetopsMsg</span></code> module, which contains <code class="docutils literal notranslate"><span class="pre">use</span> <span class="pre">ArraySetops</span></code> and thus gets all symbols from the <code class="docutils literal notranslate"><span class="pre">ArraySetops</span></code> module where the implementation function <code class="docutils literal notranslate"><span class="pre">times2()</span></code> is defined.</p></li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">times2Msg()</span></code> function (in the <code class="docutils literal notranslate"><span class="pre">ArraySetopsMsg</span></code> module) parses and executes the command by</p>
-<ol class="arabic simple">
-<li><p>Casting any scalar args</p></li>
-<li><p>Looking up <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> (<code class="docutils literal notranslate"><span class="pre">GenSymEntry</span></code>) args in the symbol table with <code class="docutils literal notranslate"><span class="pre">getGenericTypeArrayEntry</span></code></p></li>
-<li><p>Checking dtypes of arrays and branching to corresponding code</p></li>
-<li><p>Casting <code class="docutils literal notranslate"><span class="pre">GenSymEntry</span></code> objects to correct types with <code class="docutils literal notranslate"><span class="pre">toSymEntry()</span></code></p></li>
-<li><p>Executing the operation, usually on the array data <code class="docutils literal notranslate"><span class="pre">entry.a</span></code></p></li>
-<li><p>If necessary, creating new <code class="docutils literal notranslate"><span class="pre">SymEntry</span></code> and adding it to the symbol table with <code class="docutils literal notranslate"><span class="pre">st.addEntry()</span></code></p></li>
-<li><p>Returning an appropriate message string</p>
-<ol class="arabic simple">
-<li><p>If the return is an array, “created <attributes>”</p></li>
-<li><p>If the return is multiple arrays, one creation string per array, joined by “+”</p></li>
-<li><p>If the return is a scalar, “<dtype> <value>”</p></li>
-<li><p>If any error occurred, then “Error: <message>” (see <code class="docutils literal notranslate"><span class="pre">ServerErrorStrings.chpl</span></code> for functions to generate common error strings)</p></li>
-</ol>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">select</span></code> block in <code class="docutils literal notranslate"><span class="pre">ServerDaemon.chpl</span></code> sees the command “times2&lt;int64,1&gt;”, looks it up in the <code class="docutils literal notranslate"><span class="pre">commandMap</span></code>, and calls the function responsible for processing the message.</p>
+<ul class="simple">
+<li><p>This will call an instantiation of our <code class="docutils literal notranslate"><span class="pre">times2</span></code> procedure for 1D arrays with element type <code class="docutils literal notranslate"><span class="pre">int(64)</span></code>.</p></li>
+</ul>
 </li>
-</ol>
-</li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">times2()</span></code> function (in the <code class="docutils literal notranslate"><span class="pre">ArraySetopsMsg</span></code> module) applies our operation to the array, returning a new array</p></li>
+<li><p>The server generates a response to the client with a handle to the new array and its meta-data</p></li>
 </ol>
 </section>
 <section id="id1">
 <h2>Example<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
-<p>First, define your message processing logic in <code class="docutils literal notranslate"><span class="pre">src/ArraySetopsMsg.chpl</span></code> in the following manner:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">ArraySetopsMsg</span> <span class="p">{</span>
+<p>Define a function in <code class="docutils literal notranslate"><span class="pre">src/ArraySetopsMsg.chpl</span></code> that takes an array argument and
+multiplies it by <code class="docutils literal notranslate"><span class="pre">2</span></code> using a promoted operation:</p>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">module</span><span class="w"> </span><span class="nc">ArraySetopsMsg</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="o">..</span><span class="p">.</span>
 
-    <span class="o">...</span>
-    <span class="o">/*</span> 
-    <span class="n">Parse</span><span class="p">,</span> <span class="n">execute</span><span class="p">,</span> <span class="ow">and</span> <span class="n">respond</span> <span class="n">to</span> <span class="n">a</span> <span class="n">times2</span> <span class="n">message</span> 
-    <span class="p">:</span><span class="n">arg</span> <span class="n">cmd</span><span class="p">:</span> <span class="n">request</span> <span class="n">command</span>
-    <span class="p">:</span><span class="nb">type</span> <span class="n">reqMsg</span><span class="p">:</span> <span class="n">string</span> 
-    <span class="p">:</span><span class="n">arg</span> <span class="n">msgArgs</span><span class="p">:</span> <span class="n">request</span> <span class="n">arguments</span>
-    <span class="p">:</span><span class="nb">type</span> <span class="n">msgArgs</span><span class="p">:</span> <span class="n">borrowed</span> <span class="n">MessageArgs</span>
-    <span class="p">:</span><span class="n">arg</span> <span class="n">st</span><span class="p">:</span> <span class="n">SymTab</span> <span class="n">to</span> <span class="n">act</span> <span class="n">on</span>
-    <span class="p">:</span><span class="nb">type</span> <span class="n">st</span><span class="p">:</span> <span class="n">borrowed</span> <span class="n">SymTab</span> 
-    <span class="p">:</span><span class="n">returns</span><span class="p">:</span> <span class="p">(</span><span class="n">MsgTuple</span><span class="p">)</span> <span class="n">response</span> <span class="n">message</span>
-    <span class="o">*/</span>
-    <span class="n">proc</span> <span class="n">times2Msg</span><span class="p">(</span><span class="n">cmd</span><span class="p">:</span> <span class="n">string</span><span class="p">,</span> <span class="n">msgArgs</span><span class="p">:</span> <span class="n">borrowed</span> <span class="n">MessageArgs</span><span class="p">,</span> <span class="n">st</span><span class="p">:</span> <span class="n">borrowed</span> <span class="n">SymTab</span><span class="p">):</span> <span class="n">MsgTuple</span> <span class="n">throws</span> <span class="p">{</span>
-        <span class="n">var</span> <span class="n">repMsg</span><span class="p">:</span> <span class="n">string</span><span class="p">;</span> <span class="o">//</span> <span class="n">response</span> <span class="n">message</span>
-        
-        <span class="n">var</span> <span class="n">vName</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">nextName</span><span class="p">();</span> <span class="o">//</span> <span class="n">symbol</span> <span class="n">table</span> <span class="n">key</span> <span class="k">for</span> <span class="n">resulting</span> <span class="n">array</span>
+<span class="w">    </span><span class="k">@</span><span class="nd">arkouda.registerCommand</span>
+<span class="w">    </span><span class="k">proc</span><span class="w"> </span><span class="nf">times2</span><span class="p">(</span><span class="kd">const</span><span class="w"> </span><span class="kd">ref</span><span class="w"> </span><span class="nx">arg1</span><span class="p">:</span><span class="w"> </span><span class="p">[?</span><span class="nx">d</span><span class="p">]</span><span class="w"> </span><span class="p">?</span><span class="nx">t</span><span class="p">):</span><span class="w"> </span><span class="p">[</span><span class="nx">d</span><span class="p">]</span><span class="w"> </span><span class="nx">t</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">a</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nx">ret</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
 
-        <span class="n">var</span> <span class="n">gEnt</span><span class="p">:</span> <span class="n">borrowed</span> <span class="n">GenSymEntry</span> <span class="o">=</span> <span class="n">getGenericTypedArrayEntry</span><span class="p">(</span><span class="n">msgArgs</span><span class="o">.</span><span class="n">getValueOf</span><span class="p">(</span><span class="s2">&quot;arg1&quot;</span><span class="p">),</span> <span class="n">st</span><span class="p">);</span>
-
-        <span class="n">select</span> <span class="n">gEnt</span><span class="o">.</span><span class="n">dtype</span> <span class="p">{</span>
-            <span class="n">when</span> <span class="n">DType</span><span class="o">.</span><span class="n">Int64</span> <span class="p">{</span>
-                <span class="n">var</span> <span class="n">e</span> <span class="o">=</span> <span class="n">toSymEntry</span><span class="p">(</span><span class="n">gEnt</span><span class="p">,</span><span class="nb">int</span><span class="p">);</span>
-
-                <span class="n">var</span> <span class="n">aV</span> <span class="o">=</span> <span class="n">times2</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">a</span><span class="p">);</span>
-                <span class="n">st</span><span class="o">.</span><span class="n">addEntry</span><span class="p">(</span><span class="n">vName</span><span class="p">,</span> <span class="n">createSymEntry</span><span class="p">(</span><span class="n">aV</span><span class="p">));</span>
-
-                <span class="n">repMsg</span> <span class="o">=</span> <span class="s2">&quot;created &quot;</span> <span class="o">+</span> <span class="n">st</span><span class="o">.</span><span class="n">attrib</span><span class="p">(</span><span class="n">vName</span><span class="p">);</span>
-                <span class="n">asLogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">getModuleName</span><span class="p">(),</span><span class="n">getRoutineName</span><span class="p">(),</span><span class="n">getLineNumber</span><span class="p">(),</span><span class="n">repMsg</span><span class="p">);</span>
-                <span class="k">return</span> <span class="n">new</span> <span class="n">MsgTuple</span><span class="p">(</span><span class="n">repMsg</span><span class="p">,</span> <span class="n">MsgType</span><span class="o">.</span><span class="n">NORMAL</span><span class="p">);</span>
-            <span class="p">}</span>
-            <span class="o">//</span> <span class="n">add</span> <span class="n">additional</span> <span class="n">when</span> <span class="n">blocks</span> <span class="k">for</span> <span class="n">different</span> <span class="n">data</span> <span class="n">types</span><span class="o">...</span>
-            <span class="n">otherwise</span> <span class="p">{</span>
-                <span class="n">var</span> <span class="n">errorMsg</span> <span class="o">=</span> <span class="n">notImplementedError</span><span class="p">(</span><span class="s2">&quot;times2&quot;</span><span class="p">,</span><span class="n">gEnt</span><span class="o">.</span><span class="n">dtype</span><span class="p">);</span>
-                <span class="n">asLogger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">getModuleName</span><span class="p">(),</span><span class="n">getRoutineName</span><span class="p">(),</span><span class="n">getLineNumber</span><span class="p">(),</span><span class="n">errorMsg</span><span class="p">);</span>           
-                <span class="k">return</span> <span class="n">new</span> <span class="n">MsgTuple</span><span class="p">(</span><span class="n">errorMsg</span><span class="p">,</span> <span class="n">MsgType</span><span class="o">.</span><span class="n">ERROR</span><span class="p">);</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-
-    <span class="o">...</span>
+<span class="w">    </span><span class="o">..</span><span class="p">.</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Second, define your operation implementation in <code class="docutils literal notranslate"><span class="pre">src/ArraySetops.chpl</span></code> in the following manner:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>module ArraySetops {
-    
-    ...
-
-    // returns input array, doubled.
-    proc times2(a: [] ?t) throws {
-        var ret = a * 2; //scalar promotion
-        return ret;
-    }
-
-    ...
-}
-</pre></div>
-</div>
-<p>Finally, register your new function within the commandMap back in <code class="docutils literal notranslate"><span class="pre">src/ArraySetopsMsg.chpl</span></code> in the following manner:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">ArraySetopsMsg</span> <span class="p">{</span>
-    <span class="o">...</span>
-
-    <span class="n">use</span> <span class="n">CommandMap</span><span class="p">;</span>
-    <span class="o">...</span>
-    <span class="n">resisterFunction</span><span class="p">(</span><span class="s2">&quot;times2&quot;</span><span class="p">,</span> <span class="n">times2Msg</span><span class="p">,</span> <span class="n">getModuleName</span><span class="p">());</span>
+<p>Notice that the function is annotated with <code class="docutils literal notranslate"><span class="pre">&#64;arkouda.registerCommand</span></code>. This
+will tell Arkouda’s build system to generate and register several commands in
+the server’s CommandMap. One command will be created for each combination of
+array rank and dtype specified in the <code class="docutils literal notranslate"><span class="pre">registration-config.json</span></code> file. For
+example, if the file has the following settings for <code class="docutils literal notranslate"><span class="pre">&quot;array&quot;</span></code>:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;array&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;nd&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;dtype&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;int&quot;</span><span class="p">,</span><span class="s2">&quot;real&quot;</span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Now, you should be able to rebuild and launch the server and use your new feature. We close with a client-side python script that uses the new feature.</p>
+<p>then, these commands will be generated:</p>
+<ul class="simple">
+<li><p>“times2&lt;int64,1&gt;”</p></li>
+<li><p>“times2&lt;int64,2&gt;”</p></li>
+<li><p>“times2&lt;float64,1&gt;”</p></li>
+<li><p>“times2&lt;float64,2&gt;”</p></li>
+</ul>
+<p>Note that the configuration file specifies Chapel type names, while the command
+names contain their Python/Numpy counterparts.</p>
+<p>Occasionally, the <code class="docutils literal notranslate"><span class="pre">registerCommand</span></code> annotation doesn’t provide fine enough
+control over a command’s behavior. To gain lower-level access to Arkouda’s
+internal infrastructure the <code class="docutils literal notranslate"><span class="pre">instantiateAndRegister</span></code> annotation is also
+provided. For an example of why it may be needed, look at <code class="docutils literal notranslate"><span class="pre">castArray</span></code> in
+“castMsg.chpl” where the commands need to have two type arguments (one for the
+array being cast, and another for the type it’s cast to).</p>
+<p>If we wanted to use <code class="docutils literal notranslate"><span class="pre">instantiateAndRegister</span></code> for <code class="docutils literal notranslate"><span class="pre">times2</span></code>, we could write:</p>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">module</span><span class="w"> </span><span class="nc">ArraySetopsMsg</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="o">..</span><span class="p">.</span>
+
+<span class="w">    </span><span class="k">@</span><span class="nd">arkouda.instantiateAndRegister</span>
+<span class="w">    </span><span class="k">proc</span><span class="w"> </span><span class="nf">times2</span><span class="p">(</span><span class="nx">cmd</span><span class="p">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">msgArgs</span><span class="p">:</span><span class="w"> </span><span class="k">borrowed</span><span class="w"> </span><span class="nx">MessageArgs</span><span class="p">,</span><span class="w"> </span><span class="nx">st</span><span class="p">:</span><span class="w"> </span><span class="k">borrowed</span><span class="w"> </span><span class="nx">SymTab</span><span class="p">,</span><span class="w"> </span><span class="kd">type</span><span class="w"> </span><span class="nx">array_dtype</span><span class="p">,</span><span class="w"> </span><span class="kd">param</span><span class="w"> </span><span class="nx">array_nd</span><span class="p">:</span><span class="w"> </span><span class="kt">int</span><span class="p">):</span><span class="w"> </span><span class="nx">MsgTuple</span><span class="w"> </span><span class="k">throws</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">st</span><span class="p">[</span><span class="nx">msgArgs</span><span class="p">[</span><span class="s">&#39;arg1&#39;</span><span class="p">]]:</span><span class="w"> </span><span class="k">borrowed</span><span class="w"> </span><span class="nx">SymEntry</span><span class="p">(</span><span class="nx">array_dtype</span><span class="p">,</span><span class="w"> </span><span class="nx">array_nd</span><span class="p">);</span>
+<span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nx">SymEntry</span><span class="p">(</span><span class="nx">x</span><span class="p">.</span><span class="nx">a</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nx">st</span><span class="p">.</span><span class="nx">insert</span><span class="p">(</span><span class="nx">y</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="o">..</span><span class="p">.</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>With this annotation, the first three arguments must always have the same
+names and types as above, and the return type must be <code class="docutils literal notranslate"><span class="pre">MsgTuple</span></code>. This
+procedure manually pull’s the array’s name from the JSON arguments provided to
+the command: <code class="docutils literal notranslate"><span class="pre">msgArgs['arg1']</span></code>. It then acquires the array symbol (a class that
+wraps a Chapel array from the server’s symbol table), and casts it to a
+<code class="docutils literal notranslate"><span class="pre">SymEntry</span></code> with our array’s particular type and rank. We then create a new
+SymEntry with the result of our computation, and store its value in a new
+variable <code class="docutils literal notranslate"><span class="pre">y</span></code>. Finally, a response for the server is generated and returned by
+adding the new symbol to the symbol table with the <code class="docutils literal notranslate"><span class="pre">insert</span></code> method.</p>
+<p>Using a command written with either of the above annotations, you should be
+able to rebuild and launch the server and use your new feature. We close with a
+client-side python script that uses the new feature:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">arkouda</span> <span class="k">as</span> <span class="nn">ak</span>
 <span class="n">ak</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
 <span class="n">undoubled</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
