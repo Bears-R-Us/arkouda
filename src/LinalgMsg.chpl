@@ -296,7 +296,7 @@ module LinalgMsg {
         forall idx in d {
             var bIdx = idx;
             bIdx[d.rank-1] <=> bIdx[d.rank-2];  // bIdx is now the reverse of idx
-            B[bIdx] = A[idx];                   // making B the transpose of A
+            ret[bIdx] = array[idx];                   // making B the transpose of A
         }
     
         return ret;
