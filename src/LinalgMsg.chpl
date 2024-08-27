@@ -291,23 +291,20 @@ module LinalgMsg {
         var outShape = array.shape;
         outShape[outShape.size-2] <=> outShape[outShape.size-1];
         var ret = makeDistArray((...outShape), t);
-        doTranspose(array, ret);
+        
+        // // TODO: performance improvements. Should use tiling to keep data local
+        forall idx in d {
+            var bIdx = idx;
+            bIdx[d.rank-1] <=> bIdx[d.rank-2];  // bIdx is now the reverse of idx
+            B[bIdx] = A[idx];                   // making B the transpose of A
+        }
+    
         return ret;
     }
 
     proc transpose(array: [?d] ?t): [d] t throws
     where d.rank < 2 {
       throw new Error("Matrix transpose with arrays of dimension < 2 is not supported");
-    }
-
-    // // TODO: performance improvements. Should use tiling to keep data local
-    
-    proc doTranspose(ref A: [?D], ref B) {
-        forall idx in D {
-            var bIdx = idx;
-            bIdx[D.rank-1] <=> bIdx[D.rank-2];  // bIdx is now the reverse of idx
-            B[bIdx] = A[idx];                   // making B the transpose of A
-        }
     }
 
     /*
