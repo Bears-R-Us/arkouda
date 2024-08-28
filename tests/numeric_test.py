@@ -1,18 +1,23 @@
 import subprocess
-from math import isclose
+from math import isclose, sqrt
 
 import numpy as np
 import pytest
 
 import arkouda as ak
+from arkouda.client import get_max_array_rank
+from arkouda.dtypes import dtype as akdtype
+from arkouda.dtypes import str_
 
+ARRAY_TYPES = [ak.int64, ak.float64, ak.bool_, ak.uint64, str_]
 NUMERIC_TYPES = [ak.int64, ak.float64, ak.bool_, ak.uint64]
 NO_BOOL = [ak.int64, ak.float64, ak.uint64]
 NO_FLOAT = [ak.int64, ak.bool_, ak.uint64]
 INT_FLOAT = [ak.int64, ak.float64]
-ARRAY_TYPES = [ak.int64, ak.float64, ak.bool_, ak.uint64, ak.str_]
+INT_FLOAT_BOOL = [ak.int64, ak.float64, ak.bool_]
 YES_NO = [True, False]
 VOWELS_AND_SUCH = ["a", "e", "i", "o", "u", "AB", 47, 2, 3.14159]
+
 
 # There are many ways to create a vector of alternating values.
 # This is a fairly fast and fairly straightforward approach.
@@ -22,6 +27,7 @@ def alternate(L, R, n):
     v = np.full(n, R)
     v[::2] = L
     return v
+
 
 #  The following tuples support a simplification of the trigonometric
 #  and hyperbolic testing.
@@ -52,7 +58,7 @@ INFINITY_EDGE_CASES = (
     (np.arccosh, ak.arccosh),
 )
 
-# as noted in serverConfig.json, only these types are supported
+# as noted in registration-config.json, only these types are supported
 
 SUPPORTED_TYPES = [ak.bool_, ak.uint64, ak.int64, ak.bigint, ak.uint8, ak.float64]
 
@@ -279,6 +285,7 @@ class TestNumeric:
     #   log and exp tests were identical, and so have been combined.
 
     host = subprocess.check_output("hostname").decode("utf-8").strip()
+
     @pytest.mark.skipif(host == "horizon", reason="Fails on horizon")
     def test_histogram_multidim(self):
         # test 2d histogram
@@ -301,13 +308,14 @@ class TestNumeric:
         dim_list = [3, 4, 5]
         bin_list = [[2, 4, 5], [2, 4, 5, 2], [2, 4, 5, 2, 3]]
         for dim, bins in zip(dim_list, bin_list):
-            np_arrs = [np.random.randint(1, 100, 1000) for _ in range(dim)]
-            ak_arrs = [ak.array(a) for a in np_arrs]
-            np_hist, np_bin_edges = np.histogramdd(np_arrs, bins=bins)
-            ak_hist, ak_bin_edges = ak.histogramdd(ak_arrs, bins=bins)
-            assert np.allclose(np_hist.tolist(), ak_hist.to_list())
-            for np_edge, ak_edge in zip(np_bin_edges, ak_bin_edges):
-                assert np.allclose(np_edge.tolist(), ak_edge.to_list())
+            if dim <= get_max_array_rank():
+                np_arrs = [np.random.randint(1, 100, 1000) for _ in range(dim)]
+                ak_arrs = [ak.array(a) for a in np_arrs]
+                np_hist, np_bin_edges = np.histogramdd(np_arrs, bins=bins)
+                ak_hist, ak_bin_edges = ak.histogramdd(ak_arrs, bins=bins)
+                assert np.allclose(np_hist.tolist(), ak_hist.to_list())
+                for np_edge, ak_edge in zip(np_bin_edges, ak_bin_edges):
+                    assert np.allclose(np_edge.tolist(), ak_edge.to_list())
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_log_and_exp(self, num_type):
@@ -667,6 +675,327 @@ class TestNumeric:
         h3, h4 = ak.hash([bi])
         assert h1.to_list() == h3.to_list()
         assert h2.to_list() == h4.to_list()
+
+    # Notes about median:
+    #  prob_size is either even or odd, so one of sample_e, sample_o will have an even
+    #  length, and the other an odd length.  Median should be tested with both even and odd
+    #  length inputs.
+
+    #  median can be done on ints or floats
+
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    @pytest.mark.parametrize("data_type", NUMERIC_TYPES)
+    def test_median(self, prob_size, data_type):
+        sample_e = np.random.permutation(prob_size).astype(data_type)
+        pda_e = ak.array(sample_e)
+        assert isclose(np.median(sample_e), ak.median(pda_e))
+        sample_o = np.random.permutation(prob_size + 1).astype(data_type)
+        pda_o = ak.array(sample_o)
+        assert isclose(np.median(sample_o), ak.median(pda_o))
+
+    #  test_count_nonzero doesn't use parameterization on data types, because
+    #  the data is generated differently.
+
+    #  counts are ints, so we test for equality, not closeness.
+
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_count_nonzero(self, prob_size):
+        # ints, floats
+
+        for data_type in INT_FLOAT:
+            sample = np.random.randint(20, size=prob_size).astype(data_type)
+            pda = ak.array(sample)
+            assert np.count_nonzero(sample) == ak.count_nonzero(pda)
+
+        # bool
+
+        sample = np.random.randint(2, size=prob_size).astype(bool)
+        pda = ak.array(sample)
+        assert np.count_nonzero(sample) == ak.count_nonzero(pda)
+
+        # string
+
+        sample = sample.astype(str)
+        for i in range(10):
+            sample[np.random.randint(prob_size)] = ""  # empty some strings at random
+        pda = ak.array(sample)
+        assert np.count_nonzero(sample) == ak.count_nonzero(pda)
+
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_clip(self, prob_size):
+        seed = pytest.seed if pytest.seed is not None else 8675309
+        np.random.seed(seed)
+        ia = np.random.randint(1, 100, prob_size)
+        ilo = 25
+        ihi = 75
+
+        dtypes = ["int64", "float64"]
+
+        # test clip.
+        # array to be clipped can be integer or float
+        # range limits can be integer, float, or none, and can be scalars or arrays
+
+        # Looping over all data types, the interior loop tests using lo, hi as:
+
+        #   None, Scalar
+        #   None, Array
+        #   Scalar, Scalar
+        #   Scalar, Array
+        #   Scalar, None
+        #   Array, Scalar
+        #   Array, Array
+        #   Array, None
+
+        # There is no test with lo and hi both equal to None, because that's not allowed
+
+        for dtype1 in dtypes:
+            hi = np.full(ia.shape, ihi, dtype=dtype1)
+            akhi = ak.array(hi)
+            for dtype2 in dtypes:
+                lo = np.full(ia.shape, ilo, dtype=dtype2)
+                aklo = ak.array(lo)
+                for dtype3 in dtypes:
+                    nd_arry = ia.astype(dtype3)
+                    ak_arry = ak.array(nd_arry)
+                    assert np.allclose(
+                        np.clip(nd_arry, None, hi[0]), ak.clip(ak_arry, None, hi[0]).to_ndarray()
+                    )
+                    assert np.allclose(
+                        np.clip(nd_arry, None, hi), ak.clip(ak_arry, None, akhi).to_ndarray()
+                    )
+                    assert np.allclose(
+                        np.clip(nd_arry, lo[0], hi[0]), ak.clip(ak_arry, lo[0], hi[0]).to_ndarray()
+                    )
+                    assert np.allclose(
+                        np.clip(nd_arry, lo[0], hi), ak.clip(ak_arry, lo[0], akhi).to_ndarray()
+                    )
+                    assert np.allclose(
+                        np.clip(nd_arry, lo[0], None), ak.clip(ak_arry, lo[0], None).to_ndarray()
+                    )
+                    assert np.allclose(
+                        np.clip(nd_arry, lo, hi[0]), ak.clip(ak_arry, aklo, hi[0]).to_ndarray()
+                    )
+                    assert np.allclose(
+                        np.clip(nd_arry, lo, hi), ak.clip(ak_arry, aklo, akhi).to_ndarray()
+                    )
+                    assert np.allclose(
+                        np.clip(nd_arry, lo, None), ak.clip(ak_arry, aklo, None).to_ndarray()
+                    )
+
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_putmask(self, prob_size):
+
+        for data_type in INT_FLOAT:
+
+            #  three things to test: values same size as data
+
+            nda = np.random.randint(0, 10, prob_size).astype(data_type)
+            result = nda.copy()
+            np.putmask(result, result > 5, result**2)
+            pda = ak.array(nda)
+            ak.putmask(pda, pda > 5, pda**2)
+            assert (
+                np.all(result == pda.to_ndarray())
+                if data_type == ak.int64
+                else np.allclose(result, pda.to_ndarray())
+            )
+
+            # values shorter than data
+
+            result = nda.copy()
+            pda = ak.array(nda)
+            values = np.arange(3).astype(data_type)
+            np.putmask(result, result > 5, values)
+            ak.putmask(pda, pda > 5, ak.array(values))
+            assert (
+                np.all(result == pda.to_ndarray())
+                if data_type == ak.int64
+                else np.allclose(result, pda.to_ndarray())
+            )
+
+            # values longer than data
+
+            result = nda.copy()
+            pda = ak.array(nda)
+            values = np.arange(prob_size + 1).astype(data_type)
+            np.putmask(result, result > 5, values)
+            ak.putmask(pda, pda > 5, ak.array(values))
+            assert (
+                np.all(result == pda.to_ndarray())
+                if data_type == ak.int64
+                else np.allclose(result, pda.to_ndarray())
+            )
+
+            # finally try to raise the error
+
+            pda = ak.random.randint(0, 10, 10).astype(ak.float64)
+            values = np.arange(10)
+            with pytest.raises(TypeError):
+                ak.putmask(pda, pda > 3, values)
+
+    # In the tests below, the rationale for using size = math.sqrt(prob_size) is that
+    # the resulting matrices are on the order of size*size.
+
+    # tril works on ints, floats, or bool
+
+    @pytest.mark.parametrize("data_type", INT_FLOAT_BOOL)
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_tril(self, data_type, prob_size):
+        if get_max_array_rank() < 2:
+            pytest.skip()
+
+        size = int(sqrt(prob_size))
+
+        # ints and bools are checked for equality; floats are checked for closeness
+
+        check = lambda a, b, t: (
+            np.allclose(a.tolist(), b.tolist()) if akdtype(t) == "float64" else (a == b).all()
+        )
+
+        # test on one square and two non-square matrices
+
+        for rows, cols in [(size, size), (size + 1, size - 1), (size - 1, size + 1)]:
+            pda = ak.randint(1, 10, (rows, cols))
+            nda = pda.to_ndarray()
+            sweep = range(-(rows - 2), cols)  # sweeps the diagonal from LL to UR
+            for diag in sweep:
+                npa = np.tril(nda, diag)
+                ppa = ak.tril(pda, diag).to_ndarray()
+                assert check(npa, ppa, data_type)
+
+    # triu works on ints, floats, or bool
+
+    @pytest.mark.parametrize("data_type", INT_FLOAT_BOOL)
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    @pytest.mark.skip_if_max_rank_less_than(2)
+    def test_triu(self, data_type, prob_size):
+        if get_max_array_rank() < 2:
+            pytest.skip()
+        size = int(sqrt(prob_size))
+
+        # ints and bools are checked for equality; floats are checked for closeness
+
+        check = lambda a, b, t: (
+            np.allclose(a.tolist(), b.tolist()) if akdtype(t) == "float64" else (a == b).all()
+        )
+
+        # test on one square and two non-square matrices
+
+        for rows, cols in [(size, size), (size + 1, size - 1), (size - 1, size + 1)]:
+            pda = ak.randint(1, 10, (rows, cols))
+            nda = pda.to_ndarray()
+            sweep = range(-(rows - 1), cols - 1)  # sweeps the diagonal from LL to UR
+            for diag in sweep:
+                npa = np.triu(nda, diag)
+                ppa = ak.triu(pda, diag).to_ndarray()
+                assert check(npa, ppa, data_type)
+
+    # transpose works on ints, floats, or bool
+
+    @pytest.mark.parametrize("data_type", INT_FLOAT_BOOL)
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_transpose(self, data_type, prob_size):
+        if get_max_array_rank() < 2:
+            pytest.skip()
+
+        size = int(sqrt(prob_size))
+
+        # ints and bools are checked for equality; floats are checked for closeness
+
+        check = lambda a, b, t: (
+            np.allclose(a.tolist(), b.tolist()) if akdtype(t) == "float64" else (a == b).all()
+        )
+
+        # test on one square and two non-square matrices
+
+        for rows, cols in [(size, size), (size + 1, size - 1), (size - 1, size + 1)]:
+            pda = ak.randint(1, 10, (rows, cols))
+            nda = pda.to_ndarray()
+            npa = np.transpose(nda)
+            ppa = ak.transpose(pda).to_ndarray()
+            assert check(npa, ppa, data_type)
+
+    # eye works on ints, floats, or bool
+    @pytest.mark.parametrize("data_type", INT_FLOAT_BOOL)
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_eye(self, data_type, prob_size):
+        if get_max_array_rank() < 2:
+            pytest.skip()
+
+        size = int(sqrt(prob_size))
+
+        # ints and bools are checked for equality; floats are checked for closeness
+
+        check = lambda a, b, t: (
+            np.allclose(a.tolist(), b.tolist()) if akdtype(t) == "float64" else (a == b).all()
+        )
+
+        # test on one square and two non-square matrices
+
+        for rows, cols in [(size, size), (size + 1, size - 1), (size - 1, size + 1)]:
+            sweep = range(-(cols - 1), rows)  # sweeps the diagonal from LL to UR
+            for diag in sweep:
+                nda = np.eye(rows, cols, diag, dtype=data_type)
+                pda = ak.eye(rows, cols, diag, dt=data_type).to_ndarray()
+                assert check(nda, pda, data_type)
+
+    # matmul works on ints, floats, or bool
+    @pytest.mark.parametrize("data_type1", INT_FLOAT_BOOL)
+    @pytest.mark.parametrize("data_type2", INT_FLOAT_BOOL)
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_matmul(self, data_type1, data_type2, prob_size):
+        if get_max_array_rank() < 2:
+            pytest.skip()
+
+        size = int(sqrt(prob_size))
+
+        # ints and bools are checked for equality; floats are checked for closeness
+
+        check = lambda a, b, t: (
+            np.allclose(a.tolist(), b.tolist()) if akdtype(t) == "float64" else (a == b).all()
+        )
+
+        # test on one square and two non-square products
+
+        for rows, cols in [(size, size), (size + 1, size - 1), (size - 1, size + 1)]:
+            pdaLeft = ak.randint(0, 10, (rows, size), dtype=data_type1)
+            ndaLeft = pdaLeft.to_ndarray()
+            pdaRight = ak.randint(0, 10, (size, cols), dtype=data_type2)
+            ndaRight = pdaRight.to_ndarray()
+            akProduct = ak.matmul(pdaLeft, pdaRight)
+            npProduct = np.matmul(ndaLeft, ndaRight)
+            assert check(npProduct, akProduct.to_ndarray(), akProduct.dtype)
+
+    # vecdot works on ints, floats, or bool, with the limitation that both inputs can't
+    # be bool
+
+    @pytest.mark.parametrize("data_type1", INT_FLOAT_BOOL)
+    @pytest.mark.parametrize("data_type2", INT_FLOAT)
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_vecdot(self, data_type1, data_type2, prob_size):
+        if get_max_array_rank() < 2:
+            pytest.skip()
+
+        depth = np.random.randint(2, 10)
+        width = prob_size // depth
+
+        # ints and bools are checked for equality; floats are checked for closeness
+
+        check = lambda a, b, t: (
+            np.allclose(a.tolist(), b.tolist()) if akdtype(t) == "float64" else (a == b).all()
+        )
+
+        pda_a = ak.randint(0, 10, (depth, width), dtype=data_type1)
+        nda_a = pda_a.to_ndarray()
+        pda_b = ak.randint(0, 10, (depth, width), dtype=data_type2)
+        nda_b = pda_b.to_ndarray()
+        akProduct = ak.vecdot(pda_a, pda_b)
+
+        # there is no vecdot in numpy (and vdot doesn't do the same thing).
+        # np.add.reduce does.
+
+        npProduct = np.add.reduce(nda_a * nda_b)
+        assert check(npProduct, akProduct.to_ndarray(), akProduct.dtype)
 
     # Notes about array_equal:
     #   Strings compared to non-strings are always not equal.
