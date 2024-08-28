@@ -166,6 +166,38 @@ class TestDataFrame:
                 assert_almost_equal(df, df3, atol=atol, rtol=rtol)
             assert_almost_equivalent(convert_left(df), convert_right(df3), atol=atol, rtol=rtol)
 
+    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("left_as_arkouda", [True, False])
+    @pytest.mark.parametrize("right_as_arkouda", [True, False])
+    def test_assert_almost_equal_multi_dim(self, size, left_as_arkouda, right_as_arkouda):
+
+        both_ak = left_as_arkouda and right_as_arkouda
+        convert_left = self.get_converter(left_as_arkouda)
+        convert_right = self.get_converter(right_as_arkouda)
+
+        shape = (2, 2, size)
+
+        rng = ak.random.default_rng()
+        atol = 0.001
+        rtol = 0.001
+        a = ak.arange(size * 4, dtype="float64")
+        a2 = self.perturb(a, atol=atol, rtol=rtol, rng=rng)
+        a3 = a + rtol + atol
+
+        a = a.reshape(shape)
+        a2 = a2.reshape(shape)
+        a3 = a3.reshape(shape)
+
+        if both_ak:
+            assert_almost_equal(a, a2, atol=atol, rtol=rtol)
+        assert_almost_equivalent(convert_left(a), convert_right(a2), atol=atol, rtol=rtol)
+        if both_ak:
+            with pytest.raises(AssertionError):
+                assert_almost_equal(a, a3, atol=atol, rtol=rtol)
+        with pytest.raises(AssertionError):
+            assert_almost_equivalent(convert_left(a), convert_right(a3), atol=atol, rtol=rtol)
+
     def test_assert_almost_equal_scalars(self):
         atol = 0.001
         rtol = 0.001
@@ -847,7 +879,6 @@ class TestDataFrame:
         convert_left = self.get_converter(left_as_arkouda)
         convert_right = self.get_converter(right_as_arkouda)
 
-        size = 10
         a = ak.arange(size)
         a2 = a + 1
         idx = Index(a)
@@ -888,6 +919,28 @@ class TestDataFrame:
             if both_ak:
                 assert_equal(df, df2)
             assert_equivalent(convert_left(df), convert_right(df2))
+
+    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("left_as_arkouda", [True, False])
+    @pytest.mark.parametrize("right_as_arkouda", [True, False])
+    def test_assert_equal_multi_dim(self, size, left_as_arkouda, right_as_arkouda):
+        both_ak = left_as_arkouda and right_as_arkouda
+        convert_left = self.get_converter(left_as_arkouda)
+        convert_right = self.get_converter(right_as_arkouda)
+
+        shape = (2, 2, size)
+        a = ak.arange(4 * size).reshape(shape)
+        a2 = a + 1
+
+        if both_ak:
+            assert_equal(a, a)
+        assert_equivalent(convert_left(a), convert_right(a))
+        if both_ak:
+            with pytest.raises(AssertionError):
+                assert_equal(a, a2)
+        with pytest.raises(AssertionError):
+            assert_equivalent(convert_left(a), convert_right(a2))
 
     def test_assert_equal_scalars(self):
 
@@ -940,7 +993,6 @@ class TestDataFrame:
         convert_left = self.get_converter(left_as_arkouda)
         convert_right = self.get_converter(right_as_arkouda)
 
-        size = 10
         a = ak.arange(size)
         a2 = a + 1
         if both_ak:
@@ -980,6 +1032,27 @@ class TestDataFrame:
             if both_ak:
                 assert_arkouda_array_equal(s, c)
             assert_arkouda_array_equivalent(convert_left(s), convert_right(c))
+
+    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("left_as_arkouda", [True, False])
+    @pytest.mark.parametrize("right_as_arkouda", [True, False])
+    def test_assert_arkouda_array_equal_multi_dim(self, size, left_as_arkouda, right_as_arkouda):
+        both_ak = left_as_arkouda and right_as_arkouda
+        convert_left = self.get_converter(left_as_arkouda)
+        convert_right = self.get_converter(right_as_arkouda)
+
+        shape = (2, 2, size)
+        a = ak.arange(4 * size).reshape(shape)
+        a2 = a + 1
+        if both_ak:
+            assert_arkouda_array_equal(a, a)
+        assert_arkouda_array_equivalent(convert_left(a), convert_right(a))
+        if both_ak:
+            with pytest.raises(AssertionError):
+                assert_arkouda_array_equal(a, a2)
+        with pytest.raises(AssertionError):
+            assert_arkouda_array_equivalent(convert_left(a), convert_right(a2))
 
     def test_assert_arkouda_segarray_equal(self):
 
