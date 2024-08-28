@@ -1,0 +1,15 @@
+{
+    "parameter_classes": {
+        "array": {
+            "nd": [1],
+            "dtype": [
+                "int",
+                "uint",
+                "uint(8)",
+                "real",
+                "bool",
+                "bigint"
+            ]
+        }
+    }
+}
