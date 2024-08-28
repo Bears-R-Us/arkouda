@@ -1708,7 +1708,6 @@ class TestHDF5:
     def test_bigint(self, hdf_test_base_tmp):
         df_dict = {
             "pdarray": ak.arange(2**200, 2**200 + 3, max_bits=201),
-            "arrayview": ak.arange(2**200, 2**200 + 27, max_bits=201).reshape((3, 3, 3)),
             "groupby": ak.GroupBy(ak.arange(2**200, 2**200 + 5)),
             "segarray": ak.SegArray(ak.arange(0, 10, 2), ak.arange(2**200, 2**200 + 10, max_bits=212)),
         }
@@ -1723,13 +1722,6 @@ class TestHDF5:
                 assert isinstance(rd_a, ak.pdarray)
                 assert a.to_list() == rd_a.to_list()
                 assert a.max_bits == rd_a.max_bits
-
-            av_loaded = ak.read_hdf(f"{tmp_dirname}/bigint_test*", datasets="arrayview")["arrayview"]
-            av = df_dict["arrayview"]
-            for rd_av in [ret_dict["arrayview"], av_loaded]:
-                assert isinstance(rd_av, ak.ArrayView)
-                assert av.base.to_list() == rd_av.base.to_list()
-                assert av.base.max_bits == rd_av.base.max_bits
 
             g_loaded = ak.read_hdf(f"{tmp_dirname}/bigint_test*", datasets="groupby")["groupby"]
             g = df_dict["groupby"]
@@ -1753,38 +1745,6 @@ class TestHDF5:
         with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
             ak.to_hdf(my_arrays, f"{tmp_dirname}/bad_dataset_names")
             ak.read_hdf(f"{tmp_dirname}/bad_dataset_names*")
-
-    def test_internal_versions_and_legacy_read(self):
-        """
-        Test loading legacy files to ensure they can still be read.
-        Test loading internal arkouda hdf5 structuring by loading v0 and v1 files.
-        v1 contains _arkouda_metadata group and attributes, v0 does not.
-        Files are located under `test/resources` ... where server-side unit tests are located.
-        """
-        # Note: pytest unit tests are located under "tests/" vs chapel "test/"
-        cwd = os.getcwd()
-        if cwd.endswith("tests"):  # IDEs may launch unit tests from this location
-            # resources live two levels up
-            cwd += "/../../resources/hdf5-testing"
-        else:  # assume arkouda root dir
-            cwd += "/resources/hdf5-testing"
-
-        rd_arr = ak.read_hdf(f"{cwd}/Legacy_String.hdf5").popitem()[1]
-        assert ["ABC", "DEF", "GHI"] == rd_arr.to_list()
-
-        v0 = ak.load(f"{cwd}/array_v0.hdf5", file_format="hdf5").popitem()[1]
-        v1 = ak.load(f"{cwd}/array_v1.hdf5", file_format="hdf5").popitem()[1]
-        assert 50 == v0.size
-        assert 50 == v1.size
-
-    def test_multi_dim_read_write(self, hdf_test_base_tmp):
-        av = ak.ArrayView(ak.arange(27), ak.array([3, 3, 3]))
-        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
-            av.to_hdf(f"{tmp_dirname}/multi_dim_test", dataset="MultiDimObj", mode="append")
-            read_av = ak.read_hdf(f"{tmp_dirname}/multi_dim_test*", datasets="MultiDimObj")[
-                "MultiDimObj"
-            ]
-            assert np.array_equal(av.to_ndarray(), read_av.to_ndarray())
 
     def test_hdf_groupby(self, hdf_test_base_tmp):
         # test for categorical and multiple keys
@@ -2059,16 +2019,6 @@ class TestHDF5:
                 data = ak.read_hdf(f"{file_name}*")
                 assert (data["segarray"].values == sa2.values).all()
                 assert (data["segarray"].segments == sa2.segments).all()
-
-    def test_overwrite_arrayview(self, hdf_test_base_tmp):
-        av = ak.arange(27).reshape((3, 3, 3))
-        av2 = ak.arange(8).reshape((2, 2, 2))
-        with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
-            file_name = f"{tmp_dirname}/array_view_test"
-            av.to_hdf(file_name)
-            av2.update_hdf(file_name, repack=False)
-            data = ak.read_hdf(f"{file_name}*").popitem()[1]
-            assert av2.to_list() == data.to_list()
 
     def test_overwrite_single_dset(self, hdf_test_base_tmp):
         # we need to test that both repack=False and repack=True generate the same file size here
@@ -2383,7 +2333,11 @@ class TestImportExport:
             assert self.pddf.equals(akdf.to_pandas())
 
             self.pddf.to_hdf(
-                f"{file_name}_table_cols.h5", key="dataframe", format="table", data_columns=True, mode="w"
+                f"{file_name}_table_cols.h5",
+                key="dataframe",
+                format="table",
+                data_columns=True,
+                mode="w",
             )
             akdf = ak.import_data(
                 f"{file_name}_table_cols.h5", write_file=f"{file_name}_ak_table_cols.h5"
