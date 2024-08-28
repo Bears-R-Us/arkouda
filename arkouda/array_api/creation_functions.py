@@ -1,14 +1,13 @@
-# type: ignore
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, List, Optional, Tuple, Union, cast
 
-import numpy as np
-
 from arkouda.client import generic_msg
+import numpy as np
+from arkouda.pdarrayclass import create_pdarray, pdarray, _to_pdarray
+from arkouda.pdarraycreation import scalar_array
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import resolve_scalar_dtype
-from arkouda.pdarrayclass import _to_pdarray, create_pdarray, pdarray
 
 if TYPE_CHECKING:
     from ._typing import (
@@ -18,8 +17,6 @@ if TYPE_CHECKING:
         NestedSequence,
         SupportsBufferProtocol,
     )
-
-
 import arkouda as ak
 
 
@@ -86,7 +83,9 @@ def asarray(
     elif isinstance(obj, np.ndarray):
         return Array._new(_to_pdarray(obj, dt=dtype))
     else:
-        raise ValueError("asarray not implemented for 'NestedSequence' or 'SupportsBufferProtocol'")
+        raise ValueError(
+            "asarray not implemented for 'NestedSequence' or 'SupportsBufferProtocol'"
+        )
 
 
 def arange(
@@ -156,7 +155,9 @@ def empty(
         )
 
 
-def empty_like(x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None) -> Array:
+def empty_like(
+    x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None
+) -> Array:
     """
     Return a new array whose shape and dtype match the input array, without initializing entries.
     """
@@ -311,7 +312,9 @@ def ones(
     return a
 
 
-def ones_like(x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None) -> Array:
+def ones_like(
+    x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None
+) -> Array:
     """
     Return a new array whose shape and dtype match the input array, filled with ones.
     """
@@ -364,8 +367,6 @@ def zeros(
     """
     Return a new array with the specified shape and type, filled with zeros.
     """
-    from arkouda.pdarraycreation import scalar_array
-
     from .array_object import Array
 
     if device not in ["cpu", None]:
@@ -393,7 +394,9 @@ def zeros(
     return Array._new(create_pdarray(repMsg))
 
 
-def zeros_like(x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None) -> Array:
+def zeros_like(
+    x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None
+) -> Array:
     """
     Return a new array whose shape and dtype match the input array, filled with zeros.
     """

@@ -8,7 +8,6 @@ import pandas as pd
 import pytest
 
 import arkouda as ak
-import arkouda.array_api as xp
 
 INT_SCALARS = list(ak.dtypes.int_scalars.__args__)
 NUMERIC_SCALARS = list(ak.dtypes.numeric_scalars.__args__)
@@ -52,8 +51,8 @@ class TestPdarrayCreation:
             ak.array(ak.ones(shape, int), dtype),
             ak.array(np.ones(shape), dtype),
         ]:
-            assert isinstance(pda, xp.Array)
-            assert pda.shape == shape
+            assert isinstance(pda, ak.pdarray)
+            assert pda.shape == list(shape)
             assert dtype == pda.dtype
 
     @pytest.mark.skip_if_max_rank_greater_than(3)
@@ -94,7 +93,7 @@ class TestPdarrayCreation:
     @pytest.mark.skip_if_max_rank_less_than(2)
     def test_array_creation_misc(self):
         av = ak.array(np.array([[0, 1], [0, 1]]))
-        assert isinstance(av, xp.Array)
+        assert isinstance(av, ak.pdarray)
 
         with pytest.raises(TypeError):
             ak.array({range(0, 10)})
@@ -359,9 +358,9 @@ class TestPdarrayCreation:
     def test_zeros_dtype_mult_dim(self, size, dtype):
         shape = (2, 2, size)
         zeros = ak.zeros(shape, dtype)
-        assert isinstance(zeros, xp.Array)
+        assert isinstance(zeros, ak.pdarray)
         assert dtype == zeros.dtype
-        assert zeros.shape == shape
+        assert zeros.shape == list(shape)
         assert (0 == zeros).all()
 
     @pytest.mark.skip_if_max_rank_greater_than(3)
@@ -400,8 +399,8 @@ class TestPdarrayCreation:
     def test_ones_dtype_multi_dim(self, size, dtype):
         shape = (2, 2, size)
         ones = ak.ones(shape, dtype)
-        assert isinstance(ones, xp.Array)
-        assert ones.shape == shape
+        assert isinstance(ones, ak.pdarray)
+        assert ones.shape == list(shape)
         assert dtype == ones.dtype
         assert (1 == ones).all()
 
@@ -451,9 +450,9 @@ class TestPdarrayCreation:
     def test_full_dtype_multi_dim(self, size, dtype):
         shape = (2, 2, size)
         type_full = ak.full(shape, 1, dtype)
-        assert isinstance(type_full, xp.Array)
+        assert isinstance(type_full, ak.pdarray)
         assert dtype == type_full.dtype
-        assert type_full.shape == shape
+        assert type_full.shape == list(shape)
         assert (1 == type_full).all()
 
     @pytest.mark.skip_if_max_rank_greater_than(3)
@@ -725,8 +724,8 @@ class TestPdarrayCreation:
     @pytest.mark.skip_if_max_rank_less_than(3)
     def test_mulitdimensional_array_creation(self):
         a = ak.array([[0, 0], [0, 1], [1, 1]])
-        assert isinstance(a, xp.Array)
-        assert a.shape == (3, 2)
+        assert isinstance(a, ak.pdarray)
+        assert a.shape == [3, 2]
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [bool, np.float64, np.int64, str])

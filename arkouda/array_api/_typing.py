@@ -1,4 +1,3 @@
-# type: ignore
 """
 This file defines the types for type annotations.
 

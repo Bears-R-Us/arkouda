@@ -1,4 +1,3 @@
-# type: ignore
 from __future__ import annotations
 
 from .array_object import Array

@@ -1,4 +1,3 @@
-# type: ignore
 import warnings
 
 from .array_object import Array

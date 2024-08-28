@@ -1,4 +1,3 @@
-# type: ignore
 from .array_object import Array
 
 from arkouda.client import generic_msg

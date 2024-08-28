@@ -1,13 +1,10 @@
-from __future__ import annotations
-
 import itertools
 from typing import Any, Iterable, List, Optional, Tuple, Union, cast
 
 import numpy as np
 import pandas as pd
 from typeguard import typechecked
-import arkouda.array_api as xp
-from arkouda.array_api.array_object import Array  # type: ignore
+
 from arkouda.client import generic_msg, get_max_array_rank
 from arkouda.numpy.dtypes import (
     NUMBER_FORMAT_STRINGS,
@@ -160,7 +157,7 @@ def array(
     a: Union[pdarray, np.ndarray, Iterable],
     dtype: Union[np.dtype, type, str, None] = None,
     max_bits: int = -1,
-) -> Union[pdarray, Strings, Array]:
+) -> Union[pdarray, Strings]:
     """
     Convert a Python or Numpy Iterable to a pdarray or Strings object, sending
     the corresponding data to the arkouda server.
@@ -222,7 +219,6 @@ def array(
     >>> type(strings)
     <class 'arkouda.strings.Strings'>
     """
-    # Removed @typechecked to prevent cyclic dependencies with Array
     from arkouda.numeric import cast as akcast
 
     # If a is already a pdarray, do nothing
@@ -312,19 +308,14 @@ def array(
         # including the dtype and size. If the server has a different byteorder
         # than our numpy array we need to swap to match since the server expects
         # native endian bytes
-
         aview = _array_memview(a)
-        if ndim == 1:
-            rep_msg = generic_msg(
-                cmd=f"array<{a.dtype.name},{ndim}>",
-                args={"shape": full_size},
-                payload=aview,
-                send_binary=True,
-            )
-            return create_pdarray(rep_msg) if dtype is None else akcast(create_pdarray(rep_msg), dtype)
-
-        else:
-            return xp.asarray(a, dtype=dtype)  # type: ignore
+        rep_msg = generic_msg(
+            cmd=f"array<{a.dtype.name},{ndim}>",
+            args={"dtype": a.dtype.name, "shape": tuple(a.shape), "seg_string": False},
+            payload=aview,
+            send_binary=True,
+        )
+        return create_pdarray(rep_msg) if dtype is None else akcast(create_pdarray(rep_msg), dtype)
 
 
 def promote_to_common_dtype(arrays: List[pdarray]) -> Tuple[Any, List[pdarray]]:
@@ -455,7 +446,7 @@ def zeros(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
     dtype: Union[np.dtype, type, str, bigint] = float64,
     max_bits: Optional[int] = None,
-) -> Union[pdarray, Array]:
+) -> pdarray:
     """
     Create a pdarray filled with zeros.
 
@@ -504,8 +495,6 @@ def zeros(
     if ndim > get_max_array_rank():
         raise ValueError(f"array rank {ndim} exceeds maximum of {get_max_array_rank()}")
 
-    if ndim > 1:
-        return xp.zeros(shape, dtype=dtype)  # type: ignore
     repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape})
 
     return create_pdarray(repMsg, max_bits=max_bits)
@@ -516,7 +505,7 @@ def ones(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
     dtype: Union[np.dtype, type, str, bigint] = float64,
     max_bits: Optional[int] = None,
-) -> Union[pdarray, Array]:
+) -> pdarray:
     """
     Create a pdarray filled with ones.
 
@@ -565,8 +554,6 @@ def ones(
     if ndim > get_max_array_rank():
         raise ValueError(f"array rank {ndim} exceeds maximum of {get_max_array_rank()}")
 
-    if ndim > 1:
-        return xp.ones(shape, dtype=dtype)  # type: ignore
     repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape})
     a = create_pdarray(repMsg)
     a.fill(1)
@@ -581,7 +568,7 @@ def full(
     fill_value: Union[numeric_scalars, str],
     dtype: Union[np.dtype, type, str, bigint] = float64,
     max_bits: Optional[int] = None,
-) -> Union[pdarray, Strings, Array]:
+) -> Union[pdarray, Strings]:
     """
     Create a pdarray filled with fill_value.
 
@@ -622,7 +609,6 @@ def full(
     >>> ak.full(5, 5, dtype=ak.bool_)
     array([True, True, True, True, True])
     """
-
     if isinstance(fill_value, str):
         return _full_string(size, fill_value)
 
@@ -635,9 +621,6 @@ def full(
 
     if ndim > get_max_array_rank():
         raise ValueError(f"array rank {ndim} exceeds maximum of {get_max_array_rank()}")
-
-    if ndim > 1:
-        return xp.full(shape, fill_value, dtype=dtype)  # type: ignore
 
     repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape})
 
@@ -705,7 +688,7 @@ def _full_string(
 
 
 @typechecked
-def zeros_like(pda: pdarray) -> Union[pdarray, Array]:
+def zeros_like(pda: pdarray) -> pdarray:
     """
     Create a zero-filled pdarray of the same size and dtype as an existing
     pdarray.
@@ -747,7 +730,7 @@ def zeros_like(pda: pdarray) -> Union[pdarray, Array]:
 
 
 @typechecked
-def ones_like(pda: pdarray) -> Union[pdarray, Array]:
+def ones_like(pda: pdarray) -> pdarray:
     """
     Create a one-filled pdarray of the same size and dtype as an existing
     pdarray.
@@ -794,7 +777,7 @@ def ones_like(pda: pdarray) -> Union[pdarray, Array]:
 
 
 @typechecked
-def full_like(pda: pdarray, fill_value: numeric_scalars) -> Union[pdarray, Strings, Array]:
+def full_like(pda: pdarray, fill_value: numeric_scalars) -> Union[pdarray, Strings]:
     """
     Create a pdarray filled with fill_value of the same size and dtype as an existing
     pdarray.
