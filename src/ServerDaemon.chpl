@@ -623,10 +623,10 @@ module ServerDaemon {
                     appendFile(filePath="%s/commands.log".format(this.arkDirectory), formatJson(msg));
                 }
 
-                var repMsg: MsgTuple;
                 var response: string;
                 var wasError: bool;
                 try {
+                    const repMsg: MsgTuple;
 
                     /**
                     * Command processing: Look for our specialized, default commands first, then check the command maps
@@ -645,10 +645,11 @@ module ServerDaemon {
                         when "disconnect" {
                             if autoShutdown {
                                 sendShutdownRequest(user=user);
+                                repMsg = MsgTuple.success("dummy msgTuple to make split-init work");
                                 break;
+                            } else {
+                                repMsg = new MsgTuple("disconnected from arkouda server tcp://*:%i".format(ServerPort), MsgType.NORMAL);
                             }
-
-                            repMsg = new MsgTuple("disconnected from arkouda server tcp://*:%i".format(ServerPort), MsgType.NORMAL);
                         }
                         when "noop" {
                             repMsg = new MsgTuple("noop", MsgType.NORMAL);
@@ -656,28 +657,28 @@ module ServerDaemon {
                         when "ruok" {
                             repMsg = new MsgTuple("imok", MsgType.NORMAL);
                         }
-                        otherwise { // Look up in CommandMap or Binary CommandMap (or array CommandMap for special handling)
+                        otherwise { // Look up in CommandMap or Binary CommandMap
                             if commandMap.contains(cmd) {
                                 repMsg = executeCommand(cmd, msgArgs, st);
                             } else {
                                 const (multiDimCommand, nd, rawCmd) = getNDSpec(cmd),
-                                    command1D = rawCmd + "1D";
+                                      command1D = rawCmd + "1D";
                                 if multiDimCommand && nd > ServerConfig.MaxArrayDims && commandMap.contains(command1D) {
                                     const errMsg = "Error: Command '%s' is not supported with the current server configuration "
                                                     .format(cmd) +
                                                     "as the maximum array dimensionality is %i. Please recompile with support for at least %iD arrays"
                                                     .format(ServerConfig.MaxArrayDims, nd);
-                                    repMsg = new MsgTuple(errMsg, MsgType.ERROR);
                                     sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errMsg);
+                                    repMsg = new MsgTuple(errMsg, MsgType.ERROR);
                                 } else if multiDimCommand && commandMap.contains(rawCmd) {
                                     const errMsg = "Error: Command '%s' is not supported for multidimensional arrays".format(rawCmd);
-                                    repMsg = new MsgTuple(errMsg, MsgType.ERROR);
                                     sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errMsg);
+                                    repMsg = new MsgTuple(errMsg, MsgType.ERROR);
                                 } else {
-                                    repMsg = new MsgTuple("Unrecognized command: %s".format(cmd), MsgType.ERROR);
-                                    sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),repMsg.msg);
+                                    const errorMsg = "Unrecognized command: %s".format(cmd);
+                                    sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                                    repMsg = new MsgTuple(errorMsg, MsgType.ERROR);
                                 }
-
                             }
                         }
                     }
