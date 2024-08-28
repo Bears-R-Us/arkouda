@@ -129,7 +129,7 @@ def create_parser():
     parser.add_argument("hostname", help="Hostname of arkouda server")
     parser.add_argument("port", type=int, help="Port of arkouda server")
     parser.add_argument(
-        "-n", "--size", type=int, default=10**7, help="Problem size: length of array to write/read"
+        "-n", "--size", type=int, default=10**8, help="Problem size: length of array to write/read"
     )
     parser.add_argument(
         "-w", "--write", default=False, action="store_true",
