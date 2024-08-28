@@ -1746,6 +1746,7 @@ class TestHDF5:
             ak.to_hdf(my_arrays, f"{tmp_dirname}/bad_dataset_names")
             ak.read_hdf(f"{tmp_dirname}/bad_dataset_names*")
 
+
     def test_hdf_groupby(self, hdf_test_base_tmp):
         # test for categorical and multiple keys
         string = ak.array(["a", "b", "a", "b", "c"])

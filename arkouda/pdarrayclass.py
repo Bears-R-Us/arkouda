@@ -140,23 +140,6 @@ def _create_scalar_array(value):
     )
 
 
-def _reshape(array: pdarray, shape: Tuple[int, ...]):
-    """
-    Reshape the pdarray to the specified shape
-
-    Requires the ManipulationMsg server module
-    """
-    return create_pdarray(
-        generic_msg(
-            cmd=f"reshape<{array.dtype},{array.ndim},{len(shape)}>",
-            args={
-                "name": array,
-                "shape": shape,
-            },
-        ),
-    )
-
-
 def _squeeze(array: pdarray, degen_axes: List[int]):
     """
     Remove degenerate axes from a pdarray
@@ -980,7 +963,7 @@ class pdarray:
                         if len(rs) > 0:
                             shape.append(rs.pop(0))
 
-                return _reshape(ret_array, tuple(shape))
+                return ret_array.reshape(shape)
             else:
                 return ret_array
 
@@ -1147,7 +1130,7 @@ class pdarray:
                                     )
 
                             # reshape to add singleton dimensions as needed
-                            _value_r = _reshape(_value, slice_shape)
+                            _value_r = _value.reshape(slice_shape)
                         else:
                             raise ValueError(
                                 f"value array must not have more dimensions ({_value.ndim}) than the"
@@ -1754,18 +1737,24 @@ class pdarray:
 
         Returns
         -------
-        ArrayView
-            An arrayview object with the data from the array but with the new shape
+        pdarray
+            a pdarray with the same data, reshaped to the new shape
         """
-        from arkouda.array_view import ArrayView
-
         # allows the elements of the shape parameter to be passed in as separate arguments
         # For example, a.reshape(10, 11) is equivalent to a.reshape((10, 11))
         if len(shape) == 1:
             shape = shape[0]
         elif not isinstance(shape, pdarray):
             shape = [i for i in shape]
-        return ArrayView(base=self, shape=shape, order=order)
+        return create_pdarray(
+            generic_msg(
+                cmd=f"reshape<{self.dtype},{self.ndim},{len(shape)}>",
+                args={
+                    "name": self.name,
+                    "shape": shape,
+                },
+            ),
+        )
 
     def to_ndarray(self) -> np.ndarray:
         """
@@ -1828,9 +1817,7 @@ class pdarray:
         data = cast(
             memoryview,
             generic_msg(
-                cmd=f"tondarray<{self.dtype},{self.ndim}>",
-                args={"array": self},
-                recv_binary=True
+                cmd=f"tondarray<{self.dtype},{self.ndim}>", args={"array": self}, recv_binary=True
             ),
         )
         # Make sure the received data has the expected length
@@ -2601,7 +2588,7 @@ def create_pdarrays(repMsg: str) -> List[pdarray]:
     # TODO: maybe add more robust json parsing here
     try:
         repMsg = repMsg.strip("[]")
-        responses = [r.strip().strip('\"') for r in repMsg.split("\",")]
+        responses = [r.strip().strip('"') for r in repMsg.split('",')]
         return [create_pdarray(response) for response in responses]
     except Exception as e:
         raise ValueError(e)
@@ -3099,10 +3086,7 @@ def cov(x: pdarray, y: pdarray) -> np.float64:
     ``cov = ((x - x.mean()) * (y - y.mean())).sum() / (x.size - 1)``.
     """
     return parse_single_value(
-        generic_msg(
-            cmd=f"cov<{x.dtype},{x.ndim},{y.dtype},{y.ndim}>",
-            args={"x": x, "y": y}
-        )
+        generic_msg(cmd=f"cov<{x.dtype},{x.ndim},{y.dtype},{y.ndim}>", args={"x": x, "y": y})
     )
 
 
@@ -3140,10 +3124,7 @@ def corr(x: pdarray, y: pdarray) -> np.float64:
     cov(x, y) / (x.std(ddof=1) * y.std(ddof=1))
     """
     return parse_single_value(
-        generic_msg(
-            cmd=f"corr<{x.dtype},{x.ndim},{y.dtype},{y.ndim}>",
-            args={"x": x, "y": y}
-        )
+        generic_msg(cmd=f"corr<{x.dtype},{x.ndim},{y.dtype},{y.ndim}>", args={"x": x, "y": y})
     )
 
 
