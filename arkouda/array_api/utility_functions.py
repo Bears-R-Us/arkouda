@@ -1,14 +1,15 @@
+# type: ignore
 from __future__ import annotations
-
-from .array_object import Array
-from .manipulation_functions import concat
 
 from typing import Optional, Tuple, Union
 
-from arkouda.pdarraycreation import scalar_array
+import arkouda as ak
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import create_pdarray
-import arkouda as ak
+from arkouda.pdarraycreation import scalar_array
+
+from .array_object import Array
+from .manipulation_functions import concat
 
 
 def all(
