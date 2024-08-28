@@ -231,7 +231,7 @@ Module Contents
    contains strings and sets the dtype to str
 
 
-.. py:function:: full(size: Union[arkouda.numpy.dtypes.int_scalars, str], fill_value: Union[arkouda.numpy.dtypes.numeric_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
+.. py:function:: full(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], fill_value: Union[arkouda.numpy.dtypes.numeric_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
 
    Create a pdarray filled with fill_value.
 
@@ -264,7 +264,7 @@ Module Contents
    array([True, True, True, True, True])
 
 
-.. py:function:: full_like(pda: arkouda.pdarrayclass.pdarray, fill_value: arkouda.numpy.dtypes.numeric_scalars) -> arkouda.pdarrayclass.pdarray
+.. py:function:: full_like(pda: arkouda.pdarrayclass.pdarray, fill_value: arkouda.numpy.dtypes.numeric_scalars) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
 
    Create a pdarray filled with fill_value of the same size and dtype as an existing
    pdarray.
@@ -336,7 +336,7 @@ Module Contents
    array([-5, -3.75, -2.5, -1.25, 0])
 
 
-.. py:function:: ones(size: Union[arkouda.numpy.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
+.. py:function:: ones(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], dtype: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray filled with ones.
 
@@ -628,7 +628,7 @@ Module Contents
    array([0.30013431967121934, 0.47383036230759112, 1.0441791878997098])
 
 
-.. py:function:: zeros(size: Union[arkouda.numpy.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
+.. py:function:: zeros(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], dtype: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray filled with zeros.
 

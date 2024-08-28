@@ -364,6 +364,8 @@
 <span class="kn">from</span> <span class="nn">arkouda.categorical</span> <span class="kn">import</span> <span class="n">Categorical</span>
 <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span><span class="p">,</span> <span class="n">get_config</span><span class="p">,</span> <span class="n">get_mem_used</span>
 <span class="kn">from</span> <span class="nn">arkouda.client_dtypes</span> <span class="kn">import</span> <span class="n">BitVector</span><span class="p">,</span> <span class="n">BitVectorizer</span><span class="p">,</span> <span class="n">IPv4</span>
+<span class="kn">from</span> <span class="nn">arkouda.groupbyclass</span> <span class="kn">import</span> <span class="n">GroupBy</span><span class="p">,</span> <span class="n">broadcast</span>
+<span class="kn">from</span> <span class="nn">arkouda.infoclass</span> <span class="kn">import</span> <span class="n">list_registry</span>
 <span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">_is_dtype_in_union</span><span class="p">,</span>
     <span class="n">dtype</span><span class="p">,</span>
@@ -371,8 +373,6 @@
     <span class="n">int_scalars</span><span class="p">,</span>
     <span class="n">numeric_scalars</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">arkouda.groupbyclass</span> <span class="kn">import</span> <span class="n">GroupBy</span><span class="p">,</span> <span class="n">broadcast</span>
-<span class="kn">from</span> <span class="nn">arkouda.infoclass</span> <span class="kn">import</span> <span class="n">list_registry</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarraycreation</span> <span class="kn">import</span> <span class="n">arange</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarraysetops</span> <span class="kn">import</span> <span class="n">unique</span>
@@ -1036,7 +1036,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_calc_shape</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_infer_shape_from_size</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
     <span class="n">shape</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
         <span class="n">shape</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Tuple</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
@@ -1048,7 +1048,7 @@
         <span class="n">full_size</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
         <span class="n">shape</span> <span class="o">=</span> <span class="n">full_size</span>
         <span class="n">ndim</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="k">return</span> <span class="n">shape</span><span class="p">,</span> <span class="n">full_size</span><span class="p">,</span> <span class="n">ndim</span>
+    <span class="k">return</span> <span class="n">shape</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">full_size</span>
 </pre></div>
         </article>
       </div>
