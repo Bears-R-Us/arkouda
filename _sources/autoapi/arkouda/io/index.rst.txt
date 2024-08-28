@@ -174,7 +174,7 @@ Module Contents
    - Import can only be performed from hdf5 or parquet files written by pandas.
 
 
-.. py:function:: load(path_prefix: str, file_format: str = 'INFER', dataset: str = 'array', calc_string_offsets: bool = False, column_delim: str = ',') -> Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index]]]
+.. py:function:: load(path_prefix: str, file_format: str = 'INFER', dataset: str = 'array', calc_string_offsets: bool = False, column_delim: str = ',') -> Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index]]]
 
    Load a pdarray previously saved with ``pdarray.save()``.
 
@@ -312,7 +312,7 @@ Module Contents
    .. seealso:: :obj:`ls`
 
 
-.. py:function:: read(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False, column_delim: str = ',', read_nested: bool = True, has_non_float_nulls: bool = False, fixed_len: int = -1) -> Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index]]]
+.. py:function:: read(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False, column_delim: str = ',', read_nested: bool = True, has_non_float_nulls: bool = False, fixed_len: int = -1) -> Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index]]]
 
    Read datasets from files.
    File Type is determined automatically.
@@ -353,11 +353,8 @@ Module Contents
                      calculation, which can have an impact on performance.
    :type fixed_len: int
 
-   :returns:
-
-             or Arkouda ArrayViews.
-                Dictionary of {datasetName: pdarray, String, SegArray, or ArrayView}
-   :rtype: Returns a dictionary of Arkouda pdarrays, Arkouda Strings, Arkouda Segarrays,
+   :returns: Dictionary of {datasetName: pdarray, String, or SegArray}
+   :rtype: Returns a dictionary of Arkouda pdarrays, Arkouda Strings, or Arkouda Segarrays.
 
    :raises RuntimeError: If invalid filetype is detected
 
@@ -390,7 +387,7 @@ Module Contents
    >>> x = ak.read('path/name_prefix*') # Reads HDF5
 
 
-.. py:function:: read_csv(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, column_delim: str = ',', allow_errors: bool = False) -> Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index]]]
+.. py:function:: read_csv(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, column_delim: str = ',', allow_errors: bool = False) -> Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index]]]
 
    Read CSV file(s) into Arkouda objects. If more than one dataset is found, the objects
    will be returned in a dictionary mapping the dataset name to the Arkouda object
@@ -408,11 +405,8 @@ Module Contents
                         the total number of files skipped due to failure and up to 10 filenames.
    :type allow_errors: bool
 
-   :returns:
-
-             or Arkouda ArrayViews.
-                Dictionary of {datasetName: pdarray, String, SegArray, or ArrayView}
-   :rtype: Returns a dictionary of Arkouda pdarrays, Arkouda Strings, Arkouda Segarrays,
+   :returns: Dictionary of {datasetName: pdarray, String, or SegArray}
+   :rtype: Returns a dictionary of Arkouda pdarrays, Arkouda Strings, or Arkouda Segarrays.
 
    :raises ValueError: Raised if all datasets are not present in all parquet files or if one or
        more of the specified files do not exist
@@ -433,7 +427,7 @@ Module Contents
      bytes as uint(8).
 
 
-.. py:function:: read_hdf(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False, calc_string_offsets: bool = False, tag_data=False) -> Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index]]]
+.. py:function:: read_hdf(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False, calc_string_offsets: bool = False, tag_data=False) -> Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index]]]
 
    Read Arkouda objects from HDF5 file/s
 
@@ -462,11 +456,8 @@ Module Contents
                    that the data was pulled from.
    :type tagData: bool
 
-   :returns:
-
-             or Arkouda ArrayViews.
-                Dictionary of {datasetName: pdarray, String, SegArray, or ArrayView}
-   :rtype: Returns a dictionary of Arkouda pdarrays, Arkouda Strings, Arkouda Segarrays,
+   :returns: Dictionary of {datasetName: pdarray, String, SegArray}
+   :rtype: Returns a dictionary of Arkouda pdarrays, Arkouda Strings, or Arkouda Segarrays.
 
    :raises ValueError: Raised if all datasets are not present in all hdf5 files or if one or
        more of the specified files do not exist
@@ -501,7 +492,7 @@ Module Contents
    >>> x = ak.read_hdf('path/name_prefix*') # Reads HDF5
 
 
-.. py:function:: read_parquet(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False, tag_data: bool = False, read_nested: bool = True, has_non_float_nulls: bool = False, fixed_len: int = -1) -> Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index]]]
+.. py:function:: read_parquet(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False, tag_data: bool = False, read_nested: bool = True, has_non_float_nulls: bool = False, fixed_len: int = -1) -> Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index]]]
 
    Read Arkouda objects from Parquet file/s
 
@@ -537,11 +528,8 @@ Module Contents
                      calculation, which can have an impact on performance.
    :type fixed_len: int
 
-   :returns:
-
-             or Arkouda ArrayViews.
-                Dictionary of {datasetName: pdarray, String, SegArray, or ArrayView}
-   :rtype: Returns a dictionary of Arkouda pdarrays, Arkouda Strings, Arkouda Segarrays,
+   :returns: Dictionary of {datasetName: pdarray, String, or SegArray}
+   :rtype: Returns a dictionary of Arkouda pdarrays, Arkouda Strings, or Arkouda Segarrays.
 
    :raises ValueError: Raised if all datasets are not present in all parquet files or if one or
        more of the specified files do not exist
@@ -712,7 +700,7 @@ Module Contents
    objects in HDF5. Thus, they are returned within the dictionary as a dataframe.
 
 
-.. py:function:: save_all(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]], prefix_path: str, names: Optional[List[str]] = None, file_format='HDF5', mode: str = 'truncate', file_type: str = 'distribute', compression: Optional[str] = None) -> None
+.. py:function:: save_all(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray]]], prefix_path: str, names: Optional[List[str]] = None, file_format='HDF5', mode: str = 'truncate', file_type: str = 'distribute', compression: Optional[str] = None) -> None
 
    DEPRECATED
    Save multiple named pdarrays to HDF5/Parquet files.
@@ -824,7 +812,7 @@ Module Contents
      bytes as uint(8).
 
 
-.. py:function:: to_hdf(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]], prefix_path: str, names: Optional[List[str]] = None, mode: str = 'truncate', file_type: str = 'distribute') -> None
+.. py:function:: to_hdf(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray]]], prefix_path: str, names: Optional[List[str]] = None, mode: str = 'truncate', file_type: str = 'distribute') -> None
 
    Save multiple named pdarrays to HDF5 files.
 
@@ -872,7 +860,7 @@ Module Contents
    >>> ak.to_hdf([a, b], 'path/name_prefix', names=['a', 'b'])
 
 
-.. py:function:: to_parquet(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]], prefix_path: str, names: Optional[List[str]] = None, mode: str = 'truncate', compression: Optional[str] = None, convert_categoricals: bool = False) -> None
+.. py:function:: to_parquet(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray]]], prefix_path: str, names: Optional[List[str]] = None, mode: str = 'truncate', compression: Optional[str] = None, convert_categoricals: bool = False) -> None
 
    Save multiple named pdarrays to Parquet files.
 
@@ -943,7 +931,7 @@ Module Contents
        the number of dimensions in the array or if the array is not a 32 or 64 bit numeric type
 
 
-.. py:function:: update_hdf(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]], prefix_path: str, names: Optional[List[str]] = None, repack: bool = True)
+.. py:function:: update_hdf(columns: Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray]], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray]]], prefix_path: str, names: Optional[List[str]] = None, repack: bool = True)
 
    Overwrite the datasets with name appearing in names or keys in columns if columns
    is a dictionary
