@@ -1,7 +1,7 @@
 import pytest
 
 import arkouda as ak
-from arkouda.client import generic_msg
+from arkouda.client import generic_msg, get_max_array_rank
 from server_util.test.server_test_util import TestRunningMode, start_arkouda_server
 
 
@@ -156,6 +156,7 @@ class TestClient:
         for cmd in ["connect", "info", "str"]:
             assert cmd in cmds
 
+    @pytest.mark.skip_if_max_rank_greater_than(9)
     def test_client_array_dim_cmd_error(self):
         """
         Tests that a user will get a helpful error message if they attempt to
