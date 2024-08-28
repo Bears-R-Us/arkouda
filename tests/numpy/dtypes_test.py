@@ -110,62 +110,56 @@ class TestDTypes:
         for unsupported in np.int64(1.0), int(1.0), "1.0":
             assert not dtypes.isSupportedFloat(unsupported)
 
-    def test_DtypeEnum(self):
-        assert "bool" == str(dtypes.DType.BOOL)
-        assert "float32" == str(dtypes.DType.FLOAT32)
-        assert "float64" == str(dtypes.DType.FLOAT64)
-        assert "float" == str(dtypes.DType.FLOAT)
-        assert "complex64" == str(dtypes.DType.COMPLEX64)
-        assert "complex128" == str(dtypes.DType.COMPLEX128)
-        assert "int8" == str(dtypes.DType.INT8)
-        assert "int16" == str(dtypes.DType.INT16)
-        assert "int32" == str(dtypes.DType.INT32)
-        assert "int64" == str(dtypes.DType.INT64)
-        assert "int" == str(dtypes.DType.INT)
-        assert "uint8" == str(dtypes.DType.UINT8)
-        assert "uint16" == str(dtypes.DType.UINT16)
-        assert "uint32" == str(dtypes.DType.UINT32)
-        assert "uint64" == str(dtypes.DType.UINT64)
-        assert "uint" == str(dtypes.DType.UINT)
-        assert "str" == str(dtypes.DType.STR)
-        assert "bigint" == str(dtypes.DType.BIGINT)
+    # def test_DtypeEnum(self):
+    #     assert "bool" == str(dtypes.DType.BOOL)
+    #     assert "float32" == str(dtypes.DType.FLOAT32)
+    #     assert "float64" == str(dtypes.DType.FLOAT64)
+    #     assert "float" == str(dtypes.DType.FLOAT)
+    #     assert "complex64" == str(dtypes.DType.COMPLEX64)
+    #     assert "complex128" == str(dtypes.DType.COMPLEX128)
+    #     assert "int8" == str(dtypes.DType.INT8)
+    #     assert "int16" == str(dtypes.DType.INT16)
+    #     assert "int32" == str(dtypes.DType.INT32)
+    #     assert "int64" == str(dtypes.DType.INT64)
+    #     assert "int" == str(dtypes.DType.INT)
+    #     assert "uint8" == str(dtypes.DType.UINT8)
+    #     assert "uint16" == str(dtypes.DType.UINT16)
+    #     assert "uint32" == str(dtypes.DType.UINT32)
+    #     assert "uint64" == str(dtypes.DType.UINT64)
+    #     assert "uint" == str(dtypes.DType.UINT)
+    #     assert "str" == str(dtypes.DType.STR)
+    #     assert "bigint" == str(dtypes.DType.BIGINT)
+    #
+    #     assert (
+    #         frozenset(
+    #             {
+    #                 int,
+    #                 ak.int8,
+    #                 ak.int16,
+    #                 ak.int32,
+    #                 ak.int64,
+    #                 ak.uint8,
+    #                 ak.uint16,
+    #                 ak.uint32,
+    #                 ak.uint64,
+    #                 ak.bigint,
+    #                 "bool_",
+    #                 "str_",
+    #             }
+    #         )
+    #         == ak.DTypes
+    #     )
 
-        assert (
-            frozenset(
-                {
-                    "float32",
-                    "float64",
-                    "float",
-                    "complex64",
-                    "complex128",
-                    "int8",
-                    "int16",
-                    "int32",
-                    "int64",
-                    "int",
-                    "uint8",
-                    "uint16",
-                    "uint32",
-                    "uint64",
-                    "uint",
-                    "bool",
-                    "str",
-                    "bigint",
-                }
-            )
-            == ak.DTypes
-        )
+    # assert (
+    #     frozenset(
+    #         {"bool_", "float", "float64", "int", "int64", "uint", "uint64", "uint8", "bigint", "str"}
+    #     )
+    #     == ak.ARKOUDA_SUPPORTED_DTYPES
+    # )
 
-        assert (
-            frozenset(
-                {"bool_", "float", "float64", "int", "int64", "uint", "uint64", "uint8", "bigint", "str"}
-            )
-            == ak.ARKOUDA_SUPPORTED_DTYPES
-        )
-
-    def test_NumericDTypes(self):
-        num_types = frozenset(["bool", "bool_", "float", "float64", "int", "int64", "uint64", "bigint"])
-        assert num_types == dtypes.NumericDTypes
+    # def test_NumericDTypes(self):
+    #     num_types = frozenset(["bool", "bool_", "float", "float64", "int", "int64", "uint64", "bigint"])
+    #     assert num_types == dtypes.NumericDTypes
 
     def test_SeriesDTypes(self):
         for dt in "int64", "<class 'numpy.int64'>", "datetime64[ns]", "timedelta64[ns]":

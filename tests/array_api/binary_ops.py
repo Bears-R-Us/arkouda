@@ -10,8 +10,7 @@ SHAPE_A = [(1,), (5,), (2, 2), (20, 10), (20, 10), (1, 10), (5, 10), (5, 10)]
 SHAPE_B = [(1,), (5,), (2, 2), (1, 10), (20, 1), (5, 1), (10,), (1,)]
 SEED = 123
 
-SCALAR_TYPES = list(ak.ScalarDTypes)
-SCALAR_TYPES.remove("bool_")
+SCALAR_TYPES =[ "float64", "int64"]
 
 
 class TestArrayCreation:

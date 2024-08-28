@@ -8,8 +8,7 @@ import arkouda.array_api as xp
 # requires the server to be built with 2D array support
 SHAPES = [(1,), (25,), (5, 10), (10, 5)]
 SEED = 12345
-SCALAR_TYPES = list(ak.ScalarDTypes)
-SCALAR_TYPES.remove("bool_")
+SCALAR_TYPES = ["float64", "int64"]
 
 
 class TestArrayCreation:
@@ -17,7 +16,7 @@ class TestArrayCreation:
     @pytest.mark.skip_if_max_rank_less_than(2)
     def test_argsort(self):
         for shape in SHAPES:
-            for dtype in ak.ScalarDTypes:
+            for dtype in ["bool_", "float64", "int64"]:
                 for axis in range(len(shape)):
                     a = xp.asarray(ak.randint(0, 100, shape, dtype=dtype, seed=SEED))
                     b = xp.argsort(a, axis=axis)

@@ -1,9 +1,6 @@
-import json
-
 import numpy as np
 import pytest
 
-import arkouda as ak
 import arkouda.array_api as xp
 
 # requires the server to be built with 2D array support
@@ -11,12 +8,14 @@ SHAPES = [(), (0,), (0, 0), (1,), (5,), (2, 2), (5, 10)]
 SIZES = [1, 0, 0, 1, 5, 4, 50]
 DIMS = [0, 1, 2, 1, 1, 2, 2]
 
+DTYPES = ["bool_", "float64", "int64"]
+
 
 class TestArrayCreation:
     @pytest.mark.skip_if_max_rank_less_than(2)
     def test_zeros(self):
         for shape, size, dim in zip(SHAPES, SIZES, DIMS):
-            for dtype in ak.ScalarDTypes:
+            for dtype in DTYPES:
                 a = xp.zeros(shape, dtype=dtype)
                 assert a.size == size
                 assert a.ndim == dim
@@ -27,7 +26,7 @@ class TestArrayCreation:
     @pytest.mark.skip_if_max_rank_less_than(2)
     def test_ones(self):
         for shape, size, dim in zip(SHAPES, SIZES, DIMS):
-            for dtype in ak.ScalarDTypes:
+            for dtype in DTYPES:
                 a = xp.ones(shape, dtype=dtype)
                 assert a.size == size
                 assert a.ndim == dim

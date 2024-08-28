@@ -25,13 +25,12 @@ from numpy import (
 )
 
 __all__ = [
-    "ARKOUDA_SUPPORTED_DTYPES",
-    "DType",
-    "DTypeObjects",
+    # "ARKOUDA_SUPPORTED_DTYPES",
+    # "DType",
+    # "DTypeObjects",
     "DTypes",
     "NUMBER_FORMAT_STRINGS",
     "NumericDTypes",
-    "ScalarDTypes",
     "SeriesDTypes",
     "_is_dtype_in_union",
     "_val_isinstance_of_union",
@@ -167,6 +166,48 @@ intTypes = frozenset((dtype("int64"), dtype("uint64"), dtype("uint8")))
 bitType = uint64
 
 # Union aliases used for static and runtime type checking
+
+
+"""
+The DType enum defines the supported Arkouda data types in string form.
+"""
+
+
+# class DType(Enum):
+#     FLOAT = "float"
+#     FLOAT64 = "float64"
+#     FLOAT32 = "float32"
+#     COMPLEX64 = "complex64"
+#     COMPLEX128 = "complex128"
+#     INT = "int"
+#     INT8 = "int8"
+#     INT16 = "int16"
+#     INT32 = "int32"
+#     INT64 = "int64"
+#     UINT = "uint"
+#     UINT8 = "uint8"
+#     UINT16 = "uint16"
+#     UINT32 = "uint32"
+#     UINT64 = "uint64"
+#     BOOL = "bool"
+#     BIGINT = "bigint"
+#     STR = "str"
+#
+#     def __str__(self) -> str:
+#         """
+#         Overridden method returns value, which is useful in outputting
+#         a DType as a request parameter
+#         """
+#         return self.value
+#
+#     def __repr__(self) -> str:
+#         """
+#         Overridden method returns value, which is useful in outputting
+#         a DType as a request parameter
+#         """
+#         return self.value
+
+
 bool_scalars = Union[builtins.bool, np.bool_]
 float_scalars = Union[float, np.float64, np.float32]
 int_scalars = Union[
@@ -199,46 +240,6 @@ numpy_scalars = Union[
 str_scalars = Union[str, np.str_]
 all_scalars = Union[bool_scalars, numeric_scalars, numpy_scalars, str_scalars]
 
-"""
-The DType enum defines the supported Arkouda data types in string form.
-"""
-
-
-class DType(Enum):
-    FLOAT = "float"
-    FLOAT64 = "float64"
-    FLOAT32 = "float32"
-    COMPLEX64 = "complex64"
-    COMPLEX128 = "complex128"
-    INT = "int"
-    INT8 = "int8"
-    INT16 = "int16"
-    INT32 = "int32"
-    INT64 = "int64"
-    UINT = "uint"
-    UINT8 = "uint8"
-    UINT16 = "uint16"
-    UINT32 = "uint32"
-    UINT64 = "uint64"
-    BOOL = "bool"
-    BIGINT = "bigint"
-    STR = "str"
-
-    def __str__(self) -> str:
-        """
-        Overridden method returns value, which is useful in outputting
-        a DType as a request parameter
-        """
-        return self.value
-
-    def __repr__(self) -> str:
-        """
-        Overridden method returns value, which is useful in outputting
-        a DType as a request parameter
-        """
-        return self.value
-
-
 ARKOUDA_SUPPORTED_INTS = (
     int,
     np.int8,
@@ -252,33 +253,23 @@ ARKOUDA_SUPPORTED_INTS = (
     bigint,
 )
 
-ARKOUDA_SUPPORTED_FLOATS = (float, np.float64)
-ARKOUDA_SUPPORTED_NUMBERS = (
-    int,
-    np.int8,
-    np.int16,
-    np.int32,
-    np.int64,
-    float,
-    np.float32,
-    np.float64,
-    np.uint8,
-    np.uint16,
-    np.uint32,
-    np.uint64,
-    bigint,
-)
+ARKOUDA_SUPPORTED_FLOATS = (float, np.float32, np.float64)
+ARKOUDA_SUPPORTED_NUMBERS = ARKOUDA_SUPPORTED_INTS + ARKOUDA_SUPPORTED_FLOATS
+DTypes = [dtype(dt).name for dt in ARKOUDA_SUPPORTED_NUMBERS + (np.bool_, np.str_)]
+
 
 # TODO: bring supported data types into parity with all numpy dtypes
 # missing full support for: float32, int32, int16, int8, uint32, uint16, complex64, complex128
-# ARKOUDA_SUPPORTED_DTYPES = frozenset([member.value for _, member in DType.__members__.items()])
-ARKOUDA_SUPPORTED_DTYPES = frozenset(
-    ["bool_", "float", "float64", "int", "int64", "uint", "uint64", "uint8", "bigint", "str"]
-)
+# ARKOUDA_SUPPORTED_DTYPES = [dtype(dt).name for dt in ARKOUDA_SUPPORTED_NUMBERS + (np.bool_, np.str_)]
 
-DTypes = frozenset([member.value for _, member in DType.__members__.items()])
-DTypeObjects = frozenset([bool_, float, float64, int, int64, str, str_, uint8, uint64])
-NumericDTypes = frozenset(["bool_", "bool", "float", "float64", "int", "int64", "uint64", "bigint"])
+# ARKOUDA_SUPPORTED_DTYPES = frozenset(
+#    ["bool_", "float", "float64", "int", "int64", "uint", "uint64", "uint8", "bigint", "str"]
+# )
+
+# DTypes = frozenset([member.value for _, member in DType.__members__.items()])
+# DTypeObjects = frozenset([bool_, float, float64, int, int64, str, str_, uint8, uint64])
+# NumericDTypes = frozenset(["bool", "float64", "int64", "uint64", "bigint"])
+NumericDTypes = ["bool", "float64", "int64", "uint64", "bigint"]
 SeriesDTypes = {
     "string": np.str_,
     "<class 'str'>": np.str_,
@@ -292,7 +283,6 @@ SeriesDTypes = {
     "datetime64[ns]": np.int64,
     "timedelta64[ns]": np.int64,
 }
-ScalarDTypes = frozenset(["bool_", "float64", "int64"])
 
 
 def isSupportedInt(num):
