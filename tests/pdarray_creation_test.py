@@ -42,6 +42,26 @@ class TestPdarrayCreation:
             assert len(pda) == fixed_size
             assert dtype == pda.dtype
 
+    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
+    def test_array_creation_multi_dim(self, size, dtype):
+        shape = (2, 2, size)
+        for pda in [
+            ak.array(ak.ones(shape, int), dtype),
+            ak.array(np.ones(shape), dtype),
+        ]:
+            assert isinstance(pda, ak.pdarray)
+            assert pda.shape == list(shape)
+            assert dtype == pda.dtype
+
+    @pytest.mark.skip_if_max_rank_greater_than(3)
+    @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
+    def test_array_creation_error(self, dtype):
+        shape = (2, 2, 2, 2)
+        with pytest.raises(ValueError):
+            ak.array(np.ones(shape), dtype)
+
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_large_array_creation(self, size):
         # Using pytest.prob_size in various other tests can be problematic; this
@@ -70,9 +90,10 @@ class TestPdarrayCreation:
             assert isinstance(pda, ak.pdarray if pda.dtype != str else ak.Strings)
             assert len(pda) == size
 
+    @pytest.mark.skip_if_max_rank_less_than(2)
     def test_array_creation_misc(self):
         av = ak.array(np.array([[0, 1], [0, 1]]))
-        assert isinstance(av, ak.ArrayView)
+        assert isinstance(av, ak.pdarray)
 
         with pytest.raises(TypeError):
             ak.array({range(0, 10)})
@@ -82,6 +103,20 @@ class TestPdarrayCreation:
 
         with pytest.raises(TypeError):
             ak.array(list(list(0)))
+
+    def test_infer_shape_from_size(self):
+        from arkouda.util import _infer_shape_from_size
+
+        a = np.array([[0, 1], [0, 1]])
+        shape, ndim, full_size = _infer_shape_from_size(a.shape)
+        assert ndim == 2
+        assert full_size == 4
+        assert shape == (2, 2)
+
+        shape, ndim, full_size = _infer_shape_from_size(7)
+        assert ndim == 1
+        assert full_size == 7
+        assert shape == (7)
 
     def test_bigint_creation(self):
         bi = 2**200
@@ -317,6 +352,24 @@ class TestPdarrayCreation:
         assert dtype == zeros.dtype
         assert (0 == zeros).all()
 
+    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", [ak.int64, float, ak.float64, bool, ak.bool_, ak.bigint])
+    def test_zeros_dtype_mult_dim(self, size, dtype):
+        shape = (2, 2, size)
+        zeros = ak.zeros(shape, dtype)
+        assert isinstance(zeros, ak.pdarray)
+        assert dtype == zeros.dtype
+        assert zeros.shape == list(shape)
+        assert (0 == zeros).all()
+
+    @pytest.mark.skip_if_max_rank_greater_than(3)
+    @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
+    def test_zeros_error(self, dtype):
+        shape = (2, 2, 2, 2)
+        with pytest.raises(ValueError):
+            ak.zeros(shape, dtype)
+
     def test_zeros_misc(self):
         zeros = ak.ones("5")
         assert 5 == len(zeros)
@@ -339,6 +392,24 @@ class TestPdarrayCreation:
         assert isinstance(ones, ak.pdarray)
         assert dtype == ones.dtype
         assert (1 == ones).all()
+
+    @pytest.mark.parametrize("dtype", [int, ak.int64, float, ak.float64, bool, ak.bool_, ak.bigint])
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.skip_if_max_rank_less_than(3)
+    def test_ones_dtype_multi_dim(self, size, dtype):
+        shape = (2, 2, size)
+        ones = ak.ones(shape, dtype)
+        assert isinstance(ones, ak.pdarray)
+        assert ones.shape == list(shape)
+        assert dtype == ones.dtype
+        assert (1 == ones).all()
+
+    @pytest.mark.skip_if_max_rank_greater_than(3)
+    @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
+    def test_ones_error(self, dtype):
+        shape = (2, 2, 2, 2)
+        with pytest.raises(ValueError):
+            ak.ones(shape, dtype)
 
     def test_ones_misc(self):
         ones = ak.ones("5")
@@ -372,6 +443,24 @@ class TestPdarrayCreation:
         assert isinstance(type_full, ak.pdarray)
         assert dtype == type_full.dtype
         assert (1 == type_full).all()
+
+    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
+    def test_full_dtype_multi_dim(self, size, dtype):
+        shape = (2, 2, size)
+        type_full = ak.full(shape, 1, dtype)
+        assert isinstance(type_full, ak.pdarray)
+        assert dtype == type_full.dtype
+        assert type_full.shape == list(shape)
+        assert (1 == type_full).all()
+
+    @pytest.mark.skip_if_max_rank_greater_than(3)
+    @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
+    def test_full_error(self, dtype):
+        shape = (2, 2, 2, 2)
+        with pytest.raises(ValueError):
+            ak.full(shape, 1, dtype)
 
     def test_full_misc(self):
         for arg in -1, False:
@@ -632,9 +721,11 @@ class TestPdarrayCreation:
         )
         assert printable_randoms == pda.to_list()
 
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_mulitdimensional_array_creation(self):
-        av = ak.array([[0, 0], [0, 1], [1, 1]])
-        assert isinstance(av, ak.ArrayView)
+        a = ak.array([[0, 0], [0, 1], [1, 1]])
+        assert isinstance(a, ak.pdarray)
+        assert a.shape == [3, 2]
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [bool, np.float64, np.int64, str])

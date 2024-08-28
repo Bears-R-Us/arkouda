@@ -18,44 +18,6 @@ NO_BOOL = [ak.int64, ak.float64, ak.uint64]
 
 
 class TestArrayView:
-    @pytest.mark.parametrize("size", SIZE)
-    @pytest.mark.parametrize("num_type", NO_BOOL)
-    def test_mulitdimensional_array_creation(self, size, num_type):
-        n = np.array([[0, 0], [0, 1], [1, 1]])
-        a = ak.array([[0, 0], [0, 1], [1, 1]])
-        assert np.array_equal(n.tolist(), a.to_list())
-        n = np.arange(size).reshape(SHAPE[size])
-        a = ak.arange(size).reshape(SHAPE[size])
-        assert np.array_equal(n.tolist(), a.to_list())
-        n = np.arange(size, dtype=num_type).reshape(SHAPE[size])
-        a = ak.arange(size, dtype=num_type).reshape(SHAPE[size])
-        assert np.array_equal(n.tolist(), a.to_list())
-
-    def test_arrayview_int_indexing(self):
-        nd = np.arange(9).reshape(3, 3)
-        pd_reshape = ak.arange(9).reshape(3, 3)
-        pd_array = ak.array([[0, 1, 2], [3, 4, 5], [6, 7, 8]])
-
-        nd_ind = [nd[i, j] for (i, j) in product(range(3), repeat=2)]
-        reshape_ind = [pd_reshape[i, j] for (i, j) in product(range(3), repeat=2)]
-        array_ind = [pd_array[i, j] for (i, j) in product(range(3), repeat=2)]
-        assert nd_ind == reshape_ind
-        assert nd_ind == array_ind
-
-        with pytest.raises(IndexError):
-            # index out bounds (>= dimension)
-            # index 3 is out of bounds for axis 0 with size 3
-            pd_reshape[3, 1]
-        with pytest.raises(IndexError):
-            # index -4 is out of bounds for axis 1 with size 3
-            pd_reshape[2, -4]
-        with pytest.raises(IndexError):
-            # too many indicies for array: array is 2-dimensional, but 3 were indexed
-            pd_reshape[0, 1, 1]
-        with pytest.raises(ValueError):
-
-            # cannot reshape array of size 9 into shape (4,3)
-            ak.arange(9).reshape(4, 3)
 
     @pytest.mark.parametrize("size", SIZE)
     def test_int_list_indexing(self, size):
@@ -157,28 +119,6 @@ class TestArrayView:
 
         assert n[0].tolist() == a[0].to_list()
         assert n[0][2] == a[0][2]
-
-        n = np.array([[0, 1, 2, 3, 4, 5, 6, 7, 8, 9], [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]])
-        a = ak.array([[0, 1, 2, 3, 4, 5, 6, 7, 8, 9], [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]])
-        # n[0, 1:7:2].tolist() = [1, 3, 5]
-        assert n[0, 1:7:2].tolist() == a[0, 1:7:2].to_list()
-        # n[0, -2:10].tolist() = [8, 9]
-        assert n[0, -2:10].tolist() == a[0, -2:10].to_list()
-        # n[0, -3:3:-1].tolist() = [7, 6, 5, 4]
-        assert n[0, -3:3:-1].tolist() == a[0, -3:3:-1].to_list()
-        # n[0, 5:].tolist() = [5, 6, 7, 8, 9]
-        assert n[0, 5:].tolist() == a[0, 5:].to_list()
-
-        n = np.array([[[1], [2], [3]], [[4], [5], [6]]])
-        a = ak.array([[[1], [2], [3]], [[4], [5], [6]]])
-        # list(n.shape) = [2, 3, 1]
-        assert list(n.shape) == a.shape.to_list()
-        # n.tolist() = [[[1], [2], [3]], [[4], [5], [6]]]
-        assert n.tolist() == a.to_list()
-        assert n.__str__() == a.__str__()
-
-        # n[1:2].tolist() = [[[4], [5], [6]]]
-        assert n[1:2].tolist() == a[1:2].to_list()
 
     def test_slicing(self):
         a = ak.arange(30).reshape(2, 3, 5)
