@@ -104,16 +104,16 @@ class TestPdarrayCreation:
         with pytest.raises(TypeError):
             ak.array(list(list(0)))
 
-    def test_infer_from_size(self):
-        from arkouda.pdarraycreation import _infer_from_size
+    def test_infer_shape_from_size(self):
+        from arkouda.util import _infer_shape_from_size
 
         a = np.array([[0, 1], [0, 1]])
-        shape, ndim, full_size = _infer_from_size(a.shape)
+        shape, ndim, full_size = _infer_shape_from_size(a.shape)
         assert ndim == 2
         assert full_size == 4
         assert shape == (2, 2)
 
-        shape, ndim, full_size = _infer_from_size(7)
+        shape, ndim, full_size = _infer_shape_from_size(7)
         assert ndim == 1
         assert full_size == 7
         assert shape == (7)

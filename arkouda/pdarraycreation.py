@@ -26,6 +26,7 @@ from arkouda.numpy.dtypes import (
 from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.strings import Strings
+from arkouda.util import _infer_shape_from_size
 
 __all__ = [
     "array",
@@ -47,21 +48,6 @@ __all__ = [
     "promote_to_common_dtype",
     "scalar_array",
 ]
-
-
-def _infer_from_size(size):
-    shape: Union[int_scalars, Tuple[int_scalars, ...]] = 1
-    if isinstance(size, tuple):
-        shape = cast(Tuple, size)
-        full_size = 1
-        for s in cast(Tuple, shape):
-            full_size *= s
-        ndim = len(shape)
-    else:
-        full_size = cast(int, size)
-        shape = full_size
-        ndim = 1
-    return shape, ndim, full_size
 
 
 @typechecked
@@ -297,7 +283,7 @@ def array(
         except TypeError:
             raise RuntimeError(f"Unhandled dtype {a.dtype}")
     else:
-        shape, ndim, full_size = _infer_from_size(a.shape)
+        shape, ndim, full_size = _infer_shape_from_size(a.shape)
 
         # Do not allow arrays that are too large
         if (full_size * a.itemsize) > maxTransferBytes:
@@ -490,7 +476,7 @@ def zeros(
     # check dtype for error
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-    shape, ndim, full_size = _infer_from_size(size)
+    shape, ndim, full_size = _infer_shape_from_size(size)
 
     if ndim > get_max_array_rank():
         raise ValueError(f"array rank {ndim} exceeds maximum of {get_max_array_rank()}")
@@ -549,7 +535,7 @@ def ones(
     # check dtype for error
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-    shape, ndim, full_size = _infer_from_size(size)
+    shape, ndim, full_size = _infer_shape_from_size(size)
 
     if ndim > get_max_array_rank():
         raise ValueError(f"array rank {ndim} exceeds maximum of {get_max_array_rank()}")
@@ -617,7 +603,7 @@ def full(
     # check dtype for error
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-    shape, ndim, full_size = _infer_from_size(size)
+    shape, ndim, full_size = _infer_shape_from_size(size)
 
     if ndim > get_max_array_rank():
         raise ValueError(f"array rank {ndim} exceeds maximum of {get_max_array_rank()}")
