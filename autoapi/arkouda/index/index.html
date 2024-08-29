@@ -1108,7 +1108,48 @@ they are unregistered.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.index.MultiIndex.objType">
 <span class="sig-name descname"><span class="pre">objType</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MultiIndex'</span></em><a class="headerlink" href="#arkouda.index.MultiIndex.objType" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Sequence used for indexing and alignment.</p>
+<p>The basic object storing axis labels for all DataFrame objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>values</strong> (<em>List</em><em>, </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id724" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>, </em><em>pandas.Categorical</em><em>, </em><em>pandas.Index</em><em>, or </em><a class="reference internal" href="#arkouda.index.Index" title="arkouda.index.Index"><em>Index</em></a>)</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>default=None</em>) – Name to be stored in the index.</p></li>
+<li><p><strong>False</strong> (<em>allow_list =</em>) – If False, list values will be converted to a pdarray.
+If True, list values will remain as a list, provided the data length is less than max_list_size.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>:param<span class="classifier">If False, list values will be converted to a pdarray.</span></dt><dd><p>If True, list values will remain as a list, provided the data length is less than max_list_size.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>1000</strong> (<em>max_list_size =</em>) – This is the maximum allowed data length for the values to be stored as a list object.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Raised if allow_list=True and the size of values is &gt; max_list_size.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.index.MultiIndex" title="arkouda.index.MultiIndex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MultiIndex</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">Index</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="go">Index(array([1 2 3]), dtype=&#39;int64&#39;)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="s1">&#39;abc&#39;</span><span class="p">))</span>
+<span class="go">Index(array([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;]), dtype=&#39;&lt;U0&#39;)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">Index</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">allow_list</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">Index([1, 2, 3], dtype=&#39;int64&#39;)</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.index.MultiIndex.register">

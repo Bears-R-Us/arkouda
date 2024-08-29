@@ -1587,7 +1587,7 @@ Module Contents
    If possible it should be avoided.
 
 
-.. py:class:: all_scalars(origin, params, *, inst=True, name=None)
+.. py:class:: all_scalars
 
    Bases: :py:obj:`_GenericAlias`
 
@@ -1825,7 +1825,7 @@ Module Contents
 
 
 
-.. py:class:: bool_scalars(origin, params, *, inst=True, name=None)
+.. py:class:: bool_scalars
 
    Bases: :py:obj:`_GenericAlias`
 
@@ -3236,7 +3236,7 @@ Module Contents
 
 
 
-.. py:class:: float_scalars(origin, params, *, inst=True, name=None)
+.. py:class:: float_scalars
 
    Bases: :py:obj:`_GenericAlias`
 
@@ -3836,7 +3836,7 @@ Module Contents
 
 
 
-.. py:class:: int_scalars(origin, params, *, inst=True, name=None)
+.. py:class:: int_scalars
 
    Bases: :py:obj:`_GenericAlias`
 
@@ -4305,7 +4305,7 @@ Module Contents
 
 
 
-.. py:class:: numeric_and_bool_scalars(origin, params, *, inst=True, name=None)
+.. py:class:: numeric_and_bool_scalars
 
    Bases: :py:obj:`_GenericAlias`
 
@@ -4319,7 +4319,7 @@ Module Contents
    this is used by e.g. typing.List and typing.Dict.
 
 
-.. py:class:: numeric_scalars(origin, params, *, inst=True, name=None)
+.. py:class:: numeric_scalars
 
    Bases: :py:obj:`_GenericAlias`
 
@@ -4333,7 +4333,7 @@ Module Contents
    this is used by e.g. typing.List and typing.Dict.
 
 
-.. py:class:: numpy_scalars(origin, params, *, inst=True, name=None)
+.. py:class:: numpy_scalars
 
    Bases: :py:obj:`_GenericAlias`
 
@@ -5272,7 +5272,7 @@ Module Contents
 
 
 
-.. py:class:: str_scalars(origin, params, *, inst=True, name=None)
+.. py:class:: str_scalars
 
    Bases: :py:obj:`_GenericAlias`
 

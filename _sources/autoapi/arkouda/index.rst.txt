@@ -19004,6 +19004,35 @@ Package Contents
       :value: 'MultiIndex'
 
 
+      Sequence used for indexing and alignment.
+
+      The basic object storing axis labels for all DataFrame objects.
+
+      :param values:
+      :type values: List, pdarray, Strings, Categorical, pandas.Categorical, pandas.Index, or Index
+      :param name: Name to be stored in the index.
+      :type name: str, default=None
+      :param allow_list = False: If False, list values will be converted to a pdarray.
+                                 If True, list values will remain as a list, provided the data length is less than max_list_size.
+      :param : If False, list values will be converted to a pdarray.
+               If True, list values will remain as a list, provided the data length is less than max_list_size.
+      :param max_list_size = 1000: This is the maximum allowed data length for the values to be stored as a list object.
+
+      :raises ValueError: Raised if allow_list=True and the size of values is > max_list_size.
+
+      .. seealso:: :obj:`MultiIndex`
+
+      .. rubric:: Examples
+
+      >>> ak.Index([1, 2, 3])
+      Index(array([1 2 3]), dtype='int64')
+
+      >>> ak.Index(list('abc'))
+      Index(array(['a', 'b', 'c']), dtype='<U0')
+
+      >>> ak.Index([1, 2, 3], allow_list=True)
+      Index([1, 2, 3], dtype='int64')
+
 
    .. py:method:: register(user_defined_name)
 
@@ -30672,7 +30701,7 @@ Package Contents
    :raises RuntimeError: Raised if there's a server-side error thrown
 
 
-.. py:class:: all_scalars(origin, params, *, inst=True, name=None)
+.. py:class:: all_scalars
 
    Bases: :py:obj:`_GenericAlias`
 
@@ -32514,7 +32543,7 @@ Package Contents
 
 
 
-.. py:class:: bool_scalars(origin, params, *, inst=True, name=None)
+.. py:class:: bool_scalars
 
    Bases: :py:obj:`_GenericAlias`
 
@@ -35311,7 +35340,7 @@ Package Contents
 
 
 
-.. py:class:: float_scalars(origin, params, *, inst=True, name=None)
+.. py:class:: float_scalars
 
    Bases: :py:obj:`_GenericAlias`
 
@@ -36951,7 +36980,7 @@ Package Contents
 
 
 
-.. py:class:: int_scalars(origin, params, *, inst=True, name=None)
+.. py:class:: int_scalars
 
    Bases: :py:obj:`_GenericAlias`
 
@@ -36965,7 +36994,7 @@ Package Contents
    this is used by e.g. typing.List and typing.Dict.
 
 
-.. py:class:: int_scalars(origin, params, *, inst=True, name=None)
+.. py:class:: int_scalars
 
    Bases: :py:obj:`_GenericAlias`
 
@@ -36979,7 +37008,7 @@ Package Contents
    this is used by e.g. typing.List and typing.Dict.
 
 
-.. py:class:: int_scalars(origin, params, *, inst=True, name=None)
+.. py:class:: int_scalars
 
    Bases: :py:obj:`_GenericAlias`
 
@@ -36993,7 +37022,7 @@ Package Contents
    this is used by e.g. typing.List and typing.Dict.
 
 
-.. py:class:: int_scalars(origin, params, *, inst=True, name=None)
+.. py:class:: int_scalars
 
    Bases: :py:obj:`_GenericAlias`
 
@@ -38520,7 +38549,7 @@ Package Contents
 
 
 
-.. py:class:: numeric_and_bool_scalars(origin, params, *, inst=True, name=None)
+.. py:class:: numeric_and_bool_scalars
 
    Bases: :py:obj:`_GenericAlias`
 
@@ -38534,7 +38563,7 @@ Package Contents
    this is used by e.g. typing.List and typing.Dict.
 
 
-.. py:class:: numeric_scalars(origin, params, *, inst=True, name=None)
+.. py:class:: numeric_scalars
 
    Bases: :py:obj:`_GenericAlias`
 
@@ -38548,7 +38577,7 @@ Package Contents
    this is used by e.g. typing.List and typing.Dict.
 
 
-.. py:class:: numpy_scalars(origin, params, *, inst=True, name=None)
+.. py:class:: numpy_scalars
 
    Bases: :py:obj:`_GenericAlias`
 
@@ -47745,7 +47774,7 @@ Package Contents
 
 
 
-.. py:class:: str_scalars(origin, params, *, inst=True, name=None)
+.. py:class:: str_scalars
 
    Bases: :py:obj:`_GenericAlias`
 
