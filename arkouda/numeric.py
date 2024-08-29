@@ -2241,7 +2241,6 @@ def array_equal(pda_a: pdarray, pda_b: pdarray, equal_nan: bool = False):
         return ak_all(where(isnan(pda_a), isnan(pda_b), pda_a == pda_b))
     else:
         return ak_all(pda_a == pda_b)
-        return sum((pda != "").astype(np.int64))
 
 def putmask(pda: pdarray, mask: Union[bool, pdarray], values: pdarray):
     """
