@@ -53,7 +53,6 @@ module SparseMatrixMsg {
                 return new MsgTuple(errorMsg, MsgType.ERROR);
             }
         }
-
     }
 
 
@@ -80,9 +79,41 @@ module SparseMatrixMsg {
     }
 
 
+    proc sparseMatrixtoPdarray(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+
+        var gEnt = getGenericSparseArrayEntry(msgArgs.getValueOf("array"), st);
+
+        var rows = st[msgArgs["rows"]]: SymEntry(int, 1);
+        var cols = st[msgArgs["cols"]]: SymEntry(int, 1);
+        var vals = st[msgArgs["vals"]]: SymEntry(int, 1);
+
+        if gEnt.layoutStr=="CSC" {
+            // Hardcode for int right now
+            var sparrayEntry = gEnt.toSparseSymEntry(int, dimensions=2, layout.CSC);
+            sparseMatToPdarray(sparrayEntry.a, rows.a, cols.a, vals.a);
+        } else if gEnt.layoutStr=="CSR" {
+            // Hardcode for int right now
+            var sparrayEntry = gEnt.toSparseSymEntry(int, dimensions=2, layout.CSR);
+            sparseMatToPdarray(sparrayEntry.a, rows.a, cols.a, vals.a);
+        } else {
+            throw getErrorWithContext(
+                                    msg="unsupported layout for sparse matrix: %s".format(gEnt.layoutStr),
+                                    lineNumber=getLineNumber(),
+                                    routineName=getRoutineName(),
+                                    moduleName=getModuleName(),
+                                    errorClass="NotImplementedError"
+                                    );
+        }
+
+        sparseLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Converted sparse matrix to pdarray");
+        return MsgTuple.success();
+    }
+
+
 
     use CommandMap;
     registerFunction("random_sparse_matrix", randomSparseMatrixMsg, getModuleName());
     registerFunction("sparse_matrix_matrix_mult", sparseMatrixMatrixMultMsg, getModuleName());
+    registerFunction("sparseToPdarray", sparseMatrixtoPdarray, getModuleName());
 
 }

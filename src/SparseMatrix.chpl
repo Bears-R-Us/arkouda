@@ -2,6 +2,15 @@ module SparseMatrix {
 
   public use SpsMatUtil;
 
+
+  proc sparseMatToPdarray(spsMat, rows, cols, vals){
+
+    for (idx, (i, j)) in zip(1..3, spsMat.domain) {
+      rows[idx] = i;
+      cols[idx] = j;
+      vals[idx] = spsMat[i, j];
+    }
+  }
   // sparse, outer, matrix-matrix multiplication algorithm; A is assumed
   // CSC and B CSR
   proc sparseMatMatMult(A, B) {

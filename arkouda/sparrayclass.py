@@ -1,14 +1,19 @@
 from __future__ import annotations
 
 import builtins
-from typing import Optional, Sequence, Union
+from typing import Optional, Sequence, Union, cast
 
 import numpy as np
 from typeguard import typechecked
+from arkouda.dtypes import int64 as akint64
+from arkouda.dtypes import (
+    NumericDTypes
+)
 
 from arkouda.client import generic_msg
 from arkouda.dtypes import dtype, int_scalars
 from arkouda.logger import getArkoudaLogger
+from arkouda.pdarrayclass import create_pdarray, pdarray
 
 logger = getArkoudaLogger(name="sparrayclass")
 
@@ -93,6 +98,58 @@ class sparray:
     #     from arkouda.client import sparrayIterThresh
     #     print("Called repr")
     #     return generic_msg(cmd="repr", args={"array": self, "printThresh": sparrayIterThresh})
+
+    """
+    Converts the sparse matrix to a tuple of 3 pdarrays (rows, cols, vals)
+    Returns
+    -------
+    tuple[ak.pdarray, ak.pdarray, ak.pdarray]
+        A tuple of 3 pdarrays which contain the row indices, the column indices,
+        and the values at the respective indices within the sparse matrix.
+
+    Raises
+    ------
+    RuntimeError
+        Raised if there is a server-side error thrown, if the pdarray size
+        exceeds the built-in client.maxTransferBytes size limit, or if the bytes
+        received does not match expected number of bytes
+    Notes
+    -----
+    The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
+    otherwise a ``RuntimeError`` will be raised. This is to protect the user
+    from overflowing the memory of the system on which the Python client
+    is running, under the assumption that the server is running on a
+    distributed system with much more memory than the client. The user
+    may override this limit by setting client.maxTransferBytes to a larger
+    value, but proceed with caution.
+
+    Examples
+    --------
+    >>> a = ak.random_sparse_matrix(100,0.2,"CSR");
+    >>> a.to_pdarray()
+    ???
+
+    >>> type(a.to_ndarray())
+    ???
+    """
+    def to_pdarray(self):
+        size = self.nnz
+        dtype = self.dtype
+        dtype_name = cast(np.dtype, dtype).name
+        # check dtype for error
+        if dtype is not akint64:  # Hardcoded for int support only for now later change this to dtype_name not in NumericDTypes:
+            raise TypeError(f"unsupported dtype {dtype}")
+        repMsg = generic_msg(cmd=f"create<{dtype_name},1>", args={"shape": size})
+        vals = create_pdarray(repMsg)
+        akint64_name = cast(np.dtype, akint64).name
+        repMsg = generic_msg(cmd=f"create<{akint64_name},1>", args={"shape": size})
+        rows = create_pdarray(repMsg)
+        repMsg = generic_msg(cmd=f"create<{akint64_name},1>", args={"shape": size})
+        cols = create_pdarray(repMsg)
+        generic_msg(cmd="sparseToPdarray", args={"array": self, "rows": rows, "cols": cols, "vals": vals})
+        return (rows, cols, vals)
+
+
 
 
 # creates sparray object
