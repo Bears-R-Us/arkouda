@@ -321,80 +321,111 @@ module ReductionMsg
       }
     }
 
-    /*
-      Find the indices of all the non-zero elements along each dimension of the input array
+    @arkouda.instantiateAndRegister
+    proc nonzero(
+      cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+      type array_dtype,
+      param array_nd: int
+    ): MsgTuple throws
+      where array_dtype != bigint
+    {
+      var x = st[msgArgs['x']]: SymEntry(array_dtype, array_nd);
 
-      Returns one array of indices for each dimension of the input array
-    */
-    @arkouda.registerND
-    proc nonzeroMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-      param pn = Reflection.getRoutineName();
-      const x = msgArgs.getValueOf("x"),
-            rnames = [i in 0..<nd] st.nextName();
+      // call fast / simple path for 1D arrays
+      if array_nd == 1 then return st.insert(new shared SymEntry(nonzero1D(x.a)));
 
-      var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(x, st);
+      var nnzPerSlab: [0..<x.a.domain.dim(0).size] int;
+      var axes: (x.a.rank - 1)*int;
+      for i in 1..<x.a.rank do axes[i-1] = i;
 
-      proc findNonZero(type t): MsgTuple throws {
-        const eIn = toSymEntry(gEnt, t, nd),
-              nTasks = here.maxTaskPar;
+      // count the number of non-zero elements in each slab
+      forall (slabDom, slabIdx) in axisSlices(x.a.domain, (...axes)) {
+        var nnzSlabCount = 0;
 
-        // count the number of non-zero elements in a chunk of the input array owned by each task
-        var nnzPerTask: [0..<numLocales] [0..<nTasks] int;
-        coforall loc in Locales with (ref nnzPerTask) do on loc {
-          const locDom = eIn.a.localSubdomain();
-          coforall tid in 0..<nTasks with (ref nnzPerTask) {
-            var nnzTask = 0;
-            // TODO: evaluate whether 'subDomChunk' chunking along the largest dimension
-            // is the best choice. Perhaps it would be better to always chunk along the
-            // zeroth dimension for best cache locality (or to use some other technique to
-            // split work among tasks).
-            for idx in subDomChunk(locDom, tid, nTasks) do
-              if eIn.a[idx] != 0:t then nnzTask += 1;
-            nnzPerTask[loc.id][tid] = nnzTask;
+        // TODO: see comment below about making this a coforall loop
+        for idx in slabDom do
+          if x.a[idx] != 0 then nnzSlabCount += 1;
+        nnzPerSlab[slabIdx[0]] = nnzSlabCount;
+      }
+
+      const nnzTotalCount = + reduce nnzPerSlab,
+            dimIndexStarts = (+ scan nnzPerSlab) - nnzPerSlab;
+
+      var dimIndices = for 0..<array_nd do createSymEntry(nnzTotalCount, int);
+
+      // populate the arrays with the indices of the non-zero elements
+      forall (slabDom, slabIdx) in axisSlices(x.a.domain, (...axes)) {
+        var i = dimIndexStarts[slabIdx[0]];
+
+        /*
+          TODO: make this a coforall loop over a locale-wise decomposition of 'slabDom'
+          since it is a (potentially large) distributed domain. This requires computing
+          each task's starting index in the output array ahead of time (and ensuring
+          their proper relative ordering in the output arrays (not trivial)). Potentially
+          not the most performant strategy since multiple tasks and `on` blocks have to be
+          kicked off by each iteration of the outer `forall` loop?
+        */
+        for idx in slabDom {
+          if x.a[idx] != 0 {
+            for d in 0..<array_nd do
+              dimIndices[d].a[i] = idx[d];
+            i += 1;
           }
         }
+      }
 
-        // calculate the total number of non-zero elements and the starting index of each locale
-        const nnzPerLocale = [locTasks in nnzPerTask] + reduce locTasks,
-              numNonZero = + reduce nnzPerLocale,
-              locStarts = (+ scan nnzPerLocale) - nnzPerLocale;
+      const responses = for di in dimIndices do st.insert(di);
+      return MsgTuple.fromResponses(responses);
+    }
 
-        // create an index array for each dimension of the input array
-        var eOuts = for rn in rnames do st.addEntry(rn, numNonZero, int);
 
-        // populate the arrays with the indices of the non-zero elements
-        // TODO: refactor to use aggregation or bulk assignment to avoid fine-grained communication
-        coforall loc in Locales with (const ref nnzPerTask, const ref locStarts) do on loc {
-          const taskStarts = ((+ scan nnzPerTask[loc.id]) - nnzPerTask[loc.id]) + locStarts[loc.id],
-                locDom = eIn.a.localSubdomain();
-          coforall tid in 0..<nTasks {
-            var i = taskStarts[tid];
-            for idx in subDomChunk(locDom, tid, nTasks) {
-              if eIn.a[idx] != 0:t {
-                for d in 0..<nd do
-                  eOuts[d].a[i] = if nd == 1 then idx else idx[d];
-                i += 1;
-              }
+    // simple and efficient 'nonzero' implementation for 1D arrays
+    proc nonzero(
+      cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+      type array_dtype,
+      param array_nd: int
+    ): MsgTuple throws
+      where array_dtype == bigint
+    {
+      return MsgTuple.error("nonzero is not supported for bigint arrays");
+    }
+
+    proc nonzero1D(x: [?d] ?t): [] int throws {
+      const nTasksPerLoc = here.maxTaskPar;
+      var nnzPerTask: [0..<numLocales] [0..<nTasksPerLoc] int;
+
+      coforall loc in Locales with (ref nnzPerTask) do on loc {
+        const locDom = x.localSubdomain();
+        coforall tid in 0..<nTasksPerLoc with (ref nnzPerTask) {
+          var nnzTaskCount = 0;
+          for idx in subDomChunk(locDom, tid, nTasksPerLoc) do
+            if x[idx] != 0 then nnzTaskCount += 1;
+          nnzPerTask[loc.id][tid] = nnzTaskCount;
+        }
+      }
+
+      const nnzPerLoc = [locCounts in nnzPerTask] + reduce locCounts,
+            nnzTotalCount = + reduce nnzPerLoc,
+            locStarts = (+ scan nnzPerLoc) - nnzPerLoc;
+
+      var nnzIndices = makeDistArray(nnzTotalCount, int);
+
+      coforall loc in Locales with (ref nnzIndices) do on loc {
+        const taskStarts = ((+ scan nnzPerTask[loc.id]) - nnzPerTask[loc.id]) + locStarts[loc.id],
+              locDom = x.localSubdomain();
+
+        coforall tid in 0..<nTasksPerLoc with (ref nnzIndices) {
+          var i = taskStarts[tid];
+          for idx in subDomChunk(locDom, tid, nTasksPerLoc) {
+            if x[idx] != 0 then {
+              nnzIndices[i] = idx;
+              i += 1;
             }
           }
         }
-
-        const repMsg = try! '+'.join([rn in rnames] "created " + st.attrib(rn));
-        rmLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
-        return new MsgTuple(repMsg, MsgType.NORMAL);
       }
 
-      select gEnt.dtype {
-        when DType.Int64 do return findNonZero(int);
-        when DType.UInt64 do return findNonZero(uint);
-        when DType.Float64 do return findNonZero(real);
-        when DType.Bool do return findNonZero(bool);
-        otherwise {
-          var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
-          rmLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
-          return new MsgTuple(errorMsg,MsgType.ERROR);
-        }
-      }
+      return nnzIndices;
     }
 
     private module SliceReductionOps {

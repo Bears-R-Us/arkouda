@@ -146,7 +146,8 @@ def main():
     import arkouda.scipy.stats as akscipyStats
     import arkouda.series as akSeries
 
-    write_stub(aknp, "arkouda/numpy.pyi", all_only=True, allow_arkouda=True)
+    write_stub(aknp, "arkouda/numpy.pyi", all_only=False, allow_arkouda=True)
+    write_stub(aknp.dtypes, "arkouda/numpy/dtypes.pyi", all_only=False, allow_arkouda=True)
     write_stub(akscipy, "arkouda/scipy.pyi", all_only=True, allow_arkouda=True)
     write_stub(akscipyStats, "arkouda/scipy/stats.pyi", all_only=True, allow_arkouda=True)
     write_stub(akscipySpecial, "arkouda/scipy/special.pyi", all_only=True, allow_arkouda=True)

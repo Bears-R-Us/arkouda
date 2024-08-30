@@ -10,15 +10,15 @@ from typeguard import typechecked
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, get_config, get_mem_used
 from arkouda.client_dtypes import BitVector, BitVectorizer, IPv4
-from arkouda.dtypes import (
+from arkouda.groupbyclass import GroupBy, broadcast
+from arkouda.infoclass import list_registry
+from arkouda.numpy.dtypes import (
     _is_dtype_in_union,
     dtype,
     float_scalars,
     int_scalars,
     numeric_scalars,
 )
-from arkouda.groupbyclass import GroupBy, broadcast
-from arkouda.infoclass import list_registry
 from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import arange
 from arkouda.pdarraysetops import unique
@@ -610,7 +610,7 @@ def map(
         raise TypeError("Map must be dict or arkouda.Series.")
 
 
-def _calc_shape(size):
+def _infer_shape_from_size(size):
     shape: Union[int_scalars, Tuple[int_scalars, ...]] = 1
     if isinstance(size, tuple):
         shape = cast(Tuple, size)
@@ -622,4 +622,4 @@ def _calc_shape(size):
         full_size = cast(int, size)
         shape = full_size
         ndim = 1
-    return shape, full_size, ndim
+    return shape, ndim, full_size

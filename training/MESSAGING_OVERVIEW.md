@@ -65,25 +65,27 @@ The parameters in this function each server a specific purpose:
 - `msgArgs` contains parameters required for the message processing. The information about the number of arguments is bundled and will be paired accordingly with the denoted passed types. Individual arguments will need to be extracted on the server side.
 - `st: borrowed SymTab` is a reference parameter to the Server's Symbol Table. The Symbol Table acts like Arkouda's database; storing all information related to a data structure that can then be referenced from the Client without having to pass large amounts of data back and forth.
 
-All messages sent to the server are in JSON format. The JSON message sent to the server is used to generate a MessageArgs object automatically. These objects map the parameter name to the value using accessor methods. The values are always strings, but functions are provided to access it as the correct type for processing. The most common of these accessor methods is `getValueOf(argName)` which will return the value of an argument that matches the provided name.
+All messages sent to the server are in JSON format. The JSON message sent to the server is used to generate a MessageArgs object automatically. These objects map the parameter name to the value using accessor methods. The values are always strings, but functions are provided to access it as the correct type for processing.
 
-For example, assuming the server request in the above section is what is being received, there are two arguments in the JSON, `arg1` and `arg2`. To access these arguments in Chapel, we will use the `msgArgs` variable that is automatically generated. Then using the `getValueOf()` accessor method, we will set variables `arg1` and `arg2` equal to the values of their corresponding JSON arguments.
+For example, assuming the server request in the above section is what is being received, there are two arguments in the JSON, `arg1` and `arg2`. To access these arguments in Chapel, we will use the `msgArgs` variable that is automatically generated. Then using the `[]` accessor (which returns a `ParameterObj` value) and the `toScalar` method, we will set variables `arg1` and `arg2` equal to the values of their corresponding JSON arguments.
 
 ```chapel
-var arg1 = msgArgs.getValueOf("arg1"); // str dtype example
-var arg2 = msgArgs.get("arg2").getIntValue(); // int dtype example
+var arg1 = msgArgs["arg1"].toScalar(string); // str dtype example
+var arg2 = msgArgs["arg2"].toScalar(int);    // int dtype example
 ```
 
-Now the values of `arg1` and `arg2` are available for use within this Chapel function. Note that the function used can differ depending on the dtype of the expected value. `msgArgs.getValueOf()` is the base case that will return your value as a string. But there are other accessor methods that will cast the return automatically to various types:
-```chapel
-msgArgs.getIntValue()  // int64
-msgArgs.getUIntValue()  // uint64
-msgArgs.getUInt8Value()  // uint8
-msgArgs.getRealValue()  // real
-msgArgs.getBoolValue()  // bool
-msgArgs.getValueAsType(type t)  // returns as provided type
-msgArgs.getList(size s)  // List of int values of provided size
-```
+Now the values of `arg1` and `arg2` are available for use within this Chapel function. Note that the function used can differ depending on the dtype of the expected value. There are other accessor methods on the `ParameterObj` type that will cast the return automatically to various types. Here are some examples of how those methods map Python argument types to their corresponding Chapel types:
+
+| method call | Python type | returned Chapel type |
+| :--- | :--- | :--- |
+| `toScalar(bool)` | `bool_` | `bool` |
+| `toScalarTuple(int, 3)` | `Tuple[int64, int64, int64]` | `3*int` |
+| `toScalarList(real)` | `List[float64]` | `list(real)` |
+| `toScalarArray(string, 4)` | `List[str]` | `[0..<4] string` |
+| `tryGetScalar(int)` | `int64` | `(int, bool)` (bool indicates success) |
+| `getValue()` | any | `string` (raw JSON) |
+
+With the exceptions of `tryGetScalar` and `getValue`, each of the above methods will throw an error if a value of the specified type cannot be constructed from the JSON string in the ParameterObject.
 
 <a id="newModule"></a>
 ## Creating a New Chapel Module

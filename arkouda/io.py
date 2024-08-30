@@ -7,19 +7,18 @@ from warnings import warn
 import pandas as pd
 from typeguard import typechecked
 
-from arkouda.array_view import ArrayView
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg
 from arkouda.client_dtypes import IPv4
 from arkouda.dataframe import DataFrame
 from arkouda.groupbyclass import GroupBy
 from arkouda.index import Index, MultiIndex
+from arkouda.numpy.dtypes import float32, float64, int32, int64
 from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import arange, array
 from arkouda.segarray import SegArray
 from arkouda.strings import Strings
 from arkouda.timeclass import Datetime, Timedelta
-from arkouda.dtypes import float32, float64, int32, int64
 
 __all__ = [
     "get_filetype",
@@ -448,7 +447,6 @@ def _parse_obj(
 ) -> Union[
     Strings,
     pdarray,
-    ArrayView,
     SegArray,
     Categorical,
     DataFrame,
@@ -468,7 +466,7 @@ def _parse_obj(
 
     Returns
     -------
-    Strings, pdarray, or ArrayView Arkouda object
+    Strings, pdarray, SegArray, IPv4, Datetime, Timedelta, Categorical, GroupBy, DataFrame, or Index
 
     Raises
     ------
@@ -487,11 +485,6 @@ def _parse_obj(
         return Datetime(create_pdarray(obj["created"]))
     elif Timedelta.special_objType.upper() == obj["arkouda_type"]:
         return Timedelta(create_pdarray(obj["created"]))
-    elif ArrayView.objType.upper() == obj["arkouda_type"]:
-        components = obj["created"].split("+")
-        flat = create_pdarray(components[0])
-        shape = create_pdarray(components[1])
-        return ArrayView(flat, shape)
     elif Categorical.objType.upper() == obj["arkouda_type"]:
         return Categorical.from_return_msg(obj["created"])
     elif GroupBy.objType.upper() == obj["arkouda_type"]:
@@ -513,34 +506,46 @@ def _dict_recombine_segarrays_categoricals(df_dict):
     seg_cols = ["_".join(col.split("_")[:-1]) for col in df_dict.keys() if col.endswith("_segments")]
     cat_cols = [".".join(col.split(".")[:-1]) for col in df_dict.keys() if col.endswith(".categories")]
     df_dict_keys = {
-        "_".join(col.split("_")[:-1])
-        if col.endswith("_segments") or col.endswith("_values")
-        else ".".join(col.split(".")[:-1])
-        if col.endswith("._akNAcode")
-        or col.endswith(".categories")
-        or col.endswith(".codes")
-        or col.endswith(".permutation")
-        or col.endswith(".segments")
-        else col
+        (
+            "_".join(col.split("_")[:-1])
+            if col.endswith("_segments") or col.endswith("_values")
+            else (
+                ".".join(col.split(".")[:-1])
+                if col.endswith("._akNAcode")
+                or col.endswith(".categories")
+                or col.endswith(".codes")
+                or col.endswith(".permutation")
+                or col.endswith(".segments")
+                else col
+            )
+        )
         for col in df_dict.keys()
     }
 
     # update dict to contain segarrays where applicable if any exist
     if len(seg_cols) > 0 or len(cat_cols) > 0:
         df_dict = {
-            col: SegArray(df_dict[col + "_segments"], df_dict[col + "_values"])
-            if col in seg_cols
-            else Categorical.from_codes(
-                df_dict[f"{col}.codes"],
-                df_dict[f"{col}.categories"],
-                permutation=df_dict[f"{col}.permutation"]
-                if f"{col}.permutation" in df_dict_keys
-                else None,
-                segments=df_dict[f"{col}.segments"] if f"{col}.segments" in df_dict_keys else None,
-                _akNAcode=df_dict[f"{col}._akNAcode"],
+            col: (
+                SegArray(df_dict[col + "_segments"], df_dict[col + "_values"])
+                if col in seg_cols
+                else (
+                    Categorical.from_codes(
+                        df_dict[f"{col}.codes"],
+                        df_dict[f"{col}.categories"],
+                        permutation=(
+                            df_dict[f"{col}.permutation"]
+                            if f"{col}.permutation" in df_dict_keys
+                            else None
+                        ),
+                        segments=(
+                            df_dict[f"{col}.segments"] if f"{col}.segments" in df_dict_keys else None
+                        ),
+                        _akNAcode=df_dict[f"{col}._akNAcode"],
+                    )
+                    if col in cat_cols
+                    else df_dict[col]
+                )
             )
-            if col in cat_cols
-            else df_dict[col]
             for col in df_dict_keys
         }
     return df_dict
@@ -555,7 +560,6 @@ def _build_objects(
             Strings,
             pdarray,
             SegArray,
-            ArrayView,
             Categorical,
             DataFrame,
             IPv4,
@@ -575,7 +579,7 @@ def _build_objects(
 
     Returns
     -------
-    Strings, pdarray, or ArrayView Arkouda object or Dictionary mapping the dataset name to the object
+    Dictionary mapping the dataset name to the object
 
     Raises
     ------
@@ -606,7 +610,6 @@ def read_hdf(
             pdarray,
             Strings,
             SegArray,
-            ArrayView,
             Categorical,
             DataFrame,
             IPv4,
@@ -648,9 +651,8 @@ def read_hdf(
 
     Returns
     -------
-    Returns a dictionary of Arkouda pdarrays, Arkouda Strings, Arkouda Segarrays,
-     or Arkouda ArrayViews.
-        Dictionary of {datasetName: pdarray, String, SegArray, or ArrayView}
+    Returns a dictionary of Arkouda pdarrays, Arkouda Strings, or Arkouda Segarrays.
+        Dictionary of {datasetName: pdarray, String, SegArray}
 
     Raises
     ------
@@ -737,7 +739,7 @@ def read_parquet(
     tag_data: bool = False,
     read_nested: bool = True,
     has_non_float_nulls: bool = False,
-    fixed_len: int = -1
+    fixed_len: int = -1,
 ) -> Union[
     Mapping[
         str,
@@ -745,7 +747,6 @@ def read_parquet(
             pdarray,
             Strings,
             SegArray,
-            ArrayView,
             Categorical,
             DataFrame,
             IPv4,
@@ -794,9 +795,8 @@ def read_parquet(
 
     Returns
     -------
-    Returns a dictionary of Arkouda pdarrays, Arkouda Strings, Arkouda Segarrays,
-     or Arkouda ArrayViews.
-        Dictionary of {datasetName: pdarray, String, SegArray, or ArrayView}
+    Returns a dictionary of Arkouda pdarrays, Arkouda Strings, or Arkouda Segarrays.
+        Dictionary of {datasetName: pdarray, String, or SegArray}
 
     Raises
     ------
@@ -891,7 +891,6 @@ def read_csv(
             pdarray,
             Strings,
             SegArray,
-            ArrayView,
             Categorical,
             DataFrame,
             IPv4,
@@ -922,9 +921,8 @@ def read_csv(
 
     Returns
     --------
-    Returns a dictionary of Arkouda pdarrays, Arkouda Strings, Arkouda Segarrays,
-     or Arkouda ArrayViews.
-        Dictionary of {datasetName: pdarray, String, SegArray, or ArrayView}
+    Returns a dictionary of Arkouda pdarrays, Arkouda Strings, or Arkouda Segarrays.
+        Dictionary of {datasetName: pdarray, String, or SegArray}
 
     Raises
     ------
@@ -1044,8 +1042,10 @@ def import_data(
     df = DataFrame(df_def)
 
     if write_file:
-        df.to_hdf(write_file, index=index) if filetype == "HDF5" else df.to_parquet(
-            write_file, index=index
+        (
+            df.to_hdf(write_file, index=index)
+            if filetype == "HDF5"
+            else df.to_parquet(write_file, index=index)
         )
 
     if return_obj:
@@ -1129,8 +1129,8 @@ def export(
 
 def _bulk_write_prep(
     columns: Union[
-        Mapping[str, Union[pdarray, Strings, SegArray, ArrayView]],
-        List[Union[pdarray, Strings, SegArray, ArrayView]],
+        Mapping[str, Union[pdarray, Strings, SegArray]],
+        List[Union[pdarray, Strings, SegArray]],
     ],
     names: Optional[List[str]] = None,
     convert_categoricals: bool = False,
@@ -1167,8 +1167,8 @@ def _bulk_write_prep(
 
 def to_parquet(
     columns: Union[
-        Mapping[str, Union[pdarray, Strings, SegArray, ArrayView]],
-        List[Union[pdarray, Strings, SegArray, ArrayView]],
+        Mapping[str, Union[pdarray, Strings, SegArray]],
+        List[Union[pdarray, Strings, SegArray]],
     ],
     prefix_path: str,
     names: Optional[List[str]] = None,
@@ -1273,8 +1273,8 @@ def to_parquet(
 
 def to_hdf(
     columns: Union[
-        Mapping[str, Union[pdarray, Strings, SegArray, ArrayView]],
-        List[Union[pdarray, Strings, SegArray, ArrayView]],
+        Mapping[str, Union[pdarray, Strings, SegArray]],
+        List[Union[pdarray, Strings, SegArray]],
     ],
     prefix_path: str,
     names: Optional[List[str]] = None,
@@ -1385,8 +1385,8 @@ def _repack_hdf(prefix_path: str):
 
 def update_hdf(
     columns: Union[
-        Mapping[str, Union[pdarray, Strings, SegArray, ArrayView]],
-        List[Union[pdarray, Strings, SegArray, ArrayView]],
+        Mapping[str, Union[pdarray, Strings, SegArray]],
+        List[Union[pdarray, Strings, SegArray]],
     ],
     prefix_path: str,
     names: Optional[List[str]] = None,
@@ -1535,18 +1535,16 @@ def to_zarr(store_path: str, arr: pdarray, chunk_shape):
     """
     ndim = arr.ndim
     if ndim != len(chunk_shape):
-        raise ValueError("The number of dimensions in the chunk shape must match the \
-                          number of dimensions in the array")
+        raise ValueError(
+            "The number of dimensions in the chunk shape must match the \
+                          number of dimensions in the array"
+        )
     if arr.dtype not in [int64, int32, float64, float32]:
         raise ValueError("Only pdarrays of 64 and 32 bit numeric types are supported")
 
     generic_msg(
         cmd=f"writeAllZarr{ndim}D",
-        args={
-            "store_path": store_path,
-            "arr": arr,
-            "chunk_shape": chunk_shape
-        }
+        args={"store_path": store_path, "arr": arr, "chunk_shape": chunk_shape},
     )
 
 
@@ -1572,20 +1570,14 @@ def read_zarr(store_path: str, ndim: int, dtype):
         The pdarray read from the Zarr store.
     """
 
-    rep_msg = generic_msg(
-        cmd=f"readAllZarr{ndim}D",
-        args={
-            "store_path": store_path,
-            "dtype": dtype
-        }
-    )
+    rep_msg = generic_msg(cmd=f"readAllZarr{ndim}D", args={"store_path": store_path, "dtype": dtype})
     return create_pdarray(rep_msg)
 
 
 def save_all(
     columns: Union[
-        Mapping[str, Union[pdarray, Strings, SegArray, ArrayView]],
-        List[Union[pdarray, Strings, SegArray, ArrayView]],
+        Mapping[str, Union[pdarray, Strings, SegArray]],
+        List[Union[pdarray, Strings, SegArray]],
     ],
     prefix_path: str,
     names: Optional[List[str]] = None,
@@ -1675,7 +1667,6 @@ def load(
             pdarray,
             Strings,
             SegArray,
-            ArrayView,
             Categorical,
             DataFrame,
             IPv4,
@@ -1883,7 +1874,6 @@ def read(
             pdarray,
             Strings,
             SegArray,
-            ArrayView,
             Categorical,
             DataFrame,
             IPv4,
@@ -1937,9 +1927,8 @@ def read(
 
     Returns
     -------
-    Returns a dictionary of Arkouda pdarrays, Arkouda Strings, Arkouda Segarrays,
-     or Arkouda ArrayViews.
-        Dictionary of {datasetName: pdarray, String, SegArray, or ArrayView}
+    Returns a dictionary of Arkouda pdarrays, Arkouda Strings, or Arkouda Segarrays.
+        Dictionary of {datasetName: pdarray, String, or SegArray}
 
     Raises
     ------

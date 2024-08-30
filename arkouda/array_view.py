@@ -6,7 +6,7 @@ from enum import Enum
 import numpy as np
 
 from arkouda.client import generic_msg
-from arkouda.dtypes import resolve_scalar_dtype
+from arkouda.numpy.dtypes import resolve_scalar_dtype
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import cumprod, where
 from arkouda.pdarrayclass import create_pdarray, parse_single_value, pdarray

@@ -22,6 +22,35 @@ def np_is_sorted(arr):
 
 
 class TestSort:
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", [ak.float64, ak.uint64, ak.float64])
+    def test_compare_argsort(self, size, dtype):
+        # create np version
+        a = np.arange(size, dtype=dtype)
+        a = a[::-1]
+        iv = np.argsort(a)
+        a = a[iv]
+        # create ak version
+        b = ak.arange(size, dtype=dtype)
+        b = b[::-1]
+        iv = ak.argsort(b)
+        b = b[iv]
+        assert np.array_equal(a, b.to_ndarray())
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", [ak.float64, ak.uint64, ak.float64])
+    def test_compare_sort(self, size, dtype):
+        # create np version
+        a = np.arange(size, dtype=dtype)
+        a = a[::-1]
+        a = np.sort(a)
+        # create ak version
+        b = ak.arange(size, dtype=dtype)
+        b = b[::-1]
+        b = ak.sort(b)
+        assert np.allclose(a, b.to_ndarray())
+
     @pytest.mark.parametrize("dtype", NUMERIC_AND_BIGINT_TYPES)
     def test_is_sorted(self, dtype):
         pda = make_ak_arrays(dtype)

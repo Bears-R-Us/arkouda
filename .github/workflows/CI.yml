@@ -150,7 +150,6 @@ jobs:
         (cd $CHPL_HOME/tools/chapel-py && python3 -m pip install .)
     - name: Use MultiDim Configs
       run: |
-        cp .configs/serverConfig-multi-dim.json serverConfig.json
         cp .configs/registration-config-multi-dim.json registration-config.json
     - name: Build/Install Arkouda
       run: |

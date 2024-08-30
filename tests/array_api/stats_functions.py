@@ -9,18 +9,10 @@ import arkouda.array_api as xp
 
 SEED = 314159
 
-def get_server_max_array_dims():
-    try:
-        return json.load(open('serverConfig.json', 'r'))['max_array_dims']
-    except (ValueError, FileNotFoundError, TypeError, KeyError):
-        return 1
 
 class TestStatsFunction:
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_max requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_max(self):
         a = xp.asarray(ak.randint(0, 100, (5, 7, 4), dtype=ak.int64, seed=SEED))
         a[3, 6, 2] = 101
@@ -39,10 +31,7 @@ class TestStatsFunction:
         assert aMax02Keepdims.shape == (1, 7, 1)
         assert aMax02Keepdims[0, 6, 0] == 101
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_min requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_min(self):
         a = xp.asarray(ak.randint(0, 100, (5, 7, 4), dtype=ak.int64, seed=SEED))
         a[3, 6, 2] = -1
@@ -61,10 +50,7 @@ class TestStatsFunction:
         assert aMin02Keepdims.shape == (1, 7, 1)
         assert aMin02Keepdims[0, 6, 0] == -1
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_mean requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_mean(self):
         a = xp.ones((10, 5, 5))
         a[0, 0, 0] = 251
@@ -90,10 +76,7 @@ class TestStatsFunction:
         assert aMean02Keepdims[0, 0, 0] == 2
         assert aMean02Keepdims[2, 0, 0] == 2
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_std requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_std(self):
         a = xp.ones((10, 5, 5), dtype=ak.float64)
         a[0, 0, 0] = 26
@@ -113,10 +96,7 @@ class TestStatsFunction:
         assert abs(aStd02Keepdims[0, 0, 0] - math.sqrt(24)) < 1e-10
         assert abs(aStd02Keepdims[2, 0, 0] - math.sqrt(24)) < 1e-10
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_var requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_var(self):
         a = xp.ones((10, 5, 5), dtype=ak.float64)
         a[0, 0, 0] = 26
@@ -136,10 +116,7 @@ class TestStatsFunction:
         assert abs(aStd02Keepdims[0, 0, 0] - 24) < 1e-10
         assert abs(aStd02Keepdims[2, 0, 0] - 24) < 1e-10
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_prod requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_prod(self):
         a = xp.ones((2, 3, 4))
         a = a + a
@@ -158,10 +135,7 @@ class TestStatsFunction:
         assert aProd02Keepdims.shape == (2, 1, 1)
         assert aProd02Keepdims[0, 0, 0] == 2**12
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_sum requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_sum(self):
         a = xp.ones((2, 3, 4))
 
@@ -179,10 +153,7 @@ class TestStatsFunction:
         assert aSum02Keepdims.shape == (2, 1, 1)
         assert aSum02Keepdims[0, 0, 0] == 12
 
-    @pytest.mark.skipif(
-        get_server_max_array_dims() < 3,
-        reason="test_cumsum requires server with 'max_array_dims' >= 3",
-    )
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_cumsum(self):
         a = xp.asarray(ak.randint(0, 100, (5, 6, 7), seed=SEED))
 
