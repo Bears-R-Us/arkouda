@@ -11,8 +11,13 @@ import logging
 import os
 import subprocess
 import sys
-from server_util.test.server_test_util import get_arkouda_numlocales, start_arkouda_server,\
-    run_client, stop_arkouda_server
+from server_util.test.server_test_util import (
+    get_arkouda_numlocales,
+    start_arkouda_server,
+    run_client,
+    stop_arkouda_server,
+)
+
 benchmark_dir = os.path.dirname(__file__)
 util_dir = os.path.join(benchmark_dir, "..", "server_util", "test")
 sys.path.insert(0, os.path.abspath(util_dir))
@@ -90,12 +95,13 @@ def add_to_dat(benchmark, output, dat_dir, graph_infra):
     benchmark_out = "{}.exec.out.tmp".format(benchmark)
     with open(benchmark_out, "w") as f:
         f.write(output)
-    subprocess.check_output([computePerfStats, benchmark, dat_dir, perfkeys, benchmark_out])
+    subprocess.check_output(
+        [computePerfStats, benchmark, dat_dir, perfkeys, benchmark_out]
+    )
     os.remove(benchmark_out)
 
 
 def generate_graphs(args):
-
     """
     Generate graphs using the existing .dat files and graph infrastructure.
     """
@@ -140,20 +146,31 @@ def create_parser():
         default=get_arkouda_numlocales(),
         help="Number of locales to use for the server",
     )
-    parser.add_argument("-sp", "--server-port", default="5555", help="Port number to use for the server")
-    parser.add_argument("--server-args", action="append", help="Additional server arguments")
-    parser.add_argument("--numtrials", default=1, type=int, help="Number of trials to run")
     parser.add_argument(
-        "benchmarks", nargs="*", help="Basename of benchmarks to run with extension stripped"
+        "-sp", "--server-port", default="5555", help="Port number to use for the server"
+    )
+    parser.add_argument(
+        "--server-args", action="append", help="Additional server arguments"
+    )
+    parser.add_argument(
+        "--numtrials", default=1, type=int, help="Number of trials to run"
+    )
+    parser.add_argument(
+        "benchmarks",
+        nargs="*",
+        help="Basename of benchmarks to run with extension stripped",
     )
     parser.add_argument(
         "--save-data",
         default=False,
         action="store_true",
-        help="Save performance data to output files, requires $CHPL_HOME"
+        help="Save performance data to output files, requires $CHPL_HOME",
     )
     parser.add_argument(
-        "--gen-graphs", default=False, action="store_true", help="Generate graphs, requires $CHPL_HOME"
+        "--gen-graphs",
+        default=False,
+        action="store_true",
+        help="Generate graphs, requires $CHPL_HOME",
     )
     parser.add_argument(
         "--dat-dir",
@@ -167,12 +184,22 @@ def create_parser():
         help="Directory containing graph infrastructure",
     )
     parser.add_argument("--platform-name", default="", help="Test platform name")
-    parser.add_argument("--description", default="", help="Description of this configuration")
+    parser.add_argument(
+        "--description", default="", help="Description of this configuration"
+    )
     parser.add_argument("--annotations", default="", help="File containing annotations")
     parser.add_argument("--configs", help="comma seperate list of configurations")
     parser.add_argument("--start-date", help="graph start date")
-    parser.add_argument("--isolated", default="False", help="run each benchmark in its own server instance")
-    parser.add_argument("--within-slrum-alloc", default="False", help="whether this script was launched from within a slurm allocation (for use with --isolated only)")
+    parser.add_argument(
+        "--isolated",
+        default="False",
+        help="run each benchmark in its own server instance",
+    )
+    parser.add_argument(
+        "--within-slrum-alloc",
+        default="False",
+        help="whether this script was launched from within a slurm allocation (for use with --isolated only)",
+    )
     return parser
 
 
@@ -186,12 +213,19 @@ def main():
         os.makedirs(config_dat_dir, exist_ok=True)
 
     if not args.isolated:
-        start_arkouda_server(args.num_locales, port=args.server_port, server_args=args.server_args)
+        start_arkouda_server(
+            args.num_locales, port=args.server_port, server_args=args.server_args
+        )
 
     args.benchmarks = args.benchmarks or BENCHMARKS
     for benchmark in args.benchmarks:
         if args.isolated:
-            start_arkouda_server(args.num_locales, port=args.server_port, server_args=args.server_args, within_slurm_alloc=args.within_slrum_alloc)
+            start_arkouda_server(
+                args.num_locales,
+                port=args.server_port,
+                server_args=args.server_args,
+                within_slurm_alloc=args.within_slrum_alloc,
+            )
         for trial in range(args.numtrials):
             benchmark_py = os.path.join(benchmark_dir, "{}.py".format(benchmark))
             out = run_client(benchmark_py, client_args)

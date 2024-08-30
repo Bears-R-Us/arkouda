@@ -27,6 +27,7 @@ class TestRunningMode(Enum):
     """
     Enum indicating the running mode of the test harness
     """
+
     CLIENT = "CLIENT"
     CLASS_SERVER = "CLASS_SERVER"
     GLOBAL_SERVER = "GLOBAL_SERVER"
@@ -117,11 +118,11 @@ def read_server_and_port_from_file(server_connection_info):
     while True:
         try:
             with open(server_connection_info, "r") as f:
-                (hostname,port,connect_url) = f.readline().split(" ")
+                (hostname, port, connect_url) = f.readline().split(" ")
                 port = int(port)
                 if hostname == socket.gethostname():
                     hostname = "localhost"
-                return (hostname,port,connect_url)
+                return (hostname, port, connect_url)
         except (ValueError, FileNotFoundError) as e:
             time.sleep(1)
             continue
@@ -188,7 +189,9 @@ def get_server_launch_cmd(numlocales):
     import re
 
     # get the srun command for 'arkouda_server_real'
-    p = subprocess.Popen(["./arkouda_server", f"-nl{numlocales}", "--dry-run"], stdout=subprocess.PIPE)
+    p = subprocess.Popen(
+        ["./arkouda_server", f"-nl{numlocales}", "--dry-run"], stdout=subprocess.PIPE
+    )
     srun_cmd, err = p.communicate()
     srun_cmd = srun_cmd.decode()
 
@@ -199,8 +202,8 @@ def get_server_launch_cmd(numlocales):
     constraint_setting = None
     m = re.search(r"--constraint=[\w,]*\s", srun_cmd)
     if m is not None:
-        constraint_setting = srun_cmd[m.start():m.end()]
-        srun_cmd = srun_cmd[:m.start()] + srun_cmd[m.end()+1:]
+        constraint_setting = srun_cmd[m.start() : m.end()]
+        srun_cmd = srun_cmd[: m.start()] + srun_cmd[m.end() + 1 :]
 
     # extract evironment variable settings specified in the command
     # and include them in the executing environment
@@ -216,7 +219,14 @@ def get_server_launch_cmd(numlocales):
     return (srun_cmd, env, constraint_setting)
 
 
-def start_arkouda_server(numlocales, trace=False, port=5555, host=None, server_args=None, within_slurm_alloc=False):
+def start_arkouda_server(
+    numlocales,
+    trace=False,
+    port=5555,
+    host=None,
+    server_args=None,
+    within_slurm_alloc=False,
+):
     """
     Start the Arkouda server and wait for it to start running. Connection info
     is written to `get_arkouda_server_info_file()`.
@@ -239,7 +249,9 @@ def start_arkouda_server(numlocales, trace=False, port=5555, host=None, server_a
         raw_server_cmd, env, _ = get_server_launch_cmd(numlocales)
         raw_server_cmd = raw_server_cmd.strip().strip().split(" ")
     else:
-        raw_server_cmd = [get_arkouda_server(),]
+        raw_server_cmd = [
+            get_arkouda_server(),
+        ]
         env = None
 
     cmd = raw_server_cmd + [
