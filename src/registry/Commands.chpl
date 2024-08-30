@@ -2459,6 +2459,71 @@ registerFunction('pad<bigint,1>', ark_pad_bigint_1, 'UtilMsg', 125);
 
 import MsgProcessing;
 
+proc ark_reg_chunkInfoAsString_generic(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype_0, param array_nd_0: int): MsgTuple throws {
+  var array_array_sym = st[msgArgs['array']]: SymEntry(array_dtype_0, array_nd_0);
+  ref array = array_array_sym.a;
+  var ark_result = MsgProcessing.chunkInfoAsString(array);
+
+  return MsgTuple.fromScalar(ark_result);
+}
+
+proc ark_chunkInfoAsString_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_chunkInfoAsString_generic(cmd, msgArgs, st, array_dtype_0=int, array_nd_0=1);
+registerFunction('chunkInfoAsString<int64,1>', ark_chunkInfoAsString_int_1, 'MsgProcessing', 314);
+
+proc ark_chunkInfoAsString_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_chunkInfoAsString_generic(cmd, msgArgs, st, array_dtype_0=uint, array_nd_0=1);
+registerFunction('chunkInfoAsString<uint64,1>', ark_chunkInfoAsString_uint_1, 'MsgProcessing', 314);
+
+proc ark_chunkInfoAsString_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_chunkInfoAsString_generic(cmd, msgArgs, st, array_dtype_0=uint(8), array_nd_0=1);
+registerFunction('chunkInfoAsString<uint8,1>', ark_chunkInfoAsString_uint8_1, 'MsgProcessing', 314);
+
+proc ark_chunkInfoAsString_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_chunkInfoAsString_generic(cmd, msgArgs, st, array_dtype_0=real, array_nd_0=1);
+registerFunction('chunkInfoAsString<float64,1>', ark_chunkInfoAsString_real_1, 'MsgProcessing', 314);
+
+proc ark_chunkInfoAsString_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_chunkInfoAsString_generic(cmd, msgArgs, st, array_dtype_0=bool, array_nd_0=1);
+registerFunction('chunkInfoAsString<bool,1>', ark_chunkInfoAsString_bool_1, 'MsgProcessing', 314);
+
+proc ark_chunkInfoAsString_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_chunkInfoAsString_generic(cmd, msgArgs, st, array_dtype_0=bigint, array_nd_0=1);
+registerFunction('chunkInfoAsString<bigint,1>', ark_chunkInfoAsString_bigint_1, 'MsgProcessing', 314);
+
+proc ark_reg_chunkInfoAsArray_generic(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype_0, param array_nd_0: int): MsgTuple throws {
+  var array_array_sym = st[msgArgs['array']]: SymEntry(array_dtype_0, array_nd_0);
+  ref array = array_array_sym.a;
+  var ark_result = MsgProcessing.chunkInfoAsArray(array);
+  var ark_result_symbol = new shared SymEntry(ark_result);
+
+  return st.insert(ark_result_symbol);
+}
+
+proc ark_chunkInfoAsArray_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_chunkInfoAsArray_generic(cmd, msgArgs, st, array_dtype_0=int, array_nd_0=1);
+registerFunction('chunkInfoAsArray<int64,1>', ark_chunkInfoAsArray_int_1, 'MsgProcessing', 348);
+
+proc ark_chunkInfoAsArray_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_chunkInfoAsArray_generic(cmd, msgArgs, st, array_dtype_0=uint, array_nd_0=1);
+registerFunction('chunkInfoAsArray<uint64,1>', ark_chunkInfoAsArray_uint_1, 'MsgProcessing', 348);
+
+proc ark_chunkInfoAsArray_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_chunkInfoAsArray_generic(cmd, msgArgs, st, array_dtype_0=uint(8), array_nd_0=1);
+registerFunction('chunkInfoAsArray<uint8,1>', ark_chunkInfoAsArray_uint8_1, 'MsgProcessing', 348);
+
+proc ark_chunkInfoAsArray_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_chunkInfoAsArray_generic(cmd, msgArgs, st, array_dtype_0=real, array_nd_0=1);
+registerFunction('chunkInfoAsArray<float64,1>', ark_chunkInfoAsArray_real_1, 'MsgProcessing', 348);
+
+proc ark_chunkInfoAsArray_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_chunkInfoAsArray_generic(cmd, msgArgs, st, array_dtype_0=bool, array_nd_0=1);
+registerFunction('chunkInfoAsArray<bool,1>', ark_chunkInfoAsArray_bool_1, 'MsgProcessing', 348);
+
+proc ark_chunkInfoAsArray_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_chunkInfoAsArray_generic(cmd, msgArgs, st, array_dtype_0=bigint, array_nd_0=1);
+registerFunction('chunkInfoAsArray<bigint,1>', ark_chunkInfoAsArray_bigint_1, 'MsgProcessing', 348);
+
 proc ark_create_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return MsgProcessing.create(cmd, msgArgs, st, array_dtype=int, array_nd=1);
 registerFunction('create<int64,1>', ark_create_int_1, 'MsgProcessing', 35);
