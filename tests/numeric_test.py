@@ -838,12 +838,10 @@ class TestNumeric:
     # the resulting matrices are on the order of size*size.
 
     # tril works on ints, floats, or bool
-
+    @pytest.mark.skip_if_max_rank_less_than(2)
     @pytest.mark.parametrize("data_type", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_tril(self, data_type, prob_size):
-        if get_max_array_rank() < 2:
-            pytest.skip()
 
         size = int(sqrt(prob_size))
 
@@ -891,11 +889,10 @@ class TestNumeric:
 
     # transpose works on ints, floats, or bool
 
+    @pytest.mark.skip_if_max_rank_less_than(2)
     @pytest.mark.parametrize("data_type", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_transpose(self, data_type, prob_size):
-        if get_max_array_rank() < 2:
-            pytest.skip()
 
         size = int(sqrt(prob_size))
 
@@ -915,11 +912,10 @@ class TestNumeric:
             assert check(npa, ppa, data_type)
 
     # eye works on ints, floats, or bool
+    @pytest.mark.skip_if_max_rank_less_than(2)
     @pytest.mark.parametrize("data_type", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_eye(self, data_type, prob_size):
-        if get_max_array_rank() < 2:
-            pytest.skip()
 
         size = int(sqrt(prob_size))
 
@@ -939,12 +935,11 @@ class TestNumeric:
                 assert check(nda, pda, data_type)
 
     # matmul works on ints, floats, or bool
+    @pytest.mark.skip_if_max_rank_less_than(2)
     @pytest.mark.parametrize("data_type1", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("data_type2", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_matmul(self, data_type1, data_type2, prob_size):
-        if get_max_array_rank() < 2:
-            pytest.skip()
 
         size = int(sqrt(prob_size))
 
@@ -968,12 +963,11 @@ class TestNumeric:
     # vecdot works on ints, floats, or bool, with the limitation that both inputs can't
     # be bool
 
+    @pytest.mark.skip_if_max_rank_less_than(2)
     @pytest.mark.parametrize("data_type1", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("data_type2", INT_FLOAT)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_vecdot(self, data_type1, data_type2, prob_size):
-        if get_max_array_rank() < 2:
-            pytest.skip()
 
         depth = np.random.randint(2, 10)
         width = prob_size // depth
