@@ -171,7 +171,8 @@ def create_parser():
     parser.add_argument("--annotations", default="", help="File containing annotations")
     parser.add_argument("--configs", help="comma seperate list of configurations")
     parser.add_argument("--start-date", help="graph start date")
-    parser.add_argument("--isolated", default="False", help="run each benchmark in its own server instance (from within a persistent slurm allocation)")
+    parser.add_argument("--isolated", default="False", help="run each benchmark in its own server instance")
+    parser.add_argument("--within-slrum-alloc", default="False", help="whether this script was launched from within a slurm allocation (for use with --isolated only)")
     return parser
 
 
@@ -190,7 +191,7 @@ def main():
     args.benchmarks = args.benchmarks or BENCHMARKS
     for benchmark in args.benchmarks:
         if args.isolated:
-            start_arkouda_server(args.num_locales, port=args.server_port, server_args=args.server_args, within_slurm_alloc=True)
+            start_arkouda_server(args.num_locales, port=args.server_port, server_args=args.server_args, within_slurm_alloc=args.within_slrum_alloc)
         for trial in range(args.numtrials):
             benchmark_py = os.path.join(benchmark_dir, "{}.py".format(benchmark))
             out = run_client(benchmark_py, client_args)
