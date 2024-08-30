@@ -1720,7 +1720,7 @@ class pdarray:
         ret_list = json.loads(generic_msg(cmd="bigint_to_uint_list", args={"array": self}))
         return list(reversed([create_pdarray(a) for a in ret_list]))
 
-    def reshape(self, *shape, order="row_major"):
+    def reshape(self, *shape):
         """
         Gives a new shape to an array without changing its data.
 
@@ -1728,12 +1728,6 @@ class pdarray:
         ----------
         shape : int, tuple of ints, or pdarray
             The new shape should be compatible with the original shape.
-        order : str {'row_major' | 'C' | 'column_major' | 'F'}
-            Read the elements of the pdarray in this index order
-            By default, read the elements in row_major or C-like order where the last index
-            changes the fastest
-            If 'column_major' or 'F', read the elements in column_major or Fortran-like order where the
-            first index changes the fastest
 
         Returns
         -------
