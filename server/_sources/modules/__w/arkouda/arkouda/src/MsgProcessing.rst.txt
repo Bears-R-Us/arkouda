@@ -184,7 +184,7 @@ or
    :throws: `UndefinedSymbolError(name)`
    
 
-.. function:: proc chunkInfoMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws
+.. function:: proc chunkInfoAsString(array: [?d] ?t): string throws where t == bool || t == int(64) || t == uint(64) || t == uint(8) || t == real
 
    
    Get a list of lists indicating how an array is "chunked" across locales.
@@ -193,4 +193,10 @@ or
    indicating that the chunks start at indices 0 and 50 in the first dimension,
    and 0 and 20 in the second dimension.
    
+
+.. function:: proc chunkInfoAsString(array: [?d] ?t): string throws where t != bool && t != int(64) && t != uint(64) && t != uint(8) && t != real
+
+.. function:: proc chunkInfoAsArray(array: [?d] ?t): [] int throws where t == bool || t == int(64) || t == uint(64) || t == uint(8) || t == real
+
+.. function:: proc chunkInfoAsArray(array: [?d] ?t): [d] int throws where t != bool && t != int(64) && t != uint(64) && t != uint(8) && t != real
 
