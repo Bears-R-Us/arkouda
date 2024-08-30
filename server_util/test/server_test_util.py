@@ -237,12 +237,12 @@ def start_arkouda_server(numlocales, trace=False, port=5555, host=None, server_a
 
     if within_slurm_alloc:
         raw_server_cmd, env, _ = get_server_launch_cmd(numlocales)
+        raw_server_cmd = raw_server_cmd.strip().strip().split(" ")
     else:
-        raw_server_cmd = get_arkouda_server()
+        raw_server_cmd = [get_arkouda_server(),]
         env = None
 
-    cmd = [
-        raw_server_cmd,
+    cmd = raw_server_cmd + [
         "--trace={}".format("true" if trace else "false"),
         "--serverConnectionInfo={}".format(connection_file),
         "-nl {}".format(numlocales),
@@ -252,7 +252,7 @@ def start_arkouda_server(numlocales, trace=False, port=5555, host=None, server_a
         cmd += server_args
 
     logging.info('Starting "{}"'.format(cmd))
-    process = subprocess.Popen(cmd, stdout=subprocess.DEVNUL, env=env)
+    process = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, env=env)
     atexit.register(kill_server, process)
 
     if not host:
