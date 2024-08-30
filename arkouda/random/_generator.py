@@ -87,7 +87,7 @@ class Generator:
         else:
             ret_scalar = False
 
-        from arkouda.numeric import cast as akcast
+        from arkouda.numpy import cast as akcast
 
         if _val_isinstance_of_union(a, int_scalars):
             is_domain = True
@@ -416,7 +416,7 @@ class Generator:
         >>> ak.random.default_rng(17).lognormal(3, 2.5, 3)
         array([7.3866978126031091 106.20159494048757 4.5424399190667666])
         """
-        from arkouda.numeric import exp
+        from arkouda.numpy import exp
 
         norm_arr = self.normal(loc=mean, scale=sigma, size=size, method=method)
         return exp(norm_arr) if size is not None else np.exp(norm_arr)
@@ -822,7 +822,7 @@ def float_array_or_scalar_helper(func_name, var_name, var, size):
         if size != var.size:
             raise TypeError(f"array of {var_name} must have same size as return size")
         if var.dtype != akfloat64:
-            from arkouda.numeric import cast as akcast
+            from arkouda.numpy import cast as akcast
 
             var = akcast(var, akfloat64)
     else:

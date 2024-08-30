@@ -10,6 +10,8 @@ import numpy as np
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
+from arkouda.infoclass import information, pretty_print_information
+from arkouda.logger import getArkoudaLogger
 from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, DTypes, bigint
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import dtype
@@ -27,8 +29,6 @@ from arkouda.numpy.dtypes import (
 )
 from arkouda.numpy.dtypes import str_ as akstr_
 from arkouda.numpy.dtypes import uint64 as akuint64
-from arkouda.infoclass import information, pretty_print_information
-from arkouda.logger import getArkoudaLogger
 
 __all__ = [
     "pdarray",
@@ -1620,7 +1620,7 @@ class pdarray:
         >>> ak.array([2, 0, 2, 4, 0, 0]).value_counts()
         (array([0, 2, 4]), array([3, 2, 1]))
         """
-        from arkouda.numeric import value_counts
+        from arkouda.numpy import value_counts
 
         return value_counts(self)
 
@@ -1642,7 +1642,7 @@ class pdarray:
         _____
         This is essentially shorthand for ak.cast(x, '<dtype>') where x is a pdarray.
         """
-        from arkouda.numeric import cast as akcast
+        from arkouda.numpy import cast as akcast
 
         return akcast(self, dtype)
 
@@ -2482,7 +2482,7 @@ class pdarray:
         must return a list of arrays that can be (co)argsorted.
         """
         if self.dtype == akbool:
-            from arkouda.numeric import cast as akcast
+            from arkouda.numpy import cast as akcast
 
             return [akcast(self, akint64)]
         elif self.dtype in (akint64, akuint64):
@@ -3170,8 +3170,8 @@ def divmod(
     >>> ak.divmod(x,y, x % 2 == 0)
     (array([5 6 7 1 9]), array([5 0 7 3 9]))
     """
-    from arkouda.numeric import cast as akcast
-    from arkouda.numeric import where as akwhere
+    from arkouda.numpy import cast as akcast
+    from arkouda.numpy import where as akwhere
     from arkouda.pdarraycreation import full
 
     if not isinstance(x, pdarray) and not isinstance(y, pdarray):
@@ -3530,7 +3530,7 @@ def clz(pda: pdarray) -> pdarray:
     if pda.dtype == bigint:
         if pda.max_bits == -1:
             raise ValueError("max_bits must be set to count leading zeros")
-        from arkouda.numeric import where
+        from arkouda.numpy import where
         from arkouda.pdarraycreation import zeros
 
         uint_arrs = pda.bigint_to_uint_arrays()
@@ -3602,7 +3602,7 @@ def ctz(pda: pdarray) -> pdarray:
     if pda.dtype == bigint:
         # we don't need max_bits to be set because that only limits the high bits
         # which is only relevant when ctz(0) which is defined to be 0
-        from arkouda.numeric import where
+        from arkouda.numpy import where
         from arkouda.pdarraycreation import zeros
 
         # reverse the list, so we visit low bits first
@@ -3750,8 +3750,8 @@ def power(pda: pdarray, pwr: Union[int, float, pdarray], where: Union[bool, pdar
     >>> ak.power(a), 3, a % 2 == 0)
     array([0, 1, 8, 3, 64])
     """
-    from arkouda.numeric import cast as akcast
-    from arkouda.numeric import where as akwhere
+    from arkouda.numpy import cast as akcast
+    from arkouda.numpy import where as akwhere
 
     if where is True:
         return pda**pwr

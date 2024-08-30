@@ -23,13 +23,13 @@ import numpy as np
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
+from arkouda.logger import getArkoudaLogger
 from arkouda.numpy.dtypes import _val_isinstance_of_union, bigint
 from arkouda.numpy.dtypes import float64 as akfloat64
 from arkouda.numpy.dtypes import float_scalars
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import int_scalars
 from arkouda.numpy.dtypes import uint64 as akuint64
-from arkouda.logger import getArkoudaLogger
 from arkouda.pdarrayclass import RegistrationError, create_pdarray, is_sorted, pdarray
 from arkouda.pdarraycreation import arange, full
 from arkouda.random import default_rng
@@ -262,7 +262,7 @@ class GroupBy:
         dropna: bool = True,
         **kwargs,
     ):
-        from arkouda.numeric import isnan
+        from arkouda.numpy import isnan
 
         def drop_na_keys():
             if self.dropna is True:
@@ -1733,8 +1733,8 @@ class GroupBy:
             if return_indices is True, return the indices of the sampled values.
             Otherwise, return the sample values.
         """
-        from arkouda.numeric import cast as akcast
-        from arkouda.numeric import round as akround
+        from arkouda.numpy import cast as akcast
+        from arkouda.numpy import round as akround
 
         if frac is not None and n is not None:
             raise ValueError("Please enter a value for `frac` OR `n`, not both")

@@ -27,7 +27,6 @@ from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.strings import Strings
 
-
 __all__ = [
     "array",
     "zeros",
@@ -205,7 +204,7 @@ def array(
     >>> type(strings)
     <class 'arkouda.strings.Strings'>
     """
-    from arkouda.numeric import cast as akcast
+    from arkouda.numpy import cast as akcast
 
     # If a is already a pdarray, do nothing
     if isinstance(a, pdarray):
@@ -284,6 +283,7 @@ def array(
             raise RuntimeError(f"Unhandled dtype {a.dtype}")
     else:
         from arkouda.util import _infer_shape_from_size
+
         shape, ndim, full_size = _infer_shape_from_size(a.shape)
 
         # Do not allow arrays that are too large
@@ -478,6 +478,7 @@ def zeros(
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
     from arkouda.util import _infer_shape_from_size
+
     shape, ndim, full_size = _infer_shape_from_size(size)
 
     if ndim > get_max_array_rank():
@@ -538,6 +539,7 @@ def ones(
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
     from arkouda.util import _infer_shape_from_size
+
     shape, ndim, full_size = _infer_shape_from_size(size)
 
     if ndim > get_max_array_rank():
@@ -607,6 +609,7 @@ def full(
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
     from arkouda.util import _infer_shape_from_size
+
     shape, ndim, full_size = _infer_shape_from_size(size)
 
     if ndim > get_max_array_rank():

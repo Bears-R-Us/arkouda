@@ -4,16 +4,16 @@ from warnings import warn
 
 import numpy as np
 from pandas import Series as pdSeries
-from pandas import Timestamp as pdTimestamp
 from pandas import Timedelta as pdTimedelta
+from pandas import Timestamp as pdTimestamp
 from pandas import date_range as pd_date_range
 from pandas import timedelta_range as pd_timedelta_range
 from pandas import to_datetime, to_timedelta
 
 from arkouda.client import generic_msg
+from arkouda.numpy import abs as akabs
+from arkouda.numpy import cast
 from arkouda.numpy.dtypes import int64, int_scalars, intTypes, isSupportedInt
-from arkouda.numeric import abs as akabs
-from arkouda.numeric import cast
 from arkouda.pdarrayclass import RegistrationError, create_pdarray, pdarray
 from arkouda.pdarraycreation import from_series
 

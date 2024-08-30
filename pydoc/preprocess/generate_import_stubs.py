@@ -28,6 +28,12 @@ def insert_spaces_after_newlines(input_string, spaces):
     return None
 
 
+def reformat_signature(signature_string: str):
+    signature_string = re.sub(r"\<([\w.]+):[ \'\w\>]+", "\\1", signature_string)
+    signature_string = re.sub(r"\<class \'([\w.]+)\'\>", "\\1", signature_string)
+    return signature_string
+
+
 def get_parent_class_str(obj):
     if hasattr(obj, "__class__"):
         if inspect.isclass(obj):
@@ -81,7 +87,8 @@ def write_stub(module, filename, all_only=False, allow_arkouda=False):
             elif inspect.isfunction(obj):
                 if not name.startswith("__"):
                     try:
-                        f.write(f"def {name}{inspect.signature(obj)}:\n")
+                        signature_string = reformat_signature(str(inspect.signature(obj)))
+                        f.write(f"def {name}{signature_string}:\n")
                     except:
                         f.write(f"def {name}(self, *args, **kwargs):\n")
 

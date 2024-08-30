@@ -137,6 +137,21 @@ def _infinity_edge_case_helper(np_func, ak_func):
 
 
 class TestNumeric:
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_floor_float(self, prob_size):
+        from arkouda import all as akall
+        from arkouda.numpy import floor as ak_floor
+
+        a = 0.5 * ak.arange(prob_size, dtype="float64")
+        a_floor = ak_floor(a)
+
+        expected_size = np.floor((prob_size + 1) / 2).astype("int64")
+        expected = ak.array(np.repeat(ak.arange(expected_size, dtype="float64").to_ndarray(), 2))
+        #   To deal with prob_size as an odd number:
+        expected = expected[0:prob_size]
+
+        assert akall(a_floor == expected)
+
     @pytest.mark.parametrize("numeric_type", NUMERIC_TYPES)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_seeded_rng_typed(self, prob_size, numeric_type):
@@ -1009,7 +1024,7 @@ class TestNumeric:
             pda_b = ak.array(temp)
             assert ak.array_equal(pda_a, pda_b)  # matching string arrays
             pda_c = pda_b[:-1]
-            assert not (ak.array_equal(pda_a,pda_c))   # matching except c is shorter by 1
+            assert not (ak.array_equal(pda_a, pda_c))  # matching except c is shorter by 1
             temp = np.random.choice(VOWELS_AND_SUCH, prob_size)
             pda_b = ak.array(temp)
             assert not (ak.array_equal(pda_a, pda_b))  # mismatching string arrays
@@ -1029,12 +1044,14 @@ class TestNumeric:
             pda_a = ak.random.randint(0, 100, prob_size, dtype=data_type)
             if matching:  # known to match?
                 pda_b = pda_a if same_size else pda_a[:-1]
-                assert (ak.array_equal(pda_a, pda_b) == (matching and same_size))
+                assert ak.array_equal(pda_a, pda_b) == (matching and same_size)
             elif same_size:  # not matching, but same size?
                 pda_b = ak.random.randint(0, 100, prob_size, dtype=data_type)
                 assert not (ak.array_equal(pda_a, pda_b))
-            else: 
-                pda_b = ak.random.randint(0, 100, (prob_size if same_size else prob_size-1), dtype=data_type)
+            else:
+                pda_b = ak.random.randint(
+                    0, 100, (prob_size if same_size else prob_size - 1), dtype=data_type
+                )
                 assert not (ak.array_equal(pda_a, pda_b))
 
     # Notes about median:
