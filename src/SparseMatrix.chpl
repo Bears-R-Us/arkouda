@@ -3,6 +3,37 @@ module SparseMatrix {
   public use SpsMatUtil;
 
 
+  // Quick and dirty, not permanent
+  proc fillSparseMatrix(ref spsMat, const A: [?D] ?eltType) throws {
+    if A.rank != 1 then
+        throw getErrorWithContext(
+                        msg="fill vals requires a 1D array; got a %iD array".format(A.rank),
+                        lineNumber=getLineNumber(),
+                        routineName=getRoutineName(),
+                        moduleName=getModuleName(),
+                        errorClass="IllegalArgumentError"
+                        );
+    if A.size != spsMat.domain.getNNZ() then
+        throw getErrorWithContext(
+                        msg="fill vals requires an array of the same size as the sparse matrix; got %i elements, expected %i".format(A.size, spsMat.domain.getNNZ()),
+                        lineNumber=getLineNumber(),
+                        routineName=getRoutineName(),
+                        moduleName=getModuleName(),
+                        errorClass="IllegalArgumentError"
+                        );
+    if eltType != spsMat.eltType then
+        throw getErrorWithContext(
+                        msg="fill vals requires an array of the same type as the sparse matrix; got %s, expected %s".format(eltType, spsMat.eltType),
+                        lineNumber=getLineNumber(),
+                        routineName=getRoutineName(),
+                        moduleName=getModuleName(),
+                        errorClass="IllegalArgumentError"
+                        );
+    for((i,j), idx) in zip(spsMat.domain,A.domain) {
+        spsMat[i,j] = A[idx];
+    }
+  }
+
   proc sparseMatToPdarray(const ref spsMat, ref rows, ref cols, ref vals){
     for((i,j), idx) in zip(spsMat.domain,0..) {
       rows[idx] = i;

@@ -5,15 +5,13 @@ from typing import Optional, Sequence, Union, cast
 
 import numpy as np
 from typeguard import typechecked
-from arkouda.dtypes import int64 as akint64
-from arkouda.dtypes import (
-    NumericDTypes
-)
 
 from arkouda.client import generic_msg
-from arkouda.dtypes import dtype, int_scalars
+from arkouda.dtypes import NumericDTypes, dtype
+from arkouda.dtypes import int64 as akint64
+from arkouda.dtypes import int_scalars
 from arkouda.logger import getArkoudaLogger
-from arkouda.pdarrayclass import create_pdarrays
+from arkouda.pdarrayclass import create_pdarrays, pdarray
 
 logger = getArkoudaLogger(name="sparrayclass")
 
@@ -132,6 +130,7 @@ class sparray:
     >>> type(a.to_ndarray())
     ???
     """
+    @typechecked
     def to_pdarray(self):
         size = self.nnz
         dtype = self.dtype
@@ -139,10 +138,14 @@ class sparray:
         # check dtype for error
         if dtype_name not in NumericDTypes:
             raise TypeError(f"unsupported dtype {dtype}")
-        responseArrays = generic_msg(cmd="sparse_to_pdarrays", args={"array": self})
+        responseArrays = generic_msg(cmd="sparse_to_pdarrays", args={"matrix": self})
         array_list = create_pdarrays(responseArrays);
         return array_list
 
+    """"""
+    def fill_vals(self, a: pdarray):
+        generic_msg(cmd="fill_sparse_vals", args={"matrix": self, "vals": a})
+    
 # creates sparray object
 #   only after:
 #       all values have been checked by python module and...
