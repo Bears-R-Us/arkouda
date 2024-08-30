@@ -208,18 +208,19 @@ def main():
     args, client_args = parser.parse_known_args()
     args.graph_dir = args.graph_dir or os.path.join(args.dat_dir, "html")
     config_dat_dir = os.path.join(args.dat_dir, args.description)
+    run_isolated = bool(args.isolated)
 
     if args.save_data or args.gen_graphs:
         os.makedirs(config_dat_dir, exist_ok=True)
 
-    if not args.isolated:
+    if not run_isolated:
         start_arkouda_server(
             args.num_locales, port=args.server_port, server_args=args.server_args
         )
 
     args.benchmarks = args.benchmarks or BENCHMARKS
     for benchmark in args.benchmarks:
-        if args.isolated:
+        if run_isolated:
             start_arkouda_server(
                 args.num_locales,
                 port=args.server_port,
@@ -232,10 +233,10 @@ def main():
             if args.save_data or args.gen_graphs:
                 add_to_dat(benchmark, out, config_dat_dir, args.graph_infra)
             print(out)
-        if args.isolated:
+        if run_isolated:
             stop_arkouda_server()
 
-    if not args.isolated:
+    if not run_isolated:
         stop_arkouda_server()
 
     if args.save_data or args.gen_graphs:
