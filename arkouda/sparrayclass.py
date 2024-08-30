@@ -13,7 +13,7 @@ from arkouda.dtypes import (
 from arkouda.client import generic_msg
 from arkouda.dtypes import dtype, int_scalars
 from arkouda.logger import getArkoudaLogger
-from arkouda.pdarrayclass import create_pdarray, pdarray
+from arkouda.pdarrayclass import create_pdarrays
 
 logger = getArkoudaLogger(name="sparrayclass")
 
@@ -100,11 +100,11 @@ class sparray:
     #     return generic_msg(cmd="repr", args={"array": self, "printThresh": sparrayIterThresh})
 
     """
-    Converts the sparse matrix to a tuple of 3 pdarrays (rows, cols, vals)
+    Converts the sparse matrix to a list of 3 pdarrays (rows, cols, vals)
     Returns
     -------
-    tuple[ak.pdarray, ak.pdarray, ak.pdarray]
-        A tuple of 3 pdarrays which contain the row indices, the column indices,
+    List[ak.pdarray]
+        A list of 3 pdarrays which contain the row indices, the column indices,
         and the values at the respective indices within the sparse matrix.
 
     Raises
@@ -137,20 +137,11 @@ class sparray:
         dtype = self.dtype
         dtype_name = cast(np.dtype, dtype).name
         # check dtype for error
-        if dtype is not akint64:  # Hardcoded for int support only for now later change this to dtype_name not in NumericDTypes:
+        if dtype_name not in NumericDTypes:
             raise TypeError(f"unsupported dtype {dtype}")
-        repMsg = generic_msg(cmd=f"create<{dtype_name},1>", args={"shape": size})
-        vals = create_pdarray(repMsg)
-        akint64_name = cast(np.dtype, akint64).name
-        repMsg = generic_msg(cmd=f"create<{akint64_name},1>", args={"shape": size})
-        rows = create_pdarray(repMsg)
-        repMsg = generic_msg(cmd=f"create<{akint64_name},1>", args={"shape": size})
-        cols = create_pdarray(repMsg)
-        generic_msg(cmd="sparseToPdarray", args={"array": self, "rows": rows, "cols": cols, "vals": vals})
-        return (rows, cols, vals)
-
-
-
+        responseArrays = generic_msg(cmd="sparse_to_pdarrays", args={"array": self})
+        array_list = create_pdarrays(responseArrays);
+        return array_list
 
 # creates sparray object
 #   only after:

@@ -3,9 +3,8 @@ module SparseMatrix {
   public use SpsMatUtil;
 
 
-  proc sparseMatToPdarray(spsMat, rows, cols, vals){
-
-    for (idx, (i, j)) in zip(1..3, spsMat.domain) {
+  proc sparseMatToPdarray(const ref spsMat, ref rows, ref cols, ref vals){
+    for((i,j), idx) in zip(spsMat.domain,0..) {
       rows[idx] = i;
       cols[idx] = j;
       vals[idx] = spsMat[i, j];

@@ -80,21 +80,23 @@ module SparseMatrixMsg {
 
 
     proc sparseMatrixtoPdarray(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        var repMsg: string; // response message with the details of the new arr
 
         var gEnt = getGenericSparseArrayEntry(msgArgs.getValueOf("array"), st);
 
-        var rows = st[msgArgs["rows"]]: SymEntry(int, 1);
-        var cols = st[msgArgs["cols"]]: SymEntry(int, 1);
-        var vals = st[msgArgs["vals"]]: SymEntry(int, 1);
+        var size = gEnt.nnz;
+        var rows = makeDistArray(size, int);
+        var cols = makeDistArray(size, int);
+        var vals = makeDistArray(size, int);
 
         if gEnt.layoutStr=="CSC" {
             // Hardcode for int right now
             var sparrayEntry = gEnt.toSparseSymEntry(int, dimensions=2, layout.CSC);
-            sparseMatToPdarray(sparrayEntry.a, rows.a, cols.a, vals.a);
+            sparseMatToPdarray(sparrayEntry.a, rows, cols, vals);
         } else if gEnt.layoutStr=="CSR" {
             // Hardcode for int right now
             var sparrayEntry = gEnt.toSparseSymEntry(int, dimensions=2, layout.CSR);
-            sparseMatToPdarray(sparrayEntry.a, rows.a, cols.a, vals.a);
+            sparseMatToPdarray(sparrayEntry.a, rows, cols, vals);
         } else {
             throw getErrorWithContext(
                                     msg="unsupported layout for sparse matrix: %s".format(gEnt.layoutStr),
@@ -105,8 +107,12 @@ module SparseMatrixMsg {
                                     );
         }
 
+        var responses: [0..2] MsgTuple;
+        responses[0] = st.insert(createSymEntry(rows));
+        responses[1] = st.insert(createSymEntry(cols));
+        responses[2] = st.insert(createSymEntry(vals));
         sparseLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Converted sparse matrix to pdarray");
-        return MsgTuple.success();
+        return MsgTuple.fromResponses(responses);
     }
 
 
@@ -114,6 +120,6 @@ module SparseMatrixMsg {
     use CommandMap;
     registerFunction("random_sparse_matrix", randomSparseMatrixMsg, getModuleName());
     registerFunction("sparse_matrix_matrix_mult", sparseMatrixMatrixMultMsg, getModuleName());
-    registerFunction("sparseToPdarray", sparseMatrixtoPdarray, getModuleName());
+    registerFunction("sparse_to_pdarrays", sparseMatrixtoPdarray, getModuleName());
 
 }
