@@ -15,31 +15,38 @@ of ndarray.
 
 from __future__ import annotations
 
+import types
 from enum import IntEnum
-from ._dtypes import (
-    # _all_dtypes,
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Tuple,
+    Union,
+    cast,
+)
+
+from ._dtypes import (  # _all_dtypes,; _integer_or_boolean_dtypes,; _numeric_dtypes,
     _boolean_dtypes,
-    _integer_dtypes,
-    # _integer_or_boolean_dtypes,
-    _floating_dtypes,
     _complex_floating_dtypes,
-    # _numeric_dtypes,
-    _result_type,
     _dtype_categories,
+    _floating_dtypes,
+    _integer_dtypes,
+    _result_type,
 )
 from .creation_functions import asarray
-
-from typing import TYPE_CHECKING, Optional, Tuple, Union, Any, Dict, Callable, List
-import types
 
 if TYPE_CHECKING:
     from ._typing import Device, Dtype
 
-import arkouda as ak
 import numpy as np
 
-from arkouda.pdarraycreation import scalar_array
+import arkouda as ak
 from arkouda import array_api
+from arkouda.pdarraycreation import scalar_array
 
 HANDLED_FUNCTIONS: Dict[str, Callable] = {}
 
@@ -122,9 +129,7 @@ class Array:
         if self._has_single_elem():
             return self._array[0]
         else:
-            raise ValueError(
-                "Can only convert an array with one element to a Python scalar"
-            )
+            raise ValueError("Can only convert an array with one element to a Python scalar")
 
     def transpose(self, axes: Optional[Tuple[int, ...]] = None):
         """
@@ -188,8 +193,18 @@ class Array:
         """
         import json
 
+        def extract_chunk(msg_str: str):
+            return "".join(msg_str.split()[1:])
+
         return json.loads(
-            ak.generic_msg(cmd=f"chunkInfo{self.ndim}D", args={"array": self._array})
+            extract_chunk(
+                cast(
+                    str,
+                    ak.generic_msg(
+                        cmd=f"chunkInfoAsString<{self.dtype},{self.ndim}>", args={"array": self._array}
+                    ),
+                )  # string returned has format "str {list of lists}"
+            )
         )
 
     def __array__(self, dtype: None | np.dtype[Any] = None):
@@ -244,9 +259,7 @@ class Array:
 
             # The spec explicitly disallows this.
             if res_dtype != self.dtype:
-                raise TypeError(
-                    f"Cannot perform {op} with dtypes {self.dtype} and {other.dtype}"
-                )
+                raise TypeError(f"Cannot perform {op} with dtypes {self.dtype} and {other.dtype}")
 
         return other
 
@@ -264,14 +277,10 @@ class Array:
         # allowed.
         if isinstance(scalar, bool):
             if self.dtype not in _boolean_dtypes:
-                raise TypeError(
-                    "Python bool scalars can only be promoted with bool arrays"
-                )
+                raise TypeError("Python bool scalars can only be promoted with bool arrays")
         elif isinstance(scalar, int):
             if self.dtype in _boolean_dtypes:
-                raise TypeError(
-                    "Python int scalars cannot be promoted with bool arrays"
-                )
+                raise TypeError("Python int scalars cannot be promoted with bool arrays")
             if self.dtype in _integer_dtypes:
                 info = np.iinfo(int)
                 if not (info.min <= scalar <= info.max):
@@ -281,9 +290,7 @@ class Array:
             # int + array(floating) is allowed
         elif isinstance(scalar, float):
             if self.dtype not in _floating_dtypes:
-                raise TypeError(
-                    "Python float scalars can only be promoted with floating-point arrays."
-                )
+                raise TypeError("Python float scalars can only be promoted with floating-point arrays.")
         elif isinstance(scalar, complex):
             if self.dtype not in _complex_floating_dtypes:
                 raise TypeError(
@@ -365,9 +372,7 @@ class Array:
         else:
             return Array._new(self._array and other._array)
 
-    def __array_namespace__(
-        self: Array, /, *, api_version: Optional[str] = None
-    ) -> types.ModuleType:
+    def __array_namespace__(self: Array, /, *, api_version: Optional[str] = None) -> types.ModuleType:
         """
         Get the array API namespace from an `Array` instance.
         """
@@ -509,9 +514,7 @@ class Array:
             if isinstance(s, int):
                 return s
             else:
-                raise TypeError(
-                    "Only integer arrays can be converted to a Python integer"
-                )
+                raise TypeError("Only integer arrays can be converted to a Python integer")
         else:
             raise ValueError("cannot convert non-scalar array to int")
 
@@ -942,7 +945,7 @@ class Array:
     def _single_elem(self: Array) -> Optional[Union[int, float, complex, bool]]:
         if self._has_single_elem():
             if self.ndim > 0:
-                return self._array[(0,)*self.ndim]
+                return self._array[(0,) * self.ndim]
             else:
                 return self._array[0]
         else:
