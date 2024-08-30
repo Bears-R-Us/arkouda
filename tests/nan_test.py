@@ -1,7 +1,8 @@
 import numpy as np
 import pandas as pd
-from base_test import ArkoudaTest
-from context import arkouda as ak
+import pytest
+
+import arkouda as ak
 
 SIZE = 1000
 GROUPS = 32
@@ -106,7 +107,7 @@ def run_test(verbose=True):
     return failures
 
 
-class NanTest(ArkoudaTest):
+class TestNan:
     def test_nan(self):
         """
         Executes run_test and asserts whether there are any errors
@@ -114,4 +115,4 @@ class NanTest(ArkoudaTest):
         :return: None
         :raise: AssertionError if there are any errors encountered in run_test with nan values
         """
-        self.assertEqual(0, run_test())
+        assert run_test() == 0

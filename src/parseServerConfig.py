@@ -119,8 +119,18 @@ def stampOutModule(mod, src_dir, stamp_file, max_dims):
             stamp_file.write(modOut.getvalue())
 
 
+def get_nd_setting(config):
+    raw_nd_setting = config["parameter_classes"]["array"]["nd"]
+    if isinstance(raw_nd_setting, str):
+        return eval(raw_nd_setting)
+    elif isinstance(raw_nd_setting, list):
+        return raw_nd_setting
+    else:
+        return [raw_nd_setting]
+
+
 def createNDHandlerInstantiations(config, modules, src_dir):
-    max_dims = config["max_array_dims"]
+    max_dims = max(get_nd_setting(config))
     filename = f"{src_dir}/nd_support/nd_array_stamps.chpl"
 
     with open(filename, 'w') as stamps:
@@ -139,18 +149,8 @@ def createNDHandlerInstantiations(config, modules, src_dir):
     return f"{filename} -sMaxArrayDims={max_dims}"
 
 
-def getSupportedTypes(config):
-    supportedFlags = []
-    for t in ["uint8", "uint16", "uint32", "uint64", \
-              "int8", "int16", "int32", "int64", \
-              "float32", "float64", "complex64", "complex128", "bool"]:
-        isSupported = "true" if config["supported_scalar_types"][t] else "false"
-        supportedFlags.append(f"-sSupports{t.capitalize()}={isSupported}")
-    return " ".join(supportedFlags)
-
-
-def parseServerConfig(config_filename, src_dir):
-    server_config = json.load(open('serverConfig.json', 'r'))
+def parseServerConfig(config_filename, reg_config_name, src_dir):
+    server_config = json.load(open(reg_config_name, 'r'))
 
     # Create a list of module source files to include in the server build commands
     modules = getModules(config_filename)
@@ -162,11 +162,8 @@ def parseServerConfig(config_filename, src_dir):
     # will be instantiated for each rank from 1..max_array_dims
     nd_stamp_flags = createNDHandlerInstantiations(server_config, modules, src_dir)
 
-    # Create build flags to designate which types the server should support
-    type_flags = getSupportedTypes(server_config)
-
-    print(f"{module_source_files} {nd_stamp_flags} {type_flags}")
+    print(f"{module_source_files} {nd_stamp_flags} ")
 
 
 if __name__ == "__main__":
-    parseServerConfig(sys.argv[1], sys.argv[2])
+    parseServerConfig(sys.argv[1], sys.argv[2], sys.argv[3])

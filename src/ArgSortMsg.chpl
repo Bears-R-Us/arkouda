@@ -6,12 +6,12 @@ module ArgSortMsg
 {
     use ServerConfig;
     
+    use MsgProcessing;
     use CTypes;
 
     use Time;
     use Math only;
     private use Sort;
-    use ArkoudaSortCompat;
     
     use Reflection only;
     
@@ -20,7 +20,6 @@ module ArgSortMsg
     use CommAggregation;
 
     use AryUtil;
-    use ArkoudaAryUtilCompat;
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -32,10 +31,19 @@ module ArgSortMsg
     use ServerErrors;
     use Logging;
     use Message;
+    use BigInteger;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const asLogger = new Logger(logLevel, logChannel);
+
+    proc dynamicTwoArrayRadixSort(ref Data:[], comparator:?rec=new DefaultComparator()) {
+      if Data._instance.isDefaultRectangular() {
+        Sort.TwoArrayRadixSort.twoArrayRadixSort(Data, comparator);
+      } else {
+        Sort.TwoArrayDistributedRadixSort.twoArrayDistributedRadixSort(Data, comparator);
+      }
+    }
 
     // thresholds for different sized sorts
     var lgSmall = 10;
@@ -55,6 +63,24 @@ module ArgSortMsg
       TwoArrayRadixSort
     };
     config const defaultSortAlgorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD;
+
+    proc getSortingAlgoritm(algoName:string) throws{
+      var algorithm = defaultSortAlgorithm;
+      if algoName != "" {
+        try {
+          return algoName: SortingAlgorithm;
+        } catch {
+          throw getErrorWithContext(
+                                    msg="Unrecognized sorting algorithm: %s".format(algoName),
+                                    lineNumber=getLineNumber(),
+                                    routineName=getRoutineName(),
+                                    moduleName=getModuleName(),
+                                    errorClass="NotImplementedError"
+              );
+          }
+        }
+        return algorithm;
+    }
 
     // proc DefaultComparator.keyPart(x: _tuple, i:int) where !isHomogeneousTuple(x) &&
     // (isInt(x(0)) || isUint(x(0)) || isReal(x(0))) {
@@ -321,7 +347,7 @@ module ArgSortMsg
         when SortingAlgorithm.TwoArrayRadixSort {
           var AI = makeDistArray(D, (t,int));
           AI = [(a, i) in zip(A, D)] (a, i);
-          ArkoudaSortCompat.twoArrayRadixSort(AI, comparator=myDefaultComparator);
+          dynamicTwoArrayRadixSort(AI, comparator=myDefaultComparator);
           iv = [(a, i) in AI] i;
         }
         when SortingAlgorithm.RadixSortLSD {
@@ -362,7 +388,7 @@ module ArgSortMsg
             }
 
             // sort the array
-            ArkoudaSortCompat.twoArrayRadixSort(AI, comparator=myDefaultComparator);
+            dynamicTwoArrayRadixSort(AI, comparator=myDefaultComparator);
 
             // store result in 'iv'
             forall i in D.dim(axis) with (var perpIdx = idx) {
@@ -398,95 +424,41 @@ module ArgSortMsg
     }
 
     /* argsort takes pdarray and returns an index vector iv which sorts the array */
-    @arkouda.registerND
-    proc argsortMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-        param pn = Reflection.getRoutineName();
-        var repMsg: string; // response message
-        const name = msgArgs.getValueOf("name");
-        const algoName = msgArgs.getValueOf("algoName");
-        const axis = msgArgs.get("axis").getIntValue();
-        var algorithm: SortingAlgorithm = defaultSortAlgorithm;
+    @arkouda.instantiateAndRegister
+    proc argsort(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws 
+      where (array_dtype != BigInteger.bigint) && (array_dtype != uint(8))
+    {
+        const name = msgArgs["name"],
+              algoName = msgArgs["algoName"].toScalar(string),
+              algorithm = getSortingAlgoritm(algoName),
+              axis =  msgArgs["axis"].toScalar(int),
+              symEntry = st[msgArgs["name"]]: SymEntry(array_dtype, array_nd),
+              vals = if (array_dtype == bool) then (symEntry.a:int) else (symEntry.a: array_dtype);
+    
+        const iv = argsortDefault(vals, algorithm=algorithm, axis);
+        return st.insert(new shared SymEntry(iv));
+    }
 
-        if algoName != "" {
-          try {
-            algorithm = algoName: SortingAlgorithm;
-          } catch {
-            throw getErrorWithContext(
-                                    msg="Unrecognized sorting algorithm: %s".format(algoName),
-                                    lineNumber=getLineNumber(),
-                                    routineName=getRoutineName(),
-                                    moduleName=getModuleName(),
-                                    errorClass="NotImplementedError"
-                  );
-          }
-        }
-        // get next symbol name
-        const ivname = st.nextName();
+    proc argsort(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws 
+      where (array_dtype == BigInteger.bigint) || (array_dtype == uint(8)) 
+    {
+        return MsgTuple.error("argsort does not support the %s dtype".format(array_dtype:string));
+    }
 
-        asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                              "cmd: %s name: %s ivname: %s".format(cmd, name, ivname));
+    proc argsortStrings(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        const name = msgArgs["name"].toScalar(string),
+              strings = getSegString(name, st),
+              algoName = msgArgs["algoName"].toScalar(string),
+              algorithm = getSortingAlgoritm(algoName);
 
-        var objtype = msgArgs.getValueOf("objType").toUpper(): ObjType;
-        select objtype {
-          when ObjType.PDARRAY {
-            var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
-            // check and throw if over memory limit
-            overMemLimit(radixSortLSD_memEst(gEnt.size, gEnt.itemsize));
-
-            select (gEnt.dtype) {
-                when (DType.Int64) {
-                    var e = toSymEntry(gEnt,int, nd);
-                    var iv = argsortDefault(e.a, algorithm=algorithm, axis);
-                    st.addEntry(ivname, createSymEntry(iv));
-                }
-                when (DType.UInt64) {
-                    var e = toSymEntry(gEnt,uint, nd);
-                    var iv = argsortDefault(e.a, algorithm=algorithm, axis);
-                    st.addEntry(ivname, createSymEntry(iv));
-                }
-                when (DType.Float64) {
-                    var e = toSymEntry(gEnt, real, nd);
-                    var iv = argsortDefault(e.a, axis=axis);
-                    st.addEntry(ivname, createSymEntry(iv));
-                }
-                when (DType.Bool) {
-                    var e = toSymEntry(gEnt,bool, nd);
-                    var int_ea = makeDistArray(e.a:int);
-                    var iv = argsortDefault(int_ea, algorithm=algorithm, axis);
-                    st.addEntry(ivname, createSymEntry(iv));
-                }
-                otherwise {
-                    var errorMsg = notImplementedError(pn,gEnt.dtype);
-                    asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                    return new MsgTuple(errorMsg, MsgType.ERROR);
-                }
-            }
-          }
-          when ObjType.STRINGS {
-            if nd != 1 {
-              const errorMsg = "argsort only supports 1D strings";
-              asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-              return new MsgTuple(errorMsg, MsgType.ERROR);
-            }
-            var strings = getSegString(name, st);
-            // check and throw if over memory limit
-            overMemLimit((8 * strings.size * 8)
-                         + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
-            var iv = strings.argsort();
-            st.addEntry(ivname, createSymEntry(iv));
-          }
-          otherwise {
-              var errorMsg = notImplementedError(pn, objtype: string);
-              asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-              return new MsgTuple(errorMsg, MsgType.ERROR);
-          }
-        }
-
-        repMsg = "created " + st.attrib(ivname);
-        asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-        return new MsgTuple(repMsg, MsgType.NORMAL);
+        // check and throw if over memory limit
+        overMemLimit((8 * strings.size * 8)
+                      + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
+        const iv = strings.argsort();
+        return st.insert(new shared SymEntry(iv));
     }
 
     use CommandMap;
+    registerFunction("argsortStrings", argsortStrings, getModuleName());
     registerFunction("coargsort", coargsortMsg, getModuleName());
 }

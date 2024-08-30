@@ -17,12 +17,11 @@ from arkouda import sort as aksort
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, maxTransferBytes
 from arkouda.client_dtypes import BitVector, Fields, IPv4
-from arkouda.dtypes import BigInt
-
-from arkouda.dtypes import bool_ as akbool
-from arkouda.dtypes import float64 as akfloat64
-from arkouda.dtypes import int64 as akint64
-from arkouda.dtypes import uint64 as akuint64
+from arkouda.numpy.dtypes import bigint
+from arkouda.numpy.dtypes import bool_ as akbool
+from arkouda.numpy.dtypes import float64 as akfloat64
+from arkouda.numpy.dtypes import int64 as akint64
+from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.groupbyclass import GROUPBY_REDUCTION_TYPES
 from arkouda.groupbyclass import GroupBy as akGroupBy
 from arkouda.groupbyclass import unique
@@ -139,10 +138,7 @@ class DataFrameGroupBy:
             colnames = [
                 c
                 for c in colnames
-                if (
-                    (self.df.data[c].dtype.type in numerical_dtypes)
-                    or isinstance(self.df.data[c].dtype, BigInt)
-                )
+                if ((self.df.data[c].dtype in numerical_dtypes) or self.df.data[c].dtype == bigint)
                 and (
                     (isinstance(self.gb_key_names, str) and (c != self.gb_key_names))
                     or (isinstance(self.gb_key_names, list) and c not in self.gb_key_names)
@@ -884,6 +880,7 @@ class DataFrame(UserDict):
             self.data = initialdata.data
             self.update_nrows()
             return
+
         elif isinstance(initialdata, pd.DataFrame):
             # copy pd.DataFrame data into the ak.DataFrame object
             self._nrows = initialdata.shape[0]
@@ -892,16 +889,21 @@ class DataFrame(UserDict):
             self._columns = initialdata.columns.tolist()
 
             if index is None:
-                self._set_index(initialdata.index.values.tolist())
+                self._set_index(initialdata.index)
             else:
                 self._set_index(index)
             self.data = {}
             for key in initialdata.columns:
-                self.data[key] = (
-                    SegArray.from_multi_array([array(r) for r in initialdata[key]])
-                    if isinstance(initialdata[key][0], (list, np.ndarray))
-                    else array(initialdata[key])
-                )
+                if hasattr(initialdata[key], "values") and isinstance(
+                    initialdata[key].values[0], (list, np.ndarray)
+                ):
+                    self.data[key] = SegArray.from_multi_array([array(r) for r in initialdata[key]])
+                elif hasattr(initialdata[key], "values") and isinstance(
+                    initialdata[key].values, pd.Categorical
+                ):
+                    self.data[key] = Categorical(initialdata[key].values)
+                else:
+                    self.data[key] = array(initialdata[key])
 
             self.data.update()
             return
@@ -1849,7 +1851,7 @@ class DataFrame(UserDict):
     def _set_index(self, value):
         if isinstance(value, Index) or value is None:
             self._index = value
-        elif isinstance(value, (pdarray, Strings)):
+        elif isinstance(value, (pdarray, Strings, pd.Index)):
             self._index = Index(value)
         elif isinstance(value, list):
             self._index = Index(array(value))
@@ -2887,6 +2889,9 @@ class DataFrame(UserDict):
                 nbytes += (val.dtype).itemsize * self._nrows
             elif isinstance(val, Strings):
                 nbytes += val.nbytes
+            elif isinstance(val, Categorical):
+                nbytes += val.codes.nbytes
+                nbytes += val.categories.nbytes
 
         KB = 1024
         MB = KB * KB
@@ -2918,7 +2923,12 @@ class DataFrame(UserDict):
             try:
                 # in order for proper pandas functionality, SegArrays must be seen as 1d
                 # and therefore need to be converted to list
-                pandas_data[key] = val.to_ndarray() if not isinstance(val, SegArray) else val.to_list()
+                if isinstance(val, SegArray):
+                    pandas_data[key] = val.to_list()
+                elif isinstance(val, Categorical):
+                    pandas_data[key] = val.to_pandas()
+                else:
+                    pandas_data[key] = val.to_ndarray()
             except TypeError:
                 raise IndexError("Bad index type or format.")
 
@@ -4490,17 +4500,16 @@ class DataFrame(UserDict):
                 d = Categorical(d)
             return d if isinstance(d, pdarray) else d.codes
 
-        args = {
-            "size": len(self.columns.values),
-            "columns": self.columns.values,
-            "data_names": [numeric_help(self[c]) for c in self.columns.values],
-        }
+        corrs = {}
+        for c1 in self.columns.values:
+            corrs[c1] = np.zeros(len(self.columns.values))
+            for i, c2 in enumerate(self.columns.values):
+                if c1 == c2:
+                    corrs[c1][i] = 1
+                else:
+                    corrs[c1][i] = numeric_help(self[c1]).corr(numeric_help(self[c2]))
 
-        ret_dict = json.loads(generic_msg(cmd="corrMatrix", args=args))
-        return DataFrame(
-            {c: create_pdarray(ret_dict[c]) for c in self.columns.values},
-            index=array(self.columns.values),
-        )
+        return DataFrame({c: array(v) for c, v in corrs.items()}, index=array(self.columns.values))
 
     @typechecked
     def merge(

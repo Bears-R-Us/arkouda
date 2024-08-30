@@ -8,17 +8,17 @@ import numpy as np
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
-from arkouda.dtypes import (
-    BigInt,
-    DTypes,
-    _as_dtype,
-    bigint,
+from arkouda.groupbyclass import GroupBy
+from arkouda.numpy.dtypes import DTypes, bigint
+from arkouda.numpy.dtypes import dtype as akdtype
+from arkouda.numpy.dtypes import int64 as akint64
+from arkouda.numpy.dtypes import (
     int_scalars,
     isSupportedNumber,
     numeric_scalars,
     resolve_scalar_dtype,
+    str_,
 )
-from arkouda.groupbyclass import GroupBy
 from arkouda.pdarrayclass import all as ak_all
 from arkouda.pdarrayclass import any as ak_any
 from arkouda.pdarrayclass import argmax, create_pdarray, pdarray, sum
@@ -35,6 +35,7 @@ __all__ = [
     "ceil",
     "clip",
     "count_nonzero",
+    "eye",
     "floor",
     "trunc",
     "round",
@@ -49,6 +50,11 @@ __all__ = [
     "exp",
     "expm1",
     "square",
+    "matmul",
+    "triu",
+    "tril",
+    "transpose",
+    "vecdot",
     "cumsum",
     "cumprod",
     "sin",
@@ -87,7 +93,7 @@ class ErrorMode(Enum):
 @typechecked
 def cast(
     pda: Union[pdarray, Strings, Categorical],  # type: ignore
-    dt: Union[np.dtype, type, str, BigInt],
+    dt: Union[np.dtype, type, str, bigint],
     errors: ErrorMode = ErrorMode.strict,
 ) -> Union[Union[pdarray, Strings, Categorical], Tuple[pdarray, pdarray]]:  # type: ignore
     """
@@ -141,37 +147,48 @@ def cast(
     from arkouda.categorical import Categorical  # type: ignore
 
     if isinstance(pda, pdarray):
-        name = pda.name
+        if dt is Strings or akdtype(dt) == str_:
+            if pda.ndim > 1:
+                raise ValueError("Cannot cast a multi-dimensional pdarray to Strings")
+            repMsg = generic_msg(
+                cmd=f"castToStrings<{pda.dtype}>",
+                args={"name": pda},
+            )
+            return Strings.from_parts(*(type_cast(str, repMsg).split("+")))
+        else:
+            dt = akdtype(dt)
+            return create_pdarray(
+                generic_msg(
+                    cmd=f"cast<{pda.dtype},{dt},{pda.ndim}>",
+                    args={"name": pda},
+                )
+            )
     elif isinstance(pda, Strings):
-        name = pda.entry.name
         if dt is Categorical or dt == "Categorical":
             return Categorical(pda)  # type: ignore
+        elif dt is Strings or akdtype(dt) == str_:
+            return pda[:]
+        else:
+            dt = akdtype(dt)
+            repMsg = generic_msg(
+                cmd=f"castStringsTo<{dt}>",
+                args={
+                    "name": pda.entry.name,
+                    "opt": errors.name,
+                },
+            )
+            if errors == ErrorMode.return_validity:
+                a, b = type_cast(str, repMsg).split("+")
+                return create_pdarray(type_cast(str, a)), create_pdarray(type_cast(str, b))
+            else:
+                return create_pdarray(type_cast(str, repMsg))
     elif isinstance(pda, Categorical):  # type: ignore
-        if dt is Strings or dt in ["Strings", "str"]:
+        if dt is Strings or dt in ["Strings", "str"] or dt == str_:
             return pda.categories[pda.codes]
         else:
             raise ValueError("Categoricals can only be casted to Strings")
-    # typechecked decorator guarantees no other case
-
-    dt = _as_dtype(dt)
-    cmd = f"cast{pda.ndim}D"
-    repMsg = generic_msg(
-        cmd=cmd,
-        args={
-            "name": name,
-            "objType": pda.objType,
-            "targetDtype": dt.name,
-            "opt": errors.name,
-        },
-    )
-    if dt.name.startswith("str"):
-        return Strings.from_parts(*(type_cast(str, repMsg).split("+")))
     else:
-        if errors == ErrorMode.return_validity:
-            a, b = type_cast(str, repMsg).split("+")
-            return create_pdarray(type_cast(str, a)), create_pdarray(type_cast(str, b))
-        else:
-            return create_pdarray(type_cast(str, repMsg))
+        raise TypeError("pda must be a pdarray, Strings, or Categorical object")
 
 
 @typechecked
@@ -2238,3 +2255,302 @@ def putmask(pda: pdarray, mask: Union[bool, pdarray], values: pdarray):
         result = result[:-(reduction)]
 
     pda[:] = where(mask, result, pda)  # pda[:] = allows us to return modified value
+
+
+def eye(rows: int_scalars, cols: int_scalars, diag: int_scalars = 0, dt: type = akint64):
+    """
+    Return a pdarray with zeros everywhere except along a diagonal, which is all ones.
+    The matrix need not be square.
+
+    Parameters
+    ----------
+    rows : int_scalars
+    cols : int_scalars
+    diag : int_scalars
+        if diag = 0, zeros start at element [0,0] and proceed along diagonal
+        if diag > 0, zeros start at element [0,diag] and proceed along diagonal
+        if diag < 0, zeros start at element [diag,0] and proceed along diagonal
+        etc.
+
+    Returns
+    -------
+    pdarray
+        an array of zeros with ones along the specified diagonal
+
+    Examples
+    --------
+    >>> ak.eye(rows=4,cols=4,diag=0,dt=ak.int64)
+    array([array([1 0 0 0]) array([0 1 0 0]) array([0 0 1 0]) array([0 0 0 1])])
+    >>> ak.eye(rows=3,cols=3,diag=1,dt=ak.float64)
+    array([array([0.00000000000000000 1.00000000000000000 0.00000000000000000])
+    array([0.00000000000000000  0.00000000000000000 1.00000000000000000])
+    array([0.00000000000000000 0.00000000000000000 0.00000000000000000])])
+    >>> ak.eye(rows=4,cols=4,diag=-1,dt=ak.bool_)
+    array([array([False False False False]) array([True False False False])
+    array([False True False False]) array([False False True False])]
+
+    Notes
+    -----
+    if rows = cols and diag = 0, the result is an identity matrix
+    Server returns an error if rank of pda < 2
+
+    """
+
+    cmd = f"eye<{akdtype(dt).name}>"
+    args = {
+        "rows": rows,
+        "cols": cols,
+        "diag": diag,
+    }
+    return create_pdarray(
+        generic_msg(
+            cmd=cmd,
+            args=args,
+        )
+    )
+
+
+def triu(pda: pdarray, diag: int_scalars = 0):
+    """
+    Return a copy of the pda with the lower triangle zeroed out
+
+    Parameters
+    ----------
+    pda : pdarray
+    diag : int_scalars
+        if diag = 0, zeros start just above the main diagonal
+        if diag = 1, zeros start at the main diagonal
+        if diag = 2, zeros start just below the main diagonal
+        etc.
+
+    Returns
+    -------
+    pdarray
+        a copy of pda with zeros in the lower triangle
+
+    Examples
+    --------
+    >>> a = ak.array([[1,2,3,4,5],[2,3,4,5,6],[3,4,5,6,7],[4,5,6,7,8],[5,6,7,8,9]])
+    >>> ak.triu(a,diag=0)
+    array([array([1 2 3 4 5]) array([0 3 4 5 6]) array([0 0 5 6 7])
+    array([0 0 0 7 8]) array([0 0 0 0 9])])
+    >>> ak.triu(a,diag=1)
+    array([array([0 2 3 4 5]) array([0 0 4 5 6]) array([0 0 0 6 7])
+    array([0 0 0 0 8]) array([0 0 0 0 0])])
+    >>> ak.triu(a,diag=2)
+    array([array([0 0 3 4 5]) array([0 0 0 5 6]) array([0 0 0 0 7])
+    array([0 0 0 0 0]) array([0 0 0 0 0])])
+    >>> ak.triu(a,diag=3)
+    array([array([0 0 0 4 5]) array([0 0 0 0 6]) array([0 0 0 0 0])
+    array([0 0 0 0 0]) array([0 0 0 0 0])])
+    >>> ak.triu(a,diag=4)
+    array([array([0 0 0 0 5]) array([0 0 0 0 0]) array([0 0 0 0 0])
+    array([0 0 0 0 0]) array([0 0 0 0 0])])
+
+    Notes
+    -----
+    Server returns an error if rank of pda < 2
+
+    """
+
+    cmd = f"triu<{pda.dtype},{pda.ndim}>"
+    args = {
+        "array": pda,
+        "diag": diag,
+    }
+    return create_pdarray(
+        generic_msg(
+            cmd=cmd,
+            args=args,
+        )
+    )
+
+
+def tril(pda: pdarray, diag: int_scalars = 0):
+    """
+    Return a copy of the pda with the upper triangle zeroed out
+
+    Parameters
+    ----------
+    pda : pdarray
+    diag : int_scalars
+        if diag = 0, zeros start just below the main diagonal
+        if diag = 1, zeros start at the main diagonal
+        if diag = 2, zeros start just above the main diagonal
+        etc.
+
+    Returns
+    -------
+    pdarray
+        a copy of pda with zeros in the upper triangle
+
+    Examples
+    --------
+    >>> a = ak.array([[1,2,3,4,5],[2,3,4,5,6],[3,4,5,6,7],[4,5,6,7,8],[5,6,7,8,9]])
+    >>> ak.tril(a,diag=4)
+    array([array([1 2 3 4 5]) array([2 3 4 5 6]) array([3 4 5 6 7])
+    array([4 5 6 7 8]) array([5 6 7 8 9])])
+    >>> ak.tril(a,diag=3)
+    array([array([1 2 3 4 0]) array([2 3 4 5 6]) array([3 4 5 6 7])
+    array([4 5 6 7 8]) array([5 6 7 8 9])])
+    >>> ak.tril(a,diag=2)
+    array([array([1 2 3 0 0]) array([2 3 4 5 0]) array([3 4 5 6 7])
+    array([4 5 6 7 8]) array([5 6 7 8 9])])
+    >>> ak.tril(a,diag=1)
+    array([array([1 2 0 0 0]) array([2 3 4 0 0]) array([3 4 5 6 0])
+    array([4 5 6 7 8]) array([5 6 7 8 9])])
+    >>> ak.tril(a,diag=0)
+    array([array([1 0 0 0 0]) array([2 3 0 0 0]) array([3 4 5 0 0])
+    array([4 5 6 7 0]) array([5 6 7 8 9])])
+
+    Notes
+    -----
+    Server returns an error if rank of pda < 2
+
+    """
+    cmd = f"tril<{pda.dtype},{pda.ndim}>"
+    args = {
+        "array": pda,
+        "diag": diag,
+    }
+    return create_pdarray(
+        generic_msg(
+            cmd=cmd,
+            args=args,
+        )
+    )
+
+
+def transpose(pda: pdarray):
+    """
+    Compute the transpose of a matrix.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        the transpose of the input matrix
+
+    Examples
+    --------
+    >>> a = ak.array([[1,2,3,4,5],[1,2,3,4,5]])
+    >>> ak.transpose(a)
+    array([array([1 1]) array([2 2]) array([3 3]) array([4 4]) array([5 5])])
+
+
+    Notes
+    -----
+    Server returns an error if rank of pda < 2
+
+    """
+    cmd = f"transpose<{pda.dtype},{pda.ndim}>"
+    args = {
+        "array": pda,
+    }
+    return create_pdarray(
+        generic_msg(
+            cmd=cmd,
+            args=args,
+        )
+    )
+
+
+def matmul(pdaLeft: pdarray, pdaRight: pdarray):
+    """
+    Compute the product of two matrices.
+
+    Parameters
+    ----------
+    pdaLeft : pdarray
+    pdaRight : pdarray
+
+    Returns
+    -------
+    pdarray
+        the matrix product pdaLeft x pdaRight
+
+    Examples
+    --------
+    >>> a = ak.array([[1,2,3,4,5],[1,2,3,4,5]])
+    >>> b = ak.array(([1,1],[2,2],[3,3],[4,4],[5,5]])
+    >>> ak.matmul(a,b)
+    array([array([30 30]) array([45 45])])
+
+    >>> x = ak.array([[1,2,3],[1.1,2.1,3.1]])
+    >>> y = ak.array([[1,1,1],[0,2,2],[0,0,3]])
+    >>> ak.matmul(x,y)
+    array([array([1.00000000000000000 5.00000000000000000 14.00000000000000000])
+    array([1.1000000000000001 5.3000000000000007 14.600000000000001])])
+
+    Notes
+    -----
+    Server returns an error if shapes of pdaLeft and pdaRight
+    are incompatible with matrix multiplication.
+
+    """
+    if pdaLeft.ndim != pdaRight.ndim:
+        raise ValueError("matmul requires matrices of matching rank.")
+    cmd = f"matmul<{pdaLeft.dtype},{pdaRight.dtype},{pdaLeft.ndim}>"
+    args = {
+        "x1": pdaLeft,
+        "x2": pdaRight,
+    }
+    return create_pdarray(
+        generic_msg(
+            cmd=cmd,
+            args=args,
+        )
+    )
+
+
+def vecdot(x1: pdarray, x2: pdarray):
+    """
+    Compute the generalized dot product of two vectors along the given axis.
+    Assumes that both tensors have already been broadcast to the same shape.
+
+    Parameters
+    ----------
+    x1 : pdarray
+    x2 : pdarray
+
+    Returns
+    -------
+    pdarray
+        x1 vecdot x2
+
+    Examples
+    --------
+    >>> a = ak.array([[1,2,3,4,5],[1,2,3,4,5]])
+    >>> b = ak.array(([2,2,2,2,2],[2,2,2,2,2]])
+    >>> ak.vecdot(a,b)
+    array([5 10 15 20 25])
+    >>> ak.vecdot(b,a)
+    array([5 10 15 20 25])
+
+    Raises
+    ------
+    ValueTypeError
+        Raised if x1 and x2 are not of matching shape or if rank of x1 < 2
+
+    """
+
+    if x1.shape != x2.shape:
+        raise ValueError("vecdot requires matrices of matching rank.")
+    if x1.ndim < 2:
+        raise ValueError("vector requires matrices of rank 2 or more.")
+    cmd = f"vecdot<{x1.dtype},{x2.dtype},{x1.ndim}>"
+    args = {
+        "x1": x1,
+        "x2": x2,
+        "bcShape": tuple(x1.shape),
+        "axis": 0,
+    }
+    return create_pdarray(
+        generic_msg(
+            cmd=cmd,
+            args=args,
+        )
+    )

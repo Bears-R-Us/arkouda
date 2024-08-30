@@ -1,14 +1,14 @@
+import numpy as np
 import numpy.random as np_random
 
 from arkouda.client import generic_msg
-from arkouda.dtypes import _val_isinstance_of_union
-from arkouda.dtypes import bool_ as akbool
-from arkouda.dtypes import dtype as to_numpy_dtype
-from arkouda.dtypes import float64 as akfloat64
-from arkouda.dtypes import float_scalars
-from arkouda.dtypes import int64 as akint64
-from arkouda.dtypes import int_scalars, numeric_scalars
-from arkouda.dtypes import uint64 as akuint64
+from arkouda.numpy.dtypes import _val_isinstance_of_union
+from arkouda.numpy.dtypes import dtype as akdtype
+from arkouda.numpy.dtypes import dtype as to_numpy_dtype
+from arkouda.numpy.dtypes import float64 as akfloat64
+from arkouda.numpy.dtypes import float_scalars
+from arkouda.numpy.dtypes import int64 as akint64
+from arkouda.numpy.dtypes import int_scalars, numeric_scalars
 from arkouda.pdarrayclass import create_pdarray, pdarray
 
 
@@ -116,7 +116,7 @@ class Generator:
         name = self._name_dict[to_numpy_dtype(akfloat64 if has_weights else akint64)]
 
         rep_msg = generic_msg(
-            cmd="choice",
+            cmd=f"choice<{dtype.name}>",
             args={
                 "gName": name,
                 "aName": a,
@@ -126,7 +126,6 @@ class Generator:
                 "hasWeights": has_weights,
                 "isDom": is_domain,
                 "popSize": pop_size,
-                "dtype": dtype,
                 "state": self._state,
             },
         )
@@ -168,14 +167,9 @@ class Generator:
         pdarray
             Drawn samples from the parameterized exponential distribution.
         """
-        if isinstance(scale, pdarray):
-            if (scale < 0).any():
-                raise ValueError("scale cannot be less then 0")
-        elif _val_isinstance_of_union(scale, numeric_scalars):
-            if scale < 0:
-                raise ValueError("scale cannot be less then 0")
-        else:
-            raise TypeError("scale must be either a float scalar or pdarray")
+        _, scale = float_array_or_scalar_helper("exponential", "scale", scale, size)
+        if (scale < 0).any() if isinstance(scale, pdarray) else scale < 0:
+            raise TypeError("scale must be non-negative.")
         return scale * self.standard_exponential(size, method=method)
 
     def standard_exponential(self, size=None, method="zig"):
@@ -198,21 +192,27 @@ class Generator:
         pdarray
             Drawn samples from the standard exponential distribution.
         """
+        from arkouda.util import _infer_shape_from_size
+
         if size is None:
             # delegate to numpy when return size is 1
             return self._np_generator.standard_exponential(method=method)
 
+        shape, ndim, full_size = _infer_shape_from_size(size)
+        if full_size < 0:
+            raise ValueError("The size parameter must be > 0")
+
         rep_msg = generic_msg(
-            cmd="standardExponential",
+            cmd=f"standardExponential<{ndim}>",
             args={
-                "name": self._name_dict[akfloat64],
-                "size": size,
+                "name": self._name_dict[akdtype("float64")],
+                "size": shape,
                 "method": method.upper(),
                 "has_seed": self._seed is not None,
                 "state": self._state,
             },
         )
-        self._state += size if method.upper() == "INV" else 1
+        self._state += full_size if method.upper() == "INV" else 1
         return create_pdarray(rep_msg)
 
     def integers(self, low, high=None, size=None, dtype=akint64, endpoint=False):
@@ -257,6 +257,8 @@ class Generator:
         >>> rng.integers(5, size=10)
         array([2, 4, 0, 0, 0, 3, 1, 5, 5, 3])  # random
         """
+        from arkouda.util import _infer_shape_from_size
+
         # normalize dtype so things like "int" will work
         dtype = to_numpy_dtype(dtype)
 
@@ -266,28 +268,160 @@ class Generator:
         if size is None:
             # delegate to numpy when return size is 1
             return self._np_generator.integers(low=low, high=high, dtype=dtype, endpoint=endpoint)
+
         if high is None:
             high = low
             low = 0
         elif not endpoint:
             high = high - 1
 
-        name = self._name_dict[dtype]
+        shape, ndim, full_size = _infer_shape_from_size(size)
+        if full_size < 0:
+            raise ValueError("The size parameter must be > 0")
+
         rep_msg = generic_msg(
-            cmd="uniformGenerator",
+            cmd=f"uniformGenerator<{dtype.name},{ndim}>",
             args={
-                "name": name,
+                "name": self._name_dict[dtype],
                 "low": low,
                 "high": high,
-                "size": size,
-                "dtype": dtype,
+                "shape": shape,
                 "state": self._state,
             },
         )
-        self._state += size
+        self._state += full_size
         return create_pdarray(rep_msg)
 
-    def normal(self, loc=0.0, scale=1.0, size=None):
+    def logistic(self, loc=0.0, scale=1.0, size=None):
+        r"""
+        Draw samples from a logistic distribution.
+
+        Samples are drawn from a logistic distribution with specified parameters,
+        loc (location or mean, also median), and scale (>0).
+
+        Parameters
+        ----------
+        loc: float or pdarray of floats, optional
+            Parameter of the distribution. Default of 0.
+
+        scale: float or pdarray of floats, optional
+            Parameter of the distribution. Must be non-negative. Default is 1.
+
+        size: numeric_scalars, optional
+            Output shape. Default is None, in which case a single value is returned.
+
+        Notes
+        -----
+        The probability density for the Logistic distribution is
+
+        .. math::
+           P(x) = \frac{e^{-(x - \mu)/s}}{s( 1 + e^{-(x - \mu)/s})^2}
+
+        where :math:`\mu` is the location and :math:`s` is the scale.
+
+        The Logistic distribution is used in Extreme Value problems where it can act
+        as a mixture of Gumbel distributions, in Epidemiology, and by the World Chess Federation (FIDE)
+        where it is used in the Elo ranking system, assuming the performance of each player
+        is a logistically distributed random variable.
+
+        Returns
+        -------
+        pdarray
+            Pdarray of floats (unless size=None, in which case a single float is returned).
+
+        See Also
+        --------
+        normal
+
+        Examples
+        --------
+        >>> ak.random.default_rng(17).logistic(3, 2.5, 3)
+        array([1.1319566682702642 -7.1665150633720014 7.7208667145173608])
+        """
+        if size is None:
+            # delegate to numpy when return size is 1
+            return self._np_generator.logistic(loc=loc, scale=scale, size=size)
+
+        is_single_mu, mu = float_array_or_scalar_helper("logistic", "loc", loc, size)
+        is_single_scale, scale = float_array_or_scalar_helper("logistic", "scale", scale, size)
+        if (scale < 0).any() if isinstance(scale, pdarray) else scale < 0:
+            raise TypeError("scale must be non-negative.")
+
+        rep_msg = generic_msg(
+            cmd="logisticGenerator",
+            args={
+                "name": self._name_dict[akdtype("float64")],
+                "mu": mu,
+                "is_single_mu": is_single_mu,
+                "scale": scale,
+                "is_single_scale": is_single_scale,
+                "size": size,
+                "has_seed": self._seed is not None,
+                "state": self._state,
+            },
+        )
+        # we only generate one val using the generator in the symbol table
+        self._state += 1
+        return create_pdarray(rep_msg)
+
+    def lognormal(self, mean=0.0, sigma=1.0, size=None, method="zig"):
+        r"""
+        Draw samples from a log-normal distribution with specified mean,
+        standard deviation, and array shape.
+
+        Note that the mean and standard deviation are not the values for the distribution itself,
+        but of the underlying normal distribution it is derived from.
+
+        Parameters
+        ----------
+        mean: float or pdarray of floats, optional
+            Mean of the distribution. Default of 0.
+
+        sigma: float or pdarray of floats, optional
+            Standard deviation of the distribution. Must be non-negative. Default of 1.
+
+        size: numeric_scalars, optional
+            Output shape. Default is None, in which case a single value is returned.
+
+        method : str, optional
+            Either 'box' or 'zig'. 'box' uses the Box–Muller transform
+            'zig' uses the Ziggurat method.
+
+        Notes
+        -----
+        A variable `x` has a log-normal distribution if `log(x)` is normally distributed.
+        The probability density for the log-normal distribution is:
+
+        .. math::
+           p(x) = \frac{1}{\sigma x \sqrt{2\pi}} e^{-\frac{(\ln(x)-\mu)^2}{2\sigma^2}}
+
+        where :math:`\mu` is the mean and :math:`\sigma` the standard deviation of the normally
+        distributed logarithm of the variable.
+        A log-normal distribution results if a random variable is the product of a
+        large number of independent, identically-distributed variables in the same
+        way that a normal distribution results if the variable is
+        the sum of a large number of independent, identically-distributed variables.
+
+        Returns
+        -------
+        pdarray
+            Pdarray of floats (unless size=None, in which case a single float is returned).
+
+        See Also
+        --------
+        normal
+
+        Examples
+        --------
+        >>> ak.random.default_rng(17).lognormal(3, 2.5, 3)
+        array([7.3866978126031091 106.20159494048757 4.5424399190667666])
+        """
+        from arkouda.numeric import exp
+
+        norm_arr = self.normal(loc=mean, scale=sigma, size=size, method=method)
+        return exp(norm_arr) if size is not None else np.exp(norm_arr)
+
+    def normal(self, loc=0.0, scale=1.0, size=None, method="zig"):
         r"""
         Draw samples from a normal (Gaussian) distribution
 
@@ -301,6 +435,10 @@ class Generator:
 
         size: numeric_scalars, optional
             Output shape. Default is None, in which case a single value is returned.
+
+        method : str, optional
+            Either 'box' or 'zig'. 'box' uses the Box–Muller transform
+            'zig' uses the Ziggurat method.
 
         Notes
         -----
@@ -324,7 +462,7 @@ class Generator:
 
         Examples
         --------
-        >>> ak.random.default_rng(17).normal(3, 2.5, 10)
+        >>> ak.random.default_rng(17).normal(3, 2.5, 3)
         array([2.3673425816523577 4.0532529435624589 2.0598322696795694])
         """
         if size is None:
@@ -334,7 +472,7 @@ class Generator:
         if (scale < 0).any() if isinstance(scale, pdarray) else scale < 0:
             raise TypeError("scale must be non-negative.")
 
-        return loc + scale * self.standard_normal(size=size)
+        return loc + scale * self.standard_normal(size=size, method=method)
 
     def random(self, size=None):
         """
@@ -373,21 +511,9 @@ class Generator:
         if size is None:
             # delegate to numpy when return size is 1
             return self._np_generator.random()
-        rep_msg = generic_msg(
-            cmd="uniformGenerator",
-            args={
-                "name": self._name_dict[akfloat64],
-                "low": 0.0,
-                "high": 1.0,
-                "size": size,
-                "dtype": akfloat64,
-                "state": self._state,
-            },
-        )
-        self._state += size
-        return create_pdarray(rep_msg)
+        return self.uniform(size=size)
 
-    def standard_normal(self, size=None):
+    def standard_normal(self, size=None, method="zig"):
         r"""
         Draw samples from a standard Normal distribution (mean=0, stdev=1).
 
@@ -395,6 +521,10 @@ class Generator:
         ----------
         size: numeric_scalars, optional
             Output shape. Default is None, in which case a single value is returned.
+
+        method : str, optional
+            Either 'box' or 'zig'. 'box' uses the Box–Muller transform
+            'zig' uses the Ziggurat method.
 
         Returns
         -------
@@ -420,19 +550,28 @@ class Generator:
         >>> rng.standard_normal(3)
         array([0.8797352989638163, -0.7085325853376141, 0.021728052940979934])  # random
         """
+        from arkouda.util import _infer_shape_from_size
+
         if size is None:
             # delegate to numpy when return size is 1
             return self._np_generator.standard_normal()
+
+        shape, ndim, full_size = _infer_shape_from_size(size)
+        if full_size < 0:
+            raise ValueError("The size parameter must be > 0")
+
         rep_msg = generic_msg(
-            cmd="standardNormalGenerator",
+            cmd=f"standardNormalGenerator<{ndim}>",
             args={
-                "name": self._name_dict[akfloat64],
-                "size": size,
+                "name": self._name_dict[akdtype("float64")],
+                "shape": shape,
+                "method": method.upper(),
+                "has_seed": self._seed is not None,
                 "state": self._state,
             },
         )
         # since we generate 2*size uniform samples for box-muller transform
-        self._state += size * 2
+        self._state += full_size * 2
         return create_pdarray(rep_msg)
 
     def shuffle(self, x):
@@ -452,13 +591,13 @@ class Generator:
             raise TypeError("shuffle only accepts a pdarray.")
         dtype = to_numpy_dtype(x.dtype)
         name = self._name_dict[to_numpy_dtype(akint64)]
+        ndim = len(x.shape)
         generic_msg(
-            cmd="shuffle",
+            cmd=f"shuffle<{dtype.name},{ndim}>",
             args={
                 "name": name,
                 "x": x,
-                "size": x.size,
-                "dtype": dtype,
+                "shape": x.shape,
                 "state": self._state,
             },
         )
@@ -482,24 +621,27 @@ class Generator:
         if _val_isinstance_of_union(x, int_scalars):
             is_domain_perm = True
             dtype = to_numpy_dtype(akint64)
+            shape = x
             size = x
+            ndim = 1
         elif isinstance(x, pdarray):
             is_domain_perm = False
             dtype = to_numpy_dtype(x.dtype)
+            shape = x.shape
             size = x.size
+            ndim = len(shape)
         else:
             raise TypeError("permutation only accepts a pdarray or int scalar.")
 
         # we have to use the int version since we permute the domain
         name = self._name_dict[to_numpy_dtype(akint64)]
-
         rep_msg = generic_msg(
-            cmd="permutation",
+            cmd=f"permutation<{dtype.name},{ndim}>",
             args={
                 "name": name,
                 "x": x,
+                "shape": shape,
                 "size": size,
-                "dtype": dtype,
                 "isDomPerm": is_domain_perm,
                 "state": self._state,
             },
@@ -547,29 +689,14 @@ class Generator:
             # delegate to numpy when return size is 1
             return self._np_generator.poisson(lam, size)
 
-        if _val_isinstance_of_union(lam, numeric_scalars):
-            is_single_lambda = True
-            if not _val_isinstance_of_union(lam, float_scalars):
-                lam = float(lam)
-            if lam < 0:
-                raise TypeError("lambda must be >=0")
-        elif isinstance(lam, pdarray):
-            is_single_lambda = False
-            if size != lam.size:
-                raise TypeError("array of lambdas must have same size as return size")
-            if lam.dtype != akfloat64:
-                from arkouda.numeric import cast as akcast
-
-                lam = akcast(lam, akfloat64)
-            if (lam < 0).any():
-                raise TypeError("all lambdas must be >=0")
-        else:
-            raise TypeError("poisson only accepts a pdarray or float scalar for lam")
+        is_single_lambda, lam = float_array_or_scalar_helper("poisson", "lam", lam, size)
+        if (lam < 0).any() if isinstance(lam, pdarray) else lam < 0:
+            raise TypeError("lam must be non-negative.")
 
         rep_msg = generic_msg(
             cmd="poissonGenerator",
             args={
-                "name": self._name_dict[akfloat64],
+                "name": self._name_dict[akdtype("float64")],
                 "lam": lam,
                 "is_single_lambda": is_single_lambda,
                 "size": size,
@@ -617,21 +744,28 @@ class Generator:
         >>> rng.uniform(-1, 1, 3)
         array([0.030785499755523249, 0.08505865366367038, -0.38552048588998722])  # random
         """
+        from arkouda.util import _infer_shape_from_size
+
         if size is None:
             # delegate to numpy when return size is 1
             return self._np_generator.uniform(low=low, high=high)
+
+        shape, ndim, full_size = _infer_shape_from_size(size)
+        if full_size < 0:
+            raise ValueError("The size parameter must be > 0")
+
+        dt = akdtype("float64")
         rep_msg = generic_msg(
-            cmd="uniformGenerator",
+            cmd=f"uniformGenerator<{dt.name},{ndim}>",
             args={
-                "name": self._name_dict[akfloat64],
+                "name": self._name_dict[dt],
                 "low": low,
                 "high": high,
-                "size": size,
-                "dtype": akfloat64,
+                "shape": shape,
                 "state": self._state,
             },
         )
-        self._state += size
+        self._state += full_size
         return create_pdarray(rep_msg)
 
 
@@ -667,21 +801,30 @@ def default_rng(seed=None):
     # chpl has to know the type of the generator, in order to avoid having to declare
     # the type of the generator beforehand (which is not what numpy does)
     # we declare a generator for each type and fast-forward the state
-    int_name = generic_msg(
-        cmd="createGenerator",
-        args={"dtype": "int64", "has_seed": has_seed, "seed": seed, "state": state},
-    )
-    uint_name = generic_msg(
-        cmd="createGenerator",
-        args={"dtype": "uint64", "has_seed": has_seed, "seed": seed, "state": state},
-    )
-    float_name = generic_msg(
-        cmd="createGenerator",
-        args={"dtype": "float64", "has_seed": has_seed, "seed": seed, "state": state},
-    )
-    bool_name = generic_msg(
-        cmd="createGenerator",
-        args={"dtype": "bool", "has_seed": has_seed, "seed": seed, "state": state},
-    )
-    name_dict = {akint64: int_name, akuint64: uint_name, akfloat64: float_name, akbool: bool_name}
+
+    name_dict = dict()
+    for dt in akdtype("int64"), akdtype("uint64"), akdtype("float64"), akdtype("bool"):
+        name_dict[dt] = generic_msg(
+            cmd=f"createGenerator<{dt.name}>",
+            args={"has_seed": has_seed, "seed": seed, "state": state},
+        ).split()[1]
+
     return Generator(name_dict, seed if has_seed else None, state=state)
+
+
+def float_array_or_scalar_helper(func_name, var_name, var, size):
+    if _val_isinstance_of_union(var, numeric_scalars):
+        is_scalar = True
+        if not _val_isinstance_of_union(var, float_scalars):
+            var = float(var)
+    elif isinstance(var, pdarray):
+        is_scalar = False
+        if size != var.size:
+            raise TypeError(f"array of {var_name} must have same size as return size")
+        if var.dtype != akfloat64:
+            from arkouda.numeric import cast as akcast
+
+            var = akcast(var, akfloat64)
+    else:
+        raise TypeError(f"{func_name} only accepts a pdarray or float scalar for {var_name}")
+    return is_scalar, var

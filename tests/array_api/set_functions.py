@@ -1,8 +1,10 @@
-from base_test import ArkoudaTest
-from context import arkouda as ak
-import arkouda.array_api as xp
-import numpy as np
+import json
 
+import numpy as np
+import pytest
+
+import arkouda as ak
+import arkouda.array_api as xp
 
 SEED = 314159
 s = SEED
@@ -14,7 +16,9 @@ def randArr(shape):
     return xp.asarray(ak.randint(0, 100, shape, dtype=ak.int64, seed=s))
 
 
-class SetFunctionTests(ArkoudaTest):
+class TestSetFunction:
+
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_set_functions(self):
 
         for shape in [(1000), (20, 50), (2, 10, 50)]:
@@ -26,22 +30,19 @@ class SetFunctionTests(ArkoudaTest):
             uv = xp.unique_values(r)
 
             (nuv, nuidx, nuinv, nuc) = np.unique(
-                r.to_ndarray(),
-                return_index=True,
-                return_inverse=True,
-                return_counts=True
+                r.to_ndarray(), return_index=True, return_inverse=True, return_counts=True
             )
 
-            self.assertEqual(ua.values.tolist(), nuv.tolist())
-            self.assertEqual(ua.indices.tolist(), nuidx.tolist())
+            assert ua.values.tolist() == nuv.tolist()
+            assert ua.indices.tolist() == nuidx.tolist()
 
-            self.assertEqual(ua.inverse_indices.tolist(), np.reshape(nuinv, shape).tolist())
-            self.assertEqual(ua.counts.tolist(), nuc.tolist())
+            assert ua.inverse_indices.tolist() == np.reshape(nuinv, shape).tolist()
+            assert ua.counts.tolist() == nuc.tolist()
 
-            self.assertEqual(uc.values.tolist(), nuv.tolist())
-            self.assertEqual(uc.counts.tolist(), nuc.tolist())
+            assert uc.values.tolist() == nuv.tolist()
+            assert uc.counts.tolist() == nuc.tolist()
 
-            self.assertEqual(ui.values.tolist(), nuv.tolist())
-            self.assertEqual(ui.inverse_indices.tolist(), np.reshape(nuinv, shape).tolist())
+            assert ui.values.tolist() == nuv.tolist()
+            assert ui.inverse_indices.tolist() == np.reshape(nuinv, shape).tolist()
 
-            self.assertEqual(uv.tolist(), nuv.tolist())
+            assert uv.tolist() == nuv.tolist()

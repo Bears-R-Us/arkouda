@@ -72,9 +72,7 @@ module MultiTypeSymbolTable
 
             :returns: borrow of newly created `SymEntry(t)`
         */
-        proc addEntry(name: string, shape: int ...?N, type t): borrowed SymEntry(t, N) throws
-            where isSupportedType(t)
-        {
+        proc addEntry(name: string, shape: int ...?N, type t): borrowed SymEntry(t, N) throws {
             // check and throw if memory limit would be exceeded
             // TODO figure out a way to do memory checking for bigint
             if t != bigint {
@@ -99,16 +97,6 @@ module MultiTypeSymbolTable
 
         proc addEntry(name: string, shape: ?ND*int, type t): borrowed SymEntry(t, ND) throws
             do return addEntry(name, (...shape), t);
-
-        proc addEntry(name: string, shape: int ...?N, type t): borrowed SymEntry(t, N) throws
-            where !isSupportedType(t)
-        {
-            throw new ConfigurationError(
-                "The server was not configured to support pdarray's of type %s. ".format(t:string) +
-                "Please update the configuration and recompile.",
-                getLineNumber(),getRoutineName(),getModuleName()
-            );
-        }
 
         /*
         Takes an already created AbstractSymEntry and creates a new AbstractSymEntry.
@@ -432,7 +420,11 @@ module MultiTypeSymbolTable
             else if entry.isAssignableTo(SymbolEntryType.GeneratorSymEntry) {
                 return name;
             }
-            
+            else if entry.isAssignableTo(SymbolEntryType.SparseSymEntry){
+                var g: GenSparseSymEntry = toGenSparseSymEntry(entry);
+                return name + " " + g.attrib();
+            }
+
             throw new Error("attrib - Unsupported Entry Type %s".format(entry.entryType));
         }
 
@@ -569,5 +561,20 @@ module MultiTypeSymbolTable
             throw new Error(errorMsg);
         }
         return (abstractEntry: borrowed SegStringSymEntry);
+    }
+
+    /**
+     * Convenience proc to retrieve GenSparseSymEntry from SymTab
+     * Performs conversion from AbstractSymEntry to GenSparseSymEntry
+     * You can pass a logger from the calling function for better error reporting.
+     */
+    proc getGenericSparseArrayEntry(name:string, st: borrowed SymTab): borrowed GenSparseSymEntry throws {
+        var abstractEntry = st.lookup(name);
+        if ! abstractEntry.isAssignableTo(SymbolEntryType.SparseSymEntry) {
+            var errorMsg = "Error: SymbolEntryType %s is not assignable to GenSparseSymEntry".format(abstractEntry.entryType);
+            mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            throw new Error(errorMsg);
+        }
+        return (abstractEntry: borrowed GenSparseSymEntry);
     }
 }

@@ -6,7 +6,7 @@ from enum import Enum
 import numpy as np
 
 from arkouda.client import generic_msg
-from arkouda.dtypes import resolve_scalar_dtype, translate_np_dtype
+from arkouda.numpy.dtypes import resolve_scalar_dtype
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import cumprod, where
 from arkouda.pdarrayclass import create_pdarray, parse_single_value, pdarray
@@ -125,10 +125,9 @@ class ArrayView:
         except (RuntimeError, TypeError, ValueError, DeprecationWarning):
             pass
         if isinstance(key, pdarray):
-            kind, _ = translate_np_dtype(key.dtype)
-            if kind not in ("int", "uint", "bool"):
+            if key.dtype not in ("int", "uint", "bool"):
                 raise TypeError(f"unsupported pdarray index type {key.dtype}")
-            if kind == "bool":
+            if key.dtype == "bool":
                 if key.all():
                     # every dimension is True, so return this arrayview with shape = [1, self.shape]
                     return self.base.reshape(
@@ -141,7 +140,7 @@ class ArrayView:
                         concatenate([zeros(1, dtype=self.dtype), self.shape]), order=self.order.name
                     )
             # Interpret negative key as offset from end of array
-            key = where(key < 0, akcast(key + self.shape, kind), key)
+            key = where(key < 0, akcast(key + self.shape, key.dtype), key)
             # Capture the indices which are still out of bounds
             out_of_bounds = (key < 0) | (self.shape <= key)
             if out_of_bounds.any():
@@ -151,15 +150,14 @@ class ArrayView:
                 )
             coords = key if self.order is OrderType.COLUMN_MAJOR else key[::-1]
             repMsg = generic_msg(
-                cmd="arrayViewIntIndex",
+                cmd=f"arrayViewIntIndex<{self.dtype}>",
                 args={
                     "base": self.base,
                     "dim_prod": self._dim_prod,
                     "coords": coords,
                 },
             )
-            fields = repMsg.split()
-            return parse_single_value(" ".join(fields[1:]))
+            return parse_single_value(repMsg)
         elif isinstance(key, list):
             indices = []
             reshape_dim_list = []
@@ -192,10 +190,9 @@ class ArrayView:
                 elif isinstance(x, pdarray) or isinstance(x, list):
                     raise TypeError(f"Advanced indexing is not yet supported {x} ({type(x)})")
                     # x = array(x)
-                    # kind, _ = translate_np_dtype(x.dtype)
-                    # if kind not in ("bool", "int"):
+                    # if key.dtype not in ("bool", "int"):
                     #     raise TypeError("unsupported pdarray index type {}".format(x.dtype))
-                    # if kind == "bool" and dim != x.size:
+                    # if key.dtype == "bool" and dim != x.size:
                     #     raise ValueError("size mismatch {} {}".format(dim, x.size))
                     # indices.append('pdarray')
                     # indices.append(x.name)
@@ -244,17 +241,16 @@ class ArrayView:
         except (RuntimeError, TypeError, ValueError, DeprecationWarning):
             pass
         if isinstance(key, pdarray):
-            kind, _ = translate_np_dtype(key.dtype)
-            if kind not in ("int", "uint", "bool"):
+            if key.dtype not in ("int", "uint", "bool"):
                 raise TypeError(f"unsupported pdarray index type {key.dtype}")
-            if kind == "bool":
+            if key.dtype == "bool":
                 if key.all():
                     # every dimension is True, so fill arrayview with value
                     # if any dimension is False, we don't update anything
                     self.base.fill(value)
             else:
                 # Interpret negative key as offset from end of array
-                key = where(key < 0, akcast(key + self.shape, kind), key)
+                key = where(key < 0, akcast(key + self.shape, key.dtype), key)
                 # Capture the indices which are still out of bounds
                 out_of_bounds = (key < 0) | (self.shape <= key)
                 if out_of_bounds.any():
@@ -264,10 +260,9 @@ class ArrayView:
                     )
                 coords = key if self.order is OrderType.COLUMN_MAJOR else key[::-1]
                 generic_msg(
-                    cmd="arrayViewIntIndexAssign",
+                    cmd=f"arrayViewIntIndexAssign<{self.base.dtype}>",
                     args={
                         "base": self.base,
-                        "dtype": self.dtype,
                         "dim_prod": self._dim_prod,
                         "coords": coords,
                         "value": self.base.format_other(value),

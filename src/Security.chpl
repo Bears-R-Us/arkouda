@@ -1,7 +1,6 @@
 
 module Security {
     use Random;
-    use ArkoudaRandomCompat;
     use FileIO;
     use FileSystem;
     use Path;

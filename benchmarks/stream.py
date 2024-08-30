@@ -6,6 +6,7 @@ import time
 import numpy as np
 
 import arkouda as ak
+from arkouda.numpy.dtypes import dtype as akdtype
 
 TYPES = ("int64", "float64")
 
@@ -131,15 +132,16 @@ if __name__ == "__main__":
 
     parser = create_parser()
     args = parser.parse_args()
+
     if args.dtype not in TYPES:
         raise ValueError("Dtype must be {}, not {}".format("/".join(TYPES), args.dtype))
-    args.alpha = getattr(ak, args.dtype).type(args.alpha)
+    args.alpha = akdtype(getattr(ak, args.dtype)).type(args.alpha)
     ak.verbose = False
     ak.connect(server=args.hostname, port=args.port)
 
     if args.correctness_only:
         for dtype in TYPES:
-            alpha = getattr(ak, dtype).type(args.alpha)
+            alpha = akdtype(getattr(ak, dtype)).type(args.alpha)
             check_correctness(alpha, dtype, args.randomize, args.seed)
         sys.exit(0)
 

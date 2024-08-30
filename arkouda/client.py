@@ -4,8 +4,6 @@ import warnings
 from enum import Enum
 from typing import Dict, List, Mapping, Optional, Tuple, Union, cast
 
-import pyfiglet  # type: ignore
-
 from arkouda import __version__, io_util, security
 from arkouda.logger import LogLevel, getArkoudaLogger
 from arkouda.message import (
@@ -21,6 +19,7 @@ __all__ = [
     "disconnect",
     "shutdown",
     "get_config",
+    "get_max_array_rank",
     "get_mem_used",
     "get_mem_avail",
     "get_mem_status",
@@ -39,6 +38,9 @@ verbose = verboseDefVal
 # threshold for __iter__() to limit comms to arkouda_server
 pdarrayIterThreshDefVal = 100
 pdarrayIterThresh = pdarrayIterThreshDefVal
+sparrayIterThreshDefVal = 20  # sps print format is longer; we have small thresh
+sparrayIterThresh = sparrayIterThreshDefVal
+
 maxTransferBytesDefVal = 2**30
 maxTransferBytes = maxTransferBytesDefVal
 # maximum number of capture group for regex
@@ -196,6 +198,8 @@ mode = ClientMode(os.getenv("ARKOUDA_CLIENT_MODE", "UI").upper())
 
 # Print splash message if in UI mode
 if mode == ClientMode.UI:
+    import pyfiglet  # type: ignore
+
     print("{}".format(pyfiglet.figlet_format("Arkouda")))
     print(f"Client Version: {__version__}")  # type: ignore
 
@@ -1037,6 +1041,26 @@ def get_config() -> Mapping[str, Union[str, int, float]]:
         raise RuntimeError("client is not connected to a server")
 
     return serverConfig
+
+
+def get_max_array_rank() -> int:
+    """
+    Get the maximum pdarray rank the server was compiled to support
+
+    This value corresponds to the maximum number in
+    parameter_classes -> array -> nd in the `registration-config.json`
+    file when the server was compiled.
+
+    Returns
+    -------
+    int
+        The maximum pdarray rank supported by the server
+    """
+
+    if serverConfig is None:
+        raise RuntimeError("client is not connected to a server")
+
+    return int(serverConfig["maxArrayDims"])
 
 
 def _get_config_msg() -> Mapping[str, Union[str, int, float]]:

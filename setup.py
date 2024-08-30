@@ -86,7 +86,6 @@ setup(
         # These classifiers are *not* checked by 'pip install'. See instead
         # 'python_requires' below.
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.8",
     ],
     # This field adds keywords for your project which will appear on the
     # project page. What does your project relate to?
@@ -108,7 +107,7 @@ setup(
     # and refuse to install the project if the version does not match. If you
     # do not support Python 2, you can simplify this to '>=3.5' or similar, see
     # https://packaging.python.org/guides/distributing-packages-using-setuptools/#python-requires
-    python_requires=">=3.8,<3.12.4",
+    python_requires=">=3.9,<3.12.4",
     # This field lists other packages that your project depends on to run.
     # Any package you put here will be installed by pip when your project is
     # installed, so they must be valid existing projects.
@@ -127,7 +126,7 @@ setup(
         "h5py>=3.7.0",
         "pip",
         "types-tabulate",
-        "tables>=3.7.0",
+        "tables>=3.8.0",
         "pyarrow",
         "scipy<=1.13.1",
         "cloudpickle",
@@ -148,7 +147,7 @@ setup(
             "Sphinx>=5.1.1",
             "sphinx-argparse",
             "sphinx-autoapi",
-            "mypy>=0.931,<0.990",
+            "mypy>=0.931",
             "typed-ast",
             "black",
             "isort",

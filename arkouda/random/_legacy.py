@@ -3,10 +3,10 @@ from typing import Optional, Tuple, Union, cast
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
-from arkouda.dtypes import NUMBER_FORMAT_STRINGS, DTypes
-from arkouda.dtypes import dtype as akdtype
-from arkouda.dtypes import int64 as akint64
-from arkouda.dtypes import int_scalars, numeric_scalars
+from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, DTypes
+from arkouda.numpy.dtypes import dtype as akdtype
+from arkouda.numpy.dtypes import int64 as akint64
+from arkouda.numpy.dtypes import int_scalars, numeric_scalars
 from arkouda.pdarrayclass import create_pdarray, pdarray
 
 
@@ -97,20 +97,21 @@ def randint(
         raise TypeError(f"unsupported dtype {dtype}")
 
     repMsg = generic_msg(
-        cmd=f"randint{ndim}D",
+        cmd=f"randint<{dtype.name},{ndim}>",
         args={
             "shape": shape,
-            "dtype": dtype.name,
             "low": NUMBER_FORMAT_STRINGS[dtype.name].format(low),
             "high": NUMBER_FORMAT_STRINGS[dtype.name].format(high),
-            "seed": seed,
+            "seed": seed if seed is not None else -1,
         },
     )
     return create_pdarray(repMsg)
 
 
 @typechecked
-def standard_normal(size: int_scalars, seed: Union[None, int_scalars] = None) -> pdarray:
+def standard_normal(
+    size: Union[int_scalars, Tuple[int_scalars, ...]], seed: Union[None, int_scalars] = None
+) -> pdarray:
     """
     Draw real numbers from the standard normal distribution.
 
@@ -148,11 +149,23 @@ def standard_normal(size: int_scalars, seed: Union[None, int_scalars] = None) ->
     >>> ak.standard_normal(3,1)
     array([-0.68586185091150265, 1.1723810583573375, 0.567584107142031])
     """
-    if size < 0:
-        raise ValueError("The size parameter must be > 0")
+    shape: Union[int_scalars, Tuple[int_scalars, ...]] = 1
+    if isinstance(size, tuple):
+        shape = cast(Tuple, size)
+        full_size = 1
+        for s in cast(Tuple, shape):
+            full_size *= s
+        ndim = len(shape)
+    else:
+        full_size = cast(int, size)
+        if full_size < 0:
+            raise ValueError("The size parameter must be > 0")
+        shape = full_size
+        ndim = 1
     return create_pdarray(
         generic_msg(
-            cmd="randomNormal", args={"size": NUMBER_FORMAT_STRINGS["int64"].format(size), "seed": seed}
+            cmd=f"randomNormal<{ndim}>",
+            args={"shape": shape, "seed": seed},
         )
     )
 

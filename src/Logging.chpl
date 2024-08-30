@@ -6,7 +6,6 @@ module Logging {
     use Time;
 
     import IO.{format, stdout, file, open, ioMode};
-    use ArkoudaIOCompat;
 
     /*
      * The LogLevel enum is used to provide a strongly-typed means of

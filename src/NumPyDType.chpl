@@ -79,6 +79,10 @@ module NumPyDType
       }
     }
 
+    proc typeSize(type t): int {
+      return dtypeSize(whichDtype(t));
+    }
+
     /* Turns a dtype string in pythonland into a DType
 
     :arg dstr: pythonic dtype to be converted
@@ -171,9 +175,9 @@ module NumPyDType
       if t == complex(64) then return "%.17z%";
       if t == complex(128) then return "%.17z%";
       if t == bool then return "%s";
-      if t == bigint then return "%s";
+      if t == bigint then return "%?";
       if t == string then return "%s";
-      return "undef";
+      return "%?";
     }
 
     proc bool2str(b: bool): string {

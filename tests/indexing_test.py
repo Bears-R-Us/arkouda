@@ -1,82 +1,96 @@
 import numpy as np
-from base_test import ArkoudaTest
-from context import arkouda as ak
+import pytest
 
-SIZE = 100
+import arkouda as ak
+
+NUM_TYPES = [ak.int64, ak.uint64, ak.float64, ak.bool_, ak.bigint]
 
 
-class IndexingTest(ArkoudaTest):
-    def setUp(self):
-        ArkoudaTest.setUp(self)
+def key_arrays(size):
+    ikeys = ak.arange(size)
+    ukeys = ak.arange(size, dtype=ak.uint64)
+    return ikeys, ukeys
 
-        self.ikeys = ak.arange(SIZE)
-        self.ukeys = ak.arange(SIZE, dtype=ak.uint64)
-        self.i = ak.randint(0, SIZE, SIZE)
-        self.u = ak.cast(self.i, ak.uint64)
-        self.f = ak.array(np.random.randn(SIZE))  # normally dist random numbers
-        self.b = (self.i % 2) == 0
-        self.s = ak.cast(self.i, str)
-        self.bi = ak.cast(self.u, ak.bigint)
-        self.array_dict = {
-            "int64": self.i,
-            "uint64": self.u,
-            "float64": self.f,
-            "bool": self.b,
-            "bigint": self.bi,
-        }
 
-    def test_pdarray_uint_indexing(self):
-        # for every pda in array_dict test indexing with uint array and uint scalar
-        for pda in self.array_dict.values():
-            self.assertEqual(pda[np.uint(2)], pda[2])
-            self.assertListEqual(pda[self.ukeys].to_list(), pda[self.ikeys].to_list())
+def value_array(dtype, size):
+    if dtype in [ak.int64, ak.float64]:
+        return ak.randint(-size, size, size, dtype=dtype)
+    elif dtype is ak.uint64:
+        return ak.randint(0, size, size, dtype=dtype)
+    elif dtype is ak.bool_:
+        return (ak.randint(0, size, size) % 2) == 0
+    elif dtype is ak.bigint:
+        return ak.randint(0, size, size, dtype=ak.uint64) + 2**200
+    elif dtype is ak.str_:
+        return ak.random_strings_uniform(1, 16, size=size)
+    return None
 
-    def test_strings_uint_indexing(self):
-        # test Strings array indexing with uint array and uint scalar
-        self.assertEqual(self.s[np.uint(2)], self.s[2])
-        self.assertListEqual(self.s[self.ukeys].to_list(), self.s[self.ikeys].to_list())
 
-    def test_bool_indexing(self):
-        # test uint array with bool indexing
-        self.assertListEqual(self.u[self.b].to_list(), self.i[self.b].to_list())
-        # test bigint array with bool indexing
-        self.assertListEqual(self.u[self.b].to_list(), self.bi[self.b].to_list())
+def value_scalar(dtype, size):
+    if dtype in [ak.int64, ak.float64]:
+        return ak.randint(-size, 0, 1, dtype=dtype)
+    elif dtype is ak.uint64:
+        return ak.randint(2**63, 2**64, 1, dtype=dtype)
+    elif dtype is ak.bool_:
+        return (ak.randint(0, 2, 1) % 2) == 0
+    elif dtype is ak.bigint:
+        return ak.randint(0, size, 1, dtype=ak.uint64) + 2**200
+    elif dtype is ak.str_:
+        return ak.random_strings_uniform(1, 16, size=1)
+    return None
 
-    def test_set_uint(self):
-        # for every pda in array_dict test __setitem__ indexing with uint array and uint scalar
-        for t, pda in self.array_dict.items():
-            # set [int] = val with uint key and value
-            pda[np.uint(2)] = np.uint(5)
-            self.assertEqual(pda[np.uint(2)], pda[2])
 
-            # set [slice] = scalar/pdarray
-            pda[:10] = -2
-            self.assertListEqual(pda[self.ukeys].to_list(), pda[self.ikeys].to_list())
-            pda[:10] = ak.cast(ak.arange(10), t)
-            self.assertListEqual(pda[self.ukeys].to_list(), pda[self.ikeys].to_list())
+class TestIndexing:
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", NUM_TYPES + [ak.str_])
+    def test_pdarray_uint_indexing(self, prob_size, dtype):
+        ikeys, ukeys = key_arrays(prob_size)
+        pda = value_array(dtype, prob_size)
+        assert pda[np.uint(2)] == pda[2]
+        assert pda[ukeys].to_list() == pda[ikeys].to_list()
 
-            # set [pdarray] = scalar/pdarray with uint key pdarray
-            pda[ak.arange(10, dtype=ak.uint64)] = np.uint(3)
-            self.assertListEqual(pda[self.ukeys].to_list(), pda[self.ikeys].to_list())
-            pda[ak.arange(10, dtype=ak.uint64)] = ak.cast(ak.arange(10), t)
-            self.assertListEqual(pda[self.ukeys].to_list(), pda[self.ikeys].to_list())
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_bool_indexing(self, prob_size):
+        u = value_array(ak.uint64, prob_size)
+        b = value_array(ak.bool_, prob_size)
+        assert u[b].to_list() == ak.cast(u, ak.int64)[b].to_list()
+        assert u[b].to_list() == ak.cast(u, ak.bigint)[b].to_list()
 
-            if t == ak.bigint.name:
-                # bigint specific set [int] = val with uint key and value
-                pda[np.uint(2)] = 2**200
-                self.assertEqual(pda[2], 2**200)
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", NUM_TYPES)
+    def test_set_uint(self, prob_size, dtype):
+        test_size = prob_size // 2
+        ikeys, ukeys = key_arrays(prob_size)
+        pda = value_array(dtype, prob_size)
 
-                # bigint specific set [slice] = scalar/pdarray
-                pda[:10] = 2**200
-                self.assertListEqual(pda[:10].to_list(), ak.full(10, 2**200, ak.bigint).to_list())
-                pda[:10] = ak.arange(10, dtype=ak.bigint)
-                self.assertListEqual(pda[:10].to_list(), ak.arange(10, dtype=ak.uint64).to_list())
+        # set [int] = val with uint key and value
+        pda[np.uint(2)] = np.uint(5)
+        assert pda[np.uint(2)] == pda[2]
 
-                # bigint specific set [pdarray] = scalar/pdarray with uint key pdarray
-                pda[ak.arange(10, dtype=ak.uint64)] = 2**200
-                self.assertListEqual(pda[:10].to_list(), ak.full(10, 2**200, ak.bigint).to_list())
-                pda[ak.arange(10)] = ak.arange(10, dtype=ak.bigint)
-                self.assertListEqual(pda[:10].to_list(), ak.arange(10, dtype=ak.uint64).to_list())
+        # set [slice] = scalar/pdarray
+        pda[:test_size] = -2
+        assert pda[ukeys].to_list() == pda[ikeys].to_list()
+        pda[:test_size] = ak.cast(ak.arange(test_size), dtype)
+        assert pda[ukeys].to_list() == pda[ikeys].to_list()
+
+        # set [int] = val with uint key and value
+        val = value_scalar(dtype, prob_size)[0]
+        pda[np.uint(2)] = val
+        assert pda[2] == val
+
+        # set [slice] = scalar/pdarray
+        pda[:prob_size] = val
+        assert pda[:prob_size].to_list() == ak.full(prob_size, val, dtype=dtype).to_list()
+        pda_value_array = value_array(dtype, prob_size)
+        pda[:prob_size] = pda_value_array
+        assert pda[:prob_size].to_list() == pda_value_array.to_list()
+
+        # set [pdarray] = scalar/pdarray with uint key pdarray
+        pda[ak.arange(prob_size, dtype=ak.uint64)] = val
+        assert pda[:prob_size].to_list() == ak.full(prob_size, val, dtype=dtype).to_list()
+        pda_value_array = value_array(dtype, prob_size)
+        pda[ak.arange(prob_size)] = pda_value_array
+        assert pda[:prob_size].to_list() == pda_value_array.to_list()
 
     def test_indexing_with_uint(self):
         # verify reproducer from #1210 no longer fails
@@ -87,10 +101,132 @@ class IndexingTest(ArkoudaTest):
     def test_bigint_indexing_preserves_max_bits(self):
         max_bits = 64
         a = ak.arange(2**200 - 1, 2**200 + 11, max_bits=max_bits)
-        self.assertEqual(max_bits, a[ak.arange(10)].max_bits)
-        self.assertEqual(max_bits, a[:].max_bits)
+        assert max_bits == a[ak.arange(10)].max_bits
+        assert max_bits == a[:].max_bits
 
     def test_handling_bigint_max_bits(self):
         a = ak.arange(2**200 - 1, 2**200 + 11, max_bits=3)
         a[:] = ak.arange(2**200 - 1, 2**200 + 11)
-        self.assertListEqual([7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2], a.to_list())
+        assert [7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2] == a.to_list()
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_compare_get_slice(self, size):
+        # create np version
+        a = np.arange(size)
+        a = a[::2]
+        # create ak version
+        b = ak.arange(size)
+        b = b[::2]
+        assert np.allclose(a, b.to_ndarray())
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_compare_set_slice_value(self, size):
+        # create np version
+        a = np.ones(size)
+        a[::2] = -1
+        # create ak version
+        b = ak.ones(size)
+        b[::2] = -1
+        assert np.allclose(a, b.to_ndarray())
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_compare_set_slice(self, size):
+        # create np version
+        a = np.ones(size)
+        a[::2] = a[::2] * -1
+        # create ak version
+        b = ak.ones(size)
+        b[::2] = b[::2] * -1
+        assert np.allclose(a, b.to_ndarray())
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_compare_get_bool_iv(self, size):
+        # create np version
+        a = np.arange(size)
+        a = a[a < size // 2]
+        # create ak version
+        b = ak.arange(size)
+        b = b[b < size // 2]
+        assert np.allclose(a, b.to_ndarray())
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_compare_set_bool_iv_value(self, size):
+        # create np version
+        a = np.arange(size)
+        a[a < size // 2] = -1
+        # create ak version
+        b = ak.arange(size)
+        b[b < size // 2] = -1
+        assert np.allclose(a, b.to_ndarray())
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def check_set_bool_iv(self, size):
+        # create np version
+        a = np.arange(size)
+        a[a < size // 2] = a[: size // 2] * -1
+        # create ak version
+        b = ak.arange(size)
+        b[b < size // 2] = b[: size // 2] * -1
+        assert np.allclose(a, b.to_ndarray())
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def check_get_integer_iv(self, size):
+        # create np version
+        a = np.arange(size)
+        iv = np.arange(size // 2)
+        a = a[iv]
+        # create ak version
+        b = ak.arange(size)
+        iv = ak.arange(size // 2)
+        b = b[iv]
+        assert np.allclose(a, b.to_ndarray())
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_compare_set_integer_iv_val(self, size):
+        # create np version
+        a = np.arange(size)
+        iv = np.arange(size // 2)
+        a[iv] = -1
+        # create ak version
+        b = ak.arange(size)
+        iv = ak.arange(size // 2)
+        b[iv] = -1
+        assert np.allclose(a, b.to_ndarray())
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_compare_set_integer_iv(self, size):
+        # create np version
+        a = np.arange(size)
+        iv = np.arange(size // 2)
+        a[iv] = iv * 10
+        # create ak version
+        b = ak.arange(size)
+        iv = ak.arange(size // 2)
+        b[iv] = iv * 10
+        assert np.allclose(a, b.to_ndarray())
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_compare_get_integer_idx(self, size):
+        # create np version
+        a = np.arange(size)
+        v1 = a[size // 2]
+        # create ak version
+        b = ak.arange(size)
+        v2 = b[size // 2]
+        assert v1 == v2
+        assert a[-1] == b[-1]
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_compare_set_integer_idx(self, size):
+        # create np version
+        a = np.arange(size)
+        a[size // 2] = -1
+        a[-1] = -1
+        v1 = a[size // 2]
+        # create ak version
+        b = ak.arange(size)
+        b[size // 2] = -1
+        b[-1] = -1
+        v2 = b[size // 2]
+        assert v1 == v2
+        assert a[-1] == b[-1]

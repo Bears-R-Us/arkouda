@@ -12,36 +12,44 @@ Install Dependencies
 
 1. Follow the `Chapel Quickstart Guide <https://chapel-lang.org/docs/usingchapel/QUICKSTART.html>`_
 2. Follow the `Anaconda Installation Guide <https://docs.anaconda.com/anaconda/install/index.html>`_
-3. Configure your conda environment
-
-   .. substitution-code-block:: bash
-
-       conda env create -f arkouda-env.yml
 
 **********************
 Install Arkouda
 **********************
 
-1. Download Arkouda `v2023.05.05 <https://github.com/Bears-R-Us/arkouda/archive/refs/tags/v2023.05.05.tar.gz>`_
+1. Download either zip file from assets section of the `latest Arkouda release <https://github.com/Bears-R-Us/arkouda/releases/latest>`_
 2. Unpack the source files:
 
    .. substitution-code-block:: bash
 
-       tar xzf arkouda-2023.05.05.tar.gz
+       tar xzf arkouda-RELEASE_DATE.tar.gz
 
 3. Change to the arkouda directory
 
    .. substitution-code-block:: bash
 
-       cd arkouda-2023.05.05
+       cd arkouda-RELEASE_DATE
 
-4. Build Arkouda
+4. Create a conda env from `arkouda-env.yml` and activate it
+
+   .. substitution-code-block:: bash
+
+       conda env create -f arkouda-env.yml
+       conda activate arkouda
+
+5. Add your conda env to `Makefile.paths`, so `make` knows where to find dependencies
+
+   .. substitution-code-block:: bash
+
+       echo -e "\$(eval \$(call add-path,$CONDA_PREFIX))" >> Makefile.paths
+
+6. Build Arkouda
 
    .. substitution-code-block:: bash
 
        make
 
-5. Test Arkouda functionality
+7. Test Arkouda functionality
 
    .. substitution-code-block:: bash
 
@@ -93,9 +101,6 @@ In another terminal window, launch an interactive Python 3 session, such as ``ip
    connected to tcp://node01:5555
    
 Substituting the hostname and port appropriately (defaults are 'localhost' and 5555).
-
-When working on machines running macOS, the code block above may cause the program to hang. 
-This problem is resolved by running the command without the optional argument: ``ak.connect()``.
 
 ******************************
 Shutdown/Disconnect

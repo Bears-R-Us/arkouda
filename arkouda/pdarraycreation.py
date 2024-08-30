@@ -1,32 +1,32 @@
 import itertools
-from typing import Iterable, List, Optional, Tuple, Union, cast
+from typing import Any, Iterable, List, Optional, Tuple, Union, cast
 
 import numpy as np
 import pandas as pd
 from typeguard import typechecked
 
-from arkouda.client import generic_msg
-from arkouda.dtypes import (
+from arkouda.client import generic_msg, get_max_array_rank
+from arkouda.numpy.dtypes import (
     NUMBER_FORMAT_STRINGS,
-    BigInt,
     DTypes,
     NumericDTypes,
     SeriesDTypes,
     bigint,
 )
-from arkouda.dtypes import dtype as akdtype
-from arkouda.dtypes import float64, get_byteorder, get_server_byteorder
-from arkouda.dtypes import int64 as akint64
-from arkouda.dtypes import (
+from arkouda.numpy.dtypes import dtype as akdtype
+from arkouda.numpy.dtypes import float64, get_byteorder, get_server_byteorder
+from arkouda.numpy.dtypes import int64 as akint64
+from arkouda.numpy.dtypes import (
     int_scalars,
     isSupportedInt,
     isSupportedNumber,
     numeric_scalars,
     resolve_scalar_dtype,
 )
-from arkouda.dtypes import uint64 as akuint64
+from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.strings import Strings
+
 
 __all__ = [
     "array",
@@ -45,6 +45,8 @@ __all__ = [
     "random_strings_lognormal",
     "from_series",
     "bigint_from_uint_arrays",
+    "promote_to_common_dtype",
+    "scalar_array",
 ]
 
 
@@ -203,7 +205,6 @@ def array(
     >>> type(strings)
     <class 'arkouda.strings.Strings'>
     """
-    # Removed @typechecked to prevent cyclic dependencies with ArrayView
     from arkouda.numeric import cast as akcast
 
     # If a is already a pdarray, do nothing
@@ -231,16 +232,14 @@ def array(
         except (RuntimeError, TypeError, ValueError):
             raise TypeError("a must be a pdarray, np.ndarray, or convertible to a numpy array")
 
-    # Return multi-dimensional arrayview
-    if a.ndim != 1:
-        # TODO add order
-        if a.dtype.name in NumericDTypes:
-            flat_a = array(a.flatten(), dtype=dtype)
-            if isinstance(flat_a, pdarray):
-                # break into parts so mypy doesn't think we're calling reshape on a Strings
-                return flat_a.reshape(a.shape)
-        else:
-            raise TypeError("Must be an iterable or have a numeric DType")
+    # Return multi-dimensional pdarray if a.ndim <= get_max_array_rank()
+    # otherwise raise an error
+
+    if a.ndim != 1 and a.dtype.name not in NumericDTypes:
+        raise TypeError("Must be an iterable or have a numeric DType")
+
+    if a.ndim > get_max_array_rank():
+        raise ValueError(f"array rank {a.ndim} exceeds maximum of {get_max_array_rank()}")
 
     # Check if array of strings
     # if a.dtype == numpy.object_ need to check first element
@@ -255,8 +254,8 @@ def array(
             )
         encoded_np = np.array(encoded, dtype=np.uint8)
         rep_msg = generic_msg(
-            cmd="array1D",
-            args={"dtype": encoded_np.dtype.name, "shape": encoded_np.size, "seg_string": True},
+            cmd=f"arraySegString<{encoded_np.dtype.name}>",
+            args={"size": encoded_np.size},
             payload=_array_memview(encoded_np),
             send_binary=True,
         )
@@ -284,9 +283,11 @@ def array(
         except TypeError:
             raise RuntimeError(f"Unhandled dtype {a.dtype}")
     else:
+        from arkouda.util import _infer_shape_from_size
+        shape, ndim, full_size = _infer_shape_from_size(a.shape)
+
         # Do not allow arrays that are too large
-        size = a.size
-        if (size * a.itemsize) > maxTransferBytes:
+        if (full_size * a.itemsize) > maxTransferBytes:
             raise RuntimeError(
                 "Array exceeds allowed transfer size. Increase ak.client.maxTransferBytes to allow"
             )
@@ -296,12 +297,54 @@ def array(
         # native endian bytes
         aview = _array_memview(a)
         rep_msg = generic_msg(
-            cmd="array1D",
-            args={"dtype": a.dtype.name, "shape": size, "seg_string": False},
+            cmd=f"array<{a.dtype.name},{ndim}>",
+            args={"dtype": a.dtype.name, "shape": tuple(a.shape), "seg_string": False},
             payload=aview,
             send_binary=True,
         )
         return create_pdarray(rep_msg) if dtype is None else akcast(create_pdarray(rep_msg), dtype)
+
+
+def promote_to_common_dtype(arrays: List[pdarray]) -> Tuple[Any, List[pdarray]]:
+    """
+    Promote a list of pdarrays to a common dtype.
+
+    Parameters
+    ----------
+    arrays : List[pdarray]
+        List of pdarrays to promote
+
+    Returns
+    -------
+    dtype, List[pdarray]
+        The common dtype of the pdarrays and the list of pdarrays promoted to that dtype
+
+    Raises
+    ------
+    TypeError
+        Raised if the pdarrays are not all of the same dtype
+
+    See Also
+    --------
+    pdarray.promote_dtype
+
+    Examples
+    --------
+    >>> a = ak.arange(5)
+    >>> b = ak.ones(5, dtype=ak.float64)
+    >>> dtype, promoted = promote_to_common_dtype([a, b])
+    >>> dtype
+    dtype(float64)
+    >>> all(isinstance(p, pdarray) and p.dtype == dtype for p in promoted)
+    True
+    """
+    # find the common dtype of the input arrays
+    dt = np.common_type(*[np.empty(0, dtype=a.dtype) for a in arrays])
+
+    # cast the input arrays to the output dtype if necessary
+    arrays = [a.astype(dt) if a.dtype != dt else a for a in arrays]
+
+    return (akdtype(dt), arrays)
 
 
 def _array_memview(a) -> memoryview:
@@ -387,8 +430,8 @@ def bigint_from_uint_arrays(arrays, max_bits=-1):
 
 @typechecked
 def zeros(
-    size: Union[int_scalars, str],
-    dtype: Union[np.dtype, type, str, BigInt] = float64,
+    size: Union[int_scalars, Tuple[int_scalars, ...], str],
+    dtype: Union[np.dtype, type, str, bigint] = float64,
     max_bits: Optional[int] = None,
 ) -> pdarray:
     """
@@ -429,22 +472,26 @@ def zeros(
     >>> ak.zeros(5, dtype=ak.bool_)
     array([False, False, False, False, False])
     """
-    if not np.isscalar(size):
-        raise TypeError(f"size must be a scalar, not {size.__class__.__name__}")
     dtype = akdtype(dtype)  # normalize dtype
-    dtype_name = dtype.name if isinstance(dtype, BigInt) else cast(np.dtype, dtype).name
+    dtype_name = dtype.name if isinstance(dtype, bigint) else cast(np.dtype, dtype).name
     # check dtype for error
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-    repMsg = generic_msg(cmd="create1D", args={"dtype": dtype_name, "shape": size})
+    from arkouda.util import _infer_shape_from_size
+    shape, ndim, full_size = _infer_shape_from_size(size)
+
+    if ndim > get_max_array_rank():
+        raise ValueError(f"array rank {ndim} exceeds maximum of {get_max_array_rank()}")
+
+    repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape})
 
     return create_pdarray(repMsg, max_bits=max_bits)
 
 
 @typechecked
 def ones(
-    size: Union[int_scalars, str],
-    dtype: Union[np.dtype, type, str, BigInt] = float64,
+    size: Union[int_scalars, Tuple[int_scalars, ...], str],
+    dtype: Union[np.dtype, type, str, bigint] = float64,
     max_bits: Optional[int] = None,
 ) -> pdarray:
     """
@@ -485,14 +532,18 @@ def ones(
     >>> ak.ones(5, dtype=ak.bool_)
     array([True, True, True, True, True])
     """
-    if not np.isscalar(size):
-        raise TypeError(f"size must be a scalar, not {size.__class__.__name__}")
     dtype = akdtype(dtype)  # normalize dtype
-    dtype_name = dtype.name if isinstance(dtype, BigInt) else cast(np.dtype, dtype).name
+    dtype_name = dtype.name if isinstance(dtype, bigint) else cast(np.dtype, dtype).name
     # check dtype for error
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-    repMsg = generic_msg(cmd="create1D", args={"dtype": dtype_name, "shape": size})
+    from arkouda.util import _infer_shape_from_size
+    shape, ndim, full_size = _infer_shape_from_size(size)
+
+    if ndim > get_max_array_rank():
+        raise ValueError(f"array rank {ndim} exceeds maximum of {get_max_array_rank()}")
+
+    repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape})
     a = create_pdarray(repMsg)
     a.fill(1)
     if max_bits:
@@ -502,9 +553,9 @@ def ones(
 
 @typechecked
 def full(
-    size: Union[int_scalars, str],
+    size: Union[int_scalars, Tuple[int_scalars, ...], str],
     fill_value: Union[numeric_scalars, str],
-    dtype: Union[np.dtype, type, str, BigInt] = float64,
+    dtype: Union[np.dtype, type, str, bigint] = float64,
     max_bits: Optional[int] = None,
 ) -> Union[pdarray, Strings]:
     """
@@ -547,26 +598,34 @@ def full(
     >>> ak.full(5, 5, dtype=ak.bool_)
     array([True, True, True, True, True])
     """
-    if not np.isscalar(size):
-        raise TypeError(f"size must be a scalar, not {size.__class__.__name__}")
     if isinstance(fill_value, str):
         return _full_string(size, fill_value)
 
     dtype = akdtype(dtype)  # normalize dtype
-    dtype_name = dtype.name if isinstance(dtype, BigInt) else cast(np.dtype, dtype).name
+    dtype_name = dtype.name if isinstance(dtype, bigint) else cast(np.dtype, dtype).name
     # check dtype for error
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-    repMsg = generic_msg(cmd="create1D", args={"dtype": dtype_name, "shape": size})
+    from arkouda.util import _infer_shape_from_size
+    shape, ndim, full_size = _infer_shape_from_size(size)
+
+    if ndim > get_max_array_rank():
+        raise ValueError(f"array rank {ndim} exceeds maximum of {get_max_array_rank()}")
+
+    repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape})
+
     a = create_pdarray(repMsg)
     a.fill(fill_value)
+
     if max_bits:
         a.max_bits = max_bits
     return a
 
 
 @typechecked
-def scalar_array(value: numeric_scalars):
+def scalar_array(
+    value: numeric_scalars, dtype: Optional[Union[np.dtype, type, str, bigint]] = None
+) -> pdarray:
     """
     Create a pdarray from a single scalar value.
 
@@ -581,13 +640,15 @@ def scalar_array(value: numeric_scalars):
         pdarray with a single element
     """
 
+    if dtype is not None:
+        _dtype = akdtype(dtype)
+    else:
+        _dtype = resolve_scalar_dtype(value)
+
     return create_pdarray(
         generic_msg(
-            cmd="create0D",
-            args={
-                "dtype": resolve_scalar_dtype(value),
-                "value": value,
-            },
+            cmd=f"createScalarArray<{_dtype}>",
+            args={"value": value},
         )
     )
 
@@ -655,7 +716,7 @@ def zeros_like(pda: pdarray) -> pdarray:
     >>> ak.zeros_like(zeros)
     array([False, False, False, False, False])
     """
-    return zeros(pda.size, pda.dtype, pda.max_bits)
+    return zeros(tuple(pda.shape), pda.dtype, pda.max_bits)
 
 
 @typechecked
@@ -702,11 +763,11 @@ def ones_like(pda: pdarray) -> pdarray:
     >>> ak.ones_like(ones)
     array([True, True, True, True, True])
     """
-    return ones(pda.size, pda.dtype, pda.max_bits)
+    return ones(tuple(pda.shape), pda.dtype, pda.max_bits)
 
 
 @typechecked
-def full_like(pda: pdarray, fill_value: numeric_scalars) -> pdarray:
+def full_like(pda: pdarray, fill_value: numeric_scalars) -> Union[pdarray, Strings]:
     """
     Create a pdarray filled with fill_value of the same size and dtype as an existing
     pdarray.
@@ -751,7 +812,7 @@ def full_like(pda: pdarray, fill_value: numeric_scalars) -> pdarray:
     >>> ak.full_like(full)
     array([True, True, True, True, True])
     """
-    return full(pda.size, fill_value, pda.dtype, pda.max_bits)
+    return full(tuple(pda.shape), fill_value, pda.dtype, pda.max_bits)
 
 
 def arange(*args, **kwargs) -> pdarray:

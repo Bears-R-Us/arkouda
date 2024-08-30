@@ -20,6 +20,7 @@ module GenSymIO {
     use CTypes;
     use CommAggregation;
     use IOUtils;
+    use BigInteger;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -30,74 +31,72 @@ module GenSymIO {
      * Creates a pdarray server-side and returns the SymTab name used to
      * retrieve the pdarray from the SymTab.
     */
-    @arkouda.registerND
-    proc arrayMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-        const dtype = str2dtype(msgArgs.getValueOf("dtype")),
-              shape = msgArgs.get("shape").getTuple(nd),
-              asSegStr = msgArgs.get("seg_string").getBoolValue(),
-              rname = st.nextName();
-
-        var size = 1;
-        for s in shape do size *= s;
-        overMemLimit(2*size*dtypeSize(dtype));
+    @arkouda.instantiateAndRegister
+    proc array(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
+        where array_dtype != bigint
+    {
+        const shape = msgArgs["shape"].toScalarTuple(int, array_nd);
 
         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                       "dtype: %? shape: %? size: %i".format(dtype,shape,size));
+                       "dtype: %? shape: %?".format(array_dtype:string,shape));
 
-        proc bytesToSymEntry(type t) throws {
-            var entry = createSymEntry((...shape), t);
-            var localA = makeArrayFromPtr(msgArgs.payload.c_str():c_ptr(void):c_ptr(t), num_elts=size:uint);
-            if nd == 1 {
-                entry.a = localA;
-            } else {
-                forall (i, a) in zip(localA.domain, localA) with (var agg = newDstAggregator(t)) do
-                    agg.copy(entry.a[entry.a.domain.orderToIndex(i)], a);
-            }
-            st.addEntry(rname, entry);
+        return st.insert(new shared SymEntry(makeArrayFromBytes(msgArgs.payload, shape, array_dtype)));
+    }
+
+    proc array(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
+        where array_dtype == bigint
+    {
+        return MsgTuple.error("Array creation from binary payload is not supported for bigint arrays");
+    }
+
+    proc makeArrayFromBytes(ref payload: bytes, shape: ?N*int, type t): [] t throws {
+        var size = 1;
+        for s in shape do size *= s;
+        overMemLimit(2*size*typeSize(t));
+
+        var ret = makeDistArray((...shape), t),
+            localA = makeArrayFromPtr(payload.c_str():c_ptr(void):c_ptr(t), num_elts=size:uint);
+        if N == 1 {
+            ret = localA;
+        } else {
+            forall (i, a) in zip(localA.domain, localA) with (var agg = newDstAggregator(t)) do
+                agg.copy(ret[ret.domain.orderToIndex(i)], a);
         }
 
-        if dtype == DType.Int64 {
-            bytesToSymEntry(int);
-        } else if dtype == DType.UInt64 {
-            bytesToSymEntry(uint);
-        } else if dtype == DType.Float64 {
-            bytesToSymEntry(real);
-        } else if dtype == DType.Bool {
-            bytesToSymEntry(bool);
-        } else if dtype == DType.UInt8 {
-            bytesToSymEntry(uint(8));
-        } else {
-            const msg = "Unhandled data type %s".format(msgArgs.getValueOf("dtype"));
+        return ret;
+    }
+
+    @arkouda.instantiateAndRegister()
+    proc arraySegString(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype): MsgTuple throws {
+        const size = msgArgs["size"].toScalar(int),
+              rname = st.nextName();
+
+        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                       "dtype: %? size: %?".format(array_dtype:string,size));
+
+        const a = makeArrayFromBytes(msgArgs.payload, (size,), array_dtype);
+        st.addEntry(rname, createSymEntry(a));
+        
+        try {
+            st.checkTable(rname, "arrayMsg");
+            var g = st.lookup(rname);
+            if g.isAssignableTo(SymbolEntryType.TypedArraySymEntry){
+                var values = toSymEntry( (g:GenSymEntry), uint(8) );
+                var offsets = segmentedCalcOffsets(values.a, values.a.domain);
+                var oname = st.nextName();
+                var offsetsEntry = createSymEntry(offsets);
+                st.addEntry(oname, offsetsEntry);
+                const msg = "created " + st.attrib(oname) + "+created " + st.attrib(rname);
+                gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),msg);
+                return new MsgTuple(msg, MsgType.NORMAL);
+            } else {
+                throw new Error("Unsupported Type %s".format(g.entryType));
+            }
+        } catch e: Error {
+            const msg = "Error creating offsets for SegString";
             gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
             return new MsgTuple(msg, MsgType.ERROR);
         }
-
-        if asSegStr {
-            try {
-                st.checkTable(rname, "arrayMsg");
-                var g = st.lookup(rname);
-                if g.isAssignableTo(SymbolEntryType.TypedArraySymEntry){
-                    var values = toSymEntry( (g:GenSymEntry), uint(8) );
-                    var offsets = segmentedCalcOffsets(values.a, values.a.domain);
-                    var oname = st.nextName();
-                    var offsetsEntry = createSymEntry(offsets);
-                    st.addEntry(oname, offsetsEntry);
-                    const msg = "created " + st.attrib(oname) + "+created " + st.attrib(rname);
-                    gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),msg);
-                    return new MsgTuple(msg, MsgType.NORMAL);
-                } else {
-                    throw new Error("Unsupported Type %s".format(g.entryType));
-                }
-            } catch e: Error {
-                const msg = "Error creating offsets for SegString";
-                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
-                return new MsgTuple(msg, MsgType.ERROR);
-            }
-        }
-
-        const msg = "created " + st.attrib(rname);
-        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),msg);
-        return new MsgTuple(msg, MsgType.NORMAL);
     }
 
     /**
@@ -119,49 +118,30 @@ module GenSymIO {
      * Outputs the pdarray as a Numpy ndarray in the form of a 
      * Chapel Bytes object
      */
-    @arkouda.registerND
-    proc tondarrayMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-        var arrayBytes: bytes;
-        var abstractEntry = st.lookup(msgArgs.getValueOf("array"));
-        if !abstractEntry.isAssignableTo(SymbolEntryType.TypedArraySymEntry) {
-            var errorMsg = "Error: Unhandled SymbolEntryType %s".format(abstractEntry.entryType);
-            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return MsgTuple.error(errorMsg);
-        }
-        var entry:borrowed GenSymEntry = abstractEntry: borrowed GenSymEntry;
+    @arkouda.instantiateAndRegister
+    proc tondarray(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
+        where array_dtype != bigint
+    {
+        const array = st[msgArgs["array"]]: borrowed SymEntry(array_dtype, array_nd);
+        
+        overMemLimit(2 * array.size * typeSize(array_dtype));
 
-        overMemLimit(2 * entry.getSizeEstimate());
-
-        proc distArrToBytes(A: [?D] ?eltType) {
-            var ptr = allocate(eltType, D.size);
-            var localA = makeArrayFromPtr(ptr, D.size:uint);
-            if nd == 1 {
-                localA = A;
-            } else {
-                forall (i, a) in zip(localA.domain, localA) with (var agg = newSrcAggregator(eltType)) do
-                    agg.copy(localA[i], A[D.orderToIndex(i)]);
-            }
-            const size = D.size*c_sizeof(eltType):int;
-            return bytes.createAdoptingBuffer(ptr:c_ptr(uint(8)), size, size);
-        }
-
-        if entry.dtype == DType.Int64 {
-            arrayBytes = distArrToBytes(toSymEntry(entry, int, nd).a);
-        } else if entry.dtype == DType.UInt64 {
-            arrayBytes = distArrToBytes(toSymEntry(entry, uint, nd).a);
-        } else if entry.dtype == DType.Float64 {
-            arrayBytes = distArrToBytes(toSymEntry(entry, real, nd).a);
-        } else if entry.dtype == DType.Bool {
-            arrayBytes = distArrToBytes(toSymEntry(entry, bool, nd).a);
-        } else if entry.dtype == DType.UInt8 {
-            arrayBytes = distArrToBytes(toSymEntry(entry, uint(8), nd).a);
+        var ptr = allocate(array_dtype, array.size);
+        var localA = makeArrayFromPtr(ptr, array.size:uint);
+        if array_nd == 1 {
+            localA = array.a;
         } else {
-            const errorMsg = "Error: Unhandled dtype %s".format(entry.dtype);
-            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return MsgTuple.error(errorMsg);
+            forall (i, a) in zip(localA.domain, localA) with (var agg = newSrcAggregator(array_dtype)) do
+                agg.copy(localA[i], array.a[array.a.domain.orderToIndex(i)]);
         }
+        const size = array.size*c_sizeof(array_dtype):int;
+        return MsgTuple.payload(bytes.createAdoptingBuffer(ptr:c_ptr(uint(8)), size, size));
+    }
 
-       return MsgTuple.payload(arrayBytes);
+    proc tondarray(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
+        where array_dtype == bigint
+    {
+        return MsgTuple.error("cannot create ndarray from bigint array");
     }
 
     /*

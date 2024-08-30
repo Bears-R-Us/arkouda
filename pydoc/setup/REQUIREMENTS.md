@@ -4,11 +4,11 @@
 
 The installation instructions for the dependencies listed here may vary depending on your preferred operating system. Refer to the [Installation Section](install_menu.rst) for more information.
 
-- ``Chapel 1.30.0 or later``
+- ``Chapel 2.1.0 or later``
 - `cmake>=3.13.4`
 - `zeromq>=4.2.5`
 - `hdf5`
-- `python>=3.8`
+- `python>=3.9`
 - `iconv`
 - `idn2`
 - `Arrow`
@@ -17,7 +17,7 @@ The installation instructions for the dependencies listed here may vary dependin
 
 The following python packages are required by the Arkouda client package.
 
-- `python>=3.8,<3.12.4`
+- `python>=3.9,<3.12.4`
 - `numpy>=1.24.1,<2.0`
 - `pandas>=1.4.0,!=2.2.0`
 - `pyzmq>=20.0.0`
@@ -27,29 +27,42 @@ The following python packages are required by the Arkouda client package.
 - `versioneer`
 - `matplotlib>=3.3.2`
 - `h5py>=3.7.0`
-- `hdf5==1.12.2`
+- `hdf5>=1.12.2`
 - `pip`
 - `types-tabulate`
-- `tables>=3.7.0`
+- `pytables>=3.8.0`
 - `pyarrow`
+- `libiconv`
+- `libidn2`
+- `jupyter`
 - `scipy<=1.13.1`
+- `pytest>=6.0`
+- `pytest-env`
 
 ### Developer Specific
 
 The dependencies listed here are only required if you will be doing development for Arkouda.
 
 - `pexpect`
-- `pytest>=6.0`
-- `pytest-env`
 - `Sphinx>=5.1.1`
 - `sphinx-argparse`
 - `sphinx-autoapi`
+- `sphinx-design`
+- `sphinx-autodoc-typehints`
+- `sphinx-autopackagesummary`
 - `furo`
 - `myst-parser`
 - `linkify-it-py`
 - `typed-ast`
-- `mypy>=0.931,<0.990`
 - `flake8`
+- `mypy>=0.931`
+- `black`
+- `isort`
+- `pytest-json-report`
+- `pytest-benchmark`
+- `mathjax`
+- `pandas-stubs`
+- `types-python-dateutil`
 
 ### Installing/Updating Python Dependencies
 
@@ -62,7 +75,8 @@ Arkouda provides 2 files for installing dependencies, one for users and one for 
 - Users Environment YAML: `arkouda-env.yml`
 - Developer Environment YAML: `arkouda-env-dev.yml`
 
-**When running the commands below, replace `<env_name>` with the name you want to give/have given your conda environment. Replace `<yaml_file>` with the file appropriate to your interaction with Arkouda.**
+**When running the commands below, replace `<env_name>` with the name you want to give/have given your conda environment.
+Replace `<yaml_file>` with the file appropriate to your interaction with Arkouda.**
 
 ```commandline
 # Creating a new environment with dependencies installed
@@ -75,7 +89,8 @@ conda env update -n <env_name> -f <yaml_file> --prune
 
 #### Using Pip
 
-When you `pip install Arkouda`, dependencies should be installed as well. However, dependencies may change during the life-cycle of Arkouda, so here we detail how to update dependencies when using `pip` for package management.
+When you `pip install Arkouda`, dependencies should be installed as well. However, dependencies
+may change during the life-cycle of Arkouda, so here we detail how to update dependencies when using `pip` for package management.
 
 ```commandline
 # navigate to arkouda directory

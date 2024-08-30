@@ -1,21 +1,21 @@
-import numpy as np
+import arkouda as ak
+from arkouda import dtype as akdtype
 
 # Note: we use dtype objects instead of dtype classes. The spec does not
 # require any behavior on dtypes other than equality.
-int8 = np.dtype("int8")
-int16 = np.dtype("int16")
-int32 = np.dtype("int32")
-int64 = np.dtype("int64")
-uint8 = np.dtype("uint8")
-uint16 = np.dtype("uint16")
-uint32 = np.dtype("uint32")
-uint64 = np.dtype("uint64")
-float32 = np.dtype("float32")
-float64 = np.dtype("float64")
-complex64 = np.dtype("complex64")
-complex128 = np.dtype("complex128")
-# Note: This name is changed
-bool = np.dtype("bool")
+int8 = ak.int8
+int16 = ak.int16
+int32 = ak.int32
+int64 = ak.int64
+uint8 = ak.uint8
+uint16 = ak.uint16
+uint32 = ak.uint32
+uint64 = ak.uint64
+float32 = ak.float32
+float64 = ak.float64
+complex64 = ak.complex64
+complex128 = ak.complex128
+bool_ = ak.bool_
 
 _all_dtypes = (
     int8,
@@ -98,83 +98,83 @@ _dtype_categories = {
 # allowed to promote to floating-point dtypes, but only in array operators
 # (see Array._promote_scalar) method in _array_object.py.
 _promotion_table = {
-    (int8, int8): int8,
-    (int8, int16): int16,
-    (int8, int32): int32,
-    (int8, int64): int64,
-    (int16, int8): int16,
-    (int16, int16): int16,
-    (int16, int32): int32,
-    (int16, int64): int64,
-    (int32, int8): int32,
-    (int32, int16): int32,
-    (int32, int32): int32,
-    (int32, int64): int64,
-    (int64, int8): int64,
-    (int64, int16): int64,
-    (int64, int32): int64,
-    (int64, int64): int64,
-    (uint8, uint8): uint8,
-    (uint8, uint16): uint16,
-    (uint8, uint32): uint32,
-    (uint8, uint64): uint64,
-    (uint16, uint8): uint16,
-    (uint16, uint16): uint16,
-    (uint16, uint32): uint32,
-    (uint16, uint64): uint64,
-    (uint32, uint8): uint32,
-    (uint32, uint16): uint32,
-    (uint32, uint32): uint32,
-    (uint32, uint64): uint64,
-    (uint64, uint8): uint64,
-    (uint64, uint16): uint64,
-    (uint64, uint32): uint64,
-    (uint64, uint64): uint64,
-    (int8, uint8): int16,
-    (int8, uint16): int32,
-    (int8, uint32): int64,
-    (int16, uint8): int16,
-    (int16, uint16): int32,
-    (int16, uint32): int64,
-    (int32, uint8): int32,
-    (int32, uint16): int32,
-    (int32, uint32): int64,
-    (int64, uint8): int64,
-    (int64, uint16): int64,
-    (int64, uint32): int64,
-    (uint8, int8): int16,
-    (uint16, int8): int32,
-    (uint32, int8): int64,
-    (uint8, int16): int16,
-    (uint16, int16): int32,
-    (uint32, int16): int64,
-    (uint8, int32): int32,
-    (uint16, int32): int32,
-    (uint32, int32): int64,
-    (uint8, int64): int64,
-    (uint16, int64): int64,
-    (uint32, int64): int64,
-    (float32, float32): float32,
-    (float32, float64): float64,
-    (float64, float32): float64,
-    (float64, float64): float64,
-    (complex64, complex64): complex64,
-    (complex64, complex128): complex128,
-    (complex128, complex64): complex128,
-    (complex128, complex128): complex128,
-    (float32, complex64): complex64,
-    (float32, complex128): complex128,
-    (float64, complex64): complex128,
-    (float64, complex128): complex128,
-    (complex64, float32): complex64,
-    (complex64, float64): complex128,
-    (complex128, float32): complex128,
-    (complex128, float64): complex128,
-    (bool, bool): bool,
+    (akdtype(int8), akdtype(int8)): int8,
+    (akdtype(int8), akdtype(int16)): int16,
+    (akdtype(int8), akdtype(int32)): int32,
+    (akdtype(int8), akdtype(int64)): int64,
+    (akdtype(int16), akdtype(int8)): int16,
+    (akdtype(int16), akdtype(int16)): int16,
+    (akdtype(int16), akdtype(int32)): int32,
+    (akdtype(int16), akdtype(int64)): int64,
+    (akdtype(int32), akdtype(int8)): int32,
+    (akdtype(int32), akdtype(int16)): int32,
+    (akdtype(int32), akdtype(int32)): int32,
+    (akdtype(int32), akdtype(int64)): int64,
+    (akdtype(int64), akdtype(int8)): int64,
+    (akdtype(int64), akdtype(int16)): int64,
+    (akdtype(int64), akdtype(int32)): int64,
+    (akdtype(int64), akdtype(int64)): int64,
+    (akdtype(uint8), akdtype(uint8)): uint8,
+    (akdtype(uint8), akdtype(uint16)): uint16,
+    (akdtype(uint8), akdtype(uint32)): uint32,
+    (akdtype(uint8), akdtype(uint64)): uint64,
+    (akdtype(uint16), akdtype(uint8)): uint16,
+    (akdtype(uint16), akdtype(uint16)): uint16,
+    (akdtype(uint16), akdtype(uint32)): uint32,
+    (akdtype(uint16), akdtype(uint64)): uint64,
+    (akdtype(uint32), akdtype(uint8)): uint32,
+    (akdtype(uint32), akdtype(uint16)): uint32,
+    (akdtype(uint32), akdtype(uint32)): uint32,
+    (akdtype(uint32), akdtype(uint64)): uint64,
+    (akdtype(uint64), akdtype(uint8)): uint64,
+    (akdtype(uint64), akdtype(uint16)): uint64,
+    (akdtype(uint64), akdtype(uint32)): uint64,
+    (akdtype(uint64), akdtype(uint64)): uint64,
+    (akdtype(int8), akdtype(uint8)): int16,
+    (akdtype(int8), akdtype(uint16)): int32,
+    (akdtype(int8), akdtype(uint32)): int64,
+    (akdtype(int16), akdtype(uint8)): int16,
+    (akdtype(int16), akdtype(uint16)): int32,
+    (akdtype(int16), akdtype(uint32)): int64,
+    (akdtype(int32), akdtype(uint8)): int32,
+    (akdtype(int32), akdtype(uint16)): int32,
+    (akdtype(int32), akdtype(uint32)): int64,
+    (akdtype(int64), akdtype(uint8)): int64,
+    (akdtype(int64), akdtype(uint16)): int64,
+    (akdtype(int64), akdtype(uint32)): int64,
+    (akdtype(uint8), akdtype(int8)): int16,
+    (akdtype(uint16), akdtype(int8)): int32,
+    (akdtype(uint32), akdtype(int8)): int64,
+    (akdtype(uint8), akdtype(int16)): int16,
+    (akdtype(uint16), akdtype(int16)): int32,
+    (akdtype(uint32), akdtype(int16)): int64,
+    (akdtype(uint8), akdtype(int32)): int32,
+    (akdtype(uint16), akdtype(int32)): int32,
+    (akdtype(uint32), akdtype(int32)): int64,
+    (akdtype(uint8), akdtype(int64)): int64,
+    (akdtype(uint16), akdtype(int64)): int64,
+    (akdtype(uint32), akdtype(int64)): int64,
+    (akdtype(float32), akdtype(float32)): float32,
+    (akdtype(float32), akdtype(float64)): float64,
+    (akdtype(float64), akdtype(float32)): float64,
+    (akdtype(float64), akdtype(float64)): float64,
+    (akdtype(complex64), akdtype(complex64)): complex64,
+    (akdtype(complex64), akdtype(complex128)): complex128,
+    (akdtype(complex128), akdtype(complex64)): complex128,
+    (akdtype(complex128), akdtype(complex128)): complex128,
+    (akdtype(float32), akdtype(complex64)): complex64,
+    (akdtype(float32), akdtype(complex128)): complex128,
+    (akdtype(float64), akdtype(complex64)): complex128,
+    (akdtype(float64), akdtype(complex128)): complex128,
+    (akdtype(complex64), akdtype(float32)): complex64,
+    (akdtype(complex64), akdtype(float64)): complex128,
+    (akdtype(complex128), akdtype(float32)): complex128,
+    (akdtype(complex128), akdtype(float64)): complex128,
+    (akdtype(bool_), akdtype(bool_)): bool_,
 }
 
 
 def _result_type(type1, type2):
-    if (type1, type2) in _promotion_table:
-        return _promotion_table[type1, type2]
+    if (akdtype(type1), akdtype(type2)) in _promotion_table:
+        return _promotion_table[akdtype(type1), akdtype(type2)]
     raise TypeError(f"{type1} and {type2} cannot be type promoted together")

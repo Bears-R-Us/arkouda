@@ -1,29 +1,22 @@
 import platform
 from os.path import expanduser
 
-from base_test import ArkoudaTest
-
 from arkouda import security
 
-"""
-Tests Arkouda client-side security functionality
-"""
 
+class TestSecurity:
+    def test_generate_token(self):
+        assert 32 == len(security.generate_token(32))
+        assert 16 == len(security.generate_token(16))
 
-class SecurityTest(ArkoudaTest):
-    def testGenerateToken(self):
-        self.assertEqual(32, len(security.generate_token(32)))
-        self.assertEqual(16, len(security.generate_token(16)))
+    def test_get_home(self):
+        assert expanduser("~") == security.get_home_directory()
 
-    def testGetHome(self):
-        self.assertEqual(expanduser("~"), security.get_home_directory())
-
-    def testGetUsername(self):
-        self.assertTrue(
-            security.get_username()
-            in security.username_tokenizer[platform.system()](security.get_home_directory())
+    def test_get_username(self):
+        assert security.get_username() in security.username_tokenizer[platform.system()](
+            security.get_home_directory()
         )
 
-    def testGetArkoudaDirectory(self):
+    def test_get_arkouda_directory(self):
         ak_directory = security.get_arkouda_client_directory()
-        self.assertEqual("{}/.arkouda".format(security.get_home_directory()), str(ak_directory))
+        assert f"{security.get_home_directory()}/.arkouda" == str(ak_directory)

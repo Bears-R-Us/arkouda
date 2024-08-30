@@ -1,8 +1,8 @@
 module RandUtil {
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
+    use Random;
     use RandMsg;
-    use ArkoudaRandomCompat;
     use CommAggregation;
 
     const minPerStream = 256; // minimum number of elements per random stream
@@ -36,11 +36,19 @@ module RandUtil {
     }
 
     enum GenerationFunction {
-      PoissonGenerator,
       ExponentialGenerator,
+      LogisticGenerator,
+      NormalGenerator,
+      PoissonGenerator,
     }
 
-    proc uniformStreamPerElem(ref randArr: [?D] ?t, ref rng, param function: GenerationFunction, hasSeed: bool, const lam: scalarOrArray(?) = new scalarOrArray()) throws {
+    // TODO how to update this to handle randArr being a multi-dim array??
+    // I thought to just do the same randArr[randArr.domain.orderToIndex(i)] trick
+    // but im not sure how randArr.localSubdomain() will differ with multi-dim
+    proc uniformStreamPerElem(ref randArr: [?D] ?t, ref rng, param function: GenerationFunction, hasSeed: bool,
+                                                                const lam: scalarOrArray(?) = new scalarOrArray(),
+                                                                const mu: scalarOrArray(?) = new scalarOrArray(),
+                                                                const scale: scalarOrArray(?) = new scalarOrArray()) throws {
         if hasSeed {
             // use a fixed number of elements per stream instead of relying on number of locales or numTasksPerLoc because these
             // can vary from run to run / machine to mahchine. And it's important for the same seed to give the same results
@@ -72,11 +80,17 @@ module RandUtil {
                             var agg = newDstAggregator(t);
                             for i in startIdx..stopIdx {
                                 select function {
-                                    when GenerationFunction.PoissonGenerator {
-                                        agg.copy(randArr[i], poissonGenerator(lam[i], realRS));
-                                    }
                                     when GenerationFunction.ExponentialGenerator {
                                         agg.copy(randArr[i], standardExponentialZig(realRS, uintRS));
+                                    }
+                                    when GenerationFunction.LogisticGenerator {
+                                        agg.copy(randArr[i], logisticGenerator(mu[i], scale[i], realRS));
+                                    }
+                                    when GenerationFunction.NormalGenerator {
+                                        agg.copy(randArr[i], standardNormZig(realRS, uintRS));
+                                    }
+                                    when GenerationFunction.PoissonGenerator {
+                                        agg.copy(randArr[i], poissonGenerator(lam[i], realRS));
                                     }
                                     otherwise {
                                         compilerError("Unrecognized generation function");
@@ -91,11 +105,17 @@ module RandUtil {
                         else {
                             for i in startIdx..stopIdx {
                                 select function {
-                                    when GenerationFunction.PoissonGenerator {
-                                        randArr[i] = poissonGenerator(lam[i], realRS);
-                                    }
                                     when GenerationFunction.ExponentialGenerator {
                                         randArr[i] = standardExponentialZig(realRS, uintRS);
+                                    }
+                                    when GenerationFunction.LogisticGenerator {
+                                        randArr[i] = logisticGenerator(mu[i], scale[i], realRS);
+                                    }
+                                    when GenerationFunction.NormalGenerator {
+                                        randArr[i] = standardNormZig(realRS, uintRS);
+                                    }
+                                    when GenerationFunction.PoissonGenerator {
+                                        randArr[i] = poissonGenerator(lam[i], realRS);
                                     }
                                     otherwise {
                                         compilerError("Unrecognized generation function");
@@ -111,11 +131,17 @@ module RandUtil {
             forall (rv, i) in zip(randArr, randArr.domain) with (var realRS = new randomStream(real),
                                                                  var uintRS = new randomStream(uint)) {
                 select function {
-                    when GenerationFunction.PoissonGenerator {
-                        rv = poissonGenerator(lam[i], realRS);
-                    }
                     when GenerationFunction.ExponentialGenerator {
                         rv = standardExponentialZig(realRS, uintRS);
+                    }
+                    when GenerationFunction.LogisticGenerator {
+                        rv = logisticGenerator(mu[i], scale[i], realRS);
+                    }
+                    when GenerationFunction.NormalGenerator {
+                        rv = standardNormZig(realRS, uintRS);
+                    }
+                    when GenerationFunction.PoissonGenerator {
+                        rv = poissonGenerator(lam[i], realRS);
                     }
                     otherwise {
                         compilerError("Unrecognized generation function");

@@ -212,13 +212,13 @@ module BinOp
             ref ea = e.a;
             ref la = l.a;
             ref ra = r.a;
-            [(ei,li,ri) in zip(ea,la,ra)] if ri < 64 then ei = li << ri;
+            [(ei,li,ri) in zip(ea,la,ra)] if (0 <= ri && ri < 64) then ei = li << ri;
           }                    
           when ">>" {
             ref ea = e.a;
             ref la = l.a;
             ref ra = r.a;
-            [(ei,li,ri) in zip(ea,la,ra)] if ri < 64 then ei = li >> ri;
+            [(ei,li,ri) in zip(ea,la,ra)] if (0 <= ri && ri < 64) then ei = li >> ri;
           }
           when "<<<" {
             e.a = rotl(l.a, r.a);
@@ -274,13 +274,13 @@ module BinOp
           ref ea = e.a;
           ref la = l.a;
           ref ra = r.a;
-          [(ei,li,ri) in zip(ea,la,ra)] if ri < 64 then ei = li >> ri;
+          [(ei,li,ri) in zip(ea,la,ra)] if (0 <= ri && ri < 64) then ei = li >> ri;
         }
         when "<<" {
           ref ea = e.a;
           ref la = l.a;
           ref ra = r.a;
-          [(ei,li,ri) in zip(ea,la,ra)] if ri < 64 then ei = li << ri;
+          [(ei,li,ri) in zip(ea,la,ra)] if (0 <= ri && ri < 64) then ei = li << ri;
         }
         when ">>>" {
           e.a = rotr(l.a, r.a);
@@ -415,10 +415,16 @@ module BinOp
             e.a = l.a:int * r.a:int;
           }
           when ">>" {
-            e.a = l.a:int >> r.a:int;
+            ref ea = e.a;
+            ref la = l.a;
+            ref ra = r.a;
+            [(ei,li,ri) in zip(ea,la,ra)] if (0 <= ri && ri < 64) then ei = li:int >> ri:int;
           }
           when "<<" {
-            e.a = l.a:int << r.a:int;
+            ref ea = e.a;
+            ref la = l.a;
+            ref ra = r.a;
+            [(ei,li,ri) in zip(ea,la,ra)] if (0 <= ri && ri < 64) then ei = li:int << ri:int;
           }
           otherwise {
             var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
@@ -621,12 +627,12 @@ module BinOp
             [(ei,li) in zip(ea,la)] ei = if val != 0 then li%val else 0;
           }
           when "<<" {
-            if val < 64 {
+            if 0 <= val && val < 64 {
               e.a = l.a << val;
             }
-          }                    
+          }
           when ">>" {
-            if val < 64 {
+            if 0 <= val && val < 64 {
               e.a = l.a >> val;
             }
           }
@@ -675,12 +681,12 @@ module BinOp
             (e.etype == uint && val.type == int) {
       select op {
         when ">>" {
-          if val < 64 {
+          if 0 <= val && val < 64 {
             e.a = l.a >> val:l.etype;
           }
         }
         when "<<" {
-          if val < 64 {
+          if 0 <= val && val < 64 {
             e.a = l.a << val:l.etype;
           }
         }
@@ -844,10 +850,14 @@ module BinOp
             e.a = l.a:int * val:int;
           }
           when ">>" {
-            e.a = l.a:int >> val:int;
+            if 0 <= val:int && val:int < 64 {
+              e.a = l.a:int >> val:int;
+            }
           }
           when "<<" {
-            e.a = l.a:int << val:int;
+            if 0 <= val:int && val:int < 64 {
+              e.a = l.a:int << val:int;
+            }
           }
           otherwise {
             var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
@@ -1017,12 +1027,12 @@ module BinOp
           when "<<" {
             ref ea = e.a;
             ref ra = r.a;
-            [(ei,ri) in zip(ea,ra)] if ri < 64 then ei = val << ri;
+            [(ei,ri) in zip(ea,ra)] if (0 <= ri && ri < 64) then ei = val << ri;
           }                    
           when ">>" {
             ref ea = e.a;
             ref ra = r.a;
-            [(ei,ri) in zip(ea,ra)] if ri < 64 then ei = val >> ri;
+            [(ei,ri) in zip(ea,ra)] if (0 <= ri && ri < 64) then ei = val >> ri;
           }
           when "<<<" {
             e.a = rotl(val, r.a);
@@ -1219,10 +1229,14 @@ module BinOp
             e.a = val:int * r.a:int;
           }
           when ">>" {
-            e.a = val:int >> r.a:int;
+            ref ea = e.a;
+            ref ra = r.a;
+            [(ei,ri) in zip(ea,ra)] if (0 <= ri && ri < 64) then ei = val:int >> ri:int;
           }
           when "<<" {
-            e.a = val:int << r.a:int;
+            ref ea = e.a;
+            ref ra = r.a;
+            [(ei,ri) in zip(ea,ra)] if (0 <= ri && ri < 64) then ei = val:int << ri:int;
           }
           otherwise {
             var errorMsg = notImplementedError(pn,dtype,op,r.dtype);

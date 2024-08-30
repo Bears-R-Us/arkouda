@@ -71,9 +71,9 @@ def clip(a: Array, a_min, a_max, /) -> Array:
     return Array._new(
         create_pdarray(
             generic_msg(
-                cmd=f"clip{a.ndim}D",
+                cmd=f"clip<{a.dtype},{a.ndim}>",
                 args={
-                    "name": a._array,
+                    "x": a._array,
                     "min": a_min,
                     "max": a_max,
                 },
@@ -111,9 +111,9 @@ def diff(a: Array, /, n: int = 1, axis: int = -1, prepend=None, append=None) -> 
     return Array._new(
         create_pdarray(
             generic_msg(
-                cmd=f"diff{a.ndim}D",
+                cmd=f"diff<{a.dtype},{a.ndim}>",
                 args={
-                    "name": a_._array,
+                    "x": a_._array,
                     "n": n,
                     "axis": axis,
                 },
@@ -125,8 +125,8 @@ def diff(a: Array, /, n: int = 1, axis: int = -1, prepend=None, append=None) -> 
 def pad(
     array: Array,
     pad_width,  # Union[int, Tuple[int, int], Tuple[Tuple[int, int], ...]]
-    mode='constant',
-    **kwargs
+    mode="constant",
+    **kwargs,
 ) -> Array:
     """
     Pad an array.
@@ -143,13 +143,13 @@ def pad(
         Padding mode. Only 'constant' is currently supported. Use the `constant_values` keyword argument
         to specify the padding value or values (in the same format as `pad_width`).
     """
-    if mode != 'constant':
+    if mode != "constant":
         raise NotImplementedError(f"pad mode '{mode}' is not supported")
 
-    if 'constant_values' not in kwargs:
+    if "constant_values" not in kwargs:
         cvals = 0
     else:
-        cvals = kwargs['constant_values']
+        cvals = kwargs["constant_values"]
 
     if isinstance(pad_width, int):
         pad_widths_b = [pad_width] * array.ndim
@@ -176,7 +176,7 @@ def pad(
     return Array._new(
         create_pdarray(
             generic_msg(
-                cmd=f"pad{array.ndim}D",
+                cmd=f"pad<{array.dtype},{array.ndim}>",
                 args={
                     "name": array._array,
                     "padWidthBefore": tuple(pad_widths_b),

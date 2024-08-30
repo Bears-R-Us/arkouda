@@ -9,9 +9,7 @@ module Message {
     use List;
     use BigInteger;
     use MultiTypeSymEntry;
-
     use Map;
-    use ArkoudaIOCompat;
 
     enum MsgType {NORMAL,WARNING,ERROR}
     enum MsgFormat {STRING,BINARY}
@@ -56,7 +54,7 @@ module Message {
         this.payload = b"";
     }
 
-    proc MsgTuple.init(msg: string, msgType: MsgType, msgFormat: MsgFormat, user = "", payload = b"") {
+    proc MsgTuple.init(msg: string, msgType: MsgType, msgFormat: MsgFormat, user = "", in payload = b"") {
         this.msg = msg;
         this.msgType = msgType;
         this.msgFormat = msgFormat;
@@ -64,7 +62,7 @@ module Message {
         this.payload = payload;
     }
 
-    proc type MsgTuple.success(msg: string): MsgTuple {
+    proc type MsgTuple.success(msg: string = ""): MsgTuple {
         return new MsgTuple(
             msg = msg,
             msgType = MsgType.NORMAL,
@@ -118,6 +116,16 @@ module Message {
         );
     }
 
+    proc type MsgTuple.fromScalar(scalar: ?t): MsgTuple throws {
+        import NumPyDType;
+        return new MsgTuple(
+            msg = "%s %s".format(type2str(t), NumPyDType.type2fmt(t)).format(scalar),
+            msgType = MsgType.NORMAL,
+            msgFormat = MsgFormat.STRING,
+            payload = b""
+        );
+    }
+
     proc type MsgTuple.error(msg: string): MsgTuple {
         return new MsgTuple(
             msg = msg,
@@ -127,7 +135,7 @@ module Message {
         );
     }
 
-    proc type MsgTuple.payload(data: bytes): MsgTuple {
+    proc type MsgTuple.payload(in data: bytes): MsgTuple {
         return new MsgTuple(
             msg = "",
             msgType = MsgType.NORMAL,
@@ -218,7 +226,9 @@ module Message {
                 } else {
                     // temporary special case (until frontend is modified to provide lowercase 'true'/'false' values)
                     if t == bool {
-                        return this.val.toLower():bool;
+                        if this.val.startsWith("True") then return true;
+                        if this.val.startsWith("False") then return false;
+                        return this.val:int:bool;
                     }
                     return this.val: t;
                 }
@@ -295,7 +305,10 @@ module Message {
             }
 
             try {
-                return parseJson(this.val, list(t));
+                const sl = parseJson(this.val, list(string));
+                var l = new list(t);
+                for s in sl do l.pushBack(s: t);
+                return l;
             } catch {
                 throw err();
             }
@@ -445,7 +458,7 @@ module Message {
             this.payload = b"";
         }
 
-        proc init(param_list: list(ParameterObj, parSafe=true)) {
+        proc init(param_list: list(ParameterObj, parSafe=true), in payload: bytes) {
             // Intentionally initializes the param_list with `parSafe=false`.
             // It would be initialized that way anyways due to the field
             // declaration relying on the default value, this just makes it
@@ -454,7 +467,7 @@ module Message {
             this.size = param_list.size;
 
             this.param_list = param_list;
-            this.payload = b"";
+            this.payload = payload;
         }
 
         /*
@@ -544,13 +557,13 @@ module Message {
     /*
     Parse arguments formatted as json string into objects
     */
-    proc parseMessageArgs(json_str: string, size: int) throws {
+    proc parseMessageArgs(json_str: string, size: int, in payload = b"") throws {
         var pArr = jsonToArray(json_str, string, size);
         var param_list = new list(ParameterObj, parSafe=true);
         forall j_str in pArr with (ref param_list) {
             param_list.pushBack(parseParameter(j_str));
         }
-        return new owned MessageArgs(param_list);
+        return new owned MessageArgs(param_list, payload);
     }
 
     /*

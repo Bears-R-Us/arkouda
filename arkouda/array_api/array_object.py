@@ -122,7 +122,9 @@ class Array:
         if self._has_single_elem():
             return self._array[0]
         else:
-            raise ValueError("Can only convert an array with one element to a Python scalar")
+            raise ValueError(
+                "Can only convert an array with one element to a Python scalar"
+            )
 
     def transpose(self, axes: Optional[Tuple[int, ...]] = None):
         """
@@ -131,6 +133,7 @@ class Array:
         For axes=None, reverse all the dimensions of the array.
         """
         from .manipulation_functions import permute_dims
+
         if axes is None:
             _axes = tuple(range(self.ndim - 1, -1, -1))
         else:
@@ -185,7 +188,9 @@ class Array:
         """
         import json
 
-        return json.loads(ak.generic_msg(cmd=f"chunkInfo{self.ndim}D", args={"array": self._array}))
+        return json.loads(
+            ak.generic_msg(cmd=f"chunkInfo{self.ndim}D", args={"array": self._array})
+        )
 
     def __array__(self, dtype: None | np.dtype[Any] = None):
         """
@@ -459,7 +464,7 @@ class Array:
                 if isinstance(kt, Array):
                     if kt.size == 1 or kt.shape == ():
                         k.append(kt._array[0])
-                    else :
+                    else:
                         k.append(kt._array)
                 elif isinstance(kt, np.ndarray):
                     k.append(asarray(kt)._array)
@@ -504,7 +509,9 @@ class Array:
             if isinstance(s, int):
                 return s
             else:
-                raise TypeError("Only integer arrays can be converted to a Python integer")
+                raise TypeError(
+                    "Only integer arrays can be converted to a Python integer"
+                )
         else:
             raise ValueError("cannot convert non-scalar array to int")
 
@@ -607,9 +614,9 @@ class Array:
         Compute the power of this array by another array or scalar.
         """
         if isinstance(other, (int, float)):
-            return Array._new(self._array ** other)
+            return Array._new(self._array**other)
         else:
-            return Array._new(self._array ** other._array)
+            return Array._new(self._array**other._array)
 
     def __rshift__(self: Array, other: Union[int, Array], /) -> Array:
         """
@@ -842,9 +849,9 @@ class Array:
         Compute the power of another array or scalar by this array.
         """
         if isinstance(other, (int, float)):
-            return Array._new(other ** self._array)
+            return Array._new(other**self._array)
         else:
-            return Array._new(other._array ** self._array)
+            return Array._new(other._array**self._array)
 
     def __irshift__(self: Array, other: Union[int, Array], /) -> Array:
         """
@@ -934,7 +941,10 @@ class Array:
 
     def _single_elem(self: Array) -> Optional[Union[int, float, complex, bool]]:
         if self._has_single_elem():
-            return self._array[0]
+            if self.ndim > 0:
+                return self._array[(0,)*self.ndim]
+            else:
+                return self._array[0]
         else:
             return None
 
@@ -972,7 +982,9 @@ class Array:
 
 def implements_numpy(numpy_function):
     """Register an __array_function__ implementation for MyArray objects."""
+
     def decorator(func):
         HANDLED_FUNCTIONS[numpy_function] = func
         return func
+
     return decorator

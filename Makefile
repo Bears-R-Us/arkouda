@@ -3,6 +3,7 @@ ARKOUDA_PROJECT_DIR := $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
 
 PROJECT_NAME := arkouda
 ARKOUDA_SOURCE_DIR := $(ARKOUDA_PROJECT_DIR)/src
+ARKOUDA_REGISTRY_DIR=$(ARKOUDA_SOURCE_DIR)/registry
 ARKOUDA_MAIN_MODULE := arkouda_server
 ARKOUDA_MAKEFILES := Makefile Makefile.paths
 
@@ -61,10 +62,9 @@ define add-path
 ifneq ("$(wildcard $(1)/lib64)","")
   INCLUDE_FLAGS += -I$(1)/include -L$(1)/lib64
   CHPL_FLAGS    += -I$(1)/include -L$(1)/lib64 --ldflags="-Wl,-rpath,$(1)/lib64"
-else
-  INCLUDE_FLAGS += -I$(1)/include -L$(1)/lib
-  CHPL_FLAGS    += -I$(1)/include -L$(1)/lib --ldflags="-Wl,-rpath,$(1)/lib"
 endif
+INCLUDE_FLAGS += -I$(1)/include -L$(1)/lib
+CHPL_FLAGS    += -I$(1)/include -L$(1)/lib --ldflags="-Wl,-rpath,$(1)/lib"
 endef
 # Usage: $(eval $(call add-path,/home/user/anaconda3/envs/arkouda))
 #                               ^ no space after comma
@@ -88,6 +88,10 @@ endif
 
 ifndef ARKOUDA_CONFIG_FILE
 ARKOUDA_CONFIG_FILE := $(ARKOUDA_PROJECT_DIR)/ServerModules.cfg
+endif
+
+ifndef ARKOUDA_REGISTRATION_CONFIG
+ARKOUDA_REGISTRATION_CONFIG := $(ARKOUDA_PROJECT_DIR)/registration-config.json
 endif
 
 CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq -liconv -lidn2 -lparquet -larrow
@@ -128,8 +132,8 @@ install-zmq:
 	rm -r $(ZMQ_BUILD_DIR)
 	echo '$$(eval $$(call add-path,$(ZMQ_INSTALL_DIR)))' >> Makefile.paths
 
-HDF5_MAJ_MIN_VER := 1.12
-HDF5_VER := 1.12.1
+HDF5_MAJ_MIN_VER := 1.14
+HDF5_VER := 1.14.4
 HDF5_NAME_VER := hdf5-$(HDF5_VER)
 HDF5_BUILD_DIR := $(DEP_BUILD_DIR)/$(HDF5_NAME_VER)
 HDF5_INSTALL_DIR := $(DEP_INSTALL_DIR)/hdf5-install
@@ -185,6 +189,19 @@ install-idn2:
 	cd $(LIBIDN_BUILD_DIR) && ./configure --prefix=$(LIBIDN_INSTALL_DIR) && make && make install
 	rm -rf $(LIBIDN_BUILD_DIR)
 	echo '$$(eval $$(call add-path,$(LIBIDN_INSTALL_DIR)))' >> Makefile.paths
+
+
+BLOSC_BUILD_DIR := $(DEP_BUILD_DIR)/c-blosc
+BLOSC_INSTALL_DIR := $(DEP_INSTALL_DIR)/c-blosc-install
+
+install-blosc:
+	@echo "Installing blosc"
+	rm -rf $(BLOSC_INSTALL_DIR) $(BLOSC_BUILD_DIR)
+	mkdir -p $(BLOSC_INSTALL_DIR)
+	cd $(DEP_BUILD_DIR) && git clone https://github.com/Blosc/c-blosc.git
+	cd $(BLOSC_BUILD_DIR) && cmake -DCMAKE_INSTALL_PREFIX=$(BLOSC_INSTALL_DIR) && make && make install
+	rm -rf $(BLOSC_BUILD_DIR)
+	echo '$$(eval $$(call add-path,$(BLOSC_INSTALL_DIR)))' >> Makefile.paths
 
 # System Environment
 ifdef LD_RUN_PATH
@@ -245,16 +262,16 @@ $(ARROW_WRITE_O): $(ARROW_WRITE_CPP) $(ARROW_WRITE_H)
 
 CHPL_MAJOR := $(shell $(CHPL) --version | sed -n "s/chpl version \([0-9]\)\.[0-9]*.*/\1/p")
 CHPL_MINOR := $(shell $(CHPL) --version | sed -n "s/chpl version [0-9]\.\([0-9]*\).*/\1/p")
-CHPL_VERSION_OK := $(shell test $(CHPL_MAJOR) -ge 2 -o $(CHPL_MINOR) -ge 32  && echo yes)
-CHPL_VERSION_WARN := $(shell test $(CHPL_MAJOR) -eq 1 -a $(CHPL_MINOR) -le 33 && echo yes)
+CHPL_VERSION_OK := $(shell test $(CHPL_MAJOR) -ge 2 -o $(CHPL_MINOR) -ge 0  && echo yes)
+# CHPL_VERSION_WARN := $(shell test $(CHPL_MAJOR) -eq 1 -a $(CHPL_MINOR) -le 33 && echo yes)
 .PHONY: check-chpl
 check-chpl:
 ifneq ($(CHPL_VERSION_OK),yes)
-	$(error Chapel 1.32.0 or newer is required, found $(CHPL_MAJOR).$(CHPL_MINOR))
+	$(error Chapel 2.0 or newer is required, found $(CHPL_MAJOR).$(CHPL_MINOR))
 endif
-ifeq ($(CHPL_VERSION_WARN),yes)
-	$(warning Chapel 1.33.0 or newer is recommended, found $(CHPL_MAJOR).$(CHPL_MINOR))
-endif
+# ifeq ($(CHPL_VERSION_WARN),yes)
+# 	$(warning Chapel 1.33.0 or newer is recommended, found $(CHPL_MAJOR).$(CHPL_MINOR))
+# endif
 
 ZMQ_CHECK = $(DEP_INSTALL_DIR)/checkZMQ.chpl
 check-zmq: $(ZMQ_CHECK)
@@ -358,36 +375,28 @@ endif
 ARKOUDA_SOURCES = $(shell find $(ARKOUDA_SOURCE_DIR)/ -type f -name '*.chpl')
 ARKOUDA_MAIN_SOURCE := $(ARKOUDA_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl
 
-ifeq ($(shell expr $(CHPL_MAJOR) \= 2),1)
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/ge-20
+ifeq ($(shell expr $(CHPL_MINOR) \= 0),1)
+	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/eq-20
 endif
 
-ifeq ($(shell expr $(CHPL_MINOR) \= 34),1)
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/eq-134
+ifeq ($(shell expr $(CHPL_MINOR) \= 1),1)
+	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/eq-21
 endif
 
-ifeq ($(shell expr $(CHPL_MINOR) \= 33),1)
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/eq-133
+ifeq ($(shell expr $(CHPL_MINOR) \>= 2),1)
+	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/ge-22
 endif
 
-ifeq ($(shell expr $(CHPL_MINOR) \= 32),1)
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/e-132
-endif
-
-ifeq ($(shell expr $(CHPL_MINOR) \> 33),1)
-	ARKOUDA_RW_DEFAULT_FLAG := -sOpenReaderLockingDefault=false -sOpenWriterLockingDefault=false
-endif
-
-ifeq ($(shell expr $(CHPL_MAJOR) \= 2),1)
+ifeq ($(shell expr $(CHPL_MINOR) \<= 1),1)
 	ARKOUDA_RW_DEFAULT_FLAG := -sOpenReaderLockingDefault=false -sOpenWriterLockingDefault=false
 endif
 
 SERVER_CONFIG_SCRIPT=$(ARKOUDA_SOURCE_DIR)/parseServerConfig.py
 # This is the main compilation statement section
-$(ARKOUDA_MAIN_MODULE): check-deps $(ARROW_UTIL_O) $(ARROW_READ_O) $(ARROW_WRITE_O) $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
-	$(eval MOD_GEN_OUT=$(shell python3 $(SERVER_CONFIG_SCRIPT) $(ARKOUDA_CONFIG_FILE) $(ARKOUDA_SOURCE_DIR)))
+$(ARKOUDA_MAIN_MODULE): check-deps register-commands $(ARROW_UTIL_O) $(ARROW_READ_O) $(ARROW_WRITE_O) $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
+	$(eval MOD_GEN_OUT=$(shell python3 $(SERVER_CONFIG_SCRIPT) $(ARKOUDA_CONFIG_FILE) $(ARKOUDA_REGISTRATION_CONFIG) $(ARKOUDA_SOURCE_DIR)))
 
-	$(CHPL) $(CHPL_DEBUG_FLAGS) $(PRINT_PASSES_FLAGS) $(REGEX_MAX_CAPTURES_FLAG) $(OPTIONAL_SERVER_FLAGS) $(CHPL_FLAGS_WITH_VERSION) $(CHPL_COMPAT_FLAGS) $(ARKOUDA_MAIN_SOURCE) $(ARKOUDA_COMPAT_MODULES) $(ARKOUDA_SERVER_USER_MODULES) $(MOD_GEN_OUT) $(ARKOUDA_RW_DEFAULT_FLAG) -I$(ARKOUDA_SOURCE_DIR)/parquet -o $@
+	$(CHPL) $(CHPL_DEBUG_FLAGS) $(PRINT_PASSES_FLAGS) $(REGEX_MAX_CAPTURES_FLAG) $(OPTIONAL_SERVER_FLAGS) $(CHPL_FLAGS_WITH_VERSION) $(CHPL_COMPAT_FLAGS) $(ARKOUDA_MAIN_SOURCE) $(ARKOUDA_COMPAT_MODULES) $(ARKOUDA_SERVER_USER_MODULES) $(MOD_GEN_OUT) $(ARKOUDA_RW_DEFAULT_FLAG) $(ARKOUDA_REGISTRY_DIR)/Commands.chpl -I$(ARKOUDA_SOURCE_DIR)/parquet -o $@
 
 CLEAN_TARGETS += arkouda-clean
 .PHONY: arkouda-clean
@@ -470,7 +479,7 @@ doc-server: ${DOC_DIR} $(DOC_SERVER_OUTPUT_DIR)/index.html
 $(DOC_SERVER_OUTPUT_DIR)/index.html: $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES) | $(DOC_SERVER_OUTPUT_DIR)
 	@echo "Building documentation for: Server"
 	@# Build the documentation to the Chapel output directory
-	$(CHPLDOC) $(CHPLDOC_FLAGS) $(ARKOUDA_MAIN_SOURCE) $(ARKOUDA_SOURCE_DIR)/compat/e-132/* -o $(DOC_SERVER_OUTPUT_DIR)
+	$(CHPLDOC) $(CHPLDOC_FLAGS) $(ARKOUDA_MAIN_SOURCE) -o $(DOC_SERVER_OUTPUT_DIR)
 	@# Create the .nojekyll file needed for github pages in the  Chapel output directory
 	touch $(DOC_SERVER_OUTPUT_DIR)/.nojekyll
 	@echo "Completed building documentation for: Server"
@@ -531,15 +540,12 @@ $(eval $(call create_help_target,test-help,TEST_HELP_TEXT))
 .PHONY: test
 test: test-python
 
-.PHONY: test-proto
-test-proto: test-python-proto
-
 .PHONY: test-chapel
 test-chapel:
 	start_test $(TEST_SOURCE_DIR)
 
 .PHONY: test-all
-test-all: test-python test-python-proto test-chapel
+test-all: test-python test-chapel
 
 mypy:
 	python3 -m mypy arkouda
@@ -552,14 +558,11 @@ $(TEST_TARGETS): $(TEST_BINARY_DIR)/$(TEST_BINARY_SIGIL)%: $(TEST_SOURCE_DIR)/%.
 	$(CHPL) $(TEST_CHPL_FLAGS) -M $(ARKOUDA_SOURCE_DIR) $(ARKOUDA_COMPAT_MODULES) $< -o $@
 
 print-%:
-	$(info $($*)) @true
-
-test-python:
-	python3 -m pytest $(ARKOUDA_PYTEST_OPTIONS) -c pytest.ini
+	$(info $($*)) @trues
 
 size=100
-test-python-proto:
-	python3 -m pytest -c pytest_PROTO.ini PROTO_tests/ --size=$(size) $(ARKOUDA_PYTEST_OPTIONS)
+test-python:
+	python3 -m pytest -c pytest.ini --size=$(size) $(ARKOUDA_PYTEST_OPTIONS)
 
 CLEAN_TARGETS += test-clean
 .PHONY: test-clean
@@ -572,6 +575,14 @@ benchmark:
 
 version:
 	@echo $(VERSION);
+
+
+#####################
+#### register.mk ####
+#####################
+
+register-commands:
+	$(ARKOUDA_REGISTRY_DIR)/register_commands.bash $(ARKOUDA_REGISTRY_DIR) $(ARKOUDA_REGISTRATION_CONFIG) $(ARKOUDA_CONFIG_FILE) $(ARKOUDA_SOURCE_DIR)
 
 #####################
 #### Epilogue.mk ####

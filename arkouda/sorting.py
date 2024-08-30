@@ -6,12 +6,12 @@ from typing import Sequence, Union, cast
 from typeguard import check_type, typechecked
 
 from arkouda.client import generic_msg
-from arkouda.dtypes import bigint, float64, int64, int_scalars, uint64
+from arkouda.numpy.dtypes import bigint, bool_, dtype, float64, int64, int_scalars, uint64
 from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import zeros
 from arkouda.strings import Strings
 
-numeric_dtypes = {int64, uint64, float64}
+numeric_dtypes = {dtype(int64), dtype(uint64), dtype(float64)}
 
 __all__ = ["argsort", "coargsort", "sort"]
 
@@ -71,15 +71,26 @@ def argsort(
         return zeros(0, dtype=pda.dtype)
     if isinstance(pda, pdarray) and pda.dtype == bigint:
         return coargsort(pda.bigint_to_uint_arrays(), algorithm)
-    repMsg = generic_msg(
-        cmd=f"argsort{pda.ndim}D",
-        args={
-            "name": pda.entry.name if isinstance(pda, Strings) else pda.name,
-            "algoName": algorithm.name,
-            "objType": pda.objType,
-            "axis": axis,
-        },
-    )
+
+    if isinstance(pda, Strings):
+        repMsg = generic_msg(
+            cmd="argsortStrings",
+            args={
+                "name": pda.entry.name,
+                "algoName": algorithm.name,
+            },
+        )
+    else:
+        repMsg = generic_msg(
+            cmd=f"argsort<{pda.dtype.name},{pda.ndim}>",
+            args={
+                "name": pda.name,
+                "algoName": algorithm.name,
+                "objType": pda.objType,
+                "axis": axis,
+            },
+        )
+
     return create_pdarray(cast(str, repMsg))
 
 
@@ -145,7 +156,7 @@ def coargsort(
     atypes = []
     expanded_arrays = []
     for a in arrays:
-        if not isinstance(a, pdarray) or a.dtype not in [bigint, bool]:
+        if not isinstance(a, pdarray) or a.dtype not in [bigint, bool_]:
             expanded_arrays.append(a)
         elif a.dtype == bigint:
             expanded_arrays.extend(a.bigint_to_uint_arrays())

@@ -22,6 +22,9 @@ def create_parser():
         "-n", "--size", type=int, default=10**7, help="Problem size: length of array to write/read"
     )
     parser.add_argument(
+        "--fixed-size", type=int, default=-1, help="Fixed size length of string for Parquet"
+    )
+    parser.add_argument(
         "-t", "--trials", type=int, default=1, help="Number of times to run the benchmark"
     )
     parser.add_argument(
@@ -107,9 +110,10 @@ if __name__ == "__main__":
             args.seed,
             FileFormat.PARQUET,
             comp_types,
+            args.fixed_size
         )
     elif args.only_read:
-        time_ak_read(args.size, args.files_per_loc, args.trials, args.dtype, args.path, FileFormat.PARQUET, comp_types)
+        time_ak_read(args.size, args.files_per_loc, args.trials, args.dtype, args.path, FileFormat.PARQUET, comp_types, args.fixed_size)
     elif args.only_delete:
         remove_files(args.path)
     else:
@@ -122,8 +126,9 @@ if __name__ == "__main__":
             args.seed,
             FileFormat.PARQUET,
             comp_types,
+            args.fixed_size
         )
-        time_ak_read(args.size, args.files_per_loc, args.trials, args.dtype, args.path, FileFormat.PARQUET, comp_types)
+        time_ak_read(args.size, args.files_per_loc, args.trials, args.dtype, args.path, FileFormat.PARQUET, comp_types, args.fixed_size)
         remove_files(args.path)
 
     sys.exit(0)

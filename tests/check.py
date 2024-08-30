@@ -3,8 +3,9 @@
 import sys
 
 import numpy as np
-from base_test import ArkoudaTest
-from context import arkouda as ak
+import pytest
+
+import arkouda as ak
 
 N = 1_000_000
 errors = False
@@ -271,63 +272,63 @@ Encapsulates test cases that invoke the run_tests method.
 """
 
 
-class CheckTest(ArkoudaTest):
+class TestCheck:
     def testBool(self):
-        self.assertTrue(check_bool(N))
+        assert check_bool(N)
 
     def testArange(self):
-        self.assertTrue(check_arange(N))
+        assert check_arange(N)
 
     def testLinspace(self):
-        self.assertTrue(check_linspace(N))
+        assert check_linspace(N)
 
     def testOnes(self):
-        self.assertTrue(check_ones(N))
+        assert check_ones(N)
 
     def testZeros(self):
-        self.assertTrue(check_zeros(N))
+        assert check_zeros(N)
 
     def testArgsort(self):
-        self.assertTrue(check_argsort(N))
+        assert check_argsort(N)
 
     def testCoargsort(self):
-        self.assertTrue(check_coargsort(N))
+        assert check_coargsort(N)
 
     def testSort(self):
-        self.assertTrue(check_sort(N))
+        assert check_sort(N)
 
     def testGetSlice(self):
-        self.assertTrue(check_get_slice(N))
+        assert check_get_slice(N)
 
     def testSetSliceValue(self):
-        self.assertTrue(check_set_slice_value(N))
+        assert check_set_slice_value(N)
 
     def testSetSlice(self):
-        self.assertTrue(check_set_slice(N))
+        assert check_set_slice(N)
 
     def testGetBoolIv(self):
-        self.assertTrue(check_get_bool_iv(N))
+        assert check_get_bool_iv(N)
 
     def testGetBoolIvValue(self):
-        self.assertTrue(check_set_bool_iv_value(N))
+        assert check_set_bool_iv_value(N)
 
     def testSetBoolIv(self):
-        self.assertTrue(check_set_bool_iv(N))
+        assert check_set_bool_iv(N)
 
     def testGetIntegerIv(self):
-        self.assertTrue(check_get_integer_iv(N))
+        assert check_get_integer_iv(N)
 
     def testSetIntegerIvValue(self):
-        self.assertTrue(check_set_integer_iv_value(N))
+        assert check_set_integer_iv_value(N)
 
     def testSetIntegerIv(self):
-        self.assertTrue(check_set_integer_iv(N))
+        assert check_set_integer_iv(N)
 
     def testGetIntegerIdx(self):
-        self.assertTrue(check_get_integer_idx(N))
+        assert check_get_integer_idx(N)
 
     def testSetIntegerIdx(self):
-        self.assertTrue(check_set_integer_idx(N))
+        assert check_set_integer_idx(N)
 
 
 if __name__ == "__main__":

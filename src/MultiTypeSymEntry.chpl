@@ -1,6 +1,7 @@
 
 module MultiTypeSymEntry
 {
+    use Random;
     use Reflection;
     use Set;
 
@@ -8,9 +9,9 @@ module MultiTypeSymEntry
     use Logging;
     use AryUtil;
 
+
     public use NumPyDType;
     public use SymArrayDmap;
-    use ArkoudaRandomCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -22,16 +23,18 @@ module MultiTypeSymEntry
      */
     enum SymbolEntryType {
         AbstractSymEntry,  // Root Type from which all other types will inherit
-        
+
             TypedArraySymEntry, // Parent type for Arrays with a dtype, legacy->GenSymEntry
                 PrimitiveTypedArraySymEntry, // int, uint8, bool, etc.
                 ComplexTypedArraySymEntry,   // DateTime, TimeDelta, IP Address, etc.
-        
+
             GenSymEntry,
                 SegStringSymEntry,    // SegString composed of offset-int[], bytes->uint(8)
 
             CompositeSymEntry,        // Entries that consist of multiple SymEntries of varying type
 
+            GenSparseSymEntry,    // Generic entry for sparse matrices
+                SparseSymEntry,    // Entry for sparse matrices
             GeneratorSymEntry,  // Entry for random number generators
 
             AnythingSymEntry, // Placeholder to stick aritrary things in the map
@@ -44,7 +47,7 @@ module MultiTypeSymEntry
      * All other SymEntry classes should inherit from this class
      * or one of its ancestors and ultimately everything should
      * be assignable/coercible to this class.
-     * 
+     *
      * All subclasses should set & add their type to the `assignableTypes`
      * set so we can maintain & determine the type hierarchy.
      */
@@ -243,7 +246,7 @@ module MultiTypeSymEntry
           :type a: [] ?etype
         */
         proc init(a: [?D] ?etype, max_bits=-1) where MyDmap != Dmap.defaultRectangular && a.isDefaultRectangular() {
-            this.init(D.size, etype, D.rank);
+            this.init((...D.shape), etype);
             this.tupShape = D.shape;
             this.a = a;
             this.shape = tupShapeString(this.tupShape);
@@ -501,6 +504,237 @@ module MultiTypeSymEntry
         }
     }
 
+    class GenSparseSymEntry:AbstractSymEntry {
+        var dtype: DType; // answer to numpy dtype
+        var itemsize: int; // answer to numpy itemsize = num bytes per elt
+        var size: int = 0; // answer to numpy size == num elts
+        var nnz: int = 0;
+        var ndim: int = 2; // answer to numpy ndim == 2-axis for now
+        var shape: string = "[0,0]"; // answer to numpy shape
+        var layoutStr: string = "UNKNOWN"; // How to initialize
+
+        /*
+          Create a 1D GenSymEntry from an array element type and length
+        */
+        proc init(type etype, size: int = 0, nnz: int, ndim: int = 2, layoutStr: string) {
+            this.entryType = SymbolEntryType.SparseSymEntry;
+            assignableTypes.add(this.entryType);
+            this.dtype = whichDtype(etype);
+            this.itemsize = dtypeSize(this.dtype);
+            this.size = size;
+            this.nnz = nnz;
+            this.ndim = ndim;
+            init this;
+            if size == 0 then
+              this.shape = "[0,0]";
+            else
+              this.shape = tupShapeString(1, ndim);
+            this.layoutStr = layoutStr;
+        }
+
+        /* Cast this `SparseGenSymEntry` to `borrowed SparseSymEntry(etype)`
+
+           This function will halt if the cast fails.
+
+           :arg etype: `SparseSymEntry` type parameter
+           :type etype: type
+         */
+        inline proc toSparseSymEntry(type etype, param dimensions=2, param layout) {
+            return try! this :borrowed SparseSymEntry(etype, dimensions, layout);
+        }
+
+        /*
+          Formats and returns data in this entry up to the specified threshold.
+          Arrays of size less than threshold will be printed in their entirety.
+          Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements
+
+            :arg thresh: threshold for data to return
+            :type thresh: int
+
+            :arg prefix: String to prepend to the front of the data string
+            :type prefix: string
+
+            :arg suffix: String to append to the tail of the data string
+            :type suffix: string
+
+            :arg baseFormat: String which represents the base format string for the data type
+            :type baseFormat: string
+
+            :returns: s (string) containing the array data
+        */
+        override proc entry__str__(thresh:int=1, prefix:string="", suffix:string="", baseFormat:string=""): string throws {
+            genLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "__str__ invoked");
+            var s = "DType: %s, itemsize: %?, size: %?, nnz: %?, layout: %s".format(this.dtype, this.itemsize, this.size, this.nnz, this.layoutStr);
+            return prefix + s + suffix;
+        }
+
+
+        proc attrib(): string throws {
+            return "%s %? %? %? %s %s %?".format(dtype2str(this.dtype), this.size, this.nnz, this.ndim, this.shape, this.layoutStr, this.itemsize);
+        }
+
+    }
+
+    import SparseMatrix.layout;
+    use LayoutCS;
+
+
+    proc layoutToStr(param l) param {
+        select l {
+            when layout.CSR {
+                return "CSR";
+            }
+            when layout.CSC {
+                return "CSC";
+            }
+            otherwise {
+                return "UNKNOWN";
+            }
+        }
+    }
+
+    /* Symbol table entry */
+    class SparseSymEntry : GenSparseSymEntry
+    {
+        /*
+        generic element type array
+        etype is different from dtype (chapel vs numpy)
+        */
+        type etype;
+
+        /*
+        number of dimensions, to be passed back to the `GenSparseSymEntry` so that
+        we are able to make it visible to the Python client
+        */
+        param dimensions: int;
+
+        /*
+        the actual shape of the array, this has to live here, since GenSparseSymEntry
+        has to stay generic
+        For now, each dimension is assumed to be equal.
+        */
+        var tupShape: dimensions*int;
+
+        /*
+        layout of the sparse array: CSC or CSR
+        */
+        param matLayout : layout;
+
+        /*
+        'a' is the distributed sparse array
+        */
+        var a = makeSparseArray(tupShape[0], etype, matLayout); // Hardcode 2D matrix for now
+
+        /*
+          Create a SparseSymEntry from a shape and element type, etc.
+
+          :args len: size of each dimension
+          :type len: int
+
+          :arg etype: type to be instantiated
+          :type etype: type
+        */
+        proc init(a, size, param matLayout, type eltType) {
+            super.init(eltType, size, a.domain.getNNZ(), /*ndim*/2, layoutToStr(matLayout)); // Hardcode a 2D matrix for now
+            this.entryType = SymbolEntryType.SparseSymEntry;
+            assignableTypes.add(this.entryType);
+            this.etype = eltType;
+            this.dimensions = 2; // Hardcode a 2D matrix for now
+            this.tupShape = (size,size); // Harcode a 2D matrix for now
+            this.matLayout = matLayout;
+            this.a = a;
+            init this;
+            this.shape = tupShapeString(this.tupShape);
+            this.ndim = this.tupShape.size;
+        }
+
+        /*
+        Formats and returns data in this entry up to the specified threshold.
+        Matrices with nnz less than threshold will be printed in their entirety.
+        Matrices with nnz greater than or equal to threshold will print the first 3 and last 3 elements
+
+            :arg thresh: threshold for data to return
+            :type thresh: int
+
+            :arg prefix: String to pre-pend to the front of the data string
+            :type prefix: string
+
+            :arg suffix: String to append to the tail of the data string
+            :type suffix: string
+
+            :arg baseFormat: String which represents the base format string for the data type
+            :type baseFormat: string
+
+            :returns: s (string) containing the array data
+        */
+        override proc entry__str__(thresh:int=6, prefix:string = "noprefix", suffix:string = "nosuffix", baseFormat:string = "%?"): string throws {
+            var s:string;
+            const ref sparseDom = this.a.domain,
+                        denseDom = sparseDom.parentDom;
+            if this.a.domain.getNNZ() >= thresh {
+                var count = 0;
+                // Normal iteration like this is more efficient than
+                // dense iteration, so we prefer that for the first elements
+                for (_, (i, j)) in zip(1..3, sparseDom) {
+                    const idxStr = "  (%?, %?)".format(i, j); // Padding to match SciPy
+                    s += "%<16s%?\n".format(idxStr, this.a[i,j]);
+                }
+
+                s += "  :     :\n"; // Dot dot seperator, but vertical
+
+                // For the last elements, we iterate in dense order
+                // Since sparseArrays cant be strided by -1
+                // We also have to do some i,j swaps for CSC vs CSR differences
+                count = 0;
+                var backString = "";
+                for (i, j) in denseDom by -1 {
+                    var row = i, col = j;
+                    if this.matLayout==layout.CSC {
+                        row = j; // Iterate in Col Major Order for CSC
+                        col = i; // To match SciPy behavior
+                    }
+                    if !sparseDom.contains(row, col) then continue;
+                    const idxStr = "  (%?, %?)".format(row, col); // Padding to match SciPy
+                    backString = "%<16s%?\n".format(idxStr, this.a[row,col]) + backString;
+                    count += 1;
+                    if count == 3 then break;
+                }
+                s+=backString;
+            } else {
+                for (i,j) in sparseDom {
+                    const idxStr = "  (%?, %?)".format(i, j); // Padding to match SciPy
+                    s += "%<16s%?\n".format(idxStr, this.a[i,j]);
+                }
+            }
+
+            if this.etype == bool {
+                s = s.replace("true","True");
+                s = s.replace("false","False");
+            }
+
+            return s;
+        }
+
+        /*
+        Verbose flag utility method
+        */
+        proc deinit() {
+            if logLevel == LogLevel.DEBUG {writeln("deinit SparseSymEntry");try! stdout.flush();}
+        }
+    }
+
+    inline proc createSparseSymEntry(a, size, param matLayout, type eltType) throws {
+        return new shared SparseSymEntry(a, size, matLayout, eltType);
+    }
+
+    proc makeSparseArray(size, type eltType, param matLayout) {
+        const dom = {1..size, 1..size};
+        var spsDom: sparse subdomain(dom) dmapped new dmap(new CS(compressRows=(matLayout==layout.CSR)));
+        var A: [spsDom] eltType;
+        return A;
+    }
+
+
     class GeneratorSymEntry:AbstractSymEntry {
         type etype;
         var generator: randomStream(etype);
@@ -528,12 +762,19 @@ module MultiTypeSymEntry
     proc toCompositeSymEntry(entry: borrowed AbstractSymEntry) throws {
         return (entry: borrowed CompositeSymEntry);
     }
-    
+
     /**
      * Helper proc to cast AbstractSymEntry to SegStringSymEntry
      */
     proc toSegStringSymEntry(entry: borrowed AbstractSymEntry) throws {
         return (entry: borrowed SegStringSymEntry);
+    }
+
+    /**
+     * Helper proc to cast AbstractSymEntry to GenSparseSymEntry
+     */
+    proc toGenSparseSymEntry(entry: borrowed AbstractSymEntry) throws {
+        return (entry: borrowed GenSparseSymEntry);
     }
 
     /**

@@ -44,7 +44,7 @@ from ._dtypes import (
     float64,
     complex64,
     complex128,
-    bool,
+    bool_,
 )
 
 from .elementwise_functions import (
@@ -189,7 +189,7 @@ __all__ += [
     "float64",
     "complex64",
     "complex128",
-    "bool",
+    "bool_",
 ]
 
 __all__ += [

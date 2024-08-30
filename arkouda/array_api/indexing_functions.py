@@ -32,7 +32,7 @@ def take(x: Array, indices: Array, /, *, axis: Optional[int] = None) -> Array:
         axis = 0
 
     repMsg = generic_msg(
-        cmd=f"takeAlongAxis{x.ndim}D",
+        cmd=f"takeAlongAxis<{x.dtype},{indices.dtype},{x.ndim}>",
         args={
             "x": x._array,
             "indices": indices._array,

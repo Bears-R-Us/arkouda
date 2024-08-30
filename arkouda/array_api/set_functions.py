@@ -34,14 +34,14 @@ def unique_all(x: Array, /) -> UniqueAllResult:
     - the counts of each unique value
     """
     resp = cast(
-                str,
-                generic_msg(
-                    cmd=f"uniqueAll{x.ndim}D",
-                    args={"name": x._array},
-                ),
-            )
+        str,
+        generic_msg(
+            cmd=f"uniqueAll{x.ndim}D",
+            args={"name": x._array},
+        ),
+    )
 
-    arrays = [Array._new(create_pdarray(r)) for r in resp.split('+')]
+    arrays = [Array._new(create_pdarray(r)) for r in resp.split("+")]
 
     return UniqueAllResult(
         values=arrays[0],
@@ -58,14 +58,14 @@ def unique_counts(x: Array, /) -> UniqueCountsResult:
     - the counts of each unique value
     """
     resp = cast(
-                str,
-                generic_msg(
-                    cmd=f"uniqueCounts{x.ndim}D",
-                    args={"name": x._array},
-                ),
-            )
+        str,
+        generic_msg(
+            cmd=f"uniqueCounts{x.ndim}D",
+            args={"name": x._array},
+        ),
+    )
 
-    arrays = [Array._new(create_pdarray(r)) for r in resp.split('+')]
+    arrays = [Array._new(create_pdarray(r)) for r in resp.split("+")]
 
     return UniqueCountsResult(
         values=arrays[0],
@@ -80,14 +80,14 @@ def unique_inverse(x: Array, /) -> UniqueInverseResult:
     - the inverse indices that reconstruct `x` from the unique values
     """
     resp = cast(
-                str,
-                generic_msg(
-                    cmd=f"uniqueInverse{x.ndim}D",
-                    args={"name": x._array},
-                ),
-            )
+        str,
+        generic_msg(
+            cmd=f"uniqueInverse{x.ndim}D",
+            args={"name": x._array},
+        ),
+    )
 
-    arrays = [Array._new(create_pdarray(r)) for r in resp.split('+')]
+    arrays = [Array._new(create_pdarray(r)) for r in resp.split("+")]
 
     return UniqueInverseResult(
         values=arrays[0],

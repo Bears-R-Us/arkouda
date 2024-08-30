@@ -31,85 +31,39 @@ module MsgProcessing
 
     :returns: (MsgTuple) response message
     */
-    @arkouda.registerND(cmd_prefix="create")
-    proc createMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-        const dtype = str2dtype(msgArgs.getValueOf("dtype")),
-              shape = msgArgs.get("shape").getTuple(nd),
-              rname = st.nextName();
+    @arkouda.instantiateAndRegister
+    proc create(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws {
+        const shape = msgArgs["shape"].toScalarTuple(int, array_nd);
 
         var size = 1;
         for s in shape do size *= s;
+        overMemLimit(typeSize(array_dtype) * size);
 
-        overMemLimit(dtypeSize(dtype) * size);
-
-        // if verbose print action
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-            "cmd: %s dtype: %s size: %i new pdarray name: %s".format(
-                                                     cmd,dtype2str(dtype),size,rname));
-        if isSupportedDType(dtype) {
-            // create and add entry to symbol table
-            st.addEntry(rname, (...shape), dtype);
-            // if verbose print result
-            mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                        "created the pdarray %s".format(st.attrib(rname)));
+                       "creating new array (dtype=%s, shape=%?)".format(type2str(array_dtype),shape));
 
-            const repMsg = "created " + st.attrib(rname);
-            mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), repMsg);
-            return new MsgTuple(repMsg, MsgType.NORMAL);
-        } else {
-            const errorMsg = unsupportedTypeError(dtype, getRoutineName());
-            mpLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);
-        }
+        return st.insert(createSymEntry((...shape), array_dtype));
     }
 
-    // used for "zero-dimensional" array api scalars
-    proc createMsg0D(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
-        const dtype = str2dtype(msgArgs.getValueOf("dtype")),
-              rname = st.nextName();
+    @arkouda.instantiateAndRegister
+    proc createScalarArray(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype): MsgTuple throws {
+        const value = msgArgs["value"].toScalar(array_dtype);
 
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                       "cmd: %s dtype: %s size: 1 new pdarray name: %s".format(
-                       cmd,dtype2str(dtype),rname));
+                       "creating scalar array (dtype=%s)".format(type2str(array_dtype)));
 
         // on the client side, scalar (0D) arrays have a shape of "()" and a size of 1
         // here, we represent that using a 1D array with a shape of (1,) and a size of 1
-        var e = toGenSymEntry(st.addEntry(rname, 1, dtype));
-        e.size = 1;
-        e.shape = "[]";
-        e.ndim = 1; // this is 1 rather than 0 s.t. calls to other message handlers treat it as a 1D
-                    // array (e.g., we should call 'set1D', not 'set0D' on this array)
+        var e = createSymEntry(1, array_dtype);
+        e.a[0] = value;
 
-        // set the value if a 'value' argument is provided
-        proc setValue(type t) throws {
-            try {
-                const valueArg = msgArgs.get("value");
-                toSymEntry(e, t, 1).a[0] = valueArg.toScalar(t);
-            } catch e: ErrorWithContext {
-            } catch e {
-                throw e;
-            }
-        }
+        var ge = e: GenSymEntry;
+        ge.size = 1;
+        ge.shape = "[]";
+        ge.ndim = 1; // this is 1 rather than 0 s.t. calls to other message handlers treat it as a 1D
+                    // array (e.g., we should call 'set<_,1>', not 'set<_,0>' on this array)
 
-        select dtype {
-            when DType.Int64 do setValue(int);
-            when DType.UInt64 do setValue(uint);
-            when DType.Float64 do setValue(real);
-            when DType.Bool do setValue(bool);
-            when DType.BigInt do setValue(bigint);
-            otherwise {
-                const errorMsg = unsupportedTypeError(dtype, getRoutineName());
-                mpLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
-            }
-        }
-
-        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                       "created the pdarray %s".format(st.attrib(rname)));
-
-        var repMsg = "created " + st.attrib(rname);
-        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), repMsg);
-        return new MsgTuple(repMsg, MsgType.NORMAL);
+        return st.insert(e);
     }
 
     /* 
@@ -341,59 +295,12 @@ module MsgProcessing
     :returns: MsgTuple
     :throws: `UndefinedSymbolError(name)`
     */
-    @arkouda.registerND(cmd_prefix="set")
-    proc setMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd = 1): MsgTuple throws {
-        param pn = Reflection.getRoutineName();
-        const name = msgArgs.getValueOf("array"),
-              value = msgArgs.get("val");
+    @arkouda.instantiateAndRegister(prefix="set")
+    proc setMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws {
+        var e = st[msgArgs["array"]]: SymEntry(array_dtype, array_nd);
+        e.a = msgArgs["val"].toScalar(array_dtype);
 
-        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
-
-        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                            "cmd: %s value: %s in pdarray %s".format(cmd,name,st.attrib(name)));
-
-        proc doAssignment(type t): MsgTuple throws
-            where isSupportedType(t)
-        {
-            var e = toSymEntry(gEnt, t, nd);
-            const val = value.getScalarValue(t);
-            e.a = val;
-            mpLogger.debug(getModuleName(),pn,getLineNumber(),
-                            "cmd: %s name: %s to val: %?".format(cmd,name,val));
-
-            const repMsg = "set %s to %?".format(name, val);
-            mpLogger.debug(getModuleName(),pn,getLineNumber(),repMsg);
-            return new MsgTuple(repMsg, MsgType.NORMAL);
-        }
-
-        proc doAssignment(type t): MsgTuple throws
-            where !isSupportedType(t)
-        {
-            const errorMsg = unsupportedTypeError(gEnt.dtype, pn);
-            mpLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);
-        }
-
-        select gEnt.dtype {
-            when DType.Int8 do return doAssignment(int(8));
-            when DType.Int16 do return doAssignment(int(16));
-            when DType.Int32 do return doAssignment(int(32));
-            when DType.Int64 do return doAssignment(int(64));
-            when DType.UInt8 do return doAssignment(uint(8));
-            when DType.UInt16 do return doAssignment(uint(16));
-            when DType.UInt32 do return doAssignment(uint(32));
-            when DType.UInt64 do return doAssignment(uint(64));
-            when DType.Float64 do return doAssignment(real(64));
-            when DType.Complex64 do return doAssignment(complex(64));
-            when DType.Complex128 do return doAssignment(complex(128));
-            when DType.Bool do return doAssignment(bool);
-            when DType.BigInt do return doAssignment(bigint);
-            otherwise {
-                mpLogger.error(getModuleName(),getRoutineName(),
-                                               getLineNumber(),"dtype: %s".format(msgArgs.getValueOf("dtype")));
-                return new MsgTuple(unrecognizedTypeError(pn,msgArgs.getValueOf("dtype")), MsgType.ERROR);
-            }
-        }
+        return MsgTuple.success();
     }
 
      /*

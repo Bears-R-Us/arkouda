@@ -18,8 +18,8 @@ module CommandMap {
   }
   private var f = akMsgSign;
 
-  var commandMap: map(string, f.type);
-  var moduleMap: map(string, string);
+  var commandMap: map(string, f.type);        // cmd-name => function
+  var moduleMap: map(string, (string, int));  // cmd-name => (module-name, line number)
   use Set;
   var usedModules: set(string);
 
@@ -28,13 +28,15 @@ module CommandMap {
    * This binds a server command to its corresponding function matching the standard
    * function signature & MsgTuple return type
    */
-  proc registerFunction(cmd: string, fcf: f.type) {
-    commandMap.add(cmd, fcf);
-  }
+  proc registerFunction(cmd: string, fcf: f.type, modName: string = "", line: int = -1) {
+    if commandMap.contains(cmd) {
+      writef("Warning: Command '%s' already registered. Ignoring registration from [%s:%d]", cmd, modName, line);
+    } else {
+      commandMap.add(cmd, fcf);
 
-  proc registerFunction(cmd: string, fcf: f.type, modName: string) {
-    commandMap.add(cmd, fcf);
-    moduleMap.add(cmd, modName);
+      if modName != "" then
+        moduleMap.add(cmd, (modName, line));
+    }
   }
 
   proc writeUsedModulesJson(ref mods: set(string)) {
@@ -73,17 +75,11 @@ module CommandMap {
   }
 
   proc executeCommand(cmd: string, msgArgs, st): MsgTuple throws {
-    var response: MsgTuple;
     if commandMap.contains(cmd) {
-      if moduleMap.contains(cmd) then usedModules.add(moduleMap[cmd]);
-      try {
-        response = commandMap[cmd](cmd, msgArgs, st);
-      } catch e {
-        response = MsgTuple.error("Error executing command: %s".format(e.message()));
-      }
+      if moduleMap.contains(cmd) then usedModules.add(moduleMap[cmd][0]);
+      return commandMap[cmd](cmd, msgArgs, st);
     } else {
-      response = MsgTuple.error("Unrecognized command: %s".format(cmd));
+      return MsgTuple.error("Unrecognized command: %s".format(cmd));
     }
-    return response;
   }
 }

@@ -29,7 +29,7 @@ class FileFormat(Enum):
     PARQUET = 2
     CSV = 3
 
-def time_ak_write(N_per_locale, numfiles, trials, dtype, path, seed, fileFormat, comps=None):
+def time_ak_write(N_per_locale, numfiles, trials, dtype, path, seed, fileFormat, comps=None, fixed_size=-1):
     if comps is None or comps == [""]:
         comps = COMPRESSIONS
 
@@ -50,7 +50,10 @@ def time_ak_write(N_per_locale, numfiles, trials, dtype, path, seed, fileFormat,
     elif dtype == "uint64":
         a = ak.randint(0, 2**32, N, dtype=ak.uint64, seed=seed)
     elif dtype == "str":
-        a = ak.random_strings_uniform(1, 16, N, seed=seed)
+        if fixed_size > 0:
+            a = ak.random_strings_uniform(fixed_size, fixed_size+1, N, seed=seed)
+        else:
+            a = ak.random_strings_uniform(1, 16, N, seed=seed)
 
     times = {}
     if fileFormat == FileFormat.PARQUET:
@@ -93,7 +96,7 @@ def time_ak_write(N_per_locale, numfiles, trials, dtype, path, seed, fileFormat,
         print("write Average rate {} = {:.4f} GiB/sec".format(key, nb / 2**30 / times[key]))
 
 
-def time_ak_read(N_per_locale, numfiles, trials, dtype, path, fileFormat, comps=None):
+def time_ak_read(N_per_locale, numfiles, trials, dtype, path, fileFormat, comps=None, fixed_size=-1):
     if comps is None or comps == [""]:
         comps = COMPRESSIONS
 
@@ -111,15 +114,26 @@ def time_ak_read(N_per_locale, numfiles, trials, dtype, path, fileFormat, comps=
 
     times = {}
     if fileFormat == FileFormat.PARQUET:
-        for comp in COMPRESSIONS:
-            if comp in comps:
-                readtimes = []
-                for i in range(trials):
-                    start = time.time()
-                    a = ak.read_parquet(path + comp + "*").popitem()[1]
-                    end = time.time()
-                    readtimes.append(end - start)
-                times[comp] = sum(readtimes) / trials
+        if fixed_size < 1:
+            for comp in COMPRESSIONS:
+                if comp in comps:
+                    readtimes = []
+                    for i in range(trials):
+                        start = time.time()
+                        a = ak.read_parquet(path + comp + "*").popitem()[1]
+                        end = time.time()
+                        readtimes.append(end - start)
+                    times[comp] = sum(readtimes) / trials
+        else:
+            for comp in COMPRESSIONS:
+                if comp in comps:
+                    readtimes = []
+                    for i in range(trials):
+                        start = time.time()
+                        a = ak.read_parquet(path + comp + "*",fixed_len=fixed_size).popitem()[1]
+                        end = time.time()
+                        readtimes.append(end - start)
+                    times[comp] = sum(readtimes) / trials
 
     elif fileFormat == FileFormat.HDF5:
         readtimes = []
@@ -210,6 +224,9 @@ def create_parser():
     parser.add_argument("port", type=int, help="Port of arkouda server")
     parser.add_argument(
         "-n", "--size", type=int, default=10**8, help="Problem size: length of array to write/read"
+    )
+    parser.add_argument(
+        "--fixed-size", type=int, default=-1, help="Fixed size length of string for Parquet"
     )
     parser.add_argument(
         "-t", "--trials", type=int, default=1, help="Number of times to run the benchmark"

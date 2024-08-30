@@ -10,9 +10,6 @@ module SetMsg {
   use CommAggregation;
   use RadixSortLSD;
   use Unique;
-
-  use ArkoudaAryUtilCompat;
-
   use Reflection;
 
   private config const logLevel = ServerConfig.logLevel;

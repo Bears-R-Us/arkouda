@@ -1,188 +1,109 @@
 import numpy as np
-from base_test import ArkoudaTest
-from context import arkouda as ak
+import pytest
 
-SIZE = 10
-K = 5
+import arkouda as ak
 
-
-def make_array():
-    a = ak.randint(0, SIZE, SIZE)
-    return a
+NUMERIC_TYPES = ["int64", "uint64", "float64", "bool"]
 
 
-def compare_results(akres, sortedres) -> int:
-    """
-    Compares the numpy and arkouda arrays via the numpy.allclose method with the
-    default relative and absolute tolerances, returning 0 if the arrays are similar
-    element-wise within the tolerances, 1 if they are dissimilar.element
-
-    :return: 0 (identical) or 1 (dissimilar)
-    :rtype: int
-    """
-    akres = akres.to_ndarray()
-
-    if not np.array_equal(akres, sortedres):
-        akres = ak.array(akres)
-        sortedres = ak.array(sortedres)
-        innp = sortedres[
-            ak.in1d(ak.array(sortedres), ak.array(akres), True)
-        ]  # values in np array, but not ak array
-        inak = akres[
-            ak.in1d(ak.array(akres), ak.array(sortedres), True)
-        ]  # values in ak array, not not np array
-        print(f"(values in np but not ak: {innp}) (values in ak but not np: {inak})")
-        return 1
-    return 0
+def make_np_arrays(size, dtype):
+    if dtype == "int64":
+        return np.random.randint(-(2**32), 2**32, size=size, dtype=dtype)
+    elif dtype == "uint64":
+        return ak.cast(ak.randint(-(2**32), 2**32, size=size), dtype)
+    elif dtype == "float64":
+        return np.random.uniform(-(2**32), 2**32, size=size)
+    elif dtype == "bool":
+        return np.random.randint(0, 1, size=size, dtype=dtype)
+    return None
 
 
-def run_test(runMin=True, isInd=True, verbose=True):
-    """
-    The run_test method runs execution of the mink reduction
-    on a randomized array.
-    :return:
-    """
-    aka = make_array()
-
-    failures = 0
-    try:
-        if not isInd:
-            if runMin:
-                akres = ak.mink(aka, K)
-                npres = np.sort(aka.to_ndarray())[:K]  # first K elements from sorted array
-            else:
-                akres = ak.maxk(aka, K)
-                npres = np.sort(aka.to_ndarray())[-K:]  # last K elements from sorted array
-        else:
-            if runMin:
-                akres = aka[ak.argmink(aka, K)]
-                npres = np.sort(aka.to_ndarray())[:K]  # first K elements from sorted array
-            else:
-                akres = aka[ak.argmaxk(aka, K)]
-                npres = np.sort(aka.to_ndarray())[-K:]  # last K elements from sorted array
-    except RuntimeError as E:
-        if verbose:
-            print("Arkouda error: ", E)
-        return 1
-
-    failures += compare_results(akres, npres)
-
-    return failures
+def make_np_edge_cases(dtype):
+    if dtype == "int64":
+        return np.array([np.iinfo(np.int64).min, -1, 0, 3, np.iinfo(np.int64).max])
+    elif dtype == "uint64":
+        return np.array([17, 2**64-1, 0, 3, 2**63 + 10], dtype=np.uint64)
+    elif dtype == "float64":
+        return np.array(
+            [
+                np.nan,
+                -np.inf,
+                np.finfo(np.float64).min,
+                -3.14,
+                0.0,
+                3.14,
+                8,
+                np.finfo(np.float64).max,
+                np.inf,
+                np.nan,
+            ]
+        )
+    return None
 
 
-class MinKTest(ArkoudaTest):
-    def test_mink(self):
-        """
-        Executes run_test and asserts whether there are any errors
+class TestExtrema:
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", ["int64", "uint64", "float64"])
+    def test_extrema(self, prob_size, dtype):
+        pda = ak.array(make_np_arrays(prob_size, dtype))
+        ak_sorted = ak.sort(pda)
+        K = prob_size // 2
 
-        :return: None
-        :raise: AssertionError if there are any errors encountered in run_test for set operations
-        """
-        self.assertEqual(0, run_test())
+        # compare minimums against first K elements from sorted array
+        assert (ak.mink(pda, K) == ak_sorted[:K]).all()
+        assert (pda[ak.argmink(pda, K)] == ak_sorted[:K]).all()
 
-    def test_error_handling(self):
-        testArray = ak.randint(0, 100, 100)
+        # compare maximums against last K elements from sorted array
+        assert (ak.maxk(pda, K) == ak_sorted[-K:]).all()
+        assert (pda[ak.argmaxk(pda, K)] == ak_sorted[-K:]).all()
 
-        with self.assertRaises(TypeError):
-            ak.mink(list(range(0, 10)), 1)
+    @pytest.mark.parametrize("dtype", ["int64", "uint64", "float64"])
+    def test_extrema_edge_cases(self, dtype):
+        edge_cases = make_np_edge_cases(dtype)
+        size = edge_cases.size // 2
+        # Due to #2754, we need to have replacement off to avoid all values = min/max(dtype)
+        npa = np.random.choice(edge_cases, edge_cases.size // 2, replace=False)
+        pda = ak.array(npa)
+        K = size // 2
+        np_sorted = np.sort(npa)
 
-        with self.assertRaises(TypeError):
-            ak.mink(testArray, "1")
+        # extremas ignore nans
+        non_nan_sorted = np_sorted[~np.isnan(np_sorted)]
 
-        with self.assertRaises(ValueError):
-            ak.mink(testArray, -1)
+        if non_nan_sorted.size >= K:
+            # compare minimums against first K elements from sorted array
+            assert np.allclose(ak.mink(pda, K).to_ndarray(), non_nan_sorted[:K], equal_nan=True)
+            # check for -1s to avoid oob due to #2754
+            arg_min_k = ak.argmink(pda, K)
+            if (arg_min_k != -1).all():
+                assert np.allclose(pda[arg_min_k].to_ndarray(), non_nan_sorted[:K], equal_nan=True)
 
-        with self.assertRaises(ValueError):
-            ak.mink(ak.array([]), 1)
+            # compare maximums against last K elements from sorted array
+            assert np.allclose(ak.maxk(pda, K).to_ndarray(), non_nan_sorted[-K:], equal_nan=True)
+            # check for -1s to avoid oob due to #2754
+            arg_max_k = ak.argmaxk(pda, K)
+            if (arg_max_k != -1).all():
+                assert np.allclose(pda[arg_max_k].to_ndarray(), non_nan_sorted[-K:], equal_nan=True)
 
-
-class MaxKTest(ArkoudaTest):
-    def test_maxk(self):
-        """
-        Executes run_test and asserts whether there are any errors
-
-        :return: None
-        :raise: AssertionError if there are any errors encountered in run_test for set operations
-        """
-        self.assertEqual(0, run_test(runMin=False))
-
-    def test_error_handling(self):
-        testArray = ak.randint(0, 100, 100)
-
-        with self.assertRaises(TypeError):
-            ak.maxk(list(range(0, 10)), 1)
-
-        with self.assertRaises(TypeError):
-            ak.maxk(testArray, "1")
-
-        with self.assertRaises(ValueError):
-            ak.maxk(testArray, -1)
-
-        with self.assertRaises(ValueError):
-            ak.maxk(ak.array([]), 1)
-
-
-class ArgMinKTest(ArkoudaTest):
-    def test_argmink(self):
-        """
-        Executes run_test and asserts whether there are any errors
-
-        :return: None
-        :raise: AssertionError if there are any errors encountered in run_test for set operations
-        """
-        self.assertEqual(0, run_test(isInd=True))
-
-    def test_error_handling(self):
-        testArray = ak.randint(0, 100, 100)
-
-        with self.assertRaises(TypeError):
-            ak.argmink(list(range(0, 10)), 1)
-
-        with self.assertRaises(TypeError):
-            ak.argmink(testArray, "1")
-
-        with self.assertRaises(ValueError):
-            ak.argmink(testArray, -1)
-
-        with self.assertRaises(ValueError):
-            ak.argmink(ak.array([]), 1)
-
-
-class ArgMaxKTest(ArkoudaTest):
-    def test_argmaxk(self):
-        """
-        Executes run_test and asserts whether there are any errors
-
-        :return: None
-        :raise: AssertionError if there are any errors encountered in run_test for set operations
-        """
-        self.assertEqual(0, run_test(runMin=False, isInd=True))
-
-    def test_error_handling(self):
-        testArray = ak.randint(0, 100, 100)
-
-        with self.assertRaises(TypeError):
-            ak.argmaxk(list(range(0, 10)), 1)
-
-        with self.assertRaises(TypeError):
-            ak.argmaxk(testArray, "1")
-
-        with self.assertRaises(ValueError):
-            ak.argmaxk(testArray, -1)
-
-        with self.assertRaises(ValueError):
-            ak.argmaxk(ak.array([]), 1)
-
-
-class ArgMinTest(ArkoudaTest):
-    def test_argmin(self):
-        np_arr = np.array([False, False, True, True, False])
+    @pytest.mark.parametrize("dtype", NUMERIC_TYPES)
+    def test_argmin_and_argmax(self, dtype):
+        np_arr = make_np_arrays(1000, dtype)
         ak_arr = ak.array(np_arr)
-        self.assertEqual(np_arr.argmin(), ak_arr.argmin())
 
+        assert np_arr.argmin() == ak_arr.argmin()
+        assert np_arr.argmax() == ak_arr.argmax()
 
-class ArgMaxTest(ArkoudaTest):
-    def test_argmax(self):
-        np_arr = np.array([False, False, True, True, False])
-        ak_arr = ak.array(np_arr)
-        self.assertEqual(np_arr.argmax(), ak_arr.argmax())
+    def test_error_handling(self):
+        test_array = ak.randint(0, 100, 100)
+        for op in ak.mink, ak.maxk, ak.argmink, ak.argmaxk:
+            with pytest.raises(TypeError):
+                op(list(range(10)), 1)
+
+            with pytest.raises(TypeError):
+                op(test_array, "1")
+
+            with pytest.raises(ValueError):
+                op(test_array, -1)
+
+            with pytest.raises(ValueError):
+                op(ak.array([]), 1)

@@ -1,6 +1,7 @@
 module Cast {
   use MultiTypeSymbolTable;
   use MultiTypeSymEntry;
+  use Message;
   use Reflection;
   use SegmentedString;
   use ServerErrors;
@@ -12,51 +13,8 @@ module Cast {
   private config const logLevel = ServerConfig.logLevel;
   const castLogger = new Logger(logLevel);
 
-  proc castGenSymEntry(gse: borrowed GenSymEntry, st: borrowed SymTab, type fromType,
-                       type toType, param nd: int): (bool, string) throws {
-    const before = toSymEntry(gse, fromType, nd);
-    const name = st.nextName();
-    var after = st.addEntry(name, (...before.tupShape), toType);
-    try {
-      after.a = before.a : toType;
-    } catch e: IllegalArgumentError {
-      const errorMsg = "Error: bad value in cast from %s to %s".format(
-                       fromType:string, toType:string);
-      castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-      return (false, errorMsg);
-    }
-
-    const returnMsg = "created " + st.attrib(name);
-    castLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),returnMsg);
-    return (true, returnMsg);
-  }
-
-  proc castGenSymEntryToBigInt(gse: borrowed GenSymEntry, st: borrowed SymTab,
-                               type fromType, param nd: int): (bool, string) throws {
-    const before = toSymEntry(gse, fromType, nd);
-    const name = st.nextName();
-    var tmp = makeDistArray((...before.tupShape), bigint);
-    try {
-      if fromType == bigint {
-        tmp = before.a;
-      }
-      else {
-        tmp = before.a:bigint;
-      }
-    } catch e: IllegalArgumentError {
-      const errorMsg = "Error: bad value in cast from %s to bigint".format(fromType:string);
-      castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-      return (false, errorMsg);
-    }
-    st.addEntry(name, createSymEntry(tmp));
-
-    const returnMsg = "created " + st.attrib(name);
-    castLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),returnMsg);
-    return (true, returnMsg);
-  }
-
   proc castGenSymEntryToString(gse: borrowed GenSymEntry, st: borrowed SymTab,
-                                                       type fromType): (bool, string) throws {
+                                                       type fromType): MsgTuple throws {
     const before = toSymEntry(gse, fromType);
     const oname = st.nextName();
     var segments = st.addEntry(oname, before.size, int);
@@ -69,7 +27,7 @@ module Cast {
       } catch e {
           const errorMsg = "Error: could not convert float64 value to decimal representation";
           castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-          return (false, errorMsg);
+          return MsgTuple.error(errorMsg);
       }
     } else {
       try {
@@ -77,7 +35,7 @@ module Cast {
       } catch e: IllegalArgumentError {
           const errorMsg = "Error: bad value in cast from %s to string".format(fromType:string);
           castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-          return (false, errorMsg);
+          return MsgTuple.error(errorMsg);
       }
     }
     const byteLengths = [s in strings] s.numBytes + 1;
@@ -94,9 +52,9 @@ module Cast {
       }
     }
 
-    var returnMsg ="created " + st.attrib(oname) + "+created " + st.attrib(vname);
+    const returnMsg ="created " + st.attrib(oname) + "+created " + st.attrib(vname);
     castLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),returnMsg);
-    return (true, returnMsg);
+    return MsgTuple.success(returnMsg);
   }
 
   enum ErrorMode {

@@ -8,15 +8,15 @@ from typing import Dict, List, Optional, Tuple, Union, cast
 import numpy as np
 from typeguard import typechecked
 
-import arkouda.dtypes
+import arkouda.numpy.dtypes
 from arkouda.client import generic_msg
-from arkouda.dtypes import (
-    NUMBER_FORMAT_STRINGS,
+from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS
+from arkouda.numpy.dtypes import dtype as akdtype
+from arkouda.numpy.dtypes import (
     int_scalars,
-    npstr,
     resolve_scalar_dtype,
+    str_,
     str_scalars,
-    translate_np_dtype,
 )
 from arkouda.infoclass import information, list_symbol_table
 from arkouda.logger import getArkoudaLogger
@@ -183,7 +183,7 @@ class Strings:
 
         self._bytes: Optional[pdarray] = None
         self._offsets: Optional[pdarray] = None
-        self.dtype = npstr
+        self.dtype = akdtype(str_)
         self._regex_dict: Dict = dict()
         self.logger = getArkoudaLogger(name=__class__.__name__)  # type: ignore
 
@@ -319,10 +319,9 @@ class Strings:
             )
             return Strings.from_return_msg(repMsg)
         elif isinstance(key, pdarray):
-            kind, _ = translate_np_dtype(key.dtype)
-            if kind not in ("bool", "int", "uint"):
+            if key.dtype not in ("bool", "int", "uint"):
                 raise TypeError(f"unsupported pdarray index type {key.dtype}")
-            if kind == "bool" and self.size != key.size:
+            if key.dtype == "bool" and self.size != key.size:
                 raise ValueError(f"size mismatch {self.size} {key.size}")
             repMsg = generic_msg(
                 cmd="segmentedIndex",
@@ -2206,9 +2205,9 @@ class Strings:
 
         # Total number of bytes in the array data
         array_bytes = (
-            self.size * arkouda.dtypes.int64.itemsize
+            self.size * arkouda.numpy.dtypes.dtype(arkouda.numpy.dtypes.int64).itemsize
             if comp == "offsets"
-            else self.nbytes * arkouda.dtypes.uint8.itemsize
+            else self.nbytes * arkouda.numpy.dtypes.dtype(arkouda.numpy.dtypes.uint8).itemsize
         )
 
         # Guard against overflowing client memory
@@ -2228,7 +2227,7 @@ class Strings:
         # The server sends us native-endian bytes so we need to account for that.
         # Since bytes are immutable, we need to copy the np array to be mutable
         dt: np.dtype = np.dtype(np.int64) if comp == "offsets" else np.dtype(np.uint8)
-        if arkouda.dtypes.get_server_byteorder() == "big":
+        if arkouda.numpy.dtypes.get_server_byteorder() == "big":
             dt = dt.newbyteorder(">")
         else:
             dt = dt.newbyteorder("<")

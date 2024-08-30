@@ -40,66 +40,9 @@ module ServerConfig
 
     /*
       maximum array dimensionality supported by the server
-      set by 'serverModuleGen.py' based on 'serverConfig.json'
+      set in 'registration-config.json'
     */
     config param MaxArrayDims: int = 1;
-
-    /*
-      Scalar (numpy) data types supported by the server
-      set by 'serverModuleGen.py' based on 'serverConfig.json'
-    */
-    config param  SupportsUint8 = true,
-                  SupportsUint16 = false,
-                  SupportsUint32 = false,
-                  SupportsUint64 = true,
-                  SupportsInt8 = false,
-                  SupportsInt16 = false,
-                  SupportsInt32 = false,
-                  SupportsInt64 = true,
-                  SupportsFloat32 = false,
-                  SupportsFloat64 = true,
-                  SupportsComplex64 = false,
-                  SupportsComplex128 = false,
-                  SupportsBool = true;
-
-    proc isSupportedType(type t) param: bool {
-      if t == uint(8) then return SupportsUint8;
-      if t == uint(16) then return SupportsUint16;
-      if t == uint(32) then return SupportsUint32;
-      if t == uint then return SupportsUint64;
-      if t == int(8) then return SupportsInt8;
-      if t == int(16) then return SupportsInt16;
-      if t == int(32) then return SupportsInt32;
-      if t == int(64) then return SupportsInt64;
-      if t == real(32) then return SupportsFloat32;
-      if t == real then return SupportsFloat64;
-      if t == complex(64) then return SupportsComplex64;
-      if t == complex(128) then return SupportsComplex128;
-      if t == bool then return SupportsBool;
-      if t == string then return true;
-      if t == bytes then return true;
-      if t == bigint then return true;
-      return false;
-    }
-
-    proc isSupportedDType(dt: DType): bool {
-      if dt == DType.UInt8 then return SupportsUint8;
-      if dt == DType.UInt16 then return SupportsUint16;
-      if dt == DType.UInt32 then return SupportsUint32;
-      if dt == DType.UInt64 then return SupportsUint64;
-      if dt == DType.Int8 then return SupportsInt8;
-      if dt == DType.Int16 then return SupportsInt16;
-      if dt == DType.Int32 then return SupportsInt32;
-      if dt == DType.Int64 then return SupportsInt64;
-      if dt == DType.Float32 then return SupportsFloat32;
-      if dt == DType.Float64 then return SupportsFloat64;
-      if dt == DType.Complex64 then return SupportsComplex64;
-      if dt == DType.Complex128 then return SupportsComplex128;
-      if dt == DType.Bool then return SupportsBool;
-      if dt == DType.Strings then return true;
-      if dt == DType.BigInt then return true;
-      return false;
-    }
 
     /*
     Type of deployment, which currently is either STANDARD, meaning
@@ -257,6 +200,7 @@ module ServerConfig
             const byteorder: string;
             const autoShutdown: bool;
             const serverInfoNoSplash: bool;
+            const maxArrayDims: int;
         }
 
         var (Zmajor, Zminor, Zmicro) = ZMQ.version;
@@ -282,7 +226,8 @@ module ServerConfig
             regexMaxCaptures = regexMaxCaptures,
             byteorder = try! getByteorder(),
             autoShutdown = autoShutdown,
-            serverInfoNoSplash = serverInfoNoSplash
+            serverInfoNoSplash = serverInfoNoSplash,
+            maxArrayDims = MaxArrayDims
         );
         return try! formatJson(cfg);
 
@@ -320,8 +265,11 @@ module ServerConfig
     Get the byteorder (endianness) of this locale
     */
     proc getByteorder() throws {
-      use ArkoudaIOCompat;
-      return getByteOrderCompat();
+      var writeVal = 1, readVal = 0;
+      var tmpf = openMemFile();
+      tmpf.writer(locking=false, serializer = new binarySerializer(endian=endianness.big)).write(writeVal);
+      tmpf.reader(locking=false, deserializer=new binaryDeserializer(endian=endianness.native)).read(readVal);
+      return if writeVal == readVal then "big" else "little";
     }
 
     /*
