@@ -181,7 +181,42 @@ def kill_server(server_process):
             server_process.kill()
 
 
-def start_arkouda_server(numlocales, trace=False, port=5555, host=None, server_args=None):
+def get_server_launch_cmd(numlocales):
+    """
+    Get an srun command to launch ./arkouda_server_real directly
+    """
+    import re
+
+    # get the srun command for 'arkouda_server_real'
+    p = subprocess.Popen(["./arkouda_server", f"-nl{numlocales}", "--dry-run"], stdout=subprocess.PIPE)
+    srun_cmd, err = p.communicate()
+    srun_cmd = srun_cmd.decode()
+
+    if err is not None:
+        raise RuntimeError("failed to capture arkouda srun command: ", err)
+
+    # remove and capture the '--constraint=' argument if present
+    constraint_setting = None
+    m = re.search(r"--constraint=[\w,]*\s", srun_cmd)
+    if m is not None:
+        constraint_setting = srun_cmd[m.start():m.end()]
+        srun_cmd = srun_cmd[:m.start()] + srun_cmd[m.end()+1:]
+
+    # extract evironment variable settings specified in the command
+    # and include them in the executing environment
+    env = os.environ.copy()
+    max_env_idx = 0
+    for match in re.finditer(r"([A-Z_]+)=(\S+)", srun_cmd):
+        max_env_idx = max(max_env_idx, match.end())
+        env.update({match.group(1): match.group(2)})
+
+    # remove the environment variables from the command string
+    srun_cmd = srun_cmd[max_env_idx:]
+
+    return (srun_cmd, env, constraint_setting)
+
+
+def start_arkouda_server(numlocales, trace=False, port=5555, host=None, server_args=None, within_slurm_alloc=False):
     """
     Start the Arkouda server and wait for it to start running. Connection info
     is written to `get_arkouda_server_info_file()`.
@@ -191,6 +226,8 @@ def start_arkouda_server(numlocales, trace=False, port=5555, host=None, server_a
     :param int port: the desired arkouda_server port, defaults to 5555
     :param str host: the desired arkouda_server host, defaults to None
     :param list server_args: additional arguments to pass to the server
+    :param within_slurm_alloc: whether the current script is running within a slurm allocation.
+                               in which case, special care needs to be taken when launching the server.
     :return: tuple containing server host, port, and process
     :rtype: ServerInfo(host, port, process)
     """
@@ -198,8 +235,14 @@ def start_arkouda_server(numlocales, trace=False, port=5555, host=None, server_a
     with contextlib.suppress(FileNotFoundError):
         os.remove(connection_file)
 
+    if within_slurm_alloc:
+        raw_server_cmd, env, _ = get_server_launch_cmd(numlocales)
+    else:
+        raw_server_cmd = get_arkouda_server()
+        env = None
+
     cmd = [
-        get_arkouda_server(),
+        raw_server_cmd,
         "--trace={}".format("true" if trace else "false"),
         "--serverConnectionInfo={}".format(connection_file),
         "-nl {}".format(numlocales),
@@ -209,7 +252,7 @@ def start_arkouda_server(numlocales, trace=False, port=5555, host=None, server_a
         cmd += server_args
 
     logging.info('Starting "{}"'.format(cmd))
-    process = subprocess.Popen(cmd, stdout=subprocess.DEVNULL)
+    process = subprocess.Popen(cmd, stdout=subprocess.DEVNUL, env=env)
     atexit.register(kill_server, process)
 
     if not host:
