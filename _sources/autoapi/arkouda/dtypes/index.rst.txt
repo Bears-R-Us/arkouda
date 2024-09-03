@@ -904,7 +904,7 @@ Package Contents
 
 
 
-.. py:class:: all_scalars
+.. py:class:: all_scalars(origin, params, *, inst=True, name=None)
 
    Bases: :py:obj:`_GenericAlias`
 
@@ -1105,7 +1105,7 @@ Package Contents
 
 
 
-.. py:class:: bool_scalars
+.. py:class:: bool_scalars(origin, params, *, inst=True, name=None)
 
    Bases: :py:obj:`_GenericAlias`
 
@@ -1340,7 +1340,7 @@ Package Contents
 
 
 
-.. py:class:: float_scalars
+.. py:class:: float_scalars(origin, params, *, inst=True, name=None)
 
    Bases: :py:obj:`_GenericAlias`
 
@@ -1560,7 +1560,7 @@ Package Contents
 
 
 
-.. py:class:: int_scalars
+.. py:class:: int_scalars(origin, params, *, inst=True, name=None)
 
    Bases: :py:obj:`_GenericAlias`
 
@@ -1580,7 +1580,7 @@ Package Contents
 
 .. py:function:: isSupportedNumber(num)
 
-.. py:class:: numeric_and_bool_scalars
+.. py:class:: numeric_and_bool_scalars(origin, params, *, inst=True, name=None)
 
    Bases: :py:obj:`_GenericAlias`
 
@@ -1594,7 +1594,7 @@ Package Contents
    this is used by e.g. typing.List and typing.Dict.
 
 
-.. py:class:: numeric_scalars
+.. py:class:: numeric_scalars(origin, params, *, inst=True, name=None)
 
    Bases: :py:obj:`_GenericAlias`
 
@@ -1608,7 +1608,7 @@ Package Contents
    this is used by e.g. typing.List and typing.Dict.
 
 
-.. py:class:: numpy_scalars
+.. py:class:: numpy_scalars(origin, params, *, inst=True, name=None)
 
    Bases: :py:obj:`_GenericAlias`
 
@@ -2242,7 +2242,7 @@ Package Contents
 
 
 
-.. py:class:: str_scalars
+.. py:class:: str_scalars(origin, params, *, inst=True, name=None)
 
    Bases: :py:obj:`_GenericAlias`
 

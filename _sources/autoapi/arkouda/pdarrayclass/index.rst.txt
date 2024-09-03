@@ -1050,21 +1050,15 @@ Module Contents
 
 
 
-   .. py:method:: reshape(*shape, order='row_major')
+   .. py:method:: reshape(*shape)
 
       Gives a new shape to an array without changing its data.
 
       :param shape: The new shape should be compatible with the original shape.
       :type shape: int, tuple of ints, or pdarray
-      :param order: Read the elements of the pdarray in this index order
-                    By default, read the elements in row_major or C-like order where the last index
-                    changes the fastest
-                    If 'column_major' or 'F', read the elements in column_major or Fortran-like order where the
-                    first index changes the fastest
-      :type order: str {'row_major' | 'C' | 'column_major' | 'F'}
 
-      :returns: An arrayview object with the data from the array but with the new shape
-      :rtype: ArrayView
+      :returns: a pdarray with the same data, reshaped to the new shape
+      :rtype: pdarray
 
 
 
