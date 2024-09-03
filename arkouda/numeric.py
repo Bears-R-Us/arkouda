@@ -1,6 +1,6 @@
 import json
 from enum import Enum
-from typing import ForwardRef, List, Optional, Sequence, Tuple, Union
+from typing import TYPE_CHECKING, List, Sequence, Tuple, TypeVar, Union
 from typing import cast as type_cast
 from typing import no_type_check
 
@@ -27,8 +27,12 @@ from arkouda.pdarraycreation import array, linspace, scalar_array
 from arkouda.sorting import sort
 from arkouda.strings import Strings
 
-Categorical = ForwardRef("Categorical")
-SegArray = ForwardRef("SegArray")
+if TYPE_CHECKING:
+    from arkouda.categorical import Categorical
+    from arkouda.segarray import SegArray
+else:
+    Categorical = TypeVar("Categorical")
+    SegArray = TypeVar("SegArray")
 
 __all__ = [
     "cast",
@@ -1981,7 +1985,9 @@ def histogramdd(
 @typechecked
 def value_counts(
     pda: pdarray,
-) -> Union[Categorical, Tuple[Union[pdarray, Strings], Optional[pdarray]]]:  # type: ignore
+) -> Tuple[
+    Union[Union[pdarray, Strings, Categorical], Sequence[Union[pdarray, Strings, Categorical]]], pdarray
+]:
     """
     Count the occurrences of the unique values of an array.
 
