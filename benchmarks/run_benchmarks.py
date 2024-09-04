@@ -225,7 +225,7 @@ def main():
                 args.num_locales,
                 port=args.server_port,
                 server_args=args.server_args,
-                within_slurm_alloc=args.within_slrum_alloc,
+                within_slurm_alloc=bool(args.within_slrum_alloc),
             )
         for trial in range(args.numtrials):
             benchmark_py = os.path.join(benchmark_dir, "{}.py".format(benchmark))

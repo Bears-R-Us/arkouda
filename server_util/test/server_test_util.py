@@ -249,9 +249,7 @@ def start_arkouda_server(
         raw_server_cmd, env, _ = get_server_launch_cmd(numlocales)
         raw_server_cmd = raw_server_cmd.strip().strip().split(" ")
     else:
-        raw_server_cmd = [
-            get_arkouda_server(),
-        ]
+        raw_server_cmd = [get_arkouda_server(),]
         env = None
 
     cmd = raw_server_cmd + [
