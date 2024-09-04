@@ -192,12 +192,12 @@ def create_parser():
     parser.add_argument("--start-date", help="graph start date")
     parser.add_argument(
         "--isolated",
-        default="False",
+        default=False,
         help="run each benchmark in its own server instance",
     )
     parser.add_argument(
         "--within-slrum-alloc",
-        default="False",
+        default=False,
         help="whether this script was launched from within a slurm allocation (for use with --isolated only)",
     )
     return parser
