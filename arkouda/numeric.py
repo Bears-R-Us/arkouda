@@ -2220,12 +2220,16 @@ def array_equal(pda_a: pdarray, pda_b: pdarray, equal_nan: bool = False):
     Returns
     -------
     boolean
-      With string data: False if one array is of type ak.str_ and the other isn't,
-                        True if both are ak.str_ and they match.
-      With numeric data: True if neither array has any nan elements, and all elements pairwise equal.
-                         False if equal_Nan is False, and either array has any nan element.
-                         True if equal_Nan is True, all non-nan elements are pairwise equal,
-                                            and all nans in pda_a correspond to nans in pda_b
+      With string data:
+		 False if one array is of type ak.str_ and the other isn't, True if both are ak.str_ and they match.
+
+      With numeric data:
+
+		True if neither array has any nan elements, and all elements pairwise equal.
+
+                True if equal_Nan is True, all non-nan elements are pairwise equal, and all nans in pda_a correspond to nans in pda_b
+
+                False if equal_Nan is False, and either array has any nan element.
 
     Examples
     --------
@@ -2237,7 +2241,7 @@ def array_equal(pda_a: pdarray, pda_b: pdarray, equal_nan: bool = False):
     >>> ak.array_equal(a,b)
     False
     >>> a[9] = np.nan
-    >>> array_equal(a,b)
+    >>> ak.array_equal(a,b)
     False
     >>> ak.array_equal(a,b,True)
     True
