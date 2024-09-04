@@ -370,8 +370,9 @@
     <span class="n">isSupportedNumber</span><span class="p">,</span>
     <span class="n">numeric_scalars</span><span class="p">,</span>
     <span class="n">resolve_scalar_dtype</span><span class="p">,</span>
-    <span class="n">str_</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">str_</span>
+<span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">str_</span> <span class="k">as</span> <span class="n">akstr_</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="nb">all</span> <span class="k">as</span> <span class="n">ak_all</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="nb">any</span> <span class="k">as</span> <span class="n">ak_any</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">argmax</span><span class="p">,</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">,</span> <span class="nb">sum</span>
@@ -426,6 +427,7 @@
     <span class="s2">&quot;rad2deg&quot;</span><span class="p">,</span>
     <span class="s2">&quot;deg2rad&quot;</span><span class="p">,</span>
     <span class="s2">&quot;hash&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;array_equal&quot;</span><span class="p">,</span>
     <span class="s2">&quot;putmask&quot;</span><span class="p">,</span>
     <span class="s2">&quot;where&quot;</span><span class="p">,</span>
     <span class="s2">&quot;histogram&quot;</span><span class="p">,</span>
@@ -2684,6 +2686,59 @@
         <span class="k">return</span> <span class="nb">sum</span><span class="p">((</span><span class="n">pda</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
     <span class="k">elif</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">((</span><span class="n">pda</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="array_equal">
+<a class="viewcode-back" href="../../autoapi/arkouda/numeric/index.html#arkouda.array_equal">[docs]</a>
+<span class="k">def</span> <span class="nf">array_equal</span><span class="p">(</span><span class="n">pda_a</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">pda_b</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">equal_nan</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compares two pdarrays for equality.</span>
+<span class="sd">    If neither array has any nan elements, then if all elements are pairwise equal,</span>
+<span class="sd">    it returns True.</span>
+<span class="sd">    If equal_Nan is False, then any nan element in either array gives a False return.</span>
+<span class="sd">    If equal_Nan is True, then pairwise-corresponding nans are considered equal.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pda_a : pdarray</span>
+<span class="sd">    pda_b : pdarray</span>
+<span class="sd">    equal_nan : boolean to determine how to handle nans, default False</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    boolean</span>
+<span class="sd">      With string data:</span>
+<span class="sd">         False if one array is type ak.str_ &amp; the other isn&#39;t, True if both are ak.str_ &amp; they match.</span>
+
+<span class="sd">      With numeric data:</span>
+<span class="sd">         True if neither array has any nan elements, and all elements pairwise equal.</span>
+
+<span class="sd">         True if equal_Nan True, all non-nans pairwise equal &amp; nans in pda_a correspond to nans in pda_b</span>
+
+<span class="sd">         False if equal_Nan False, &amp; either array has any nan element.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; a = ak.randint(0,10,10,dtype=ak.float64)</span>
+<span class="sd">    &gt;&gt;&gt; b = a</span>
+<span class="sd">    &gt;&gt;&gt; ak.array_equal(a,b)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; b[9] = np.nan</span>
+<span class="sd">    &gt;&gt;&gt; ak.array_equal(a,b)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; a[9] = np.nan</span>
+<span class="sd">    &gt;&gt;&gt; ak.array_equal(a,b)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; ak.array_equal(a,b,True)</span>
+<span class="sd">    True</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">pda_a</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">pda_b</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="ow">or</span> <span class="p">((</span><span class="n">pda_a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akstr_</span><span class="p">)</span> <span class="o">^</span> <span class="p">(</span><span class="n">pda_b</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akstr_</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">elif</span> <span class="n">equal_nan</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ak_all</span><span class="p">(</span><span class="n">where</span><span class="p">(</span><span class="n">isnan</span><span class="p">(</span><span class="n">pda_a</span><span class="p">),</span> <span class="n">isnan</span><span class="p">(</span><span class="n">pda_b</span><span class="p">),</span> <span class="n">pda_a</span> <span class="o">==</span> <span class="n">pda_b</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ak_all</span><span class="p">(</span><span class="n">pda_a</span> <span class="o">==</span> <span class="n">pda_b</span><span class="p">)</span></div>
 
 
 

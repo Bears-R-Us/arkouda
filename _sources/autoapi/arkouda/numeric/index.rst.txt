@@ -25,6 +25,7 @@ Functions
    arkouda.numeric.arctan
    arkouda.numeric.arctan2
    arkouda.numeric.arctanh
+   arkouda.numeric.array_equal
    arkouda.numeric.cast
    arkouda.numeric.ceil
    arkouda.numeric.clip
@@ -248,6 +249,50 @@ Module Contents
    :rtype: pdarray
 
    :raises TypeError: Raised if the parameters are not a pdarray or numeric scalar.
+
+
+.. py:function:: array_equal(pda_a: arkouda.pdarrayclass.pdarray, pda_b: arkouda.pdarrayclass.pdarray, equal_nan: bool = False)
+
+   Compares two pdarrays for equality.
+   If neither array has any nan elements, then if all elements are pairwise equal,
+   it returns True.
+   If equal_Nan is False, then any nan element in either array gives a False return.
+   If equal_Nan is True, then pairwise-corresponding nans are considered equal.
+
+   :param pda_a:
+   :type pda_a: pdarray
+   :param pda_b:
+   :type pda_b: pdarray
+   :param equal_nan:
+   :type equal_nan: boolean to determine how to handle nans, default False
+
+   :returns:
+
+             With string data:
+                False if one array is type ak.str_ & the other isn't, True if both are ak.str_ & they match.
+
+             With numeric data:
+                True if neither array has any nan elements, and all elements pairwise equal.
+
+                True if equal_Nan True, all non-nans pairwise equal & nans in pda_a correspond to nans in pda_b
+
+                False if equal_Nan False, & either array has any nan element.
+   :rtype: boolean
+
+   .. rubric:: Examples
+
+   >>> a = ak.randint(0,10,10,dtype=ak.float64)
+   >>> b = a
+   >>> ak.array_equal(a,b)
+   True
+   >>> b[9] = np.nan
+   >>> ak.array_equal(a,b)
+   False
+   >>> a[9] = np.nan
+   >>> ak.array_equal(a,b)
+   False
+   >>> ak.array_equal(a,b,True)
+   True
 
 
 .. py:function:: cast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], dt: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]

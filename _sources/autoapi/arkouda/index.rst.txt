@@ -80,7 +80,6 @@ Attributes
    arkouda.euler_gamma
    arkouda.inf
    arkouda.infty
-   arkouda.logger
    arkouda.nan
    arkouda.pi
 
@@ -242,7 +241,6 @@ Classes
    arkouda.int_scalars
    arkouda.int_scalars
    arkouda.int_scalars
-   arkouda.int_scalars
    arkouda.intc
    arkouda.integer
    arkouda.intp
@@ -265,7 +263,6 @@ Classes
    arkouda.short
    arkouda.signedinteger
    arkouda.single
-   arkouda.sparray
    arkouda.str_
    arkouda.str_
    arkouda.str_scalars
@@ -322,6 +319,7 @@ Functions
    arkouda.array
    arkouda.array
    arkouda.array
+   arkouda.array_equal
    arkouda.assert_almost_equal
    arkouda.assert_almost_equivalent
    arkouda.assert_arkouda_array_equal
@@ -381,7 +379,6 @@ Functions
    arkouda.create_pdarray
    arkouda.create_pdarray
    arkouda.create_pdarray
-   arkouda.create_sparray
    arkouda.ctz
    arkouda.cumprod
    arkouda.cumsum
@@ -398,7 +395,6 @@ Functions
    arkouda.disp
    arkouda.divmod
    arkouda.dot
-   arkouda.dtype
    arkouda.dtype
    arkouda.enableVerbose
    arkouda.exp
@@ -419,7 +415,6 @@ Functions
    arkouda.gen_ranges
    arkouda.gen_ranges
    arkouda.generic_concat
-   arkouda.getArkoudaLogger
    arkouda.getArkoudaLogger
    arkouda.get_byteorder
    arkouda.get_callback
@@ -31368,6 +31363,50 @@ Package Contents
    <class 'arkouda.strings.Strings'>
 
 
+.. py:function:: array_equal(pda_a: arkouda.pdarrayclass.pdarray, pda_b: arkouda.pdarrayclass.pdarray, equal_nan: bool = False)
+
+   Compares two pdarrays for equality.
+   If neither array has any nan elements, then if all elements are pairwise equal,
+   it returns True.
+   If equal_Nan is False, then any nan element in either array gives a False return.
+   If equal_Nan is True, then pairwise-corresponding nans are considered equal.
+
+   :param pda_a:
+   :type pda_a: pdarray
+   :param pda_b:
+   :type pda_b: pdarray
+   :param equal_nan:
+   :type equal_nan: boolean to determine how to handle nans, default False
+
+   :returns:
+
+             With string data:
+                False if one array is type ak.str_ & the other isn't, True if both are ak.str_ & they match.
+
+             With numeric data:
+                True if neither array has any nan elements, and all elements pairwise equal.
+
+                True if equal_Nan True, all non-nans pairwise equal & nans in pda_a correspond to nans in pda_b
+
+                False if equal_Nan False, & either array has any nan element.
+   :rtype: boolean
+
+   .. rubric:: Examples
+
+   >>> a = ak.randint(0,10,10,dtype=ak.float64)
+   >>> b = a
+   >>> ak.array_equal(a,b)
+   True
+   >>> b[9] = np.nan
+   >>> ak.array_equal(a,b)
+   False
+   >>> a[9] = np.nan
+   >>> ak.array_equal(a,b)
+   False
+   >>> ak.array_equal(a,b,True)
+   True
+
+
 .. py:function:: assert_almost_equal(left, right, rtol: float = 1e-05, atol: float = 1e-08, **kwargs) -> None
 
    Check that the left and right objects are approximately equal.
@@ -33935,24 +33974,6 @@ Package Contents
        the pdarray instance
 
 
-.. py:function:: create_sparray(repMsg: str, max_bits=None) -> sparray
-
-   Return a sparray instance pointing to an array created by the arkouda server.
-   The user should not call this function directly.
-
-   :param repMsg: space-delimited string containing the sparray name, datatype, size
-                  dimension, shape,and itemsize
-   :type repMsg: str
-
-   :returns: A sparray with the same attributes as on the server
-   :rtype: sparray
-
-   :raises ValueError: If there's an error in parsing the repMsg parameter into the six
-       values needed to create the pdarray instance
-   :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
-       the pdarray instance
-
-
 .. py:class:: csingle(value)
 
    Bases: :py:obj:`numpy.complexfloating`
@@ -34488,8 +34509,6 @@ Package Contents
 
 
 
-
-.. py:function:: dtype(x)
 
 .. py:function:: dtype(x)
 
@@ -35678,33 +35697,6 @@ Package Contents
    and updates for the specified handler.
 
 
-.. py:function:: getArkoudaLogger(name: str, handlers: Optional[List[logging.Handler]] = None, logFormat: Optional[str] = ArkoudaLogger.DEFAULT_LOG_FORMAT, logLevel: Optional[LogLevel] = None) -> ArkoudaLogger
-
-   A convenience method for instantiating an ArkoudaLogger that retrieves the
-   logging level from the ARKOUDA_LOG_LEVEL env variable
-
-   :param name: The name of the ArkoudaLogger
-   :type name: str
-   :param handlers: A list of logging.Handler objects, if None, a list consisting of
-                    one StreamHandler named 'console-handler' is generated and configured
-   :type handlers: List[Handler]
-   :param logFormat: The format for log messages, defaults to the following format:
-                     '[%(name)s] Line %(lineno)d %(levelname)s: %(message)s'
-   :type logFormat: str
-
-   :rtype: ArkoudaLogger
-
-   :raises TypeError: Raised if either name or logFormat is not a str object or if handlers
-       is not a list of str objects
-
-   .. rubric:: Notes
-
-   Important note: if a list of 1..n logging.Handler objects is passed in, and
-   dynamic changes to 1..n handlers is desired, set a name for each Handler
-   object as follows: handler.name = <desired name>, which will enable retrieval
-   and updates for the specified handler.
-
-
 .. py:function:: get_byteorder(dt: np.dtype) -> str
 
    Get a concrete byteorder (turns '=' into '<' or '>')
@@ -36826,20 +36818,6 @@ Package Contents
    this is used by e.g. typing.List and typing.Dict.
 
 
-.. py:class:: int_scalars(origin, params, *, inst=True, name=None)
-
-   Bases: :py:obj:`_GenericAlias`
-
-
-   The central part of internal API.
-
-   This represents a generic version of type 'origin' with type arguments 'params'.
-   There are two kind of these aliases: user defined and special. The special ones
-   are wrappers around builtin collections and ABCs in collections.abc. These must
-   have 'name' always set. If 'inst' is False, then the alias can't be instantiated,
-   this is used by e.g. typing.List and typing.Dict.
-
-
 .. py:class:: intc(value)
 
    Bases: :py:obj:`numpy.signedinteger`
@@ -37772,8 +37750,6 @@ Package Contents
 
    :rtype: pdarray contain values of the base 2 log
 
-
-.. py:data:: logger
 
 .. py:class:: longdouble(value)
 
@@ -46089,82 +46065,6 @@ Package Contents
    >>> sorted = ak.sort(a)
    >>> a
    array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
-
-
-.. py:class:: sparray(name: str, mydtype: Union[numpy.dtype, str], size: arkouda.dtypes.int_scalars, nnz: arkouda.dtypes.int_scalars, ndim: arkouda.dtypes.int_scalars, shape: Sequence[int], layout: str, itemsize: arkouda.dtypes.int_scalars, max_bits: Optional[int] = None)
-
-   The class for sparse arrays. This class contains only the
-   attributies of the array; the data resides on the arkouda
-   server. When a server operation results in a new array, arkouda
-   will create a sparray instance that points to the array data on
-   the server. As such, the user should not initialize sparray
-   instances directly.
-
-   .. attribute:: name
-
-      The server-side identifier for the array
-
-      :type: str
-
-   .. attribute:: dtype
-
-      The element type of the array
-
-      :type: dtype
-
-   .. attribute:: size
-
-      The size of any one dimension of the array (all dimensions are assumed to be equal sized for now)
-
-      :type: int_scalars
-
-   .. attribute:: ndim
-
-      The rank of the array (currently only rank 2 arrays supported)
-
-      :type: int_scalars
-
-   .. attribute:: shape
-
-      A list or tuple containing the sizes of each dimension of the array
-
-      :type: Sequence[int]
-
-   .. attribute:: layout
-
-      The layout of the array ("CSR" or "CSC" are the only valid values)
-
-      :type: str
-
-   .. attribute:: itemsize
-
-      The size in bytes of each element
-
-      :type: int_scalars
-
-
-   .. py:attribute:: dtype
-
-
-   .. py:attribute:: itemsize
-
-
-   .. py:attribute:: layout
-
-
-   .. py:attribute:: name
-
-
-   .. py:attribute:: ndim
-
-
-   .. py:attribute:: nnz
-
-
-   .. py:attribute:: shape
-
-
-   .. py:attribute:: size
 
 
 .. py:function:: sparse_matrix_matrix_mult(A, B: arkouda.sparrayclass.sparray) -> arkouda.sparrayclass.sparray
