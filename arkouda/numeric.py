@@ -17,8 +17,9 @@ from arkouda.numpy.dtypes import (
     isSupportedNumber,
     numeric_scalars,
     resolve_scalar_dtype,
-    str_,
 )
+from arkouda.numpy.dtypes import str_
+from arkouda.numpy.dtypes import str_ as akstr_
 from arkouda.pdarrayclass import all as ak_all
 from arkouda.pdarrayclass import any as ak_any
 from arkouda.pdarrayclass import argmax, create_pdarray, pdarray, sum
@@ -73,6 +74,7 @@ __all__ = [
     "rad2deg",
     "deg2rad",
     "hash",
+    "array_equal",
     "putmask",
     "where",
     "histogram",
@@ -2200,6 +2202,56 @@ def count_nonzero(pda):
         return sum((pda).astype(np.int64))
     elif pda.dtype == str:
         return sum((pda != "").astype(np.int64))
+
+
+def array_equal(pda_a: pdarray, pda_b: pdarray, equal_nan: bool = False):
+    """
+    Compares two pdarrays for equality.
+    If neither array has any nan elements, then if all elements are pairwise equal,
+    it returns True.
+    If equal_Nan is False, then any nan element in either array gives a False return.
+    If equal_Nan is True, then pairwise-corresponding nans are considered equal.
+
+    Parameters
+    ----------
+    pda_a : pdarray
+    pda_b : pdarray
+    equal_nan : boolean to determine how to handle nans, default False
+
+    Returns
+    -------
+    boolean
+      With string data:
+         False if one array is type ak.str_ & the other isn't, True if both are ak.str_ & they match.
+
+      With numeric data:
+         True if neither array has any nan elements, and all elements pairwise equal.
+
+         True if equal_Nan True, all non-nans pairwise equal & nans in pda_a correspond to nans in pda_b
+
+         False if equal_Nan False, & either array has any nan element.
+
+    Examples
+    --------
+    >>> a = ak.randint(0,10,10,dtype=ak.float64)
+    >>> b = a
+    >>> ak.array_equal(a,b)
+    True
+    >>> b[9] = np.nan
+    >>> ak.array_equal(a,b)
+    False
+    >>> a[9] = np.nan
+    >>> ak.array_equal(a,b)
+    False
+    >>> ak.array_equal(a,b,True)
+    True
+    """
+    if (pda_a.shape != pda_b.shape) or ((pda_a.dtype == akstr_) ^ (pda_b.dtype == akstr_)):
+        return False
+    elif equal_nan:
+        return ak_all(where(isnan(pda_a), isnan(pda_b), pda_a == pda_b))
+    else:
+        return ak_all(pda_a == pda_b)
 
 
 def putmask(pda: pdarray, mask: Union[bool, pdarray], values: pdarray):
