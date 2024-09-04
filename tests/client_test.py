@@ -75,7 +75,9 @@ class TestClient:
 
         def get_server_max_array_dims():
             try:
-                return json.load(open("serverConfig.json", "r"))["max_array_dims"]
+                return max(
+                    json.load(open("registration-config.json", "r"))["parameter_classes"]["array"]["nd"]
+                )
             except (ValueError, FileNotFoundError, TypeError, KeyError):
                 return 1
 
@@ -154,6 +156,7 @@ class TestClient:
         for cmd in ["connect", "info", "str"]:
             assert cmd in cmds
 
+    @pytest.mark.skip_if_max_rank_greater_than(9)
     def test_client_array_dim_cmd_error(self):
         """
         Tests that a user will get a helpful error message if they attempt to

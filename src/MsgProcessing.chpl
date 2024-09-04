@@ -310,50 +310,56 @@ module MsgProcessing
         indicating that the chunks start at indices 0 and 50 in the first dimension,
         and 0 and 20 in the second dimension.
     */
-    @arkouda.registerND
-    proc chunkInfoMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-        const name = msgArgs.getValueOf("array");
-        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+    @arkouda.registerCommand
+    proc chunkInfoAsString(array: [?d] ?t): string throws
+    where (t == bool) || (t == int(64)) || (t == uint(64)) || (t == uint(8)) ||(t == real) {
 
-        proc getChunkInfo(type t): MsgTuple throws {
-            var blockSizes: [0..<nd] [0..<numLocales] int;
-            const e = toSymEntry(gEnt, t, nd);
+        var blockSizes: [0..<d.rank] [0..<numLocales] int;
 
-            coforall loc in Locales with (ref blockSizes) do on loc {
-                const locDom = e.a.localSubdomain();
-                for i in 0..<nd do
-                    blockSizes[i][loc.id] = locDom.dim(i).low;
-            }
+        coforall loc in Locales with (ref blockSizes) do on loc {
+            const locDom = d.localSubdomain();
+            for i in 0..<d.rank do
+                blockSizes[i][loc.id] = locDom.dim(i).low;
+        }
 
-            var msg = "[";
-            var first = true;
-            for dim in blockSizes {
-                if first then first = false; else msg += ", ";
-                msg += "[";
-                var firstInner = true;
-                for locSize in dim {
-                    if firstInner then firstInner = false; else msg += ", ";
-                    msg += locSize:string;
-                }
-                msg += "]";
+        var msg = "[";
+        var first = true;
+        for dim in blockSizes {
+            if first then first = false; else msg += ", ";
+            msg += "[";
+            var firstInner = true;
+            for locSize in dim {
+                if firstInner then firstInner = false; else msg += ", ";
+                msg += locSize:string;
             }
             msg += "]";
-
-            mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),msg);
-            return new MsgTuple(msg, MsgType.NORMAL);
         }
+        msg += "]";
 
-        select gEnt.dtype {
-            when DType.Int64 do return getChunkInfo(int);
-            when DType.UInt64 do return getChunkInfo(uint);
-            when DType.Float64 do return getChunkInfo(real);
-            when DType.Bool do return getChunkInfo(bool);
-            when DType.UInt8 do return getChunkInfo(uint(8));
-            otherwise {
-                const errorMsg = notImplementedError(getRoutineName(),dtype2str(gEnt.dtype));
-                mpLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg,MsgType.ERROR);
-            }
+        return msg;
+    }
+
+    proc chunkInfoAsString(array: [?d] ?t): string throws 
+        where (t != bool) && (t != int(64)) && (t != uint(64)) && (t != uint(8)) && (t != real){
+        throw new Error("chunkInfo does not support dtype %s".format(t:string));
+    }
+
+    @arkouda.registerCommand
+    proc chunkInfoAsArray(array: [?d] ?t):[] int throws
+    where (t == bool) || (t == int(64)) || (t == uint(64)) || (t == uint(8)) ||(t == real) {
+        var outShape = (d.rank, numLocales);
+        var blockSizes= makeDistArray((...outShape), int);
+
+        coforall loc in Locales with (ref blockSizes) do on loc {
+            const locDom = d.localSubdomain();
+            for i in 0..<d.rank do
+                blockSizes[i,loc.id] = locDom.dim(i).low;
         }
+        return blockSizes;
+    }
+
+    proc chunkInfoAsArray(array: [?d] ?t): [d] int throws 
+        where (t != bool) && (t != int(64)) && (t != uint(64)) && (t != uint(8)) && (t != real){
+        throw new Error("chunkInfo does not support dtype %s".format(t:string));
     }
 }

@@ -192,13 +192,13 @@ class Generator:
         pdarray
             Drawn samples from the standard exponential distribution.
         """
-        from arkouda.util import _calc_shape
+        from arkouda.util import _infer_shape_from_size
 
         if size is None:
             # delegate to numpy when return size is 1
             return self._np_generator.standard_exponential(method=method)
 
-        shape, full_size, ndim = _calc_shape(size)
+        shape, ndim, full_size = _infer_shape_from_size(size)
         if full_size < 0:
             raise ValueError("The size parameter must be > 0")
 
@@ -257,7 +257,7 @@ class Generator:
         >>> rng.integers(5, size=10)
         array([2, 4, 0, 0, 0, 3, 1, 5, 5, 3])  # random
         """
-        from arkouda.util import _calc_shape
+        from arkouda.util import _infer_shape_from_size
 
         # normalize dtype so things like "int" will work
         dtype = to_numpy_dtype(dtype)
@@ -275,7 +275,7 @@ class Generator:
         elif not endpoint:
             high = high - 1
 
-        shape, full_size, ndim = _calc_shape(size)
+        shape, ndim, full_size = _infer_shape_from_size(size)
         if full_size < 0:
             raise ValueError("The size parameter must be > 0")
 
@@ -550,13 +550,13 @@ class Generator:
         >>> rng.standard_normal(3)
         array([0.8797352989638163, -0.7085325853376141, 0.021728052940979934])  # random
         """
-        from arkouda.util import _calc_shape
+        from arkouda.util import _infer_shape_from_size
 
         if size is None:
             # delegate to numpy when return size is 1
             return self._np_generator.standard_normal()
 
-        shape, full_size, ndim = _calc_shape(size)
+        shape, ndim, full_size = _infer_shape_from_size(size)
         if full_size < 0:
             raise ValueError("The size parameter must be > 0")
 
@@ -744,13 +744,13 @@ class Generator:
         >>> rng.uniform(-1, 1, 3)
         array([0.030785499755523249, 0.08505865366367038, -0.38552048588998722])  # random
         """
-        from arkouda.util import _calc_shape
+        from arkouda.util import _infer_shape_from_size
 
         if size is None:
             # delegate to numpy when return size is 1
             return self._np_generator.uniform(low=low, high=high)
 
-        shape, full_size, ndim = _calc_shape(size)
+        shape, ndim, full_size = _infer_shape_from_size(size)
         if full_size < 0:
             raise ValueError("The size parameter must be > 0")
 
