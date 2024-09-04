@@ -33666,7 +33666,7 @@ Package Contents
    both the number of elements and number of bytes required for the join.
 
 
-.. py:function:: concatenate(arrays: Sequence[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical]], ordered: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical]
+.. py:function:: concatenate(arrays: Sequence[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]], ordered: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical, Sequence[arkouda.categorical.Categorical]]
 
    Concatenate a list or tuple of ``pdarray`` or ``Strings`` objects into
    one ``pdarray`` or ``Strings`` object, respectively.
@@ -33702,7 +33702,7 @@ Package Contents
    array(['one', 'two', 'three', 'four', 'five'])
 
 
-.. py:function:: concatenate(arrays: Sequence[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical]], ordered: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical]
+.. py:function:: concatenate(arrays: Sequence[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]], ordered: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical, Sequence[arkouda.categorical.Categorical]]
 
    Concatenate a list or tuple of ``pdarray`` or ``Strings`` objects into
    one ``pdarray`` or ``Strings`` object, respectively.
@@ -33738,7 +33738,7 @@ Package Contents
    array(['one', 'two', 'three', 'four', 'five'])
 
 
-.. py:function:: concatenate(arrays: Sequence[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical]], ordered: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical]
+.. py:function:: concatenate(arrays: Sequence[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]], ordered: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical, Sequence[arkouda.categorical.Categorical]]
 
    Concatenate a list or tuple of ``pdarray`` or ``Strings`` objects into
    one ``pdarray`` or ``Strings`` object, respectively.
@@ -35837,7 +35837,7 @@ Package Contents
 
 
 
-.. py:function:: hash(pda: Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, SegArray, Categorical], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, SegArray, Categorical]]], full: bool = True) -> Union[Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray], arkouda.pdarrayclass.pdarray]
+.. py:function:: hash(pda: Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.categorical.Categorical], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.categorical.Categorical]]], full: bool = True) -> Union[Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray], arkouda.pdarrayclass.pdarray]
 
    Return an element-wise hash of the array or list of arrays.
 
@@ -36170,7 +36170,7 @@ Package Contents
    - Import can only be performed from hdf5 or parquet files written by pandas.
 
 
-.. py:function:: in1d(pda1: arkouda.groupbyclass.groupable, pda2: arkouda.groupbyclass.groupable, assume_unique: bool = False, symmetric: bool = False, invert: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.groupbyclass.groupable]
+.. py:function:: in1d(pda1: arkouda.groupbyclass.groupable, pda2: arkouda.groupbyclass.groupable, assume_unique: bool = False, symmetric: bool = False, invert: bool = False) -> arkouda.groupbyclass.groupable
 
    Test whether each element of a 1-D array is also present in a second array.
 
@@ -36203,7 +36203,7 @@ Package Contents
    Only works for pdarrays of int64 dtype, float64, Strings, or Categorical
 
 
-.. py:function:: in1d(pda1: arkouda.groupbyclass.groupable, pda2: arkouda.groupbyclass.groupable, assume_unique: bool = False, symmetric: bool = False, invert: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.groupbyclass.groupable]
+.. py:function:: in1d(pda1: arkouda.groupbyclass.groupable, pda2: arkouda.groupbyclass.groupable, assume_unique: bool = False, symmetric: bool = False, invert: bool = False) -> arkouda.groupbyclass.groupable
 
    Test whether each element of a 1-D array is also present in a second array.
 
@@ -36236,7 +36236,7 @@ Package Contents
    Only works for pdarrays of int64 dtype, float64, Strings, or Categorical
 
 
-.. py:function:: in1d(pda1: arkouda.groupbyclass.groupable, pda2: arkouda.groupbyclass.groupable, assume_unique: bool = False, symmetric: bool = False, invert: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.groupbyclass.groupable]
+.. py:function:: in1d(pda1: arkouda.groupbyclass.groupable, pda2: arkouda.groupbyclass.groupable, assume_unique: bool = False, symmetric: bool = False, invert: bool = False) -> arkouda.groupbyclass.groupable
 
    Test whether each element of a 1-D array is also present in a second array.
 
@@ -48487,7 +48487,7 @@ Package Contents
 
 
 
-.. py:function:: value_counts(pda: arkouda.pdarrayclass.pdarray) -> Union[Categorical, Tuple[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], Optional[arkouda.pdarrayclass.pdarray]]]
+.. py:function:: value_counts(pda: arkouda.pdarrayclass.pdarray) -> Tuple[Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], Sequence[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]]], arkouda.pdarrayclass.pdarray]
 
    Count the occurrences of the unique values of an array.
 

@@ -634,7 +634,7 @@ Module Contents
    Alias of arkouda.numpy.floor
 
 
-.. py:function:: hash(pda: Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, SegArray, Categorical], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, SegArray, Categorical]]], full: bool = True) -> Union[Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray], arkouda.pdarrayclass.pdarray]
+.. py:function:: hash(pda: Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.categorical.Categorical], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.categorical.Categorical]]], full: bool = True) -> Union[Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray], arkouda.pdarrayclass.pdarray]
 
    Return an element-wise hash of the array or list of arrays.
 
@@ -1276,7 +1276,7 @@ Module Contents
    array([1, 2, 3])
 
 
-.. py:function:: value_counts(pda: arkouda.pdarrayclass.pdarray) -> Union[Categorical, Tuple[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], Optional[arkouda.pdarrayclass.pdarray]]]
+.. py:function:: value_counts(pda: arkouda.pdarrayclass.pdarray) -> Tuple[Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], Sequence[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]]], arkouda.pdarrayclass.pdarray]
 
    Count the occurrences of the unique values of an array.
 

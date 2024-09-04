@@ -353,7 +353,7 @@
           <h1>Source code for arkouda.numeric</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">ForwardRef</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">type_cast</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">no_type_check</span>
 
@@ -380,8 +380,12 @@
 <span class="kn">from</span> <span class="nn">arkouda.sorting</span> <span class="kn">import</span> <span class="n">sort</span>
 <span class="kn">from</span> <span class="nn">arkouda.strings</span> <span class="kn">import</span> <span class="n">Strings</span>
 
-<span class="n">Categorical</span> <span class="o">=</span> <span class="n">ForwardRef</span><span class="p">(</span><span class="s2">&quot;Categorical&quot;</span><span class="p">)</span>
-<span class="n">SegArray</span> <span class="o">=</span> <span class="n">ForwardRef</span><span class="p">(</span><span class="s2">&quot;SegArray&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">arkouda.categorical</span> <span class="kn">import</span> <span class="n">Categorical</span>
+    <span class="kn">from</span> <span class="nn">arkouda.segarray</span> <span class="kn">import</span> <span class="n">SegArray</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">Categorical</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;Categorical&quot;</span><span class="p">)</span>
+    <span class="n">SegArray</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;SegArray&quot;</span><span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;cast&quot;</span><span class="p">,</span>
@@ -2456,7 +2460,9 @@
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">value_counts</span><span class="p">(</span>
     <span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Categorical</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pdarray</span><span class="p">]]]:</span>  <span class="c1"># type: ignore</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span>
+    <span class="n">Union</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">],</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]]],</span> <span class="n">pdarray</span>
+<span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Count the occurrences of the unique values of an array.</span>
 

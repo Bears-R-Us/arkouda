@@ -21,7 +21,7 @@ Functions
 Module Contents
 ---------------
 
-.. py:function:: concatenate(arrays: Sequence[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical]], ordered: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical]
+.. py:function:: concatenate(arrays: Sequence[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]], ordered: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical, Sequence[arkouda.categorical.Categorical]]
 
    Concatenate a list or tuple of ``pdarray`` or ``Strings`` objects into
    one ``pdarray`` or ``Strings`` object, respectively.
@@ -57,7 +57,7 @@ Module Contents
    array(['one', 'two', 'three', 'four', 'five'])
 
 
-.. py:function:: in1d(pda1: arkouda.groupbyclass.groupable, pda2: arkouda.groupbyclass.groupable, assume_unique: bool = False, symmetric: bool = False, invert: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.groupbyclass.groupable]
+.. py:function:: in1d(pda1: arkouda.groupbyclass.groupable, pda2: arkouda.groupbyclass.groupable, assume_unique: bool = False, symmetric: bool = False, invert: bool = False) -> arkouda.groupbyclass.groupable
 
    Test whether each element of a 1-D array is also present in a second array.
 
