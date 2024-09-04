@@ -2203,6 +2203,7 @@ def count_nonzero(pda):
     elif pda.dtype == str:
         return sum((pda != "").astype(np.int64))
 
+
 def array_equal(pda_a: pdarray, pda_b: pdarray, equal_nan: bool = False):
     """
     Compares two pdarrays for equality.
@@ -2221,15 +2222,15 @@ def array_equal(pda_a: pdarray, pda_b: pdarray, equal_nan: bool = False):
     -------
     boolean
       With string data:
-		 False if one array is of type ak.str_ and the other isn't, True if both are ak.str_ and they match.
+         False if one array is type ak.str_ & the other isn't, True if both are ak.str_ & they match.
 
       With numeric data:
 
-		True if neither array has any nan elements, and all elements pairwise equal.
+         True if neither array has any nan elements, and all elements pairwise equal.
 
-                True if equal_Nan is True, all non-nan elements are pairwise equal, and all nans in pda_a correspond to nans in pda_b
+         True if equal_Nan True, all non-nans pairwise equal & nans in pda_a correspond to nans in pda_b
 
-                False if equal_Nan is False, and either array has any nan element.
+         False if equal_Nan False, & either array has any nan element.
 
     Examples
     --------
@@ -2252,6 +2253,7 @@ def array_equal(pda_a: pdarray, pda_b: pdarray, equal_nan: bool = False):
         return ak_all(where(isnan(pda_a), isnan(pda_b), pda_a == pda_b))
     else:
         return ak_all(pda_a == pda_b)
+
 
 def putmask(pda: pdarray, mask: Union[bool, pdarray], values: pdarray):
     """
