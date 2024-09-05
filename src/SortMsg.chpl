@@ -4,7 +4,7 @@ module SortMsg
 
     use Time;
     use Math only;
-    use Sort only;
+    use ArkoudaSortCompat only relativeComparator;
     use Search only;
     use Reflection;
     use ServerErrors;
@@ -201,14 +201,14 @@ module SortMsg
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    record leftCmp {
+    record leftCmp: relativeComparator {
       proc compare(a: real, b: real): int {
         if a < b then return -1;
         else return 1;
       }
     }
 
-    record rightCmp {
+    record rightCmp: relativeComparator {
       proc compare(a: real, b: real): int {
         if a <= b then return -1;
         else return 1;

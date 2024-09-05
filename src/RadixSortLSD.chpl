@@ -22,16 +22,17 @@ module RadixSortLSD
     use RangeChunk;
     use Logging;
     use ServerConfig;
+    use ArkoudaSortCompat only keyComparator;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const rsLogger = new Logger(logLevel, logChannel);
 
-    record KeysComparator {
+    record KeysComparator: keyComparator {
       inline proc key(k) { return k; }
     }
 
-    record KeysRanksComparator {
+    record KeysRanksComparator: keyComparator {
       inline proc key(kr) { const (k, _) = kr; return k; }
     }
 
