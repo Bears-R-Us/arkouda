@@ -383,7 +383,7 @@ ifeq ($(shell expr $(CHPL_MINOR) \>= 2),1)
 endif
 
 ifeq ($(shell expr $(CHPL_MINOR) \>= 2),1)
-	ARKOUDA_KEYPART_FLAG += -suseKeyPartStatus=true
+	ARKOUDA_KEYPART_FLAG := -suseKeyPartStatus=true
 endif
 
 ifeq ($(shell expr $(CHPL_MINOR) \<= 1),1)
@@ -478,7 +478,7 @@ doc-server: ${DOC_DIR} $(DOC_SERVER_OUTPUT_DIR)/index.html
 $(DOC_SERVER_OUTPUT_DIR)/index.html: $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES) | $(DOC_SERVER_OUTPUT_DIR)
 	@echo "Building documentation for: Server"
 	@# Build the documentation to the Chapel output directory
-	$(CHPLDOC) $(CHPLDOC_FLAGS) $(ARKOUDA_MAIN_SOURCE) -o $(DOC_SERVER_OUTPUT_DIR)
+	$(CHPLDOC) $(CHPLDOC_FLAGS) $(ARKOUDA_MAIN_SOURCE) $(ARKOUDA_SOURCE_DIR)/compat/ge-22 -o $(DOC_SERVER_OUTPUT_DIR)
 	@# Create the .nojekyll file needed for github pages in the  Chapel output directory
 	touch $(DOC_SERVER_OUTPUT_DIR)/.nojekyll
 	@echo "Completed building documentation for: Server"
