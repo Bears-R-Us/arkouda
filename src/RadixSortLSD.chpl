@@ -22,7 +22,7 @@ module RadixSortLSD
     use RangeChunk;
     use Logging;
     use ServerConfig;
-    use ArkoudaSortCompat only keyComparator;
+    use ArkoudaSortCompat except isSorted;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
