@@ -450,7 +450,7 @@ def multiarray_setop_validation(
 def union1d(
     pda1: groupable,
     pda2: groupable,
-) -> Union[pdarray, groupable]:
+) -> groupable:
     """
     Find the union of two arrays/List of Arrays.
 
@@ -532,7 +532,7 @@ def union1d(
         c = [concatenate(x, ordered=False) for x in zip(ua, ub)]
         g = GroupBy(c)
         k, ct = g.size()
-        return k
+        return list(k)
     else:
         raise TypeError(
             f"Both pda1 and pda2 must be pdarray, List, or Tuple. Received {type(pda1)} and {type(pda2)}"
