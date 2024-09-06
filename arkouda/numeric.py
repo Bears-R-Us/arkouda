@@ -1827,7 +1827,8 @@ def histogram2d(
 
     Returns
     -------
-    hist : ArrayView, shape(nx, ny)
+    hist : pdarray
+        shape(nx, ny)
         The bi-dimensional histogram of samples x and y.
         Values in x are histogrammed along the first dimension and
         values in y are histogrammed along the second dimension.
@@ -1909,7 +1910,8 @@ def histogramdd(
 
     Returns
     -------
-    hist : ArrayView, shape(nx, ny, ..., nd)
+    hist : pdarray
+        shape(nx, ny, ..., nd)
         The multidimensional histogram of pdarrays in sample.
         Values in first pdarray are histogrammed along the first dimension.
         Values in second pdarray are histogrammed along the second dimension and so on.
