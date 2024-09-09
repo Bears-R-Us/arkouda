@@ -32,11 +32,11 @@ Radix Sort Least Significant Digit
 
 .. data:: const rsLogger = new Logger(logLevel, logChannel)
 
-.. record:: KeysComparator
+.. record:: KeysComparator : keyComparator
 
    .. method:: proc key(k)
 
-.. record:: KeysRanksComparator
+.. record:: KeysRanksComparator : keyComparator
 
    .. method:: proc key(kr)
 

@@ -19,7 +19,7 @@ or
 
 .. data:: const ssLogger = new Logger(logLevel, logChannel)
 
-.. record:: StringIntComparator
+.. record:: StringIntComparator : keyPartComparator
 
    .. method:: proc keyPart((a0, _): (string, int), in i: int)
 
