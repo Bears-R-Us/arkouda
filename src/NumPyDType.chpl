@@ -172,8 +172,8 @@ module NumPyDType
       if t == int then return "%i";
       if t == real(32) then return "%.17r";
       if t == real then return "%.17r";
-      if t == complex(64) then return "%.17z%";
-      if t == complex(128) then return "%.17z%";
+      if t == complex(64) then return "%.17z%"; // "
+      if t == complex(128) then return "%.17z%"; // "
       if t == bool then return "%s";
       if t == bigint then return "%?";
       if t == string then return "%s";
@@ -188,6 +188,33 @@ module NumPyDType
     proc bool2str(b: ?t): t
       where t != bool
         do return b;
+
+    /*
+      Numpy's type promotion rules for (some) binary operations
+
+      todo: expand this to include all numpy dtypes (and use a
+      procedural approach similar to the dtype procedures below)
+    */
+    proc promotedType(type a, type b) type {
+      if a == uint && b == uint then return uint;
+      if a == uint && b == int then return real;
+      if a == uint && b == real then return real;
+      if a == uint && b == bool then return uint;
+      if a == int && b == uint then return real;
+      if a == int && b == int then return int;
+      if a == int && b == real then return real;
+      if a == int && b == bool then return int;
+      if a == real && b == uint then return real;
+      if a == real && b == int then return real;
+      if a == real && b == real then return real;
+      if a == real && b == bool then return real;
+      if a == bool && b == uint then return uint;
+      if a == bool && b == int then return int;
+      if a == bool && b == real then return real;
+      if a == bool && b == bool then return bool;
+      if a == bigint && b == bigint then return bigint;
+      return int;
+    }
 
     /*
       Return the dtype that can store the result of

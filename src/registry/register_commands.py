@@ -872,7 +872,7 @@ def main():
     with open(sys.argv[3] + "/registry/Commands.chpl", "w") as f:
         f.write(chpl_src.replace("\t", "  "))
 
-    print("registered ", n, " commands from ", len(source_files), " modules")
+    print("registered ", n, " commands from ", len(source_files), " modules (", len(DEFAULT_MODS), " default modules)")
 
 
 if __name__ == "__main__":
