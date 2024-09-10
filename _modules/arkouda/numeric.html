@@ -234,7 +234,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../usage/categorical.html">Categoricals</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/random.html">Random in Arkouda</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/segarray.html">SegArrays in Arkouda</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../usage/arrayview.html">ArrayView in Arkouda</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
@@ -2296,7 +2295,8 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    hist : ArrayView, shape(nx, ny)</span>
+<span class="sd">    hist : pdarray</span>
+<span class="sd">        shape(nx, ny)</span>
 <span class="sd">        The bi-dimensional histogram of samples x and y.</span>
 <span class="sd">        Values in x are histogrammed along the first dimension and</span>
 <span class="sd">        values in y are histogrammed along the second dimension.</span>
@@ -2381,7 +2381,8 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    hist : ArrayView, shape(nx, ny, ..., nd)</span>
+<span class="sd">    hist : pdarray</span>
+<span class="sd">        shape(nx, ny, ..., nd)</span>
 <span class="sd">        The multidimensional histogram of pdarrays in sample.</span>
 <span class="sd">        Values in first pdarray are histogrammed along the first dimension.</span>
 <span class="sd">        Values in second pdarray are histogrammed along the second dimension and so on.</span>

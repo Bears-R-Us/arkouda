@@ -235,7 +235,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../usage/categorical.html">Categoricals</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/random.html">Random in Arkouda</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/segarray.html">SegArrays in Arkouda</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../usage/arrayview.html">ArrayView in Arkouda</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
@@ -384,7 +383,6 @@
 <ul class="simple">
 <li><p>pdarray</p></li>
 <li><p>Strings</p></li>
-<li><p>ArrayView</p></li>
 <li><p>DataFrame</p></li>
 <li><p>Index</p></li>
 <li><p>Categorical</p></li>
@@ -401,7 +399,7 @@
 <div><p>Integer representing the type of object stored in the group/dataset. This corresponds to the Chapel <code class="docutils literal notranslate"><span class="pre">enum</span> <span class="pre">ObjType</span></code>. Required to properly read each object.</p>
 </div></blockquote>
 <ul class="simple">
-<li><p>0 = <code class="docutils literal notranslate"><span class="pre">ArrayView</span></code></p></li>
+<li><p>0 = <code class="docutils literal notranslate"><span class="pre">ArrayView</span></code> (Deprecated)</p></li>
 <li><p>1 = <code class="docutils literal notranslate"><span class="pre">pdarray</span></code></p></li>
 <li><p>2 = <code class="docutils literal notranslate"><span class="pre">Strings</span></code></p></li>
 <li><p>3 = <code class="docutils literal notranslate"><span class="pre">SegArray</span></code></p></li>
@@ -427,38 +425,6 @@
 <h2>Data Schema<a class="headerlink" href="#data-schema" title="Link to this heading">¶</a></h2>
 <p>This section provides an outline of the expected data schema for each object type. Each example assumes the top level group/dataset is not nested.</p>
 <p>When reading array values, the data type of the values is automatically detected and is therefore not required to be included in the metadata.</p>
-<section id="arrayview">
-<h3>ArrayView<a class="headerlink" href="#arrayview" title="Link to this heading">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">ArrayView</span></code> objects require additional attributes to be read properly.</p>
-<p><code class="docutils literal notranslate"><span class="pre">Rank</span></code>: <code class="docutils literal notranslate"><span class="pre">int</span></code></p>
-<blockquote>
-<div><p>Integer representing the number of dimensions in the dataset. This should be stored as the rank of the <em>unflattened</em> data, even when storing as a flattened array.</p>
-</div></blockquote>
-<p><code class="docutils literal notranslate"><span class="pre">Shape</span></code>: <code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">array</span></code></p>
-<blockquote>
-<div><p>Integer array storing the size of each dimension. The array should be of length equal to the <code class="docutils literal notranslate"><span class="pre">Rank</span></code>.</p>
-</div></blockquote>
-<p>Providing these attributes allows for the ArrayView object to be reconstructed from its values.</p>
-<blockquote>
-<div><ol class="arabic simple">
-<li><p>Dataset (will have a user provided name. Defaults to ‘ArrayView’)</p>
-<ol class="arabic simple">
-<li><p>Attributes</p>
-<ol class="arabic simple">
-<li><p>ObjType: 0</p></li>
-<li><p>isBool: 0 or 1</p></li>
-<li><p>Rank: <code class="docutils literal notranslate"><span class="pre">number_of_dimensions</span></code></p></li>
-<li><p>Shape: <code class="docutils literal notranslate"><span class="pre">array_of_size_rank</span></code></p></li>
-<li><p>file_version: 2.0 (Optional)</p></li>
-<li><p>arkouda_version: ‘current_arkouda_version’ (Optional)</p></li>
-</ol>
-</li>
-<li><p>Data - values of the ArrayView.</p></li>
-</ol>
-</li>
-</ol>
-</div></blockquote>
-</section>
 <section id="pdarray">
 <h3>pdarray<a class="headerlink" href="#pdarray" title="Link to this heading">¶</a></h3>
 <blockquote>
@@ -866,7 +832,6 @@
 <li><a class="reference internal" href="#supported-arkouda-data-types">Supported Arkouda Data Types</a></li>
 <li><a class="reference internal" href="#metadata-attributes">MetaData Attributes</a></li>
 <li><a class="reference internal" href="#data-schema">Data Schema</a><ul>
-<li><a class="reference internal" href="#arrayview">ArrayView</a></li>
 <li><a class="reference internal" href="#pdarray">pdarray</a></li>
 <li><a class="reference internal" href="#strings">Strings</a></li>
 <li><a class="reference internal" href="#segarray">SegArray</a></li>

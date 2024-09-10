@@ -235,7 +235,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/categorical.html">Categoricals</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/random.html">Random in Arkouda</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/segarray.html">SegArrays in Arkouda</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../usage/arrayview.html">ArrayView in Arkouda</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
@@ -1366,7 +1365,8 @@ Defaults to 10</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><strong>hist</strong> (<em>ArrayView, shape(nx, ny)</em>) – The bi-dimensional histogram of samples x and y.
+<li><p><strong>hist</strong> (<em>pdarray</em>) – shape(nx, ny)
+The bi-dimensional histogram of samples x and y.
 Values in x are histogrammed along the first dimension and
 values in y are histogrammed along the second dimension.</p></li>
 <li><p><strong>x_edges</strong> (<em>pdarray</em>) – The bin edges along the first dimension.</p></li>
@@ -1423,7 +1423,8 @@ Defaults to 10</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><strong>hist</strong> (<em>ArrayView, shape(nx, ny, …, nd)</em>) – The multidimensional histogram of pdarrays in sample.
+<li><p><strong>hist</strong> (<em>pdarray</em>) – shape(nx, ny, …, nd)
+The multidimensional histogram of pdarrays in sample.
 Values in first pdarray are histogrammed along the first dimension.
 Values in second pdarray are histogrammed along the second dimension and so on.</p></li>
 <li><p><strong>edges</strong> (<em>List[pdarray]</em>) – A list of pdarrays containing the bin edges for each dimension.</p></li>
