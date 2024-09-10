@@ -21,7 +21,6 @@ While most objects in Arkouda can be saved, there are 3 main datatypes currently
 
 - pdarray
 - Strings
-- ArrayView
 - DataFrame
 - Index
 - Categorical
@@ -37,7 +36,7 @@ All data within the HDF5 file is expected to contain several attributes that aid
 `ObjType`: `int`
 > Integer representing the type of object stored in the group/dataset. This corresponds to the Chapel `enum ObjType`. Required to properly read each object.
 >
-- 0 = `ArrayView`
+- 0 = `ArrayView` (Deprecated)
 - 1 = `pdarray`
 - 2 = `Strings`
 - 3 = `SegArray`
@@ -63,27 +62,6 @@ This section provides an outline of the expected data schema for each object typ
 
 When reading array values, the data type of the values is automatically detected and is therefore not required to be included in the metadata.
 
-### ArrayView
-
-`ArrayView` objects require additional attributes to be read properly.
-
-`Rank`: `int` 
-> Integer representing the number of dimensions in the dataset. This should be stored as the rank of the *unflattened* data, even when storing as a flattened array.
-
-`Shape`: `int array` 
->Integer array storing the size of each dimension. The array should be of length equal to the `Rank`.
-
-Providing these attributes allows for the ArrayView object to be reconstructed from its values.
-
-> 1. Dataset (will have a user provided name. Defaults to 'ArrayView')
->       1. Attributes
->           1. ObjType: 0
->           2. isBool: 0 or 1
->           3. Rank: `number_of_dimensions`
->           4. Shape: `array_of_size_rank`
->           5. file_version: 2.0 (Optional)
->           6. arkouda_version: 'current_arkouda_version' (Optional)
->       2. Data - values of the ArrayView.
 
 ### pdarray
 
