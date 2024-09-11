@@ -5,8 +5,8 @@ from numpy import asarray
 from scipy.stats import chi2  # type: ignore
 
 import arkouda as ak
-from arkouda.scipy.special import xlogy
 from arkouda.numpy.dtypes import float64 as akfloat64
+from arkouda.scipy.special import xlogy
 
 __all__ = ["power_divergence", "chisquare", "Power_divergenceResult"]
 

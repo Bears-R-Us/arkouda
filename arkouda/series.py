@@ -12,11 +12,11 @@ import arkouda.dataframe
 from arkouda.accessor import CachedAccessor, DatetimeAccessor, StringAccessor
 from arkouda.alignment import lookup
 from arkouda.categorical import Categorical
-from arkouda.numpy.dtypes import dtype, float64, int64
 from arkouda.groupbyclass import GroupBy, groupable_element_type
 from arkouda.index import Index, MultiIndex
-from arkouda.numeric import cast as akcast
-from arkouda.numeric import isnan, value_counts
+from arkouda.numpy import cast as akcast
+from arkouda.numpy import isnan, value_counts
+from arkouda.numpy.dtypes import dtype, float64, int64
 from arkouda.pdarrayclass import (
     RegistrationError,
     any,
@@ -1562,7 +1562,7 @@ class Series:
         +----+-----+
 
         """
-        from arkouda.numeric import where
+        from arkouda.numpy import where
 
         if isinstance(value, Series):
             value = value.values

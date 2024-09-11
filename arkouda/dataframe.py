@@ -17,18 +17,18 @@ from arkouda import sort as aksort
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, maxTransferBytes
 from arkouda.client_dtypes import BitVector, Fields, IPv4
-from arkouda.numpy.dtypes import bigint
-from arkouda.numpy.dtypes import bool_ as akbool
-from arkouda.numpy.dtypes import float64 as akfloat64
-from arkouda.numpy.dtypes import int64 as akint64
-from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.groupbyclass import GROUPBY_REDUCTION_TYPES
 from arkouda.groupbyclass import GroupBy as akGroupBy
 from arkouda.groupbyclass import unique
 from arkouda.index import Index, MultiIndex
 from arkouda.join import inner_join
-from arkouda.numeric import cast as akcast
-from arkouda.numeric import cumsum, where
+from arkouda.numpy import cast as akcast
+from arkouda.numpy import cumsum, where
+from arkouda.numpy.dtypes import bigint
+from arkouda.numpy.dtypes import bool_ as akbool
+from arkouda.numpy.dtypes import float64 as akfloat64
+from arkouda.numpy.dtypes import int64 as akint64
+from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.pdarrayclass import RegistrationError, pdarray
 from arkouda.pdarraycreation import arange, array, create_pdarray, full, zeros
 from arkouda.pdarraysetops import concatenate, in1d, intersect1d

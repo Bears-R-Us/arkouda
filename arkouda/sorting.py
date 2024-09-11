@@ -6,7 +6,15 @@ from typing import Sequence, Union, cast
 from typeguard import check_type, typechecked
 
 from arkouda.client import generic_msg
-from arkouda.numpy.dtypes import bigint, bool_, dtype, float64, int64, int_scalars, uint64
+from arkouda.numpy.dtypes import (
+    bigint,
+    bool_,
+    dtype,
+    float64,
+    int64,
+    int_scalars,
+    uint64,
+)
 from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import zeros
 from arkouda.strings import Strings
@@ -146,7 +154,7 @@ def coargsort(
     array([0, 1, 0, 1])
     """
     from arkouda.categorical import Categorical
-    from arkouda.numeric import cast as akcast
+    from arkouda.numpy import cast as akcast
 
     check_type(
         argname="coargsort", value=arrays, expected_type=Sequence[Union[pdarray, Strings, Categorical]]
