@@ -14,6 +14,10 @@ from arkouda.pdarrayclass import create_pdarrays, pdarray
 
 logger = getArkoudaLogger(name="sparrayclass")
 
+__all__ = [
+    "sparray",
+    "create_sparray",
+]
 
 class sparray:
     """
