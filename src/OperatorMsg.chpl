@@ -271,7 +271,8 @@ module OperatorMsg
       param array_nd: int
     ): MsgTuple throws
       where binop_dtype_a != bigint && binop_dtype_b != bigint &&
-            !isRealType(binop_dtype_a) && !isRealType(binop_dtype_b)
+            !isRealType(binop_dtype_a) && !isRealType(binop_dtype_b) &&
+            !(binop_dtype_a == bool && binop_dtype_b == bool)
     {
       const a = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
             b = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd),
@@ -280,13 +281,10 @@ module OperatorMsg
       if a.tupShape != b.tupShape then
         return MsgTuple.error("array shapes must match for element-wise binary operations");
 
-      type resultType = if binop_dtype_a == bool && binop_dtype_b == bool
-        then int // NOTE: numpy uses int(8) in this case
-        else (if (isIntType(binop_dtype_a) && isUintType(binop_dtype_b)) ||
-                 (isUintType(binop_dtype_a) && isIntType(binop_dtype_b))
+      type resultType = if (isIntType(binop_dtype_a) && isUintType(binop_dtype_b)) ||
+                           (isUintType(binop_dtype_a) && isIntType(binop_dtype_b))
           then binop_dtype_a // use LHS type for integer types with non-matching signed-ness
-          else promotedType(binop_dtype_a, binop_dtype_b) // otherwise, use regular type promotion
-        );
+          else promotedType(binop_dtype_a, binop_dtype_b); // otherwise, use regular type promotion
       var result = makeDistArray((...a.tupShape), resultType);
 
       select op {
@@ -304,19 +302,61 @@ module OperatorMsg
           [(ri,ai,bi) in zip(result,aa,bb)] if 0 <= bi && bi < 64 then ri = ai:resultType >> bi:resultType;
         }
         when '<<<' {
-          if !isIntegral(binop_dtype_a) || !isIntegral(binop_dtype_b) // cannot be 'bool'
-            then return MsgTuple.error("bitwise rotation is only supported for integral arrays");
+          if !isIntegral(binop_dtype_a) || !isIntegral(binop_dtype_b)
+            then return MsgTuple.error("cannot perform bitwise rotation with boolean arrays");
           result = rotl(a.a, b.a):resultType;
         }
         when '>>>' {
-          if !isIntegral(binop_dtype_a) || !isIntegral(binop_dtype_b) // cannot be 'bool'
-            then return MsgTuple.error("bitwise rotation is only supported for integral arrays");
+          if !isIntegral(binop_dtype_a) || !isIntegral(binop_dtype_b)
+            then return MsgTuple.error("cannot perform bitwise rotation with boolean arrays");
           result = rotr(a.a, b.a):resultType;
         }
         otherwise return MsgTuple.error("unknown bitwise binary operation: " + op);
       }
 
       return st.insert(new shared SymEntry(result));
+    }
+
+    // special handling for bitwise ops with two boolean arrays
+    proc bitwiseOpVV(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+      type binop_dtype_a,
+      type binop_dtype_b,
+      param array_nd: int
+    ): MsgTuple throws
+      where binop_dtype_a == bool && binop_dtype_b == bool
+    {
+      const a = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
+            b = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd),
+            op = msgArgs['op'].toScalar(string);
+
+      if op == '<<' || op == '>>' {
+        var result = makeDistArray((...a.tupShape), int);
+
+        if op == '<<' {
+          ref aa = a.a;
+          ref bb = b.a;
+          [(ri,ai,bi) in zip(result,aa,bb)] if 0 <= bi && bi < 64 then ri = ai:int << bi:int;
+        } else {
+          ref aa = a.a;
+          ref bb = b.a;
+          [(ri,ai,bi) in zip(result,aa,bb)] if 0 <= bi && bi < 64 then ri = ai:int >> bi:int;
+        }
+
+        return st.insert(new shared SymEntry(result));
+      } else {
+        var result = makeDistArray((...a.tupShape), bool);
+
+        select op {
+          when '|'  do result = a.a | b.a;
+          when '&'  do result = a.a & b.a;
+          when '^'  do result = a.a ^ b.a;
+          when '<<<' do return MsgTuple.error("bitwise rotation on boolean arrays is not supported");
+          when '>>>' do return MsgTuple.error("bitwise rotation on boolean arrays is not supported");
+          otherwise return MsgTuple.error("unknown bitwise binary operation: " + op);
+        }
+
+        return st.insert(new shared SymEntry(result));
+      }
     }
 
     // special handling for bitwise ops with at least one bigint array
@@ -710,17 +750,18 @@ module OperatorMsg
       type binop_dtype_b,
       param array_nd: int
     ): MsgTuple throws
-      where !isRealType(promotedType(binop_dtype_a, binop_dtype_b)) &&
-            binop_dtype_a != bigint && binop_dtype_b != bigint &&
-            !(isRealType(binop_dtype_a) || isRealType(binop_dtype_b))
+      where binop_dtype_a != bigint && binop_dtype_b != bigint &&
+            !isRealType(binop_dtype_a) && !isRealType(binop_dtype_b) &&
+            !(binop_dtype_a == bool && binop_dtype_b == bool)
     {
       const a = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
             val = msgArgs['value'].toScalar(binop_dtype_b),
             op = msgArgs['op'].toScalar(string);
 
-      type resultType = if binop_dtype_a == bool && binop_dtype_b == bool
-        then int // NOTE: numpy uses int(8) in this case
-        else promotedType(binop_dtype_a, binop_dtype_b);
+      type resultType = if (isIntType(binop_dtype_a) && isUintType(binop_dtype_b)) ||
+                           (isUintType(binop_dtype_a) && isIntType(binop_dtype_b))
+        then binop_dtype_a // use LHS type for integer types with non-matching signed-ness
+        else promotedType(binop_dtype_a, binop_dtype_b); // otherwise, use regular type promotion
       var result = makeDistArray((...a.tupShape), resultType);
 
       select op {
@@ -737,18 +778,58 @@ module OperatorMsg
         }
         when '<<<' {
           if !isIntegral(binop_dtype_a) || !isIntegral(binop_dtype_b)
-            then return MsgTuple.error("bitwise rotation is only supported for integral arrays");
+            then return MsgTuple.error("cannot perform bitwise rotation with boolean arrays");
           result = rotl(a.a, val):resultType;
         }
         when '>>>' {
           if !isIntegral(binop_dtype_a) || !isIntegral(binop_dtype_b)
-            then return MsgTuple.error("bitwise rotation is only supported for integral arrays");
+            then return MsgTuple.error("cannot perform bitwise rotation with boolean arrays");
           result = rotr(a.a, val):resultType;
         }
         otherwise return MsgTuple.error("unknown bitwise binary operation: " + op);
       }
 
       return st.insert(new shared SymEntry(result));
+    }
+
+    // special handling for bitwise ops with two boolean arrays
+    proc bitwiseOpVS(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+      type binop_dtype_a,
+      type binop_dtype_b,
+      param array_nd: int
+    ): MsgTuple throws
+      where binop_dtype_a == bool && binop_dtype_b == bool
+    {
+      const a = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
+            val = msgArgs['value'].toScalar(binop_dtype_b),
+            op = msgArgs['op'].toScalar(string);
+
+      if op == '<<' || op == '>>' {
+        var result = makeDistArray((...a.tupShape), int);
+
+        if op == '<<' {
+          ref aa = a.a;
+          [(ri,ai) in zip(result,aa)] if 0 <= val && val < 64 then ri = ai:int << val:int;
+        } else {
+          ref aa = a.a;
+          [(ri,ai) in zip(result,aa)] if 0 <= val && val < 64 then ri = ai:int >> val:int;
+        }
+
+        return st.insert(new shared SymEntry(result));
+      } else {
+        var result = makeDistArray((...a.tupShape), bool);
+
+        select op {
+          when '|'  do result = a.a | val;
+          when '&'  do result = a.a & val;
+          when '^'  do result = a.a ^ val;
+          when '<<<' do return MsgTuple.error("bitwise rotation on boolean arrays is not supported");
+          when '>>>' do return MsgTuple.error("bitwise rotation on boolean arrays is not supported");
+          otherwise return MsgTuple.error("unknown bitwise binary operation: " + op);
+        }
+
+        return st.insert(new shared SymEntry(result));
+      }
     }
 
     // special handling for bitwise ops with at least one bigint array/value
@@ -758,8 +839,7 @@ module OperatorMsg
       param array_nd: int
     ): MsgTuple throws
       where (binop_dtype_a == bigint || binop_dtype_b == bigint) &&
-            !isRealType(promotedType(binop_dtype_a, binop_dtype_b)) &&
-            !(isRealType(binop_dtype_a) || isRealType(binop_dtype_b))
+            !isRealType(binop_dtype_a) && !isRealType(binop_dtype_b)
     {
       const a = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
             val = msgArgs['value'].toScalar(binop_dtype_b),
@@ -823,25 +903,46 @@ module OperatorMsg
             }
           }
         }
+        when '<<<' {
+          if !has_max_bits then return MsgTuple.error("bitwise rotation on bigint arrays requires a max_bits value");
+          if binop_dtype_b == bigint then return MsgTuple.error("right-shift of a bigint array by a non-bigint array is not supported");
+          forall rx in result with (var local_val = val, var local_max_size = max_size) {
+            var bot_bits = rx;
+            const modded_shift = if binop_dtype_b == int then local_val%max_bits else local_val%max_bits:uint;
+            rx <<= modded_shift;
+            const shift_amt = if binop_dtype_b == int then max_bits - modded_shift else max_bits:uint - modded_shift;
+            bot_bits >>= shift_amt;
+            rx += bot_bits;
+            rx &= local_max_size;
+          }
+        }
+        when '>>>' {
+          if !has_max_bits then return MsgTuple.error("bitwise rotation on bigint arrays requires a max_bits value");
+          if binop_dtype_b == bigint then return MsgTuple.error("right-shift of a bigint array by a non-bigint array is not supported");
+          forall rx in result with (var local_val = val, var local_max_size = max_size) {
+            var top_bits = rx;
+            const modded_shift = if binop_dtype_b == int then local_val%max_bits else local_val%max_bits:uint;
+            rx >>= modded_shift;
+            const shift_amt = if binop_dtype_b == int then max_bits - modded_shift else max_bits:uint - modded_shift;
+            top_bits <<= shift_amt;
+            rx += top_bits;
+            rx &= local_max_size;
+          }
+        }
+        otherwise return MsgTuple.error("unknown bitwise binary operation: " + op);
       }
 
       return st.insert(new shared SymEntry(result, max_bits));
     }
 
-    // special error message for bitwise ops with real-valued arrays/values
+    // special error message for bitwise ops with real-valued arrays
     proc bitwiseOpVS(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
       type binop_dtype_a,
       type binop_dtype_b,
       param array_nd: int
     ): MsgTuple throws
-      where isRealType(promotedType(binop_dtype_a, binop_dtype_b)) ||
-            isRealType(binop_dtype_a) || isRealType(binop_dtype_b)
-    {
-      return MsgTuple.error(
-        "bitwise operations that would result in a real-valued array " +
-        "(according to Numpy's type promotion rules) are not supported"
-      );
-    }
+      where isRealType(binop_dtype_a) || isRealType(binop_dtype_b)
+        do return MsgTuple.error("bitwise operations with real-valued arrays are not supported");
 
     /*
       Supports real division between an array and a scalar

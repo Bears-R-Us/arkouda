@@ -8,7 +8,7 @@ module TimeClassMsg {
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
-    use BinOp;
+    use OperatorMsg only floorDivisionHelper;
     use Time;
 
     use Map;
