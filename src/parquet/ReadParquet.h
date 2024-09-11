@@ -15,9 +15,9 @@
 #include <queue>
 extern "C" {
 #endif
-  int c_readStrColumnByName(const char* filename, void* chpl_arr, const char* colname, int64_t batchSize, char** errMsg);
+  int c_readStrColumnByName(const char* filename, void* chpl_arr, const char* colname, int64_t numElems, int64_t batchSize, char** errMsg);
   
-  int cpp_readStrColumnByName(const char* filename, void* chpl_arr, const char* colname, int64_t batchSize, char** errMsg);
+  int cpp_readStrColumnByName(const char* filename, void* chpl_arr, const char* colname, int64_t numElems, int64_t batchSize, char** errMsg);
 
   int c_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_chpl,
                          const char* colname, int64_t numElems, int64_t startIdx,
