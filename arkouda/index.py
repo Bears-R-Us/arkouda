@@ -10,11 +10,11 @@ from numpy import dtype as npdtype
 from typeguard import typechecked
 
 from arkouda import Categorical, Strings
+from arkouda.groupbyclass import GroupBy, unique
+from arkouda.numpy import cast as akcast
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import float64 as akfloat64
 from arkouda.numpy.dtypes import int64 as akint64
-from arkouda.groupbyclass import GroupBy, unique
-from arkouda.numeric import cast as akcast
 from arkouda.pdarrayclass import RegistrationError, pdarray
 from arkouda.pdarraycreation import arange, array, create_pdarray, ones
 from arkouda.pdarraysetops import argsort, in1d

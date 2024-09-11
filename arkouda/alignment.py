@@ -6,12 +6,12 @@ import numpy as np
 
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg
+from arkouda.groupbyclass import GroupBy, broadcast, unique
+from arkouda.numpy import cumsum, where
 from arkouda.numpy.dtypes import bigint
 from arkouda.numpy.dtypes import float64 as akfloat64
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import uint64 as akuint64
-from arkouda.groupbyclass import GroupBy, broadcast, unique
-from arkouda.numeric import cumsum, where
 from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import arange, full, ones, zeros
 from arkouda.pdarraysetops import concatenate, in1d
@@ -236,7 +236,6 @@ def find(query, space, all_occurrences=False, remove_missing=False):
 
             # create a segarray which contains all the indices from query
             # in our search space, instead of just the min for each segment
-
             # im not completely convinced there's not a better way to get this given the
             # amount of structure but this is not the bottleneck of the computation anymore
             min_k_vals = i[g.permutation][less_than]

@@ -20,15 +20,15 @@ from pandas import Categorical as pd_Categorical
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
+from arkouda.groupbyclass import GroupBy, unique
+from arkouda.infoclass import information
+from arkouda.logger import getArkoudaLogger
+from arkouda.numpy import cast as akcast
+from arkouda.numpy import where
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import int_scalars, resolve_scalar_dtype, str_, str_scalars
-from arkouda.groupbyclass import GroupBy, unique
-from arkouda.infoclass import information
-from arkouda.logger import getArkoudaLogger
-from arkouda.numeric import cast as akcast
-from arkouda.numeric import where
 from arkouda.pdarrayclass import RegistrationError
 from arkouda.pdarrayclass import all as akall
 from arkouda.pdarrayclass import create_pdarray, pdarray

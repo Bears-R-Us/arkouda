@@ -10,6 +10,8 @@ import numpy as np
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
+from arkouda.infoclass import information, pretty_print_information
+from arkouda.logger import getArkoudaLogger
 from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, DTypes, bigint
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import dtype
@@ -27,8 +29,6 @@ from arkouda.numpy.dtypes import (
 )
 from arkouda.numpy.dtypes import str_ as akstr_
 from arkouda.numpy.dtypes import uint64 as akuint64
-from arkouda.infoclass import information, pretty_print_information
-from arkouda.logger import getArkoudaLogger
 
 __all__ = [
     "pdarray",
@@ -137,23 +137,6 @@ def _create_scalar_array(value):
                 "value": value,
             },
         )
-    )
-
-
-def _reshape(array: pdarray, shape: Tuple[int, ...]):
-    """
-    Reshape the pdarray to the specified shape
-
-    Requires the ManipulationMsg server module
-    """
-    return create_pdarray(
-        generic_msg(
-            cmd=f"reshape<{array.dtype},{array.ndim},{len(shape)}>",
-            args={
-                "name": array,
-                "shape": shape,
-            },
-        ),
     )
 
 
@@ -1000,7 +983,7 @@ class pdarray:
                         if len(rs) > 0:
                             shape.append(rs.pop(0))
 
-                return _reshape(ret_array, tuple(shape))
+                return ret_array.reshape(shape)
             else:
                 return ret_array
 
@@ -1167,7 +1150,7 @@ class pdarray:
                                     )
 
                             # reshape to add singleton dimensions as needed
-                            _value_r = _reshape(_value, slice_shape)
+                            _value_r = _value.reshape(slice_shape)
                         else:
                             raise ValueError(
                                 f"value array must not have more dimensions ({_value.ndim}) than the"
@@ -1657,7 +1640,7 @@ class pdarray:
         >>> ak.array([2, 0, 2, 4, 0, 0]).value_counts()
         (array([0, 2, 4]), array([3, 2, 1]))
         """
-        from arkouda.numeric import value_counts
+        from arkouda.numpy import value_counts
 
         return value_counts(self)
 
@@ -1679,7 +1662,7 @@ class pdarray:
         _____
         This is essentially shorthand for ak.cast(x, '<dtype>') where x is a pdarray.
         """
-        from arkouda.numeric import cast as akcast
+        from arkouda.numpy import cast as akcast
 
         return akcast(self, dtype)
 
@@ -1757,7 +1740,7 @@ class pdarray:
         ret_list = json.loads(generic_msg(cmd="bigint_to_uint_list", args={"array": self}))
         return list(reversed([create_pdarray(a) for a in ret_list]))
 
-    def reshape(self, *shape, order="row_major"):
+    def reshape(self, *shape):
         """
         Gives a new shape to an array without changing its data.
 
@@ -1765,27 +1748,27 @@ class pdarray:
         ----------
         shape : int, tuple of ints, or pdarray
             The new shape should be compatible with the original shape.
-        order : str {'row_major' | 'C' | 'column_major' | 'F'}
-            Read the elements of the pdarray in this index order
-            By default, read the elements in row_major or C-like order where the last index
-            changes the fastest
-            If 'column_major' or 'F', read the elements in column_major or Fortran-like order where the
-            first index changes the fastest
 
         Returns
         -------
-        ArrayView
-            An arrayview object with the data from the array but with the new shape
+        pdarray
+            a pdarray with the same data, reshaped to the new shape
         """
-        from arkouda.array_view import ArrayView
-
         # allows the elements of the shape parameter to be passed in as separate arguments
         # For example, a.reshape(10, 11) is equivalent to a.reshape((10, 11))
         if len(shape) == 1:
             shape = shape[0]
         elif not isinstance(shape, pdarray):
             shape = [i for i in shape]
-        return ArrayView(base=self, shape=shape, order=order)
+        return create_pdarray(
+            generic_msg(
+                cmd=f"reshape<{self.dtype},{self.ndim},{len(shape)}>",
+                args={
+                    "name": self.name,
+                    "shape": shape,
+                },
+            ),
+        )
 
     def to_ndarray(self) -> np.ndarray:
         """
@@ -1848,9 +1831,7 @@ class pdarray:
         data = cast(
             memoryview,
             generic_msg(
-                cmd=f"tondarray<{self.dtype},{self.ndim}>",
-                args={"array": self},
-                recv_binary=True
+                cmd=f"tondarray<{self.dtype},{self.ndim}>", args={"array": self}, recv_binary=True
             ),
         )
         # Make sure the received data has the expected length
@@ -2521,7 +2502,7 @@ class pdarray:
         must return a list of arrays that can be (co)argsorted.
         """
         if self.dtype == akbool:
-            from arkouda.numeric import cast as akcast
+            from arkouda.numpy import cast as akcast
 
             return [akcast(self, akint64)]
         elif self.dtype in (akint64, akuint64):
@@ -2621,7 +2602,7 @@ def create_pdarrays(repMsg: str) -> List[pdarray]:
     # TODO: maybe add more robust json parsing here
     try:
         repMsg = repMsg.strip("[]")
-        responses = [r.strip().strip('\"') for r in repMsg.split("\",")]
+        responses = [r.strip().strip('"') for r in repMsg.split('",')]
         return [create_pdarray(response) for response in responses]
     except Exception as e:
         raise ValueError(e)
@@ -3119,10 +3100,7 @@ def cov(x: pdarray, y: pdarray) -> np.float64:
     ``cov = ((x - x.mean()) * (y - y.mean())).sum() / (x.size - 1)``.
     """
     return parse_single_value(
-        generic_msg(
-            cmd=f"cov<{x.dtype},{x.ndim},{y.dtype},{y.ndim}>",
-            args={"x": x, "y": y}
-        )
+        generic_msg(cmd=f"cov<{x.dtype},{x.ndim},{y.dtype},{y.ndim}>", args={"x": x, "y": y})
     )
 
 
@@ -3160,10 +3138,7 @@ def corr(x: pdarray, y: pdarray) -> np.float64:
     cov(x, y) / (x.std(ddof=1) * y.std(ddof=1))
     """
     return parse_single_value(
-        generic_msg(
-            cmd=f"corr<{x.dtype},{x.ndim},{y.dtype},{y.ndim}>",
-            args={"x": x, "y": y}
-        )
+        generic_msg(cmd=f"corr<{x.dtype},{x.ndim},{y.dtype},{y.ndim}>", args={"x": x, "y": y})
     )
 
 
@@ -3215,8 +3190,8 @@ def divmod(
     >>> ak.divmod(x,y, x % 2 == 0)
     (array([5 6 7 1 9]), array([5 0 7 3 9]))
     """
-    from arkouda.numeric import cast as akcast
-    from arkouda.numeric import where as akwhere
+    from arkouda.numpy import cast as akcast
+    from arkouda.numpy import where as akwhere
     from arkouda.pdarraycreation import full
 
     if not isinstance(x, pdarray) and not isinstance(y, pdarray):
@@ -3575,7 +3550,7 @@ def clz(pda: pdarray) -> pdarray:
     if pda.dtype == bigint:
         if pda.max_bits == -1:
             raise ValueError("max_bits must be set to count leading zeros")
-        from arkouda.numeric import where
+        from arkouda.numpy import where
         from arkouda.pdarraycreation import zeros
 
         uint_arrs = pda.bigint_to_uint_arrays()
@@ -3647,7 +3622,7 @@ def ctz(pda: pdarray) -> pdarray:
     if pda.dtype == bigint:
         # we don't need max_bits to be set because that only limits the high bits
         # which is only relevant when ctz(0) which is defined to be 0
-        from arkouda.numeric import where
+        from arkouda.numpy import where
         from arkouda.pdarraycreation import zeros
 
         # reverse the list, so we visit low bits first
@@ -3795,8 +3770,8 @@ def power(pda: pdarray, pwr: Union[int, float, pdarray], where: Union[bool, pdar
     >>> ak.power(a), 3, a % 2 == 0)
     array([0, 1, 8, 3, 64])
     """
-    from arkouda.numeric import cast as akcast
-    from arkouda.numeric import where as akwhere
+    from arkouda.numpy import cast as akcast
+    from arkouda.numpy import where as akwhere
 
     if where is True:
         return pda**pwr

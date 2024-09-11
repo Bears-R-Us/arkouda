@@ -1,6 +1,6 @@
 module SegStringSort {
   use SegmentedString;
-  use Sort;
+  use ArkoudaSortCompat;
   use Time;
   use IO;
   use CTypes;
@@ -26,7 +26,7 @@ module SegStringSort {
   private config const logChannel = ServerConfig.logChannel;
   const ssLogger = new Logger(logLevel, logChannel);
 
-  record StringIntComparator {
+  record StringIntComparator: keyPartComparator {
     proc keyPart((a0,_): (string, int), in i: int) {
       // Just run the default comparator on the string
       return (new DefaultComparator()).keyPart(a0, i);

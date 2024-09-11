@@ -10,17 +10,12 @@ from typeguard import typechecked
 
 import arkouda.numpy.dtypes
 from arkouda.client import generic_msg
-from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS
-from arkouda.numpy.dtypes import dtype as akdtype
-from arkouda.numpy.dtypes import (
-    int_scalars,
-    resolve_scalar_dtype,
-    str_,
-    str_scalars,
-)
 from arkouda.infoclass import information, list_symbol_table
 from arkouda.logger import getArkoudaLogger
 from arkouda.match import Match, MatchType
+from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS
+from arkouda.numpy.dtypes import dtype as akdtype
+from arkouda.numpy.dtypes import int_scalars, resolve_scalar_dtype, str_, str_scalars
 from arkouda.pdarrayclass import RegistrationError
 from arkouda.pdarrayclass import all as akall
 from arkouda.pdarrayclass import create_pdarray, parse_single_value, pdarray
@@ -2255,7 +2250,7 @@ class Strings:
         _____
         This is essentially shorthand for ak.cast(x, '<dtype>') where x is a pdarray.
         """
-        from arkouda.numeric import cast as akcast
+        from arkouda.numpy import cast as akcast
 
         return akcast(self, dtype)
 

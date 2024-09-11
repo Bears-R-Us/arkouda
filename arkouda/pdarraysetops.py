@@ -1,24 +1,29 @@
 from __future__ import annotations
 
-from typing import ForwardRef, Sequence, Union, cast
+from typing import Sequence, TypeVar, Union, cast
 
 import numpy as np
 from typeguard import typechecked
 
+
 from arkouda.client import generic_msg
 from arkouda.client_dtypes import BitVector
+from arkouda.groupbyclass import GroupBy, groupable, groupable_element_type, unique
+from arkouda.logger import getArkoudaLogger
 from arkouda.numpy.dtypes import bigint
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import uint64 as akuint64
-from arkouda.groupbyclass import GroupBy, groupable, groupable_element_type, unique
-from arkouda.logger import getArkoudaLogger
 from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import array, ones, zeros, zeros_like
 from arkouda.sorting import argsort
 from arkouda.strings import Strings
+from typing import TYPE_CHECKING
 
-Categorical = ForwardRef("Categorical")
+if TYPE_CHECKING:
+    from arkouda.categorical import Categorical
+else:
+    Categorical = TypeVar("Categorical")
 
 __all__ = ["in1d", "concatenate", "union1d", "intersect1d", "setdiff1d", "setxor1d", "indexof1d"]
 
@@ -26,8 +31,8 @@ logger = getArkoudaLogger(name="pdarraysetops")
 
 
 def _in1d_single(
-    pda1: Union[pdarray, Strings, "Categorical"],  # type: ignore
-    pda2: Union[pdarray, Strings, "Categorical"],  # type: ignore
+    pda1: Union[pdarray, Strings, "Categorical"],
+    pda2: Union[pdarray, Strings, "Categorical"],
     invert: bool = False,
 ) -> pdarray:
     """
@@ -131,7 +136,7 @@ def in1d(
     assume_unique: bool = False,
     symmetric: bool = False,
     invert: bool = False,
-) -> Union[pdarray, groupable]:
+) -> groupable:
     """
     Test whether each element of a 1-D array is also present in a second array.
 
@@ -176,10 +181,16 @@ def in1d(
             raise TypeError("Arguments must have compatible types, Strings/Categorical")
         elif isinstance(pda1, pdarray) and not isinstance(pda2, pdarray):
             raise TypeError("If pda1 is pdarray, pda2 must also be pda2")
-        if symmetric:
-            return _in1d_single(pda1, pda2), _in1d_single(pda2, pda1, invert)
-        else:
+        elif isinstance(pda2, (pdarray, Strings, Categorical_)):
+            if symmetric:
+                return _in1d_single(pda1, pda2), _in1d_single(pda2, pda1, invert)
             return _in1d_single(pda1, pda2, invert)
+        else:
+            raise TypeError(
+                "Inputs should both be Union[pdarray, Strings, Categorical] or both be "
+                "Sequence[pdarray, Strings, Categorical]."
+                "  (Do not mix and match.)"
+            )
     atypes = np.array([ai.dtype for ai in pda1])
     btypes = np.array([bi.dtype for bi in pda2])
     if not (atypes == btypes).all():
@@ -291,9 +302,9 @@ def indexof1d(query: groupable, space: groupable) -> pdarray:
 # fmt: off
 @typechecked
 def concatenate(
-    arrays: Sequence[Union[pdarray, Strings, "Categorical", ]],  # type: ignore
+    arrays: Sequence[Union[pdarray, Strings, "Categorical", ]],
     ordered: bool = True,
-) -> Union[pdarray, Strings, "Categorical"]:  # type: ignore
+) -> Union[pdarray, Strings, Categorical, Sequence[Categorical]]:
     """
     Concatenate a list or tuple of ``pdarray`` or ``Strings`` objects into
     one ``pdarray`` or ``Strings`` object, respectively.
