@@ -1,6 +1,7 @@
 module SparseMatrix {
 
   public use SpsMatUtil;
+  use ArkoudaSparseMatrixCompat;
 
 
   // Quick and dirty, not permanent
