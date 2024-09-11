@@ -172,7 +172,7 @@ module ParquetMsg {
   }
 
   proc readStrFilesByName(ref A: [] ?t, filenames: [] string, sizes: [] int, dsetname: string) throws {
-    extern proc c_readStrColumnByName(filename, arr_chpl, colname, batchSize, errMsg): int;
+    extern proc c_readStrColumnByName(filename, arr_chpl, colname, numElems, batchSize, errMsg): int;
     var (subdoms, length) = getSubdomains(sizes);
     
     coforall loc in A.targetLocales() do on loc {
@@ -188,7 +188,7 @@ module ParquetMsg {
             var col: [filedom] t;
 
             if c_readStrColumnByName(filename.localize().c_str(), c_ptrTo(col),
-                                     dsetname.localize().c_str(),
+                                     dsetname.localize().c_str(), filedom.size,
                                      batchSize, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
               pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
             }
