@@ -44,14 +44,14 @@ module SparseMatrix {
   }
   // sparse, outer, matrix-matrix multiplication algorithm; A is assumed
   // CSC and B CSR
-  proc sparseMatMatMult(A, B) {
-    var spsData: sparseMatDat;
+  // proc sparseMatMatMult(A, B) {
+  //   var spsData: sparseMatDat;
 
-    sparseMatMatMult(A, B, spsData);
+  //   sparseMatMatMult(A, B, spsData);
 
-    var C = makeSparseMat(A.domain.parentDom, spsData);
-    return C;
-  }
+  //   var C = makeSparseMat(A.domain.parentDom, spsData);
+  //   return C;
+  // }
 
   // This version forms the guts of the above and permits a running set
   // of nonzeroes to be passed in and updated rather than assuming that

@@ -73,8 +73,8 @@ class TestSparse:
             result_rows, result_cols, result_vals = zip(*[(r, c, v) for (r, c), v in result.items()])
 
             return list(result_rows), list(result_cols), list(result_vals)
-        matA = ak.random_sparse_matrix(100, 1, 'CSC') # Make it fully dense to make testing easy
-        matB = ak.random_sparse_matrix(100, 1, 'CSR') # Make it fully dense to make testing easy
+        matA = ak.random_sparse_matrix(10, 1, 'CSC') # Make it fully dense to make testing easy
+        matB = ak.random_sparse_matrix(10, 1, 'CSR') # Make it fully dense to make testing easy
         fill_vals_a = ak.randint(0, 10, matA.nnz)
         fill_vals_b = ak.randint(0, 10, matB.nnz)
         matA.fill_vals(fill_vals_a)

@@ -7,8 +7,7 @@ import numpy as np
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
-from arkouda.dtypes import NumericDTypes, dtype
-from arkouda.dtypes import int_scalars
+from arkouda.dtypes import NumericDTypes, dtype, int_scalars
 from arkouda.logger import getArkoudaLogger
 from arkouda.pdarrayclass import create_pdarrays, pdarray
 
@@ -18,6 +17,7 @@ __all__ = [
     "sparray",
     "create_sparray",
 ]
+
 
 class sparray:
     """
