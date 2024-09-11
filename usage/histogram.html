@@ -257,6 +257,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/dtypes/index.html">arkouda.dtypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/numeric/index.html">arkouda.numeric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/random/index.html">arkouda.random</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/testing/index.html">arkouda.testing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/accessor/index.html">arkouda.accessor</a></li>
@@ -275,7 +276,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/logger/index.html">arkouda.logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/match/index.html">arkouda.match</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/matcher/index.html">arkouda.matcher</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/numeric/index.html">arkouda.numeric</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../autoapi/arkouda/numpy/index.html">arkouda.numpy</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.numpy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html">arkouda.numpy.dtypes</a></li>
 </ul>
@@ -506,7 +506,7 @@ always a np.float64 or np.int64.</p>
 <dd><p>Compute the variance. See <code class="docutils literal notranslate"><span class="pre">arkouda.var</span></code> for details.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ddof</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id901" title="arkouda.int_scalars"><em>int_scalars</em></a>) – “Delta Degrees of Freedom” used in calculating var</p>
+<dd class="field-odd"><p><strong>ddof</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id900" title="arkouda.int_scalars"><em>int_scalars</em></a>) – “Delta Degrees of Freedom” used in calculating var</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The scalar variance of the array</p>
@@ -530,7 +530,7 @@ always a np.float64 or np.int64.</p>
 <dd><p>Compute the standard deviation. See <code class="docutils literal notranslate"><span class="pre">arkouda.std</span></code> for details.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ddof</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id901" title="arkouda.int_scalars"><em>int_scalars</em></a>) – “Delta Degrees of Freedom” used in calculating std</p>
+<dd class="field-odd"><p><strong>ddof</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id900" title="arkouda.int_scalars"><em>int_scalars</em></a>) – “Delta Degrees of Freedom” used in calculating std</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The scalar standard deviation of the array</p>
@@ -553,7 +553,7 @@ always a np.float64 or np.int64.</p>
 <dd><p>Compute the minimum “k” values.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id901" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of maximum values to be returned by the output.</p>
+<dd class="field-odd"><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id900" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of maximum values to be returned by the output.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The maximum <cite>k</cite> values from pda</p>
@@ -573,7 +573,7 @@ always a np.float64 or np.int64.</p>
 <dd><p>Compute the maximum “k” values.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id901" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of maximum values to be returned by the output.</p>
+<dd class="field-odd"><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id900" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of maximum values to be returned by the output.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The maximum <cite>k</cite> values from pda</p>
@@ -593,7 +593,7 @@ always a np.float64 or np.int64.</p>
 <dd><p>Compute the minimum “k” values.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id901" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of maximum values to be returned by the output.</p>
+<dd class="field-odd"><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id900" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of maximum values to be returned by the output.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Indices corresponding to the maximum <cite>k</cite> values from pda</p>
@@ -613,7 +613,7 @@ always a np.float64 or np.int64.</p>
 <dd><p>Finds the indices corresponding to the maximum “k” values.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id901" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of maximum values to be returned by the output.</p>
+<dd class="field-odd"><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id900" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of maximum values to be returned by the output.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Indices corresponding to the  maximum <cite>k</cite> values, sorted</p>
@@ -633,20 +633,20 @@ always a np.float64 or np.int64.</p>
 <p>Arkouda can compute simple histograms on <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> data. Currently, this function can only create histograms over evenly spaced bins between the min and max of the data. In the future, we plan to support using a <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> to define custom bin edges.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.histogram">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">histogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numeric.html#histogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.histogram" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">histogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/_numeric.html#histogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.histogram" title="Link to this definition">¶</a></dt>
 <dd><p>Compute a histogram of evenly spaced bins over the range of an array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The values to histogram</p></li>
-<li><p><strong>bins</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id901" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The number of equal-size bins to use (default: 10)</p></li>
+<li><p><strong>bins</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id900" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The number of equal-size bins to use (default: 10)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Bin edges and The number of values present in each bin</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>(<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../autoapi/arkouda/dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union">Union</a>[<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#id880" title="arkouda.int64">int64</a> or <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.float64" title="arkouda.float64">float64</a>])</p>
+<dd class="field-odd"><p>(<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../autoapi/arkouda/dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union">Union</a>[<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#id879" title="arkouda.int64">int64</a> or <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.float64" title="arkouda.float64">float64</a>])</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -684,14 +684,14 @@ always a np.float64 or np.int64.</p>
 <p>For int64 <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> objects, it is often useful to count only the unique values that appear. This function finds all unique values and their counts.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.value_counts">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">value_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numeric.html#value_counts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.value_counts" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">value_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/_numeric.html#value_counts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.value_counts" title="Link to this definition">¶</a></dt>
 <dd><p>Count the occurrences of the unique values of an array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#id880" title="arkouda.int64"><em>int64</em></a>) – The array of values to count</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#id879" title="arkouda.int64"><em>int64</em></a>) – The array of values to count</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">pdarray</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Strings</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">Categorical</span></code>), <code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">pdarray</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Strings</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">Categorical</span></code>)]]], <a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">pdarray</span></code></a>]</span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">pdarray</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Strings</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><code class="xref py py-class docutils literal notranslate"><span class="pre">Categorical</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">pdarray</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Strings</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><code class="xref py py-class docutils literal notranslate"><span class="pre">Categorical</span></code></a>]]], <a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">pdarray</span></code></a>]</span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><ul class="simple">

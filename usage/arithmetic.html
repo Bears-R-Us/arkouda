@@ -257,6 +257,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/dtypes/index.html">arkouda.dtypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/numeric/index.html">arkouda.numeric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/random/index.html">arkouda.random</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/testing/index.html">arkouda.testing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/accessor/index.html">arkouda.accessor</a></li>
@@ -275,7 +276,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/logger/index.html">arkouda.logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/match/index.html">arkouda.match</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/matcher/index.html">arkouda.matcher</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/numeric/index.html">arkouda.numeric</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../autoapi/arkouda/numpy/index.html">arkouda.numpy</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.numpy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html">arkouda.numpy.dtypes</a></li>
 </ul>
@@ -380,7 +380,7 @@
 <p>Arrays support several mathematical functions that operate element-wise and return a <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> of the same length.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.abs">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">abs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numeric.html#abs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.abs" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">abs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/_numeric.html#abs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.abs" title="Link to this definition">¶</a></dt>
 <dd><p>Return the element-wise absolute value of the array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -409,7 +409,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.log">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numeric.html#log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.log" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/_numeric.html#log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.log" title="Link to this definition">¶</a></dt>
 <dd><p>Return the element-wise natural log of the array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -445,7 +445,7 @@ array elements</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.exp">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">exp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numeric.html#exp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.exp" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">exp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/_numeric.html#exp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.exp" title="Link to this definition">¶</a></dt>
 <dd><p>Return the element-wise exponential of the array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -476,7 +476,7 @@ array elements</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.sin">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">sin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numeric.html#sin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.sin" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">sin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/_numeric.html#sin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.sin" title="Link to this definition">¶</a></dt>
 <dd><p>Return the element-wise sine of the array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -502,7 +502,7 @@ of the original pdarray</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.cos">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">cos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numeric.html#cos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.cos" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">cos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/_numeric.html#cos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.cos" title="Link to this definition">¶</a></dt>
 <dd><p>Return the element-wise cosine of the array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -532,7 +532,7 @@ of the original pdarray</p>
 <p>Scans perform a cumulative reduction over a <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>, returning a <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> of the same size.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.cumsum">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">cumsum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numeric.html#cumsum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.cumsum" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">cumsum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/_numeric.html#cumsum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.cumsum" title="Link to this definition">¶</a></dt>
 <dd><p>Return the cumulative sum over the array.</p>
 <p>The sum is inclusive, such that the <code class="docutils literal notranslate"><span class="pre">i</span></code> th element of the
 result is the sum of elements up to and including <code class="docutils literal notranslate"><span class="pre">i</span></code>.</p>
@@ -569,7 +569,7 @@ of the original pdarray</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.cumprod">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">cumprod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numeric.html#cumprod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.cumprod" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">cumprod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/_numeric.html#cumprod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.cumprod" title="Link to this definition">¶</a></dt>
 <dd><p>Return the cumulative product over the array.</p>
 <p>The product is inclusive, such that the <code class="docutils literal notranslate"><span class="pre">i</span></code> th element of the
 result is the product of elements up to and including <code class="docutils literal notranslate"><span class="pre">i</span></code>.</p>
@@ -843,7 +843,7 @@ always a np.float64 or np.int64</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Values for which to calculate the variance</p></li>
-<li><p><strong>ddof</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id901" title="arkouda.int_scalars"><em>int_scalars</em></a>) – “Delta Degrees of Freedom” used in calculating var</p></li>
+<li><p><strong>ddof</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id900" title="arkouda.int_scalars"><em>int_scalars</em></a>) – “Delta Degrees of Freedom” used in calculating var</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -884,7 +884,7 @@ deviation is implemented as the square root of the variance.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – values for which to calculate the standard deviation</p></li>
-<li><p><strong>ddof</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id901" title="arkouda.int_scalars"><em>int_scalars</em></a>) – “Delta Degrees of Freedom” used in calculating std</p></li>
+<li><p><strong>ddof</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id900" title="arkouda.int_scalars"><em>int_scalars</em></a>) – “Delta Degrees of Freedom” used in calculating std</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -928,7 +928,7 @@ unbiased estimate of the standard deviation per se.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Input array.</p></li>
-<li><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id901" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of minimum values to be returned by the output.</p></li>
+<li><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id900" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of minimum values to be returned by the output.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -972,7 +972,7 @@ about a <cite>k</cite> of 5 million is where performance degredation has been ob
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Input array.</p></li>
-<li><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id901" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of maximum values to be returned by the output.</p></li>
+<li><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id900" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of maximum values to be returned by the output.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1015,7 +1015,7 @@ about a <cite>k</cite> of 5 million is where performance degredation has been ob
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Input array.</p></li>
-<li><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id901" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of indices corresponding to minimum array values</p></li>
+<li><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id900" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of indices corresponding to minimum array values</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1059,7 +1059,7 @@ about a <cite>k</cite> of 5 million is where performance degradation has been ob
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Input array.</p></li>
-<li><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id901" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of indices corresponding to maxmum array values</p></li>
+<li><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id900" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of indices corresponding to maxmum array values</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1100,7 +1100,7 @@ about a <cite>k</cite> of 5 million is where performance degradation has been ob
 <p>The <code class="docutils literal notranslate"><span class="pre">where</span></code> function is a way to multiplex two <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> (or a <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> and a scalar) based on a condition:</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.where">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">where</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">condition</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numeric.html#where"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.where" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">where</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">condition</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/_numeric.html#where"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.where" title="Link to this definition">¶</a></dt>
 <dd><p>Returns an array with elements chosen from A and B based upon a
 conditioning array. As is the case with numpy.where, the return array
 consists of values from the first array (A) where the conditioning array

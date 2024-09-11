@@ -256,6 +256,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/dtypes/index.html">arkouda.dtypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/numeric/index.html">arkouda.numeric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/random/index.html">arkouda.random</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/testing/index.html">arkouda.testing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/accessor/index.html">arkouda.accessor</a></li>
@@ -274,7 +275,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/logger/index.html">arkouda.logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/match/index.html">arkouda.match</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/matcher/index.html">arkouda.matcher</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/numeric/index.html">arkouda.numeric</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/arkouda/numpy/index.html">arkouda.numpy</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.numpy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/numpy/dtypes/index.html">arkouda.numpy.dtypes</a></li>
 </ul>
@@ -358,11 +358,11 @@
 <span class="kn">from</span> <span class="nn">arkouda.alignment</span> <span class="kn">import</span> <span class="n">right_align</span>
 <span class="kn">from</span> <span class="nn">arkouda.categorical</span> <span class="kn">import</span> <span class="n">Categorical</span>
 <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
+<span class="kn">from</span> <span class="nn">arkouda.groupbyclass</span> <span class="kn">import</span> <span class="n">GroupBy</span><span class="p">,</span> <span class="n">broadcast</span>
+<span class="kn">from</span> <span class="nn">arkouda.numpy</span> <span class="kn">import</span> <span class="n">cumsum</span>
 <span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">NUMBER_FORMAT_STRINGS</span>
 <span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">int64</span> <span class="k">as</span> <span class="n">akint64</span>
 <span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">resolve_scalar_dtype</span>
-<span class="kn">from</span> <span class="nn">arkouda.groupbyclass</span> <span class="kn">import</span> <span class="n">GroupBy</span><span class="p">,</span> <span class="n">broadcast</span>
-<span class="kn">from</span> <span class="nn">arkouda.numeric</span> <span class="kn">import</span> <span class="n">cumsum</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarraycreation</span> <span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">ones</span><span class="p">,</span> <span class="n">zeros</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarraysetops</span> <span class="kn">import</span> <span class="n">concatenate</span><span class="p">,</span> <span class="n">in1d</span>

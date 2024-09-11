@@ -12,6 +12,7 @@ Subpackages
 
    /autoapi/arkouda/array_api/index
    /autoapi/arkouda/dtypes/index
+   /autoapi/arkouda/numeric/index
    /autoapi/arkouda/random/index
    /autoapi/arkouda/testing/index
 
@@ -38,7 +39,6 @@ Submodules
    /autoapi/arkouda/logger/index
    /autoapi/arkouda/match/index
    /autoapi/arkouda/matcher/index
-   /autoapi/arkouda/numeric/index
    /autoapi/arkouda/numpy/index
    /autoapi/arkouda/pdarrayclass/index
    /autoapi/arkouda/pdarraycreation/index
@@ -402,7 +402,6 @@ Functions
    arkouda.export
    arkouda.eye
    arkouda.find
-   arkouda.floor
    arkouda.floor
    arkouda.fmod
    arkouda.format_float_positional
@@ -10686,26 +10685,42 @@ Package Contents
 
 .. py:class:: ErrorMode
 
-   Bases: :py:obj:`enum.Enum`
-
-
-   Generic enumeration.
-
-   Derive from this class to define new enumerations.
-
-
-   .. py:attribute:: ignore
-      :value: 'ignore'
+   An enumeration.
 
 
 
-   .. py:attribute:: return_validity
-      :value: 'return_validity'
+   .. py:method:: ignore(*args, **kwargs)
+
+      An enumeration.
 
 
 
-   .. py:attribute:: strict
-      :value: 'strict'
+
+   .. py:method:: name(*args, **kwargs)
+
+      The name of the Enum member.
+
+
+
+
+   .. py:method:: return_validity(*args, **kwargs)
+
+      An enumeration.
+
+
+
+
+   .. py:method:: strict(*args, **kwargs)
+
+      An enumeration.
+
+
+
+
+   .. py:method:: value(*args, **kwargs)
+
+      The value of the Enum member.
+
 
 
 
@@ -30055,7 +30070,7 @@ Package Contents
 
 
 
-.. py:function:: akcast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], dt: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
+.. py:function:: akcast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, ~Categorical], dt: Union[numpy.dtype, type, str, dtypes.dtypes.bigint], errors: _numeric.ErrorMode = ErrorMode.strict) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, ~Categorical, Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
 
    Cast an array to another dtype.
 
@@ -30099,7 +30114,7 @@ Package Contents
    array([False, True, True, True, True])
 
 
-.. py:function:: akcast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], dt: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
+.. py:function:: akcast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, ~Categorical], dt: Union[numpy.dtype, type, str, dtypes.dtypes.bigint], errors: _numeric.ErrorMode = ErrorMode.strict) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, ~Categorical, Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
 
    Cast an array to another dtype.
 
@@ -30930,7 +30945,7 @@ Package Contents
    :raises TypeError: Raised if the parameter is not a pdarray
 
 
-.. py:function:: arctan2(num: Union[arkouda.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars], denom: Union[arkouda.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars], where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
+.. py:function:: arctan2(num: Union[arkouda.pdarrayclass.pdarray, float, numpy.float64, numpy.float32, int, numpy.int8, numpy.int16, numpy.int32, numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64], denom: Union[arkouda.pdarrayclass.pdarray, float, numpy.float64, numpy.float32, int, numpy.int8, numpy.int16, numpy.int32, numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64], where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
 
    Return the element-wise inverse tangent of the array pair. The result chosen is the
    signed angle in radians between the ray ending at the origin and passing through the
@@ -33215,7 +33230,7 @@ Package Contents
 
 
 
-.. py:function:: cast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], dt: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
+.. py:function:: cast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, ~Categorical], dt: Union[numpy.dtype, type, str, dtypes.dtypes.bigint], errors: _numeric.ErrorMode = ErrorMode.strict) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, ~Categorical, Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
 
    Cast an array to another dtype.
 
@@ -33259,7 +33274,7 @@ Package Contents
    array([False, True, True, True, True])
 
 
-.. py:function:: cast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], dt: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
+.. py:function:: cast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, ~Categorical], dt: Union[numpy.dtype, type, str, dtypes.dtypes.bigint], errors: _numeric.ErrorMode = ErrorMode.strict) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, ~Categorical, Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
 
    Cast an array to another dtype.
 
@@ -33402,7 +33417,7 @@ Package Contents
    :raises RuntimeError: Raised if there is a server-side error in executing clear request
 
 
-.. py:function:: clip(pda: arkouda.pdarrayclass.pdarray, lo: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray], hi: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray]) -> arkouda.pdarrayclass.pdarray
+.. py:function:: clip(pda: arkouda.pdarrayclass.pdarray, lo: Union[float, numpy.float64, numpy.float32, int, numpy.int8, numpy.int16, numpy.int32, numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64, arkouda.pdarrayclass.pdarray], hi: Union[float, numpy.float64, numpy.float32, int, numpy.int8, numpy.int16, numpy.int32, numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64, arkouda.pdarrayclass.pdarray]) -> arkouda.pdarrayclass.pdarray
 
    Clip (limit) the values in an array to a given range [lo,hi]
 
@@ -34600,7 +34615,7 @@ Package Contents
      the same file type, but formatted to be read by Pandas.
 
 
-.. py:function:: eye(rows: arkouda.numpy.dtypes.int_scalars, cols: arkouda.numpy.dtypes.int_scalars, diag: arkouda.numpy.dtypes.int_scalars = 0, dt: type = akint64)
+.. py:function:: eye(rows: Union[int, numpy.int8, numpy.int16, numpy.int32, numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64], cols: Union[int, numpy.int8, numpy.int16, numpy.int32, numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64], diag: Union[int, numpy.int8, numpy.int16, numpy.int32, numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64] = 0, dt: type = numpy.int64)
 
    Return a pdarray with zeros everywhere except along a diagonal, which is all ones.
    The matrix need not be square.
@@ -35202,11 +35217,6 @@ Package Contents
 
    >>> ak.floor(ak.linspace(1.1,5.5,5))
    array([1, 2, 3, 4, 5])
-
-
-.. py:function:: floor(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
-
-   Alias of arkouda.numpy.floor
 
 
 .. py:function:: fmod(dividend: Union[pdarray, arkouda.numpy.dtypes.numeric_scalars], divisor: Union[pdarray, arkouda.numpy.dtypes.numeric_scalars]) -> pdarray
@@ -35837,7 +35847,7 @@ Package Contents
 
 
 
-.. py:function:: hash(pda: Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.categorical.Categorical], List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.categorical.Categorical]]], full: bool = True) -> Union[Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray], arkouda.pdarrayclass.pdarray]
+.. py:function:: hash(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, ~SegArray, ~Categorical, List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, ~SegArray, ~Categorical]]], full: bool = True) -> Union[Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray], arkouda.pdarrayclass.pdarray]
 
    Return an element-wise hash of the array or list of arrays.
 
@@ -35905,7 +35915,7 @@ Package Contents
    >>> hist_all(ak_df)
 
 
-.. py:function:: histogram(pda: arkouda.pdarrayclass.pdarray, bins: arkouda.numpy.dtypes.int_scalars = 10) -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
+.. py:function:: histogram(pda: arkouda.pdarrayclass.pdarray, bins: Union[int, numpy.int8, numpy.int16, numpy.int32, numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64] = 10) -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
 
    Compute a histogram of evenly spaced bins over the range of an array.
 
@@ -35943,7 +35953,7 @@ Package Contents
    >>> plt.plot(b.to_ndarray()[::-1], h.to_ndarray())
 
 
-.. py:function:: histogram(pda: arkouda.pdarrayclass.pdarray, bins: arkouda.numpy.dtypes.int_scalars = 10) -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
+.. py:function:: histogram(pda: arkouda.pdarrayclass.pdarray, bins: Union[int, numpy.int8, numpy.int16, numpy.int32, numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64] = 10) -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
 
    Compute a histogram of evenly spaced bins over the range of an array.
 
@@ -35981,7 +35991,7 @@ Package Contents
    >>> plt.plot(b.to_ndarray()[::-1], h.to_ndarray())
 
 
-.. py:function:: histogram2d(x: arkouda.pdarrayclass.pdarray, y: arkouda.pdarrayclass.pdarray, bins: Union[arkouda.numpy.dtypes.int_scalars, Sequence[arkouda.numpy.dtypes.int_scalars]] = 10) -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
+.. py:function:: histogram2d(x: arkouda.pdarrayclass.pdarray, y: arkouda.pdarrayclass.pdarray, bins: Union[int, numpy.int8, numpy.int16, numpy.int32, numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64, Sequence[Union[int, numpy.int8, numpy.int16, numpy.int32, numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64]]] = 10) -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
 
    Compute the bi-dimensional histogram of two data samples with evenly spaced bins
 
@@ -36030,7 +36040,7 @@ Package Contents
    array([0.0 3.0 6.0 9.0])
 
 
-.. py:function:: histogramdd(sample: Sequence[arkouda.pdarrayclass.pdarray], bins: Union[arkouda.numpy.dtypes.int_scalars, Sequence[arkouda.numpy.dtypes.int_scalars]] = 10) -> Tuple[arkouda.pdarrayclass.pdarray, Sequence[arkouda.pdarrayclass.pdarray]]
+.. py:function:: histogramdd(sample: Sequence[arkouda.pdarrayclass.pdarray], bins: Union[int, numpy.int8, numpy.int16, numpy.int32, numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64, Sequence[Union[int, numpy.int8, numpy.int16, numpy.int32, numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64]]] = 10) -> Tuple[arkouda.pdarrayclass.pdarray, Sequence[arkouda.pdarrayclass.pdarray]]
 
    Compute the multidimensional histogram of data in sample with evenly spaced bins.
 
@@ -47773,7 +47783,7 @@ Package Contents
    Server returns an error if rank of pda < 2
 
 
-.. py:function:: tril(pda: arkouda.pdarrayclass.pdarray, diag: arkouda.numpy.dtypes.int_scalars = 0)
+.. py:function:: tril(pda: arkouda.pdarrayclass.pdarray, diag: Union[int, numpy.int8, numpy.int16, numpy.int32, numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64] = 0)
 
    Return a copy of the pda with the upper triangle zeroed out
 
@@ -47812,7 +47822,7 @@ Package Contents
    Server returns an error if rank of pda < 2
 
 
-.. py:function:: triu(pda: arkouda.pdarrayclass.pdarray, diag: arkouda.numpy.dtypes.int_scalars = 0)
+.. py:function:: triu(pda: arkouda.pdarrayclass.pdarray, diag: Union[int, numpy.int8, numpy.int16, numpy.int32, numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64] = 0)
 
    Return a copy of the pda with the lower triangle zeroed out
 
@@ -48489,7 +48499,7 @@ Package Contents
 
 
 
-.. py:function:: value_counts(pda: arkouda.pdarrayclass.pdarray) -> Tuple[Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], Sequence[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]]], arkouda.pdarrayclass.pdarray]
+.. py:function:: value_counts(pda: arkouda.pdarrayclass.pdarray) -> tuple
 
    Count the occurrences of the unique values of an array.
 
@@ -48648,7 +48658,7 @@ Package Contents
              * *pdarray* -- The stacked array
 
 
-.. py:function:: where(condition: arkouda.pdarrayclass.pdarray, A: Union[str, arkouda.numpy.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], B: Union[str, arkouda.numpy.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]
+.. py:function:: where(condition: arkouda.pdarrayclass.pdarray, A: Union[str, float, numpy.float64, numpy.float32, int, numpy.int8, numpy.int16, numpy.int32, numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64, arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, ~Categorical], B: Union[str, float, numpy.float64, numpy.float32, int, numpy.int8, numpy.int16, numpy.int32, numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64, arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, ~Categorical]) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, ~Categorical]
 
    Returns an array with elements chosen from A and B based upon a
    conditioning array. As is the case with numpy.where, the return array
@@ -48712,7 +48722,7 @@ Package Contents
    is not currently supported in Arkouda
 
 
-.. py:function:: where(condition: arkouda.pdarrayclass.pdarray, A: Union[str, arkouda.numpy.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], B: Union[str, arkouda.numpy.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]
+.. py:function:: where(condition: arkouda.pdarrayclass.pdarray, A: Union[str, float, numpy.float64, numpy.float32, int, numpy.int8, numpy.int16, numpy.int32, numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64, arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, ~Categorical], B: Union[str, float, numpy.float64, numpy.float32, int, numpy.int8, numpy.int16, numpy.int32, numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64, arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, ~Categorical]) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, ~Categorical]
 
    Returns an array with elements chosen from A and B based upon a
    conditioning array. As is the case with numpy.where, the return array
@@ -48776,7 +48786,7 @@ Package Contents
    is not currently supported in Arkouda
 
 
-.. py:function:: where(condition: arkouda.pdarrayclass.pdarray, A: Union[str, arkouda.numpy.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], B: Union[str, arkouda.numpy.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]
+.. py:function:: where(condition: arkouda.pdarrayclass.pdarray, A: Union[str, float, numpy.float64, numpy.float32, int, numpy.int8, numpy.int16, numpy.int32, numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64, arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, ~Categorical], B: Union[str, float, numpy.float64, numpy.float32, int, numpy.int8, numpy.int16, numpy.int32, numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64, arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, ~Categorical]) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, ~Categorical]
 
    Returns an array with elements chosen from A and B based upon a
    conditioning array. As is the case with numpy.where, the return array

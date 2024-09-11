@@ -256,6 +256,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/dtypes/index.html">arkouda.dtypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/numeric/index.html">arkouda.numeric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/random/index.html">arkouda.random</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/testing/index.html">arkouda.testing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/accessor/index.html">arkouda.accessor</a></li>
@@ -274,7 +275,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/logger/index.html">arkouda.logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/match/index.html">arkouda.match</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/matcher/index.html">arkouda.matcher</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/numeric/index.html">arkouda.numeric</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/index.html">arkouda.numpy</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.numpy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/dtypes/index.html">arkouda.numpy.dtypes</a></li>
 </ul>
@@ -443,7 +443,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">ret_scalar</span> <span class="o">=</span> <span class="kc">False</span>
 
-        <span class="kn">from</span> <span class="nn">arkouda.numeric</span> <span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
+        <span class="kn">from</span> <span class="nn">arkouda.numpy</span> <span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
 
         <span class="k">if</span> <span class="n">_val_isinstance_of_union</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">int_scalars</span><span class="p">):</span>
             <span class="n">is_domain</span> <span class="o">=</span> <span class="kc">True</span>
@@ -787,7 +787,7 @@
 <span class="sd">        &gt;&gt;&gt; ak.random.default_rng(17).lognormal(3, 2.5, 3)</span>
 <span class="sd">        array([7.3866978126031091 106.20159494048757 4.5424399190667666])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda.numeric</span> <span class="kn">import</span> <span class="n">exp</span>
+        <span class="kn">from</span> <span class="nn">arkouda.numpy</span> <span class="kn">import</span> <span class="n">exp</span>
 
         <span class="n">norm_arr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="n">mean</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">sigma</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">exp</span><span class="p">(</span><span class="n">norm_arr</span><span class="p">)</span> <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">norm_arr</span><span class="p">)</span></div>
@@ -1219,7 +1219,7 @@
         <span class="k">if</span> <span class="n">size</span> <span class="o">!=</span> <span class="n">var</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;array of </span><span class="si">{</span><span class="n">var_name</span><span class="si">}</span><span class="s2"> must have same size as return size&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">akfloat64</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">arkouda.numeric</span> <span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
+            <span class="kn">from</span> <span class="nn">arkouda.numpy</span> <span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
 
             <span class="n">var</span> <span class="o">=</span> <span class="n">akcast</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">akfloat64</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>

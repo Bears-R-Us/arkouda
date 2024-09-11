@@ -256,6 +256,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/dtypes/index.html">arkouda.dtypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/numeric/index.html">arkouda.numeric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/random/index.html">arkouda.random</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/testing/index.html">arkouda.testing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/accessor/index.html">arkouda.accessor</a></li>
@@ -274,7 +275,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/logger/index.html">arkouda.logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/match/index.html">arkouda.match</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/matcher/index.html">arkouda.matcher</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/numeric/index.html">arkouda.numeric</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/arkouda/numpy/index.html">arkouda.numpy</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.numpy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/numpy/dtypes/index.html">arkouda.numpy.dtypes</a></li>
 </ul>
@@ -362,6 +362,8 @@
 <span class="kn">from</span> <span class="nn">typeguard</span> <span class="kn">import</span> <span class="n">typechecked</span>
 
 <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
+<span class="kn">from</span> <span class="nn">arkouda.infoclass</span> <span class="kn">import</span> <span class="n">information</span><span class="p">,</span> <span class="n">pretty_print_information</span>
+<span class="kn">from</span> <span class="nn">arkouda.logger</span> <span class="kn">import</span> <span class="n">getArkoudaLogger</span>
 <span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">NUMBER_FORMAT_STRINGS</span><span class="p">,</span> <span class="n">DTypes</span><span class="p">,</span> <span class="n">bigint</span>
 <span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">bool_</span> <span class="k">as</span> <span class="n">akbool</span>
 <span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">dtype</span>
@@ -379,8 +381,6 @@
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">str_</span> <span class="k">as</span> <span class="n">akstr_</span>
 <span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">uint64</span> <span class="k">as</span> <span class="n">akuint64</span>
-<span class="kn">from</span> <span class="nn">arkouda.infoclass</span> <span class="kn">import</span> <span class="n">information</span><span class="p">,</span> <span class="n">pretty_print_information</span>
-<span class="kn">from</span> <span class="nn">arkouda.logger</span> <span class="kn">import</span> <span class="n">getArkoudaLogger</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;pdarray&quot;</span><span class="p">,</span>
@@ -2072,7 +2072,7 @@
 <span class="sd">        &gt;&gt;&gt; ak.array([2, 0, 2, 4, 0, 0]).value_counts()</span>
 <span class="sd">        (array([0, 2, 4]), array([3, 2, 1]))</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda.numeric</span> <span class="kn">import</span> <span class="n">value_counts</span>
+        <span class="kn">from</span> <span class="nn">arkouda.numpy</span> <span class="kn">import</span> <span class="n">value_counts</span>
 
         <span class="k">return</span> <span class="n">value_counts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
@@ -2097,7 +2097,7 @@
 <span class="sd">        _____</span>
 <span class="sd">        This is essentially shorthand for ak.cast(x, &#39;&lt;dtype&gt;&#39;) where x is a pdarray.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda.numeric</span> <span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
+        <span class="kn">from</span> <span class="nn">arkouda.numpy</span> <span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
 
         <span class="k">return</span> <span class="n">akcast</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span></div>
 
@@ -2980,7 +2980,7 @@
 <span class="sd">        must return a list of arrays that can be (co)argsorted.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akbool</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">arkouda.numeric</span> <span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
+            <span class="kn">from</span> <span class="nn">arkouda.numpy</span> <span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
 
             <span class="k">return</span> <span class="p">[</span><span class="n">akcast</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">akint64</span><span class="p">)]</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="n">akint64</span><span class="p">,</span> <span class="n">akuint64</span><span class="p">):</span>
@@ -3722,8 +3722,8 @@
 <span class="sd">    &gt;&gt;&gt; ak.divmod(x,y, x % 2 == 0)</span>
 <span class="sd">    (array([5 6 7 1 9]), array([5 0 7 3 9]))</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">arkouda.numeric</span> <span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
-    <span class="kn">from</span> <span class="nn">arkouda.numeric</span> <span class="kn">import</span> <span class="n">where</span> <span class="k">as</span> <span class="n">akwhere</span>
+    <span class="kn">from</span> <span class="nn">arkouda.numpy</span> <span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
+    <span class="kn">from</span> <span class="nn">arkouda.numpy</span> <span class="kn">import</span> <span class="n">where</span> <span class="k">as</span> <span class="n">akwhere</span>
     <span class="kn">from</span> <span class="nn">arkouda.pdarraycreation</span> <span class="kn">import</span> <span class="n">full</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
@@ -4103,7 +4103,7 @@
     <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">bigint</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">max_bits</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;max_bits must be set to count leading zeros&quot;</span><span class="p">)</span>
-        <span class="kn">from</span> <span class="nn">arkouda.numeric</span> <span class="kn">import</span> <span class="n">where</span>
+        <span class="kn">from</span> <span class="nn">arkouda.numpy</span> <span class="kn">import</span> <span class="n">where</span>
         <span class="kn">from</span> <span class="nn">arkouda.pdarraycreation</span> <span class="kn">import</span> <span class="n">zeros</span>
 
         <span class="n">uint_arrs</span> <span class="o">=</span> <span class="n">pda</span><span class="o">.</span><span class="n">bigint_to_uint_arrays</span><span class="p">()</span>
@@ -4178,7 +4178,7 @@
     <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">bigint</span><span class="p">:</span>
         <span class="c1"># we don&#39;t need max_bits to be set because that only limits the high bits</span>
         <span class="c1"># which is only relevant when ctz(0) which is defined to be 0</span>
-        <span class="kn">from</span> <span class="nn">arkouda.numeric</span> <span class="kn">import</span> <span class="n">where</span>
+        <span class="kn">from</span> <span class="nn">arkouda.numpy</span> <span class="kn">import</span> <span class="n">where</span>
         <span class="kn">from</span> <span class="nn">arkouda.pdarraycreation</span> <span class="kn">import</span> <span class="n">zeros</span>
 
         <span class="c1"># reverse the list, so we visit low bits first</span>
@@ -4335,8 +4335,8 @@
 <span class="sd">    &gt;&gt;&gt; ak.power(a), 3, a % 2 == 0)</span>
 <span class="sd">    array([0, 1, 8, 3, 64])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">arkouda.numeric</span> <span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
-    <span class="kn">from</span> <span class="nn">arkouda.numeric</span> <span class="kn">import</span> <span class="n">where</span> <span class="k">as</span> <span class="n">akwhere</span>
+    <span class="kn">from</span> <span class="nn">arkouda.numpy</span> <span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
+    <span class="kn">from</span> <span class="nn">arkouda.numpy</span> <span class="kn">import</span> <span class="n">where</span> <span class="k">as</span> <span class="n">akwhere</span>
 
     <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">pda</span><span class="o">**</span><span class="n">pwr</span>

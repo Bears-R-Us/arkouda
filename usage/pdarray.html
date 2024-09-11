@@ -257,6 +257,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/dtypes/index.html">arkouda.dtypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/numeric/index.html">arkouda.numeric</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/random/index.html">arkouda.random</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/testing/index.html">arkouda.testing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/accessor/index.html">arkouda.accessor</a></li>
@@ -275,7 +276,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/logger/index.html">arkouda.logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/match/index.html">arkouda.match</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/matcher/index.html">arkouda.matcher</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/numeric/index.html">arkouda.numeric</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../autoapi/arkouda/numpy/index.html">arkouda.numpy</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.numpy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html">arkouda.numpy.dtypes</a></li>
 </ul>
@@ -396,7 +396,7 @@ instances directly.</p>
 <dd><p>The number of elements in the array</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#id901" title="arkouda.int_scalars">int_scalars</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#id900" title="arkouda.int_scalars">int_scalars</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -407,7 +407,7 @@ instances directly.</p>
 <dd><p>The rank of the array (currently only rank 1 arrays supported)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#id901" title="arkouda.int_scalars">int_scalars</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#id900" title="arkouda.int_scalars">int_scalars</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -429,7 +429,7 @@ instances directly.</p>
 <dd><p>The size in bytes of each element</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#id901" title="arkouda.int_scalars">int_scalars</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#id900" title="arkouda.int_scalars">int_scalars</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -490,7 +490,7 @@ may override this limit by setting client.maxTransferBytes to a larger
 value, but proceed with caution.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code>, <a class="reference internal" href="../autoapi/arkouda/index.html#id1260" title="arkouda.pdarray.to_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_list</span></code></a></p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code>, <a class="reference internal" href="../autoapi/arkouda/index.html#id1259" title="arkouda.pdarray.to_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_list</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -517,7 +517,7 @@ value, but proceed with caution.</p>
 <p>Explicit conversion is supported via the <code class="docutils literal notranslate"><span class="pre">cast</span></code> function.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.cast">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">cast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">ErrorMode.strict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numeric.html#cast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.cast" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">cast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">ErrorMode.strict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/_numeric.html#cast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.cast" title="Link to this definition">¶</a></dt>
 <dd><p>Cast an array to another dtype.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
