@@ -1,7 +1,5 @@
-import glob
 import itertools
 import os
-import tempfile
 
 import numpy as np
 import pandas as pd
@@ -662,6 +660,35 @@ class TestDataFrame:
         group_on = ["key1", "key2"]
         ak_result = getattr(df.groupby(group_on), agg)()
         pd_result = getattr(pd_df.groupby(group_on, as_index=False), agg)()
+        assert_frame_equal(ak_result.to_pandas(retain_index=True), pd_result)
+
+        # TODO aggregations of string columns not currently supported (even for count)
+        df.drop("key1", axis=1, inplace=True)
+        df.drop("key2", axis=1, inplace=True)
+        pd_df = df.to_pandas()
+
+        group_on = ["nums1", "nums2"]
+        ak_result = getattr(df.groupby(group_on), agg)()
+        pd_result = getattr(pd_df.groupby(group_on, as_index=False), agg)()
+        assert_frame_equal(ak_result.to_pandas(retain_index=True), pd_result)
+
+        # TODO aggregation mishandling NaN see issue #3765
+        df.drop("nums2", axis=1, inplace=True)
+        pd_df = df.to_pandas()
+        group_on = "nums1"
+        ak_result = getattr(df.groupby(group_on), agg)()
+        pd_result = getattr(pd_df.groupby(group_on), agg)()
+        assert_frame_equal(ak_result.to_pandas(retain_index=True), pd_result)
+
+    def test_count_nan_bug(self):
+        # verify reproducer for #3762 is fixed
+        df = ak.DataFrame({"A": [1, 2, 2, np.nan], "B": [3, 4, 5, 6], "C": [1, np.nan, 2, 3]})
+        ak_result = df.groupby("A").count()
+        pd_result = df.to_pandas().groupby("A").count()
+        assert_frame_equal(ak_result.to_pandas(retain_index=True), pd_result)
+
+        ak_result = df.groupby(["A", "C"], as_index=False).count()
+        pd_result = df.to_pandas().groupby(["A", "C"], as_index=False).count()
         assert_frame_equal(ak_result.to_pandas(retain_index=True), pd_result)
 
     def test_gb_aggregations_return_dataframe(self):
