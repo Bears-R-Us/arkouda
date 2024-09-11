@@ -79,10 +79,6 @@ module NumPyDType
       }
     }
 
-    proc typeSize(type t): int {
-      return dtypeSize(whichDtype(t));
-    }
-
     /* Turns a dtype string in pythonland into a DType
 
     :arg dstr: pythonic dtype to be converted
@@ -189,216 +185,107 @@ module NumPyDType
       where t != bool
         do return b;
 
-    /*
-      Numpy's type promotion rules for (some) binary operations
+  /*
+      Numpy's type promotion rules
 
-      todo: expand this to include all numpy dtypes (and use a
-      procedural approach similar to the dtype procedures below)
-    */
-    proc promotedType(type a, type b) type {
-      if a == uint && b == uint then return uint;
-      if a == uint && b == int then return real;
-      if a == uint && b == real then return real;
-      if a == uint && b == bool then return uint;
-      if a == int && b == uint then return real;
-      if a == int && b == int then return int;
-      if a == int && b == real then return real;
-      if a == int && b == bool then return int;
-      if a == real && b == uint then return real;
-      if a == real && b == int then return real;
-      if a == real && b == real then return real;
-      if a == real && b == bool then return real;
-      if a == bool && b == uint then return uint;
-      if a == bool && b == int then return int;
-      if a == bool && b == real then return real;
-      if a == bool && b == bool then return bool;
-      if a == bigint && b == bigint then return bigint;
-      return int;
-    }
+      (including some additional rules for bigint)
 
-    /*
-      Return the dtype that can store the result of
-      an operation between two dtypes for the following
-      operations: ``+``, ``-``, ``*``, ``**``, ``//``, ``%``,
-      ``&``, ``|``, ``^``, ``<<``, ``>>``
-
-      follows Numpy's rules for type promotion
-      (of which the array-api promotion rules are a subset)
-    */
-    proc commonDType(a: DType, b: DType): DType {
-      select (scalarDTypeKind(a), scalarDTypeKind(b)) {
-        when (DTK.Integer, DTK.Integer) {
-          if isSignedIntegerDType(a) == isSignedIntegerDType(b) {
-            return maxDType(a, b);
+      see: https://numpy.org/doc/2.1/reference/arrays.promotion.html#numerical-promotion
+  */
+  proc promotedType(type a, type b) type {
+      if getKind(a) == getKind(b) {
+      return maxSizedType(a, b);
+      } else {
+          if getKind(a) == DTK.BOOL {
+              return b;
+          } else if getKind(b) == DTK.BOOL {
+              return a;
+          } else if getKind(a) == DTK.SINT && getKind(b) == DTK.UINT {
+              if typeSize(a) > typeSize(b)
+              then return a;
+              else return promoteUIntToSInt(b);
+          } else if getKind(a) == DTK.UINT && getKind(b) == DTK.SINT {
+              if typeSize(b) > typeSize(a)
+              then return b;
+              else return promoteUIntToSInt(a);
+          } else if getKind(a) == DTK.REAL && (getKind(b) == DTK.UINT || getKind(b) == DTK.SINT) {
+              if typeSize(a) > typeSize(b)
+              then return a;
+              else return promoteIntToReal(b);
+          } else if (getKind(a) == DTK.UINT || getKind(a) == DTK.SINT) && getKind(b) == DTK.REAL {
+              if typeSize(b) > typeSize(a)
+              then return b;
+              else return promoteIntToReal(a);
+          } else if getKind(a) == DTK.COMPLEX && (getKind(b) == DTK.UINT || getKind(b) == DTK.SINT) {
+              if typeSize(b) < 4
+              then return a;
+              else return complex(128);
+          } else if (getKind(a) == DTK.UINT || getKind(a) == DTK.SINT) && getKind(b) == DTK.COMPLEX {
+              if typeSize(a) < 4
+              then return b;
+              else return complex(128);
+          } else if getKind(a) == DTK.COMPLEX && getKind(b) == DTK.REAL {
+              if typeSize(b) <= 4
+              then return a;
+              else return complex(128);
+          } else if getKind(a) == DTK.REAL && getKind(b) == DTK.COMPLEX {
+              if typeSize(a) <= 4
+              then return b;
+              else return complex(128);
+          } else if getKind(a) == DTK.BIGINT || getKind(b) == DTK.BIGINT {
+              // type promotions between bigint and non-integer types don't make
+              // sense; however, prohibiting such cases needs to be handled outside
+              // this procedure
+              return bigint;
           } else {
-            const (s, u) = if isSignedIntegerDType(a) then (a, b) else (b, a);
-            return maxDType(promoteToNextSigned(u), s);
+              // should be unreachable
+              return int;
           }
-        }
-        when (DTK.Integer, DTK.Float)
-          do return maxDType(promoteToNextFloat(a), b);
-        when (DTK.Float, DTK.Integer)
-          do return maxDType(promoteToNextFloat(b), a);
-        when (DTK.Integer, DTK.Complex)
-          do return maxDType(promoteToNextComplex(a), b);
-        when (DTK.Complex, DTK.Integer)
-          do return maxDType(promoteToNextComplex(b), a);
-        when (DTK.Float, DTK.Float)
-          do return maxDType(a, b);
-        when (DTK.Float, DTK.Complex)
-          do return maxDType(promoteToNextComplex(a), b);
-        when (DTK.Complex, DTK.Float)
-          do return maxDType(promoteToNextComplex(b), a);
-        when (DTK.Complex, DTK.Complex)
-          do return maxDType(a, b);
-        otherwise {
-            if a == DType.Bool && b != DType.Bool then
-                return b;
-            else if a != DType.Bool && b == DType.Bool then
-                return a;
-            else return DType.Bool;
-        }
       }
-    }
+  }
 
-    /*
-      Return the dtype that can store the result of
-      a division operation between two dtypes
-      (following Numpy's rules for type promotion)
-    */
-    proc divDType(a: DType, b: DType): DType {
-      select (scalarDTypeKind(a), scalarDTypeKind(b)) {
-        when (DTK.Integer, DTK.Integer)
-          do return DType.Float64;
-        when (DTK.Integer, DTK.Float)
-          do return if dtypeSize(a) < 4 && b == DType.Float32
-            then DType.Float32
-            else DType.Float64;
-        when (DTK.Float, DTK.Integer)
-          do return if a == DType.Float32 && dtypeSize(b) < 4
-            then DType.Float32
-            else DType.Float64;
-        when (DTK.Integer, DTK.Complex)
-          do return maxDType(promoteToNextComplex(a), b);
-        when (DTK.Complex, DTK.Integer)
-          do return maxDType(promoteToNextComplex(b), a);
-        when (DTK.Float, DTK.Float)
-          do return maxDType(a, b);
-        when (DTK.Float, DTK.Complex)
-          do return maxDType(promoteToNextComplex(a), b);
-        when (DTK.Complex, DTK.Float)
-          do return maxDType(promoteToNextComplex(b), a);
-        when (DTK.Complex, DTK.Complex)
-          do return maxDType(a, b);
-        when (DTK.Bool, DTK.Float)
-            do return b;
-        when (DTK.Float, DTK.Bool)
-            do return a;
-        when (DTK.Bool, DTK.Complex)
-            do return b;
-        when (DTK.Complex, DTK.Bool)
-            do return a;
-        otherwise do return DType.Float64;
-      }
-    }
+  enum DTK {
+      SINT,
+      UINT,
+      REAL,
+      COMPLEX,
+      BOOL,
+      BIGINT,
+  }
 
-    private proc maxDType(a: DType, b: DType): DType {
-      if dtypeSize(a) >= dtypeSize(b)
-          then return a;
-          else return b;
-    }
+  proc getKind(type t) param: DTK {
+      if isIntType(t) then return DTK.SINT;
+      if isUintType(t) then return DTK.UINT;
+      if isRealType(t) then return DTK.REAL;
+      if isComplexType(t) then return DTK.COMPLEX;
+      if t == bigint then return DTK.BIGINT;
+      return DTK.BOOL;
+  }
 
-    enum DTK {
-      Integer,
-      Float,
-      Complex,
-      Bool,
-      Other
-    }
+  proc maxSizedType(type a, type b) type {
+      if typeSize(a) >= typeSize(b)
+      then return a;
+      else return b;
+  }
 
-    private proc scalarDTypeKind(dt: DType): DTK {
-      select dt {
-        when DType.UInt8 do return DTK.Integer;
-        when DType.UInt16 do return DTK.Integer;
-        when DType.UInt32 do return DTK.Integer;
-        when DType.UInt64 do return DTK.Integer;
-        when DType.Int8 do return DTK.Integer;
-        when DType.Int16 do return DTK.Integer;
-        when DType.Int32 do return DTK.Integer;
-        when DType.Int64 do return DTK.Integer;
-        when DType.Float32 do return DTK.Float;
-        when DType.Float64 do return DTK.Float;
-        when DType.Complex64 do return DTK.Complex;
-        when DType.Complex128 do return DTK.Complex;
-        when DType.Bool do return DTK.Bool;
-        otherwise do return DTK.Other;
-      }
-    }
+  proc promoteUIntToSInt(type t) type {
+      if t == uint(8) then return int(16);
+      if t == uint(16) then return int(32);
+      if t == uint(32) then return int(64);
+      return real(64);
+  }
 
-    private proc isSignedIntegerDType(dt: DType): bool {
-        select dt {
-            when DType.Int8 do return true;
-            when DType.Int16 do return true;
-            when DType.Int32 do return true;
-            when DType.Int64 do return true;
-            otherwise do return false;
-        }
-    }
+  proc promoteIntToReal(type t) type {
+      if t == int(8) || t == uint(8) ||
+          t == int(16) || t == uint(16)
+          then return real(32);
+          else return real(64);
+  }
 
-    private proc promoteToNextSigned(dt: DType): DType {
-      select dt {
-        when DType.Bool do return DType.Int8;
-        when DType.UInt8 do return DType.Int16;
-        when DType.UInt16 do return DType.Int32;
-        when DType.UInt32 do return DType.Int64;
-        when DType.UInt64 do return DType.Float64;
-        when DType.Int8 do return DType.Int16;
-        when DType.Int16 do return DType.Int32;
-        when DType.Int32 do return DType.Int64;
-        when DType.Int64 do return DType.Float64;
-        when DType.Float32 do return DType.Float64;
-        when DType.Float64 do return DType.Float64;
-        when DType.Complex64 do return DType.Complex128;
-        when DType.Complex128 do return DType.Complex128;
-        otherwise do return DType.UNDEF;
-      }
-    }
+  proc typeSize(type t) param: int {
+      if t == bigint then return 16;
+      if t == bool then return 1;
+      return numBytes(t);
+  }
 
-    private proc promoteToNextFloat(dt: DType): DType {
-      select dt {
-        when DType.Bool do return DType.Float32;
-        when DType.UInt8 do return DType.Float32;
-        when DType.UInt16 do return DType.Float32;
-        when DType.UInt32 do return DType.Float64;
-        when DType.UInt64 do return DType.Float64;
-        when DType.Int8 do return DType.Float32;
-        when DType.Int16 do return DType.Float32;
-        when DType.Int32 do return DType.Float64;
-        when DType.Int64 do return DType.Float64;
-        when DType.Float32 do return DType.Float64;
-        when DType.Float64 do return DType.Float64;
-        when DType.Complex64 do return DType.Complex128;
-        when DType.Complex128 do return DType.Complex128;
-        otherwise do return DType.UNDEF;
-      }
-    }
-
-    private proc promoteToNextComplex(dt: DType): DType {
-      select dt {
-        when DType.Bool do return DType.Complex64;
-        when DType.UInt8 do return DType.Complex64;
-        when DType.UInt16 do return DType.Complex64;
-        when DType.UInt32 do return DType.Complex128;
-        when DType.UInt64 do return DType.Complex128;
-        when DType.Int8 do return DType.Complex64;
-        when DType.Int16 do return DType.Complex64;
-        when DType.Int32 do return DType.Complex128;
-        when DType.Int64 do return DType.Complex128;
-        when DType.Float32 do return DType.Complex64;
-        when DType.Float64 do return DType.Complex128;
-        when DType.Complex64 do return DType.Complex128;
-        when DType.Complex128 do return DType.Complex128;
-        otherwise do return DType.UNDEF;
-      }
-    }
 }

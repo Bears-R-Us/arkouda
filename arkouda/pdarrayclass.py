@@ -499,6 +499,19 @@ class pdarray:
         fmt = NUMBER_FORMAT_STRINGS[self.dtype.name]
         return fmt.format(other)
 
+    def _binop_cmd_group(op: str) -> str:
+        if op in ["+", "-", "*", "%", "**", "//"]:
+            op_cmd = "arithmeticOp"
+        elif op in ["==", "!=", "<", ">", "<=", ">="]:
+            op_cmd = "comparisonOp"
+        elif op in ["&", "|", "^", "<<", ">>", ">>>", "<<<"]:
+            op_cmd = "bitwiseOp"
+        elif op == "/":
+            op_cmd = "divOp"
+        else:
+            raise ValueError(f"unrecognized operator {op}")
+        return op_cmd
+
     # binary operators
     def _binop(self, other: pdarray, op: str) -> pdarray:
         """
@@ -531,24 +544,20 @@ class pdarray:
             return NotImplemented
         if op not in self.BinOps:
             raise ValueError(f"bad operator {op}")
+
+        op_cmd = pdarray._binop_cmd_group(op)
+
         # pdarray binop pdarray
         if isinstance(other, pdarray):
             try:
                 x1, x2, tmp_x1, tmp_x2 = broadcast_if_needed(self, other)
             except ValueError:
                 raise ValueError(f"shape mismatch {self.shape} {other.shape}")
-            if op in ["+", "-", "*", "%", "**", "//"]:
-                op_cmd = "arithmeticOpVV"
-            elif op in ["==", "!=", "<", ">", "<=", ">="]:
-                op_cmd = "comparisonOpVV"
-            elif op in ["&", "|", "^", "<<", ">>", ">>>", "<<<"]:
-                op_cmd = "bitwiseOpVV"
-            elif op == "/":
-                op_cmd = "divOpVV"
-            else:
-                raise ValueError(f"unrecognized operator {op}")
 
-            repMsg = generic_msg(cmd=f"{op_cmd}<{x1.dtype},{x2.dtype},{x1.ndim}>", args={"op": op, "a": x1, "b": x2})
+            repMsg = generic_msg(
+                cmd=f"{op_cmd}VV<{x1.dtype},{x2.dtype},{x1.ndim}>",
+                args={"op": op, "a": x1, "b": x2}
+            )
             if tmp_x1:
                 del x1
             if tmp_x2:
@@ -565,8 +574,8 @@ class pdarray:
         if dt not in DTypes:
             raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")
         repMsg = generic_msg(
-            cmd=f"binopvs{self.ndim}D",
-            args={"op": op, "a": self, "dtype": dt, "value": other},
+            cmd=f"{op_cmd}VS<{self.dtype},{dt},{self.ndim}>",
+            args={"op": op, "a": self, "value": other},
         )
         return create_pdarray(repMsg)
 
