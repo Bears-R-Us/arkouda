@@ -7,7 +7,6 @@ module OperatorMsg
     use BitOps;
     use Reflection;
     use ServerErrors;
-    use BinOp;
     use BigInteger;
 
     use MultiTypeSymbolTable;
