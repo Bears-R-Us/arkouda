@@ -795,9 +795,13 @@ class pdarray:
             raise ValueError(f"bad operator {op}")
         # pdarray op= pdarray
         if isinstance(other, pdarray):
+            # TODO: shape broadcasting here if needed
             if self.shape != other.shape:
                 raise ValueError(f"shape mismatch {self.shape} {other.shape}")
-            generic_msg(cmd=f"opeqvv{self.ndim}D", args={"op": op, "a": self, "b": other})
+            generic_msg(
+                cmd=f"opeqVV<{self.dtype},{other.dtype},{self.ndim}>",
+                args={"op": op, "a": self, "b": other}
+            )
             return self
         # pdarray binop scalar
         # opeq requires scalar to be cast as pdarray dtype

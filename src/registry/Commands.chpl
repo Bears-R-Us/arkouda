@@ -2389,403 +2389,503 @@ registerFunction('divOpVS<bigint,bigint,1>', ark_divOpVS_bigint_bigint_1, 'Opera
 
 proc ark_arithmeticOpSV_int_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.arithmeticOpSV(cmd, msgArgs, st, binop_dtype_a=int, binop_dtype_b=int, array_nd=1);
-registerFunction('arithmeticOpSV<int64,int64,1>', ark_arithmeticOpSV_int_int_1, 'OperatorMsg', 991);
+registerFunction('arithmeticOpSV<int64,int64,1>', ark_arithmeticOpSV_int_int_1, 'OperatorMsg', 990);
 
 proc ark_arithmeticOpSV_int_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.arithmeticOpSV(cmd, msgArgs, st, binop_dtype_a=int, binop_dtype_b=uint, array_nd=1);
-registerFunction('arithmeticOpSV<int64,uint64,1>', ark_arithmeticOpSV_int_uint_1, 'OperatorMsg', 991);
+registerFunction('arithmeticOpSV<int64,uint64,1>', ark_arithmeticOpSV_int_uint_1, 'OperatorMsg', 990);
 
 proc ark_arithmeticOpSV_int_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.arithmeticOpSV(cmd, msgArgs, st, binop_dtype_a=int, binop_dtype_b=real, array_nd=1);
-registerFunction('arithmeticOpSV<int64,float64,1>', ark_arithmeticOpSV_int_real_1, 'OperatorMsg', 991);
+registerFunction('arithmeticOpSV<int64,float64,1>', ark_arithmeticOpSV_int_real_1, 'OperatorMsg', 990);
 
 proc ark_arithmeticOpSV_int_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.arithmeticOpSV(cmd, msgArgs, st, binop_dtype_a=int, binop_dtype_b=bool, array_nd=1);
-registerFunction('arithmeticOpSV<int64,bool,1>', ark_arithmeticOpSV_int_bool_1, 'OperatorMsg', 991);
+registerFunction('arithmeticOpSV<int64,bool,1>', ark_arithmeticOpSV_int_bool_1, 'OperatorMsg', 990);
 
 proc ark_arithmeticOpSV_int_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.arithmeticOpSV(cmd, msgArgs, st, binop_dtype_a=int, binop_dtype_b=bigint, array_nd=1);
-registerFunction('arithmeticOpSV<int64,bigint,1>', ark_arithmeticOpSV_int_bigint_1, 'OperatorMsg', 991);
+registerFunction('arithmeticOpSV<int64,bigint,1>', ark_arithmeticOpSV_int_bigint_1, 'OperatorMsg', 990);
 
 proc ark_arithmeticOpSV_uint_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.arithmeticOpSV(cmd, msgArgs, st, binop_dtype_a=uint, binop_dtype_b=int, array_nd=1);
-registerFunction('arithmeticOpSV<uint64,int64,1>', ark_arithmeticOpSV_uint_int_1, 'OperatorMsg', 991);
+registerFunction('arithmeticOpSV<uint64,int64,1>', ark_arithmeticOpSV_uint_int_1, 'OperatorMsg', 990);
 
 proc ark_arithmeticOpSV_uint_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.arithmeticOpSV(cmd, msgArgs, st, binop_dtype_a=uint, binop_dtype_b=uint, array_nd=1);
-registerFunction('arithmeticOpSV<uint64,uint64,1>', ark_arithmeticOpSV_uint_uint_1, 'OperatorMsg', 991);
+registerFunction('arithmeticOpSV<uint64,uint64,1>', ark_arithmeticOpSV_uint_uint_1, 'OperatorMsg', 990);
 
 proc ark_arithmeticOpSV_uint_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.arithmeticOpSV(cmd, msgArgs, st, binop_dtype_a=uint, binop_dtype_b=real, array_nd=1);
-registerFunction('arithmeticOpSV<uint64,float64,1>', ark_arithmeticOpSV_uint_real_1, 'OperatorMsg', 991);
+registerFunction('arithmeticOpSV<uint64,float64,1>', ark_arithmeticOpSV_uint_real_1, 'OperatorMsg', 990);
 
 proc ark_arithmeticOpSV_uint_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.arithmeticOpSV(cmd, msgArgs, st, binop_dtype_a=uint, binop_dtype_b=bool, array_nd=1);
-registerFunction('arithmeticOpSV<uint64,bool,1>', ark_arithmeticOpSV_uint_bool_1, 'OperatorMsg', 991);
+registerFunction('arithmeticOpSV<uint64,bool,1>', ark_arithmeticOpSV_uint_bool_1, 'OperatorMsg', 990);
 
 proc ark_arithmeticOpSV_uint_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.arithmeticOpSV(cmd, msgArgs, st, binop_dtype_a=uint, binop_dtype_b=bigint, array_nd=1);
-registerFunction('arithmeticOpSV<uint64,bigint,1>', ark_arithmeticOpSV_uint_bigint_1, 'OperatorMsg', 991);
+registerFunction('arithmeticOpSV<uint64,bigint,1>', ark_arithmeticOpSV_uint_bigint_1, 'OperatorMsg', 990);
 
 proc ark_arithmeticOpSV_real_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.arithmeticOpSV(cmd, msgArgs, st, binop_dtype_a=real, binop_dtype_b=int, array_nd=1);
-registerFunction('arithmeticOpSV<float64,int64,1>', ark_arithmeticOpSV_real_int_1, 'OperatorMsg', 991);
+registerFunction('arithmeticOpSV<float64,int64,1>', ark_arithmeticOpSV_real_int_1, 'OperatorMsg', 990);
 
 proc ark_arithmeticOpSV_real_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.arithmeticOpSV(cmd, msgArgs, st, binop_dtype_a=real, binop_dtype_b=uint, array_nd=1);
-registerFunction('arithmeticOpSV<float64,uint64,1>', ark_arithmeticOpSV_real_uint_1, 'OperatorMsg', 991);
+registerFunction('arithmeticOpSV<float64,uint64,1>', ark_arithmeticOpSV_real_uint_1, 'OperatorMsg', 990);
 
 proc ark_arithmeticOpSV_real_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.arithmeticOpSV(cmd, msgArgs, st, binop_dtype_a=real, binop_dtype_b=real, array_nd=1);
-registerFunction('arithmeticOpSV<float64,float64,1>', ark_arithmeticOpSV_real_real_1, 'OperatorMsg', 991);
+registerFunction('arithmeticOpSV<float64,float64,1>', ark_arithmeticOpSV_real_real_1, 'OperatorMsg', 990);
 
 proc ark_arithmeticOpSV_real_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.arithmeticOpSV(cmd, msgArgs, st, binop_dtype_a=real, binop_dtype_b=bool, array_nd=1);
-registerFunction('arithmeticOpSV<float64,bool,1>', ark_arithmeticOpSV_real_bool_1, 'OperatorMsg', 991);
+registerFunction('arithmeticOpSV<float64,bool,1>', ark_arithmeticOpSV_real_bool_1, 'OperatorMsg', 990);
 
 proc ark_arithmeticOpSV_real_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.arithmeticOpSV(cmd, msgArgs, st, binop_dtype_a=real, binop_dtype_b=bigint, array_nd=1);
-registerFunction('arithmeticOpSV<float64,bigint,1>', ark_arithmeticOpSV_real_bigint_1, 'OperatorMsg', 991);
+registerFunction('arithmeticOpSV<float64,bigint,1>', ark_arithmeticOpSV_real_bigint_1, 'OperatorMsg', 990);
 
 proc ark_arithmeticOpSV_bool_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.arithmeticOpSV(cmd, msgArgs, st, binop_dtype_a=bool, binop_dtype_b=int, array_nd=1);
-registerFunction('arithmeticOpSV<bool,int64,1>', ark_arithmeticOpSV_bool_int_1, 'OperatorMsg', 991);
+registerFunction('arithmeticOpSV<bool,int64,1>', ark_arithmeticOpSV_bool_int_1, 'OperatorMsg', 990);
 
 proc ark_arithmeticOpSV_bool_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.arithmeticOpSV(cmd, msgArgs, st, binop_dtype_a=bool, binop_dtype_b=uint, array_nd=1);
-registerFunction('arithmeticOpSV<bool,uint64,1>', ark_arithmeticOpSV_bool_uint_1, 'OperatorMsg', 991);
+registerFunction('arithmeticOpSV<bool,uint64,1>', ark_arithmeticOpSV_bool_uint_1, 'OperatorMsg', 990);
 
 proc ark_arithmeticOpSV_bool_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.arithmeticOpSV(cmd, msgArgs, st, binop_dtype_a=bool, binop_dtype_b=real, array_nd=1);
-registerFunction('arithmeticOpSV<bool,float64,1>', ark_arithmeticOpSV_bool_real_1, 'OperatorMsg', 991);
+registerFunction('arithmeticOpSV<bool,float64,1>', ark_arithmeticOpSV_bool_real_1, 'OperatorMsg', 990);
 
 proc ark_arithmeticOpSV_bool_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.arithmeticOpSV(cmd, msgArgs, st, binop_dtype_a=bool, binop_dtype_b=bool, array_nd=1);
-registerFunction('arithmeticOpSV<bool,bool,1>', ark_arithmeticOpSV_bool_bool_1, 'OperatorMsg', 991);
+registerFunction('arithmeticOpSV<bool,bool,1>', ark_arithmeticOpSV_bool_bool_1, 'OperatorMsg', 990);
 
 proc ark_arithmeticOpSV_bool_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.arithmeticOpSV(cmd, msgArgs, st, binop_dtype_a=bool, binop_dtype_b=bigint, array_nd=1);
-registerFunction('arithmeticOpSV<bool,bigint,1>', ark_arithmeticOpSV_bool_bigint_1, 'OperatorMsg', 991);
+registerFunction('arithmeticOpSV<bool,bigint,1>', ark_arithmeticOpSV_bool_bigint_1, 'OperatorMsg', 990);
 
 proc ark_arithmeticOpSV_bigint_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.arithmeticOpSV(cmd, msgArgs, st, binop_dtype_a=bigint, binop_dtype_b=int, array_nd=1);
-registerFunction('arithmeticOpSV<bigint,int64,1>', ark_arithmeticOpSV_bigint_int_1, 'OperatorMsg', 991);
+registerFunction('arithmeticOpSV<bigint,int64,1>', ark_arithmeticOpSV_bigint_int_1, 'OperatorMsg', 990);
 
 proc ark_arithmeticOpSV_bigint_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.arithmeticOpSV(cmd, msgArgs, st, binop_dtype_a=bigint, binop_dtype_b=uint, array_nd=1);
-registerFunction('arithmeticOpSV<bigint,uint64,1>', ark_arithmeticOpSV_bigint_uint_1, 'OperatorMsg', 991);
+registerFunction('arithmeticOpSV<bigint,uint64,1>', ark_arithmeticOpSV_bigint_uint_1, 'OperatorMsg', 990);
 
 proc ark_arithmeticOpSV_bigint_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.arithmeticOpSV(cmd, msgArgs, st, binop_dtype_a=bigint, binop_dtype_b=real, array_nd=1);
-registerFunction('arithmeticOpSV<bigint,float64,1>', ark_arithmeticOpSV_bigint_real_1, 'OperatorMsg', 991);
+registerFunction('arithmeticOpSV<bigint,float64,1>', ark_arithmeticOpSV_bigint_real_1, 'OperatorMsg', 990);
 
 proc ark_arithmeticOpSV_bigint_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.arithmeticOpSV(cmd, msgArgs, st, binop_dtype_a=bigint, binop_dtype_b=bool, array_nd=1);
-registerFunction('arithmeticOpSV<bigint,bool,1>', ark_arithmeticOpSV_bigint_bool_1, 'OperatorMsg', 991);
+registerFunction('arithmeticOpSV<bigint,bool,1>', ark_arithmeticOpSV_bigint_bool_1, 'OperatorMsg', 990);
 
 proc ark_arithmeticOpSV_bigint_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.arithmeticOpSV(cmd, msgArgs, st, binop_dtype_a=bigint, binop_dtype_b=bigint, array_nd=1);
-registerFunction('arithmeticOpSV<bigint,bigint,1>', ark_arithmeticOpSV_bigint_bigint_1, 'OperatorMsg', 991);
+registerFunction('arithmeticOpSV<bigint,bigint,1>', ark_arithmeticOpSV_bigint_bigint_1, 'OperatorMsg', 990);
 
 proc ark_comparisonOpSV_int_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.comparisonOpSV(cmd, msgArgs, st, binop_dtype_a=int, binop_dtype_b=int, array_nd=1);
-registerFunction('comparisonOpSV<int64,int64,1>', ark_comparisonOpSV_int_int_1, 'OperatorMsg', 1149);
+registerFunction('comparisonOpSV<int64,int64,1>', ark_comparisonOpSV_int_int_1, 'OperatorMsg', 1148);
 
 proc ark_comparisonOpSV_int_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.comparisonOpSV(cmd, msgArgs, st, binop_dtype_a=int, binop_dtype_b=uint, array_nd=1);
-registerFunction('comparisonOpSV<int64,uint64,1>', ark_comparisonOpSV_int_uint_1, 'OperatorMsg', 1149);
+registerFunction('comparisonOpSV<int64,uint64,1>', ark_comparisonOpSV_int_uint_1, 'OperatorMsg', 1148);
 
 proc ark_comparisonOpSV_int_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.comparisonOpSV(cmd, msgArgs, st, binop_dtype_a=int, binop_dtype_b=real, array_nd=1);
-registerFunction('comparisonOpSV<int64,float64,1>', ark_comparisonOpSV_int_real_1, 'OperatorMsg', 1149);
+registerFunction('comparisonOpSV<int64,float64,1>', ark_comparisonOpSV_int_real_1, 'OperatorMsg', 1148);
 
 proc ark_comparisonOpSV_int_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.comparisonOpSV(cmd, msgArgs, st, binop_dtype_a=int, binop_dtype_b=bool, array_nd=1);
-registerFunction('comparisonOpSV<int64,bool,1>', ark_comparisonOpSV_int_bool_1, 'OperatorMsg', 1149);
+registerFunction('comparisonOpSV<int64,bool,1>', ark_comparisonOpSV_int_bool_1, 'OperatorMsg', 1148);
 
 proc ark_comparisonOpSV_int_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.comparisonOpSV(cmd, msgArgs, st, binop_dtype_a=int, binop_dtype_b=bigint, array_nd=1);
-registerFunction('comparisonOpSV<int64,bigint,1>', ark_comparisonOpSV_int_bigint_1, 'OperatorMsg', 1149);
+registerFunction('comparisonOpSV<int64,bigint,1>', ark_comparisonOpSV_int_bigint_1, 'OperatorMsg', 1148);
 
 proc ark_comparisonOpSV_uint_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.comparisonOpSV(cmd, msgArgs, st, binop_dtype_a=uint, binop_dtype_b=int, array_nd=1);
-registerFunction('comparisonOpSV<uint64,int64,1>', ark_comparisonOpSV_uint_int_1, 'OperatorMsg', 1149);
+registerFunction('comparisonOpSV<uint64,int64,1>', ark_comparisonOpSV_uint_int_1, 'OperatorMsg', 1148);
 
 proc ark_comparisonOpSV_uint_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.comparisonOpSV(cmd, msgArgs, st, binop_dtype_a=uint, binop_dtype_b=uint, array_nd=1);
-registerFunction('comparisonOpSV<uint64,uint64,1>', ark_comparisonOpSV_uint_uint_1, 'OperatorMsg', 1149);
+registerFunction('comparisonOpSV<uint64,uint64,1>', ark_comparisonOpSV_uint_uint_1, 'OperatorMsg', 1148);
 
 proc ark_comparisonOpSV_uint_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.comparisonOpSV(cmd, msgArgs, st, binop_dtype_a=uint, binop_dtype_b=real, array_nd=1);
-registerFunction('comparisonOpSV<uint64,float64,1>', ark_comparisonOpSV_uint_real_1, 'OperatorMsg', 1149);
+registerFunction('comparisonOpSV<uint64,float64,1>', ark_comparisonOpSV_uint_real_1, 'OperatorMsg', 1148);
 
 proc ark_comparisonOpSV_uint_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.comparisonOpSV(cmd, msgArgs, st, binop_dtype_a=uint, binop_dtype_b=bool, array_nd=1);
-registerFunction('comparisonOpSV<uint64,bool,1>', ark_comparisonOpSV_uint_bool_1, 'OperatorMsg', 1149);
+registerFunction('comparisonOpSV<uint64,bool,1>', ark_comparisonOpSV_uint_bool_1, 'OperatorMsg', 1148);
 
 proc ark_comparisonOpSV_uint_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.comparisonOpSV(cmd, msgArgs, st, binop_dtype_a=uint, binop_dtype_b=bigint, array_nd=1);
-registerFunction('comparisonOpSV<uint64,bigint,1>', ark_comparisonOpSV_uint_bigint_1, 'OperatorMsg', 1149);
+registerFunction('comparisonOpSV<uint64,bigint,1>', ark_comparisonOpSV_uint_bigint_1, 'OperatorMsg', 1148);
 
 proc ark_comparisonOpSV_real_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.comparisonOpSV(cmd, msgArgs, st, binop_dtype_a=real, binop_dtype_b=int, array_nd=1);
-registerFunction('comparisonOpSV<float64,int64,1>', ark_comparisonOpSV_real_int_1, 'OperatorMsg', 1149);
+registerFunction('comparisonOpSV<float64,int64,1>', ark_comparisonOpSV_real_int_1, 'OperatorMsg', 1148);
 
 proc ark_comparisonOpSV_real_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.comparisonOpSV(cmd, msgArgs, st, binop_dtype_a=real, binop_dtype_b=uint, array_nd=1);
-registerFunction('comparisonOpSV<float64,uint64,1>', ark_comparisonOpSV_real_uint_1, 'OperatorMsg', 1149);
+registerFunction('comparisonOpSV<float64,uint64,1>', ark_comparisonOpSV_real_uint_1, 'OperatorMsg', 1148);
 
 proc ark_comparisonOpSV_real_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.comparisonOpSV(cmd, msgArgs, st, binop_dtype_a=real, binop_dtype_b=real, array_nd=1);
-registerFunction('comparisonOpSV<float64,float64,1>', ark_comparisonOpSV_real_real_1, 'OperatorMsg', 1149);
+registerFunction('comparisonOpSV<float64,float64,1>', ark_comparisonOpSV_real_real_1, 'OperatorMsg', 1148);
 
 proc ark_comparisonOpSV_real_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.comparisonOpSV(cmd, msgArgs, st, binop_dtype_a=real, binop_dtype_b=bool, array_nd=1);
-registerFunction('comparisonOpSV<float64,bool,1>', ark_comparisonOpSV_real_bool_1, 'OperatorMsg', 1149);
+registerFunction('comparisonOpSV<float64,bool,1>', ark_comparisonOpSV_real_bool_1, 'OperatorMsg', 1148);
 
 proc ark_comparisonOpSV_real_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.comparisonOpSV(cmd, msgArgs, st, binop_dtype_a=real, binop_dtype_b=bigint, array_nd=1);
-registerFunction('comparisonOpSV<float64,bigint,1>', ark_comparisonOpSV_real_bigint_1, 'OperatorMsg', 1149);
+registerFunction('comparisonOpSV<float64,bigint,1>', ark_comparisonOpSV_real_bigint_1, 'OperatorMsg', 1148);
 
 proc ark_comparisonOpSV_bool_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.comparisonOpSV(cmd, msgArgs, st, binop_dtype_a=bool, binop_dtype_b=int, array_nd=1);
-registerFunction('comparisonOpSV<bool,int64,1>', ark_comparisonOpSV_bool_int_1, 'OperatorMsg', 1149);
+registerFunction('comparisonOpSV<bool,int64,1>', ark_comparisonOpSV_bool_int_1, 'OperatorMsg', 1148);
 
 proc ark_comparisonOpSV_bool_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.comparisonOpSV(cmd, msgArgs, st, binop_dtype_a=bool, binop_dtype_b=uint, array_nd=1);
-registerFunction('comparisonOpSV<bool,uint64,1>', ark_comparisonOpSV_bool_uint_1, 'OperatorMsg', 1149);
+registerFunction('comparisonOpSV<bool,uint64,1>', ark_comparisonOpSV_bool_uint_1, 'OperatorMsg', 1148);
 
 proc ark_comparisonOpSV_bool_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.comparisonOpSV(cmd, msgArgs, st, binop_dtype_a=bool, binop_dtype_b=real, array_nd=1);
-registerFunction('comparisonOpSV<bool,float64,1>', ark_comparisonOpSV_bool_real_1, 'OperatorMsg', 1149);
+registerFunction('comparisonOpSV<bool,float64,1>', ark_comparisonOpSV_bool_real_1, 'OperatorMsg', 1148);
 
 proc ark_comparisonOpSV_bool_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.comparisonOpSV(cmd, msgArgs, st, binop_dtype_a=bool, binop_dtype_b=bool, array_nd=1);
-registerFunction('comparisonOpSV<bool,bool,1>', ark_comparisonOpSV_bool_bool_1, 'OperatorMsg', 1149);
+registerFunction('comparisonOpSV<bool,bool,1>', ark_comparisonOpSV_bool_bool_1, 'OperatorMsg', 1148);
 
 proc ark_comparisonOpSV_bool_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.comparisonOpSV(cmd, msgArgs, st, binop_dtype_a=bool, binop_dtype_b=bigint, array_nd=1);
-registerFunction('comparisonOpSV<bool,bigint,1>', ark_comparisonOpSV_bool_bigint_1, 'OperatorMsg', 1149);
+registerFunction('comparisonOpSV<bool,bigint,1>', ark_comparisonOpSV_bool_bigint_1, 'OperatorMsg', 1148);
 
 proc ark_comparisonOpSV_bigint_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.comparisonOpSV(cmd, msgArgs, st, binop_dtype_a=bigint, binop_dtype_b=int, array_nd=1);
-registerFunction('comparisonOpSV<bigint,int64,1>', ark_comparisonOpSV_bigint_int_1, 'OperatorMsg', 1149);
+registerFunction('comparisonOpSV<bigint,int64,1>', ark_comparisonOpSV_bigint_int_1, 'OperatorMsg', 1148);
 
 proc ark_comparisonOpSV_bigint_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.comparisonOpSV(cmd, msgArgs, st, binop_dtype_a=bigint, binop_dtype_b=uint, array_nd=1);
-registerFunction('comparisonOpSV<bigint,uint64,1>', ark_comparisonOpSV_bigint_uint_1, 'OperatorMsg', 1149);
+registerFunction('comparisonOpSV<bigint,uint64,1>', ark_comparisonOpSV_bigint_uint_1, 'OperatorMsg', 1148);
 
 proc ark_comparisonOpSV_bigint_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.comparisonOpSV(cmd, msgArgs, st, binop_dtype_a=bigint, binop_dtype_b=real, array_nd=1);
-registerFunction('comparisonOpSV<bigint,float64,1>', ark_comparisonOpSV_bigint_real_1, 'OperatorMsg', 1149);
+registerFunction('comparisonOpSV<bigint,float64,1>', ark_comparisonOpSV_bigint_real_1, 'OperatorMsg', 1148);
 
 proc ark_comparisonOpSV_bigint_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.comparisonOpSV(cmd, msgArgs, st, binop_dtype_a=bigint, binop_dtype_b=bool, array_nd=1);
-registerFunction('comparisonOpSV<bigint,bool,1>', ark_comparisonOpSV_bigint_bool_1, 'OperatorMsg', 1149);
+registerFunction('comparisonOpSV<bigint,bool,1>', ark_comparisonOpSV_bigint_bool_1, 'OperatorMsg', 1148);
 
 proc ark_comparisonOpSV_bigint_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.comparisonOpSV(cmd, msgArgs, st, binop_dtype_a=bigint, binop_dtype_b=bigint, array_nd=1);
-registerFunction('comparisonOpSV<bigint,bigint,1>', ark_comparisonOpSV_bigint_bigint_1, 'OperatorMsg', 1149);
+registerFunction('comparisonOpSV<bigint,bigint,1>', ark_comparisonOpSV_bigint_bigint_1, 'OperatorMsg', 1148);
 
 proc ark_bitwiseOpSV_int_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.bitwiseOpSV(cmd, msgArgs, st, binop_dtype_a=int, binop_dtype_b=int, array_nd=1);
-registerFunction('bitwiseOpSV<int64,int64,1>', ark_bitwiseOpSV_int_int_1, 'OperatorMsg', 1206);
+registerFunction('bitwiseOpSV<int64,int64,1>', ark_bitwiseOpSV_int_int_1, 'OperatorMsg', 1205);
 
 proc ark_bitwiseOpSV_int_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.bitwiseOpSV(cmd, msgArgs, st, binop_dtype_a=int, binop_dtype_b=uint, array_nd=1);
-registerFunction('bitwiseOpSV<int64,uint64,1>', ark_bitwiseOpSV_int_uint_1, 'OperatorMsg', 1206);
+registerFunction('bitwiseOpSV<int64,uint64,1>', ark_bitwiseOpSV_int_uint_1, 'OperatorMsg', 1205);
 
 proc ark_bitwiseOpSV_int_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.bitwiseOpSV(cmd, msgArgs, st, binop_dtype_a=int, binop_dtype_b=real, array_nd=1);
-registerFunction('bitwiseOpSV<int64,float64,1>', ark_bitwiseOpSV_int_real_1, 'OperatorMsg', 1206);
+registerFunction('bitwiseOpSV<int64,float64,1>', ark_bitwiseOpSV_int_real_1, 'OperatorMsg', 1205);
 
 proc ark_bitwiseOpSV_int_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.bitwiseOpSV(cmd, msgArgs, st, binop_dtype_a=int, binop_dtype_b=bool, array_nd=1);
-registerFunction('bitwiseOpSV<int64,bool,1>', ark_bitwiseOpSV_int_bool_1, 'OperatorMsg', 1206);
+registerFunction('bitwiseOpSV<int64,bool,1>', ark_bitwiseOpSV_int_bool_1, 'OperatorMsg', 1205);
 
 proc ark_bitwiseOpSV_int_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.bitwiseOpSV(cmd, msgArgs, st, binop_dtype_a=int, binop_dtype_b=bigint, array_nd=1);
-registerFunction('bitwiseOpSV<int64,bigint,1>', ark_bitwiseOpSV_int_bigint_1, 'OperatorMsg', 1206);
+registerFunction('bitwiseOpSV<int64,bigint,1>', ark_bitwiseOpSV_int_bigint_1, 'OperatorMsg', 1205);
 
 proc ark_bitwiseOpSV_uint_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.bitwiseOpSV(cmd, msgArgs, st, binop_dtype_a=uint, binop_dtype_b=int, array_nd=1);
-registerFunction('bitwiseOpSV<uint64,int64,1>', ark_bitwiseOpSV_uint_int_1, 'OperatorMsg', 1206);
+registerFunction('bitwiseOpSV<uint64,int64,1>', ark_bitwiseOpSV_uint_int_1, 'OperatorMsg', 1205);
 
 proc ark_bitwiseOpSV_uint_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.bitwiseOpSV(cmd, msgArgs, st, binop_dtype_a=uint, binop_dtype_b=uint, array_nd=1);
-registerFunction('bitwiseOpSV<uint64,uint64,1>', ark_bitwiseOpSV_uint_uint_1, 'OperatorMsg', 1206);
+registerFunction('bitwiseOpSV<uint64,uint64,1>', ark_bitwiseOpSV_uint_uint_1, 'OperatorMsg', 1205);
 
 proc ark_bitwiseOpSV_uint_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.bitwiseOpSV(cmd, msgArgs, st, binop_dtype_a=uint, binop_dtype_b=real, array_nd=1);
-registerFunction('bitwiseOpSV<uint64,float64,1>', ark_bitwiseOpSV_uint_real_1, 'OperatorMsg', 1206);
+registerFunction('bitwiseOpSV<uint64,float64,1>', ark_bitwiseOpSV_uint_real_1, 'OperatorMsg', 1205);
 
 proc ark_bitwiseOpSV_uint_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.bitwiseOpSV(cmd, msgArgs, st, binop_dtype_a=uint, binop_dtype_b=bool, array_nd=1);
-registerFunction('bitwiseOpSV<uint64,bool,1>', ark_bitwiseOpSV_uint_bool_1, 'OperatorMsg', 1206);
+registerFunction('bitwiseOpSV<uint64,bool,1>', ark_bitwiseOpSV_uint_bool_1, 'OperatorMsg', 1205);
 
 proc ark_bitwiseOpSV_uint_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.bitwiseOpSV(cmd, msgArgs, st, binop_dtype_a=uint, binop_dtype_b=bigint, array_nd=1);
-registerFunction('bitwiseOpSV<uint64,bigint,1>', ark_bitwiseOpSV_uint_bigint_1, 'OperatorMsg', 1206);
+registerFunction('bitwiseOpSV<uint64,bigint,1>', ark_bitwiseOpSV_uint_bigint_1, 'OperatorMsg', 1205);
 
 proc ark_bitwiseOpSV_real_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.bitwiseOpSV(cmd, msgArgs, st, binop_dtype_a=real, binop_dtype_b=int, array_nd=1);
-registerFunction('bitwiseOpSV<float64,int64,1>', ark_bitwiseOpSV_real_int_1, 'OperatorMsg', 1206);
+registerFunction('bitwiseOpSV<float64,int64,1>', ark_bitwiseOpSV_real_int_1, 'OperatorMsg', 1205);
 
 proc ark_bitwiseOpSV_real_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.bitwiseOpSV(cmd, msgArgs, st, binop_dtype_a=real, binop_dtype_b=uint, array_nd=1);
-registerFunction('bitwiseOpSV<float64,uint64,1>', ark_bitwiseOpSV_real_uint_1, 'OperatorMsg', 1206);
+registerFunction('bitwiseOpSV<float64,uint64,1>', ark_bitwiseOpSV_real_uint_1, 'OperatorMsg', 1205);
 
 proc ark_bitwiseOpSV_real_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.bitwiseOpSV(cmd, msgArgs, st, binop_dtype_a=real, binop_dtype_b=real, array_nd=1);
-registerFunction('bitwiseOpSV<float64,float64,1>', ark_bitwiseOpSV_real_real_1, 'OperatorMsg', 1206);
+registerFunction('bitwiseOpSV<float64,float64,1>', ark_bitwiseOpSV_real_real_1, 'OperatorMsg', 1205);
 
 proc ark_bitwiseOpSV_real_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.bitwiseOpSV(cmd, msgArgs, st, binop_dtype_a=real, binop_dtype_b=bool, array_nd=1);
-registerFunction('bitwiseOpSV<float64,bool,1>', ark_bitwiseOpSV_real_bool_1, 'OperatorMsg', 1206);
+registerFunction('bitwiseOpSV<float64,bool,1>', ark_bitwiseOpSV_real_bool_1, 'OperatorMsg', 1205);
 
 proc ark_bitwiseOpSV_real_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.bitwiseOpSV(cmd, msgArgs, st, binop_dtype_a=real, binop_dtype_b=bigint, array_nd=1);
-registerFunction('bitwiseOpSV<float64,bigint,1>', ark_bitwiseOpSV_real_bigint_1, 'OperatorMsg', 1206);
+registerFunction('bitwiseOpSV<float64,bigint,1>', ark_bitwiseOpSV_real_bigint_1, 'OperatorMsg', 1205);
 
 proc ark_bitwiseOpSV_bool_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.bitwiseOpSV(cmd, msgArgs, st, binop_dtype_a=bool, binop_dtype_b=int, array_nd=1);
-registerFunction('bitwiseOpSV<bool,int64,1>', ark_bitwiseOpSV_bool_int_1, 'OperatorMsg', 1206);
+registerFunction('bitwiseOpSV<bool,int64,1>', ark_bitwiseOpSV_bool_int_1, 'OperatorMsg', 1205);
 
 proc ark_bitwiseOpSV_bool_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.bitwiseOpSV(cmd, msgArgs, st, binop_dtype_a=bool, binop_dtype_b=uint, array_nd=1);
-registerFunction('bitwiseOpSV<bool,uint64,1>', ark_bitwiseOpSV_bool_uint_1, 'OperatorMsg', 1206);
+registerFunction('bitwiseOpSV<bool,uint64,1>', ark_bitwiseOpSV_bool_uint_1, 'OperatorMsg', 1205);
 
 proc ark_bitwiseOpSV_bool_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.bitwiseOpSV(cmd, msgArgs, st, binop_dtype_a=bool, binop_dtype_b=real, array_nd=1);
-registerFunction('bitwiseOpSV<bool,float64,1>', ark_bitwiseOpSV_bool_real_1, 'OperatorMsg', 1206);
+registerFunction('bitwiseOpSV<bool,float64,1>', ark_bitwiseOpSV_bool_real_1, 'OperatorMsg', 1205);
 
 proc ark_bitwiseOpSV_bool_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.bitwiseOpSV(cmd, msgArgs, st, binop_dtype_a=bool, binop_dtype_b=bool, array_nd=1);
-registerFunction('bitwiseOpSV<bool,bool,1>', ark_bitwiseOpSV_bool_bool_1, 'OperatorMsg', 1206);
+registerFunction('bitwiseOpSV<bool,bool,1>', ark_bitwiseOpSV_bool_bool_1, 'OperatorMsg', 1205);
 
 proc ark_bitwiseOpSV_bool_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.bitwiseOpSV(cmd, msgArgs, st, binop_dtype_a=bool, binop_dtype_b=bigint, array_nd=1);
-registerFunction('bitwiseOpSV<bool,bigint,1>', ark_bitwiseOpSV_bool_bigint_1, 'OperatorMsg', 1206);
+registerFunction('bitwiseOpSV<bool,bigint,1>', ark_bitwiseOpSV_bool_bigint_1, 'OperatorMsg', 1205);
 
 proc ark_bitwiseOpSV_bigint_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.bitwiseOpSV(cmd, msgArgs, st, binop_dtype_a=bigint, binop_dtype_b=int, array_nd=1);
-registerFunction('bitwiseOpSV<bigint,int64,1>', ark_bitwiseOpSV_bigint_int_1, 'OperatorMsg', 1206);
+registerFunction('bitwiseOpSV<bigint,int64,1>', ark_bitwiseOpSV_bigint_int_1, 'OperatorMsg', 1205);
 
 proc ark_bitwiseOpSV_bigint_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.bitwiseOpSV(cmd, msgArgs, st, binop_dtype_a=bigint, binop_dtype_b=uint, array_nd=1);
-registerFunction('bitwiseOpSV<bigint,uint64,1>', ark_bitwiseOpSV_bigint_uint_1, 'OperatorMsg', 1206);
+registerFunction('bitwiseOpSV<bigint,uint64,1>', ark_bitwiseOpSV_bigint_uint_1, 'OperatorMsg', 1205);
 
 proc ark_bitwiseOpSV_bigint_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.bitwiseOpSV(cmd, msgArgs, st, binop_dtype_a=bigint, binop_dtype_b=real, array_nd=1);
-registerFunction('bitwiseOpSV<bigint,float64,1>', ark_bitwiseOpSV_bigint_real_1, 'OperatorMsg', 1206);
+registerFunction('bitwiseOpSV<bigint,float64,1>', ark_bitwiseOpSV_bigint_real_1, 'OperatorMsg', 1205);
 
 proc ark_bitwiseOpSV_bigint_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.bitwiseOpSV(cmd, msgArgs, st, binop_dtype_a=bigint, binop_dtype_b=bool, array_nd=1);
-registerFunction('bitwiseOpSV<bigint,bool,1>', ark_bitwiseOpSV_bigint_bool_1, 'OperatorMsg', 1206);
+registerFunction('bitwiseOpSV<bigint,bool,1>', ark_bitwiseOpSV_bigint_bool_1, 'OperatorMsg', 1205);
 
 proc ark_bitwiseOpSV_bigint_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.bitwiseOpSV(cmd, msgArgs, st, binop_dtype_a=bigint, binop_dtype_b=bigint, array_nd=1);
-registerFunction('bitwiseOpSV<bigint,bigint,1>', ark_bitwiseOpSV_bigint_bigint_1, 'OperatorMsg', 1206);
+registerFunction('bitwiseOpSV<bigint,bigint,1>', ark_bitwiseOpSV_bigint_bigint_1, 'OperatorMsg', 1205);
 
 proc ark_divOpSV_int_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.divOpSV(cmd, msgArgs, st, binop_dtype_a=int, binop_dtype_b=int, array_nd=1);
-registerFunction('divOpSV<int64,int64,1>', ark_divOpSV_int_int_1, 'OperatorMsg', 1412);
+registerFunction('divOpSV<int64,int64,1>', ark_divOpSV_int_int_1, 'OperatorMsg', 1411);
 
 proc ark_divOpSV_int_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.divOpSV(cmd, msgArgs, st, binop_dtype_a=int, binop_dtype_b=uint, array_nd=1);
-registerFunction('divOpSV<int64,uint64,1>', ark_divOpSV_int_uint_1, 'OperatorMsg', 1412);
+registerFunction('divOpSV<int64,uint64,1>', ark_divOpSV_int_uint_1, 'OperatorMsg', 1411);
 
 proc ark_divOpSV_int_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.divOpSV(cmd, msgArgs, st, binop_dtype_a=int, binop_dtype_b=real, array_nd=1);
-registerFunction('divOpSV<int64,float64,1>', ark_divOpSV_int_real_1, 'OperatorMsg', 1412);
+registerFunction('divOpSV<int64,float64,1>', ark_divOpSV_int_real_1, 'OperatorMsg', 1411);
 
 proc ark_divOpSV_int_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.divOpSV(cmd, msgArgs, st, binop_dtype_a=int, binop_dtype_b=bool, array_nd=1);
-registerFunction('divOpSV<int64,bool,1>', ark_divOpSV_int_bool_1, 'OperatorMsg', 1412);
+registerFunction('divOpSV<int64,bool,1>', ark_divOpSV_int_bool_1, 'OperatorMsg', 1411);
 
 proc ark_divOpSV_int_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.divOpSV(cmd, msgArgs, st, binop_dtype_a=int, binop_dtype_b=bigint, array_nd=1);
-registerFunction('divOpSV<int64,bigint,1>', ark_divOpSV_int_bigint_1, 'OperatorMsg', 1412);
+registerFunction('divOpSV<int64,bigint,1>', ark_divOpSV_int_bigint_1, 'OperatorMsg', 1411);
 
 proc ark_divOpSV_uint_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.divOpSV(cmd, msgArgs, st, binop_dtype_a=uint, binop_dtype_b=int, array_nd=1);
-registerFunction('divOpSV<uint64,int64,1>', ark_divOpSV_uint_int_1, 'OperatorMsg', 1412);
+registerFunction('divOpSV<uint64,int64,1>', ark_divOpSV_uint_int_1, 'OperatorMsg', 1411);
 
 proc ark_divOpSV_uint_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.divOpSV(cmd, msgArgs, st, binop_dtype_a=uint, binop_dtype_b=uint, array_nd=1);
-registerFunction('divOpSV<uint64,uint64,1>', ark_divOpSV_uint_uint_1, 'OperatorMsg', 1412);
+registerFunction('divOpSV<uint64,uint64,1>', ark_divOpSV_uint_uint_1, 'OperatorMsg', 1411);
 
 proc ark_divOpSV_uint_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.divOpSV(cmd, msgArgs, st, binop_dtype_a=uint, binop_dtype_b=real, array_nd=1);
-registerFunction('divOpSV<uint64,float64,1>', ark_divOpSV_uint_real_1, 'OperatorMsg', 1412);
+registerFunction('divOpSV<uint64,float64,1>', ark_divOpSV_uint_real_1, 'OperatorMsg', 1411);
 
 proc ark_divOpSV_uint_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.divOpSV(cmd, msgArgs, st, binop_dtype_a=uint, binop_dtype_b=bool, array_nd=1);
-registerFunction('divOpSV<uint64,bool,1>', ark_divOpSV_uint_bool_1, 'OperatorMsg', 1412);
+registerFunction('divOpSV<uint64,bool,1>', ark_divOpSV_uint_bool_1, 'OperatorMsg', 1411);
 
 proc ark_divOpSV_uint_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.divOpSV(cmd, msgArgs, st, binop_dtype_a=uint, binop_dtype_b=bigint, array_nd=1);
-registerFunction('divOpSV<uint64,bigint,1>', ark_divOpSV_uint_bigint_1, 'OperatorMsg', 1412);
+registerFunction('divOpSV<uint64,bigint,1>', ark_divOpSV_uint_bigint_1, 'OperatorMsg', 1411);
 
 proc ark_divOpSV_real_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.divOpSV(cmd, msgArgs, st, binop_dtype_a=real, binop_dtype_b=int, array_nd=1);
-registerFunction('divOpSV<float64,int64,1>', ark_divOpSV_real_int_1, 'OperatorMsg', 1412);
+registerFunction('divOpSV<float64,int64,1>', ark_divOpSV_real_int_1, 'OperatorMsg', 1411);
 
 proc ark_divOpSV_real_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.divOpSV(cmd, msgArgs, st, binop_dtype_a=real, binop_dtype_b=uint, array_nd=1);
-registerFunction('divOpSV<float64,uint64,1>', ark_divOpSV_real_uint_1, 'OperatorMsg', 1412);
+registerFunction('divOpSV<float64,uint64,1>', ark_divOpSV_real_uint_1, 'OperatorMsg', 1411);
 
 proc ark_divOpSV_real_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.divOpSV(cmd, msgArgs, st, binop_dtype_a=real, binop_dtype_b=real, array_nd=1);
-registerFunction('divOpSV<float64,float64,1>', ark_divOpSV_real_real_1, 'OperatorMsg', 1412);
+registerFunction('divOpSV<float64,float64,1>', ark_divOpSV_real_real_1, 'OperatorMsg', 1411);
 
 proc ark_divOpSV_real_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.divOpSV(cmd, msgArgs, st, binop_dtype_a=real, binop_dtype_b=bool, array_nd=1);
-registerFunction('divOpSV<float64,bool,1>', ark_divOpSV_real_bool_1, 'OperatorMsg', 1412);
+registerFunction('divOpSV<float64,bool,1>', ark_divOpSV_real_bool_1, 'OperatorMsg', 1411);
 
 proc ark_divOpSV_real_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.divOpSV(cmd, msgArgs, st, binop_dtype_a=real, binop_dtype_b=bigint, array_nd=1);
-registerFunction('divOpSV<float64,bigint,1>', ark_divOpSV_real_bigint_1, 'OperatorMsg', 1412);
+registerFunction('divOpSV<float64,bigint,1>', ark_divOpSV_real_bigint_1, 'OperatorMsg', 1411);
 
 proc ark_divOpSV_bool_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.divOpSV(cmd, msgArgs, st, binop_dtype_a=bool, binop_dtype_b=int, array_nd=1);
-registerFunction('divOpSV<bool,int64,1>', ark_divOpSV_bool_int_1, 'OperatorMsg', 1412);
+registerFunction('divOpSV<bool,int64,1>', ark_divOpSV_bool_int_1, 'OperatorMsg', 1411);
 
 proc ark_divOpSV_bool_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.divOpSV(cmd, msgArgs, st, binop_dtype_a=bool, binop_dtype_b=uint, array_nd=1);
-registerFunction('divOpSV<bool,uint64,1>', ark_divOpSV_bool_uint_1, 'OperatorMsg', 1412);
+registerFunction('divOpSV<bool,uint64,1>', ark_divOpSV_bool_uint_1, 'OperatorMsg', 1411);
 
 proc ark_divOpSV_bool_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.divOpSV(cmd, msgArgs, st, binop_dtype_a=bool, binop_dtype_b=real, array_nd=1);
-registerFunction('divOpSV<bool,float64,1>', ark_divOpSV_bool_real_1, 'OperatorMsg', 1412);
+registerFunction('divOpSV<bool,float64,1>', ark_divOpSV_bool_real_1, 'OperatorMsg', 1411);
 
 proc ark_divOpSV_bool_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.divOpSV(cmd, msgArgs, st, binop_dtype_a=bool, binop_dtype_b=bool, array_nd=1);
-registerFunction('divOpSV<bool,bool,1>', ark_divOpSV_bool_bool_1, 'OperatorMsg', 1412);
+registerFunction('divOpSV<bool,bool,1>', ark_divOpSV_bool_bool_1, 'OperatorMsg', 1411);
 
 proc ark_divOpSV_bool_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.divOpSV(cmd, msgArgs, st, binop_dtype_a=bool, binop_dtype_b=bigint, array_nd=1);
-registerFunction('divOpSV<bool,bigint,1>', ark_divOpSV_bool_bigint_1, 'OperatorMsg', 1412);
+registerFunction('divOpSV<bool,bigint,1>', ark_divOpSV_bool_bigint_1, 'OperatorMsg', 1411);
 
 proc ark_divOpSV_bigint_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.divOpSV(cmd, msgArgs, st, binop_dtype_a=bigint, binop_dtype_b=int, array_nd=1);
-registerFunction('divOpSV<bigint,int64,1>', ark_divOpSV_bigint_int_1, 'OperatorMsg', 1412);
+registerFunction('divOpSV<bigint,int64,1>', ark_divOpSV_bigint_int_1, 'OperatorMsg', 1411);
 
 proc ark_divOpSV_bigint_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.divOpSV(cmd, msgArgs, st, binop_dtype_a=bigint, binop_dtype_b=uint, array_nd=1);
-registerFunction('divOpSV<bigint,uint64,1>', ark_divOpSV_bigint_uint_1, 'OperatorMsg', 1412);
+registerFunction('divOpSV<bigint,uint64,1>', ark_divOpSV_bigint_uint_1, 'OperatorMsg', 1411);
 
 proc ark_divOpSV_bigint_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.divOpSV(cmd, msgArgs, st, binop_dtype_a=bigint, binop_dtype_b=real, array_nd=1);
-registerFunction('divOpSV<bigint,float64,1>', ark_divOpSV_bigint_real_1, 'OperatorMsg', 1412);
+registerFunction('divOpSV<bigint,float64,1>', ark_divOpSV_bigint_real_1, 'OperatorMsg', 1411);
 
 proc ark_divOpSV_bigint_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.divOpSV(cmd, msgArgs, st, binop_dtype_a=bigint, binop_dtype_b=bool, array_nd=1);
-registerFunction('divOpSV<bigint,bool,1>', ark_divOpSV_bigint_bool_1, 'OperatorMsg', 1412);
+registerFunction('divOpSV<bigint,bool,1>', ark_divOpSV_bigint_bool_1, 'OperatorMsg', 1411);
 
 proc ark_divOpSV_bigint_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return OperatorMsg.divOpSV(cmd, msgArgs, st, binop_dtype_a=bigint, binop_dtype_b=bigint, array_nd=1);
-registerFunction('divOpSV<bigint,bigint,1>', ark_divOpSV_bigint_bigint_1, 'OperatorMsg', 1412);
+registerFunction('divOpSV<bigint,bigint,1>', ark_divOpSV_bigint_bigint_1, 'OperatorMsg', 1411);
+
+proc ark_opeqVV_int_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVV(cmd, msgArgs, st, binop_dtype_a=int, binop_dtype_b=int, array_nd=1);
+registerFunction('opeqVV<int64,int64,1>', ark_opeqVV_int_int_1, 'OperatorMsg', 1449);
+
+proc ark_opeqVV_int_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVV(cmd, msgArgs, st, binop_dtype_a=int, binop_dtype_b=uint, array_nd=1);
+registerFunction('opeqVV<int64,uint64,1>', ark_opeqVV_int_uint_1, 'OperatorMsg', 1449);
+
+proc ark_opeqVV_int_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVV(cmd, msgArgs, st, binop_dtype_a=int, binop_dtype_b=real, array_nd=1);
+registerFunction('opeqVV<int64,float64,1>', ark_opeqVV_int_real_1, 'OperatorMsg', 1449);
+
+proc ark_opeqVV_int_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVV(cmd, msgArgs, st, binop_dtype_a=int, binop_dtype_b=bool, array_nd=1);
+registerFunction('opeqVV<int64,bool,1>', ark_opeqVV_int_bool_1, 'OperatorMsg', 1449);
+
+proc ark_opeqVV_int_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVV(cmd, msgArgs, st, binop_dtype_a=int, binop_dtype_b=bigint, array_nd=1);
+registerFunction('opeqVV<int64,bigint,1>', ark_opeqVV_int_bigint_1, 'OperatorMsg', 1449);
+
+proc ark_opeqVV_uint_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVV(cmd, msgArgs, st, binop_dtype_a=uint, binop_dtype_b=int, array_nd=1);
+registerFunction('opeqVV<uint64,int64,1>', ark_opeqVV_uint_int_1, 'OperatorMsg', 1449);
+
+proc ark_opeqVV_uint_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVV(cmd, msgArgs, st, binop_dtype_a=uint, binop_dtype_b=uint, array_nd=1);
+registerFunction('opeqVV<uint64,uint64,1>', ark_opeqVV_uint_uint_1, 'OperatorMsg', 1449);
+
+proc ark_opeqVV_uint_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVV(cmd, msgArgs, st, binop_dtype_a=uint, binop_dtype_b=real, array_nd=1);
+registerFunction('opeqVV<uint64,float64,1>', ark_opeqVV_uint_real_1, 'OperatorMsg', 1449);
+
+proc ark_opeqVV_uint_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVV(cmd, msgArgs, st, binop_dtype_a=uint, binop_dtype_b=bool, array_nd=1);
+registerFunction('opeqVV<uint64,bool,1>', ark_opeqVV_uint_bool_1, 'OperatorMsg', 1449);
+
+proc ark_opeqVV_uint_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVV(cmd, msgArgs, st, binop_dtype_a=uint, binop_dtype_b=bigint, array_nd=1);
+registerFunction('opeqVV<uint64,bigint,1>', ark_opeqVV_uint_bigint_1, 'OperatorMsg', 1449);
+
+proc ark_opeqVV_real_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVV(cmd, msgArgs, st, binop_dtype_a=real, binop_dtype_b=int, array_nd=1);
+registerFunction('opeqVV<float64,int64,1>', ark_opeqVV_real_int_1, 'OperatorMsg', 1449);
+
+proc ark_opeqVV_real_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVV(cmd, msgArgs, st, binop_dtype_a=real, binop_dtype_b=uint, array_nd=1);
+registerFunction('opeqVV<float64,uint64,1>', ark_opeqVV_real_uint_1, 'OperatorMsg', 1449);
+
+proc ark_opeqVV_real_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVV(cmd, msgArgs, st, binop_dtype_a=real, binop_dtype_b=real, array_nd=1);
+registerFunction('opeqVV<float64,float64,1>', ark_opeqVV_real_real_1, 'OperatorMsg', 1449);
+
+proc ark_opeqVV_real_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVV(cmd, msgArgs, st, binop_dtype_a=real, binop_dtype_b=bool, array_nd=1);
+registerFunction('opeqVV<float64,bool,1>', ark_opeqVV_real_bool_1, 'OperatorMsg', 1449);
+
+proc ark_opeqVV_real_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVV(cmd, msgArgs, st, binop_dtype_a=real, binop_dtype_b=bigint, array_nd=1);
+registerFunction('opeqVV<float64,bigint,1>', ark_opeqVV_real_bigint_1, 'OperatorMsg', 1449);
+
+proc ark_opeqVV_bool_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVV(cmd, msgArgs, st, binop_dtype_a=bool, binop_dtype_b=int, array_nd=1);
+registerFunction('opeqVV<bool,int64,1>', ark_opeqVV_bool_int_1, 'OperatorMsg', 1449);
+
+proc ark_opeqVV_bool_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVV(cmd, msgArgs, st, binop_dtype_a=bool, binop_dtype_b=uint, array_nd=1);
+registerFunction('opeqVV<bool,uint64,1>', ark_opeqVV_bool_uint_1, 'OperatorMsg', 1449);
+
+proc ark_opeqVV_bool_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVV(cmd, msgArgs, st, binop_dtype_a=bool, binop_dtype_b=real, array_nd=1);
+registerFunction('opeqVV<bool,float64,1>', ark_opeqVV_bool_real_1, 'OperatorMsg', 1449);
+
+proc ark_opeqVV_bool_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVV(cmd, msgArgs, st, binop_dtype_a=bool, binop_dtype_b=bool, array_nd=1);
+registerFunction('opeqVV<bool,bool,1>', ark_opeqVV_bool_bool_1, 'OperatorMsg', 1449);
+
+proc ark_opeqVV_bool_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVV(cmd, msgArgs, st, binop_dtype_a=bool, binop_dtype_b=bigint, array_nd=1);
+registerFunction('opeqVV<bool,bigint,1>', ark_opeqVV_bool_bigint_1, 'OperatorMsg', 1449);
+
+proc ark_opeqVV_bigint_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVV(cmd, msgArgs, st, binop_dtype_a=bigint, binop_dtype_b=int, array_nd=1);
+registerFunction('opeqVV<bigint,int64,1>', ark_opeqVV_bigint_int_1, 'OperatorMsg', 1449);
+
+proc ark_opeqVV_bigint_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVV(cmd, msgArgs, st, binop_dtype_a=bigint, binop_dtype_b=uint, array_nd=1);
+registerFunction('opeqVV<bigint,uint64,1>', ark_opeqVV_bigint_uint_1, 'OperatorMsg', 1449);
+
+proc ark_opeqVV_bigint_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVV(cmd, msgArgs, st, binop_dtype_a=bigint, binop_dtype_b=real, array_nd=1);
+registerFunction('opeqVV<bigint,float64,1>', ark_opeqVV_bigint_real_1, 'OperatorMsg', 1449);
+
+proc ark_opeqVV_bigint_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVV(cmd, msgArgs, st, binop_dtype_a=bigint, binop_dtype_b=bool, array_nd=1);
+registerFunction('opeqVV<bigint,bool,1>', ark_opeqVV_bigint_bool_1, 'OperatorMsg', 1449);
+
+proc ark_opeqVV_bigint_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVV(cmd, msgArgs, st, binop_dtype_a=bigint, binop_dtype_b=bigint, array_nd=1);
+registerFunction('opeqVV<bigint,bigint,1>', ark_opeqVV_bigint_bigint_1, 'OperatorMsg', 1449);
 
 import RandMsg;
 
