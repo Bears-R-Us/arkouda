@@ -814,9 +814,10 @@ class pdarray:
             # Can't cast other as dtype of pdarray
             raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")
 
+        # TODO: shouldn't we use the dtype of 'other' here?
         generic_msg(
-            cmd=f"opeqvs{self.ndim}D",
-            args={"op": op, "a": self, "dtype": self.dtype.name, "value": self.format_other(other)},
+            cmd=f"opeqVS<{self.dtype},{self.dtype},{self.ndim}>",
+            args={"op": op, "a": self, "value": self.format_other(other)},
         )
         return self
 

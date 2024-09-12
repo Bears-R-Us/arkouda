@@ -1626,597 +1626,177 @@ module OperatorMsg
       ));
     }
 
-    /*
-      Parse and respond to opeqvs message.
-      vector op= scalar
 
-      :arg reqMsg: request containing (cmd,op,aname,bname,rname)
-      :type reqMsg: string
+    @arkouda.instantiateAndRegister
+    proc opeqVS(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+      type binop_dtype_a,
+      type binop_dtype_b,
+      param array_nd: int
+    ): MsgTuple throws
+      // result of operation must be the same type as the left operand
+      where binop_dtype_a == promotedType(binop_dtype_a, binop_dtype_b) &&
+            binop_dtype_a != bigint && binop_dtype_b != bigint
+    {
+      const a = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
+            val = msgArgs['value'].toScalar(binop_dtype_b),
+            op = msgArgs['op'].toScalar(string);
 
-      :arg st: SymTab to act on
-      :type st: borrowed SymTab
+      const unsupErrorMsg = "unsupported op=: %s %s %s".format(binop_dtype_a:string, op, binop_dtype_b:string);
 
-      :returns: (MsgTuple)
-      :throws: `UndefinedSymbolError(name)`
-    */
-    @arkouda.registerND
-    proc opeqvsMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-        param pn = Reflection.getRoutineName();
-        var repMsg: string; // response message
-
-        const op = msgArgs.getValueOf("op");
-        const aname = msgArgs.getValueOf("a");
-        const value = msgArgs.get("value");
-        var dtype = str2dtype(msgArgs.getValueOf("dtype"));
-
-        omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                        "cmd: %s op: %s aname: %s dtype: %s scalar: %s".format(
-                                                 cmd,op,aname,dtype2str(dtype),value.getValue()));
-
-        var left: borrowed GenSymEntry = getGenericTypedArrayEntry(aname, st);
- 
-        omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                         "op: %? pdarray: %? scalar: %?".format(op,st.attrib(aname),value.getValue()));
-        select (left.dtype, dtype) {
-            when (DType.Int64, DType.Int64) {
-                var l = toSymEntry(left,int, nd);
-                var val = value.getIntValue();
-                select op {
-                    when "+=" { l.a += val; }
-                    when "-=" { l.a -= val; }
-                    when "*=" { l.a *= val; }
-                    when ">>=" { l.a >>= val; }
-                    when "<<=" { l.a <<= val; }
-                    when "//=" {
-                        if val != 0 {l.a /= val;} else {l.a = 0;}
-                    }//floordiv
-                    when "%=" {
-                        if val != 0 {l.a %= val;} else {l.a = 0;}
-                    }
-                    when "**=" {
-                        if val<0 {
-                            var errorMsg = "Attempt to exponentiate base of type Int64 to negative exponent";
-                            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                                                                              errorMsg);
-                            return new MsgTuple(errorMsg, MsgType.ERROR);
-                        }
-                        else{ l.a **= val; }
-
-                    }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);                         
-                    }
-                }
-            }
-            when (DType.Int64, DType.UInt64) {
-                var l = toSymEntry(left,int, nd);
-                var val = value.getUIntValue();
-                select op {
-                    when ">>=" { l.a >>= val; }
-                    when "<<=" { l.a <<= val; }
-                    otherwise {
-                        // The result of operations between int and uint are float by default which doesn't fit in either type
-                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);
-                    }
-                }
-            }
-            when (DType.Int64, DType.Float64) {
-                var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
-            }
-            when (DType.Int64, DType.Bool) {
-                var l = toSymEntry(left, int, nd);
-                var val = value.getBoolValue();
-                select op {
-                    when "+=" {l.a += val:int;}
-                    when "-=" {l.a -= val:int;}
-                    when "*=" {l.a *= val:int;}
-                    when ">>=" {l.a >>= val:int; }
-                    when "<<=" {l.a <<= val:int; }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);
-                    }
-                }
-            }
-            when (DType.Int64, DType.BigInt) {
-                var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
-            }
-            when (DType.UInt64, DType.Int64) {
-            var l = toSymEntry(left, uint, nd);
-                var val = value.getIntValue();
-                select op {
-                    when ">>=" { l.a >>= val; }
-                    when "<<=" { l.a <<= val; }
-                    otherwise {
-                        // The result of operations between int and uint are float by default which doesn't fit in either type
-                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);
-                    }
-                }
-            }
-            when (DType.UInt64, DType.UInt64) {
-                var l = toSymEntry(left,uint, nd);
-                var val = value.getUIntValue();
-                select op {
-                    when "+=" { l.a += val; }
-                    when "-=" {
-                        l.a -= val;
-                    }
-                    when "*=" { l.a *= val; }
-                    when "//=" {
-                        if val != 0 {l.a /= val;} else {l.a = 0;}
-                    }//floordiv
-                    when "%=" {
-                        if val != 0 {l.a %= val;} else {l.a = 0;}
-                    }
-                    when "**=" {
-                        l.a **= val;
-                    }
-                    when ">>=" { l.a >>= val; }
-                    when "<<=" { l.a <<= val; }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);
-                    }
-                }
-            }
-            when (DType.UInt64, DType.Float64) {
-                var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
-            }
-            when (DType.UInt64, DType.Bool) {
-                var l = toSymEntry(left, uint, nd);
-                var val = value.getBoolValue();
-                select op {
-                    when "+=" {l.a += val:uint;}
-                    when "-=" {l.a -= val:uint;}
-                    when "*=" {l.a *= val:uint;}
-                    when ">>=" { l.a >>= val:uint;}
-                    when "<<=" { l.a <<= val:uint;}
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);
-                    }
-                }
-            }
-            when (DType.Bool, DType.Bool) {
-                var l = toSymEntry(left, bool, nd);
-                var val = value.getBoolValue();
-                select op {
-                    when "+=" {l.a |= val;}
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);
-                    }
-                }
-            }
-            when (DType.UInt64, DType.BigInt) {
-                var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
-            }
-            when (DType.Float64, DType.Int64) {
-                var l = toSymEntry(left,real, nd);
-                var val = value.getIntValue();
-                select op {
-                    when "+=" {l.a += val;}
-                    when "-=" {l.a -= val;}
-                    when "*=" {l.a *= val;}
-                    when "/=" {l.a /= val:real;} //truediv
-                    when "//=" { //floordiv
-                        ref la = l.a;
-                        [li in la] li = floorDivisionHelper(li, val);
-                    }
-                    when "**=" { l.a **= val; }
-                    when "%=" {
-                        ref la = l.a;
-                        [li in la] li = modHelper(li, val);
-                    }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);
-                    }
-                }
-            }
-            when (DType.Float64, DType.UInt64) {
-                var l = toSymEntry(left,real, nd);
-                var val = value.getUIntValue();
-                select op {
-                    when "+=" { l.a += val; }
-                    when "-=" { l.a -= val; }
-                    when "*=" { l.a *= val; }
-                    when "//=" {
-                        ref la = l.a;
-                        [li in la] li = floorDivisionHelper(li, val);
-                    }//floordiv
-                    when "**=" {
-                        l.a **= val;
-                    }
-                    when "%=" {
-                        ref la = l.a;
-                        [li in la] li = modHelper(li, val);
-                    }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);
-                    }
-                }
-            }
-            when (DType.Float64, DType.Float64) {
-                var l = toSymEntry(left,real, nd);
-                var val = value.getRealValue();
-                select op {
-                    when "+=" {l.a += val;}
-                    when "-=" {l.a -= val;}
-                    when "*=" {l.a *= val;}
-                    when "/=" {l.a /= val;}//truediv
-                    when "//=" { //floordiv
-                        ref la = l.a;
-                        [li in la] li = floorDivisionHelper(li, val);
-                    }
-                    when "**=" { l.a **= val; }
-                    when "%=" {
-                        ref la = l.a;
-                        [li in la] li = modHelper(li, val);
-                    }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);
-                    }
-                }
-            }
-            when (DType.Float64, DType.Bool) {
-                var l = toSymEntry(left, real, nd);
-                var val = value.getBoolValue();
-                select op {
-                    when "+=" {l.a += val:real;}
-                    when "-=" {l.a -= val:real;}
-                    when "*=" {l.a *= val:real;}
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);
-                    }
-                }
-            }
-            when (DType.Float64, DType.BigInt) {
-                var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
-            }
-            when (DType.BigInt, DType.Int64) {
-                var l = toSymEntry(left,bigint, nd);
-                var val = value.getIntValue();
-                ref la = l.a;
-                var max_bits = l.max_bits;
-                var max_size = 1:bigint;
-                var has_max_bits = max_bits != -1;
-                if has_max_bits {
-                  max_size <<= max_bits;
-                  max_size -= 1;
-                }
-                select op {
-                  when "+=" {
-                    forall li in la with (var local_val = val, var local_max_size = max_size) {
-                      li += local_val;
-                      if has_max_bits {
-                        li &= local_max_size;
-                      }
-                    }
-                  }
-                  when "-=" {
-                    forall li in la with (var local_val = val, var local_max_size = max_size) {
-                      li -= local_val;
-                      if has_max_bits {
-                        li &= local_max_size;
-                      }
-                    }
-                  }
-                  when "*=" {
-                    forall li in la with (var local_val = val, var local_max_size = max_size) {
-                      li *= local_val;
-                      if has_max_bits {
-                        li &= local_max_size;
-                      }
-                    }
-                  }
-                  when "//=" {
-                    forall li in la with (var local_val = val, var local_max_size = max_size) {
-                      if local_val != 0 {
-                        li /= local_val;
-                      }
-                      else {
-                        li = 0:bigint;
-                      }
-                      if has_max_bits {
-                        li &= local_max_size;
-                      }
-                    }
-                  }
-                  when "%=" {
-                    // we can't use li %= val because this can result in negatives
-                    forall li in la with (var local_val = val, var local_max_size = max_size) {
-                      if local_val != 0 {
-                        mod(li, li, local_val);
-                      }
-                      else {
-                        li = 0:bigint;
-                      }
-                      if has_max_bits {
-                        li &= local_max_size;
-                      }
-                    }
-                  }
-                  when "**=" {
-                    if val<0 {
-                      throw new Error("Attempt to exponentiate base of type BigInt to negative exponent");
-                    }
-                    if has_max_bits {
-                      forall li in la with (var local_val = val, var local_max_size = max_size) {
-                        powMod(li, li, local_val, local_max_size + 1);
-                      }
-                    }
-                    else {
-                      forall li in la with (var local_val = val) {
-                        li **= local_val:uint;
-                      }
-                    }
-                  }
-                  otherwise {
-                    var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                    omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                    return new MsgTuple(errorMsg, MsgType.ERROR);
-                  }
-                }
-            }
-            when (DType.BigInt, DType.UInt64) {
-                var l = toSymEntry(left,bigint, nd);
-                var val = value.getUIntValue();
-                ref la = l.a;
-                var max_bits = l.max_bits;
-                var max_size = 1:bigint;
-                var has_max_bits = max_bits != -1;
-                if has_max_bits {
-                  max_size <<= max_bits;
-                  max_size -= 1;
-                }
-                select op {
-                  when "+=" {
-                    forall li in la with (var local_val = val, var local_max_size = max_size) {
-                      li += local_val;
-                      if has_max_bits {
-                        li &= local_max_size;
-                      }
-                    }
-                  }
-                  when "-=" {
-                    forall li in la with (var local_val = val, var local_max_size = max_size) {
-                      li -= local_val;
-                      if has_max_bits {
-                        li &= local_max_size;
-                      }
-                    }
-                  }
-                  when "*=" {
-                    forall li in la with (var local_val = val, var local_max_size = max_size) {
-                      li *= local_val;
-                      if has_max_bits {
-                        li &= local_max_size;
-                      }
-                    }
-                  }
-                  when "//=" {
-                    forall li in la with (var local_val = val, var local_max_size = max_size) {
-                      if local_val != 0 {
-                        li /= local_val;
-                      }
-                      else {
-                        li = 0:bigint;
-                      }
-                      if has_max_bits {
-                        li &= local_max_size;
-                      }
-                    }
-                  }
-                  when "%=" {
-                    // we can't use li %= val because this can result in negatives
-                    forall li in la with (var local_val = val, var local_max_size = max_size) {
-                      if local_val != 0 {
-                        mod(li, li, local_val);
-                      }
-                      else {
-                        li = 0:bigint;
-                      }
-                      if has_max_bits {
-                        li &= local_max_size;
-                      }
-                    }
-                  }
-                  when "**=" {
-                    if val<0 {
-                      throw new Error("Attempt to exponentiate base of type BigInt to negative exponent");
-                    }
-                    if has_max_bits {
-                      forall li in la with (var local_val = val, var local_max_size = max_size) {
-                        powMod(li, li, local_val, local_max_size + 1);
-                      }
-                    }
-                    else {
-                      forall li in la with (var local_val = val) {
-                        li **= local_val:uint;
-                      }
-                    }
-                  }
-                  otherwise {
-                    var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                    omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                    return new MsgTuple(errorMsg, MsgType.ERROR);
-                  }
-                }
-            }
-            when (DType.BigInt, DType.Float64) {
-                var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
-            }
-            when (DType.BigInt, DType.Bool) {
-                var l = toSymEntry(left, bigint, nd);
-                var val = value.getBoolValue();
-                ref la = l.a;
-                var max_bits = l.max_bits;
-                var max_size = 1:bigint;
-                var has_max_bits = max_bits != -1;
-                if has_max_bits {
-                  max_size <<= max_bits;
-                  max_size -= 1;
-                }
-                select op {
-                  // TODO change once we can cast directly from bool to bigint
-                  when "+=" {
-                    forall li in la with (var local_val = val:int:bigint, var local_max_size = max_size) {
-                      li += local_val;
-                      if has_max_bits {
-                        li &= local_max_size;
-                      }
-                    }
-                  }
-                  when "-=" {
-                    forall li in la with (var local_val = val:int:bigint, var local_max_size = max_size) {
-                      li -= local_val;
-                      if has_max_bits {
-                        li &= local_max_size;
-                      }
-                    }
-                  }
-                  when "*=" {
-                    forall li in la with (var local_val = val:int:bigint, var local_max_size = max_size) {
-                      li *= local_val;
-                      if has_max_bits {
-                        li &= local_max_size;
-                      }
-                    }
-                  }
-                  otherwise {
-                    var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                    omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                    return new MsgTuple(errorMsg, MsgType.ERROR);
-                  }
-                }
-            }
-            when (DType.BigInt, DType.BigInt) {
-                var l = toSymEntry(left,bigint, nd);
-                var val = value.getBigIntValue();
-                ref la = l.a;
-                var max_bits = l.max_bits;
-                var max_size = 1:bigint;
-                var has_max_bits = max_bits != -1;
-                if has_max_bits {
-                  max_size <<= max_bits;
-                  max_size -= 1;
-                }
-                select op {
-                  when "+=" {
-                    forall li in la with (var local_val = val, var local_max_size = max_size) {
-                      li += local_val;
-                      if has_max_bits {
-                        li &= local_max_size;
-                      }
-                    }
-                  }
-                  when "-=" {
-                    forall li in la with (var local_val = val, var local_max_size = max_size) {
-                      li -= local_val;
-                      if has_max_bits {
-                        li &= local_max_size;
-                      }
-                    }
-                  }
-                  when "*=" {
-                    forall li in la with (var local_val = val, var local_max_size = max_size) {
-                      li *= local_val;
-                      if has_max_bits {
-                        li &= local_max_size;
-                      }
-                    }
-                  }
-                  when "//=" {
-                    forall li in la with (var local_val = val, var local_max_size = max_size) {
-                      if local_val != 0 {
-                        li /= local_val;
-                      }
-                      else {
-                        li = 0:bigint;
-                      }
-                      if has_max_bits {
-                        li &= local_max_size;
-                      }
-                    }
-                  }
-                  when "%=" {
-                    // we can't use li %= val because this can result in negatives
-                    forall li in la with (var local_val = val, var local_max_size = max_size) {
-                      if local_val != 0 {
-                        mod(li, li, local_val);
-                      }
-                      else {
-                        li = 0:bigint;
-                      }
-                      if has_max_bits {
-                        li &= local_max_size;
-                      }
-                    }
-                  }
-                  when "**=" {
-                    if val<0 {
-                      throw new Error("Attempt to exponentiate base of type BigInt to negative exponent");
-                    }
-                    if has_max_bits {
-                      forall li in la with (var local_val = val, var local_max_size = max_size) {
-                        powMod(li, li, local_val, local_max_size + 1);
-                      }
-                    }
-                    else {
-                      forall li in la with (var local_val = val) {
-                        li **= local_val:uint;
-                      }
-                    }
-                  }
-                  otherwise {
-                    var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                    omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                    return new MsgTuple(errorMsg, MsgType.ERROR);
-                  }
-                }
-            }
-            otherwise {
-              var errorMsg = unrecognizedTypeError(pn,
-                                  "("+dtype2str(left.dtype)+","+dtype2str(dtype)+")");
-              omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-              return new MsgTuple(errorMsg, MsgType.ERROR);
-            }
+      if isIntegralType(binop_dtype_a) && isIntegralType(binop_dtype_b) {
+        select op {
+          when "+=" do a.a += val;
+          when "-=" do a.a -= val;
+          when "*=" do a.a *= val;
+          when ">>=" do a.a >>= val;
+          when "<<=" do a.a <<= val;
+          when "//=" {
+            if val != 0 then a.a /= val; else a.a = 0;
+          }
+          when "%=" {
+            if val != 0 then a.a %= val; else a.a = 0;
+          }
+          when "**=" {
+            if val<0
+              then return MsgTuple.error("Attempt to exponentiate base of type Int64 to negative exponent");
+              else a.a **= val;
+          }
+          otherwise do return MsgTuple.error(unsupErrorMsg);
         }
-        repMsg = "opeqvs success";
-        omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-        return new MsgTuple(repMsg, MsgType.NORMAL);
+      } else if isIntegralType(binop_dtype_a) && binop_dtype_b == bool {
+        select op {
+          when "+=" do a.a += val:binop_dtype_a;
+          when "-=" do a.a -= val:binop_dtype_a;
+          when "*=" do a.a *= val:binop_dtype_a;
+          when ">>=" do a.a >>= val:binop_dtype_a;
+          when "<<=" do a.a <<= val:binop_dtype_a;
+          otherwise do return MsgTuple.error(unsupErrorMsg);
+        }
+      } else if binop_dtype_a == bool && binop_dtype_b == bool {
+        select op {
+          when "|=" do a.a |= val;
+          when "&=" do a.a &= val;
+          when "^=" do a.a ^= val;
+          when "+=" do a.a |= val;
+          otherwise do return MsgTuple.error(unsupErrorMsg);
+        }
+      } else if isRealType(binop_dtype_a) && (isRealType(binop_dtype_b) || isIntegralType(binop_dtype_b)) {
+        select op {
+          when "+=" do a.a += val;
+          when "-=" do a.a -= val;
+          when "*=" do a.a *= val;
+          when "/=" do a.a /= val:binop_dtype_a;
+          when "//=" {
+            ref aa = a.a;
+            [ai in aa] ai = floorDivisionHelper(ai, val);
+          }
+          when "**=" do a.a **= val;
+          when "%=" {
+            ref aa = a.a;
+            [ai in aa] ai = modHelper(ai, val);
+          }
+          otherwise do return MsgTuple.error(unsupErrorMsg);
+        }
+      } else if isRealType(binop_dtype_a) && binop_dtype_b == bool {
+        select op {
+          when "+=" do a.a += val:binop_dtype_a;
+          when "-=" do a.a -= val:binop_dtype_a;
+          when "*=" do a.a *= val:binop_dtype_a;
+          otherwise do return MsgTuple.error(unsupErrorMsg);
+        }
+      } else {
+        return MsgTuple.error(unsupErrorMsg);
+      }
+
+      return MsgTuple.success();
     }
 
+    // special handling for bigint ops
+    proc opeqVS(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+      type binop_dtype_a,
+      type binop_dtype_b,
+      param array_nd: int
+    ): MsgTuple throws
+      where (binop_dtype_a == bigint || binop_dtype_b == bigint) &&
+            !isRealType(binop_dtype_b)
+    {
+      const op = msgArgs['op'].toScalar(string),
+            unsupErrorMsg = "unsupported op=: %s %s %s".format(binop_dtype_a:string, op, binop_dtype_b:string);
+
+      if binop_dtype_a != bigint then return MsgTuple.error(unsupErrorMsg);
+
+      const a = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
+            val = msgArgs['value'].toScalar(binop_dtype_b),
+            (has_max_bits, max_size, max_bits) = getMaxBits(a);
+      ref aa = a.a;
+
+      select op {
+        when "+=" {
+          forall ai in aa with (var local_val = val, var local_max_size = max_size) {
+            ai += local_val;
+            if has_max_bits then ai &= local_max_size;
+          }
+        }
+        when "-=" {
+          forall ai in aa with (var local_val = val, var local_max_size = max_size) {
+            ai -= local_val;
+            if has_max_bits then ai &= local_max_size;
+          }
+        }
+        when "*=" {
+          forall ai in aa with (var local_val = val, var local_max_size = max_size) {
+            ai *= local_val;
+            if has_max_bits then ai &= local_max_size;
+          }
+        }
+        when "//=" {
+          if binop_dtype_b == bool then return MsgTuple.error(unsupErrorMsg);
+          forall ai in aa with (var local_val = val, var local_max_size = max_size) {
+            if local_val != 0 then ai /= local_val; else ai = 0:bigint;
+            if has_max_bits then ai &= local_max_size;
+          }
+        }
+        when "%=" {
+          if binop_dtype_b == bool then return MsgTuple.error(unsupErrorMsg);
+          // we can't use ai %= bi because this can result in negatives
+          forall ai in aa with (var local_val = val, var local_max_size = max_size) {
+            if local_val != 0 then mod(ai, ai, local_val); else ai = 0:bigint;
+            if has_max_bits then ai &= local_max_size;
+          }
+        }
+        when "**=" {
+          if binop_dtype_b == bool then return MsgTuple.error(unsupErrorMsg);
+          if val < 0 then return MsgTuple.error("Attempt to exponentiate base of type BigInt to negative exponent");
+          if has_max_bits {
+            forall ai in aa with (var local_val = val, var local_max_size = max_size) {
+              powMod(ai, ai, local_val, local_max_size + 1);
+            }
+          } else {
+            forall ai in aa with (var local_val = val) {
+              ai **= local_val:uint;
+            }
+          }
+        }
+        otherwise do return MsgTuple.error(unsupErrorMsg);
+      }
+
+      return MsgTuple.success();
+    }
+
+    // error message when result could not be stored in 'binop_dtype_a'
+    proc opeqVS(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+      type binop_dtype_a,
+      type binop_dtype_b,
+      param array_nd: int
+    ): MsgTuple throws {
+      const op = msgArgs['op'].toScalar(string);
+      return MsgTuple.error(notImplementedError(
+        cmd,
+        whichDtype(binop_dtype_a),
+        op,
+        whichDtype(binop_dtype_b)
+      ));
+    }
 
     /*
       Helper to determine the max_bits between two SymEntry's

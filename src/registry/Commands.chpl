@@ -2887,6 +2887,106 @@ proc ark_opeqVV_bigint_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: 
   return OperatorMsg.opeqVV(cmd, msgArgs, st, binop_dtype_a=bigint, binop_dtype_b=bigint, array_nd=1);
 registerFunction('opeqVV<bigint,bigint,1>', ark_opeqVV_bigint_bigint_1, 'OperatorMsg', 1449);
 
+proc ark_opeqVS_int_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVS(cmd, msgArgs, st, binop_dtype_a=int, binop_dtype_b=int, array_nd=1);
+registerFunction('opeqVS<int64,int64,1>', ark_opeqVS_int_int_1, 'OperatorMsg', 1631);
+
+proc ark_opeqVS_int_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVS(cmd, msgArgs, st, binop_dtype_a=int, binop_dtype_b=uint, array_nd=1);
+registerFunction('opeqVS<int64,uint64,1>', ark_opeqVS_int_uint_1, 'OperatorMsg', 1631);
+
+proc ark_opeqVS_int_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVS(cmd, msgArgs, st, binop_dtype_a=int, binop_dtype_b=real, array_nd=1);
+registerFunction('opeqVS<int64,float64,1>', ark_opeqVS_int_real_1, 'OperatorMsg', 1631);
+
+proc ark_opeqVS_int_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVS(cmd, msgArgs, st, binop_dtype_a=int, binop_dtype_b=bool, array_nd=1);
+registerFunction('opeqVS<int64,bool,1>', ark_opeqVS_int_bool_1, 'OperatorMsg', 1631);
+
+proc ark_opeqVS_int_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVS(cmd, msgArgs, st, binop_dtype_a=int, binop_dtype_b=bigint, array_nd=1);
+registerFunction('opeqVS<int64,bigint,1>', ark_opeqVS_int_bigint_1, 'OperatorMsg', 1631);
+
+proc ark_opeqVS_uint_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVS(cmd, msgArgs, st, binop_dtype_a=uint, binop_dtype_b=int, array_nd=1);
+registerFunction('opeqVS<uint64,int64,1>', ark_opeqVS_uint_int_1, 'OperatorMsg', 1631);
+
+proc ark_opeqVS_uint_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVS(cmd, msgArgs, st, binop_dtype_a=uint, binop_dtype_b=uint, array_nd=1);
+registerFunction('opeqVS<uint64,uint64,1>', ark_opeqVS_uint_uint_1, 'OperatorMsg', 1631);
+
+proc ark_opeqVS_uint_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVS(cmd, msgArgs, st, binop_dtype_a=uint, binop_dtype_b=real, array_nd=1);
+registerFunction('opeqVS<uint64,float64,1>', ark_opeqVS_uint_real_1, 'OperatorMsg', 1631);
+
+proc ark_opeqVS_uint_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVS(cmd, msgArgs, st, binop_dtype_a=uint, binop_dtype_b=bool, array_nd=1);
+registerFunction('opeqVS<uint64,bool,1>', ark_opeqVS_uint_bool_1, 'OperatorMsg', 1631);
+
+proc ark_opeqVS_uint_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVS(cmd, msgArgs, st, binop_dtype_a=uint, binop_dtype_b=bigint, array_nd=1);
+registerFunction('opeqVS<uint64,bigint,1>', ark_opeqVS_uint_bigint_1, 'OperatorMsg', 1631);
+
+proc ark_opeqVS_real_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVS(cmd, msgArgs, st, binop_dtype_a=real, binop_dtype_b=int, array_nd=1);
+registerFunction('opeqVS<float64,int64,1>', ark_opeqVS_real_int_1, 'OperatorMsg', 1631);
+
+proc ark_opeqVS_real_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVS(cmd, msgArgs, st, binop_dtype_a=real, binop_dtype_b=uint, array_nd=1);
+registerFunction('opeqVS<float64,uint64,1>', ark_opeqVS_real_uint_1, 'OperatorMsg', 1631);
+
+proc ark_opeqVS_real_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVS(cmd, msgArgs, st, binop_dtype_a=real, binop_dtype_b=real, array_nd=1);
+registerFunction('opeqVS<float64,float64,1>', ark_opeqVS_real_real_1, 'OperatorMsg', 1631);
+
+proc ark_opeqVS_real_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVS(cmd, msgArgs, st, binop_dtype_a=real, binop_dtype_b=bool, array_nd=1);
+registerFunction('opeqVS<float64,bool,1>', ark_opeqVS_real_bool_1, 'OperatorMsg', 1631);
+
+proc ark_opeqVS_real_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVS(cmd, msgArgs, st, binop_dtype_a=real, binop_dtype_b=bigint, array_nd=1);
+registerFunction('opeqVS<float64,bigint,1>', ark_opeqVS_real_bigint_1, 'OperatorMsg', 1631);
+
+proc ark_opeqVS_bool_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVS(cmd, msgArgs, st, binop_dtype_a=bool, binop_dtype_b=int, array_nd=1);
+registerFunction('opeqVS<bool,int64,1>', ark_opeqVS_bool_int_1, 'OperatorMsg', 1631);
+
+proc ark_opeqVS_bool_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVS(cmd, msgArgs, st, binop_dtype_a=bool, binop_dtype_b=uint, array_nd=1);
+registerFunction('opeqVS<bool,uint64,1>', ark_opeqVS_bool_uint_1, 'OperatorMsg', 1631);
+
+proc ark_opeqVS_bool_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVS(cmd, msgArgs, st, binop_dtype_a=bool, binop_dtype_b=real, array_nd=1);
+registerFunction('opeqVS<bool,float64,1>', ark_opeqVS_bool_real_1, 'OperatorMsg', 1631);
+
+proc ark_opeqVS_bool_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVS(cmd, msgArgs, st, binop_dtype_a=bool, binop_dtype_b=bool, array_nd=1);
+registerFunction('opeqVS<bool,bool,1>', ark_opeqVS_bool_bool_1, 'OperatorMsg', 1631);
+
+proc ark_opeqVS_bool_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVS(cmd, msgArgs, st, binop_dtype_a=bool, binop_dtype_b=bigint, array_nd=1);
+registerFunction('opeqVS<bool,bigint,1>', ark_opeqVS_bool_bigint_1, 'OperatorMsg', 1631);
+
+proc ark_opeqVS_bigint_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVS(cmd, msgArgs, st, binop_dtype_a=bigint, binop_dtype_b=int, array_nd=1);
+registerFunction('opeqVS<bigint,int64,1>', ark_opeqVS_bigint_int_1, 'OperatorMsg', 1631);
+
+proc ark_opeqVS_bigint_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVS(cmd, msgArgs, st, binop_dtype_a=bigint, binop_dtype_b=uint, array_nd=1);
+registerFunction('opeqVS<bigint,uint64,1>', ark_opeqVS_bigint_uint_1, 'OperatorMsg', 1631);
+
+proc ark_opeqVS_bigint_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVS(cmd, msgArgs, st, binop_dtype_a=bigint, binop_dtype_b=real, array_nd=1);
+registerFunction('opeqVS<bigint,float64,1>', ark_opeqVS_bigint_real_1, 'OperatorMsg', 1631);
+
+proc ark_opeqVS_bigint_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVS(cmd, msgArgs, st, binop_dtype_a=bigint, binop_dtype_b=bool, array_nd=1);
+registerFunction('opeqVS<bigint,bool,1>', ark_opeqVS_bigint_bool_1, 'OperatorMsg', 1631);
+
+proc ark_opeqVS_bigint_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return OperatorMsg.opeqVS(cmd, msgArgs, st, binop_dtype_a=bigint, binop_dtype_b=bigint, array_nd=1);
+registerFunction('opeqVS<bigint,bigint,1>', ark_opeqVS_bigint_bigint_1, 'OperatorMsg', 1631);
+
 import RandMsg;
 
 proc ark_randint_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
