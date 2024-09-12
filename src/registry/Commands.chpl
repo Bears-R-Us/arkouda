@@ -19,6 +19,16 @@ param regConfig = """
         "bool",
         "bigint"
       ]
+    },
+    "scalar": {
+      "dtype": [
+        "int",
+        "uint",
+        "uint(8)",
+        "real",
+        "bool",
+        "bigint"
+      ]
     }
   }
 }
