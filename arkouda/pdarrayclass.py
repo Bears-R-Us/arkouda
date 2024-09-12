@@ -482,7 +482,10 @@ class pdarray:
         fmt = NUMBER_FORMAT_STRINGS[self.dtype.name]
         return fmt.format(other)
 
-    def _binop_cmd_group(op: str) -> str:
+    def _binop_cmd_group(self, op: str) -> str:
+        """
+        get the name of the command that implements an operator
+        """
         if op in ["+", "-", "*", "%", "**", "//"]:
             op_cmd = "arithmeticOp"
         elif op in ["==", "!=", "<", ">", "<=", ">="]:
@@ -527,8 +530,7 @@ class pdarray:
             return NotImplemented
         if op not in self.BinOps:
             raise ValueError(f"bad operator {op}")
-
-        op_cmd = pdarray._binop_cmd_group(op)
+        op_cmd = self._binop_cmd_group(op)
 
         # pdarray binop pdarray
         if isinstance(other, pdarray):
@@ -601,9 +603,10 @@ class pdarray:
             other = self.dtype.type(other)
         if dt not in DTypes:
             raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")
+        op_cmd = self._binop_cmd_group(op)
         repMsg = generic_msg(
-            cmd=f"binopsv{self.ndim}D",
-            args={"op": op, "dtype": dt, "value": other, "a": self},
+            cmd=f"{op_cmd}SV<{dt},{self.dtype},{self.ndim}>",
+            args={"op": op, "value": other, "b": self},
         )
         return create_pdarray(repMsg)
 

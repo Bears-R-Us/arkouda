@@ -262,7 +262,7 @@ module OperatorMsg
 
     /*
       Supports the following binary operations between two arrays:
-      |, &, ^, <<, >>
+      |, &, ^, <<, >>, <<<, >>>
     */
     @arkouda.instantiateAndRegister
     proc bitwiseOpVV(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
@@ -742,7 +742,7 @@ module OperatorMsg
 
     /*
       Supports the following binary operations between an array and scalar
-      |, &, ^, <<, >>
+      |, &, ^, <<, >>, <<<, >>>
     */
     @arkouda.instantiateAndRegister
     proc bitwiseOpVS(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
@@ -974,716 +974,518 @@ module OperatorMsg
             (has_max_bits, max_size, max_bits) = getMaxBits(a);
 
       var result = a.a;
-
       forall rx in result with (const local_val = val, const local_max_size = max_size) {
         rx /= local_val;
-        if has_max_bits then rx &= local_max_size;
+      if has_max_bits then rx &= local_max_size;
       }
 
       return st.insert(new shared SymEntry(result, max_bits));
     }
 
     /*
-      Parse and respond to binopvs message.
-      vs == vector op scalar
-
-      :arg reqMsg: request containing (cmd,op,aname,dtype,value)
-      :type reqMsg: string
-
-      :arg st: SymTab to act on
-      :type st: borrowed SymTab
-
-      :returns: (MsgTuple)
-      :throws: `UndefinedSymbolError(name)`
+      Supports the following binary operations between an array and scalar:
+      +, -, *, %, **, //
     */
-    // @arkouda.registerND
-    // proc binopvsMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-    //     param pn = Reflection.getRoutineName();
-    //     var repMsg: string = ""; // response message
+    @arkouda.instantiateAndRegister
+    proc arithmeticOpSV(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+      type binop_dtype_a,
+      type binop_dtype_b,
+      param array_nd: int
+    ): MsgTuple throws
+      where (binop_dtype_a != bool || binop_dtype_b != bool) &&
+            binop_dtype_a != bigint && binop_dtype_b != bigint
+    {
+      const val = msgArgs['value'].toScalar(binop_dtype_a),
+            b = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd),
+            op = msgArgs['op'].toScalar(string);
 
-    //     const aname = msgArgs.getValueOf("a");
-    //     const op = msgArgs.getValueOf("op");
-    //     const value = msgArgs.get("value");
+      type resultType = promotedType(binop_dtype_a, binop_dtype_b);
+      var result = makeDistArray((...b.tupShape), resultType);
 
-    //     const dtype = str2dtype(msgArgs.getValueOf("dtype"));
-    //     var rname = st.nextName();
-    //     var left: borrowed GenSymEntry = getGenericTypedArrayEntry(aname, st);
+      select op {
+        when '+' do result = val:resultType + b.a:resultType;
+        when '-' do result = val:resultType - b.a:resultType;
+        when '*' do result = val:resultType * b.a:resultType;
+        when '%' { // '
+          ref bb = b.a;
+          if isRealType(resultType)
+            then [(bi,ri) in zip(bb,result)] ri = modHelper(val:resultType, bi:resultType);
+            else [(bi,ri) in zip(bb,result)] ri = if val != 0:binop_dtype_a then val:resultType % bi:resultType else 0:resultType;
+        }
+        when '**' {
+          if isIntegralType(binop_dtype_b) && (|| reduce (b.a < 0)) {
+            return MsgTuple.error("Attempt to exponentiate integer base to negative exponent");
+          }
+          result = val:resultType ** b.a:resultType;
+        }
+        when '//' {
+          ref bb = b.a;
+          if isRealType(resultType)
+            then [(bi,ri) in zip(bb,result)] ri = floorDivisionHelper(val:resultType, bi:resultType);
+            else [(bi,ri) in zip(bb,result)] ri = if val != 0:binop_dtype_a then (val / bi):resultType else 0:resultType;
+        }
+        otherwise return MsgTuple.error("unknown arithmetic binary operation: " + op);
+      }
 
-    //     omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-    //                        "op: %s dtype: %? pdarray: %? scalar: %?".format(
-    //                                                  op,dtype,st.attrib(aname),value.getValue()));
+      return st.insert(new shared SymEntry(result));
+    }
 
-    //     use Set;
-    //     // This boolOps set is a filter to determine the output type for the operation.
-    //     // All operations that involve one of these operations result in a `bool` symbol
-    //     // table entry.
-    //     var boolOps: set(string);
-    //     boolOps.add("<");
-    //     boolOps.add("<=");
-    //     boolOps.add(">");
-    //     boolOps.add(">=");
-    //     boolOps.add("==");
-    //     boolOps.add("!=");
+    // special handling for bool-bool arithmetic
+    proc arithmeticOpSV(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+      type binop_dtype_a,
+      type binop_dtype_b,
+      param array_nd: int
+    ): MsgTuple throws
+      where binop_dtype_a == bool && binop_dtype_b == bool
+    {
+      const val = msgArgs['value'].toScalar(binop_dtype_a),
+            b = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd),
+            op = msgArgs['op'].toScalar(string);
 
-    //     var realOps: set(string);
-    //     realOps.add("+");
-    //     realOps.add("-");
-    //     realOps.add("/");
-    //     realOps.add("//");
+      var result = makeDistArray((...b.tupShape), bool);
 
-    //     select (left.dtype, dtype) {
-    //       when (DType.Int64, DType.Int64) {
-    //         var l = toSymEntry(left,int, nd);
-    //         var val = value.getIntValue();
-            
-    //         if boolOps.contains(op) {
-    //           var e = st.addEntry(rname, l.tupShape, bool);
-    //           return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //         } else if op == "/" {
-    //           // True division is the only case in this int, int case
-    //           // that results in a `real` symbol table entry.
-    //           var e = st.addEntry(rname, l.tupShape, real);
-    //           return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //         }
-    //         var e = st.addEntry(rname, l.tupShape, int);
-    //         return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //       }
-    //       when (DType.Int64, DType.Float64) {
-    //         var l = toSymEntry(left,int, nd);
-    //         var val = value.getRealValue();
-    //         // Only two possible resultant types are `bool` and `real`
-    //         // for this case
-    //         if boolOps.contains(op) {
-    //           var e = st.addEntry(rname, l.tupShape, bool);
-    //           return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //         }
-    //         var e = st.addEntry(rname, l.tupShape, real);
-    //         return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //       }
-    //       when (DType.Float64, DType.Int64) {
-    //         var l = toSymEntry(left,real, nd);
-    //         var val = value.getIntValue();
-    //         if boolOps.contains(op) {
-    //           var e = st.addEntry(rname, l.tupShape, bool);
-    //           return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //         }
-    //         var e = st.addEntry(rname, l.tupShape, real);
-    //         return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //       }
-    //       when (DType.UInt64, DType.Float64) {
-    //         var l = toSymEntry(left,uint, nd);
-    //         var val = value.getRealValue();
-    //         // Only two possible resultant types are `bool` and `real`
-    //         // for this case
-    //         if boolOps.contains(op) {
-    //           var e = st.addEntry(rname, l.tupShape, bool);
-    //           return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //         }
-    //         var e = st.addEntry(rname, l.tupShape, real);
-    //         return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //       }
-    //       when (DType.Float64, DType.UInt64) {
-    //         var l = toSymEntry(left,real, nd);
-    //         var val = value.getUIntValue();
-    //         if boolOps.contains(op) {
-    //           var e = st.addEntry(rname, l.tupShape, bool);
-    //           return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //         }
-    //         var e = st.addEntry(rname, l.tupShape, real);
-    //         return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //       }
-    //       when (DType.Float64, DType.Float64) {
-    //         var l = toSymEntry(left,real, nd);
-    //         var val = value.getRealValue();
-    //         if boolOps.contains(op) {
-    //           var e = st.addEntry(rname, l.tupShape, bool);
-    //           return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //         }
-    //         var e = st.addEntry(rname, l.tupShape, real);
-    //         return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //       }
-    //       // For cases where a boolean operand is involved, the only
-    //       // possible resultant type is `bool`
-    //       when (DType.Bool, DType.Bool) {
-    //         var l = toSymEntry(left,bool, nd);
-    //         var val = value.getBoolValue();
-    //         if (op == "<<") || (op == ">>") {
-    //           var e = st.addEntry(rname, l.tupShape, int);
-    //           return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //         }
-    //         var e = st.addEntry(rname, l.tupShape, bool);
-    //         return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //       }
-    //       when (DType.Bool, DType.Int64) {
-    //         var l = toSymEntry(left,bool, nd);
-    //         var val = value.getIntValue();
-    //         if boolOps.contains(op) {
-    //           var e = st.addEntry(rname, l.tupShape, bool);
-    //           return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //         }
-    //         var e = st.addEntry(rname, l.tupShape, int);
-    //         return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //       }
-    //       when (DType.Int64, DType.Bool) {
-    //         var l = toSymEntry(left,int, nd);
-    //         var val = value.getBoolValue();
-    //         if boolOps.contains(op) {
-    //           var e = st.addEntry(rname, l.tupShape, bool);
-    //           return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //         }
-    //         var e = st.addEntry(rname, l.tupShape, int);
-    //         return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //       }
-    //       when (DType.Bool, DType.Float64) {
-    //         var l = toSymEntry(left,bool, nd);
-    //         var val = value.getRealValue();
-    //         if boolOps.contains(op) {
-    //           var e = st.addEntry(rname, l.tupShape, bool);
-    //           return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //         }
-    //         var e = st.addEntry(rname, l.tupShape, real);
-    //         return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //       }
-    //       when (DType.Float64, DType.Bool) {
-    //         var l = toSymEntry(left,real, nd);
-    //         var val = value.getBoolValue();
-    //         if boolOps.contains(op) {
-    //           var e = st.addEntry(rname, l.tupShape, bool);
-    //           return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //         }
-    //         var e = st.addEntry(rname, l.tupShape, real);
-    //         return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //       }
-    //       when (DType.Bool, DType.UInt64) {
-    //         var l = toSymEntry(left,bool, nd);
-    //         var val = value.getUIntValue();
-    //         if boolOps.contains(op) {
-    //           var e = st.addEntry(rname, l.tupShape, bool);
-    //           return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //         }
-    //         var e = st.addEntry(rname, l.tupShape, uint);
-    //         return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //       }
-    //       when (DType.UInt64, DType.Bool) {
-    //         var l = toSymEntry(left,uint, nd);
-    //         var val = value.getBoolValue();
-    //         if boolOps.contains(op) {
-    //           var e = st.addEntry(rname, l.tupShape, bool);
-    //           return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //         }
-    //         var e = st.addEntry(rname, l.tupShape, uint);
-    //         return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //       }
-    //       when (DType.UInt64, DType.UInt64) {
-    //         var l = toSymEntry(left,uint, nd);
-    //         var val = value.getUIntValue();
-    //         if boolOps.contains(op) {
-    //           var e = st.addEntry(rname, l.tupShape, bool);
-    //           return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //         }
-    //         if op == "/"{
-    //           var e = st.addEntry(rname, l.tupShape, real);
-    //           return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //         } else {
-    //           var e = st.addEntry(rname, l.tupShape, uint);
-    //           return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //         }
-    //       }
-    //       when (DType.UInt64, DType.Int64) {
-    //         var l = toSymEntry(left,uint, nd);
-    //         var val = value.getIntValue();
-    //         if boolOps.contains(op) {
-    //           var e = st.addEntry(rname, l.tupShape, bool);
-    //           return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //         }
-    //         // +, -, /, // both result in real outputs to match NumPy
-    //         if realOps.contains(op) {
-    //           var e = st.addEntry(rname, l.tupShape, real);
-    //           return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //         } else {
-    //           // isn't +, -, /, // so we can use LHS to determine type
-    //           var e = st.addEntry(rname, l.tupShape, uint);
-    //           return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //         }
-    //       }
-    //       when (DType.Int64, DType.UInt64) {
-    //         var l = toSymEntry(left,int, nd);
-    //         var val = value.getUIntValue();
-    //         if boolOps.contains(op) {
-    //           var e = st.addEntry(rname, l.tupShape, bool);
-    //           return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //         }
-    //         // +, -, /, // both result in real outputs to match NumPy
-    //         if realOps.contains(op) {
-    //           var e = st.addEntry(rname, l.tupShape, real);
-    //           return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //         } else {
-    //           // isn't +, -, /, // so we can use LHS to determine type
-    //           var e = st.addEntry(rname, l.tupShape, int);
-    //           return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-    //         }
-    //       }
-    //       when (DType.BigInt, DType.BigInt) {
-    //         var l = toSymEntry(left,bigint, nd);
-    //         var val = value.getBigIntValue();
-    //         if boolOps.contains(op) {
-    //           // call bigint specific func which returns distr bool array
-    //           var e = st.addEntry(rname, createSymEntry(doBigIntBinOpvsBoolReturn(l, val, op)));
-    //           var repMsg = "created %s".format(st.attrib(rname));
-    //           return new MsgTuple(repMsg, MsgType.NORMAL);
-    //         }
-    //         // call bigint specific func which returns dist bigint array
-    //         var (tmp, max_bits) = doBigIntBinOpvs(l, val, op);
-    //         var e = st.addEntry(rname, createSymEntry(tmp, max_bits));
-    //         var repMsg = "created %s".format(st.attrib(rname));
-    //         return new MsgTuple(repMsg, MsgType.NORMAL);
-    //       }
-    //       when (DType.BigInt, DType.Int64) {
-    //         var l = toSymEntry(left,bigint, nd);
-    //         var val = value.getIntValue();
-    //         if boolOps.contains(op) {
-    //           // call bigint specific func which returns distr bool array
-    //           var e = st.addEntry(rname, createSymEntry(doBigIntBinOpvsBoolReturn(l, val, op)));
-    //           var repMsg = "created %s".format(st.attrib(rname));
-    //           return new MsgTuple(repMsg, MsgType.NORMAL);
-    //         }
-    //         // call bigint specific func which returns dist bigint array
-    //         var (tmp, max_bits) = doBigIntBinOpvs(l, val, op);
-    //         var e = st.addEntry(rname, createSymEntry(tmp, max_bits));
-    //         var repMsg = "created %s".format(st.attrib(rname));
-    //         return new MsgTuple(repMsg, MsgType.NORMAL);
-    //       }
-    //       when (DType.BigInt, DType.UInt64) {
-    //         var l = toSymEntry(left,bigint, nd);
-    //         var val = value.getUIntValue();
-    //         if boolOps.contains(op) {
-    //           // call bigint specific func which returns distr bool array
-    //           var e = st.addEntry(rname, createSymEntry(doBigIntBinOpvsBoolReturn(l, val, op)));
-    //           var repMsg = "created %s".format(st.attrib(rname));
-    //           return new MsgTuple(repMsg, MsgType.NORMAL);
-    //         }
-    //         // call bigint specific func which returns dist bigint array
-    //         var (tmp, max_bits) = doBigIntBinOpvs(l, val, op);
-    //         var e = st.addEntry(rname, createSymEntry(tmp, max_bits));
-    //         var repMsg = "created %s".format(st.attrib(rname));
-    //         return new MsgTuple(repMsg, MsgType.NORMAL);
-    //       }
-    //       when (DType.BigInt, DType.Bool) {
-    //         var l = toSymEntry(left,bigint, nd);
-    //         var val = value.getBoolValue();
-    //         if boolOps.contains(op) {
-    //           // call bigint specific func which returns distr bool array
-    //           var e = st.addEntry(rname, createSymEntry(doBigIntBinOpvsBoolReturn(l, val, op)));
-    //           var repMsg = "created %s".format(st.attrib(rname));
-    //           return new MsgTuple(repMsg, MsgType.NORMAL);
-    //         }
-    //         // call bigint specific func which returns dist bigint array
-    //         var (tmp, max_bits) = doBigIntBinOpvs(l, val, op);
-    //         var e = st.addEntry(rname, createSymEntry(tmp, max_bits));
-    //         var repMsg = "created %s".format(st.attrib(rname));
-    //         return new MsgTuple(repMsg, MsgType.NORMAL);
-    //       }
-    //       when (DType.Int64, DType.BigInt) {
-    //         var l = toSymEntry(left,int, nd);
-    //         var val = value.getBigIntValue();
-    //         if boolOps.contains(op) {
-    //           // call bigint specific func which returns distr bool array
-    //           var e = st.addEntry(rname, createSymEntry(doBigIntBinOpvsBoolReturn(l, val, op)));
-    //           var repMsg = "created %s".format(st.attrib(rname));
-    //           return new MsgTuple(repMsg, MsgType.NORMAL);
-    //         }
-    //         // call bigint specific func which returns dist bigint array
-    //         var (tmp, max_bits) = doBigIntBinOpvs(l, val, op);
-    //         var e = st.addEntry(rname, createSymEntry(tmp, max_bits));
-    //         var repMsg = "created %s".format(st.attrib(rname));
-    //         return new MsgTuple(repMsg, MsgType.NORMAL);
-    //       }
-    //       when (DType.UInt64, DType.BigInt) {
-    //         var l = toSymEntry(left,uint, nd);
-    //         var val = value.getBigIntValue();
-    //         if boolOps.contains(op) {
-    //           // call bigint specific func which returns distr bool array
-    //           var e = st.addEntry(rname, createSymEntry(doBigIntBinOpvsBoolReturn(l, val, op)));
-    //           var repMsg = "created %s".format(st.attrib(rname));
-    //           return new MsgTuple(repMsg, MsgType.NORMAL);
-    //         }
-    //         // call bigint specific func which returns dist bigint array
-    //         var (tmp, max_bits) = doBigIntBinOpvs(l, val, op);
-    //         var e = st.addEntry(rname, createSymEntry(tmp, max_bits));
-    //         var repMsg = "created %s".format(st.attrib(rname));
-    //         return new MsgTuple(repMsg, MsgType.NORMAL);
-    //       }
-    //       when (DType.Bool, DType.BigInt) {
-    //         var l = toSymEntry(left,bool, nd);
-    //         var val = value.getBigIntValue();
-    //         if boolOps.contains(op) {
-    //           // call bigint specific func which returns distr bool array
-    //           var e = st.addEntry(rname, createSymEntry(doBigIntBinOpvsBoolReturn(l, val, op)));
-    //           var repMsg = "created %s".format(st.attrib(rname));
-    //           return new MsgTuple(repMsg, MsgType.NORMAL);
-    //         }
-    //         // call bigint specific func which returns dist bigint array
-    //         var (tmp, max_bits) = doBigIntBinOpvs(l, val, op);
-    //         var e = st.addEntry(rname, createSymEntry(tmp, max_bits));
-    //         var repMsg = "created %s".format(st.attrib(rname));
-    //         return new MsgTuple(repMsg, MsgType.NORMAL);
-    //       }
-    //     }
-    //     var errorMsg = unrecognizedTypeError(pn, "("+dtype2str(left.dtype)+","+dtype2str(dtype)+")");
-    //     omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-    //     return new MsgTuple(errorMsg, MsgType.ERROR);
-    // }
+      // TODO: implement %, **, and // following NumPy's behavior
+      select op {
+        when '+' do result = val | b.a;
+        when '-' do return MsgTuple.error("cannot subtract boolean array from boolean");
+        when '*' do result = val & b.a;
+        when '%' do return MsgTuple.error("modulo of boolean by a boolean array is not supported"); // '
+        when '**' do return MsgTuple.error("exponentiation of a boolean by a boolean array is not supported");
+        when '//' do return MsgTuple.error("floor-division of a boolean by a boolean array is not supported");
+        otherwise return MsgTuple.error("unknown arithmetic binary operation: " + op);
+      }
 
-    /*
-      Parse and respond to binopsv message.
-      sv == scalar op vector
+      return st.insert(new shared SymEntry(result));
+    }
 
-      :arg reqMsg: request containing (cmd,op,dtype,value,aname)
-      :type reqMsg: string 
+    // special handling for bigint arithmetic
+    proc arithmeticOpSV(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+      type binop_dtype_a,
+      type binop_dtype_b,
+      param array_nd: int
+    ): MsgTuple throws
+      where (binop_dtype_a == bigint && !isRealType(binop_dtype_b)) ||
+            (binop_dtype_b == bigint && !isRealType(binop_dtype_a))
+    {
+      const val = msgArgs['value'].toScalar(binop_dtype_a),
+            b = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd),
+            op = msgArgs['op'].toScalar(string),
+            (has_max_bits, max_size, max_bits) = getMaxBits(b);
 
-      :arg st: SymTab to act on
-      :type st: borrowed SymTab 
+      var result = makeDistArray((...b.tupShape), bigint);
+      result = val:bigint;
 
-      :returns: (MsgTuple) 
-      :throws: `UndefinedSymbolError(name)`
-    */
-    @arkouda.registerND
-    proc binopsvMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-        param pn = Reflection.getRoutineName();
-        var repMsg: string = ""; // response message
+      ref bb = b.a;
 
-        const op = msgArgs.getValueOf("op");
-        const aname = msgArgs.getValueOf("a");
-        const value = msgArgs.get("value");
-
-        var dtype = str2dtype(msgArgs.getValueOf("dtype"));
-        var rname = st.nextName();
-        var right: borrowed GenSymEntry = getGenericTypedArrayEntry(aname, st);
-        
-        omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                 "command = %? op = %? scalar dtype = %? scalar = %? pdarray = %?".format(
-                                   cmd,op,dtype2str(dtype),value,st.attrib(aname)));
-
-        use Set;
-        // This boolOps set is a filter to determine the output type for the operation.
-        // All operations that involve one of these operations result in a `bool` symbol
-        // table entry.
-        var boolOps: set(string);
-        boolOps.add("<");
-        boolOps.add("<=");
-        boolOps.add(">");
-        boolOps.add(">=");
-        boolOps.add("==");
-        boolOps.add("!=");
-        
-        var realOps: set(string);
-        realOps.add("+");
-        realOps.add("-");
-        realOps.add("/");
-        realOps.add("//");
-
-        select (dtype, right.dtype) {
-          when (DType.Int64, DType.Int64) {
-            var val = value.getIntValue();
-            var r = toSymEntry(right,int, nd);
-            
-            if boolOps.contains(op) {
-              var e = st.addEntry(rname, r.tupShape, bool);
-              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-            } else if op == "/" {
-              // True division is the only case in this int, int case
-              // that results in a `real` symbol table entry.
-              var e = st.addEntry(rname, r.tupShape, real);
-              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-            }
-            var e = st.addEntry(rname, r.tupShape, int);
-            return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-          }
-          when (DType.Int64, DType.Float64) {
-            var val = value.getIntValue();
-            var r = toSymEntry(right,real, nd);
-            // Only two possible resultant types are `bool` and `real`
-            // for this case
-            if boolOps.contains(op) {
-              var e = st.addEntry(rname, r.tupShape, bool);
-              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-            }
-            var e = st.addEntry(rname, r.tupShape, real);
-            return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-          }
-          when (DType.Float64, DType.Int64) {
-            var val = value.getRealValue();
-            var r = toSymEntry(right,int, nd);
-            if boolOps.contains(op) {
-              var e = st.addEntry(rname, r.tupShape, bool);
-              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-            }
-            var e = st.addEntry(rname, r.tupShape, real);
-            return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-          }
-          when (DType.UInt64, DType.Float64) {
-            var val = value.getUIntValue();
-            var r = toSymEntry(right,real, nd);
-            // Only two possible resultant types are `bool` and `real`
-            // for this case
-            if boolOps.contains(op) {
-              var e = st.addEntry(rname, r.tupShape, bool);
-              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-            }
-            var e = st.addEntry(rname, r.tupShape, real);
-            return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-          }
-          when (DType.Float64, DType.UInt64) {
-            var val = value.getRealValue();
-            var r = toSymEntry(right,uint, nd);
-            if boolOps.contains(op) {
-              var e = st.addEntry(rname, r.tupShape, bool);
-              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-            }
-            var e = st.addEntry(rname, r.tupShape, real);
-            return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-          }
-          when (DType.Float64, DType.Float64) {
-            var val = value.getRealValue();
-            var r = toSymEntry(right,real, nd);
-            if boolOps.contains(op) {
-              var e = st.addEntry(rname, r.tupShape, bool);
-              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-            }
-            var e = st.addEntry(rname, r.tupShape, real);
-            return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-          }
-          // For cases where a boolean operand is involved, the only
-          // possible resultant type is `bool`
-          when (DType.Bool, DType.Bool) {
-            var val = value.getBoolValue();
-            var r = toSymEntry(right,bool, nd);
-            if (op == "<<") || (op == ">>") {
-              var e = st.addEntry(rname, r.tupShape, int);
-              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-            }
-            var e = st.addEntry(rname, r.tupShape, bool);
-            return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-          }
-          when (DType.Bool, DType.Int64) {
-            var val = value.getBoolValue();
-            var r = toSymEntry(right,int, nd);
-            if boolOps.contains(op) {
-              var e = st.addEntry(rname, r.tupShape, bool);
-              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-            }
-            var e = st.addEntry(rname, r.tupShape, int);
-            return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-          }
-          when (DType.Int64, DType.Bool) {
-            var val = value.getIntValue();
-            var r = toSymEntry(right,bool, nd);
-            if boolOps.contains(op) {
-              var e = st.addEntry(rname, r.tupShape, bool);
-              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-            }
-            var e = st.addEntry(rname, r.tupShape, int);
-            return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-          }
-          when (DType.Bool, DType.Float64) {
-            var val = value.getBoolValue();
-            var r = toSymEntry(right,real, nd);
-            if boolOps.contains(op) {
-              var e = st.addEntry(rname, r.tupShape, bool);
-              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-            }
-            var e = st.addEntry(rname, r.tupShape, real);
-            return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-          }
-          when (DType.Float64, DType.Bool) {
-            var val = value.getRealValue();
-            var r = toSymEntry(right,bool, nd);
-            if boolOps.contains(op) {
-              var e = st.addEntry(rname, r.tupShape, bool);
-              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-            }
-            var e = st.addEntry(rname, r.tupShape, real);
-            return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-          }
-          when (DType.Bool, DType.UInt64) {
-            var val = value.getBoolValue();
-            var r = toSymEntry(right,uint, nd);
-            if boolOps.contains(op) {
-              var e = st.addEntry(rname, r.tupShape, bool);
-              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-            }
-            var e = st.addEntry(rname, r.tupShape, uint);
-            return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-          }
-          when (DType.UInt64, DType.Bool) {
-            var val = value.getUIntValue();
-            var r = toSymEntry(right,bool, nd);
-            if boolOps.contains(op) {
-              var e = st.addEntry(rname, r.tupShape, bool);
-              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-            }
-            var e = st.addEntry(rname, r.tupShape, uint);
-            return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-          }
-          when (DType.UInt64, DType.UInt64) {
-            var val = value.getUIntValue();
-            var r = toSymEntry(right,uint, nd);
-            if boolOps.contains(op) {
-              var e = st.addEntry(rname, r.tupShape, bool);
-              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-            }
-            if op == "/"{
-              var e = st.addEntry(rname, r.tupShape, real);
-              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-            } else {
-              var e = st.addEntry(rname, r.tupShape, uint);
-              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-            }
-          }
-          when (DType.UInt64, DType.Int64) {
-            var val = value.getUIntValue();
-            var r = toSymEntry(right,int, nd);
-            if boolOps.contains(op) {
-              var e = st.addEntry(rname, r.tupShape, bool);
-              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-            }
-            // +, -, /, // both result in real outputs to match NumPy
-            if realOps.contains(op) {
-              var e = st.addEntry(rname, r.tupShape, real);
-              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-            } else {
-              // isn't +, -, /, // so we can use LHS to determine type
-              var e = st.addEntry(rname, r.tupShape, uint);
-              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-            }
-          }
-          when (DType.Int64, DType.UInt64) {
-            var val = value.getIntValue();
-            var r = toSymEntry(right,uint, nd);
-            if boolOps.contains(op) {
-              var e = st.addEntry(rname, r.tupShape, bool);
-              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-            }
-            // +, -, /, // both result in real outputs to match NumPy
-            if realOps.contains(op) {
-              var e = st.addEntry(rname, r.tupShape, real);
-              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-            } else {
-              // isn't +, -, /, // so we can use LHS to determine type
-              var e = st.addEntry(rname, r.tupShape, int);
-              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-            }
-          }
-          when (DType.BigInt, DType.BigInt) {
-            var val = value.getBigIntValue();
-            var r = toSymEntry(right,bigint, nd);
-            if boolOps.contains(op) {
-              // call bigint specific func which returns distr bool array
-              var e = st.addEntry(rname, createSymEntry(doBigIntBinOpsvBoolReturn(val, r, op)));
-              var repMsg = "created %s".format(st.attrib(rname));
-              return new MsgTuple(repMsg, MsgType.NORMAL);
-            }
-            // call bigint specific func which returns dist bigint array
-            var (tmp, max_bits) = doBigIntBinOpsv(val, r, op);
-            var e = st.addEntry(rname, createSymEntry(tmp, max_bits));
-            var repMsg = "created %s".format(st.attrib(rname));
-            return new MsgTuple(repMsg, MsgType.NORMAL);
-          }
-          when (DType.BigInt, DType.Int64) {
-            var val = value.getBigIntValue();
-            var r = toSymEntry(right,int, nd);
-            if boolOps.contains(op) {
-              // call bigint specific func which returns distr bool array
-              var e = st.addEntry(rname, createSymEntry(doBigIntBinOpsvBoolReturn(val, r, op)));
-              var repMsg = "created %s".format(st.attrib(rname));
-              return new MsgTuple(repMsg, MsgType.NORMAL);
-            }
-            // call bigint specific func which returns dist bigint array
-            var (tmp, max_bits) = doBigIntBinOpsv(val, r, op);
-            var e = st.addEntry(rname, createSymEntry(tmp, max_bits));
-            var repMsg = "created %s".format(st.attrib(rname));
-            return new MsgTuple(repMsg, MsgType.NORMAL);
-          }
-          when (DType.BigInt, DType.UInt64) {
-            var val = value.getBigIntValue();
-            var r = toSymEntry(right,uint, nd);
-            if boolOps.contains(op) {
-              // call bigint specific func which returns distr bool array
-              var e = st.addEntry(rname, createSymEntry(doBigIntBinOpsvBoolReturn(val, r, op)));
-              var repMsg = "created %s".format(st.attrib(rname));
-              return new MsgTuple(repMsg, MsgType.NORMAL);
-            }
-            // call bigint specific func which returns dist bigint array
-            var (tmp, max_bits) = doBigIntBinOpsv(val, r, op);
-            var e = st.addEntry(rname, createSymEntry(tmp, max_bits));
-            var repMsg = "created %s".format(st.attrib(rname));
-            return new MsgTuple(repMsg, MsgType.NORMAL);
-          }
-          when (DType.BigInt, DType.Bool) {
-            var val = value.getBigIntValue();
-            var r = toSymEntry(right,bool, nd);
-            if boolOps.contains(op) {
-              // call bigint specific func which returns distr bool array
-              var e = st.addEntry(rname, createSymEntry(doBigIntBinOpsvBoolReturn(val, r, op)));
-              var repMsg = "created %s".format(st.attrib(rname));
-              return new MsgTuple(repMsg, MsgType.NORMAL);
-            }
-            // call bigint specific func which returns dist bigint array
-            var (tmp, max_bits) = doBigIntBinOpsv(val, r, op);
-            var e = st.addEntry(rname, createSymEntry(tmp, max_bits));
-            var repMsg = "created %s".format(st.attrib(rname));
-            return new MsgTuple(repMsg, MsgType.NORMAL);
-          }
-          when (DType.Int64, DType.BigInt) {
-            var val = value.getIntValue();
-            var r = toSymEntry(right,bigint, nd);
-            if boolOps.contains(op) {
-              // call bigint specific func which returns distr bool array
-              var e = st.addEntry(rname, createSymEntry(doBigIntBinOpsvBoolReturn(val, r, op)));
-              var repMsg = "created %s".format(st.attrib(rname));
-              return new MsgTuple(repMsg, MsgType.NORMAL);
-            }
-            // call bigint specific func which returns dist bigint array
-            var (tmp, max_bits) = doBigIntBinOpsv(val, r, op);
-            var e = st.addEntry(rname, createSymEntry(tmp, max_bits));
-            var repMsg = "created %s".format(st.attrib(rname));
-            return new MsgTuple(repMsg, MsgType.NORMAL);
-          }
-          when (DType.UInt64, DType.BigInt) {
-            var val = value.getUIntValue();
-            var r = toSymEntry(right,bigint, nd);
-            if boolOps.contains(op) {
-              // call bigint specific func which returns distr bool array
-              var e = st.addEntry(rname, createSymEntry(doBigIntBinOpsvBoolReturn(val, r, op)));
-              var repMsg = "created %s".format(st.attrib(rname));
-              return new MsgTuple(repMsg, MsgType.NORMAL);
-            }
-            // call bigint specific func which returns dist bigint array
-            var (tmp, max_bits) = doBigIntBinOpsv(val, r, op);
-            var e = st.addEntry(rname, createSymEntry(tmp, max_bits));
-            var repMsg = "created %s".format(st.attrib(rname));
-            return new MsgTuple(repMsg, MsgType.NORMAL);
-          }
-          when (DType.Bool, DType.BigInt) {
-            var val = value.getBoolValue();
-            var r = toSymEntry(right,bigint, nd);
-            if boolOps.contains(op) {
-              // call bigint specific func which returns distr bool array
-              var e = st.addEntry(rname, createSymEntry(doBigIntBinOpsvBoolReturn(val, r, op)));
-              var repMsg = "created %s".format(st.attrib(rname));
-              return new MsgTuple(repMsg, MsgType.NORMAL);
-            }
-            // call bigint specific func which returns dist bigint array
-            var (tmp, max_bits) = doBigIntBinOpsv(val, r, op);
-            var e = st.addEntry(rname, createSymEntry(tmp, max_bits));
-            var repMsg = "created %s".format(st.attrib(rname));
-            return new MsgTuple(repMsg, MsgType.NORMAL);
+      select op {
+        when '+' {
+          forall (rx, bi) in zip(result, bb) with (const local_max_size = max_size) {
+            rx += bi;
+            if has_max_bits then rx &= local_max_size;
           }
         }
-        var errorMsg = unrecognizedTypeError(pn, "("+dtype2str(dtype)+","+dtype2str(right.dtype)+")");
-        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-        return new MsgTuple(errorMsg, MsgType.ERROR);
+        when '-' {
+          forall (rx, bi) in zip(result, bb) with (const local_max_size = max_size) {
+            rx -= bi;
+            if has_max_bits then rx &= local_max_size;
+          }
+        }
+        when '*' {
+          forall (rx, bi) in zip(result, bb) with (const local_max_size = max_size) {
+            rx *= bi;
+            if has_max_bits then rx &= local_max_size;
+          }
+        }
+        when '%' { // '
+          if binop_dtype_a != bigint then return MsgTuple.error("cannot mod a non-bigint value by a bigint array");
+          if binop_dtype_b == bool then return MsgTuple.error("cannot mod a bigint value by a bool array");
+          forall (rx, bi) in zip(result, bb) with (const local_max_size = max_size) {
+            if bi != 0 then mod(rx, rx, bi); else rx = 0:bigint;
+            if has_max_bits then rx &= local_max_size;
+          }
+        }
+        when '**' {
+          if binop_dtype_a != bigint then return MsgTuple.error("cannot exponentiate a non-bigint value by a bigint array");
+          if binop_dtype_b == bool then return MsgTuple.error("cannot exponentiate a bigint value by a bool array");
+          if || reduce (bb < 0) then return MsgTuple.error("Attempt to exponentiate bigint base to negative exponent");
+
+          if has_max_bits
+            then forall (rx, bi) in zip(result, bb) with (const local_max_size = max_size) do
+              powMod(rx, rx, bi, local_max_size + 1);
+            else forall (rx, bi) in zip(result, bb) do
+              rx **= bi:uint;
+        }
+        when '//' {
+          if binop_dtype_a != bigint then return MsgTuple.error("cannot floor-div a non-bigint value by a bigint array");
+          if binop_dtype_b == bool then return MsgTuple.error("cannot floor-div a bigint value by a bool array");
+
+          forall (rx, bi) in zip(result, bb) with (const local_max_size = max_size) {
+            if bi != 0 then rx /= bi; else rx = 0:bigint;
+            if has_max_bits then rx &= local_max_size;
+          }
+        }
+      }
+
+      return st.insert(new shared SymEntry(result, max_bits));
     }
+
+    proc arithmeticOpSV(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+      type binop_dtype_a,
+      type binop_dtype_b,
+      param array_nd: int
+    ): MsgTuple throws
+      where (binop_dtype_a == bigint && isRealType(binop_dtype_b)) ||
+            (binop_dtype_b == bigint && isRealType(binop_dtype_a))
+    {
+      return MsgTuple.error("binary arithmetic operations between real and bigint arrays/values are not supported");
+    }
+
+    /*
+      Supports the following binary operations between an array and scalar:
+      ==, !=, <, <=, >, >=
+    */
+    @arkouda.instantiateAndRegister
+    proc comparisonOpSV(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+      type binop_dtype_a,
+      type binop_dtype_b,
+      param array_nd: int
+    ): MsgTuple throws
+      where !(binop_dtype_a == bigint && isRealType(binop_dtype_b)) &&
+            !(binop_dtype_b == bigint && isRealType(binop_dtype_a))
+    {
+      const val = msgArgs['value'].toScalar(binop_dtype_a),
+            b = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd),
+            op = msgArgs['op'].toScalar(string);
+
+      var result = makeDistArray((...b.tupShape), bool);
+
+      if (binop_dtype_a == real && binop_dtype_b == bool) ||
+         (binop_dtype_a == bool && binop_dtype_b == real)
+      {
+        select op {
+          when '==' do result = val:real == b.a:real;
+          when '!=' do result = val:real != b.a:real;
+          when '<'  do result = val:real <  b.a:real;
+          when '<=' do result = val:real <= b.a:real;
+          when '>'  do result = val:real >  b.a:real;
+          when '>=' do result = val:real >= b.a:real;
+          otherwise return MsgTuple.error("unknown comparison binary operation: " + op);
+        }
+      } else {
+        select op {
+          when '==' do result = val == b.a;
+          when '!=' do result = val != b.a;
+          when '<'  do result = val <  b.a;
+          when '<=' do result = val <= b.a;
+          when '>'  do result = val >  b.a;
+          when '>=' do result = val >= b.a;
+          otherwise return MsgTuple.error("unknown comparison binary operation: " + op);
+        }
+      }
+
+      return st.insert(new shared SymEntry(result));
+    }
+
+    proc comparisonOpSV(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+      type binop_dtype_a,
+      type binop_dtype_b,
+      param array_nd: int
+    ): MsgTuple throws
+      where (binop_dtype_a == bigint && isRealType(binop_dtype_b)) ||
+            (binop_dtype_b == bigint && isRealType(binop_dtype_a))
+    {
+      return MsgTuple.error("comparison operations between real and bigint arrays/values are not supported");
+    }
+
+    /*
+      Supports the following binary operations between an array and scalar
+      |, &, ^, <<, >>, <<<, >>>
+    */
+    @arkouda.instantiateAndRegister
+    proc bitwiseOpSV(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+      type binop_dtype_a,
+      type binop_dtype_b,
+      param array_nd: int
+    ): MsgTuple throws
+      where binop_dtype_a != bigint && binop_dtype_b != bigint &&
+            !isRealType(binop_dtype_a) && !isRealType(binop_dtype_b) &&
+            !(binop_dtype_a == bool && binop_dtype_b == bool)
+    {
+      const val = msgArgs['value'].toScalar(binop_dtype_a),
+            b = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd),
+            op = msgArgs['op'].toScalar(string);
+
+      type resultType = if (isIntType(binop_dtype_a) && isUintType(binop_dtype_b)) ||
+                           (isUintType(binop_dtype_a) && isIntType(binop_dtype_b))
+        then binop_dtype_a // use LHS type for integer types with non-matching signed-ness
+        else promotedType(binop_dtype_a, binop_dtype_b); // otherwise, use regular type promotion
+      var result = makeDistArray((...b.tupShape), resultType);
+
+      select op {
+        when '|'  do result = (val | b.a):resultType;
+        when '&'  do result = (val & b.a):resultType;
+        when '^'  do result = (val ^ b.a):resultType;
+        when '<<' {
+          ref bb = b.a;
+          [(ri,bi) in zip(result,bb)] if 0 <= bi && bi < 64 then ri = val:resultType << bi:resultType;
+        }
+        when '>>' {
+          ref bb = b.a;
+          [(ri,bi) in zip(result,bb)] if 0 <= bi && bi < 64 then ri = val:resultType >> bi:resultType;
+        }
+        when '<<<' {
+          if !isIntegral(binop_dtype_a) || !isIntegral(binop_dtype_b)
+            then return MsgTuple.error("cannot perform bitwise rotation with boolean arrays");
+          result = rotl(val, b.a):resultType;
+        }
+        when '>>>' {
+          if !isIntegral(binop_dtype_a) || !isIntegral(binop_dtype_b)
+            then return MsgTuple.error("cannot perform bitwise rotation with boolean arrays");
+          result = rotr(val, b.a):resultType;
+        }
+        otherwise return MsgTuple.error("unknown bitwise binary operation: " + op);
+      }
+
+      return st.insert(new shared SymEntry(result));
+    }
+
+    // special handling for bitwise ops with two boolean arrays
+    proc bitwiseOpSV(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+      type binop_dtype_a,
+      type binop_dtype_b,
+      param array_nd: int
+    ): MsgTuple throws
+      where binop_dtype_a == bool && binop_dtype_b == bool
+    {
+      const val = msgArgs['value'].toScalar(binop_dtype_a),
+            b = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd),
+            op = msgArgs['op'].toScalar(string);
+
+      if op == '<<' || op == '>>' {
+        var result = makeDistArray((...b.tupShape), int);
+
+        if op == '<<' {
+          ref bb = b.a;
+          [(ri,bi) in zip(result,bb)] if 0 <= bi && bi < 64 then ri = val:int << bi:int;
+        } else {
+          ref bb = b.a;
+          [(ri,bi) in zip(result,bb)] if 0 <= bi && bi < 64 then ri = val:int >> bi:int;
+        }
+
+        return st.insert(new shared SymEntry(result));
+      } else {
+        var result = makeDistArray((...b.tupShape), bool);
+
+        select op {
+          when '|'  do result = val | b.a;
+          when '&'  do result = val & b.a;
+          when '^'  do result = val ^ b.a;
+          when '<<<' do return MsgTuple.error("bitwise rotation on boolean arrays is not supported");
+          when '>>>' do return MsgTuple.error("bitwise rotation on boolean arrays is not supported");
+          otherwise return MsgTuple.error("unknown bitwise binary operation: " + op);
+        }
+
+        return st.insert(new shared SymEntry(result));
+      }
+    }
+
+    // special handling for bitwise ops with at least one bigint array/value
+    proc bitwiseOpSV(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+      type binop_dtype_a,
+      type binop_dtype_b,
+      param array_nd: int
+    ): MsgTuple throws
+      where (binop_dtype_a == bigint || binop_dtype_b == bigint) &&
+            !isRealType(binop_dtype_a) && !isRealType(binop_dtype_b)
+    {
+      const val = msgArgs['value'].toScalar(binop_dtype_a),
+            b = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd),
+            op = msgArgs['op'].toScalar(string),
+            (has_max_bits, max_size, max_bits) = getMaxBits(b);
+
+      // 'a' must be a bigint, and 'b' must not be real for the operations below
+      // (for some operations, both a and b must be bigint)
+      if binop_dtype_a != bigint || isRealType(binop_dtype_b) then
+        return MsgTuple.error("bitwise operations between a LHS bigint and RHS non-bigint arrays are not supported");
+
+      var result = makeDistArray((...b.tupShape), bigint);
+      result = val:bigint;
+      param bothBigint = binop_dtype_a == bigint && binop_dtype_b == bigint;
+      ref bb = b.a;
+
+      select op {
+        when '|' {
+          if !bothBigint then return MsgTuple.error("bitwise OR between bigint and non-bigint arrays/values is not supported");
+          forall (rx, bi) in zip(result, bb) with (const local_max_size = max_size) {
+            rx |= bi;
+            if has_max_bits then rx &= local_max_size;
+          }
+        }
+        when '&' {
+          if !bothBigint then return MsgTuple.error("bitwise AND between bigint and non-bigint arrays/values is not supported");
+          forall (rx, bi) in zip(result, bb) with (const local_max_size = max_size) {
+            rx &= bi;
+            if has_max_bits then rx &= local_max_size;
+          }
+        }
+        when '^' {
+          if !bothBigint then return MsgTuple.error("bitwise XOR between bigint and non-bigint arrays/values is not supported");
+          forall (rx, bi) in zip(result, bb) with (const local_max_size = max_size) {
+            rx ^= bi;
+            if has_max_bits then rx &= local_max_size;
+          }
+        }
+        when '<<' {
+          if binop_dtype_b == bigint then return MsgTuple.error("left-shift of a bigint array by a non-bigint value is not supported");
+          forall (rx, bi) in zip(result, bb) with (const local_max_size = max_size) {
+            if has_max_bits {
+              if bi >= max_bits then rx = 0:bigint;
+              else {
+                rx <<= bi;
+                rx &= local_max_size;
+              }
+            } else {
+              rx <<= bi;
+            }
+          }
+        }
+        when '>>' {
+          if binop_dtype_b == bigint then return MsgTuple.error("right-shift of a bigint array by a non-bigint value is not supported");
+          forall (rx, bi) in zip(result, bb) with (const local_max_size = max_size) {
+            if has_max_bits {
+              if bi >= max_bits then rx = 0:bigint;
+              else {
+                rx >>= bi;
+                rx &= local_max_size;
+              }
+            } else {
+              rx >>= bi;
+            }
+          }
+        }
+        when '<<<' {
+          if !has_max_bits then return MsgTuple.error("bitwise rotation on bigint arrays requires a max_bits value");
+          if binop_dtype_a == bigint then return MsgTuple.error("right-shift of a bigint array by a non-bigint array is not supported");
+          forall (rx, bi) in zip(result, bb) with (const local_max_size = max_size) {
+            var bot_bits = rx;
+            const modded_shift = if binop_dtype_b == int then bi%max_bits else bi%max_bits:uint;
+            rx <<= modded_shift;
+            const shift_amt = if binop_dtype_b == int then max_bits - modded_shift else max_bits:uint - modded_shift;
+            bot_bits >>= shift_amt;
+            rx += bot_bits;
+            rx &= local_max_size;
+          }
+        }
+        when '>>>' {
+          if !has_max_bits then return MsgTuple.error("bitwise rotation on bigint arrays requires a max_bits value");
+          if binop_dtype_a == bigint then return MsgTuple.error("right-shift of a bigint array by a non-bigint array is not supported");
+          forall (rx, bi) in zip(result, bb) with (const local_max_size = max_size) {
+            var top_bits = rx;
+            const modded_shift = if binop_dtype_b == int then bi%max_bits else bi%max_bits:uint;
+            rx >>= modded_shift;
+            const shift_amt = if binop_dtype_b == int then max_bits - modded_shift else max_bits:uint - modded_shift;
+            top_bits <<= shift_amt;
+            rx += top_bits;
+            rx &= local_max_size;
+          }
+        }
+        otherwise return MsgTuple.error("unknown bitwise binary operation: " + op);
+      }
+
+      return st.insert(new shared SymEntry(result, max_bits));
+    }
+
+    // special error message for bitwise ops with real-valued arrays
+    proc bitwiseOpSV(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+      type binop_dtype_a,
+      type binop_dtype_b,
+      param array_nd: int
+    ): MsgTuple throws
+      where isRealType(binop_dtype_a) || isRealType(binop_dtype_b)
+        do return MsgTuple.error("bitwise operations with real-valued arrays are not supported");
+
+    /*
+      Supports real division between a scalar and an array
+    */
+    @arkouda.instantiateAndRegister
+    proc divOpSV(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+      type binop_dtype_a,
+      type binop_dtype_b,
+      param array_nd: int
+    ): MsgTuple throws {
+      const val = msgArgs['value'].toScalar(binop_dtype_a),
+            b = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd);
+
+      const result = val:real / b.a:real;
+
+      return st.insert(new shared SymEntry(result));
+    }
+
+    // special handling for bigint-bigint division
+    proc divOpSV(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+      type binop_dtype_a,
+      type binop_dtype_b,
+      param array_nd: int
+    ): MsgTuple throws
+      where binop_dtype_a == bigint && binop_dtype_b == bigint
+    {
+      const val = msgArgs['value'].toScalar(binop_dtype_a),
+            b = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd),
+            (has_max_bits, max_size, max_bits) = getMaxBits(b);
+
+      var result = makeDistArray((...b.tupShape), bigint);
+      result = val:bigint;
+      ref bb = b.a;
+
+      forall (rx, bi) in zip(result, bb) with (const local_max_size = max_size) {
+        rx /= bi;
+        if has_max_bits then rx &= local_max_size;
+      }
+
+      return st.insert(new shared SymEntry(result, max_bits));
+    }
+
+    // @arkouda.instantiateAndRegister
+    // proc opeqVV(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab
+    //   type binop_dtype_a,
+    //   type binop_dtype_b,
+    //   param array_nd: int
+    // ): MsgTuple throws
+    //   // result of operation must be the same type as the left operand
+    //   where binop_dtype_a == promotedType(binop_dtype_a, binop_dtype_b) &&
+    //         binop_dtype_a != bigint && binop_dtype_b != bigint
+    // {
+
+    // }
+
+    // // special handling for bigint ops
+    // proc opeqVV(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab
+    //   type binop_dtype_a,
+    //   type binop_dtype_b,
+    //   param array_nd: int
+    // ): MsgTuple throws
+    //   where binop_dtype_a == bigint || binop_dtype_b == bigint
+    // {
+
+    // }
+
+    // // error message when result cannot be stored in 'binop_dtype_a'
+    // proc opeqVV(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab
+    //   type binop_dtype_a,
+    //   type binop_dtype_b,
+    //   param array_nd: int
+    // ): MsgTuple throws
+    //   where binop_dtype_a != promotedType(binop_dtype_a, binop_dtype_b) &&
+    //         binop_dtype_a != bigint && binop_dtype_b != bigint
+    // {
+    //   const op = msgArgs['op'].toScalar(string);
+    //   return MsgTuple.error(notImplementedError(
+    //     cmd,
+    //     whichDtype(binop_dtype_a),
+    //     op,
+    //     whichDtype(right.dtype)
+    //   ));
+    // }
 
     /*
       Parse and respond to opeqvv message.
