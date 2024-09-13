@@ -98,7 +98,7 @@ int64_t readColumnIrregularBitWidth(void* chpl_arr, int64_t startIdx, std::share
   return i;
 }
 
-int cpp_readStrColumnByName(const char* filename, void* chpl_arr, const char* colname, int64_t batchSize, char** errMsg) {
+int cpp_readStrColumnByName(const char* filename, void* chpl_arr, const char* colname, int64_t numElems, int64_t batchSize, char** errMsg) {
   try {
     int64_t ty = cpp_getType(filename, colname, errMsg);
   
@@ -131,23 +131,37 @@ int cpp_readStrColumnByName(const char* filename, void* chpl_arr, const char* co
       column_reader = row_group_reader->Column(idx);
 
       if(ty == ARROWSTRING) {
-        int16_t definition_level; // nullable type and only reading single records in batch
         auto chpl_ptr = (unsigned char*)chpl_arr;
         parquet::ByteArrayReader* reader =
           static_cast<parquet::ByteArrayReader*>(column_reader.get());
 
-        while (reader->HasNext()) {
-          parquet::ByteArray value;
-          (void)reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
-          // if values_read is 0, that means that it was a null value
-          if(values_read > 0) {
-            for(int j = 0; j < value.len; j++) {
-              chpl_ptr[i] = value.ptr[j];
+        int totalProcessed = 0;
+        std::vector<parquet::ByteArray> values(batchSize);
+        while (reader->HasNext() && totalProcessed < numElems) {
+          std::vector<int16_t> definition_levels(batchSize,-1);
+          if((numElems - totalProcessed) < batchSize) // adjust batchSize if needed
+            batchSize = numElems - totalProcessed;
+          
+          (void)reader->ReadBatch(batchSize, definition_levels.data(), nullptr, values.data(), &values_read);
+          totalProcessed += values_read;
+          int j = 0;
+          int numProcessed = 0;
+          while(j < batchSize) {
+            if(definition_levels[j] == 1) {
+              for(int k = 0; k < values[numProcessed].len; k++) {
+                chpl_ptr[i] = values[numProcessed].ptr[k];
+                i++;
+              }
+              i++; // skip one space so the strings are null terminated with a 0
+              numProcessed++;
+            } else if(definition_levels[j] == 0) {
               i++;
+            } else {
+              j = batchSize; // exit loop, not read
             }
+            j++;
           }
-          i++; // skip one space so the strings are null terminated with a 0
-        }        
+        }
       }
     }
     return 0;
@@ -440,19 +454,32 @@ int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname, v
           static_cast<parquet::ByteArrayReader*>(column_reader.get());
 
         int64_t numRead = 0;
-        while (ba_reader->HasNext() && numRead < numElems) {
-          parquet::ByteArray value;
-          (void)ba_reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
-          if(values_read > 0) {
-            offsets[i] = value.len + 1;
-            byteSize += value.len + 1;
-            numRead += values_read;
-          } else {
-            offsets[i] = 1;
-            byteSize+=1;
-            numRead+=1;
+        
+        int totalProcessed = 0;
+        std::vector<parquet::ByteArray> values(batchSize);
+        while (ba_reader->HasNext() && totalProcessed < numElems) {
+          if((numElems - totalProcessed) < batchSize) // adjust batchSize if needed
+            batchSize = numElems - totalProcessed;
+          std::vector<int16_t> definition_levels(batchSize,-1);
+          (void)ba_reader->ReadBatch(batchSize, definition_levels.data(), nullptr, values.data(), &values_read);
+          totalProcessed += values_read;
+          int j = 0;
+          int numProcessed = 0;
+          while(j < batchSize) {
+            if(definition_levels[j] == 1 || definition_levels[j] == 3) {
+              offsets[i] = values[numProcessed].len + 1;
+              byteSize += values[numProcessed].len + 1;
+              numProcessed++;
+              i++;
+            } else if(definition_levels[j] == 0) {
+              offsets[i] = 1;
+              byteSize+=1;
+              i++;
+            } else {
+              j = batchSize; // exit condition
+            }
+            j++;
           }
-          i++;
         }
       }
       return byteSize;
@@ -731,8 +758,8 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
 }
 
 extern "C" {
-  int c_readStrColumnByName(const char* filename, void* chpl_arr, const char* colname, int64_t batchSize, char** errMsg) {
-    return cpp_readStrColumnByName(filename, chpl_arr, colname, batchSize, errMsg);
+  int c_readStrColumnByName(const char* filename, void* chpl_arr, const char* colname, int64_t numElems, int64_t batchSize, char** errMsg) {
+    return cpp_readStrColumnByName(filename, chpl_arr, colname, numElems, batchSize, errMsg);
   }
   
   int c_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_chpl, const char* colname, int64_t numElems, int64_t startIdx, int64_t batchSize, int64_t byteLength, bool hasNonFloatNulls, char** errMsg) {
