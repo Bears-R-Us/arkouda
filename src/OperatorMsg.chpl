@@ -1394,7 +1394,7 @@ module OperatorMsg
       type binop_dtype_a, type binop_dtype_b, param array_nd: int
     ) throws {
       const a = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
-            val = msgArgs['b'].toScalar(binop_dtype_b),
+            val = msgArgs['value'].toScalar(binop_dtype_b),
             op = msgArgs['op'].toScalar(string);
 
       return (a, val, op);
@@ -1404,7 +1404,7 @@ module OperatorMsg
       msgArgs: borrowed MessageArgs, st: borrowed SymTab,
       type binop_dtype_a, type binop_dtype_b, param array_nd: int
     ) throws {
-      const val = msgArgs['a'].toScalar(binop_dtype_a),
+      const val = msgArgs['value'].toScalar(binop_dtype_a),
             b = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd),
             op = msgArgs['op'].toScalar(string);
 
