@@ -2,25 +2,18 @@
 module OperatorMsg
 {
     use ServerConfig;
-
     use Math;
     use BitOps;
     use Reflection;
     use ServerErrors;
     use BigInteger;
-
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
     use Reflection;
     use Logging;
     use Message;
-
     use Time;
-
-    private config const logLevel = ServerConfig.logLevel;
-    private config const logChannel = ServerConfig.logChannel;
-    const omLogger = new Logger(logLevel, logChannel);
 
     /*
       Supports the following binary operations between two arrays:
@@ -35,9 +28,7 @@ module OperatorMsg
       where (binop_dtype_a != bool || binop_dtype_b != bool) &&
             binop_dtype_a != bigint && binop_dtype_b != bigint
     {
-      const a = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
-            b = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd),
-            op = msgArgs['op'].toScalar(string);
+      const (a, b, op) = arrayArgsVV(msgArgs, st, binop_dtype_a, binop_dtype_b, array_nd);
 
       if a.tupShape != b.tupShape then
         return MsgTuple.error("array shapes must match for element-wise binary operations");
@@ -91,27 +82,24 @@ module OperatorMsg
     ): MsgTuple throws
       where binop_dtype_a == bool && binop_dtype_b == bool
     {
-      const a = st[msgArgs['a']]: borrowed SymEntry(bool, array_nd),
-            b = st[msgArgs['b']]: borrowed SymEntry(bool, array_nd),
-            op = msgArgs['op'].toScalar(string);
-
-      if a.tupShape != b.tupShape then
-        return MsgTuple.error("array shapes must match for element-wise binary operations");
-
-      var result = makeDistArray((...a.tupShape), bool);
+      const (a, b, op) = arrayArgsVV(msgArgs, st, binop_dtype_a, binop_dtype_b, array_nd);
 
       // TODO: implement %, **, and // following NumPy's behavior
       select op {
-        when '+' do result = a.a | b.a;
+        when '+' do {
+          const result = a.a | b.a;
+          return st.insert(new shared SymEntry(result));
+        }
         when '-' do return MsgTuple.error("cannot subtract boolean arrays");
-        when '*' do result = a.a & b.a;
+        when '*' {
+          const result = a.a & b.a;
+          return st.insert(new shared SymEntry(result));
+        }
         when '%' do return MsgTuple.error("modulo between two boolean arrays is not supported"); // '
         when '**' do return MsgTuple.error("exponentiation between two boolean arrays is not supported");
         when '//' do return MsgTuple.error("floor-division between two boolean arrays is not supported");
         otherwise return MsgTuple.error("unknown arithmetic binary operation: " + op);
       }
-
-      return st.insert(new shared SymEntry(result));
     }
 
     // special handling for bigint arithmetic
@@ -120,16 +108,11 @@ module OperatorMsg
       type binop_dtype_b,
       param array_nd: int
     ): MsgTuple throws
-      where (binop_dtype_a == bigint && !isRealType(binop_dtype_b)) ||
-            (binop_dtype_b == bigint && !isRealType(binop_dtype_a))
+      where (binop_dtype_a == bigint || binop_dtype_b == bigint) &&
+            !isRealType(binop_dtype_a) && !isRealType(binop_dtype_b)
     {
-      const a = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
-            b = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd),
-            op = msgArgs['op'].toScalar(string),
+      const (a, b, op) = arrayArgsVV(msgArgs, st, binop_dtype_a, binop_dtype_b, array_nd),
             (has_max_bits, max_size, max_bits) = getMaxBits(a, b);
-
-      if a.tupShape != b.tupShape then
-        return MsgTuple.error("array shapes must match for element-wise binary operations");
 
       param bigintBoolOp = binop_dtype_a == bigint && binop_dtype_b == bool ||
                            binop_dtype_b == bigint && binop_dtype_a == bool;
@@ -212,13 +195,7 @@ module OperatorMsg
       where !(binop_dtype_a == bigint && isRealType(binop_dtype_b)) &&
             !(binop_dtype_b == bigint && isRealType(binop_dtype_a))
     {
-      const a = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
-            b = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd),
-            op = msgArgs['op'].toScalar(string);
-
-      if a.tupShape != b.tupShape then
-        return MsgTuple.error("array shapes must match for element-wise binary operations");
-
+      const (a, b, op) = arrayArgsVV(msgArgs, st, binop_dtype_a, binop_dtype_b, array_nd);
       var result = makeDistArray((...a.tupShape), bool);
 
       if (binop_dtype_a == real && binop_dtype_b == bool) ||
@@ -256,7 +233,8 @@ module OperatorMsg
       where (binop_dtype_a == bigint && isRealType(binop_dtype_b)) ||
             (binop_dtype_b == bigint && isRealType(binop_dtype_a))
     {
-      return MsgTuple.error("comparison operations between real and bigint arrays are not supported");
+      // return MsgTuple.error("comparison operations between real and bigint arrays are not supported");
+      halt("nope");
     }
 
     /*
@@ -273,12 +251,7 @@ module OperatorMsg
             !isRealType(binop_dtype_a) && !isRealType(binop_dtype_b) &&
             !(binop_dtype_a == bool && binop_dtype_b == bool)
     {
-      const a = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
-            b = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd),
-            op = msgArgs['op'].toScalar(string);
-
-      if a.tupShape != b.tupShape then
-        return MsgTuple.error("array shapes must match for element-wise binary operations");
+      const (a, b, op) = arrayArgsVV(msgArgs, st, binop_dtype_a, binop_dtype_b, array_nd);
 
       type resultType = if (isIntType(binop_dtype_a) && isUintType(binop_dtype_b)) ||
                            (isUintType(binop_dtype_a) && isIntType(binop_dtype_b))
@@ -324,9 +297,7 @@ module OperatorMsg
     ): MsgTuple throws
       where binop_dtype_a == bool && binop_dtype_b == bool
     {
-      const a = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
-            b = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd),
-            op = msgArgs['op'].toScalar(string);
+      const (a, b, op) = arrayArgsVV(msgArgs, st, binop_dtype_a, binop_dtype_b, array_nd);
 
       if op == '<<' || op == '>>' {
         var result = makeDistArray((...a.tupShape), int);
@@ -367,9 +338,7 @@ module OperatorMsg
       where (binop_dtype_a == bigint || binop_dtype_b == bigint) &&
             !isRealType(binop_dtype_a) && !isRealType(binop_dtype_b)
     {
-      const a = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
-            b = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd),
-            op = msgArgs['op'].toScalar(string),
+      const (a, b, op) = arrayArgsVV(msgArgs, st, binop_dtype_a, binop_dtype_b, array_nd),
             (has_max_bits, max_size, max_bits) = getMaxBits(a, b);
 
       if a.tupShape != b.tupShape then
@@ -491,8 +460,7 @@ module OperatorMsg
       type binop_dtype_b,
       param array_nd: int
     ): MsgTuple throws {
-      const a = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
-            b = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd);
+      const (a, b, _) = arrayArgsVV(msgArgs, st, binop_dtype_a, binop_dtype_b, array_nd);;
 
       if a.tupShape != b.tupShape then
         return MsgTuple.error("array shapes must match for element-wise binary operations");
@@ -510,8 +478,7 @@ module OperatorMsg
     ): MsgTuple throws
       where binop_dtype_a == bigint && binop_dtype_b == bigint
     {
-      const a = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
-            b = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd),
+      const (a, b, _) = arrayArgsVV(msgArgs, st, binop_dtype_a, binop_dtype_b, array_nd),
             (has_max_bits, max_size, max_bits) = getMaxBits(a, b);
 
       if a.tupShape != b.tupShape then
@@ -541,9 +508,10 @@ module OperatorMsg
       where (binop_dtype_a != bool || binop_dtype_b != bool) &&
             binop_dtype_a != bigint && binop_dtype_b != bigint
     {
-      const a = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
-            val = msgArgs['value'].toScalar(binop_dtype_b),
-            op = msgArgs['op'].toScalar(string);
+      const (a, val, op) = arrayArgsVS(msgArgs, st, binop_dtype_a, binop_dtype_b, array_nd);
+
+      param isRealBoolOp = (binop_dtype_a == bool && isRealType(binop_dtype_b)) ||
+                           (binop_dtype_b == bool && isRealType(binop_dtype_a));
 
       type resultType = promotedType(binop_dtype_a, binop_dtype_b);
       var result = makeDistArray((...a.tupShape), resultType);
@@ -553,18 +521,21 @@ module OperatorMsg
         when '-' do result = a.a:resultType - val:resultType;
         when '*' do result = a.a:resultType * val:resultType;
         when '%' { // '
+          if isRealBoolOp then return MsgTuple.error("'%' not supported between real and bool arrays");
           ref aa = a.a;
           if isRealType(resultType)
             then [(ai,ri) in zip(aa,result)] ri = modHelper(ai:resultType, val:resultType);
             else [(ai,ri) in zip(aa,result)] ri = if val != 0:binop_dtype_b then ai:resultType % val:resultType else 0:resultType;
         }
         when '**' {
+          if isRealBoolOp then return MsgTuple.error("'**' not supported between real and bool arrays");
           if isIntegralType(binop_dtype_a) && (|| reduce (a.a < 0)) {
             return MsgTuple.error("Attempt to exponentiate integer base to negative exponent");
           }
           result = a.a:resultType ** val:resultType;
         }
         when '//' {
+          if isRealBoolOp then return MsgTuple.error("'//' not supported between real and bool arrays");
           ref aa = a.a;
           if isRealType(resultType)
             then [(ai,ri) in zip(aa,result)] ri = floorDivisionHelper(ai:resultType, val:resultType);
@@ -584,24 +555,24 @@ module OperatorMsg
     ): MsgTuple throws
       where binop_dtype_a == bool && binop_dtype_b == bool
     {
-      const a = st[msgArgs['a']]: borrowed SymEntry(bool, array_nd),
-            val = msgArgs['value'].toScalar(binop_dtype_b),
-            op = msgArgs['op'].toScalar(string);
-
-      var result = makeDistArray((...a.tupShape), bool);
+      const (a, val, op) = arrayArgsVS(msgArgs, st, binop_dtype_a, binop_dtype_b, array_nd);
 
       // TODO: implement %, **, and // following NumPy's behavior
       select op {
-        when '+' do result = a.a | val;
+        when '+' {
+          const result = a.a | val;
+          return st.insert(new shared SymEntry(result));
+        }
         when '-' do return MsgTuple.error("cannot subtract boolean from boolean array");
-        when '*' do result = a.a & val;
+        when '*' {
+          const result = a.a & val;
+          return st.insert(new shared SymEntry(result));
+        }
         when '%' do return MsgTuple.error("modulo of boolean array by a boolean is not supported"); // '
         when '**' do return MsgTuple.error("exponentiation of a boolean array by a boolean is not supported");
         when '//' do return MsgTuple.error("floor-division of a boolean array by a boolean is not supported");
         otherwise return MsgTuple.error("unknown arithmetic binary operation: " + op);
       }
-
-      return st.insert(new shared SymEntry(result));
     }
 
     // special handling for bigint arithmetic
@@ -613,9 +584,7 @@ module OperatorMsg
       where (binop_dtype_a == bigint && !isRealType(binop_dtype_b)) ||
             (binop_dtype_b == bigint && !isRealType(binop_dtype_a))
     {
-      const a = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
-            val = msgArgs['value'].toScalar(binop_dtype_b),
-            op = msgArgs['op'].toScalar(string),
+      const (a, val, op) = arrayArgsVS(msgArgs, st, binop_dtype_a, binop_dtype_b, array_nd),
             (has_max_bits, max_size, max_bits) = getMaxBits(a);
 
       param bigintBoolOp = binop_dtype_a == bigint && binop_dtype_b == bool ||
@@ -678,9 +647,7 @@ module OperatorMsg
     ): MsgTuple throws
       where (binop_dtype_a == bigint && isRealType(binop_dtype_b)) ||
             (binop_dtype_b == bigint && isRealType(binop_dtype_a))
-    {
-      return MsgTuple.error("binary arithmetic operations between real and bigint arrays/values are not supported");
-    }
+        do return MsgTuple.error("binary arithmetic operations between real and bigint arrays/values are not supported");
 
     /*
       Supports the following binary operations between an array and scalar:
@@ -695,9 +662,7 @@ module OperatorMsg
       where !(binop_dtype_a == bigint && isRealType(binop_dtype_b)) &&
             !(binop_dtype_b == bigint && isRealType(binop_dtype_a))
     {
-      const a = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
-            val = msgArgs['value'].toScalar(binop_dtype_b),
-            op = msgArgs['op'].toScalar(string);
+      const (a, val, op) = arrayArgsVS(msgArgs, st, binop_dtype_a, binop_dtype_b, array_nd);
 
       var result = makeDistArray((...a.tupShape), bool);
 
@@ -735,9 +700,7 @@ module OperatorMsg
     ): MsgTuple throws
       where (binop_dtype_a == bigint && isRealType(binop_dtype_b)) ||
             (binop_dtype_b == bigint && isRealType(binop_dtype_a))
-    {
-      return MsgTuple.error("comparison operations between real and bigint arrays/values are not supported");
-    }
+        do return MsgTuple.error("comparison operations between real and bigint arrays/values are not supported");
 
     /*
       Supports the following binary operations between an array and scalar
@@ -753,9 +716,7 @@ module OperatorMsg
             !isRealType(binop_dtype_a) && !isRealType(binop_dtype_b) &&
             !(binop_dtype_a == bool && binop_dtype_b == bool)
     {
-      const a = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
-            val = msgArgs['value'].toScalar(binop_dtype_b),
-            op = msgArgs['op'].toScalar(string);
+      const (a, val, op) = arrayArgsVS(msgArgs, st, binop_dtype_a, binop_dtype_b, array_nd);
 
       type resultType = if (isIntType(binop_dtype_a) && isUintType(binop_dtype_b)) ||
                            (isUintType(binop_dtype_a) && isIntType(binop_dtype_b))
@@ -799,9 +760,7 @@ module OperatorMsg
     ): MsgTuple throws
       where binop_dtype_a == bool && binop_dtype_b == bool
     {
-      const a = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
-            val = msgArgs['value'].toScalar(binop_dtype_b),
-            op = msgArgs['op'].toScalar(string);
+      const (a, val, op) = arrayArgsVS(msgArgs, st, binop_dtype_a, binop_dtype_b, array_nd);
 
       if op == '<<' || op == '>>' {
         var result = makeDistArray((...a.tupShape), int);
@@ -840,9 +799,7 @@ module OperatorMsg
       where (binop_dtype_a == bigint || binop_dtype_b == bigint) &&
             !isRealType(binop_dtype_a) && !isRealType(binop_dtype_b)
     {
-      const a = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
-            val = msgArgs['value'].toScalar(binop_dtype_b),
-            op = msgArgs['op'].toScalar(string),
+      const (a, val, op) = arrayArgsVS(msgArgs, st, binop_dtype_a, binop_dtype_b, array_nd),
             (has_max_bits, max_size, max_bits) = getMaxBits(a);
 
       // 'a' must be a bigint, and 'b' must not be real for the operations below
@@ -952,10 +909,8 @@ module OperatorMsg
       type binop_dtype_b,
       param array_nd: int
     ): MsgTuple throws {
-      const a = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
-            val = msgArgs['value'].toScalar(binop_dtype_b);
-
-      const result = a.a:real / val:real;
+      const (a, val, _) = arrayArgsVS(msgArgs, st, binop_dtype_a, binop_dtype_b, array_nd),
+            result = a.a:real / val:real;
 
       return st.insert(new shared SymEntry(result));
     }
@@ -968,14 +923,13 @@ module OperatorMsg
     ): MsgTuple throws
       where binop_dtype_a == bigint && binop_dtype_b == bigint
     {
-      const a = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
-            val = msgArgs['value'].toScalar(bigint),
+      const (a, val, op) = arrayArgsVS(msgArgs, st, binop_dtype_a, binop_dtype_b, array_nd),
             (has_max_bits, max_size, max_bits) = getMaxBits(a);
 
       var result = a.a;
       forall rx in result with (const local_val = val, const local_max_size = max_size) {
         rx /= local_val;
-      if has_max_bits then rx &= local_max_size;
+        if has_max_bits then rx &= local_max_size;
       }
 
       return st.insert(new shared SymEntry(result, max_bits));
@@ -994,9 +948,7 @@ module OperatorMsg
       where (binop_dtype_a != bool || binop_dtype_b != bool) &&
             binop_dtype_a != bigint && binop_dtype_b != bigint
     {
-      const val = msgArgs['value'].toScalar(binop_dtype_a),
-            b = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd),
-            op = msgArgs['op'].toScalar(string);
+      const (val, b, op) = arrayArgsSV(msgArgs, st, binop_dtype_a, binop_dtype_b, array_nd);
 
       type resultType = promotedType(binop_dtype_a, binop_dtype_b);
       var result = makeDistArray((...b.tupShape), resultType);
@@ -1037,10 +989,7 @@ module OperatorMsg
     ): MsgTuple throws
       where binop_dtype_a == bool && binop_dtype_b == bool
     {
-      const val = msgArgs['value'].toScalar(binop_dtype_a),
-            b = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd),
-            op = msgArgs['op'].toScalar(string);
-
+      const (val, b, op) = arrayArgsSV(msgArgs, st, binop_dtype_a, binop_dtype_b, array_nd);
       var result = makeDistArray((...b.tupShape), bool);
 
       // TODO: implement %, **, and // following NumPy's behavior
@@ -1066,14 +1015,11 @@ module OperatorMsg
       where (binop_dtype_a == bigint && !isRealType(binop_dtype_b)) ||
             (binop_dtype_b == bigint && !isRealType(binop_dtype_a))
     {
-      const val = msgArgs['value'].toScalar(binop_dtype_a),
-            b = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd),
-            op = msgArgs['op'].toScalar(string),
+      const (val, b, op) = arrayArgsSV(msgArgs, st, binop_dtype_a, binop_dtype_b, array_nd),
             (has_max_bits, max_size, max_bits) = getMaxBits(b);
 
       var result = makeDistArray((...b.tupShape), bigint);
       result = val:bigint;
-
       ref bb = b.a;
 
       select op {
@@ -1135,9 +1081,7 @@ module OperatorMsg
     ): MsgTuple throws
       where (binop_dtype_a == bigint && isRealType(binop_dtype_b)) ||
             (binop_dtype_b == bigint && isRealType(binop_dtype_a))
-    {
-      return MsgTuple.error("binary arithmetic operations between real and bigint arrays/values are not supported");
-    }
+        do return MsgTuple.error("binary arithmetic operations between real and bigint arrays/values are not supported");
 
     /*
       Supports the following binary operations between an array and scalar:
@@ -1152,10 +1096,7 @@ module OperatorMsg
       where !(binop_dtype_a == bigint && isRealType(binop_dtype_b)) &&
             !(binop_dtype_b == bigint && isRealType(binop_dtype_a))
     {
-      const val = msgArgs['value'].toScalar(binop_dtype_a),
-            b = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd),
-            op = msgArgs['op'].toScalar(string);
-
+      const (val, b, op) = arrayArgsSV(msgArgs, st, binop_dtype_a, binop_dtype_b, array_nd);
       var result = makeDistArray((...b.tupShape), bool);
 
       if (binop_dtype_a == real && binop_dtype_b == bool) ||
@@ -1192,9 +1133,7 @@ module OperatorMsg
     ): MsgTuple throws
       where (binop_dtype_a == bigint && isRealType(binop_dtype_b)) ||
             (binop_dtype_b == bigint && isRealType(binop_dtype_a))
-    {
-      return MsgTuple.error("comparison operations between real and bigint arrays/values are not supported");
-    }
+      do return MsgTuple.error("comparison operations between real and bigint arrays/values are not supported");
 
     /*
       Supports the following binary operations between an array and scalar
@@ -1210,9 +1149,7 @@ module OperatorMsg
             !isRealType(binop_dtype_a) && !isRealType(binop_dtype_b) &&
             !(binop_dtype_a == bool && binop_dtype_b == bool)
     {
-      const val = msgArgs['value'].toScalar(binop_dtype_a),
-            b = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd),
-            op = msgArgs['op'].toScalar(string);
+      const (val, b, op) = arrayArgsSV(msgArgs, st, binop_dtype_a, binop_dtype_b, array_nd);
 
       type resultType = if (isIntType(binop_dtype_a) && isUintType(binop_dtype_b)) ||
                            (isUintType(binop_dtype_a) && isIntType(binop_dtype_b))
@@ -1256,9 +1193,7 @@ module OperatorMsg
     ): MsgTuple throws
       where binop_dtype_a == bool && binop_dtype_b == bool
     {
-      const val = msgArgs['value'].toScalar(binop_dtype_a),
-            b = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd),
-            op = msgArgs['op'].toScalar(string);
+      const (val, b, op) = arrayArgsSV(msgArgs, st, binop_dtype_a, binop_dtype_b, array_nd);
 
       if op == '<<' || op == '>>' {
         var result = makeDistArray((...b.tupShape), int);
@@ -1297,9 +1232,7 @@ module OperatorMsg
       where (binop_dtype_a == bigint || binop_dtype_b == bigint) &&
             !isRealType(binop_dtype_a) && !isRealType(binop_dtype_b)
     {
-      const val = msgArgs['value'].toScalar(binop_dtype_a),
-            b = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd),
-            op = msgArgs['op'].toScalar(string),
+      const (val, b, op) = arrayArgsSV(msgArgs, st, binop_dtype_a, binop_dtype_b, array_nd),
             (has_max_bits, max_size, max_bits) = getMaxBits(b);
 
       // 'a' must be a bigint, and 'b' must not be real for the operations below
@@ -1412,10 +1345,8 @@ module OperatorMsg
       type binop_dtype_b,
       param array_nd: int
     ): MsgTuple throws {
-      const val = msgArgs['value'].toScalar(binop_dtype_a),
-            b = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd);
-
-      const result = val:real / b.a:real;
+      const (val, b, _) = arrayArgsSV(msgArgs, st, binop_dtype_a, binop_dtype_b, array_nd),
+            result = val:real / b.a:real;
 
       return st.insert(new shared SymEntry(result));
     }
@@ -1428,8 +1359,7 @@ module OperatorMsg
     ): MsgTuple throws
       where binop_dtype_a == bigint && binop_dtype_b == bigint
     {
-      const val = msgArgs['value'].toScalar(binop_dtype_a),
-            b = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd),
+      const (val, b, _) = arrayArgsSV(msgArgs, st, binop_dtype_a, binop_dtype_b, array_nd),
             (has_max_bits, max_size, max_bits) = getMaxBits(b);
 
       var result = makeDistArray((...b.tupShape), bigint);
@@ -1442,6 +1372,43 @@ module OperatorMsg
       }
 
       return st.insert(new shared SymEntry(result, max_bits));
+    }
+
+    // helpers for parsing array arguments in above binary operations
+    proc arrayArgsVV(
+      msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+      type binop_dtype_a, type binop_dtype_b, param array_nd: int
+    ) throws {
+      const a = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
+            b = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd),
+            op = msgArgs['op'].toScalar(string);
+
+      if a.tupShape != b.tupShape then
+        throw new Error("array shapes must match for element-wise binary operations");
+
+      return (a, b, op);
+    }
+
+    proc arrayArgsVS(
+      msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+      type binop_dtype_a, type binop_dtype_b, param array_nd: int
+    ) throws {
+      const a = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
+            val = msgArgs['b'].toScalar(binop_dtype_b),
+            op = msgArgs['op'].toScalar(string);
+
+      return (a, val, op);
+    }
+
+    proc arrayArgsSV(
+      msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+      type binop_dtype_a, type binop_dtype_b, param array_nd: int
+    ) throws {
+      const val = msgArgs['a'].toScalar(binop_dtype_a),
+            b = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd),
+            op = msgArgs['op'].toScalar(string);
+
+      return (val, b, op);
     }
 
     @arkouda.instantiateAndRegister
