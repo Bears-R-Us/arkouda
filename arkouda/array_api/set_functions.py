@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from .array_object import Array
-
 from typing import NamedTuple, cast
 
 from arkouda.client import generic_msg
-from arkouda.pdarrayclass import create_pdarray
+from arkouda.pdarrayclass import create_pdarray, create_pdarrays
+
+from .array_object import Array
 
 
 class UniqueAllResult(NamedTuple):
@@ -33,21 +33,21 @@ def unique_all(x: Array, /) -> UniqueAllResult:
     - the inverse indices that reconstruct `x` from the unique values
     - the counts of each unique value
     """
-    resp = cast(
-        str,
-        generic_msg(
-            cmd=f"uniqueAll{x.ndim}D",
-            args={"name": x._array},
-        ),
+    arrays = create_pdarrays(
+        cast(
+            str,
+            generic_msg(
+                cmd=f"uniqueAll<{x.dtype},{x.ndim}>",
+                args={"name": x._array},
+            ),
+        )
     )
 
-    arrays = [Array._new(create_pdarray(r)) for r in resp.split("+")]
-
     return UniqueAllResult(
-        values=arrays[0],
-        indices=arrays[1],
-        inverse_indices=arrays[2],
-        counts=arrays[3],
+        values=Array._new(arrays[0]),
+        indices=Array._new(arrays[1]),
+        inverse_indices=Array._new(arrays[2]),
+        counts=Array._new(arrays[3]),
     )
 
 
@@ -57,19 +57,19 @@ def unique_counts(x: Array, /) -> UniqueCountsResult:
     - the unique values in `x`
     - the counts of each unique value
     """
-    resp = cast(
-        str,
-        generic_msg(
-            cmd=f"uniqueCounts{x.ndim}D",
-            args={"name": x._array},
-        ),
+    arrays = create_pdarrays(
+        cast(
+            str,
+            generic_msg(
+                cmd=f"uniqueCounts<{x.dtype},{x.ndim}>",
+                args={"name": x._array},
+            ),
+        )
     )
 
-    arrays = [Array._new(create_pdarray(r)) for r in resp.split("+")]
-
     return UniqueCountsResult(
-        values=arrays[0],
-        counts=arrays[1],
+        values=Array._new(arrays[0]),
+        counts=Array._new(arrays[1]),
     )
 
 
@@ -79,19 +79,19 @@ def unique_inverse(x: Array, /) -> UniqueInverseResult:
     - the unique values in `x`
     - the inverse indices that reconstruct `x` from the unique values
     """
-    resp = cast(
-        str,
-        generic_msg(
-            cmd=f"uniqueInverse{x.ndim}D",
-            args={"name": x._array},
-        ),
+    arrays = create_pdarrays(
+        cast(
+            str,
+            generic_msg(
+                cmd=f"uniqueInverse<{x.dtype},{x.ndim}>",
+                args={"name": x._array},
+            ),
+        )
     )
 
-    arrays = [Array._new(create_pdarray(r)) for r in resp.split("+")]
-
     return UniqueInverseResult(
-        values=arrays[0],
-        inverse_indices=arrays[1],
+        values=Array._new(arrays[0]),
+        inverse_indices=Array._new(arrays[1]),
     )
 
 
@@ -104,7 +104,7 @@ def unique_values(x: Array, /) -> Array:
             cast(
                 str,
                 generic_msg(
-                    cmd=f"uniqueValues{x.ndim}D",
+                    cmd=f"uniqueValues<{x.dtype},{x.ndim}>",
                     args={"name": x._array},
                 ),
             )
