@@ -540,8 +540,8 @@ class pdarray:
         if dt not in DTypes:
             raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")
         repMsg = generic_msg(
-            cmd=f"binopvs{self.ndim}D",
-            args={"op": op, "a": self, "dtype": dt, "value": other},
+            cmd=f"binopvsMsg<{self.dtype},{dt},{self.ndim}>",
+            args={"op": op, "a": self, "value": other},
         )
         return create_pdarray(repMsg)
 
