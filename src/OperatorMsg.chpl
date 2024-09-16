@@ -194,7 +194,9 @@ module OperatorMsg
             return doBinOpvv(l, r, int, op, pn, st);
           }
         }
-        else if binop_dtype_a == bigint || binop_dtype_b == bigint {
+        else if (binop_dtype_a == bigint || binop_dtype_b == bigint) &&
+                !isRealType(binop_dtype_a) && !isRealType(binop_dtype_b)
+        {
           if boolOps.contains(op) {
             // call bigint specific func which returns distr bool array
             return st.insert(new shared SymEntry(doBigIntBinOpvvBoolReturn(l, r, op)));
@@ -379,7 +381,9 @@ module OperatorMsg
             return doBinOpvs(l, val, int, op, pn, st);
           }
         }
-        else if binop_dtype_a == bigint || binop_dtype_b == bigint {
+        else if (binop_dtype_a == bigint || binop_dtype_b == bigint) &&
+                !isRealType(binop_dtype_a) && !isRealType(binop_dtype_b)
+        {
           if boolOps.contains(op) {
             // call bigint specific func which returns distr bool array
             return st.insert(new shared SymEntry(doBigIntBinOpvsBoolReturn(l, val, op)));
