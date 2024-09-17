@@ -28,6 +28,16 @@ param regConfig = """
         "bool",
         "bigint"
       ]
+    },
+    "scalar": {
+      "dtype": [
+        "int",
+        "uint",
+        "uint(8)",
+        "real",
+        "bool",
+        "bigint"
+      ]
     }
   }
 }
@@ -2270,6 +2280,104 @@ registerFunction('nonzero<bool,1>', ark_nonzero_bool_1, 'ReductionMsg', 325);
 proc ark_nonzero_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
   return ReductionMsg.nonzero(cmd, msgArgs, st, array_dtype=bigint, array_nd=1);
 registerFunction('nonzero<bigint,1>', ark_nonzero_bigint_1, 'ReductionMsg', 325);
+
+import SetMsg;
+
+proc ark_uniqueValues_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return SetMsg.uniqueValues(cmd, msgArgs, st, array_dtype=int, array_nd=1);
+registerFunction('uniqueValues<int64,1>', ark_uniqueValues_int_1, 'SetMsg', 17);
+
+proc ark_uniqueValues_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return SetMsg.uniqueValues(cmd, msgArgs, st, array_dtype=uint, array_nd=1);
+registerFunction('uniqueValues<uint64,1>', ark_uniqueValues_uint_1, 'SetMsg', 17);
+
+proc ark_uniqueValues_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return SetMsg.uniqueValues(cmd, msgArgs, st, array_dtype=uint(8), array_nd=1);
+registerFunction('uniqueValues<uint8,1>', ark_uniqueValues_uint8_1, 'SetMsg', 17);
+
+proc ark_uniqueValues_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return SetMsg.uniqueValues(cmd, msgArgs, st, array_dtype=real, array_nd=1);
+registerFunction('uniqueValues<float64,1>', ark_uniqueValues_real_1, 'SetMsg', 17);
+
+proc ark_uniqueValues_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return SetMsg.uniqueValues(cmd, msgArgs, st, array_dtype=bool, array_nd=1);
+registerFunction('uniqueValues<bool,1>', ark_uniqueValues_bool_1, 'SetMsg', 17);
+
+proc ark_uniqueValues_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return SetMsg.uniqueValues(cmd, msgArgs, st, array_dtype=bigint, array_nd=1);
+registerFunction('uniqueValues<bigint,1>', ark_uniqueValues_bigint_1, 'SetMsg', 17);
+
+proc ark_uniqueCounts_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return SetMsg.uniqueCounts(cmd, msgArgs, st, array_dtype=int, array_nd=1);
+registerFunction('uniqueCounts<int64,1>', ark_uniqueCounts_int_1, 'SetMsg', 37);
+
+proc ark_uniqueCounts_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return SetMsg.uniqueCounts(cmd, msgArgs, st, array_dtype=uint, array_nd=1);
+registerFunction('uniqueCounts<uint64,1>', ark_uniqueCounts_uint_1, 'SetMsg', 37);
+
+proc ark_uniqueCounts_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return SetMsg.uniqueCounts(cmd, msgArgs, st, array_dtype=uint(8), array_nd=1);
+registerFunction('uniqueCounts<uint8,1>', ark_uniqueCounts_uint8_1, 'SetMsg', 37);
+
+proc ark_uniqueCounts_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return SetMsg.uniqueCounts(cmd, msgArgs, st, array_dtype=real, array_nd=1);
+registerFunction('uniqueCounts<float64,1>', ark_uniqueCounts_real_1, 'SetMsg', 37);
+
+proc ark_uniqueCounts_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return SetMsg.uniqueCounts(cmd, msgArgs, st, array_dtype=bool, array_nd=1);
+registerFunction('uniqueCounts<bool,1>', ark_uniqueCounts_bool_1, 'SetMsg', 37);
+
+proc ark_uniqueCounts_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return SetMsg.uniqueCounts(cmd, msgArgs, st, array_dtype=bigint, array_nd=1);
+registerFunction('uniqueCounts<bigint,1>', ark_uniqueCounts_bigint_1, 'SetMsg', 37);
+
+proc ark_uniqueInverse_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return SetMsg.uniqueInverse(cmd, msgArgs, st, array_dtype=int, array_nd=1);
+registerFunction('uniqueInverse<int64,1>', ark_uniqueInverse_int_1, 'SetMsg', 58);
+
+proc ark_uniqueInverse_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return SetMsg.uniqueInverse(cmd, msgArgs, st, array_dtype=uint, array_nd=1);
+registerFunction('uniqueInverse<uint64,1>', ark_uniqueInverse_uint_1, 'SetMsg', 58);
+
+proc ark_uniqueInverse_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return SetMsg.uniqueInverse(cmd, msgArgs, st, array_dtype=uint(8), array_nd=1);
+registerFunction('uniqueInverse<uint8,1>', ark_uniqueInverse_uint8_1, 'SetMsg', 58);
+
+proc ark_uniqueInverse_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return SetMsg.uniqueInverse(cmd, msgArgs, st, array_dtype=real, array_nd=1);
+registerFunction('uniqueInverse<float64,1>', ark_uniqueInverse_real_1, 'SetMsg', 58);
+
+proc ark_uniqueInverse_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return SetMsg.uniqueInverse(cmd, msgArgs, st, array_dtype=bool, array_nd=1);
+registerFunction('uniqueInverse<bool,1>', ark_uniqueInverse_bool_1, 'SetMsg', 58);
+
+proc ark_uniqueInverse_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return SetMsg.uniqueInverse(cmd, msgArgs, st, array_dtype=bigint, array_nd=1);
+registerFunction('uniqueInverse<bigint,1>', ark_uniqueInverse_bigint_1, 'SetMsg', 58);
+
+proc ark_uniqueAll_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return SetMsg.uniqueAll(cmd, msgArgs, st, array_dtype=int, array_nd=1);
+registerFunction('uniqueAll<int64,1>', ark_uniqueAll_int_1, 'SetMsg', 78);
+
+proc ark_uniqueAll_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return SetMsg.uniqueAll(cmd, msgArgs, st, array_dtype=uint, array_nd=1);
+registerFunction('uniqueAll<uint64,1>', ark_uniqueAll_uint_1, 'SetMsg', 78);
+
+proc ark_uniqueAll_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return SetMsg.uniqueAll(cmd, msgArgs, st, array_dtype=uint(8), array_nd=1);
+registerFunction('uniqueAll<uint8,1>', ark_uniqueAll_uint8_1, 'SetMsg', 78);
+
+proc ark_uniqueAll_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return SetMsg.uniqueAll(cmd, msgArgs, st, array_dtype=real, array_nd=1);
+registerFunction('uniqueAll<float64,1>', ark_uniqueAll_real_1, 'SetMsg', 78);
+
+proc ark_uniqueAll_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return SetMsg.uniqueAll(cmd, msgArgs, st, array_dtype=bool, array_nd=1);
+registerFunction('uniqueAll<bool,1>', ark_uniqueAll_bool_1, 'SetMsg', 78);
+
+proc ark_uniqueAll_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return SetMsg.uniqueAll(cmd, msgArgs, st, array_dtype=bigint, array_nd=1);
+registerFunction('uniqueAll<bigint,1>', ark_uniqueAll_bigint_1, 'SetMsg', 78);
 
 import StatsMsg;
 

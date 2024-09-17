@@ -1,5 +1,3 @@
-import json
-
 import numpy as np
 import pytest
 
@@ -10,7 +8,16 @@ SEED = 314159
 s = SEED
 
 
-def randArr(shape):
+def ret_shapes():
+    shapes = [1000]
+    if pytest.max_rank > 1:
+        shapes.append((20, 50))
+    if pytest.max_rank > 2:
+        shapes.append((2, 10, 50))
+    return shapes
+
+
+def rand_arr(shape):
     global s
     s += 2
     return xp.asarray(ak.randint(0, 100, shape, dtype=ak.int64, seed=s))
@@ -18,11 +25,9 @@ def randArr(shape):
 
 class TestSetFunction:
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_set_functions(self):
-
-        for shape in [(1000), (20, 50), (2, 10, 50)]:
-            r = randArr(shape)
+        for shape in ret_shapes():
+            r = rand_arr(shape)
 
             ua = xp.unique_all(r)
             uc = xp.unique_counts(r)
