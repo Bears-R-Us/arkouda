@@ -992,6 +992,11 @@ module EfuncMsg
             }  // end of when where
 
             when "putmask" {                // putmask only requires original values and mask to be ofsame shape,
+                if nd != 1 {
+                    var errorMsg = "multi-dim putmask is not yet enabled";
+                    eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                    return new MsgTuple(errorMsg, MsgType.ERROR);
+                }
                 select (g2.dtype,g3.dtype) {    // and allows all of the data type combinations herein.
                     when (DType.Float64, DType.Float64) {
                         var e2 = toSymEntry(g2, real, nd);
