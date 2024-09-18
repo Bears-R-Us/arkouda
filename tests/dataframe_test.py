@@ -1,7 +1,5 @@
-import glob
 import itertools
 import os
-import tempfile
 
 import numpy as np
 import pandas as pd
@@ -652,16 +650,47 @@ class TestDataFrame:
         pd_result = getattr(pd_df.groupby(group_on), agg)()
         assert_frame_equal(ak_result.to_pandas(retain_index=True), pd_result)
 
+    @pytest.mark.parametrize("dropna", [True, False])
     @pytest.mark.parametrize("agg", ["count", "max", "mean", "median", "min", "std", "sum", "var"])
-    def test_gb_aggregations_with_nans(self, agg):
+    def test_gb_aggregations_with_nans(self, agg, dropna):
         df = self.build_ak_df_with_nans()
         # @TODO handle bool columns correctly
         df.drop("bools", axis=1, inplace=True)
         pd_df = df.to_pandas()
 
         group_on = ["key1", "key2"]
-        ak_result = getattr(df.groupby(group_on), agg)()
-        pd_result = getattr(pd_df.groupby(group_on, as_index=False), agg)()
+        ak_result = getattr(df.groupby(group_on, dropna=dropna), agg)()
+        pd_result = getattr(pd_df.groupby(group_on, as_index=False, dropna=dropna), agg)()
+        assert_frame_equal(ak_result.to_pandas(retain_index=True), pd_result)
+
+        # TODO aggregations of string columns not currently supported (even for count)
+        df.drop("key1", axis=1, inplace=True)
+        df.drop("key2", axis=1, inplace=True)
+        pd_df = df.to_pandas()
+
+        group_on = ["nums1", "nums2"]
+        ak_result = getattr(df.groupby(group_on, dropna=dropna), agg)()
+        pd_result = getattr(pd_df.groupby(group_on, as_index=False, dropna=dropna), agg)()
+        assert_frame_equal(ak_result.to_pandas(retain_index=True), pd_result)
+
+        # TODO aggregation mishandling NaN see issue #3765
+        df.drop("nums2", axis=1, inplace=True)
+        pd_df = df.to_pandas()
+        group_on = "nums1"
+        ak_result = getattr(df.groupby(group_on, dropna=dropna), agg)()
+        pd_result = getattr(pd_df.groupby(group_on, dropna=dropna), agg)()
+        assert_frame_equal(ak_result.to_pandas(retain_index=True), pd_result)
+
+    @pytest.mark.parametrize("dropna", [True, False])
+    def test_count_nan_bug(self, dropna):
+        # verify reproducer for #3762 is fixed
+        df = ak.DataFrame({"A": [1, 2, 2, np.nan], "B": [3, 4, 5, 6], "C": [1, np.nan, 2, 3]})
+        ak_result = df.groupby("A", dropna=dropna).count()
+        pd_result = df.to_pandas().groupby("A", dropna=dropna).count()
+        assert_frame_equal(ak_result.to_pandas(retain_index=True), pd_result)
+
+        ak_result = df.groupby(["A", "C"], as_index=False, dropna=dropna).count()
+        pd_result = df.to_pandas().groupby(["A", "C"], as_index=False, dropna=dropna).count()
         assert_frame_equal(ak_result.to_pandas(retain_index=True), pd_result)
 
     def test_gb_aggregations_return_dataframe(self):
