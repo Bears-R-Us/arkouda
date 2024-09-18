@@ -2290,6 +2290,7 @@ def array_equal(pda_a: pdarray, pda_b: pdarray, equal_nan: bool = False):
     else:
         return ak_all(pda_a == pda_b)
 
+
 def putmask(
      A : pdarray ,
      mask : pdarray,
@@ -2360,6 +2361,7 @@ def putmask(
         },
     )
     return
+
 
 def eye(rows: int_scalars, cols: int_scalars, diag: int_scalars = 0, dt: type = akint64):
     """
