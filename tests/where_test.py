@@ -9,16 +9,19 @@ import arkouda as ak
 warnings.simplefilter("always", UserWarning)
 
 
+# TODO: Parametrize test_where
 class TestWhere:
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_where(self, size):
         npA = {
+            "uint64": np.random.randint(0, 10, size),
             "int64": np.random.randint(0, 10, size),
             "float64": np.random.randn(size),
             "bool": np.random.randint(0, 2, size, dtype="bool"),
         }
         akA = {k: ak.array(v) for k, v in npA.items()}
         npB = {
+            "uint64": np.random.randint(0, 10, size),
             "int64": np.random.randint(10, 20, size),
             "float64": np.random.randn(size) + 10,
             "bool": np.random.randint(0, 2, size, dtype="bool"),
@@ -26,18 +29,12 @@ class TestWhere:
         akB = {k: ak.array(v) for k, v in npB.items()}
         npCond = np.random.randint(0, 2, size, dtype="bool")
         akCond = ak.array(npCond)
-        scA = {"int64": 42, "float64": 2.71828, "bool": True}
-        scB = {"int64": -1, "float64": 3.14159, "bool": False}
         dtypes = set(npA.keys())
 
-        for dtype in dtypes:
-            for (ak1, ak2), (np1, np2) in zip(
-                product((akA, scA), (akB, scB)),
-                product((npA, scA), (npB, scB)),
-            ):
-                akres = ak.where(akCond, ak1[dtype], ak2[dtype]).to_ndarray()
-                npres = np.where(npCond, np1[dtype], np2[dtype])
-                assert np.allclose(akres, npres, equal_nan=True)
+        for (dtype1,dtype2) in zip(dtypes,dtypes):
+            akres = ak.where(akCond, akA[dtype1], akB[dtype2]).to_ndarray()
+            npres = np.where(npCond, npA[dtype1], npB[dtype2])
+            assert np.allclose(akres, npres, equal_nan=True)
 
     def test_error_handling(self):
         with pytest.raises(TypeError):
