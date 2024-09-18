@@ -2291,59 +2291,76 @@ def array_equal(pda_a: pdarray, pda_b: pdarray, equal_nan: bool = False):
         return ak_all(pda_a == pda_b)
 
 
-def putmask(pda: pdarray, mask: Union[bool, pdarray], values: pdarray):
+def putmask(
+     A : pdarray ,
+     mask : pdarray,
+     Values : pdarray
+ ) :  # doesn't return anything, as A is overwritten in place
     """
-    Overwrite elements of a pdarray at indices where mask is True
+    Overwrites elements of A with elements from B based upon a mask array.
+    Similar to numpy.putmask, where mask = False, A retains its original value,
+    but where mask = True, A is overwritten with the corresponding entry from Values.
+
+    This is similar to ak.where, except that (1) no new pdarray is created, and
+    (2) Values does not have to be the same size as A and mask.
 
     Parameters
     ----------
-    pda    : pdarray, source data, also output data
-        pda = input where mask is False, = values where mask is True
-    mask   : a scalar boolean, or a pdarray of booleans
-    values : pdarray, replacement data
-
-    Returns
-    -------
-    None - pda is modified in-place
-
-    Notes
-    -----
-    If values.size != a.size, values is repeated and/or pruned as needed to
-    make sizes match, because ak.where requires matching sizes.
+    A : pdarray
+        Value(s) used when mask is False (see Notes for allowed dtypes)
+    mask : pdarray
+        Used to choose values from A or B, must be same size as A, and of type ak.bool_
+    Values : pdarray
+        Value(s) used when mask is False (see Notes for allowed dtypes)
 
     Examples
     -------
     >>> a = ak.array(np.arange(10))
     >>> ak.putmask (a,a>2,a**2)
+    >>> a
     array ([0,1,2,9,16,25,36,49,64,81])
 
+    >>> a = ak.array(np.arange(10))
     >>> values = ak.array([3,2])
     >>> ak.putmask (a,a>2,values)
+    >>> a
     array ([0,1,2,2,3,2,3,2,3,2])
 
     Raises
     ------
-    TypeError
-        Raised if a and values are not the same type
+    RuntimeError
+        Raised if mask is not same size as A, or if A.dtype and Values.dtype are not
+        an allowed pair (see Notes for details).
 
+    Notes
+    -----
+    A and mask must be the same size.  Values can be any size.
+
+    Allowed dtypes for A and Values conform to types accepted by numpy putmask.
+
+    If A is ak.float64, Values can be ak.float64, ak.int64, ak.uint64, ak.bool_.
+
+    If A is ak.int64, Values can be ak.int64 or ak.bool_.
+
+    If A is ak.uint64, Values can be ak.int64, ak.uint64, or ak.bool_.
+
+    If A is ak.bool_, Values must be ak.bool_.
+
+    Only one conditional clause is supported e.g., n < 5, n > 1, which is supported in numpy
+    is not currently supported in Arkouda
+
+    Only 1D pdarrays are implemented for now.
     """
-
-    from arkouda.pdarraysetops import concatenate
-
-    # check for matching types
-
-    if values.dtype != pda.dtype:
-        raise TypeError("ak.putmask requires arrays of matching type")
-
-    # if values is not the same size as pda, repeat it and/or prune it as needed
-
-    growth = pda.size // values.size + (0 if pda.size % values.size == 0 else 1)
-    result = concatenate(growth * [values])
-    if result.size > pda.size:
-        reduction = result.size % pda.size
-        result = result[:-(reduction)]
-
-    pda[:] = where(mask, result, pda)  # pda[:] = allows us to return modified value
+    generic_msg(
+        cmd=f"efunc3vv{mask.ndim}D",
+        args={
+            "func": "putmask",
+            "condition": mask,
+            "a": A,
+            "b": Values,
+        },
+    )
+    return
 
 
 def eye(rows: int_scalars, cols: int_scalars, diag: int_scalars = 0, dt: type = akint64):
