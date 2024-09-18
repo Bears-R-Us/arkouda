@@ -102,36 +102,17 @@ class sparray:
 
     """
     Converts the sparse matrix to a list of 3 pdarrays (rows, cols, vals)
+
     Returns
     -------
     List[ak.pdarray]
         A list of 3 pdarrays which contain the row indices, the column indices,
         and the values at the respective indices within the sparse matrix.
-
-    Raises
-    ------
-    RuntimeError
-        Raised if there is a server-side error thrown, if the pdarray size
-        exceeds the built-in client.maxTransferBytes size limit, or if the bytes
-        received does not match expected number of bytes
-    Notes
-    -----
-    The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
-    otherwise a ``RuntimeError`` will be raised. This is to protect the user
-    from overflowing the memory of the system on which the Python client
-    is running, under the assumption that the server is running on a
-    distributed system with much more memory than the client. The user
-    may override this limit by setting client.maxTransferBytes to a larger
-    value, but proceed with caution.
-
     Examples
     --------
     >>> a = ak.random_sparse_matrix(100,0.2,"CSR");
     >>> a.to_pdarray()
-    ???
-
-    >>> type(a.to_ndarray())
-    ???
+    [array([1 1 1 ... 100 100 100]), array([17 21 29 ... 75 77 85]), array([0 0 0 ... 0 0 0])]
     """
 
     @typechecked
