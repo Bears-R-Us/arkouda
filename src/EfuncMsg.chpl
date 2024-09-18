@@ -1532,7 +1532,6 @@ module EfuncMsg
          if Values.size < A_subset_size {
              coforall loc in Locales do on loc {
                  var local_Values : [0..Values.size-1] tv = Values ;
-                 // var local_Values = Values ; // per Tess's suggestion
                  forall element in A.localSubdomain() {
                      if mask[element] then A[element] = (local_Values[element%local_Values.size]):ta ;
                  }
