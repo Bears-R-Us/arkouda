@@ -384,7 +384,7 @@
 <dd><p>Return the permutation that sorts the array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#id718" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – The array to sort (int64, uint64, or float64)</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#id474" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – The array to sort (int64, uint64, or float64)</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The indices such that <code class="docutils literal notranslate"><span class="pre">pda[indices]</span></code> is sorted</p>
@@ -420,7 +420,7 @@ input arrays are treated as columns. The permutation sorts numeric
 columns, but not strings/Categoricals – strings/Categoricals are grouped, but not ordered.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>arrays</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../index.html#id718" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>]</em><em>]</em>) – The columns (int64, uint64, float64, Strings, or Categorical) to sort by row</p>
+<dd class="field-odd"><p><strong>arrays</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../index.html#id474" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>]</em><em>]</em>) – The columns (int64, uint64, float64, Strings, or Categorical) to sort by row</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The indices that permute the rows to grouped order</p>

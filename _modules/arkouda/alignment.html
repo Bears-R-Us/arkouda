@@ -372,7 +372,7 @@
 
 
 <div class="viewcode-block" id="unsqueeze">
-<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.alignment.unsqueeze">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/alignment/index.html#arkouda.alignment.unsqueeze">[docs]</a>
 <span class="k">def</span> <span class="nf">unsqueeze</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">Strings</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">p</span><span class="p">]</span>
@@ -382,7 +382,7 @@
 
 
 <div class="viewcode-block" id="zero_up">
-<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.alignment.zero_up">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/alignment/index.html#arkouda.alignment.zero_up">[docs]</a>
 <span class="k">def</span> <span class="nf">zero_up</span><span class="p">(</span><span class="n">vals</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Map an array of sparse values to 0-up indices.</span>
@@ -406,7 +406,7 @@
 
 
 <div class="viewcode-block" id="align">
-<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.alignment.align">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/alignment/index.html#arkouda.alignment.align">[docs]</a>
 <span class="k">def</span> <span class="nf">align</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Map multiple arrays of sparse identifiers to a common 0-up index.</span>
@@ -434,7 +434,7 @@
 
 
 <div class="viewcode-block" id="right_align">
-<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.alignment.right_align">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/alignment/index.html#arkouda.alignment.right_align">[docs]</a>
 <span class="k">def</span> <span class="nf">right_align</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Map two arrays of sparse values to the 0-up index set implied by the right array,</span>
@@ -463,7 +463,7 @@
 
 
 <div class="viewcode-block" id="left_align">
-<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.alignment.left_align">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/alignment/index.html#arkouda.alignment.left_align">[docs]</a>
 <span class="k">def</span> <span class="nf">left_align</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Map two arrays of sparse identifiers to the 0-up index set implied by the left array,</span>
@@ -474,14 +474,14 @@
 
 
 <div class="viewcode-block" id="NonUniqueError">
-<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.alignment.NonUniqueError">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/alignment/index.html#arkouda.alignment.NonUniqueError">[docs]</a>
 <span class="k">class</span> <span class="nc">NonUniqueError</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
 
 
 <div class="viewcode-block" id="find">
-<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.alignment.find">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/alignment/index.html#arkouda.alignment.find">[docs]</a>
 <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">all_occurrences</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">remove_missing</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return indices of query items in a search list of items.</span>
@@ -635,7 +635,7 @@
 
 
 <div class="viewcode-block" id="lookup">
-<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.alignment.lookup">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/alignment/index.html#arkouda.alignment.lookup">[docs]</a>
 <span class="k">def</span> <span class="nf">lookup</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">arguments</span><span class="p">,</span> <span class="n">fillvalue</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Apply the function defined by the mapping keys --&gt; values to arguments.</span>
@@ -699,7 +699,7 @@
 
 
 <div class="viewcode-block" id="in1d_intervals">
-<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.alignment.in1d_intervals">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/alignment/index.html#arkouda.alignment.in1d_intervals">[docs]</a>
 <span class="k">def</span> <span class="nf">in1d_intervals</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">intervals</span><span class="p">,</span> <span class="n">symmetric</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test each value for membership in *any* of a set of half-open (pythonic)</span>
@@ -752,7 +752,7 @@
 
 
 <div class="viewcode-block" id="search_intervals">
-<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.alignment.search_intervals">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/alignment/index.html#arkouda.alignment.search_intervals">[docs]</a>
 <span class="k">def</span> <span class="nf">search_intervals</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">intervals</span><span class="p">,</span> <span class="n">tiebreak</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hierarchical</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given an array of query vals and non-overlapping, closed intervals, return</span>
@@ -1025,7 +1025,7 @@
 
 
 <div class="viewcode-block" id="is_cosorted">
-<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.alignment.is_cosorted">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/alignment/index.html#arkouda.alignment.is_cosorted">[docs]</a>
 <span class="k">def</span> <span class="nf">is_cosorted</span><span class="p">(</span><span class="n">arrays</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return True iff the arrays are cosorted, i.e., if the arrays were columns in a table</span>
@@ -1074,7 +1074,7 @@
 
 
 <div class="viewcode-block" id="interval_lookup">
-<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.alignment.interval_lookup">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/alignment/index.html#arkouda.alignment.interval_lookup">[docs]</a>
 <span class="k">def</span> <span class="nf">interval_lookup</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">arguments</span><span class="p">,</span> <span class="n">fillvalue</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">tiebreak</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hierarchical</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Apply a function defined over intervals to an array of arguments.</span>
