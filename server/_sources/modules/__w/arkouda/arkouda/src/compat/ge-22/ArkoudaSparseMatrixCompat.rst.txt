@@ -1,0 +1,19 @@
+.. default-domain:: chpl
+
+.. module:: ArkoudaSparseMatrixCompat
+
+ArkoudaSparseMatrixCompat
+=========================
+**Usage**
+
+.. code-block:: chapel
+
+   use ArkoudaSparseMatrixCompat;
+
+
+or
+
+.. code-block:: chapel
+
+   import ArkoudaSparseMatrixCompat;
+

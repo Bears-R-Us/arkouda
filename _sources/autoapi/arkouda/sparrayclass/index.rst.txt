@@ -4,14 +4,6 @@ arkouda.sparrayclass
 .. py:module:: arkouda.sparrayclass
 
 
-Attributes
-----------
-
-.. autoapisummary::
-
-   arkouda.sparrayclass.logger
-
-
 Classes
 -------
 
@@ -48,8 +40,6 @@ Module Contents
    :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
        the pdarray instance
 
-
-.. py:data:: logger
 
 .. py:class:: sparray(name: str, mydtype: Union[numpy.dtype, str], size: arkouda.dtypes.int_scalars, nnz: arkouda.dtypes.int_scalars, ndim: arkouda.dtypes.int_scalars, shape: Sequence[int], layout: str, itemsize: arkouda.dtypes.int_scalars, max_bits: Optional[int] = None)
 
@@ -106,6 +96,9 @@ Module Contents
    .. py:attribute:: dtype
 
 
+   .. py:method:: fill_vals(a: arkouda.pdarrayclass.pdarray)
+
+
    .. py:attribute:: itemsize
 
 
@@ -125,5 +118,8 @@ Module Contents
 
 
    .. py:attribute:: size
+
+
+   .. py:method:: to_pdarray()
 
 

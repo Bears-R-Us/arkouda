@@ -25,7 +25,9 @@ or
 
    SparseMatrix/*
 
-.. function:: proc sparseMatMatMult(A, B)
+.. function:: proc fillSparseMatrix(ref spsMat, const A: [?D] ?eltType) throws
+
+.. function:: proc sparseMatToPdarray(const ref spsMat, ref rows, ref cols, ref vals)
 
 .. function:: proc sparseMatMatMult(A, B, ref spsData)
 

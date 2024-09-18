@@ -353,16 +353,22 @@
 <span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span> <span class="nn">builtins</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">typeguard</span> <span class="kn">import</span> <span class="n">typechecked</span>
 
 <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
-<span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">int_scalars</span>
+<span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">NumericDTypes</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">int_scalars</span>
 <span class="kn">from</span> <span class="nn">arkouda.logger</span> <span class="kn">import</span> <span class="n">getArkoudaLogger</span>
+<span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">create_pdarrays</span><span class="p">,</span> <span class="n">pdarray</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">getArkoudaLogger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;sparrayclass&quot;</span><span class="p">)</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;sparray&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;create_sparray&quot;</span><span class="p">,</span>
+<span class="p">]</span>
 
 
 <div class="viewcode-block" id="sparray">
@@ -441,13 +447,50 @@
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># This won&#39;t work out of the box for sparrays need to add this in later</span>
         <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">sparrayIterThresh</span>
 
-        <span class="k">return</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;printThresh&quot;</span><span class="p">:</span> <span class="n">sparrayIterThresh</span><span class="p">})</span></div>
-
+        <span class="k">return</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;printThresh&quot;</span><span class="p">:</span> <span class="n">sparrayIterThresh</span><span class="p">})</span>
 
     <span class="c1"># def __repr__(self):</span>
     <span class="c1">#     from arkouda.client import sparrayIterThresh</span>
     <span class="c1">#     print(&quot;Called repr&quot;)</span>
     <span class="c1">#     return generic_msg(cmd=&quot;repr&quot;, args={&quot;array&quot;: self, &quot;printThresh&quot;: sparrayIterThresh})</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts the sparse matrix to a list of 3 pdarrays (rows, cols, vals)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    List[ak.pdarray]</span>
+<span class="sd">        A list of 3 pdarrays which contain the row indices, the column indices,</span>
+<span class="sd">        and the values at the respective indices within the sparse matrix.</span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; a = ak.random_sparse_matrix(100,0.2,&quot;CSR&quot;);</span>
+<span class="sd">    &gt;&gt;&gt; a.to_pdarray()</span>
+<span class="sd">    [array([1 1 1 ... 100 100 100]), array([17 21 29 ... 75 77 85]), array([0 0 0 ... 0 0 0])]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="sparray.to_pdarray">
+<a class="viewcode-back" href="../../autoapi/arkouda/sparrayclass/index.html#arkouda.sparray.to_pdarray">[docs]</a>
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span> <span class="nf">to_pdarray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span>
+        <span class="n">dtype_name</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+        <span class="c1"># check dtype for error</span>
+        <span class="k">if</span> <span class="n">dtype_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">NumericDTypes</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported dtype </span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">responseArrays</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;sparse_to_pdarrays&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;matrix&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">})</span>
+        <span class="n">array_list</span> <span class="o">=</span> <span class="n">create_pdarrays</span><span class="p">(</span><span class="n">responseArrays</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">array_list</span></div>
+
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="sparray.fill_vals">
+<a class="viewcode-back" href="../../autoapi/arkouda/sparrayclass/index.html#arkouda.sparray.fill_vals">[docs]</a>
+    <span class="k">def</span> <span class="nf">fill_vals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;fill_sparse_vals&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;matrix&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;vals&quot;</span><span class="p">:</span> <span class="n">a</span><span class="p">})</span></div>
+</div>
+
 
 
 <span class="c1"># creates sparray object</span>

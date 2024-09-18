@@ -80,7 +80,6 @@ Attributes
    arkouda.euler_gamma
    arkouda.inf
    arkouda.infty
-   arkouda.logger
    arkouda.nan
    arkouda.pi
 
@@ -232,7 +231,6 @@ Classes
    arkouda.int_scalars
    arkouda.int_scalars
    arkouda.int_scalars
-   arkouda.int_scalars
    arkouda.intc
    arkouda.integer
    arkouda.intp
@@ -380,7 +378,6 @@ Functions
    arkouda.divmod
    arkouda.dot
    arkouda.dtype
-   arkouda.dtype
    arkouda.enableVerbose
    arkouda.exp
    arkouda.expm1
@@ -395,7 +392,6 @@ Functions
    arkouda.full
    arkouda.full_like
    arkouda.generic_concat
-   arkouda.getArkoudaLogger
    arkouda.getArkoudaLogger
    arkouda.get_byteorder
    arkouda.get_callback
@@ -28838,8 +28834,6 @@ Package Contents
 
 .. py:function:: dtype(x)
 
-.. py:function:: dtype(x)
-
 .. py:data:: e
    :type:  float
 
@@ -29851,33 +29845,6 @@ Package Contents
 
 
 .. py:function:: generic_concat(items, ordered=True)
-
-.. py:function:: getArkoudaLogger(name: str, handlers: Optional[List[logging.Handler]] = None, logFormat: Optional[str] = ArkoudaLogger.DEFAULT_LOG_FORMAT, logLevel: Optional[LogLevel] = None) -> ArkoudaLogger
-
-   A convenience method for instantiating an ArkoudaLogger that retrieves the
-   logging level from the ARKOUDA_LOG_LEVEL env variable
-
-   :param name: The name of the ArkoudaLogger
-   :type name: str
-   :param handlers: A list of logging.Handler objects, if None, a list consisting of
-                    one StreamHandler named 'console-handler' is generated and configured
-   :type handlers: List[Handler]
-   :param logFormat: The format for log messages, defaults to the following format:
-                     '[%(name)s] Line %(lineno)d %(levelname)s: %(message)s'
-   :type logFormat: str
-
-   :rtype: ArkoudaLogger
-
-   :raises TypeError: Raised if either name or logFormat is not a str object or if handlers
-       is not a list of str objects
-
-   .. rubric:: Notes
-
-   Important note: if a list of 1..n logging.Handler objects is passed in, and
-   dynamic changes to 1..n handlers is desired, set a name for each Handler
-   object as follows: handler.name = <desired name>, which will enable retrieval
-   and updates for the specified handler.
-
 
 .. py:function:: getArkoudaLogger(name: str, handlers: Optional[List[logging.Handler]] = None, logFormat: Optional[str] = ArkoudaLogger.DEFAULT_LOG_FORMAT, logLevel: Optional[LogLevel] = None) -> ArkoudaLogger
 
@@ -30960,20 +30927,6 @@ Package Contents
    this is used by e.g. typing.List and typing.Dict.
 
 
-.. py:class:: int_scalars(origin, params, *, inst=True, name=None)
-
-   Bases: :py:obj:`_GenericAlias`
-
-
-   The central part of internal API.
-
-   This represents a generic version of type 'origin' with type arguments 'params'.
-   There are two kind of these aliases: user defined and special. The special ones
-   are wrappers around builtin collections and ABCs in collections.abc. These must
-   have 'name' always set. If 'inst' is False, then the alias can't be instantiated,
-   this is used by e.g. typing.List and typing.Dict.
-
-
 .. py:class:: intc(value)
 
    Bases: :py:obj:`numpy.signedinteger`
@@ -31832,8 +31785,6 @@ Package Contents
 
    :rtype: pdarray contain values of the base 2 log
 
-
-.. py:data:: logger
 
 .. py:class:: longdouble(value)
 
@@ -39071,6 +39022,9 @@ Package Contents
    .. py:attribute:: dtype
 
 
+   .. py:method:: fill_vals(a: arkouda.pdarrayclass.pdarray)
+
+
    .. py:attribute:: itemsize
 
 
@@ -39090,6 +39044,9 @@ Package Contents
 
 
    .. py:attribute:: size
+
+
+   .. py:method:: to_pdarray()
 
 
 .. py:function:: sparse_matrix_matrix_mult(A, B: arkouda.sparrayclass.sparray) -> arkouda.sparrayclass.sparray
