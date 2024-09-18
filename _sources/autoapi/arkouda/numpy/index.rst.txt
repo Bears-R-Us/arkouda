@@ -5335,35 +5335,56 @@ Module Contents
 .. py:data:: pi
    :type:  float
 
-.. py:function:: putmask(pda: arkouda.pdarrayclass.pdarray, mask: Union[bool, arkouda.pdarrayclass.pdarray], values: arkouda.pdarrayclass.pdarray)
+.. py:function:: putmask(A: arkouda.pdarrayclass.pdarray, mask: arkouda.pdarrayclass.pdarray, Values: arkouda.pdarrayclass.pdarray)
 
-   Overwrite elements of a pdarray at indices where mask is True
+   Overwrites elements of A with elements from B based upon a mask array.
+   Similar to numpy.putmask, where mask = False, A retains its original value,
+   but where mask = True, A is overwritten with the corresponding entry from Values.
 
-   :param pda: pda = input where mask is False, = values where mask is True
-   :type pda: pdarray, source data, also output data
-   :param mask:
-   :type mask: a scalar boolean, or a pdarray of booleans
-   :param values:
-   :type values: pdarray, replacement data
+   This is similar to ak.where, except that (1) no new pdarray is created, and
+   (2) Values does not have to be the same size as A and mask.
 
-   :rtype: None - pda is modified in-place
-
-   .. rubric:: Notes
-
-   If values.size != a.size, values is repeated and/or pruned as needed to
-   make sizes match, because ak.where requires matching sizes.
+   :param A: Value(s) used when mask is False (see Notes for allowed dtypes)
+   :type A: pdarray
+   :param mask: Used to choose values from A or B, must be same size as A, and of type ak.bool_
+   :type mask: pdarray
+   :param Values: Value(s) used when mask is False (see Notes for allowed dtypes)
+   :type Values: pdarray
 
    .. rubric:: Examples
 
    >>> a = ak.array(np.arange(10))
    >>> ak.putmask (a,a>2,a**2)
+   >>> a
    array ([0,1,2,9,16,25,36,49,64,81])
 
+   >>> a = ak.array(np.arange(10))
    >>> values = ak.array([3,2])
    >>> ak.putmask (a,a>2,values)
+   >>> a
    array ([0,1,2,2,3,2,3,2,3,2])
 
-   :raises TypeError: Raised if a and values are not the same type
+   :raises RuntimeError: Raised if mask is not same size as A, or if A.dtype and Values.dtype are not
+       an allowed pair (see Notes for details).
+
+   .. rubric:: Notes
+
+   A and mask must be the same size.  Values can be any size.
+
+   Allowed dtypes for A and Values conform to types accepted by numpy putmask.
+
+   If A is ak.float64, Values can be ak.float64, ak.int64, ak.uint64, ak.bool_.
+
+   If A is ak.int64, Values can be ak.int64 or ak.bool_.
+
+   If A is ak.uint64, Values can be ak.int64, ak.uint64, or ak.bool_.
+
+   If A is ak.bool_, Values must be ak.bool_.
+
+   Only one conditional clause is supported e.g., n < 5, n > 1, which is supported in numpy
+   is not currently supported in Arkouda
+
+   Only 1D pdarrays are implemented for now.
 
 
 .. py:function:: rad2deg(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray

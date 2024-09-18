@@ -935,8 +935,8 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.median" title="arkouda.numpy.median"><code class="xref py py-obj docutils literal notranslate"><span class="pre">median</span></code></a>(pda)</p></td>
 <td><p>Compute the median of a given array.  1d case only, for now.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.putmask" title="arkouda.numpy.putmask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">putmask</span></code></a>(pda, mask, values)</p></td>
-<td><p>Overwrite elements of a pdarray at indices where mask is True</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.putmask" title="arkouda.numpy.putmask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">putmask</span></code></a>(A, mask, Values)</p></td>
+<td><p>Overwrites elements of A with elements from B based upon a mask array.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.rad2deg" title="arkouda.numpy.rad2deg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rad2deg</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Converts angles element-wise from radians to degrees.</p></td>
@@ -6608,39 +6608,51 @@ this is used by e.g. typing.List and typing.Dict.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.putmask">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">putmask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numpy/_numeric.html#putmask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.putmask" title="Link to this definition">¶</a></dt>
-<dd><p>Overwrite elements of a pdarray at indices where mask is True</p>
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">putmask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">Values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numpy/_numeric.html#putmask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.putmask" title="Link to this definition">¶</a></dt>
+<dd><p>Overwrites elements of A with elements from B based upon a mask array.
+Similar to numpy.putmask, where mask = False, A retains its original value,
+but where mask = True, A is overwritten with the corresponding entry from Values.</p>
+<p>This is similar to ak.where, except that (1) no new pdarray is created, and
+(2) Values does not have to be the same size as A and mask.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>source data</em><em>, </em><em>also output data</em>) – pda = input where mask is False, = values where mask is True</p></li>
-<li><p><strong>mask</strong> (<em>a scalar boolean</em><em>, or </em><em>a pdarray</em><em> of </em><em>booleans</em>)</p></li>
-<li><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>replacement data</em>)</p></li>
+<li><p><strong>A</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Value(s) used when mask is False (see Notes for allowed dtypes)</p></li>
+<li><p><strong>mask</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Used to choose values from A or B, must be same size as A, and of type <a href="#id24"><span class="problematic" id="id25">ak.bool_</span></a></p></li>
+<li><p><strong>Values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Value(s) used when mask is False (see Notes for allowed dtypes)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None - pda is modified in-place</p>
-</dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>If values.size != a.size, values is repeated and/or pruned as needed to
-make sizes match, because ak.where requires matching sizes.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">putmask</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="o">&gt;</span><span class="mi">2</span><span class="p">,</span><span class="n">a</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
 <span class="go">array ([0,1,2,9,16,25,36,49,64,81])</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">values</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">values</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">putmask</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="o">&gt;</span><span class="mi">2</span><span class="p">,</span><span class="n">values</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
 <span class="go">array ([0,1,2,2,3,2,3,2,3,2])</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>TypeError</strong> – Raised if a and values are not the same type</p>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if mask is not same size as A, or if A.dtype and Values.dtype are not
+an allowed pair (see Notes for details).</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>A and mask must be the same size.  Values can be any size.</p>
+<p>Allowed dtypes for A and Values conform to types accepted by numpy putmask.</p>
+<p>If A is ak.float64, Values can be ak.float64, ak.int64, ak.uint64, <a href="#id26"><span class="problematic" id="id27">ak.bool_</span></a>.</p>
+<p>If A is ak.int64, Values can be ak.int64 or <a href="#id28"><span class="problematic" id="id29">ak.bool_</span></a>.</p>
+<p>If A is ak.uint64, Values can be ak.int64, ak.uint64, or <a href="#id30"><span class="problematic" id="id31">ak.bool_</span></a>.</p>
+<p>If A is <a href="#id32"><span class="problematic" id="id33">ak.bool_</span></a>, Values must be <a href="#id34"><span class="problematic" id="id35">ak.bool_</span></a>.</p>
+<p>Only one conditional clause is supported e.g., n &lt; 5, n &gt; 1, which is supported in numpy
+is not currently supported in Arkouda</p>
+<p>Only 1D pdarrays are implemented for now.</p>
 </dd></dl>
 
 <dl class="py function">

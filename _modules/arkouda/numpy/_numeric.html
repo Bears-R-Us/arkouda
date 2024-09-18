@@ -2780,59 +2780,76 @@
 
 <div class="viewcode-block" id="putmask">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.putmask">[docs]</a>
-<span class="k">def</span> <span class="nf">putmask</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">mask</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span> <span class="n">values</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">putmask</span><span class="p">(</span>
+     <span class="n">A</span> <span class="p">:</span> <span class="n">pdarray</span> <span class="p">,</span>
+     <span class="n">mask</span> <span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
+     <span class="n">Values</span> <span class="p">:</span> <span class="n">pdarray</span>
+ <span class="p">)</span> <span class="p">:</span>  <span class="c1"># doesn&#39;t return anything, as A is overwritten in place</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Overwrite elements of a pdarray at indices where mask is True</span>
+<span class="sd">    Overwrites elements of A with elements from B based upon a mask array.</span>
+<span class="sd">    Similar to numpy.putmask, where mask = False, A retains its original value,</span>
+<span class="sd">    but where mask = True, A is overwritten with the corresponding entry from Values.</span>
+
+<span class="sd">    This is similar to ak.where, except that (1) no new pdarray is created, and</span>
+<span class="sd">    (2) Values does not have to be the same size as A and mask.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    pda    : pdarray, source data, also output data</span>
-<span class="sd">        pda = input where mask is False, = values where mask is True</span>
-<span class="sd">    mask   : a scalar boolean, or a pdarray of booleans</span>
-<span class="sd">    values : pdarray, replacement data</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    None - pda is modified in-place</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    If values.size != a.size, values is repeated and/or pruned as needed to</span>
-<span class="sd">    make sizes match, because ak.where requires matching sizes.</span>
+<span class="sd">    A : pdarray</span>
+<span class="sd">        Value(s) used when mask is False (see Notes for allowed dtypes)</span>
+<span class="sd">    mask : pdarray</span>
+<span class="sd">        Used to choose values from A or B, must be same size as A, and of type ak.bool_</span>
+<span class="sd">    Values : pdarray</span>
+<span class="sd">        Value(s) used when mask is False (see Notes for allowed dtypes)</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    -------</span>
 <span class="sd">    &gt;&gt;&gt; a = ak.array(np.arange(10))</span>
 <span class="sd">    &gt;&gt;&gt; ak.putmask (a,a&gt;2,a**2)</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
 <span class="sd">    array ([0,1,2,9,16,25,36,49,64,81])</span>
 
+<span class="sd">    &gt;&gt;&gt; a = ak.array(np.arange(10))</span>
 <span class="sd">    &gt;&gt;&gt; values = ak.array([3,2])</span>
 <span class="sd">    &gt;&gt;&gt; ak.putmask (a,a&gt;2,values)</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
 <span class="sd">    array ([0,1,2,2,3,2,3,2,3,2])</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
-<span class="sd">    TypeError</span>
-<span class="sd">        Raised if a and values are not the same type</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        Raised if mask is not same size as A, or if A.dtype and Values.dtype are not</span>
+<span class="sd">        an allowed pair (see Notes for details).</span>
 
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    A and mask must be the same size.  Values can be any size.</span>
+
+<span class="sd">    Allowed dtypes for A and Values conform to types accepted by numpy putmask.</span>
+
+<span class="sd">    If A is ak.float64, Values can be ak.float64, ak.int64, ak.uint64, ak.bool_.</span>
+
+<span class="sd">    If A is ak.int64, Values can be ak.int64 or ak.bool_.</span>
+
+<span class="sd">    If A is ak.uint64, Values can be ak.int64, ak.uint64, or ak.bool_.</span>
+
+<span class="sd">    If A is ak.bool_, Values must be ak.bool_.</span>
+
+<span class="sd">    Only one conditional clause is supported e.g., n &lt; 5, n &gt; 1, which is supported in numpy</span>
+<span class="sd">    is not currently supported in Arkouda</span>
+
+<span class="sd">    Only 1D pdarrays are implemented for now.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="kn">from</span> <span class="nn">arkouda.pdarraysetops</span> <span class="kn">import</span> <span class="n">concatenate</span>
-
-    <span class="c1"># check for matching types</span>
-
-    <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;ak.putmask requires arrays of matching type&quot;</span><span class="p">)</span>
-
-    <span class="c1"># if values is not the same size as pda, repeat it and/or prune it as needed</span>
-
-    <span class="n">growth</span> <span class="o">=</span> <span class="n">pda</span><span class="o">.</span><span class="n">size</span> <span class="o">//</span> <span class="n">values</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="p">(</span><span class="mi">0</span> <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">size</span> <span class="o">%</span> <span class="n">values</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">(</span><span class="n">growth</span> <span class="o">*</span> <span class="p">[</span><span class="n">values</span><span class="p">])</span>
-    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="n">pda</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
-        <span class="n">reduction</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">size</span> <span class="o">%</span> <span class="n">pda</span><span class="o">.</span><span class="n">size</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="p">[:</span><span class="o">-</span><span class="p">(</span><span class="n">reduction</span><span class="p">)]</span>
-
-    <span class="n">pda</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">pda</span><span class="p">)</span>  <span class="c1"># pda[:] = allows us to return modified value</span></div>
+    <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;efunc3vv</span><span class="si">{</span><span class="n">mask</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;func&quot;</span><span class="p">:</span> <span class="s2">&quot;putmask&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="n">mask</span><span class="p">,</span>
+            <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">A</span><span class="p">,</span>
+            <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">Values</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+    <span class="k">return</span></div>
 
 
 
