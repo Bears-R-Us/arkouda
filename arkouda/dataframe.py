@@ -106,7 +106,7 @@ class DataFrameGroupBy:
         If True the grouped values of the aggregation keys will be treated as an index.
     """
 
-    def __init__(self, gb, df, gb_key_names=None, as_index=True, dropna=True):
+    def __init__(self, gb, df, gb_key_names=None, as_index=True):
 
         self.gb = gb
         self.df = df
@@ -115,11 +115,11 @@ class DataFrameGroupBy:
         for attr in ["nkeys", "permutation", "unique_keys", "segments"]:
             setattr(self, attr, getattr(gb, attr))
 
-        self.dropna = dropna
+        self.dropna = self.gb.dropna
         self.where_not_nan = None
         self.all_non_nan = False
 
-        if dropna:
+        if self.dropna:
             from arkouda import all as ak_all
             from arkouda import isnan
 
@@ -2714,7 +2714,7 @@ class DataFrame(UserDict):
 
         gb = akGroupBy(cols, dropna=dropna)
         if use_series:
-            gb = DataFrameGroupBy(gb, self, gb_key_names=keys, as_index=as_index, dropna=dropna)
+            gb = DataFrameGroupBy(gb, self, gb_key_names=keys, as_index=as_index)
         return gb
 
     def memory_usage(self, index=True, unit="B") -> Series:
