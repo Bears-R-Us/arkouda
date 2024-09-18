@@ -440,12 +440,12 @@ def unpack_scalar_arg(arg_name, arg_type):
     return f"\tvar {arg_name} = {ARGS_FORMAL_NAME}['{arg_name}'].toScalar({arg_type});"
 
 
-def unpack_scalar_arg_with_generic(arg_name, array_count):
+def unpack_scalar_arg_with_generic(arg_name, scalar_count):
     """
     Generate the code to unpack a scalar argument
 
     'scalar_count' is used to generate unique names when
-    a procedure has multiple array-symbol formals
+    a procedure has multiple scalar-symbol formals
 
     Example:
     ```
@@ -455,7 +455,7 @@ def unpack_scalar_arg_with_generic(arg_name, array_count):
     Returns the chapel code, and the specifications for the
     'dtype' and type-constructor arguments
     """
-    dtype_arg_name = "scalar_dtype_" + str(array_count)
+    dtype_arg_name = "scalar_dtype_" + str(scalar_count)
     return (
         unpack_scalar_arg(arg_name, dtype_arg_name),
         [(dtype_arg_name, "type", None, None)],
