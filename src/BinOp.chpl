@@ -62,9 +62,6 @@ module BinOp
   :arg op: string representation of binary operation to execute
   :type op: string
 
-  :arg rname: name of the `e` in the symbol table
-  :type rname: string
-
   :arg pn: routine name of callsite function
   :type pn: string
 

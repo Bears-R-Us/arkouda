@@ -27,7 +27,7 @@ module OperatorMsg
       Parse and respond to binopvv message.
       vv == vector op vector
 
-      :arg reqMsg: request containing (cmd,op,aname,bname,rname)
+      :arg reqMsg: request containing (cmd,op,aname,bname)
       :type reqMsg: string 
 
       :arg st: SymTab to act on
@@ -70,8 +70,6 @@ module OperatorMsg
         realOps.add("-");
         realOps.add("/");
         realOps.add("//");
-
-        const rname = st.nextName();
 
         if binop_dtype_a == int && binop_dtype_b == int {
           if boolOps.contains(op) {
@@ -239,8 +237,6 @@ module OperatorMsg
         omLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
              "cmd: %? op: %? left pdarray: %? scalar: %?".format(
                                           cmd,op,st.attrib(msgArgs['a'].val), val));
-
-        const rname = st.nextName();
 
         use Set;
         // This boolOps set is a filter to determine the output type for the operation.
@@ -1053,7 +1049,7 @@ module OperatorMsg
       Parse and respond to opeqvs message.
       vector op= scalar
 
-      :arg reqMsg: request containing (cmd,op,aname,bname,rname)
+      :arg reqMsg: request containing (cmd,op,aname,bname)
       :type reqMsg: string
 
       :arg st: SymTab to act on
