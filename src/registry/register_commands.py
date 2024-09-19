@@ -139,10 +139,6 @@ def get_formals(fn, require_type_annotations):
                     ten = "<array>"
                     extra_info = [None, None]
 
-                    # TODO: support referencing a domain from another array's domain query
-                    # (e.g., 'proc foo(x: [?d], y: [d])')
-                    # to avoid instantiating all combinations of array ranks for the 2+ arrays
-
                     # record domain query name if any
                     if isinstance(te.iterand(), chapel.TypeQuery):
                         extra_info[0] = FormalQuery(te.iterand().name())
