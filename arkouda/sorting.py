@@ -94,7 +94,6 @@ def argsort(
             args={
                 "name": pda.name,
                 "algoName": algorithm.name,
-                "objType": pda.objType,
                 "axis": axis,
             },
         )

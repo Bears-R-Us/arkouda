@@ -430,17 +430,12 @@ module ArgSortMsg
     {
         const name = msgArgs["name"],
               algoName = msgArgs["algoName"].toScalar(string),
-              algorithm = getSortingAlgoritm(algoName),
+              algorithm = if array_dtype == real then defaultSortAlgorithm else getSortingAlgoritm(algoName),
               axis =  msgArgs["axis"].toScalar(int),
-              symEntry = st[msgArgs["name"]]: SymEntry(array_dtype, array_nd);
+              symEntry = st[msgArgs["name"]]: borrowed SymEntry(array_dtype, array_nd),
+              vals = if (array_dtype == bool) then (symEntry.a:int) else (symEntry.a: array_dtype);
 
-        const iv;
-        if array_dtype == bool {
-          var int_vals = makeDistArray(symEntry.a:int);
-          iv = argsortDefault(int_vals, algorithm=algorithm, axis);
-        } else {
-          iv = argsortDefault(symEntry.a, algorithm=algorithm, axis);
-        }
+        const iv = argsortDefault(vals, algorithm=algorithm, axis);
         return st.insert(new shared SymEntry(iv));
     }
 
