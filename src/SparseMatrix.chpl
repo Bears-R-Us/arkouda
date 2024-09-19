@@ -36,12 +36,94 @@ module SparseMatrix {
   }
 
   proc sparseMatToPdarray(const ref spsMat, ref rows, ref cols, ref vals){
-    for((i,j), idx) in zip(spsMat.domain,0..) {
-      rows[idx] = i;
-      cols[idx] = j;
-      vals[idx] = spsMat[i, j];
+    // // serial algorithm (for reference):
+    // for((i,j), idx) in zip(spsMat.domain,0..) {
+    //   rows[idx] = i;
+    //   cols[idx] = j;
+    //   vals[idx] = spsMat[i, j];
+    // }
+
+    const grid = spsMat.domain.targetLocales();
+          nRowBlocks = grid.domain.dim(0).size,
+          nColBlocks = grid.domain.dim(1).size;
+
+    const nRowsPerRowBlock = /* TODO! */;
+
+    // TODO: make the `0..<nRowsPerRowBlock` domain distributed across `grid[{grid.domain.dim(0), 0..0}]`
+    // ...OR... remove the outer section of this array (i.e., make it`[0..nRows] [0..<nColBlocks] int`)
+    //          (still making it distributed along the first dimension)
+
+    // array to keep track of the number of nonzero elements in each columns section of each row in the matrix
+    // where there are `nColBlocks` column-sections per row, and the rows are divided into `nRowBlocks` blocks
+    var nnzCounts: [0..<nRowBlocks] [0..<nRowsPerRowBlock] [0..<nColBlocks] int;
+
+    coforall rb in 0..<nRowBlocks {
+
+        // TODO: split this work up across multiple tasks
+        for i in /* TODO: get this row-block's row indices */ {
+
+          coforall cb in 0..<nColBlocks {
+            on grid[rb, cb] {
+              // TODO: need the dense subdomain for this block (maybe include it as a field in SparseSymEntry?)
+              const blockDom = spsMat.localSubdomain(); // this is sparse!!!
+
+              for j in blockDom.dim(1) {
+                if spsMat.domain.contains((i,j)) {
+                  nnzCounts[rb][i][cb] += 1;
+                }
+              }
+
+            }
+          }
+
+      }
+    }
+
+    // compute prefix sums to determine where each column's section of each row should start
+    // depositing values in the output arrays
+    const nnzPerRow: [0..<nRowBlocks] [0..<nRowsPerRowBlock] int;
+    for rb in 0..<nRowBlocks do
+      for ii in 0..<nRowsPerRowBlock do
+        nnzPerRow[rb][ii] = (+ reduce nnzCounts[rb][ii]) - nnzPerRow[rb][ii];
+
+    const nnzPerRowBlock = [rb in nnzPerRow] + reduce rb;
+
+    // indicates where in the rows/cols/vals arrays each row block should start depositing values
+    const rowBlockStarts = (+ reduce nnzPerRowBlock) - nnzPerRowBlock;
+
+    coforall rb in 0..<nRowBlocks with (ref rows, ref cols, ref vals) {
+      // indicates where in the rows/cols/vals arrays each row should start depositing values
+      const rowStarts = ((+ reduce nnzPerRow[rb]) - nnzPerRow[rb]) + rowBlockStarts[rb];
+
+      // TODO: split this work up across multiple tasks
+      for i in /* TODO: get this row-block's row indices */ {
+        // indicates where in the rows/cols/vals arrays each column's section of the row should start depositing values
+        const rowSectionStarts = ((+ reduce nnzCounts[rb][i]) - nnzCounts[rb][i]) + rowStarts[i];
+
+        coforall cb in 0..<nColBlocks with (ref rows, ref cols, ref vals) {
+          on grid[rb, cb] {
+            // index into the rows/cols/vals arrays, starting at the beginning of this column's section of the i'th row
+            var idx = rowSectionStarts[cb];
+
+            const blockDom = spsMat.localSubdomain(); // TODO: need the dense subdomain for this block
+
+            // TODO: use aggregation for these array accesses
+            // aggregators should probably be initialized ahead of time (outside of this locale's coforall loop)
+            // (one per )
+            for j in 0..<blockDom.dim(1).size {
+              if spsMat.domain.contains((i,j)) {
+                rows[idx] = i;
+                cols[idx] = j;
+                vals[idx] = spsMat[i, j];
+                idx += 1;
+              }
+            }
+          }
+        }
+      }
     }
   }
+
   // sparse, outer, matrix-matrix multiplication algorithm; A is assumed
   // CSC and B CSR
   // proc sparseMatMatMult(A, B) {
