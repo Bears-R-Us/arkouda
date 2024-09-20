@@ -158,13 +158,13 @@ module SparseMatrix {
     const nnzDom = blockDist.createDomain({0..<nRowBlocks, 1..n}, targetLocales=grid);
     var nnzPerRowBlock: [nnzDom] int;
 
-    // details for splitting rows into groups for task-level parallelism
+    // details for splitting columns into groups for task-level parallelism
     const nTasksPerColBlock = here.maxTaskPar,
           nColGroups = nColBlocks * nTasksPerColBlock,
           nColsPerGroup = n / nColGroups,
           nRowsPerBlock = m / nRowBlocks;
 
-    // compute the number of non-zeros in each column-section of each row
+    // compute the number of non-zeros in each row-section of each column
     coforall rowBlockIdx in 0..<nRowBlocks with (ref nnzPerRowBlock) {
       const iStart = rowBlockIdx * nRowsPerBlock + 1,
             iEnd = if rowBlockIdx == nRowBlocks-1 then m else (rowBlockIdx+1) * nRowsPerBlock;
@@ -192,7 +192,7 @@ module SparseMatrix {
       }
     }
 
-    // scan operation to find the starting index (in the 1D output arrays) for each column-block of each row
+    // scan operation to find the starting index (in the 1D output arrays) for each row-block of each column
     const rowBlockStartOffsets = flattenedExScanCSC(nnzPerRowBlock, nColGroups, nTasksPerColBlock, nColsPerGroup);
 
     // store the non-zero indices and values in the output arrays
@@ -249,7 +249,7 @@ module SparseMatrix {
     // }
 
     // 1D block distributed array representing intermediate result of scan for each row group
-    // (distributed across first column-block's locales only)
+    // (distributed across grid's first column of locales only)
     const interDom = blockDist.createDomain(
       0..<nRowGroups,
       targetLocales=reshape(grid[{0..<nRowBlocks, 0..0}], {0..<nRowBlocks})
@@ -277,8 +277,8 @@ module SparseMatrix {
       }
     }
 
-    // compute an exclusive scan of each row group's sum
-    intermediate = (+ scan intermediate) - intermediate;
+    // compute a scan of each row-group's sum
+    intermediate = + scan intermediate;
 
     // update the row groups with the previous group's sum
     // (the 0'th row group is already correct)
@@ -290,7 +290,7 @@ module SparseMatrix {
 
         // TODO: explicit serial loop might be faster than slice assignment here
         colBlockStartOffsets[{iStart..iEnd, 0..<nColBlocks}] +=
-          intermediate.localAccess[rg];
+          intermediate.localAccess[rg-1];
       }
     }
 
@@ -316,15 +316,15 @@ module SparseMatrix {
     //   }
     // }
 
-    // 1D block distributed array representing intermediate result of scan for each row group
-    // (distributed across first row-block's locales only)
+    // 1D block distributed array representing intermediate result of scan for each column group
+    // (distributed across grid's first row of locales only)
     const interDom = blockDist.createDomain(
       0..<nColGroups,
       targetLocales=reshape(grid[{0..0, 0..<nColBlocks}], {0..<nColBlocks})
     );
     var intermediate: [interDom] int;
 
-    // compute an exclusive scan within each row group
+    // compute an exclusive scan within each column group
     coforall cg in 0..<nColGroups with (ref rowBlockStartOffsets) {
       const colBlockIdx = cg / nTasksPerColBlock;
       on grid[0, colBlockIdx] {
@@ -345,11 +345,11 @@ module SparseMatrix {
       }
     }
 
-    // compute an exclusive scan of each row group's sum
-    intermediate = (+ scan intermediate) - intermediate;
+    // compute a scan of each column-group's sum
+    intermediate = + scan intermediate;
 
-    // update the row groups with the previous group's sum
-    // (the 0'th row group is already correct)
+    // update the column groups with the previous group's sum
+    // (the 0'th column group is already correct)
     coforall cg in 0..<nColGroups with (ref rowBlockStartOffsets) {
       const colBlockIdx = cg / nTasksPerColBlock;
       on grid[0, colBlockIdx] {
@@ -358,7 +358,7 @@ module SparseMatrix {
 
         // TODO: explicit serial loop might be faster than slice assignment here
         rowBlockStartOffsets[{0..<nRowBlocks, jStart..jEnd}] +=
-          intermediate.localAccess[cg];
+          intermediate.localAccess[cg-1];
       }
     }
 
