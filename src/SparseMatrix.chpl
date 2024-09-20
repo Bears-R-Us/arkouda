@@ -350,7 +350,7 @@ module SparseMatrix {
 
     // update the column groups with the previous group's sum
     // (the 0'th column group is already correct)
-    coforall cg in 0..<nColGroups with (ref rowBlockStartOffsets) {
+    coforall cg in 1..<nColGroups with (ref rowBlockStartOffsets) {
       const colBlockIdx = cg / nTasksPerColBlock;
       on grid[0, colBlockIdx] {
         const jStart = cg * nColsPerGroup + 1,
