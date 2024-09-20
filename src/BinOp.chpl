@@ -190,7 +190,7 @@ module BinOp
             ref ra = r.a;
             [(ei,li,ri) in zip(ea,la,ra)] ei = if ri != 0 then li/ri else 0;
           }
-          when "%" { // " modulo
+          when "%" { // modulo " <- quote is workaround for syntax highlighter bug
             ref ea = e;
             ref la = l.a;
             ref ra = r.a;
@@ -320,7 +320,7 @@ module BinOp
           when "**" { 
             e= l.a**r.a;
           }
-          when "%" { // "
+          when "%" { // modulo " <- quote is workaround for syntax highlighter bug
             ref ea = e;
             ref la = l.a;
             ref ra = r.a;
@@ -352,7 +352,7 @@ module BinOp
           when "**" { 
             e= l.a:real**r.a:real;
           }
-          when "%" { // "
+          when "%" { // modulo " <- quote is workaround for syntax highlighter bug
             ref ea = e;
             ref la = l.a;
             ref ra = r.a;
@@ -552,7 +552,7 @@ module BinOp
             ref la = l.a;
             [(ei,li) in zip(ea,la)] ei = if val != 0 then li/val else 0;
           }
-          when "%" { // modulo "
+          when "%" { // modulo " <- quote is workaround for syntax highlighter bug
             ref ea = e;
             ref la = l.a;
             [(ei,li) in zip(ea,la)] ei = if val != 0 then li%val else 0;
@@ -673,7 +673,7 @@ module BinOp
           when "**" { 
             e= l.a**val;
           }
-          when "%" { // "
+          when "%" { // modulo " <- quote is workaround for syntax highlighter bug
             ref ea = e;
             ref la = l.a;
             [(ei,li) in zip(ea,la)] ei = modHelper(li, val);
@@ -724,7 +724,7 @@ module BinOp
           when "**" { 
             e= l.a: real**val: real;
           }
-          when "%" { // "
+          when "%" { // modulo " <- quote is workaround for syntax highlighter bug
             ref ea = e;
             ref la = l.a;
             [(ei,li) in zip(ea,la)] ei = modHelper(li, val);
@@ -897,7 +897,7 @@ module BinOp
             ref ra = r.a;
             [(ei,ri) in zip(ea,ra)] ei = if ri != 0 then val/ri else 0;
           }
-          when "%" { // modulo "
+          when "%" { // modulo " <- quote is workaround for syntax highlighter bug
             ref ea = e;
             ref ra = r.a;
             [(ei,ri) in zip(ea,ra)] ei = if ri != 0 then val%ri else 0;
@@ -1003,7 +1003,7 @@ module BinOp
           when "**" { 
             e= val**r.a;
           }
-          when "%" { // "
+          when "%" { // modulo " <- quote is workaround for syntax highlighter bug
             ref ea = e;
             ref ra = r.a;
             [(ei,ri) in zip(ea,ra)] ei = modHelper(val:real, ri);
@@ -1054,7 +1054,7 @@ module BinOp
           when "**" { 
             e= val:real**r.a:real;
           }
-          when "%" { // "
+          when "%" { // modulo " <- quote is workaround for syntax highlighter bug
             ref ea = e;
             ref ra = r.a;
             [(ei,ri) in zip(ea,ra)] ei = modHelper(val:real, ri);
@@ -1271,7 +1271,7 @@ module BinOp
           }
           visted = true;
         }
-        when "%" { // modulo
+        when "%" { // modulo " <- quote is workaround for syntax highlighter bug
           // we only do in place mod when ri != 0, tmp will be 0 in other locations
           // we can't use ei = li % ri because this can result in negatives
           forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
@@ -1515,7 +1515,7 @@ module BinOp
           }
           visted = true;
         }
-        when "%" { // modulo
+        when "%" { // modulo " <- quote is workaround for syntax highlighter bug
           // we only do in place mod when val != 0, tmp will be 0 in other locations
           // we can't use ei = li % val because this can result in negatives
           forall t in tmp with (var local_val = val, var local_max_size = max_size) {
@@ -1779,7 +1779,7 @@ module BinOp
           }
           visted = true;
         }
-        when "%" { // modulo
+        when "%" { // modulo " <- quote is workaround for syntax highlighter bug
           forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
             if ri != 0 {
               mod(t, t, ri);
