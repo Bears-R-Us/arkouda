@@ -18,6 +18,17 @@ INT_FLOAT_BOOL = [ak.int64, ak.float64, ak.bool_]
 YES_NO = [True, False]
 VOWELS_AND_SUCH = ["a", "e", "i", "o", "u", "AB", 47, 2, 3.14159]
 
+ALLOWED_PUTMASK_PAIRS = [
+    (ak.float64, ak.float64),
+    (ak.float64, ak.int64),
+    (ak.float64, ak.uint64),
+    (ak.float64, ak.bool_),
+    (ak.int64, ak.int64),
+    (ak.int64, ak.bool_),
+    (ak.uint64, ak.uint64),
+    (ak.uint64, ak.bool_),
+    (ak.bool_, ak.bool_),
+]
 
 # There are many ways to create a vector of alternating values.
 # This is a fairly fast and fairly straightforward approach.
@@ -533,8 +544,6 @@ class TestNumeric:
         assert ak.array([100]) == result[1]
 
     def test_value_counts_error(self):
-        pda = ak.linspace(1, 10, 10)
-
         with pytest.raises(TypeError):
             ak.value_counts([0])
 
@@ -801,53 +810,63 @@ class TestNumeric:
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_putmask(self, prob_size):
 
-        for data_type in INT_FLOAT:
+        for d1, d2 in ALLOWED_PUTMASK_PAIRS:
 
             #  three things to test: values same size as data
 
-            nda = np.random.randint(0, 10, prob_size).astype(data_type)
-            result = nda.copy()
-            np.putmask(result, result > 5, result**2)
+            nda = np.random.randint(0, 10, prob_size).astype(d1)
             pda = ak.array(nda)
-            ak.putmask(pda, pda > 5, pda**2)
-            assert (
-                np.all(result == pda.to_ndarray())
-                if data_type == ak.int64
-                else np.allclose(result, pda.to_ndarray())
-            )
+            nda2 = (nda**2).astype(d2)
+            pda2 = ak.array(nda2)
+            hold_that_thought = nda.copy()
+            np.putmask(nda, nda > 5, nda2)
+            ak.putmask(pda, pda > 5, pda2)
+            assert np.allclose(nda, pda.to_ndarray())
 
-            # values shorter than data
+            # values potentially much shorter than data
 
-            result = nda.copy()
+            nda = hold_that_thought.copy()
             pda = ak.array(nda)
-            values = np.arange(3).astype(data_type)
-            np.putmask(result, result > 5, values)
-            ak.putmask(pda, pda > 5, ak.array(values))
-            assert (
-                np.all(result == pda.to_ndarray())
-                if data_type == ak.int64
-                else np.allclose(result, pda.to_ndarray())
-            )
+            npvalues = np.arange(3).astype(d2)
+            akvalues = ak.array(npvalues)
+            np.putmask(nda, nda > 5, npvalues)
+            ak.putmask(pda, pda > 5, akvalues)
+            assert np.allclose(nda, pda.to_ndarray())
+
+            # values shorter than data, but likely not to fit on one locale in a multi-locale test
+
+            nda = hold_that_thought.copy()
+            pda = ak.array(nda)
+            npvalues = np.arange(prob_size // 2 + 1).astype(d2)
+            akvalues = ak.array(npvalues)
+            np.putmask(nda, nda > 5, npvalues)
+            ak.putmask(pda, pda > 5, akvalues)
+            assert np.allclose(nda, pda.to_ndarray())
 
             # values longer than data
 
-            result = nda.copy()
+            nda = hold_that_thought.copy()
             pda = ak.array(nda)
-            values = np.arange(prob_size + 1).astype(data_type)
-            np.putmask(result, result > 5, values)
-            ak.putmask(pda, pda > 5, ak.array(values))
-            assert (
-                np.all(result == pda.to_ndarray())
-                if data_type == ak.int64
-                else np.allclose(result, pda.to_ndarray())
-            )
+            npvalues = np.arange(prob_size + 1000).astype(d2)
+            akvalues = ak.array(npvalues)
+            np.putmask(nda, nda > 5, npvalues)
+            ak.putmask(pda, pda > 5, akvalues)
+            assert np.allclose(nda, pda.to_ndarray())
 
-            # finally try to raise the error
+            # finally try to raise errors
 
-            pda = ak.random.randint(0, 10, 10).astype(ak.float64)
-            values = np.arange(10)
-            with pytest.raises(TypeError):
-                ak.putmask(pda, pda > 3, values)
+        pda = ak.random.randint(0, 10, 10).astype(ak.float64)
+        mask = ak.array([True])  # wrong size error
+        values = ak.arange(10).astype(ak.float64)
+        with pytest.raises(RuntimeError):
+            ak.putmask(pda, mask, values)
+
+        for d2, d1 in ALLOWED_PUTMASK_PAIRS:
+            if d1 != d2:  # wrong types error
+                pda = ak.arange(0, 10, prob_size).astype(d1)
+                pda2 = (10 - pda).astype(d2)
+                with pytest.raises(RuntimeError):
+                    ak.putmask(pda, pda > 5, pda2)
 
     # In the tests below, the rationale for using size = math.sqrt(prob_size) is that
     # the resulting matrices are on the order of size*size.
@@ -1159,54 +1178,3 @@ class TestNumeric:
                     assert np.allclose(
                         np.clip(nd_arry, lo, None), ak.clip(ak_arry, aklo, None).to_ndarray()
                     )
-
-    @pytest.mark.parametrize("prob_size", pytest.prob_size)
-    def test_putmask(self, prob_size):
-
-        for data_type in INT_FLOAT:
-
-            #  three things to test: values same size as data
-
-            nda = np.random.randint(0, 10, prob_size).astype(data_type)
-            result = nda.copy()
-            np.putmask(result, result > 5, result**2)
-            pda = ak.array(nda)
-            ak.putmask(pda, pda > 5, pda**2)
-            assert (
-                np.all(result == pda.to_ndarray())
-                if data_type == ak.int64
-                else np.allclose(result, pda.to_ndarray())
-            )
-
-            # values shorter than data
-
-            result = nda.copy()
-            pda = ak.array(nda)
-            values = np.arange(3).astype(data_type)
-            np.putmask(result, result > 5, values)
-            ak.putmask(pda, pda > 5, ak.array(values))
-            assert (
-                np.all(result == pda.to_ndarray())
-                if data_type == ak.int64
-                else np.allclose(result, pda.to_ndarray())
-            )
-
-            # values longer than data
-
-            result = nda.copy()
-            pda = ak.array(nda)
-            values = np.arange(prob_size + 1).astype(data_type)
-            np.putmask(result, result > 5, values)
-            ak.putmask(pda, pda > 5, ak.array(values))
-            assert (
-                np.all(result == pda.to_ndarray())
-                if data_type == ak.int64
-                else np.allclose(result, pda.to_ndarray())
-            )
-
-            # finally try to raise the error
-
-            pda = ak.random.randint(0, 10, 10).astype(ak.float64)
-            values = np.arange(10)
-            with pytest.raises(TypeError):
-                ak.putmask(pda, pda > 3, values)

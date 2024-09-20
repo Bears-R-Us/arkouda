@@ -1,16 +1,22 @@
 from __future__ import annotations
 
 import builtins
-from typing import Optional, Sequence, Union
+from typing import Optional, Sequence, Union, cast
 
 import numpy as np
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
-from arkouda.dtypes import dtype, int_scalars
+from arkouda.dtypes import NumericDTypes, dtype, int_scalars
 from arkouda.logger import getArkoudaLogger
+from arkouda.pdarrayclass import create_pdarrays, pdarray
 
 logger = getArkoudaLogger(name="sparrayclass")
+
+__all__ = [
+    "sparray",
+    "create_sparray",
+]
 
 
 class sparray:
@@ -93,6 +99,37 @@ class sparray:
     #     from arkouda.client import sparrayIterThresh
     #     print("Called repr")
     #     return generic_msg(cmd="repr", args={"array": self, "printThresh": sparrayIterThresh})
+
+    """
+    Converts the sparse matrix to a list of 3 pdarrays (rows, cols, vals)
+
+    Returns
+    -------
+    List[ak.pdarray]
+        A list of 3 pdarrays which contain the row indices, the column indices,
+        and the values at the respective indices within the sparse matrix.
+    Examples
+    --------
+    >>> a = ak.random_sparse_matrix(100,0.2,"CSR");
+    >>> a.to_pdarray()
+    [array([1 1 1 ... 100 100 100]), array([17 21 29 ... 75 77 85]), array([0 0 0 ... 0 0 0])]
+    """
+
+    @typechecked
+    def to_pdarray(self):
+        dtype = self.dtype
+        dtype_name = cast(np.dtype, dtype).name
+        # check dtype for error
+        if dtype_name not in NumericDTypes:
+            raise TypeError(f"unsupported dtype {dtype}")
+        responseArrays = generic_msg(cmd="sparse_to_pdarrays", args={"matrix": self})
+        array_list = create_pdarrays(responseArrays)
+        return array_list
+
+    """"""
+
+    def fill_vals(self, a: pdarray):
+        generic_msg(cmd="fill_sparse_vals", args={"matrix": self, "vals": a})
 
 
 # creates sparray object
