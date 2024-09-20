@@ -48,7 +48,6 @@ module SortMsg
       }
     }
 
-
     proc sort(array: [?d] ?t, alg: string, axis: int): [d] t throws 
     where ((t == real) || (t==int) || (t==uint(64))) && (d.rank > 1) {
 
@@ -92,7 +91,6 @@ module SortMsg
       return sorted;
     }
 
-
     proc sort(array: [?d] ?t, alg: string, axis: int): [d] t throws 
     where ((t != real) && (t!=int) && (t!=uint(64))) {
       throw new Error("sort does not support type %s".format(type2str(t)));
@@ -100,8 +98,8 @@ module SortMsg
 
     // https://data-apis.org/array-api/latest/API_specification/generated/array_api.searchsorted.html#array_api.searchsorted
     @arkouda.registerCommand
-    proc searchSorted(x1: [?d1] ?t, x2: [?d2] ?t2, side: string): [d2] int throws
-    where (t == real) && (t2 == real) && (d1.rank == 1) {
+    proc searchSorted(x1: [?d1] real, x2: [?d2] real, side: string): [d2] int throws
+    where (d1.rank == 1) {
 
       if side != "left" && side != "right" {
           throw new Error("searchSorted side must be a string with value 'left' or 'right'.");
@@ -125,14 +123,9 @@ module SortMsg
       return ret;
     }
 
-    proc searchSorted(x1: [?d1] ?t, x2: [?d2] ?t2, side: string): [d2] int throws
+    proc searchSorted(x1: [?d1] real, x2: [?d2] real, side: string): [d2] int throws
     where (d1.rank != 1){
       throw new Error("searchSorted only arrays x1 of dimension 1.");
-    }
-
-    proc searchSorted(x1: [?d1] ?t, x2: [?d2] ?t2, side: string): [d2] int throws
-    where ((t != real) || (t2 != real)) && (d1.rank == 1){
-      throw new Error("searchSorted only supports float64 type.");
     }
 
     record leftCmp: relativeComparator {

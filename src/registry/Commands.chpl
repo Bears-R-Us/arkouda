@@ -1905,10 +1905,10 @@ proc ark_sort_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed 
   return ark_reg_sort_generic(cmd, msgArgs, st, array_dtype_0=bigint, array_nd_0=1);
 registerFunction('sort<bigint,1>', ark_sort_bigint_1, 'SortMsg', 34);
 
-proc ark_reg_searchSorted_generic(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype_0, param array_nd_0: int, type array_dtype_1, param array_nd_1: int): MsgTuple throws {
-  var x1_array_sym = st[msgArgs['x1']]: SymEntry(array_dtype_0, array_nd_0);
+proc ark_reg_searchSorted_generic(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd_0: int, param array_nd_1: int): MsgTuple throws {
+  var x1_array_sym = st[msgArgs['x1']]: SymEntry(real, array_nd_0);
   ref x1 = x1_array_sym.a;
-  var x2_array_sym = st[msgArgs['x2']]: SymEntry(array_dtype_1, array_nd_1);
+  var x2_array_sym = st[msgArgs['x2']]: SymEntry(real, array_nd_1);
   ref x2 = x2_array_sym.a;
   var side = msgArgs['side'].toScalar(string);
   var ark_result = SortMsg.searchSorted(x1,x2,side);
@@ -1917,149 +1917,9 @@ proc ark_reg_searchSorted_generic(cmd: string, msgArgs: borrowed MessageArgs, st
   return st.insert(ark_result_symbol);
 }
 
-proc ark_searchSorted_int_1_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=int, array_nd_0=1, array_dtype_1=int, array_nd_1=1);
-registerFunction('searchSorted<int64,1,int64,1>', ark_searchSorted_int_1_int_1, 'SortMsg', 103);
-
-proc ark_searchSorted_int_1_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=int, array_nd_0=1, array_dtype_1=uint, array_nd_1=1);
-registerFunction('searchSorted<int64,1,uint64,1>', ark_searchSorted_int_1_uint_1, 'SortMsg', 103);
-
-proc ark_searchSorted_int_1_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=int, array_nd_0=1, array_dtype_1=uint(8), array_nd_1=1);
-registerFunction('searchSorted<int64,1,uint8,1>', ark_searchSorted_int_1_uint8_1, 'SortMsg', 103);
-
-proc ark_searchSorted_int_1_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=int, array_nd_0=1, array_dtype_1=real, array_nd_1=1);
-registerFunction('searchSorted<int64,1,float64,1>', ark_searchSorted_int_1_real_1, 'SortMsg', 103);
-
-proc ark_searchSorted_int_1_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=int, array_nd_0=1, array_dtype_1=bool, array_nd_1=1);
-registerFunction('searchSorted<int64,1,bool,1>', ark_searchSorted_int_1_bool_1, 'SortMsg', 103);
-
-proc ark_searchSorted_int_1_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=int, array_nd_0=1, array_dtype_1=bigint, array_nd_1=1);
-registerFunction('searchSorted<int64,1,bigint,1>', ark_searchSorted_int_1_bigint_1, 'SortMsg', 103);
-
-proc ark_searchSorted_uint_1_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=uint, array_nd_0=1, array_dtype_1=int, array_nd_1=1);
-registerFunction('searchSorted<uint64,1,int64,1>', ark_searchSorted_uint_1_int_1, 'SortMsg', 103);
-
-proc ark_searchSorted_uint_1_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=uint, array_nd_0=1, array_dtype_1=uint, array_nd_1=1);
-registerFunction('searchSorted<uint64,1,uint64,1>', ark_searchSorted_uint_1_uint_1, 'SortMsg', 103);
-
-proc ark_searchSorted_uint_1_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=uint, array_nd_0=1, array_dtype_1=uint(8), array_nd_1=1);
-registerFunction('searchSorted<uint64,1,uint8,1>', ark_searchSorted_uint_1_uint8_1, 'SortMsg', 103);
-
-proc ark_searchSorted_uint_1_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=uint, array_nd_0=1, array_dtype_1=real, array_nd_1=1);
-registerFunction('searchSorted<uint64,1,float64,1>', ark_searchSorted_uint_1_real_1, 'SortMsg', 103);
-
-proc ark_searchSorted_uint_1_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=uint, array_nd_0=1, array_dtype_1=bool, array_nd_1=1);
-registerFunction('searchSorted<uint64,1,bool,1>', ark_searchSorted_uint_1_bool_1, 'SortMsg', 103);
-
-proc ark_searchSorted_uint_1_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=uint, array_nd_0=1, array_dtype_1=bigint, array_nd_1=1);
-registerFunction('searchSorted<uint64,1,bigint,1>', ark_searchSorted_uint_1_bigint_1, 'SortMsg', 103);
-
-proc ark_searchSorted_uint8_1_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=uint(8), array_nd_0=1, array_dtype_1=int, array_nd_1=1);
-registerFunction('searchSorted<uint8,1,int64,1>', ark_searchSorted_uint8_1_int_1, 'SortMsg', 103);
-
-proc ark_searchSorted_uint8_1_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=uint(8), array_nd_0=1, array_dtype_1=uint, array_nd_1=1);
-registerFunction('searchSorted<uint8,1,uint64,1>', ark_searchSorted_uint8_1_uint_1, 'SortMsg', 103);
-
-proc ark_searchSorted_uint8_1_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=uint(8), array_nd_0=1, array_dtype_1=uint(8), array_nd_1=1);
-registerFunction('searchSorted<uint8,1,uint8,1>', ark_searchSorted_uint8_1_uint8_1, 'SortMsg', 103);
-
-proc ark_searchSorted_uint8_1_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=uint(8), array_nd_0=1, array_dtype_1=real, array_nd_1=1);
-registerFunction('searchSorted<uint8,1,float64,1>', ark_searchSorted_uint8_1_real_1, 'SortMsg', 103);
-
-proc ark_searchSorted_uint8_1_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=uint(8), array_nd_0=1, array_dtype_1=bool, array_nd_1=1);
-registerFunction('searchSorted<uint8,1,bool,1>', ark_searchSorted_uint8_1_bool_1, 'SortMsg', 103);
-
-proc ark_searchSorted_uint8_1_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=uint(8), array_nd_0=1, array_dtype_1=bigint, array_nd_1=1);
-registerFunction('searchSorted<uint8,1,bigint,1>', ark_searchSorted_uint8_1_bigint_1, 'SortMsg', 103);
-
-proc ark_searchSorted_real_1_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=real, array_nd_0=1, array_dtype_1=int, array_nd_1=1);
-registerFunction('searchSorted<float64,1,int64,1>', ark_searchSorted_real_1_int_1, 'SortMsg', 103);
-
-proc ark_searchSorted_real_1_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=real, array_nd_0=1, array_dtype_1=uint, array_nd_1=1);
-registerFunction('searchSorted<float64,1,uint64,1>', ark_searchSorted_real_1_uint_1, 'SortMsg', 103);
-
-proc ark_searchSorted_real_1_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=real, array_nd_0=1, array_dtype_1=uint(8), array_nd_1=1);
-registerFunction('searchSorted<float64,1,uint8,1>', ark_searchSorted_real_1_uint8_1, 'SortMsg', 103);
-
-proc ark_searchSorted_real_1_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=real, array_nd_0=1, array_dtype_1=real, array_nd_1=1);
-registerFunction('searchSorted<float64,1,float64,1>', ark_searchSorted_real_1_real_1, 'SortMsg', 103);
-
-proc ark_searchSorted_real_1_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=real, array_nd_0=1, array_dtype_1=bool, array_nd_1=1);
-registerFunction('searchSorted<float64,1,bool,1>', ark_searchSorted_real_1_bool_1, 'SortMsg', 103);
-
-proc ark_searchSorted_real_1_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=real, array_nd_0=1, array_dtype_1=bigint, array_nd_1=1);
-registerFunction('searchSorted<float64,1,bigint,1>', ark_searchSorted_real_1_bigint_1, 'SortMsg', 103);
-
-proc ark_searchSorted_bool_1_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=bool, array_nd_0=1, array_dtype_1=int, array_nd_1=1);
-registerFunction('searchSorted<bool,1,int64,1>', ark_searchSorted_bool_1_int_1, 'SortMsg', 103);
-
-proc ark_searchSorted_bool_1_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=bool, array_nd_0=1, array_dtype_1=uint, array_nd_1=1);
-registerFunction('searchSorted<bool,1,uint64,1>', ark_searchSorted_bool_1_uint_1, 'SortMsg', 103);
-
-proc ark_searchSorted_bool_1_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=bool, array_nd_0=1, array_dtype_1=uint(8), array_nd_1=1);
-registerFunction('searchSorted<bool,1,uint8,1>', ark_searchSorted_bool_1_uint8_1, 'SortMsg', 103);
-
-proc ark_searchSorted_bool_1_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=bool, array_nd_0=1, array_dtype_1=real, array_nd_1=1);
-registerFunction('searchSorted<bool,1,float64,1>', ark_searchSorted_bool_1_real_1, 'SortMsg', 103);
-
-proc ark_searchSorted_bool_1_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=bool, array_nd_0=1, array_dtype_1=bool, array_nd_1=1);
-registerFunction('searchSorted<bool,1,bool,1>', ark_searchSorted_bool_1_bool_1, 'SortMsg', 103);
-
-proc ark_searchSorted_bool_1_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=bool, array_nd_0=1, array_dtype_1=bigint, array_nd_1=1);
-registerFunction('searchSorted<bool,1,bigint,1>', ark_searchSorted_bool_1_bigint_1, 'SortMsg', 103);
-
-proc ark_searchSorted_bigint_1_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=bigint, array_nd_0=1, array_dtype_1=int, array_nd_1=1);
-registerFunction('searchSorted<bigint,1,int64,1>', ark_searchSorted_bigint_1_int_1, 'SortMsg', 103);
-
-proc ark_searchSorted_bigint_1_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=bigint, array_nd_0=1, array_dtype_1=uint, array_nd_1=1);
-registerFunction('searchSorted<bigint,1,uint64,1>', ark_searchSorted_bigint_1_uint_1, 'SortMsg', 103);
-
-proc ark_searchSorted_bigint_1_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=bigint, array_nd_0=1, array_dtype_1=uint(8), array_nd_1=1);
-registerFunction('searchSorted<bigint,1,uint8,1>', ark_searchSorted_bigint_1_uint8_1, 'SortMsg', 103);
-
-proc ark_searchSorted_bigint_1_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=bigint, array_nd_0=1, array_dtype_1=real, array_nd_1=1);
-registerFunction('searchSorted<bigint,1,float64,1>', ark_searchSorted_bigint_1_real_1, 'SortMsg', 103);
-
-proc ark_searchSorted_bigint_1_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=bigint, array_nd_0=1, array_dtype_1=bool, array_nd_1=1);
-registerFunction('searchSorted<bigint,1,bool,1>', ark_searchSorted_bigint_1_bool_1, 'SortMsg', 103);
-
-proc ark_searchSorted_bigint_1_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
-  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_dtype_0=bigint, array_nd_0=1, array_dtype_1=bigint, array_nd_1=1);
-registerFunction('searchSorted<bigint,1,bigint,1>', ark_searchSorted_bigint_1_bigint_1, 'SortMsg', 103);
+proc ark_searchSorted_1_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_nd_0=1, array_nd_1=1);
+registerFunction('searchSorted<1,1>', ark_searchSorted_1_1, 'SortMsg', 101);
 
 import StatsMsg;
 
