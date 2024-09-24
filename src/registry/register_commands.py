@@ -136,7 +136,17 @@ class FormalTypeSpec:
         self.name = name
         self.storage_kind = storage_kind
         self.type_str = type_str
-        self.info = [] if info is None else (info if isinstance(info, list) else [info,])
+        self.info = (
+            []
+            if info is None
+            else (
+                info
+                if isinstance(info, list)
+                else [
+                    info,
+                ]
+            )
+        )
 
     def append_info(self, info):
         self.info.append(info)
@@ -154,7 +164,11 @@ class FormalTypeSpec:
         return self.kind == formalKind.SCALAR and self.type_str in chapel_scalar_types
 
     def stringify(self) -> str:
-        return f"{self.storage_kind} {self.name}: {self.type_str}" if self.type_str else f"{self.storage_kind} {self.name}"
+        return (
+            f"{self.storage_kind} {self.name}: {self.type_str}"
+            if self.type_str
+            else f"{self.storage_kind} {self.name}"
+        )
 
 
 def get_formals(fn, require_type_annotations):
@@ -201,7 +215,9 @@ def get_formals(fn, require_type_annotations):
                 else:
                     # TODO:  `x: []` and `x: [?d]` are currently treated as invalid formal type expressions
                     raise ValueError("invalid formal type expression")
-            elif isinstance(te, chapel.FnCall):  # Composite types (list and borrowed-class)
+            elif isinstance(
+                te, chapel.FnCall
+            ):  # Composite types (list and borrowed-class)
                 if ce := te.called_expression():
                     if isinstance(ce, chapel.Identifier):
                         call_name = ce.name()
@@ -213,10 +229,14 @@ def get_formals(fn, require_type_annotations):
                                     f"unsupported formal type for registration {list_type}; list element type must be a scalar",
                                 )
                             else:
-                                return FormalTypeSpec(formalKind.LIST, name, sk, info=list_type)
+                                return FormalTypeSpec(
+                                    formalKind.LIST, name, sk, info=list_type
+                                )
                         elif call_name == "borrowed":
                             ten = call_name + " " + list(te.actuals())[0].name()
-                            return FormalTypeSpec(formalKind.BORROWED_CLASS, name, sk, ten)
+                            return FormalTypeSpec(
+                                formalKind.BORROWED_CLASS, name, sk, ten
+                            )
                         else:
                             error_message(
                                 f"registering '{fn.name()}'",
@@ -232,7 +252,9 @@ def get_formals(fn, require_type_annotations):
                         f"registering '{fn.name()}'",
                         f"unsupported type expression for registration {extract_ast_block_text(te.body())}",
                     )
-            elif isinstance(te, chapel.OpCall) and te.is_binary_op() and te.op() == "*":  # Homog. Tuple types
+            elif (
+                isinstance(te, chapel.OpCall) and te.is_binary_op() and te.op() == "*"
+            ):  # Homog. Tuple types
                 ft = FormalTypeSpec(formalKind.HOMOG_TUPLE, name, sk)
                 actuals = list(te.actuals())
 
@@ -505,11 +527,17 @@ def unpack_array_arg(arg_name, array_count, finfo, domain_queries, dtype_queries
         nd_generic_formal_info = None
     else:
         nd_arg_name = "array_nd_" + str(array_count)
-        nd_generic_formal_info = FormalTypeSpec(formalKind.SCALAR, nd_arg_name, "param", "int")
+        nd_generic_formal_info = FormalTypeSpec(
+            formalKind.SCALAR, nd_arg_name, "param", "int"
+        )
 
     # check if the array formal has a static type or a type-query
     # if not, generate a unique name and formal info for the dtype argument
-    if finfo is not None and finfo[1] is not None and isinstance(finfo[1], StaticTypeInfo):
+    if (
+        finfo is not None
+        and finfo[1] is not None
+        and isinstance(finfo[1], StaticTypeInfo)
+    ):
         dtype_arg_name = finfo[1].value
         dtype_generic_formal_info = None
     elif (
@@ -522,7 +550,9 @@ def unpack_array_arg(arg_name, array_count, finfo, domain_queries, dtype_queries
         dtype_generic_formal_info = None
     else:
         dtype_arg_name = "array_dtype_" + str(array_count)
-        dtype_generic_formal_info = FormalTypeSpec(formalKind.SCALAR, dtype_arg_name, storage_kind="type")
+        dtype_generic_formal_info = FormalTypeSpec(
+            formalKind.SCALAR, dtype_arg_name, storage_kind="type"
+        )
 
     return (
         f"\tvar {arg_name}_array_sym = {SYMTAB_FORMAL_NAME}[{ARGS_FORMAL_NAME}['{arg_name}']]: {ARRAY_ENTRY_CLASS_NAME}({dtype_arg_name}, {nd_arg_name});\n"
@@ -649,7 +679,9 @@ def gen_arg_unpacking(formals):
 
     for formal_spec in formals:
         if formal_spec.is_chapel_scalar_type():
-            unpack_lines.append(unpack_scalar_arg(formal_spec.name, formal_spec.type_str))
+            unpack_lines.append(
+                unpack_scalar_arg(formal_spec.name, formal_spec.type_str)
+            )
         elif formal_spec.kind == formalKind.ARRAY:
             # finfo[0] is the domain query info, finfo[1] is the dtype query info
             finfo = formal_spec.info
@@ -817,7 +849,9 @@ def gen_command_proc(name, return_type, formals, mod_name):
 
     # get the names of the array-elt-type queries in the formals
     array_etype_queries = [
-        f.info[1].name for f in formals if (f.kind == formalKind.ARRAY and len(f.info) > 0)
+        f.info[1].name
+        for f in formals
+        if (f.kind == formalKind.ARRAY and len(f.info) > 0)
     ]
 
     # assume the returned type is a symbol if it's an identifier that is not a scalar or type-query reference
