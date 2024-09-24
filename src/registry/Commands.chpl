@@ -1868,6 +1868,59 @@ proc ark_uniqueAll_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borr
   return SetMsg.uniqueAll(cmd, msgArgs, st, array_dtype=bigint, array_nd=1);
 registerFunction('uniqueAll<bigint,1>', ark_uniqueAll_bigint_1, 'SetMsg', 78);
 
+import SortMsg;
+
+proc ark_reg_sort_generic(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype_0, param array_nd_0: int): MsgTuple throws {
+  var array_array_sym = st[msgArgs['array']]: SymEntry(array_dtype_0, array_nd_0);
+  ref array = array_array_sym.a;
+  var alg = msgArgs['alg'].toScalar(string);
+  var axis = msgArgs['axis'].toScalar(int);
+  var ark_result = SortMsg.sort(array,alg,axis);
+  var ark_result_symbol = new shared SymEntry(ark_result);
+
+  return st.insert(ark_result_symbol);
+}
+
+proc ark_sort_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_sort_generic(cmd, msgArgs, st, array_dtype_0=int, array_nd_0=1);
+registerFunction('sort<int64,1>', ark_sort_int_1, 'SortMsg', 34);
+
+proc ark_sort_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_sort_generic(cmd, msgArgs, st, array_dtype_0=uint, array_nd_0=1);
+registerFunction('sort<uint64,1>', ark_sort_uint_1, 'SortMsg', 34);
+
+proc ark_sort_uint8_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_sort_generic(cmd, msgArgs, st, array_dtype_0=uint(8), array_nd_0=1);
+registerFunction('sort<uint8,1>', ark_sort_uint8_1, 'SortMsg', 34);
+
+proc ark_sort_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_sort_generic(cmd, msgArgs, st, array_dtype_0=real, array_nd_0=1);
+registerFunction('sort<float64,1>', ark_sort_real_1, 'SortMsg', 34);
+
+proc ark_sort_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_sort_generic(cmd, msgArgs, st, array_dtype_0=bool, array_nd_0=1);
+registerFunction('sort<bool,1>', ark_sort_bool_1, 'SortMsg', 34);
+
+proc ark_sort_bigint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_sort_generic(cmd, msgArgs, st, array_dtype_0=bigint, array_nd_0=1);
+registerFunction('sort<bigint,1>', ark_sort_bigint_1, 'SortMsg', 34);
+
+proc ark_reg_searchSorted_generic(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd_0: int, param array_nd_1: int): MsgTuple throws {
+  var x1_array_sym = st[msgArgs['x1']]: SymEntry(real, array_nd_0);
+  ref x1 = x1_array_sym.a;
+  var x2_array_sym = st[msgArgs['x2']]: SymEntry(real, array_nd_1);
+  ref x2 = x2_array_sym.a;
+  var side = msgArgs['side'].toScalar(string);
+  var ark_result = SortMsg.searchSorted(x1,x2,side);
+  var ark_result_symbol = new shared SymEntry(ark_result);
+
+  return st.insert(ark_result_symbol);
+}
+
+proc ark_searchSorted_1_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+  return ark_reg_searchSorted_generic(cmd, msgArgs, st, array_nd_0=1, array_nd_1=1);
+registerFunction('searchSorted<1,1>', ark_searchSorted_1_1, 'SortMsg', 101);
+
 import StatsMsg;
 
 proc ark_reg_mean_generic(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype_0, param array_nd_0: int): MsgTuple throws {

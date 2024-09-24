@@ -184,7 +184,7 @@ def searchsorted(
         _x1 = x1
 
     resp = generic_msg(
-        cmd=f"searchSorted{x2.ndim}D",
+        cmd=f"searchSorted<1,{x2.ndim}>",
         args={
             "x1": _x1._array,
             "x2": x2._array,

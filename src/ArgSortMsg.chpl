@@ -64,7 +64,7 @@ module ArgSortMsg
     };
     config const defaultSortAlgorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD;
 
-    proc getSortingAlgoritm(algoName:string) throws{
+    proc getSortingAlgorithm(algoName:string) throws{
       var algorithm = defaultSortAlgorithm;
       if algoName != "" {
         try {
@@ -430,7 +430,7 @@ module ArgSortMsg
     {
         const name = msgArgs["name"],
               algoName = msgArgs["algoName"].toScalar(string),
-              algorithm = getSortingAlgoritm(algoName),
+              algorithm = getSortingAlgorithm(algoName),
               axis =  msgArgs["axis"].toScalar(int),
               symEntry = st[msgArgs["name"]]: SymEntry(array_dtype, array_nd),
               vals = if (array_dtype == bool) then (symEntry.a:int) else (symEntry.a: array_dtype);
@@ -449,7 +449,7 @@ module ArgSortMsg
         const name = msgArgs["name"].toScalar(string),
               strings = getSegString(name, st),
               algoName = msgArgs["algoName"].toScalar(string),
-              algorithm = getSortingAlgoritm(algoName);
+              algorithm = getSortingAlgorithm(algoName);
 
         // check and throw if over memory limit
         overMemLimit((8 * strings.size * 8)
