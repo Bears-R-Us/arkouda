@@ -64,7 +64,7 @@ module Histogram
     proc histogramGlobalAtomic(x: [?aD] ?etype1, y: [aD] ?etype2, xMin: etype1, xMax: etype1, yMin: etype2, yMax: etype2, numXBins: int, numYBins: int, xBinWidth: real, yBinWidth: real) throws {
         const totNumBins = numXBins * numYBins;
         var hD = makeDistDom(totNumBins);
-        var atomicHist: [hD] atomic int;
+        var atomicHist: [hD] atomic real;
 
         // count into atomic histogram
         forall (xi, yi) in zip(x, y) {
@@ -78,7 +78,7 @@ module Histogram
             atomicHist[(xiBin * numYBins) + yiBin].add(1);
         }
 
-        var hist = makeDistArray(totNumBins,int);
+        var hist = makeDistArray(totNumBins,real);
         // copy from atomic histogram to normal histogram
         [(e,ae) in zip(hist, atomicHist)] e = ae.read();
         try! hgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
