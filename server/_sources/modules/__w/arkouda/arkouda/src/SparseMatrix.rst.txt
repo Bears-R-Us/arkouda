@@ -27,7 +27,23 @@ or
 
 .. function:: proc fillSparseMatrix(ref spsMat, const A: [?D] ?eltType) throws
 
-.. function:: proc sparseMatToPdarray(const ref spsMat, ref rows, ref cols, ref vals)
+.. function:: proc sparseMatToPdarrayCSR(const ref spsMat, ref rows, ref cols, ref vals)
+
+   
+   Fill the rows, cols, and vals arrays with the non-zero indices and values
+   from the sparse matrix in row-major order.
+   
+
+.. function:: proc sparseMatToPdarrayCSC(const ref spsMat, ref rows, ref cols, ref vals)
+
+   
+   Fill the rows, cols, and vals arrays with the non-zero indices and values
+   from the sparse matrix in col-major order.
+   
+
+.. function:: proc flattenedExScanCSR(in nnzPerColBlock: [?d] int, nRowGroups: int, nTasksPerRowBlock: int, nRowsPerGroup: int)
+
+.. function:: proc flattenedExScanCSC(in nnzPerRowBlock: [?d] int, nColGroups: int, nTasksPerColBlock: int, nColsPerGroup: int)
 
 .. function:: proc sparseMatMatMult(A, B, ref spsData)
 
