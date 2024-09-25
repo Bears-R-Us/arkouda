@@ -92,11 +92,11 @@ module SparseMatrixMsg {
         if gEnt.layoutStr=="CSC" {
             // Hardcode for int right now
             var sparrayEntry = gEnt.toSparseSymEntry(int, dimensions=2, layout.CSC);
-            sparseMatToPdarray(sparrayEntry.a, rows, cols, vals);
+            sparseMatToPdarrayCSC(sparrayEntry.a, rows, cols, vals);
         } else if gEnt.layoutStr=="CSR" {
             // Hardcode for int right now
             var sparrayEntry = gEnt.toSparseSymEntry(int, dimensions=2, layout.CSR);
-            sparseMatToPdarray(sparrayEntry.a, rows, cols, vals);
+            sparseMatToPdarrayCSR(sparrayEntry.a, rows, cols, vals);
         } else {
             throw getErrorWithContext(
                                     msg="unsupported layout for sparse matrix: %s".format(gEnt.layoutStr),
