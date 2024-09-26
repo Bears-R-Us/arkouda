@@ -648,6 +648,8 @@
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
                 <span class="s2">&quot;Array exceeds allowed transfer size. Increase ak.client.maxTransferBytes to allow&quot;</span>
             <span class="p">)</span>
+        <span class="c1">#   Make a copy to avoid error #3757</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="c1"># Pack binary array data into a bytes object with a command header</span>
         <span class="c1"># including the dtype and size. If the server has a different byteorder</span>
         <span class="c1"># than our numpy array we need to swap to match since the server expects</span>
