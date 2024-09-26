@@ -858,8 +858,6 @@ def gen_command_proc(name, return_type, formals, mod_name):
         )
     ]
 
-    print(array_etype_queries)
-
     # assume the returned type is a symbol if it's an identifier that is not a scalar or type-query reference
     # or if it is a `SymEntry` type-constructor call
     returns_symbol = (
