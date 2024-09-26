@@ -291,6 +291,8 @@ def array(
             raise RuntimeError(
                 "Array exceeds allowed transfer size. Increase ak.client.maxTransferBytes to allow"
             )
+        #   Make a copy to avoid error #3757
+        a = a.copy()
         # Pack binary array data into a bytes object with a command header
         # including the dtype and size. If the server has a different byteorder
         # than our numpy array we need to swap to match since the server expects
