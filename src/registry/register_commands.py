@@ -851,8 +851,14 @@ def gen_command_proc(name, return_type, formals, mod_name):
     array_etype_queries = [
         f.info[1].name
         for f in formals
-        if (f.kind == formalKind.ARRAY and len(f.info) > 0)
+        if (
+            f.kind == formalKind.ARRAY
+            and len(f.info) > 0
+            and isinstance(f.info[1], FormalQuery)
+        )
     ]
+
+    print(array_etype_queries)
 
     # assume the returned type is a symbol if it's an identifier that is not a scalar or type-query reference
     # or if it is a `SymEntry` type-constructor call
@@ -867,7 +873,7 @@ def gen_command_proc(name, return_type, formals, mod_name):
             # TODO: generalize this to any class type identifier or class type-constructor call that
             # inherits from 'AbstractSymEntry'
             isinstance(return_type, chapel.FnCall)
-            and return_type.called_expression().name() == "SymEntry"
+            and return_type.called_expression().name() == ARRAY_ENTRY_CLASS_NAME
         )
     )
     returns_array = (
