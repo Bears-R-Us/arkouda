@@ -251,6 +251,7 @@ def sort(pda: pdarray, algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortL
     if pda.size == 0:
         return zeros(0, dtype=pda.dtype)
     repMsg = generic_msg(
-        cmd=f"sort{pda.ndim}D", args={"alg": algorithm.name, "array": pda, "axis": axis}
+        cmd=f"sort<{pda.dtype.name},{pda.ndim}>",
+        args={"alg": algorithm.name, "array": pda, "axis": axis},
     )
     return create_pdarray(cast(str, repMsg))
