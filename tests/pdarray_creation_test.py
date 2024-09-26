@@ -8,6 +8,7 @@ import pandas as pd
 import pytest
 
 import arkouda as ak
+from arkouda.testing import assert_arkouda_array_equal
 
 INT_SCALARS = list(ak.dtypes.int_scalars.__args__)
 NUMERIC_SCALARS = list(ak.dtypes.numeric_scalars.__args__)
@@ -103,6 +104,17 @@ class TestPdarrayCreation:
 
         with pytest.raises(TypeError):
             ak.array(list(list(0)))
+
+    @pytest.mark.skip_if_max_rank_less_than(2)
+    def test_array_creation_transpose_bug_reproducer(self):
+
+        import numpy as np
+
+        rows = 5
+        cols = 5
+        nda = np.random.randint(1, 10, (rows, cols))
+
+        assert_arkouda_array_equal(ak.transpose(ak.array(nda)), ak.array(np.transpose(nda)))
 
     def test_infer_shape_from_size(self):
         from arkouda.util import _infer_shape_from_size
