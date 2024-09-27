@@ -269,7 +269,6 @@ module BinOp
     } else if (l.etype == uint && r.etype == int) ||
               (l.etype == int && r.etype == uint) {
 
-      writeln("correct dispatch... ", op, "  ", l.etype: string, " ", r.etype: string, " ", etype: string);
       select op {
         when "+" {
           e = l.a:real + r.a:real;
