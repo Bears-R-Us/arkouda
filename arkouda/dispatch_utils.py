@@ -1,6 +1,6 @@
 import base64
 import pickle
-import numba
+import numba #type: ignore
 
 print("importing arkouda.dispatch_utils")
 

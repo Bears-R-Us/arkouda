@@ -1,5 +1,5 @@
 import base64
-import cloudpickle
+import cloudpickle #type: ignore
 
 import arkouda as ak
 

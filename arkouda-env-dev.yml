@@ -23,6 +23,7 @@ dependencies:
   - scipy<=1.13.1
   - pytest>=6.0
   - pytest-env
+  
 
   # Developer dependencies
   - pexpect
@@ -42,6 +43,7 @@ dependencies:
   - pandas-stubs
   - types-python-dateutil
   - cloudpickle
+  - numba
 
 
   - pip:
