@@ -41,6 +41,8 @@ dependencies:
   - mathjax
   - pandas-stubs
   - types-python-dateutil
+  - cloudpickle
+
 
   - pip:
     # Developer dependencies
