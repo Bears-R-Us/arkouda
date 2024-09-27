@@ -128,6 +128,10 @@ Run the `make` command to build the `arkouda_server` executable.
 make
 ```
 
+Note:
+This step can require a large amount of RAM, especially when building with multi-locale enabled.
+If you are running in wsl or a container and your build fails, consider increasing the memory allocation. 
+
 ## Building the Arkouda Documentation
 The Arkouda documentation is [here](https://bears-r-us.github.io/arkouda/). This section is only necessary
 if you're updating the documentation.
