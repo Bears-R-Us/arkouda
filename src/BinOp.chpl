@@ -289,7 +289,6 @@ module BinOp
           return MsgTuple.error(nie);
         }
       }
-      writeln("returning... ", op, "  ", l.etype: string, " ", r.etype: string, " ", etype: string);
       return st.insert(new shared SymEntry(e));
     }
     // If either RHS or LHS type is real, the same operations are supported and the
