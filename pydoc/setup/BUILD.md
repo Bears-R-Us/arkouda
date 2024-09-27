@@ -142,8 +142,13 @@ if you're updating the documentation.
 First ensure that all Python doc dependencies including sphinx and sphinx extensions have been installed as detailed 
 above. 
 
-_Important: if Chapel was built locally, ```make chpldoc``` must be executed as detailed above to enable 
-generation of the Chapel docs via the chpldoc executable._
+_Important: if Chapel was built locally, you will first need to  ```make chpldoc``` to build the server docs_
+
+The commands to install `chpldoc` are: 
+```bash
+cd $CHPL_HOME
+make chpldoc
+```
 
 Now that all doc generation dependencies for both Python and Chapel have been installed, there are three make targets for 
 generating docs:
