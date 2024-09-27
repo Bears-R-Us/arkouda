@@ -286,7 +286,6 @@ module BinOp
           [(ei,li,ri) in zip(ea,la,ra)] ei = floorDivisionHelper(li, ri);
         }
         otherwise {
-          writeln("wtf... ", op, "  ", l.etype: string, " ", r.etype: string, " ", etype: string);
           return MsgTuple.error(nie);
         }
       }
