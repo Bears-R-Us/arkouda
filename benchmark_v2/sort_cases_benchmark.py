@@ -4,7 +4,6 @@ import pytest
 from arkouda.sorting import SortingAlgorithm
 
 TYPES = ("int64", "float64")
-POWERLAW_DATA = None
 
 
 def get_nbytes(data):
@@ -63,15 +62,11 @@ def bench_random_uniform(benchmark, algo, dtype, bits):
 
 
 def _generate_power_law_data():
-    global POWERLAW_DATA
+    y = ak.uniform(pytest.prob_size)
+    a = -2.5  # power law exponent, between -2 and -3
+    ub = 2**32  # upper bound
 
-    if POWERLAW_DATA is None:
-        y = ak.uniform(pytest.prob_size)
-        a = -2.5  # power law exponent, between -2 and -3
-        ub = 2 ** 32  # upper bound
-        POWERLAW_DATA = ((ub ** (a + 1) - 1) * y + 1) ** (1 / (a + 1))
-
-    return POWERLAW_DATA
+    return ((ub ** (a + 1) - 1) * y + 1) ** (1 / (a + 1))
 
 
 @pytest.mark.benchmark(group="AK_Sort_Cases")
