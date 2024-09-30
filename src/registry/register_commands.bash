@@ -20,7 +20,7 @@ else
     then
         :
     else
-        echo "Unable to register commands"
+        echo "Unable to register commands; make sure 'chapel-py' is installed"
         exit 1
     fi
 fi
