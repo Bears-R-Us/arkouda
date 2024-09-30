@@ -62,9 +62,6 @@ module BinOp
   :arg op: string representation of binary operation to execute
   :type op: string
 
-  :arg rname: name of the `e` in the symbol table
-  :type rname: string
-
   :arg pn: routine name of callsite function
   :type pn: string
 
@@ -74,48 +71,48 @@ module BinOp
   :returns: (MsgTuple) 
   :throws: `UndefinedSymbolError(name)`
   */
-  proc doBinOpvv(l, r, e, op: string, rname, pn, st) throws {
-    if e.etype == bool {
+  proc doBinOpvv(l, r, type etype, op: string, pn, st): MsgTuple throws {
+    var e = makeDistArray((...l.tupShape), etype);
+
+    const nie = notImplementedError(pn,l.dtype,op,r.dtype);
+
+    if etype == bool {
       // Since we know that the result type is a boolean, we know
       // that it either (1) is an operation between bools or (2) uses
       // a boolean operator (<, <=, etc.)
       if l.etype == bool && r.etype == bool {
         select op {
           when "|" {
-            e.a = l.a | r.a;
+            e = l.a | r.a;
           }
           when "&" {
-            e.a = l.a & r.a;
+            e = l.a & r.a;
           }
           when "^" {
-            e.a = l.a ^ r.a;
+            e = l.a ^ r.a;
           }
           when "==" {
-            e.a = l.a == r.a;
+            e = l.a == r.a;
           }
           when "!=" {
-            e.a = l.a != r.a;
+            e = l.a != r.a;
           }
           when "<" {
-            e.a = l.a:int < r.a:int;
+            e = l.a:int < r.a:int;
           }
           when ">" {
-            e.a = l.a:int > r.a:int;
+            e = l.a:int > r.a:int;
           }
           when "<=" {
-            e.a = l.a:int <= r.a:int;
+            e = l.a:int <= r.a:int;
           }
           when ">=" {
-            e.a = l.a:int >= r.a:int;
+            e = l.a:int >= r.a:int;
           }
           when "+" {
-            e.a = l.a | r.a;
+            e = l.a | r.a;
           }
-          otherwise {
-            var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
-            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);
-          }
+          otherwise do return MsgTuple.error(nie);
         }
       }
       // All types support the same binary operations when the resultant
@@ -125,203 +122,174 @@ module BinOp
         if ((l.etype == real && r.etype == bool) || (l.etype == bool && r.etype == real)) {
           select op {
             when "<" {
-              e.a = l.a:real < r.a:real;
+              e = l.a:real < r.a:real;
             }
             when ">" {
-              e.a = l.a:real > r.a:real;
+              e = l.a:real > r.a:real;
             }
             when "<=" {
-              e.a = l.a:real <= r.a:real;
+              e = l.a:real <= r.a:real;
             }
             when ">=" {
-              e.a = l.a:real >= r.a:real;
+              e = l.a:real >= r.a:real;
             }
             when "==" {
-              e.a = l.a:real == r.a:real;
+              e = l.a:real == r.a:real;
             }
             when "!=" {
-              e.a = l.a:real != r.a:real;
+              e = l.a:real != r.a:real;
             }
-            otherwise {
-              var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
-              omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-              return new MsgTuple(errorMsg, MsgType.ERROR);
-            }
+            otherwise do return MsgTuple.error(nie);
           }
         }
         else {
           select op {
             when "<" {
-              e.a = l.a < r.a;
+              e = l.a < r.a;
             }
             when ">" {
-              e.a = l.a > r.a;
+              e = l.a > r.a;
             }
             when "<=" {
-              e.a = l.a <= r.a;
+              e = l.a <= r.a;
             }
             when ">=" {
-              e.a = l.a >= r.a;
+              e = l.a >= r.a;
             }
             when "==" {
-              e.a = l.a == r.a;
+              e = l.a == r.a;
             }
             when "!=" {
-              e.a = l.a != r.a;
+              e = l.a != r.a;
             }
-            otherwise {
-              var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
-              omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                              
-              return new MsgTuple(errorMsg, MsgType.ERROR); 
-            }
+            otherwise do return MsgTuple.error(nie);
           }
         }
       }
-      var repMsg = "created %s".format(st.attrib(rname));
-      return new MsgTuple(repMsg, MsgType.NORMAL);
+      return st.insert(new shared SymEntry(e));
     }
     // Since we know that both `l` and `r` are of type `int` and that
     // the resultant type is not bool (checked in first `if`), we know
     // what operations are supported based on the resultant type
     else if (l.etype == int && r.etype == int) ||
             (l.etype == uint && r.etype == uint)  {
-      if e.etype == int || e.etype == uint {
+      if etype == int || etype == uint {
         select op {
           when "+" {
-            e.a = l.a + r.a;
+            e = l.a + r.a;
           }
           when "-" {
-            e.a = l.a - r.a;
+            e = l.a - r.a;
           }
           when "*" {
-            e.a = l.a * r.a;
+            e = l.a * r.a;
           }
           when "//" { // floordiv
-            ref ea = e.a;
+            ref ea = e;
             ref la = l.a;
             ref ra = r.a;
             [(ei,li,ri) in zip(ea,la,ra)] ei = if ri != 0 then li/ri else 0;
           }
-          when "%" { // modulo
-            ref ea = e.a;
+          when "%" { // modulo " <- quote is workaround for syntax highlighter bug
+            ref ea = e;
             ref la = l.a;
             ref ra = r.a;
             [(ei,li,ri) in zip(ea,la,ra)] ei = if ri != 0 then li%ri else 0;
           }
           when "<<" {
-            ref ea = e.a;
+            ref ea = e;
             ref la = l.a;
             ref ra = r.a;
             [(ei,li,ri) in zip(ea,la,ra)] if (0 <= ri && ri < 64) then ei = li << ri;
           }                    
           when ">>" {
-            ref ea = e.a;
+            ref ea = e;
             ref la = l.a;
             ref ra = r.a;
             [(ei,li,ri) in zip(ea,la,ra)] if (0 <= ri && ri < 64) then ei = li >> ri;
           }
           when "<<<" {
-            e.a = rotl(l.a, r.a);
+            e = rotl(l.a, r.a);
           }
           when ">>>" {
-            e.a = rotr(l.a, r.a);
+            e = rotr(l.a, r.a);
           }
           when "&" {
-            e.a = l.a & r.a;
+            e = l.a & r.a;
           }                    
           when "|" {
-            e.a = l.a | r.a;
+            e = l.a | r.a;
           }                    
           when "^" {
-            e.a = l.a ^ r.a;
+            e = l.a ^ r.a;
           }
-          when "**" { 
-            if || reduce (r.a<0){
-              //instead of error, could we paste the below code but of type float?
-              var errorMsg = "Attempt to exponentiate base of type Int64 to negative exponent";
-              omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
-              return new MsgTuple(errorMsg, MsgType.ERROR);                                
-            }
-            e.a= l.a**r.a;
-          }     
-          otherwise {
-            var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
-            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                              
-            return new MsgTuple(errorMsg, MsgType.ERROR); 
+          when "**" {
+            if || reduce (r.a<0)
+              then return MsgTuple.error("Attempt to exponentiate base of type Int64 to negative exponent");
+            e= l.a**r.a;
           }
+          otherwise do return MsgTuple.error(nie);
         }
-      } else if e.etype == real {
+      } else if etype == real {
         select op {
           // True division is the only integer type that would result in a
           // resultant type of `real`
           when "/" {
-            e.a = l.a:real / r.a:real;
+            e = l.a:real / r.a:real;
           }
-          otherwise {
-            var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
-            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                              
-            return new MsgTuple(errorMsg, MsgType.ERROR); 
-          }   
-        }
+          otherwise do return MsgTuple.error(nie);
+        }   
       }
-      var repMsg = "created %s".format(st.attrib(rname));
-      return new MsgTuple(repMsg, MsgType.NORMAL);
+      return st.insert(new shared SymEntry(e));
     }
-    else if (e.etype == int && r.etype == uint) ||
-            (e.etype == uint && r.etype == int) {
+    else if (etype == int && r.etype == uint) ||
+            (etype == uint && r.etype == int) {
       select op {
         when ">>" {
-          ref ea = e.a;
+          ref ea = e;
           ref la = l.a;
           ref ra = r.a;
           [(ei,li,ri) in zip(ea,la,ra)] if (0 <= ri && ri < 64) then ei = li >> ri;
         }
         when "<<" {
-          ref ea = e.a;
+          ref ea = e;
           ref la = l.a;
           ref ra = r.a;
           [(ei,li,ri) in zip(ea,la,ra)] if (0 <= ri && ri < 64) then ei = li << ri;
         }
         when ">>>" {
-          e.a = rotr(l.a, r.a);
+          e = rotr(l.a, r.a);
         }
         when "<<<" {
-          e.a = rotl(l.a, r.a);
+          e = rotl(l.a, r.a);
         }
-        otherwise {
-          var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
-          omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-          return new MsgTuple(errorMsg, MsgType.ERROR);
-        }
+        otherwise do return MsgTuple.error(nie);
       }
-      var repMsg = "created %s".format(st.attrib(rname));
-      return new MsgTuple(repMsg, MsgType.NORMAL);
+      return st.insert(new shared SymEntry(e));
     } else if (l.etype == uint && r.etype == int) ||
               (l.etype == int && r.etype == uint) {
+
       select op {
         when "+" {
-          e.a = l.a:real + r.a:real;
+          e = l.a:real + r.a:real;
         }
         when "-" {
-          e.a = l.a:real - r.a:real;
+          e = l.a:real - r.a:real;
         }
         when "/" { // truediv
-            e.a = l.a:real / r.a:real;
+            e = l.a:real / r.a:real;
         }
         when "//" { // floordiv
-          ref ea = e.a;
+          ref ea = e;
           var la = l.a:real;
           var ra = r.a:real;
           [(ei,li,ri) in zip(ea,la,ra)] ei = floorDivisionHelper(li, ri);
         }
         otherwise {
-          var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
-          omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                              
-          return new MsgTuple(errorMsg, MsgType.ERROR); 
-        }   
+          return MsgTuple.error(nie);
+        }
       }
-      var repMsg = "created %s".format(st.attrib(rname));
-      return new MsgTuple(repMsg, MsgType.NORMAL);
+      return st.insert(new shared SymEntry(e));
     }
     // If either RHS or LHS type is real, the same operations are supported and the
     // result will always be a `real`, so all 3 of these cases can be shared.
@@ -329,213 +297,182 @@ module BinOp
              || (l.etype == real && r.etype == int)) {
       select op {
           when "+" {
-            e.a = l.a + r.a;
+            e = l.a + r.a;
           }
           when "-" {
-            e.a = l.a - r.a;
+            e = l.a - r.a;
           }
           when "*" {
-            e.a = l.a * r.a;
+            e = l.a * r.a;
           }
           when "/" { // truediv
-            e.a = l.a / r.a;
+            e = l.a / r.a;
           } 
           when "//" { // floordiv
-            ref ea = e.a;
+            ref ea = e;
             ref la = l.a;
             ref ra = r.a;
             [(ei,li,ri) in zip(ea,la,ra)] ei = floorDivisionHelper(li, ri);
           }
           when "**" { 
-            e.a= l.a**r.a;
+            e= l.a**r.a;
           }
-          when "%" {
-            ref ea = e.a;
+          when "%" { // modulo " <- quote is workaround for syntax highlighter bug
+            ref ea = e;
             ref la = l.a;
             ref ra = r.a;
             [(ei,li,ri) in zip(ea,la,ra)] ei = modHelper(li, ri);
           }
-          otherwise {
-            var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
-            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);
-          }
+          otherwise do return MsgTuple.error(nie);
         }
-      var repMsg = "created %s".format(st.attrib(rname));
-      return new MsgTuple(repMsg, MsgType.NORMAL);
+      return st.insert(new shared SymEntry(e));
     } else if ((l.etype == uint && r.etype == real) || (l.etype == real && r.etype == uint)) {
       select op {
           when "+" {
-            e.a = l.a:real + r.a:real;
+            e = l.a:real + r.a:real;
           }
           when "-" {
-            e.a = l.a:real - r.a:real;
+            e = l.a:real - r.a:real;
           }
           when "*" {
-            e.a = l.a:real * r.a:real;
+            e = l.a:real * r.a:real;
           }
           when "/" { // truediv
-            e.a = l.a:real / r.a:real;
+            e = l.a:real / r.a:real;
           } 
           when "//" { // floordiv
-            ref ea = e.a;
+            ref ea = e;
             ref la = l.a;
             ref ra = r.a;
             [(ei,li,ri) in zip(ea,la,ra)] ei = floorDivisionHelper(li, ri);
           }
           when "**" { 
-            e.a= l.a:real**r.a:real;
+            e= l.a:real**r.a:real;
           }
-          when "%" {
-            ref ea = e.a;
+          when "%" { // modulo " <- quote is workaround for syntax highlighter bug
+            ref ea = e;
             ref la = l.a;
             ref ra = r.a;
             [(ei,li,ri) in zip(ea,la,ra)] ei = modHelper(li, ri);
           }
-          otherwise {
-            var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
-            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);
-          }
+          otherwise do return MsgTuple.error(nie);
         }
-      var repMsg = "created %s".format(st.attrib(rname));
-      return new MsgTuple(repMsg, MsgType.NORMAL);
+      return st.insert(new shared SymEntry(e));
     } else if ((l.etype == int && r.etype == bool) || (l.etype == bool && r.etype == int)) {
       select op {
           when "+" {
             // Since we don't know which of `l` or `r` is the int and which is the `bool`,
             // we can just cast both to int, which will be a noop for the vector that is
             // already `int`
-            e.a = l.a:int + r.a:int;
+            e = l.a:int + r.a:int;
           }
           when "-" {
-            e.a = l.a:int - r.a:int;
+            e = l.a:int - r.a:int;
           }
           when "*" {
-            e.a = l.a:int * r.a:int;
+            e = l.a:int * r.a:int;
           }
           when ">>" {
-            ref ea = e.a;
+            ref ea = e;
             ref la = l.a;
             ref ra = r.a;
             [(ei,li,ri) in zip(ea,la,ra)] if (0 <= ri && ri < 64) then ei = li:int >> ri:int;
           }
           when "<<" {
-            ref ea = e.a;
+            ref ea = e;
             ref la = l.a;
             ref ra = r.a;
             [(ei,li,ri) in zip(ea,la,ra)] if (0 <= ri && ri < 64) then ei = li:int << ri:int;
           }
-          otherwise {
-            var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
-            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);
-          }
+          otherwise do return MsgTuple.error(nie);
         }
-      var repMsg = "created %s".format(st.attrib(rname));
-      return new MsgTuple(repMsg, MsgType.NORMAL);
+      return st.insert(new shared SymEntry(e));
     } else if ((l.etype == uint && r.etype == bool) || (l.etype == bool && r.etype == uint)) {
       select op {
           when "+" {
-            e.a = l.a:uint + r.a:uint;
+            e = l.a:uint + r.a:uint;
           }
           when "-" {
-            e.a = l.a:uint - r.a:uint;
+            e = l.a:uint - r.a:uint;
           }
           when "*" {
-            e.a = l.a:uint * r.a:uint;
+            e = l.a:uint * r.a:uint;
           }
-          otherwise {
-            var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
-            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);
-          }
+          otherwise do return MsgTuple.error(nie);
         }
-      var repMsg = "created %s".format(st.attrib(rname));
-      return new MsgTuple(repMsg, MsgType.NORMAL);  
+      return st.insert(new shared SymEntry(e));
     } else if ((l.etype == real && r.etype == bool) || (l.etype == bool && r.etype == real)) {
       select op {
           when "+" {
-            e.a = l.a:real + r.a:real;
+            e = l.a:real + r.a:real;
           }
           when "-" {
-            e.a = l.a:real - r.a:real;
+            e = l.a:real - r.a:real;
           }
           when "*" {
-            e.a = l.a:real * r.a:real;
+            e = l.a:real * r.a:real;
           }
-          otherwise {
-            var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
-            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);
-          }
+          otherwise do return MsgTuple.error(nie);
         }
-      var repMsg = "created %s".format(st.attrib(rname));
-      return new MsgTuple(repMsg, MsgType.NORMAL);
+      return st.insert(new shared SymEntry(e));
     } else if (l.etype == bool && r.etype == bool)  {
       select op {
           when "<<" {
-            e.a = l.a:int << r.a:int;
+            e = l.a:int << r.a:int;
           }
           when ">>" {
-            e.a = l.a:int >> r.a:int;
+            e = l.a:int >> r.a:int;
           }
-          otherwise {
-            var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
-            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);
-          }
+          otherwise do return MsgTuple.error(nie);
         }
-      var repMsg = "created %s".format(st.attrib(rname));
-      return new MsgTuple(repMsg, MsgType.NORMAL);
+      return st.insert(new shared SymEntry(e));
+    } else {
+      return MsgTuple.error(nie);
     }
-    var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
-    omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-    return new MsgTuple(errorMsg, MsgType.ERROR);
   }
 
-  proc doBinOpvs(l, val, e, op: string, dtype, rname, pn, st) throws {
-    if e.etype == bool {
+  proc doBinOpvs(l, val, type etype, op: string, pn, st): MsgTuple throws {
+    var e = makeDistArray((...l.tupShape), etype);
+
+    const nie = notImplementedError(pn,"%s %s %s".format(type2str(l.a.eltType),op,type2str(val.type)));
+
+    if etype == bool {
       // Since we know that the result type is a boolean, we know
       // that it either (1) is an operation between bools or (2) uses
       // a boolean operator (<, <=, etc.)
       if l.etype == bool && val.type == bool {
         select op {
           when "|" {
-            e.a = l.a | val;
+            e = l.a | val;
           }
           when "&" {
-            e.a = l.a & val;
+            e = l.a & val;
           }
           when "^" {
-            e.a = l.a ^ val;
+            e = l.a ^ val;
           }
           when "==" {
-            e.a = l.a == val;
+            e = l.a == val;
           }
           when "!=" {
-            e.a = l.a != val;
+            e = l.a != val;
           }
           when "<" {
-            e.a = l.a:int < val:int;
+            e = l.a:int < val:int;
           }
           when ">" {
-            e.a = l.a:int > val:int;
+            e = l.a:int > val:int;
           }
           when "<=" {
-            e.a = l.a:int <= val:int;
+            e = l.a:int <= val:int;
           }
           when ">=" {
-            e.a = l.a:int >= val:int;
+            e = l.a:int >= val:int;
           }
           when "+" {
-            e.a = l.a | val;
+            e = l.a | val;
           }
-          otherwise {
-            var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
-            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);
-          }
+          otherwise do return MsgTuple.error(nie);
         }
       }
       // All types support the same binary operations when the resultant
@@ -545,196 +482,168 @@ module BinOp
         if ((l.etype == real && val.type == bool) || (l.etype == bool && val.type == real)) {
           select op {
             when "<" {
-              e.a = l.a:real < val:real;
+              e = l.a:real < val:real;
             }
             when ">" {
-              e.a = l.a:real > val:real;
+              e = l.a:real > val:real;
             }
             when "<=" {
-              e.a = l.a:real <= val:real;
+              e = l.a:real <= val:real;
             }
             when ">=" {
-              e.a = l.a:real >= val:real;
+              e = l.a:real >= val:real;
             }
             when "==" {
-              e.a = l.a:real == val:real;
+              e = l.a:real == val:real;
             }
             when "!=" {
-              e.a = l.a:real != val:real;
+              e = l.a:real != val:real;
             }
-            otherwise {
-              var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
-              omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-              return new MsgTuple(errorMsg, MsgType.ERROR);
-            }
+            otherwise do return MsgTuple.error(nie);
           }
         }
         else {
           select op {
             when "<" {
-              e.a = l.a < val;
+              e = l.a < val;
             }
             when ">" {
-              e.a = l.a > val;
+              e = l.a > val;
             }
             when "<=" {
-              e.a = l.a <= val;
+              e = l.a <= val;
             }
             when ">=" {
-              e.a = l.a >= val;
+              e = l.a >= val;
             }
             when "==" {
-              e.a = l.a == val;
+              e = l.a == val;
             }
             when "!=" {
-              e.a = l.a != val;
+              e = l.a != val;
             }
-            otherwise {
-              var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
-              omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                              
-              return new MsgTuple(errorMsg, MsgType.ERROR); 
-            }
+            otherwise do return MsgTuple.error(nie);
           }
         }
       }
-      var repMsg = "created %s".format(st.attrib(rname));
-      return new MsgTuple(repMsg, MsgType.NORMAL);
+      return st.insert(new shared SymEntry(e));
     }
     // Since we know that both `l` and `r` are of type `int` and that
     // the resultant type is not bool (checked in first `if`), we know
     // what operations are supported based on the resultant type
     else if (l.etype == int && val.type == int) ||
             (l.etype == uint && val.type == uint) {
-      if e.etype == int || e.etype == uint {
+      if etype == int || etype == uint {
         select op {
           when "+" {
-            e.a = l.a + val;
+            e = l.a + val;
           }
           when "-" {
-            e.a = l.a - val;
+            e = l.a - val;
           }
           when "*" {
-            e.a = l.a * val;
+            e = l.a * val;
           }
           when "//" { // floordiv
-            ref ea = e.a;
+            ref ea = e;
             ref la = l.a;
             [(ei,li) in zip(ea,la)] ei = if val != 0 then li/val else 0;
           }
-          when "%" { // modulo
-            ref ea = e.a;
+          when "%" { // modulo " <- quote is workaround for syntax highlighter bug
+            ref ea = e;
             ref la = l.a;
             [(ei,li) in zip(ea,la)] ei = if val != 0 then li%val else 0;
           }
           when "<<" {
             if 0 <= val && val < 64 {
-              e.a = l.a << val;
+              e = l.a << val;
             }
           }
           when ">>" {
             if 0 <= val && val < 64 {
-              e.a = l.a >> val;
+              e = l.a >> val;
             }
           }
           when "<<<" {
-            e.a = rotl(l.a, val);
+            e = rotl(l.a, val);
           }
           when ">>>" {
-            e.a = rotr(l.a, val);
+            e = rotr(l.a, val);
           }
           when "&" {
-            e.a = l.a & val;
+            e = l.a & val;
           }                    
           when "|" {
-            e.a = l.a | val;
+            e = l.a | val;
           }                    
           when "^" {
-            e.a = l.a ^ val;
+            e = l.a ^ val;
           }
           when "**" { 
-            e.a= l.a**val;
+            e= l.a**val;
           }     
-          otherwise {
-            var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
-            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                              
-            return new MsgTuple(errorMsg, MsgType.ERROR); 
-          }
+          otherwise do return MsgTuple.error(nie);
         }
-      } else if e.etype == real {
+      } else if etype == real {
         select op {
           // True division is the only integer type that would result in a
           // resultant type of `real`
           when "/" {
-            e.a = l.a:real / val:real;
+            e = l.a:real / val:real;
           }
-          otherwise {
-            var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
-            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                              
-            return new MsgTuple(errorMsg, MsgType.ERROR); 
-          }
+          otherwise do return MsgTuple.error(nie);
         }
       }
-      var repMsg = "created %s".format(st.attrib(rname));
-      return new MsgTuple(repMsg, MsgType.NORMAL);
+      return st.insert(new shared SymEntry(e));
     }
-    else if (e.etype == int && val.type == uint) ||
-            (e.etype == uint && val.type == int) {
+    else if (etype == int && val.type == uint) ||
+            (etype == uint && val.type == int) {
       select op {
         when ">>" {
           if 0 <= val && val < 64 {
-            e.a = l.a >> val:l.etype;
+            e = l.a >> val:l.etype;
           }
         }
         when "<<" {
           if 0 <= val && val < 64 {
-            e.a = l.a << val:l.etype;
+            e = l.a << val:l.etype;
           }
         }
         when ">>>" {
-          e.a = rotr(l.a, val:l.etype);
+          e = rotr(l.a, val:l.etype);
         }
         when "<<<" {
-          e.a = rotl(l.a, val:l.etype);
+          e = rotl(l.a, val:l.etype);
         }
         when "+" {
-          e.a = l.a + val:l.etype;
+          e = l.a + val:l.etype;
         }
         when "-" {
-          e.a = l.a - val:l.etype;
+          e = l.a - val:l.etype;
         }
-        otherwise {
-          var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
-          omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-          return new MsgTuple(errorMsg, MsgType.ERROR);
-        }
+        otherwise do return MsgTuple.error(nie);
       }
-      var repMsg = "created %s".format(st.attrib(rname));
-      return new MsgTuple(repMsg, MsgType.NORMAL);
+      return st.insert(new shared SymEntry(e));
     }
     else if (l.etype == bool && val.type == bool) {
       select op {
         when ">>" {
           if(val){
-            e.a = l.a:int >> val:int;
+            e = l.a:int >> val:int;
           }else{
-            e.a = l.a:int;
+            e = l.a:int;
           }
         }
         when "<<" {
           if(val){
-            e.a = l.a:int << val:int;
+            e = l.a:int << val:int;
           }else{
-            e.a = l.a:int;
+            e = l.a:int;
           }
         }
-        otherwise {
-          var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
-          omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-          return new MsgTuple(errorMsg, MsgType.ERROR);
-        }
+        otherwise do return MsgTuple.error(nie);
       }
-      var repMsg = "created %s".format(st.attrib(rname));
-      return new MsgTuple(repMsg, MsgType.NORMAL);
+      return st.insert(new shared SymEntry(e));
     }
     // If either RHS or LHS type is real, the same operations are supported and the
     // result will always be a `real`, so all 3 of these cases can be shared.
@@ -742,198 +651,173 @@ module BinOp
              || (l.etype == real && val.type == int)) {
       select op {
           when "+" {
-            e.a = l.a + val;
+            e = l.a + val;
           }
           when "-" {
-            e.a = l.a - val;
+            e = l.a - val;
           }
           when "*" {
-            e.a = l.a * val;
+            e = l.a * val;
           }
           when "/" { // truediv
-            e.a = l.a / val;
-          } 
+            e = l.a / val;
+          }
           when "//" { // floordiv
-            ref ea = e.a;
+            ref ea = e;
             ref la = l.a;
             [(ei,li) in zip(ea,la)] ei = floorDivisionHelper(li, val);
           }
           when "**" { 
-            e.a= l.a**val;
+            e= l.a**val;
           }
-          when "%" {
-            ref ea = e.a;
+          when "%" { // modulo " <- quote is workaround for syntax highlighter bug
+            ref ea = e;
             ref la = l.a;
             [(ei,li) in zip(ea,la)] ei = modHelper(li, val);
           }
-          otherwise {
-            var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
-            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);
-          }
+          otherwise do return MsgTuple.error(nie);
         }
-      var repMsg = "created %s".format(st.attrib(rname));
-      return new MsgTuple(repMsg, MsgType.NORMAL);
+      return st.insert(new shared SymEntry(e));
     }
-    else if e.etype == real && ((l.etype == uint && val.type == int) || (l.etype == int && val.type == uint)) {
+    else if etype == real && ((l.etype == uint && val.type == int) || (l.etype == int && val.type == uint)) {
       select op {
           when "+" {
-            e.a = l.a: real + val: real;
+            e = l.a: real + val: real;
           }
           when "-" {
-            e.a = l.a: real - val: real;
+            e = l.a: real - val: real;
           }
           when "/" { // truediv
-            e.a = l.a: real / val: real;
+            e = l.a: real / val: real;
           }
           when "//" { // floordiv
-            ref ea = e.a;
+            ref ea = e;
             var la = l.a;
             [(ei,li) in zip(ea,la)] ei = floorDivisionHelper(li, val:real);
           }
-          otherwise {
-            var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
-            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);
-          }
+          otherwise do return MsgTuple.error(nie);
         }
-      var repMsg = "created %s".format(st.attrib(rname));
-      return new MsgTuple(repMsg, MsgType.NORMAL);
+      return st.insert(new shared SymEntry(e));
     }
     else if ((l.etype == uint && val.type == real) || (l.etype == real && val.type == uint)) {
       select op {
           when "+" {
-            e.a = l.a: real + val: real;
+            e = l.a: real + val: real;
           }
           when "-" {
-            e.a = l.a: real - val: real;
+            e = l.a: real - val: real;
           }
           when "*" {
-            e.a = l.a: real * val: real;
+            e = l.a: real * val: real;
           }
           when "/" { // truediv
-            e.a = l.a: real / val: real;
+            e = l.a: real / val: real;
           } 
           when "//" { // floordiv
-            ref ea = e.a;
+            ref ea = e;
             ref la = l.a;
             [(ei,li) in zip(ea,la)] ei = floorDivisionHelper(li, val);
           }
           when "**" { 
-            e.a= l.a: real**val: real;
+            e= l.a: real**val: real;
           }
-          when "%" {
-            ref ea = e.a;
+          when "%" { // modulo " <- quote is workaround for syntax highlighter bug
+            ref ea = e;
             ref la = l.a;
             [(ei,li) in zip(ea,la)] ei = modHelper(li, val);
           }
-          otherwise {
-            var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
-            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);
-          }
+          otherwise do return MsgTuple.error(nie);
         }
-      var repMsg = "created %s".format(st.attrib(rname));
-      return new MsgTuple(repMsg, MsgType.NORMAL);
+      return st.insert(new shared SymEntry(e));
     } else if ((l.etype == int && val.type == bool) || (l.etype == bool && val.type == int)) {
       select op {
           when "+" {
             // Since we don't know which of `l` or `r` is the int and which is the `bool`,
             // we can just cast both to int, which will be a noop for the vector that is
             // already `int`
-            e.a = l.a:int + val:int;
+            e = l.a:int + val:int;
           }
           when "-" {
-            e.a = l.a:int - val:int;
+            e = l.a:int - val:int;
           }
           when "*" {
-            e.a = l.a:int * val:int;
+            e = l.a:int * val:int;
           }
           when ">>" {
             if 0 <= val:int && val:int < 64 {
-              e.a = l.a:int >> val:int;
+              e = l.a:int >> val:int;
             }
           }
           when "<<" {
             if 0 <= val:int && val:int < 64 {
-              e.a = l.a:int << val:int;
+              e = l.a:int << val:int;
             }
           }
-          otherwise {
-            var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
-            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);
-          }
+          otherwise do return MsgTuple.error(nie);
         }
-      var repMsg = "created %s".format(st.attrib(rname));
-      return new MsgTuple(repMsg, MsgType.NORMAL);
+      return st.insert(new shared SymEntry(e));
     } else if ((l.etype == real && val.type == bool) || (l.etype == bool && val.type == real)) {
       select op {
           when "+" {
-            e.a = l.a:real + val:real;
+            e = l.a:real + val:real;
           }
           when "-" {
-            e.a = l.a:real - val:real;
+            e = l.a:real - val:real;
           }
           when "*" {
-            e.a = l.a:real * val:real;
+            e = l.a:real * val:real;
           }
-          otherwise {
-            var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
-            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);
-          }
+          otherwise do return MsgTuple.error(nie);
         }
-      var repMsg = "created %s".format(st.attrib(rname));
-      return new MsgTuple(repMsg, MsgType.NORMAL);
+      return st.insert(new shared SymEntry(e));
+    } else {
+      const errorMsg = unrecognizedTypeError(pn, "("+dtype2str(l.dtype)+","+type2str(val.type)+")");
+      omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+      return MsgTuple.error(errorMsg);
     }
-    var errorMsg = unrecognizedTypeError(pn, "("+dtype2str(l.dtype)+","+dtype2str(dtype)+")");
-    omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-    return new MsgTuple(errorMsg, MsgType.ERROR);
   }
 
-  proc doBinOpsv(val, r, e, op: string, dtype, rname, pn, st) throws {
-    if e.etype == bool {
+  proc doBinOpsv(val, r, type etype, op: string, pn, st) throws {
+    var e = makeDistArray((...r.tupShape), etype);
+    const nie = notImplementedError(pn,"%s %s %s".format(type2str(val.type),op,type2str(r.a.eltType)));
+
+    if etype == bool {
       // Since we know that the result type is a boolean, we know
       // that it either (1) is an operation between bools or (2) uses
       // a boolean operator (<, <=, etc.)
       if r.etype == bool && val.type == bool {
         select op {
           when "|" {
-            e.a = val | r.a;
+            e = val | r.a;
           }
           when "&" {
-            e.a = val & r.a;
+            e = val & r.a;
           }
           when "^" {
-            e.a = val ^ r.a;
+            e = val ^ r.a;
           }
           when "==" {
-            e.a = val == r.a;
+            e = val == r.a;
           }
           when "!=" {
-            e.a = val != r.a;
+            e = val != r.a;
           }
           when "<" {
-            e.a = val:int < r.a:int;
+            e = val:int < r.a:int;
           }
           when ">" {
-            e.a = val:int > r.a:int;
+            e = val:int > r.a:int;
           }
           when "<=" {
-            e.a = val:int <= r.a:int;
+            e = val:int <= r.a:int;
           }
           when ">=" {
-            e.a = val:int >= r.a:int;
+            e = val:int >= r.a:int;
           }
           when "+" {
-            e.a = val | r.a;
+            e = val | r.a;
           }
-          otherwise {
-            var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
-            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);
-          }
+          otherwise do return MsgTuple.error(nie);
         }
       }
       // All types support the same binary operations when the resultant
@@ -943,111 +827,102 @@ module BinOp
         if ((r.etype == real && val.type == bool) || (r.etype == bool && val.type == real)) {
           select op {
             when "<" {
-              e.a = val:real < r.a:real;
+              e = val:real < r.a:real;
             }
             when ">" {
-              e.a = val:real > r.a:real;
+              e = val:real > r.a:real;
             }
             when "<=" {
-              e.a = val:real <= r.a:real;
+              e = val:real <= r.a:real;
             }
             when ">=" {
-              e.a = val:real >= r.a:real;
+              e = val:real >= r.a:real;
             }
             when "==" {
-              e.a = val:real == r.a:real;
+              e = val:real == r.a:real;
             }
             when "!=" {
-              e.a = val:real != r.a:real;
+              e = val:real != r.a:real;
             }
-            otherwise {
-              var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
-              omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-              return new MsgTuple(errorMsg, MsgType.ERROR);
-            }
+            otherwise do return MsgTuple.error(nie);
           }
         }
         else {
           select op {
             when "<" {
-              e.a = val < r.a;
+              e = val < r.a;
             }
             when ">" {
-              e.a = val > r.a;
+              e = val > r.a;
             }
             when "<=" {
-              e.a = val <= r.a;
+              e = val <= r.a;
             }
             when ">=" {
-              e.a = val >= r.a;
+              e = val >= r.a;
             }
             when "==" {
-              e.a = val == r.a;
+              e = val == r.a;
             }
             when "!=" {
-              e.a = val != r.a;
+              e = val != r.a;
             }
-            otherwise {
-              var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
-              omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                              
-              return new MsgTuple(errorMsg, MsgType.ERROR); 
-            }
+            otherwise do return MsgTuple.error(nie);
           }
         }
       }
-      var repMsg = "created %s".format(st.attrib(rname));
-      return new MsgTuple(repMsg, MsgType.NORMAL);
+      return st.insert(new shared SymEntry(e));
     }
     // Since we know that both `l` and `r` are of type `int` and that
     // the resultant type is not bool (checked in first `if`), we know
     // what operations are supported based on the resultant type
     else if (r.etype == int && val.type == int) ||
             (r.etype == uint && val.type == uint) {
-      if e.etype == int || e.etype == uint {
+      if etype == int || etype == uint {
         select op {
           when "+" {
-            e.a = val + r.a;
+            e = val + r.a;
           }
           when "-" {
-            e.a = val - r.a;
+            e = val - r.a;
           }
           when "*" {
-            e.a = val * r.a;
+            e = val * r.a;
           }
           when "//" { // floordiv
-            ref ea = e.a;
+            ref ea = e;
             ref ra = r.a;
             [(ei,ri) in zip(ea,ra)] ei = if ri != 0 then val/ri else 0;
           }
-          when "%" { // modulo
-            ref ea = e.a;
+          when "%" { // modulo " <- quote is workaround for syntax highlighter bug
+            ref ea = e;
             ref ra = r.a;
             [(ei,ri) in zip(ea,ra)] ei = if ri != 0 then val%ri else 0;
           }
           when "<<" {
-            ref ea = e.a;
+            ref ea = e;
             ref ra = r.a;
             [(ei,ri) in zip(ea,ra)] if (0 <= ri && ri < 64) then ei = val << ri;
           }                    
           when ">>" {
-            ref ea = e.a;
+            ref ea = e;
             ref ra = r.a;
             [(ei,ri) in zip(ea,ra)] if (0 <= ri && ri < 64) then ei = val >> ri;
           }
           when "<<<" {
-            e.a = rotl(val, r.a);
+            e = rotl(val, r.a);
           }
           when ">>>" {
-            e.a = rotr(val, r.a);
+            e = rotr(val, r.a);
           }
           when "&" {
-            e.a = val & r.a;
+            e = val & r.a;
           }                    
           when "|" {
-            e.a = val | r.a;
+            e = val | r.a;
           }                    
           when "^" {
-            e.a = val ^ r.a;
+            e = val ^ r.a;
           }
           when "**" {
             if || reduce (r.a<0){
@@ -1055,65 +930,50 @@ module BinOp
               omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
               return new MsgTuple(errorMsg, MsgType.ERROR); 
             }
-            e.a= val**r.a;
-          }     
-          otherwise {
-            var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
-            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                              
-            return new MsgTuple(errorMsg, MsgType.ERROR); 
+            e= val**r.a;
           }
+          otherwise do return MsgTuple.error(nie);
         }
-      } else if e.etype == real {
+      } else if etype == real {
         select op {
           // True division is the only integer type that would result in a
           // resultant type of `real`
           when "/" {
-            e.a = val:real / r.a:real;
+            e = val:real / r.a:real;
           }
-          otherwise {
-            var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
-            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                              
-            return new MsgTuple(errorMsg, MsgType.ERROR); 
-          }
-            
+          otherwise do return MsgTuple.error(nie);
         }
       }
-      var repMsg = "created %s".format(st.attrib(rname));
-      return new MsgTuple(repMsg, MsgType.NORMAL);
+      return st.insert(new shared SymEntry(e));
     }
-    else if (e.etype == int && val.type == uint) ||
-            (e.etype == uint && val.type == int) {
+    else if (etype == int && val.type == uint) ||
+            (etype == uint && val.type == int) {
       select op {
         when ">>" {
-          ref ea = e.a;
+          ref ea = e;
           ref ra = r.a;
           [(ei,ri) in zip(ea,ra)] if ri:uint < 64 then ei = val:r.etype >> ri;
         }
         when "<<" {
-          ref ea = e.a;
+          ref ea = e;
           ref ra = r.a;
           [(ei,ri) in zip(ea,ra)] if ri:uint < 64 then ei = val:r.etype << ri;
         }
         when ">>>" {
-          e.a = rotr(val:r.etype, r.a);
+          e = rotr(val:r.etype, r.a);
         }
         when "<<<" {
-          e.a = rotl(val:r.etype, r.a);
+          e = rotl(val:r.etype, r.a);
         }
         when "+" {
-          e.a = val:r.etype + r.a;
+          e = val:r.etype + r.a;
         }
         when "-" {
-          e.a = val:r.etype - r.a;
+          e = val:r.etype - r.a;
         }
-        otherwise {
-          var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
-          omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-          return new MsgTuple(errorMsg, MsgType.ERROR);
-        }
+        otherwise do return MsgTuple.error(nie);
       }
-      var repMsg = "created %s".format(st.attrib(rname));
-      return new MsgTuple(repMsg, MsgType.NORMAL);
+      return st.insert(new shared SymEntry(e));
     }
     // If either RHS or LHS type is real, the same operations are supported and the
     // result will always be a `real`, so all 3 of these cases can be shared.
@@ -1121,174 +981,145 @@ module BinOp
              || (r.etype == real && val.type == int)) {
       select op {
           when "+" {
-            e.a = val + r.a;
+            e = val + r.a;
           }
           when "-" {
-            e.a = val - r.a;
+            e = val - r.a;
           }
           when "*" {
-            e.a = val * r.a;
+            e = val * r.a;
           }
           when "/" { // truediv
-            e.a = val:real / r.a:real;
+            e = val:real / r.a:real;
           } 
           when "//" { // floordiv
-            ref ea = e.a;
+            ref ea = e;
             ref ra = r.a;
             [(ei,ri) in zip(ea,ra)] ei = floorDivisionHelper(val:real, ri);
           }
           when "**" { 
-            e.a= val**r.a;
+            e= val**r.a;
           }
-          when "%" {
-            ref ea = e.a;
+          when "%" { // modulo " <- quote is workaround for syntax highlighter bug
+            ref ea = e;
             ref ra = r.a;
             [(ei,ri) in zip(ea,ra)] ei = modHelper(val:real, ri);
           }
-          otherwise {
-            var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
-            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);
-          }
+          otherwise do return MsgTuple.error(nie);
         }
-      var repMsg = "created %s".format(st.attrib(rname));
-      return new MsgTuple(repMsg, MsgType.NORMAL);
+      return st.insert(new shared SymEntry(e));
     }
-    else if e.etype == real && ((r.etype == uint && val.type == int) || (r.etype == int && val.type == uint)) {
+    else if etype == real && ((r.etype == uint && val.type == int) || (r.etype == int && val.type == uint)) {
       select op {
           when "+" {
-            e.a = val:real + r.a:real;
+            e = val:real + r.a:real;
           }
           when "-" {
-            e.a = val:real - r.a:real;
+            e = val:real - r.a:real;
           }
           when "/" { // truediv
-            e.a = val:real / r.a:real;
+            e = val:real / r.a:real;
           }
           when "//" { // floordiv
-            ref ea = e.a;
+            ref ea = e;
             var ra = r.a;
             [(ei,ri) in zip(ea,ra)] ei = floorDivisionHelper(val:real, ri);
           }
-          otherwise {
-            var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
-            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);
-          }
+          otherwise do return MsgTuple.error(nie);
         }
-      var repMsg = "created %s".format(st.attrib(rname));
-      return new MsgTuple(repMsg, MsgType.NORMAL);
+      return st.insert(new shared SymEntry(e));
     }
     else if ((r.etype == uint && val.type == real) || (r.etype == real && val.type == uint)) {
       select op {
           when "+" {
-            e.a = val:real + r.a:real;
+            e = val:real + r.a:real;
           }
           when "-" {
-            e.a = val:real - r.a:real;
+            e = val:real - r.a:real;
           }
           when "*" {
-            e.a = val:real * r.a:real;
+            e = val:real * r.a:real;
           }
           when "/" { // truediv
-            e.a = val:real / r.a:real;
+            e = val:real / r.a:real;
           } 
           when "//" { // floordiv
-            ref ea = e.a;
+            ref ea = e;
             ref ra = r.a;
             [(ei,ri) in zip(ea,ra)] ei = floorDivisionHelper(val:real, ri);
           }
           when "**" { 
-            e.a= val:real**r.a:real;
+            e= val:real**r.a:real;
           }
-          when "%" {
-            ref ea = e.a;
+          when "%" { // modulo " <- quote is workaround for syntax highlighter bug
+            ref ea = e;
             ref ra = r.a;
             [(ei,ri) in zip(ea,ra)] ei = modHelper(val:real, ri);
           }
-          otherwise {
-            var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
-            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);
-          }
+          otherwise do return MsgTuple.error(nie);
         }
-      var repMsg = "created %s".format(st.attrib(rname));
-      return new MsgTuple(repMsg, MsgType.NORMAL);
+      return st.insert(new shared SymEntry(e));
     } else if ((r.etype == int && val.type == bool) || (r.etype == bool && val.type == int)) {
       select op {
           when "+" {
             // Since we don't know which of `l` or `r` is the int and which is the `bool`,
             // we can just cast both to int, which will be a noop for the vector that is
             // already `int`
-            e.a = val:int + r.a:int;
+            e = val:int + r.a:int;
           }
           when "-" {
-            e.a = val:int - r.a:int;
+            e = val:int - r.a:int;
           }
           when "*" {
-            e.a = val:int * r.a:int;
+            e = val:int * r.a:int;
           }
           when ">>" {
-            ref ea = e.a;
+            ref ea = e;
             ref ra = r.a;
             [(ei,ri) in zip(ea,ra)] if (0 <= ri && ri < 64) then ei = val:int >> ri:int;
           }
           when "<<" {
-            ref ea = e.a;
+            ref ea = e;
             ref ra = r.a;
             [(ei,ri) in zip(ea,ra)] if (0 <= ri && ri < 64) then ei = val:int << ri:int;
           }
-          otherwise {
-            var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
-            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);
-          }
+          otherwise do return MsgTuple.error(nie);
         }
-      var repMsg = "created %s".format(st.attrib(rname));
-      return new MsgTuple(repMsg, MsgType.NORMAL);
+      return st.insert(new shared SymEntry(e));
     } else if ((r.etype == real && val.type == bool) || (r.etype == bool && val.type == real)) {
       select op {
           when "+" {
-            e.a = val:real + r.a:real;
+            e = val:real + r.a:real;
           }
           when "-" {
-            e.a = val:real - r.a:real;
+            e = val:real - r.a:real;
           }
           when "*" {
-            e.a = val:real * r.a:real;
+            e = val:real * r.a:real;
           }
-          otherwise {
-            var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
-            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);
-          }
+          otherwise do return MsgTuple.error(nie);
         }
-      var repMsg = "created %s".format(st.attrib(rname));
-      return new MsgTuple(repMsg, MsgType.NORMAL);
+      return st.insert(new shared SymEntry(e));
     } else if (r.etype == bool && val.type == bool)  {
       select op {
           when "<<" {
             if(val){
-              e.a = val:int << r.a:int;
+              e = val:int << r.a:int;
             }
           }
           when ">>" {
             if(val){
-              e.a = val:int >> r.a:int;
+              e = val:int >> r.a:int;
             }
           }
-          otherwise {
-            var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
-            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);
-          }
+          otherwise do return MsgTuple.error(nie);
         }
-      var repMsg = "created %s".format(st.attrib(rname));
-      return new MsgTuple(repMsg, MsgType.NORMAL);
+      return st.insert(new shared SymEntry(e));
+    } else {
+      const errorMsg = unrecognizedTypeError(pn, "("+type2str(val.type)+","+type2str(r.a.eltType)+")");
+      omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+      return new MsgTuple(errorMsg, MsgType.ERROR);
     }
-    var errorMsg = unrecognizedTypeError(pn, "("+dtype2str(dtype)+","+dtype2str(r.dtype)+")");
-    omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-    return new MsgTuple(errorMsg, MsgType.ERROR);
   }
 
   proc doBigIntBinOpvv(l, r, op: string) throws {
@@ -1437,7 +1268,7 @@ module BinOp
           }
           visted = true;
         }
-        when "%" { // modulo
+        when "%" { // modulo " <- quote is workaround for syntax highlighter bug
           // we only do in place mod when ri != 0, tmp will be 0 in other locations
           // we can't use ei = li % ri because this can result in negatives
           forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
@@ -1681,7 +1512,7 @@ module BinOp
           }
           visted = true;
         }
-        when "%" { // modulo
+        when "%" { // modulo " <- quote is workaround for syntax highlighter bug
           // we only do in place mod when val != 0, tmp will be 0 in other locations
           // we can't use ei = li % val because this can result in negatives
           forall t in tmp with (var local_val = val, var local_max_size = max_size) {
@@ -1945,7 +1776,7 @@ module BinOp
           }
           visted = true;
         }
-        when "%" { // modulo
+        when "%" { // modulo " <- quote is workaround for syntax highlighter bug
           forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
             if ri != 0 {
               mod(t, t, ri);

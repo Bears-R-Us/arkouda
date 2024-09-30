@@ -11,6 +11,15 @@
                 "bigint"
             ]
         },
+        "binop": {
+            "dtype": [
+                "int",
+                "uint",
+                "real",
+                "bool",
+                "bigint"
+            ]
+        },
         "scalar": {
             "dtype": [
                 "int",
