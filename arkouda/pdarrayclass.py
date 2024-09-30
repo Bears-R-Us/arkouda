@@ -364,7 +364,7 @@ class pdarray:
         self.dtype = dtype(mydtype)
         self.size = size
         self.ndim = ndim
-        self.shape = shape
+        self._shape = tuple(shape)
         self.itemsize = itemsize
         if max_bits:
             self.max_bits = max_bits
@@ -398,6 +398,18 @@ class pdarray:
         from arkouda.client import pdarrayIterThresh
 
         return generic_msg(cmd="repr", args={"array": self, "printThresh": pdarrayIterThresh})
+
+    @property
+    def shape(self):
+        """
+        Return the shape of an array.
+
+        Returns
+        -------
+        tuple of int
+            The elements of the shape tuple give the lengths of the corresponding array dimensions.
+        """
+        return tuple(self._shape)
 
     @property
     def max_bits(self):
@@ -962,7 +974,7 @@ class pdarray:
 
                 # use 'None' values in the original key to expand the dimensions
                 shape = []
-                rs = ret_array.shape
+                rs = list(ret_array.shape)
                 for k in key_with_none:
                     if k is None:
                         shape.append(1)
