@@ -455,14 +455,16 @@ module SparseMatrix {
     return C;
   }
 
-  proc randSparseMatrix(size, density, param layout, param distributed=false, type eltType) {
-    const Dom = {1..size, 1..size};
+  proc randSparseMatrix(size, density, param layout, type eltType) {
+    import SymArrayDmap.makeSparseDomain;
+    var (SD, dense) = makeSparseDomain(size, layout);
 
-    // compute some random sparse index patterns for the matrices
-    //
-    const AD = randSparseDomain(Dom, density, layout, distributed);
+    // randomly include index pairs based on provided density
+    for (i,j) in dense do
+        if rands.next() <= density then
+          SD += (i,j);
 
-    var A: [AD] eltType;
+    var A: [SD] eltType;
     return A;
   }
 
@@ -497,43 +499,6 @@ module SparseMatrix {
           }
         }
       }
-    }
-
-
-    // create a local random sparse matrix within the space of 'Dom' of
-    // the given density and layout.  If distributed is true, this will
-    // be a block-distributed sparse matrix, otherwise it'll be local.
-    //
-    proc randSparseDomain(parentDom, density, param matLayout, param distributed)
-    where distributed == false {
-
-      var SD: sparse subdomain(parentDom) dmapped new dmap(new CS(compressRows=(matLayout==layout.CSR)));
-
-      for (i,j) in parentDom do
-        if rands.next() <= density then
-          SD += (i,j);
-
-      return SD;
-    }
-
-    proc randSparseDomain(parentDom, density, param matLayout, param distributed)
-    where distributed == true {
-      const locsPerDim = sqrt(numLocales:real): int,
-            grid = {0..<locsPerDim, 0..<locsPerDim},
-            localeGrid = reshape(Locales[0..<grid.size], grid);
-
-      type layoutType = CS(compressRows=(matLayout==layout.CSR));
-      const DenseBlkDom = parentDom dmapped new blockDist(boundingBox=parentDom,
-                                                    targetLocales=localeGrid,
-                                                    sparseLayoutType=layoutType);
-
-      var SD: sparse subdomain(DenseBlkDom);
-
-      for (i,j) in parentDom do
-        if rands.next() <= density then
-          SD += (i,j);
-
-      return SD;
     }
 
 
