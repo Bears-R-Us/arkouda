@@ -477,6 +477,9 @@ pip<span class="w"> </span>install<span class="w"> </span>dist/arkouda*.tar.gz
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make
 </pre></div>
 </div>
+<p>Note:
+This step can require a large amount of RAM, especially when building with multi-locale enabled.
+If you are running in wsl or a container and your build fails, consider increasing the memory allocation.</p>
 </section>
 <section id="building-the-arkouda-documentation">
 <h2>Building the Arkouda Documentation<a class="headerlink" href="#building-the-arkouda-documentation" title="Link to this heading">¶</a></h2>
@@ -486,8 +489,12 @@ if you’re updating the documentation.</p>
 <summary><b>(click to see more)</b></summary>
 <p>First ensure that all Python doc dependencies including sphinx and sphinx extensions have been installed as detailed
 above.</p>
-<p><em>Important: if Chapel was built locally, <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">chpldoc</span></code> must be executed as detailed above to enable
-generation of the Chapel docs via the chpldoc executable.</em></p>
+<p><em>Important: if Chapel was built locally, you will first need to  <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">chpldoc</span></code> to build the server docs</em></p>
+<p>The commands to install <code class="docutils literal notranslate"><span class="pre">chpldoc</span></code> are:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span><span class="nv">$CHPL_HOME</span>
+make<span class="w"> </span>chpldoc
+</pre></div>
+</div>
 <p>Now that all doc generation dependencies for both Python and Chapel have been installed, there are three make targets for
 generating docs:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># make doc-python generates the Python docs only</span>

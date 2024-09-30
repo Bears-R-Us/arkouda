@@ -20,7 +20,7 @@ Requirements
 
 .. need to use html file below to link properly
 
-For a full list of requirements, click `here <REQUIREMENTS.html>`_.
+For a full list of requirements, click `here <REQUIREMENTS.md>`_.
 
 .. _requirements_pg: REQUIREMENTS.md
 

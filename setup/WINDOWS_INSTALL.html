@@ -370,7 +370,19 @@ There are a number of tutorials available online such as <a class="reference ext
 </ul>
 <p>Once configured you can follow the basic <a class="reference internal" href="LINUX_INSTALL.html"><span class="std std-doc">Linux Install</span></a>
 for installing Chapel &amp; Arkouda.  We also recommend installing Anaconda for windows.</p>
-<p><strong>Note:</strong> When running <code class="docutils literal notranslate"><span class="pre">make</span></code> to build Chapel while using WSL, pathing issues to library dependencies are common. In most cases, a symlink pointing to the correct location or library will fix these errors.</p>
+<p><strong>Notes:</strong></p>
+<ul>
+<li><p>By default, wsl VM is allocated 8 Gb of memory. If you want to increase this for your
+system, you will need to
+<a class="reference external" href="https://learn.microsoft.com/en-us/windows/wsl/wsl-config#wslconfig">add a <code class="docutils literal notranslate"><span class="pre">.wslconfig</span></code> file</a>. The contents should
+looks something like the following</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">wsl2</span><span class="p">]</span>
+<span class="n">memory</span><span class="o">=</span><span class="mi">12</span><span class="n">GB</span> <span class="c1"># Limits VM memory in WSL 2 to 12 GB </span>
+</pre></div>
+</div>
+<p>To verify, restart wsl and run a command like <code class="docutils literal notranslate"><span class="pre">top</span></code> or <code class="docutils literal notranslate"><span class="pre">htop</span></code></p>
+</li>
+<li><p>When running <code class="docutils literal notranslate"><span class="pre">make</span></code> to build Chapel while using WSL, pathing issues to library dependencies are common. In most cases, a symlink pointing to the correct location or library will fix these errors.</p>
 <p>An example of one of these errors found while using Chapel 1.31.0 and Ubuntu 20.04 LTS with WSL is:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>../../../bin/llvm-tblgen:<span class="w"> </span>error<span class="w"> </span><span class="k">while</span><span class="w"> </span>loading<span class="w"> </span>shared<span class="w"> </span>libraries:<span class="w"> </span>libtinfow.so.6:<span class="w"> </span>cannot<span class="w"> </span>open<span class="w"> </span>shared<span class="w"> </span>object<span class="w"> </span>file:<span class="w"> </span>No<span class="w"> </span>such<span class="w"> </span>file<span class="w"> </span>or<span class="w"> </span>directory
 </pre></div>
@@ -389,6 +401,8 @@ the house we found it necessary to add</p>
 </pre></div>
 </div>
 <p>to our <code class="docutils literal notranslate"><span class="pre">~/.bashrc</span></code> file to get the display correctly forwarded.</p>
+</li>
+</ul>
 </section>
 
         </article>

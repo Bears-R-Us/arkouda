@@ -362,7 +362,7 @@
 <p>This feature uses the C-backend to leverage incremental building and avoid building everything at once, which can cut down on the memory usage of the compiler.</p>
 <p>This feature can also speed up build times, but is somewhat of a heroic step, as it requires using Chapel’s (non-default) C back-end and will also negatively impact Arkouda execution performance. It can also only accelerate the <code class="docutils literal notranslate"><span class="pre">makeBinary</span></code> step of compilation, so is most useful in cases where that is a bottleneck in your compilation timings (where, in our full-scale Arkouda compiles, resolve tends to be the current bottleneck).</p>
 <ol class="arabic simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">-j</span> <span class="pre">16</span> <span class="pre">runtime</span> <span class="pre">&quot;CHPL_TARGET_COMPILER=clang&quot;</span></code> (or gnu)</p>
+<li><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">-j</span> <span class="pre">8</span> <span class="pre">runtime</span> <span class="pre">&quot;CHPL_TARGET_COMPILER=clang&quot;</span></code> (or gnu)</p>
 <ul class="simple">
 <li><p>rebuild the Chapel runtime using the C backend</p></li>
 </ul>
