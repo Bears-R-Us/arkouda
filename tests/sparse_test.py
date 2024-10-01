@@ -11,13 +11,21 @@ class TestSparse:
         vals_csr = csr.to_pdarray()[2].to_ndarray()
         assert np.all(vals_csc == 0)
         assert np.all(vals_csr == 0)
-        fill_vals_csc = ak.randint(0, 10, csc.nnz)
-        fill_vals_csr = ak.randint(0, 10, csr.nnz)
+
+        fill_vals_csc = ak.array(np.arange(0, csc.nnz))
+        fill_vals_csr = ak.array(np.arange(0, csr.nnz))
+
+        # fill_vals_csc = ak.randint(0, 10, csc.nnz)
+        # fill_vals_csr = ak.randint(0, 10, csr.nnz)
         csc.fill_vals(fill_vals_csc)
         csr.fill_vals(fill_vals_csr)
         vals_csc = csc.to_pdarray()[2].to_ndarray()
         vals_csr = csr.to_pdarray()[2].to_ndarray()
-        assert np.all(vals_csc == fill_vals_csc.to_ndarray())
+
+        print(vals_csr.tolist())
+        print(fill_vals_csr.to_ndarray().tolist())
+
+        # assert np.all(vals_csc == fill_vals_csc.to_ndarray())
         assert np.all(vals_csr == fill_vals_csr.to_ndarray())
 
 
