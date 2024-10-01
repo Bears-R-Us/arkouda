@@ -6,7 +6,7 @@ module SparseMatrix {
   use CommAggregation;
 
   // Quick and dirty, not permanent
-  proc fillSparseMatrix(ref spsMat, const A: [?D] ?eltType) throws {
+  proc fillSparseMatrix(ref spsMat, const A: [?D] ?eltType, param l: layout) throws {
     if A.rank != 1 then
         throw getErrorWithContext(
                         msg="fill vals requires a 1D array; got a %iD array".format(A.rank),
@@ -31,8 +31,35 @@ module SparseMatrix {
                         moduleName=getModuleName(),
                         errorClass="IllegalArgumentError"
                         );
-    for((i,j), idx) in zip(spsMat.domain,A.domain) {
-        spsMat[i,j] = A[idx];
+    
+    // Note: this simplified loop cannot be used because iteration over spsMat.domain
+    //       occures one locale at a time (i.e., the first spsMat.domain.parDom.localSubdomain(Locales[0]).size
+    //       values from 'A' are deposited on locale 0, and so on), rather than depositing
+    //       them row-major or column-major globally
+    // for ((i,j), idx) in zip(spsMat.domain,A.domain) {
+    //   spsMat[i,j] = A[idx];
+    // }
+
+    if l == layout.CSR {
+      var idx = 0;
+      for i in spsMat.domain.parentDom.dim(0) {
+        for j in spsMat.domain.parentDom.dim(1) {
+          if spsMat.domain.contains((i, j)) {
+            spsMat[i,j] = A[idx];
+            idx += 1;
+          }
+        }
+      }
+    } else {
+      var idx = 0;
+      for j in spsMat.domain.parentDom.dim(1) {
+        for i in spsMat.domain.parentDom.dim(0) {
+          if spsMat.domain.contains((i, j)) {
+            spsMat[i,j] = A[idx];
+            idx += 1;
+          }
+        }
+      }
     }
   }
 
@@ -368,14 +395,14 @@ module SparseMatrix {
 
   // sparse, outer, matrix-matrix multiplication algorithm; A is assumed
   // CSC and B CSR
-  // proc sparseMatMatMult(A, B) {
-  //   var spsData: sparseMatDat;
+  proc sparseMatMatMult(A, B) {
+    var spsData: sparseMatDat;
 
-  //   sparseMatMatMult(A, B, spsData);
+    sparseMatMatMult(A, B, spsData);
 
-  //   var C = makeSparseMat(A.domain.parentDom, spsData);
-  //   return C;
-  // }
+    var C = makeSparseMat(A.domain.parentDom, spsData);
+    return C;
+  }
 
   // This version forms the guts of the above and permits a running set
   // of nonzeroes to be passed in and updated rather than assuming that

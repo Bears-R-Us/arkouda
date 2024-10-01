@@ -125,11 +125,11 @@ module SparseMatrixMsg {
         if gEnt.layoutStr=="CSC" {
             // Hardcode for int right now
             var sparrayEntry = gEnt.toSparseSymEntry(int, dimensions=2, layout.CSC);
-            fillSparseMatrix(sparrayEntry.a, vals.a);
+            fillSparseMatrix(sparrayEntry.a, vals.a, layout.CSC);
         } else if gEnt.layoutStr=="CSR" {
             // Hardcode for int right now
             var sparrayEntry = gEnt.toSparseSymEntry(int, dimensions=2, layout.CSR);
-            fillSparseMatrix(sparrayEntry.a, vals.a);
+            fillSparseMatrix(sparrayEntry.a, vals.a, layout.CSR);
         } else {
             throw getErrorWithContext(
                                     msg="unsupported layout for sparse matrix: %s".format(gEnt.layoutStr),
