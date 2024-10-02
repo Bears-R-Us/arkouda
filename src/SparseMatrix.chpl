@@ -63,6 +63,15 @@ module SparseMatrix {
     }
   }
 
+  proc getGridInfo(const ref spsMat) where spsMat.chpl_isNonDistributedArray() {
+    return (reshape([here,], {0..<1, 0..<1}), 1, 1);
+  }
+
+  proc getGridInfo(const ref spsMat) where !spsMat.chpl_isNonDistributedArray() {
+    const grid = spsMat.domain.targetLocales();
+    return (grid, grid.dim(0).size, grid.dim(1).size);
+  }
+
   /*
     Fill the rows, cols, and vals arrays with the non-zero indices and values
     from the sparse matrix in row-major order.
@@ -76,9 +85,7 @@ module SparseMatrix {
     // }
 
     // info about matrix block distribution across a 2D grid of locales
-    const grid = spsMat.domain.targetLocales(),
-          nRowBlocks = grid.domain.dim(0).size,   // 2
-          nColBlocks = grid.domain.dim(1).size;   // 2
+    const (grid, nRowBlocks, nColBlocks) = getGridInfo(spsMat);
 
     // number of non-zeros in each row, for each column-block of the matrix
     // TODO: make this a sparse array ('spsMat.shape[0]' could be very large)
@@ -93,11 +100,11 @@ module SparseMatrix {
                 iRange = lsd.dim(0),
                 jRange = lsd.dim(1);
 
-          // TODO: do all this with a single task if iRange.size < here.maxTaskPar (instead of spawning one task per row)
+          // TODO: use a single task if iRange.size < here.maxTaskPar (instead of spawning one task per row)
           const nRowTasks = min(here.maxTaskPar, iRange.size),
                 nRowsPerTask = iRange.size / nRowTasks;
 
-          coforall rt in 0..<nRowTasks {
+          coforall rt in 0..<nRowTasks with (ref nnzPerColBlock) {
             const iStart = rt * nRowsPerTask + iRange.low,
                   iStop = if rt == nRowTasks-1 then iRange.last else (rt+1) * nRowsPerTask + iRange.low - 1;
 
@@ -113,7 +120,8 @@ module SparseMatrix {
     }
 
     // scan operation to find the starting index (in the 1D output arrays) for each column-block of each row
-    const colBlockStartOffsets: [nnzDom] int = rowMajorExScan(nnzPerColBlock, spsMat.domain.parentDom);
+    const colBlockStartOffsets: [nnzDom] int =
+      rowMajorExScan(nnzPerColBlock, grid, nRowBlocks, nColBlocks, spsMat.domain.parentDom);
 
     // deposit indices and values into output arrays in parallel
     coforall colBlockIdx in 0..<nColBlocks with (ref rows, ref cols, ref vals) {
@@ -126,7 +134,7 @@ module SparseMatrix {
           const nRowTasks = min(here.maxTaskPar, iRange.size),
                 nRowsPerTask = iRange.size / nRowTasks;
 
-          coforall rt in 0..<nRowTasks {
+          coforall rt in 0..<nRowTasks with (ref rows, ref cols, ref vals) {
             const iStart = rt * nRowsPerTask + iRange.low,
                   iStop = if rt == nRowTasks-1 then iRange.last else (rt+1) * nRowsPerTask + iRange.low - 1;
 
@@ -151,10 +159,10 @@ module SparseMatrix {
     }
   }
 
-  /*
-    Fill the rows, cols, and vals arrays with the non-zero indices and values
-    from the sparse matrix in col-major order.
-  */
+  // /*
+  //   Fill the rows, cols, and vals arrays with the non-zero indices and values
+  //   from the sparse matrix in col-major order.
+  // */
   proc sparseMatToPdarrayCSC(const ref spsMat, ref rows, ref cols, ref vals) {
     // // serial algorithm (for reference):
     // for((i,j), idx) in zip(spsMat.domain,0..) {
@@ -163,47 +171,34 @@ module SparseMatrix {
     //   vals[idx] = spsMat[i, j];
     // }
 
-    // matrix shape
-    const m = spsMat.shape[0],
-          n = spsMat.shape[1];
-
     // info about matrix block distribution across a 2D grid of locales
-    const grid = spsMat.domain.targetLocales(),
-          nRowBlocks = grid.domain.dim(0).size,
-          nColBlocks = grid.domain.dim(1).size;
+    const (grid, nRowBlocks, nColBlocks) = getGridInfo(spsMat);
 
     // number of non-zeros in each column, for each row-block of the matrix
-    // TODO: use zero-based indexing for SparseSymEntry
-    const nnzDom = blockDist.createDomain({0..<nRowBlocks, 1..n}, targetLocales=grid);
+    // TODO: make this a sparse array ('spsMat.shape[0]' could be very large)
+    const nnzDom = blockDist.createDomain({0..<nRowBlocks, 1..spsMat.shape[1]}, targetLocales=grid);
     var nnzPerRowBlock: [nnzDom] int;
 
-    // details for splitting columns into groups for task-level parallelism
-    const nTasksPerColBlock = here.maxTaskPar,
-          nColGroups = min(nColBlocks * nTasksPerColBlock, n),
-          nColsPerGroup = n / nColGroups,
-          nRowsPerBlock = m / nRowBlocks;
-
-    // compute the number of non-zeros in each row-section of each column
-    coforall rowBlockIdx in 0..<nRowBlocks with (ref nnzPerRowBlock) {
-      const iStart = rowBlockIdx * nRowsPerBlock + 1,
-            iEnd = if rowBlockIdx == nRowBlocks-1 then m else (rowBlockIdx+1) * nRowsPerBlock;
-
-      coforall cg in 0..<nColGroups with (ref nnzPerRowBlock) {
-        const colBlockIdx = cg / nTasksPerColBlock;
+    // compute the number of non-zeros in each column-section of each row
+    coforall colBlockIdx in 0..<nColBlocks with (ref nnzPerRowBlock) {
+      coforall rowBlockIdx in 0..<nRowBlocks with (ref nnzPerRowBlock) {
         on grid[rowBlockIdx, colBlockIdx] {
-          const jStart = cg * nColsPerGroup + 1,
-                jEnd = if cg == nColGroups-1 then n else (cg+1) * nColsPerGroup;
+          const lsd = spsMat.domain.parentDom.localSubdomain(),
+                iRange = lsd.dim(0),
+                jRange = lsd.dim(1);
 
-          // TODO: there is probably a much smarter way to compute this information using the
-          // underlying CSC data structures
-          for j in jStart..jEnd {
-            for i in iStart..iEnd {
-              if spsMat.domain.contains((i,j)) {
-                // TODO: this localAccess assumes that the `cg*nColsPerGroup` math lines up perfectly
-                // with the matrix's block distribution; this is (probably) not guaranteed
-                // - should use the parentDom to compute actual local indices
-                // nnzPerRowBlock.localAccess[rowBlockIdx,j] += 1;
-                nnzPerRowBlock[rowBlockIdx,j] += 1;
+          // TODO: use a single task if jRange.size < here.maxTaskPar (instead of spawning one task per column)
+          const nColTasks = min(here.maxTaskPar, jRange.size),
+                nColsPerTask = jRange.size / nColTasks;
+
+          coforall ct in 0..<nColTasks with (ref nnzPerRowBlock) {
+            const jStart = ct * nColsPerTask + jRange.low,
+                  jStop = if ct == nColTasks-1 then jRange.last else (ct+1) * nColsPerTask + jRange.low - 1;
+
+            for i in iRange {
+              for j in jStart..jStop {
+                if spsMat.domain.contains((i,j))
+                  then nnzPerRowBlock.localAccess[rowBlockIdx, j] += 1;
               }
             }
           }
@@ -212,34 +207,37 @@ module SparseMatrix {
     }
 
     // scan operation to find the starting index (in the 1D output arrays) for each row-block of each column
-    const rowBlockStartOffsets = flattenedExScanCSC(nnzPerRowBlock, nColGroups, nTasksPerColBlock, nColsPerGroup);
+    const rowBlockStartOffsets: [nnzDom] int =
+      colMajorExScan(nnzPerRowBlock, grid, nRowBlocks, nColBlocks, spsMat.domain.parentDom);
 
-    // store the non-zero indices and values in the output arrays
-    coforall rowBlockIdx in 0..<nRowBlocks with (ref rows, ref cols, ref vals) {
-      const iStart = rowBlockIdx * nRowsPerBlock + 1,
-            iEnd = if rowBlockIdx == nRowBlocks-1 then m else (rowBlockIdx+1) * nRowsPerBlock;
-
-      coforall cg in 0..<nColGroups with (ref rows, ref cols, ref vals) {
-        const colBlockIdx = cg / nTasksPerColBlock;
+    // compute the number of non-zeros in each column-section of each row
+    coforall colBlockIdx in 0..<nColBlocks with (ref rows, ref cols, ref vals) {
+      coforall rowBlockIdx in 0..<nRowBlocks with (ref rows, ref cols, ref vals) {
         on grid[rowBlockIdx, colBlockIdx] {
-          const jStart = cg * nColsPerGroup + 1,
-                jEnd = if cg == nColGroups-1 then n else (cg+1) * nColsPerGroup;
+          const lsd = spsMat.domain.parentDom.localSubdomain(),
+                iRange = lsd.dim(0),
+                jRange = lsd.dim(1);
 
-          // aggregators to deposit indices and values into 1D output arrays
-          var idxAgg = newSrcAggregator(int),
-              valAgg = newSrcAggregator(spsMat.eltType);
+          const nColTasks = min(here.maxTaskPar, jRange.size),
+                nColsPerTask = jRange.size / nColTasks;
 
-          for j in jStart..jEnd {
-            var idx = rowBlockStartOffsets[rowBlockIdx, j];
-            for i in iStart..iEnd {
-              if spsMat.domain.contains((i,j)) {
-                rows[idx] = i;
-                cols[idx] = j;
-                vals[idx] = spsMat[i, j];
-                // idxAgg.copy(rows[idx], i);
-                // idxAgg.copy(cols[idx], j);
-                // valAgg.copy(vals[idx], spsMat[i, j]); // TODO: (see above note about localAccess)
-                idx += 1;
+          coforall ct in 0..<nColTasks with (ref rows, ref cols, ref vals) {
+            const jStart = ct * nColsPerTask + jRange.low,
+                  jStop = if ct == nColTasks-1 then jRange.last else (ct+1) * nColsPerTask + jRange.low - 1;
+
+            // aggregators to deposit indices and values into 1D output arrays
+            var idxAgg = newDstAggregator(int),
+                valAgg = newDstAggregator(spsMat.eltType);
+
+            for j in jStart..jStop {
+              var idx = rowBlockStartOffsets.localAccess[rowBlockIdx, j];
+              for i in iRange {
+                if spsMat.domain.contains((i,j)) {
+                  idxAgg.copy(rows[idx], i);
+                  idxAgg.copy(cols[idx], j);
+                  valAgg.copy(vals[idx], spsMat[i, j]);
+                  idx += 1;
+                }
               }
             }
           }
@@ -250,14 +248,19 @@ module SparseMatrix {
 
   // helper function for sparseMatToPdarrayCSR
   // computes a row-major flattened scan of a distributed 2D array in parallel
-  proc rowMajorExScan(in nnzPerColBlock: [?d] int, ref pdom) {
-    const nColBlocks = d.dim(1).size,
-          grid = d.targetLocales(),
-          nRowBlocks = grid.dim(0).size;
-
+  proc rowMajorExScan(in nnzPerColBlock: [?d] int, grid: [] locale, nRowBlocks: int, nColBlocks: int, ref pdom) {
     var colBlockStartOffsets: [d] int;
 
-    // domain over the first column of 'grid'
+    // // serial algorithm (for reference):
+    // var sum = 0;
+    // for i in 1..d.dim(0).size {
+    //  for colBlockIdx in 0..<nColBlocks {
+    //     colBlockStartOffsets[i, colBlockIdx] = sum;
+    //     sum += nnzPerColBlock[i, colBlockIdx];
+    //   }
+    // }
+
+    // domain distributed over the first column of 'grid' only
     const interDom = blockDist.createDomain(
       0..<nRowBlocks,
       targetLocales=reshape(grid[{0..<nRowBlocks, 0..0}], {0..<nRowBlocks})
@@ -267,7 +270,7 @@ module SparseMatrix {
     var intermediate: [interDom] int;
 
     // compute an exclusive scan within each row block
-    coforall rowBlockIdx in 0..<nRowBlocks with (ref nnzPerColBlock) do on grid[rowBlockIdx, 0] {
+    coforall rowBlockIdx in 0..<nRowBlocks with (ref colBlockStartOffsets) do on grid[rowBlockIdx, 0] {
       const iRange = pdom.localSubdomain().dim(0),
             nRowTasks = min(here.maxTaskPar, iRange.size),
             nRowsPerTask = iRange.size / nRowTasks;
@@ -276,7 +279,7 @@ module SparseMatrix {
       var rowBlockIntermediate: [0..<nRowTasks] int;
 
       // compute an exclusive scan within each task's group of rows
-      coforall rt in 0..<nRowTasks {
+      coforall rt in 0..<nRowTasks with (ref rowBlockIntermediate) {
         const iStart = rt * nRowsPerTask + iRange.low,
               iStop = if rt == nRowTasks-1 then iRange.last else (rt+1) * nRowsPerTask + iRange.low - 1;
 
@@ -293,7 +296,7 @@ module SparseMatrix {
         rowBlockIntermediate[rt] = rtSum;
       }
 
-      // compute a scan on the intermediate results and upate this row-block of the array
+      // compute a scan on the intermediate results and update this row-block of the array
       rowBlockIntermediate = + scan rowBlockIntermediate;
       intermediate.localAccess[rowBlockIdx] = rowBlockIntermediate.last;
 
@@ -305,10 +308,10 @@ module SparseMatrix {
       }
     }
 
-    // compute a scan on the intermediate results and upate the global array
+    // compute a scan on the intermediate results and update the global array
     intermediate = + scan intermediate;
 
-    coforall rowBlockIdx in 1..<nRowBlocks with (ref nnzPerColBlock) do on grid[rowBlockIdx, 0] {
+    coforall rowBlockIdx in 1..<nRowBlocks with (ref colBlockStartOffsets) do on grid[rowBlockIdx, 0] {
       const iRange = pdom.localSubdomain().dim(0);
       colBlockStartOffsets[{iRange, 0..<nColBlocks}] += intermediate[rowBlockIdx-1];
     }
@@ -318,69 +321,72 @@ module SparseMatrix {
 
   // helper function for sparseMatToPdarrayCSC
   // computes a col-major flattened scan of a distributed 2D array in parallel
-  proc flattenedExScanCSC(in nnzPerRowBlock: [?d] int, nColGroups: int, nTasksPerColBlock: int, nColsPerGroup: int) {
-    const nRowBlocks = d.dim(0).size,
-          n = d.dim(1).size,
-          grid = d.targetLocales(),
-          nColBlocks = grid.dim(1).size;
-
+  proc colMajorExScan(in nnzPerRowBlock: [?d] int, grid: [] locale, nRowBlocks: int, nColBlocks: int, ref pdom) {
     var rowBlockStartOffsets: [d] int;
 
     // // serial algorithm (for reference):
     // var sum = 0;
-    // for j in 1..n {
+    // for j in 1..d.dim(1).size {
     //  for rowBlockIdx in 0..<nRowBlocks {
     //     rowBlockStartOffsets[rowBlockIdx, j] = sum;
     //     sum += nnzPerRowBlock[rowBlockIdx, j];
     //   }
     // }
 
-    // 1D block distributed array representing intermediate result of scan for each column group
-    // (distributed across grid's first row of locales only)
+    // domain distributed over the first column of 'grid' only
     const interDom = blockDist.createDomain(
-      0..<nColGroups,
+      0..<nColBlocks,
       targetLocales=reshape(grid[{0..0, 0..<nColBlocks}], {0..<nColBlocks})
     );
+
+    // array to store sum of values within each column block
     var intermediate: [interDom] int;
 
-    // compute an exclusive scan within each column group
-    coforall cg in 0..<nColGroups with (ref rowBlockStartOffsets) {
-      const colBlockIdx = cg / nTasksPerColBlock;
-      on grid[0, colBlockIdx] {
-        const jStart = cg * nColsPerGroup + 1,
-              jEnd = if cg == nColGroups-1 then n else (cg+1) * nColsPerGroup;
+    // compute an exclusive scan within each column block
+    coforall colBlockIdx in 0..<nColBlocks with (ref rowBlockStartOffsets) do on grid[0, colBlockIdx] {
+      const jRange = pdom.localSubdomain().dim(1),
+            nColTasks = min(here.maxTaskPar, jRange.size),
+            nColsPerTask = jRange.size / nColTasks;
 
-        var cgSum = 0;
-        for j in jStart..jEnd {
-          for rowBlockIdx in 0..<nRowBlocks {
-            rowBlockStartOffsets[rowBlockIdx, j] = cgSum;
+      // array to store sum of values within each task's group of cols
+      var colBlockIntermediate: [0..<nColTasks] int;
+
+      // compute an exclusive scan within each task's group of rows
+      coforall ct in 0..<nColTasks with (ref colBlockIntermediate) {
+        const jStart = ct * nColsPerTask + jRange.low,
+              jStop = if ct == nColTasks-1 then jRange.last else (ct+1) * nColsPerTask + jRange.low - 1;
+
+        var ctSum = 0;
+        for j in jStart..jStop {
+          for rowBlockIdx in 0..<nColBlocks {
+            rowBlockStartOffsets[rowBlockIdx, j] = ctSum;
 
             // TODO: would aggregation we worthwhile here (for the non-local accesses of the non-zero rows)?
-            cgSum += nnzPerRowBlock[rowBlockIdx, j];
+            ctSum += nnzPerRowBlock[rowBlockIdx, j];
           }
         }
 
-        // intermediate.localAccess[cg] = cgSum;
-        intermediate[cg] = cgSum;
+        colBlockIntermediate[ct] = ctSum;
+      }
+
+      // compute a scan on the intermediate results and update this col-block of the array
+      colBlockIntermediate = + scan colBlockIntermediate;
+      intermediate.localAccess[colBlockIdx] = colBlockIntermediate.last;
+
+      coforall ct in 1..<nColTasks {
+        const jStart = ct * nColsPerTask + jRange.low,
+              jStop = if ct == nColTasks-1 then jRange.last else (ct+1) * nColsPerTask + jRange.low - 1;
+
+        rowBlockStartOffsets[{jStart..jStop, 0..<nColBlocks}] += colBlockIntermediate[ct-1];
       }
     }
 
-    // compute a scan of each column-group's sum
+    // compute a scan on the intermediate results and update the global array
     intermediate = + scan intermediate;
 
-    // update the column groups with the previous group's sum
-    // (the 0'th column group is already correct)
-    coforall cg in 1..<nColGroups with (ref rowBlockStartOffsets) {
-      const colBlockIdx = cg / nTasksPerColBlock;
-      on grid[0, colBlockIdx] {
-        const jStart = cg * nColsPerGroup + 1,
-              jEnd = if cg == nColGroups-1 then n else (cg+1) * nColsPerGroup;
-
-        // TODO: explicit serial loop might be faster than slice assignment here
-        rowBlockStartOffsets[{0..<nRowBlocks, jStart..jEnd}] +=
-          intermediate[cg-1];
-          // intermediate.localAccess[cg-1];
-      }
+    coforall colBlockIdx in 1..<nColBlocks with (ref rowBlockStartOffsets) do on grid[0,colBlockIdx] {
+      const jRange = pdom.localSubdomain().dim(1);
+      rowBlockStartOffsets[{jRange, 0..<nColBlocks}] += intermediate[colBlockIdx-1];
     }
 
     return rowBlockStartOffsets;
