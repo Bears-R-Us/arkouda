@@ -175,7 +175,7 @@ module SparseMatrix {
     const (grid, nRowBlocks, nColBlocks) = getGridInfo(spsMat);
 
     // number of non-zeros in each column, for each row-block of the matrix
-    // TODO: make this a sparse array ('spsMat.shape[0]' could be very large)
+    // TODO: make this a sparse array ('spsMat.shape[1]' could be very large)
     const nnzDom = blockDist.createDomain({0..<nRowBlocks, 1..spsMat.shape[1]}, targetLocales=grid);
     var nnzPerRowBlock: [nnzDom] int;
 
@@ -377,7 +377,7 @@ module SparseMatrix {
         const jStart = ct * nColsPerTask + jRange.low,
               jStop = if ct == nColTasks-1 then jRange.last else (ct+1) * nColsPerTask + jRange.low - 1;
 
-        rowBlockStartOffsets[{jStart..jStop, 0..<nColBlocks}] += colBlockIntermediate[ct-1];
+        rowBlockStartOffsets[{0..<nRowBlocks, jStart..jStop}] += colBlockIntermediate[ct-1];
       }
     }
 
@@ -386,7 +386,7 @@ module SparseMatrix {
 
     coforall colBlockIdx in 1..<nColBlocks with (ref rowBlockStartOffsets) do on grid[0,colBlockIdx] {
       const jRange = pdom.localSubdomain().dim(1);
-      rowBlockStartOffsets[{jRange, 0..<nColBlocks}] += intermediate[colBlockIdx-1];
+      rowBlockStartOffsets[{0..<nRowBlocks, jRange}] += intermediate[colBlockIdx-1];
     }
 
     return rowBlockStartOffsets;
