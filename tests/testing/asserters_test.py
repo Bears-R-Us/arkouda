@@ -866,7 +866,7 @@ class TestDataFrame:
         # check_exact
         # rtol
         # atol
-        rng = ak.random.default_rng()
+        rng = ak.random.default_rng(seed=17)
         atol = 0.001
         rtol = 0.001
 
@@ -887,6 +887,7 @@ class TestDataFrame:
                 assert_frame_equal(df, df_rtol_atol, check_exact=True)
         with pytest.raises(AssertionError):
             assert_frame_equivalent(convert_left(df), convert_right(df_rtol_atol), check_exact=True)
+
         if both_ak:
             with pytest.raises(AssertionError):
                 assert_frame_equal(df, df_rtol_atol, check_exact=False, rtol=rtol)
@@ -894,6 +895,7 @@ class TestDataFrame:
             assert_frame_equivalent(
                 convert_left(df), convert_right(df_rtol_atol), check_exact=False, rtol=rtol
             )
+
         if both_ak:
             with pytest.raises(AssertionError):
                 assert_frame_equal(df, df_rtol_atol, check_exact=False, atol=atol)
