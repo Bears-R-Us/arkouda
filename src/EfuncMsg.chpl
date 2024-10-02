@@ -42,6 +42,100 @@ module EfuncMsg
       :throws: `UndefinedSymbolError(name)`
       */
 
+
+//  This section is a rewrite of trig and hyp functions in new interface.
+//  This comment will be updated as other functions are rewritten, and deleted
+//  once the rewrite is complete.
+
+//  Error-throwing versions of each function are indented below their "parents"
+//  in an attempt to improve readability.
+
+    @arkouda.registerCommand (name="sin")
+    proc sine (x : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint) { return sin(x); }
+       
+        proc sine (x : [?d] ?t) : [d] real throws
+            { throw new Error ("Invalid data type for sin"); }
+
+    @arkouda.registerCommand (name="cos")
+    proc cosine (x : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint) { return cos(x); }
+       
+        proc cosine (x : [?d] ?t) : [d] real throws
+            { throw new Error ("Invalid data type for cos"); }
+
+    @arkouda.registerCommand (name="tan")
+    proc tangent (x : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint) { return tan(x); }
+       
+        proc tangent (x : [?d] ?t) : [d] real throws
+            { throw new Error ("Invalid data type for tan"); }
+
+    @arkouda.registerCommand (name="arcsin")
+    proc arcsine (x : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint) { return asin(x); }
+       
+        proc arcsine (x : [?d] ?t) : [d] real throws
+            { throw new Error ("Invalid data type for arcsin"); }
+
+    @arkouda.registerCommand (name="arccos")
+    proc arccosine (x : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint) { return acos(x); }
+       
+        proc arccosine (x : [?d] ?t) : [d] real throws
+            { throw new Error ("Invalid data type for arccos"); }
+
+    @arkouda.registerCommand (name="arctan")
+    proc arctangent (x : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint) { return atan(x); }
+       
+        proc arctangent (x : [?d] ?t) : [d] real throws
+            { throw new Error ("Invalid data type for arctan"); }
+
+    @arkouda.registerCommand (name="sinh")
+    proc hypsine (x : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint) { return sinh(x); }
+       
+        proc hypsine (x : [?d] ?t) : [d] real throws
+            { throw new Error ("Invalid data type for sinh"); }
+
+    @arkouda.registerCommand (name="cosh")
+    proc hypcosine (x : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint) { return cosh(x); }
+       
+        proc hypcosine (x : [?d] ?t) : [d] real throws
+            { throw new Error ("Invalid data type for cosh"); }
+
+    @arkouda.registerCommand (name="tanh")
+    proc hyptangent (x : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint) { return tanh(x); }
+       
+        proc hyptangent (x : [?d] ?t) : [d] real throws
+            { throw new Error ("Invalid data type for tanh"); }
+
+    @arkouda.registerCommand (name="arcsinh")
+    proc archypsine (x : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint) { return asinh(x); }
+       
+        proc archypsine (x : [?d] ?t) : [d] real throws
+            { throw new Error ("Invalid data type for arcsinh"); }
+
+    @arkouda.registerCommand (name="arccosh")
+    proc archypcosine (x : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint) { return acosh(x); }
+       
+        proc archypcosine (x : [?d] ?t) : [d] real throws
+            { throw new Error ("Invalid data type for arccosh"); }
+
+    @arkouda.registerCommand (name="arctanh")
+    proc archyptangent (x : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint) { return atanh(x); }
+       
+        proc archyptangent (x : [?d] ?t) : [d] real throws
+            { throw new Error ("Invalid data type for arctanh"); }
+
+//  End of rewrite section -- delete this comment after all of EfuncMsg is rewritten.
+
     @arkouda.registerND
     proc efuncMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
         param pn = Reflection.getRoutineName();
@@ -100,42 +194,6 @@ module EfuncMsg
                             eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                             return new MsgTuple(errorMsg, MsgType.ERROR);
                         }
-                    }
-                    when "sin" {
-                        st.addEntry(rname, new shared SymEntry(sin(ea)));
-                    }
-                    when "cos" {
-                        st.addEntry(rname, new shared SymEntry(cos(ea)));
-                    }
-                    when "tan" {
-                        st.addEntry(rname, new shared SymEntry(tan(ea)));
-                    }
-                    when "arcsin" {
-                        st.addEntry(rname, new shared SymEntry(asin(ea)));
-                    }
-                    when "arccos" {
-                        st.addEntry(rname, new shared SymEntry(acos(ea)));
-                    }
-                    when "arctan" {
-                        st.addEntry(rname, new shared SymEntry(atan(ea)));
-                    }
-                    when "sinh" {
-                        st.addEntry(rname, new shared SymEntry(sinh(ea)));
-                    }
-                    when "cosh" {
-                        st.addEntry(rname, new shared SymEntry(cosh(ea)));
-                    }
-                    when "tanh" {
-                        st.addEntry(rname, new shared SymEntry(tanh(ea)));
-                    }
-                    when "arcsinh" {
-                        st.addEntry(rname, new shared SymEntry(asinh(ea)));
-                    }
-                    when "arccosh" {
-                        st.addEntry(rname, new shared SymEntry(acosh(ea)));
-                    }
-                    when "arctanh" {
-                        st.addEntry(rname, new shared SymEntry(atanh(ea)));
                     }
                     when "hash64" {
                         overMemLimit(numBytes(int) * e.size);
@@ -253,42 +311,6 @@ module EfuncMsg
                             return new MsgTuple(errorMsg, MsgType.ERROR);
                         }
                     }
-                    when "sin" {
-                        st.addEntry(rname, new shared SymEntry(sin(ea)));
-                    }
-                    when "cos" {
-                        st.addEntry(rname, new shared SymEntry(cos(ea)));
-                    }
-                    when "tan" {
-                        st.addEntry(rname, new shared SymEntry(tan(ea)));
-                    }
-                    when "arcsin" {
-                        st.addEntry(rname, new shared SymEntry(asin(ea)));
-                    }
-                    when "arccos" {
-                        st.addEntry(rname, new shared SymEntry(acos(ea)));
-                    }
-                    when "arctan" {
-                        st.addEntry(rname, new shared SymEntry(atan(ea)));
-                    }
-                    when "sinh" {
-                        st.addEntry(rname, new shared SymEntry(sinh(ea)));
-                    }
-                    when "cosh" {
-                        st.addEntry(rname, new shared SymEntry(cosh(ea)));
-                    }
-                    when "tanh" {
-                        st.addEntry(rname, new shared SymEntry(tanh(ea)));
-                    }
-                    when "arcsinh" {
-                        st.addEntry(rname, new shared SymEntry(asinh(ea)));
-                    }
-                    when "arccosh" {
-                        st.addEntry(rname, new shared SymEntry(acosh(ea)));
-                    }
-                    when "arctanh" {
-                        st.addEntry(rname, new shared SymEntry(atanh(ea)));
-                    }
                     when "hash64" {
                         overMemLimit(numBytes(real) * e.size);
                         var a = st.addEntry(rname, e.tupShape, uint);
@@ -396,42 +418,6 @@ module EfuncMsg
                             eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                             return new MsgTuple(errorMsg, MsgType.ERROR);
                         }
-                    }
-                    when "sin" {
-                        st.addEntry(rname, new shared SymEntry(sin(ea)));
-                    }
-                    when "cos" {
-                        st.addEntry(rname, new shared SymEntry(cos(ea)));
-                    }
-                    when "tan" {
-                        st.addEntry(rname, new shared SymEntry(tan(ea)));
-                    }
-                    when "arcsin" {
-                        st.addEntry(rname, new shared SymEntry(asin(ea)));
-                    }
-                    when "arccos" {
-                        st.addEntry(rname, new shared SymEntry(acos(ea)));
-                    }
-                    when "arctan" {
-                        st.addEntry(rname, new shared SymEntry(atan(ea)));
-                    }
-                    when "sinh" {
-                        st.addEntry(rname, new shared SymEntry(sinh(ea)));
-                    }
-                    when "cosh" {
-                        st.addEntry(rname, new shared SymEntry(cosh(ea)));
-                    }
-                    when "tanh" {
-                        st.addEntry(rname, new shared SymEntry(tanh(ea)));
-                    }
-                    when "arcsinh" {
-                        st.addEntry(rname, new shared SymEntry(asinh(ea)));
-                    }
-                    when "arccosh" {
-                        st.addEntry(rname, new shared SymEntry(acosh(ea)));
-                    }
-                    when "arctanh" {
-                        st.addEntry(rname, new shared SymEntry(atanh(ea)));
                     }
                     when "parity" {
                         st.addEntry(rname, new shared SymEntry(parity(ea)));

@@ -103,6 +103,20 @@ class ErrorMode(Enum):
     return_validity = "return_validity"
 
 
+# merge_where comes in handy in functions that include a "where" argument.
+
+
+def merge_where(new_pda, where, ret):
+    new_pda = cast(new_pda, ret.dtype)
+    new_pda[where] = ret
+    return new_pda
+
+
+def datatype_check(the_dtype, allowed_list, name):
+    if not (the_dtype in allowed_list):
+        raise TypeError(f"{the_dtype} is not implemented in {name}")
+
+
 @typechecked
 def cast(
     pda: Union[pdarray, Strings, Categorical],  # type: ignore
@@ -1297,17 +1311,17 @@ def _trig_helper(pda: pdarray, func: str, where: Union[bool, pdarray] = True) ->
     ------
     TypeError
         Raised if the parameter is not a pdarray
-    TypeError
+        Raised if input is not real or int or uint
         Raised if where condition is not type Boolean
     """
+    datatype_check(pda.dtype, [float, int, ak_uint64], func)
     if where is True:
         repMsg = type_cast(
             str,
             generic_msg(
-                cmd=f"efunc{pda.ndim}D",
+                cmd=f"{func}<{pda.dtype},{pda.ndim}>",
                 args={
-                    "func": func,
-                    "array": pda,
+                    "x": pda,
                 },
             ),
         )
@@ -1320,18 +1334,13 @@ def _trig_helper(pda: pdarray, func: str, where: Union[bool, pdarray] = True) ->
         repMsg = type_cast(
             str,
             generic_msg(
-                cmd=f"efunc{pda.ndim}D",
+                cmd=f"{func}<{pda.dtype},{pda.ndim}>",
                 args={
-                    "func": func,
-                    "array": pda[where],
+                    "pda": pda[where],
                 },
             ),
         )
-        new_pda = pda[:]
-        ret = create_pdarray(repMsg)
-        new_pda = cast(new_pda, ret.dtype)
-        new_pda[where] = ret
-        return new_pda
+        return merge_where(pda[:], where, create_pdarray(repMsg))
 
 
 @typechecked
@@ -2292,10 +2301,8 @@ def array_equal(pda_a: pdarray, pda_b: pdarray, equal_nan: bool = False):
 
 
 def putmask(
-     A : pdarray ,
-     mask : pdarray,
-     Values : pdarray
- ) :  # doesn't return anything, as A is overwritten in place
+    A: pdarray, mask: pdarray, Values: pdarray
+):  # doesn't return anything, as A is overwritten in place
     """
     Overwrites elements of A with elements from B based upon a mask array.
     Similar to numpy.putmask, where mask = False, A retains its original value,
