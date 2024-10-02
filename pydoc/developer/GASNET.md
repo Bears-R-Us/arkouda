@@ -28,7 +28,7 @@ Once your environment is configured, you are ready to build Chapel using GASNet.
 
 ```bash
 cd $CHPL_HOME
-make -j 16
+make -j 8  # you can bump this up 16 if you have enough memory
 ``` 
 
 Once complete, Chapel has been built with GASNet.

@@ -568,9 +568,10 @@ CLEAN_TARGETS += test-clean
 test-clean:
 	$(RM) $(TEST_TARGETS) $(addsuffix _real,$(TEST_TARGETS))
 
+size_bm = 10**8
 .PHONY: benchmark
 benchmark:
-	python3 -m pytest -c benchmark.ini --benchmark-autosave --benchmark-storage=file://benchmark_v2/.benchmarks
+	python3 -m pytest -c benchmark.ini --benchmark-autosave --benchmark-storage=file://benchmark_v2/.benchmarks --size=$(size_bm)
 
 version:
 	@echo $(VERSION);
