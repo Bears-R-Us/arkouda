@@ -112,9 +112,11 @@ def merge_where(new_pda, where, ret):
 
 # TODO: standardize error checking in python interface
 
+
 def datatype_check(the_dtype, allowed_list, name):
     if not (the_dtype in allowed_list):
         raise TypeError(f"{the_dtype} is not implemented in {name}")
+
 
 @typechecked
 def cast(
@@ -1309,7 +1311,7 @@ def _trig_helper(pda: pdarray, func: str, where: Union[bool, pdarray] = True) ->
     Raises
     ------
     TypeError
-        Raised if pda is not a pdarray, or if input is not real or int or uint, or if where is not Boolean
+        Raised if pda is not a pdarray or if is not real or int or uint, or if where is not Boolean
     """
     datatype_check(pda.dtype, [float, int, ak_uint64], func)
     if where is True:
