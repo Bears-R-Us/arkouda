@@ -1335,7 +1335,7 @@ def _trig_helper(pda: pdarray, func: str, where: Union[bool, pdarray] = True) ->
             generic_msg(
                 cmd=f"{func}<{pda.dtype},{pda.ndim}>",
                 args={
-                    "pda": pda[where],
+                    "x": pda[where],
                 },
             ),
         )
