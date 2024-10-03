@@ -30,6 +30,7 @@ from arkouda.pdarrayclass import argmax, create_pdarray, pdarray, sum
 from arkouda.pdarraycreation import array, linspace, scalar_array
 from arkouda.sorting import sort
 from arkouda.strings import Strings
+from arkouda.util import _where_helper
 
 NUMERIC_TYPES = [ak_int64, ak_float64, ak_bool, ak_uint64]
 
@@ -103,19 +104,12 @@ class ErrorMode(Enum):
     return_validity = "return_validity"
 
 
-# merge_where comes in handy in functions that include a "where" argument.
-
-def merge_where(new_pda, where, ret):
-    new_pda = cast(new_pda, ret.dtype)
-    new_pda[where] = ret
-    return new_pda
-
 # TODO: standardize error checking in python interface
 
 
-def datatype_check(the_dtype, allowed_list, name):
+def _datatype_check(the_dtype, allowed_list, name):
     if not (the_dtype in allowed_list):
-        raise TypeError(f"{the_dtype} is not implemented in {name}")
+        raise TypeError(f"{name} only implements types {allowed_list}")
 
 
 @typechecked
@@ -1313,7 +1307,7 @@ def _trig_helper(pda: pdarray, func: str, where: Union[bool, pdarray] = True) ->
     TypeError
         Raised if pda is not a pdarray or if is not real or int or uint, or if where is not Boolean
     """
-    datatype_check(pda.dtype, [float, int, ak_uint64], func)
+    _datatype_check(pda.dtype, [float, int, ak_uint64], func)
     if where is True:
         repMsg = type_cast(
             str,
@@ -1339,7 +1333,7 @@ def _trig_helper(pda: pdarray, func: str, where: Union[bool, pdarray] = True) ->
                 },
             ),
         )
-        return merge_where(pda[:], where, create_pdarray(repMsg))
+        return _merge_where(pda[:], where, create_pdarray(repMsg))
 
 
 @typechecked

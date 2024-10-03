@@ -55,7 +55,7 @@ module EfuncMsg
         where (t==int || t==real || t==uint) { return sin(x); }
        
         proc sine (x : [?d] ?t) : [d] real throws
-            { throw new Error ("Invalid data type for sin"); }
+            { throw new Error ("sin does not support type %s".format(type2str(t))) ; }
 
     @arkouda.registerCommand (name="cos")
     proc cosine (x : [?d] ?t) : [d] real throws
