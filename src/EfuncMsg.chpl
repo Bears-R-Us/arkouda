@@ -62,77 +62,77 @@ module EfuncMsg
         where (t==int || t==real || t==uint) { return cos(x); }
        
         proc cosine (x : [?d] ?t) : [d] real throws
-            { throw new Error ("Invalid data type for cos"); }
+            { throw new Error ("cos does not support type %s".format(type2str(t))) ; }
 
     @arkouda.registerCommand (name="tan")
     proc tangent (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return tan(x); }
        
         proc tangent (x : [?d] ?t) : [d] real throws
-            { throw new Error ("Invalid data type for tan"); }
+            { throw new Error ("tan does not support type %s".format(type2str(t))) ; }
 
     @arkouda.registerCommand (name="arcsin")
     proc arcsine (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return asin(x); }
        
         proc arcsine (x : [?d] ?t) : [d] real throws
-            { throw new Error ("Invalid data type for arcsin"); }
+            { throw new Error ("arcsin does not support type %s".format(type2str(t))) ; }
 
     @arkouda.registerCommand (name="arccos")
     proc arccosine (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return acos(x); }
        
         proc arccosine (x : [?d] ?t) : [d] real throws
-            { throw new Error ("Invalid data type for arccos"); }
+            { throw new Error ("arccos does not support type %s".format(type2str(t))) ; }
 
     @arkouda.registerCommand (name="arctan")
     proc arctangent (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return atan(x); }
        
         proc arctangent (x : [?d] ?t) : [d] real throws
-            { throw new Error ("Invalid data type for arctan"); }
+            { throw new Error ("arctan does not support type %s".format(type2str(t))) ; }
 
     @arkouda.registerCommand (name="sinh")
     proc hypsine (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return sinh(x); }
        
         proc hypsine (x : [?d] ?t) : [d] real throws
-            { throw new Error ("Invalid data type for sinh"); }
+            { throw new Error ("sinh does not support type %s".format(type2str(t))) ; }
 
     @arkouda.registerCommand (name="cosh")
     proc hypcosine (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return cosh(x); }
        
         proc hypcosine (x : [?d] ?t) : [d] real throws
-            { throw new Error ("Invalid data type for cosh"); }
+            { throw new Error ("cosh does not support type %s".format(type2str(t))) ; }
 
     @arkouda.registerCommand (name="tanh")
     proc hyptangent (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return tanh(x); }
        
         proc hyptangent (x : [?d] ?t) : [d] real throws
-            { throw new Error ("Invalid data type for tanh"); }
+            { throw new Error ("tanh does not support type %s".format(type2str(t))) ; }
 
     @arkouda.registerCommand (name="arcsinh")
     proc archypsine (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return asinh(x); }
        
         proc archypsine (x : [?d] ?t) : [d] real throws
-            { throw new Error ("Invalid data type for arcsinh"); }
+            { throw new Error ("arcsinh does not support type %s".format(type2str(t))) ; }
 
     @arkouda.registerCommand (name="arccosh")
     proc archypcosine (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return acosh(x); }
        
         proc archypcosine (x : [?d] ?t) : [d] real throws
-            { throw new Error ("Invalid data type for arccosh"); }
+            { throw new Error ("arccosh does not support type %s".format(type2str(t))) ; }
 
     @arkouda.registerCommand (name="arctanh")
     proc archyptangent (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return atanh(x); }
        
         proc archyptangent (x : [?d] ?t) : [d] real throws
-            { throw new Error ("Invalid data type for arctanh"); }
+            { throw new Error ("arctanh does not support type %s".format(type2str(t))) ; }
 
 //  End of rewrite section -- delete this comment after all of EfuncMsg is rewritten.
 

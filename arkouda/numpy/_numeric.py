@@ -15,7 +15,7 @@ from arkouda.numpy.dtypes import bool_ as ak_bool
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import float64 as ak_float64
 from arkouda.numpy.dtypes import int64 as ak_int64
-from arkouda.numpy.dtypes import int64 as akint64
+from arkouda.numpy.dtypes import uint64 as ak_uint64
 from arkouda.numpy.dtypes import (
     int_scalars,
     isSupportedNumber,
@@ -23,14 +23,13 @@ from arkouda.numpy.dtypes import (
     resolve_scalar_dtype,
     str_,
 )
-from arkouda.numpy.dtypes import uint64 as ak_uint64
+from arkouda.numpy.dtypes import _datatype_check
 from arkouda.pdarrayclass import all as ak_all
 from arkouda.pdarrayclass import any as ak_any
 from arkouda.pdarrayclass import argmax, create_pdarray, pdarray, sum
 from arkouda.pdarraycreation import array, linspace, scalar_array
 from arkouda.sorting import sort
 from arkouda.strings import Strings
-from arkouda.util import _where_helper
 
 NUMERIC_TYPES = [ak_int64, ak_float64, ak_bool, ak_uint64]
 
@@ -107,9 +106,12 @@ class ErrorMode(Enum):
 # TODO: standardize error checking in python interface
 
 
-def _datatype_check(the_dtype, allowed_list, name):
-    if not (the_dtype in allowed_list):
-        raise TypeError(f"{name} only implements types {allowed_list}")
+# _merge_where is useful in functions that include a "where" argument.
+
+def _merge_where(new_pda, where, ret):
+    new_pda = cast(new_pda, ret.dtype)
+    new_pda[where] = ret
+    return new_pda
 
 
 @typechecked
@@ -1307,7 +1309,7 @@ def _trig_helper(pda: pdarray, func: str, where: Union[bool, pdarray] = True) ->
     TypeError
         Raised if pda is not a pdarray or if is not real or int or uint, or if where is not Boolean
     """
-    _datatype_check(pda.dtype, [float, int, ak_uint64], func)
+    _datatype_check(pda.dtype, [ak_float64, ak_int64, ak_uint64], func)
     if where is True:
         repMsg = type_cast(
             str,
@@ -2363,7 +2365,7 @@ def putmask(
     return
 
 
-def eye(rows: int_scalars, cols: int_scalars, diag: int_scalars = 0, dt: type = akint64):
+def eye(rows: int_scalars, cols: int_scalars, diag: int_scalars = 0, dt: type = ak_int64):
     """
     Return a pdarray with zeros everywhere except along a diagonal, which is all ones.
     The matrix need not be square.
