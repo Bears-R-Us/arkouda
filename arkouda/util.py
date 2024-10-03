@@ -33,6 +33,7 @@ if TYPE_CHECKING:
 
 # _merge_where is useful in functions that include a "where" argument.
 
+
 def _merge_where(new_pda, where, ret):
     new_pda = cast(new_pda, ret.dtype)
     new_pda[where] = ret
