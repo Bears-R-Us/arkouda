@@ -105,17 +105,16 @@ class ErrorMode(Enum):
 
 # merge_where comes in handy in functions that include a "where" argument.
 
-
 def merge_where(new_pda, where, ret):
     new_pda = cast(new_pda, ret.dtype)
     new_pda[where] = ret
     return new_pda
 
+# TODO: standardize error checking in python interface
 
 def datatype_check(the_dtype, allowed_list, name):
     if not (the_dtype in allowed_list):
         raise TypeError(f"{the_dtype} is not implemented in {name}")
-
 
 @typechecked
 def cast(
@@ -1310,9 +1309,7 @@ def _trig_helper(pda: pdarray, func: str, where: Union[bool, pdarray] = True) ->
     Raises
     ------
     TypeError
-        Raised if the parameter is not a pdarray
-        Raised if input is not real or int or uint
-        Raised if where condition is not type Boolean
+        Raised if pda is not a pdarray, or if input is not real or int or uint, or if where is not Boolean
     """
     datatype_check(pda.dtype, [float, int, ak_uint64], func)
     if where is True:

@@ -48,7 +48,7 @@ module EfuncMsg
 //  once the rewrite is complete.
 
 //  Error-throwing versions of each function are indented below their "parents"
-//  in an attempt to improve readability.
+//  in order to improve readability.
 
     @arkouda.registerCommand (name="sin")
     proc sine (x : [?d] ?t) : [d] real throws
