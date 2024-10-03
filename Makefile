@@ -133,11 +133,11 @@ install-zmq:
 	echo '$$(eval $$(call add-path,$(ZMQ_INSTALL_DIR)))' >> Makefile.paths
 
 HDF5_MAJ_MIN_VER := 1.14
-HDF5_VER := 1.14.4
+HDF5_VER := 1.14.4-3
 HDF5_NAME_VER := hdf5-$(HDF5_VER)
 HDF5_BUILD_DIR := $(DEP_BUILD_DIR)/$(HDF5_NAME_VER)
 HDF5_INSTALL_DIR := $(DEP_INSTALL_DIR)/hdf5-install
-HDF5_LINK :=  https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-$(HDF5_MAJ_MIN_VER)/$(HDF5_NAME_VER)/src/$(HDF5_NAME_VER).tar.gz
+HDF5_LINK :=  https://github.com/HDFGroup/hdf5/releases/download/hdf5_1.14.4.3/hdf5-1.14.4-3.tar.gz
 install-hdf5:
 	@echo "Installing HDF5"
 	rm -rf $(HDF5_BUILD_DIR) $(HDF5_INSTALL_DIR)

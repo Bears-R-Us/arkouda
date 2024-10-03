@@ -13,8 +13,8 @@ module PythonMsg
     use ServerErrorStrings;
 
     use Map;
-    use ArkoudaIOCompat;
-    use ArkoudaAryUtilCompat;
+    //use ArkoudaIOCompat;
+    //use ArkoudaAryUtilCompat;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
