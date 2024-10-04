@@ -106,8 +106,6 @@ def manage_connection():
 
     try:
         ak.connect(server=pytest.server, port=pytest.port, timeout=pytest.timeout)
-        if TestRunningMode.CLIENT == pytest.test_running_mode:
-            pytest.nl = get_config()['numLocales']
         pytest.max_rank = get_max_array_rank()
 
     except Exception as e:
