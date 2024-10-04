@@ -105,8 +105,8 @@ class ErrorMode(Enum):
 
 # TODO: standardize error checking in python interface
 
+# merge_where comes in handy in arctan2 and some other functions.
 
-# _merge_where is useful in functions that include a "where" argument.
 
 def _merge_where(new_pda, where, ret):
     new_pda = cast(new_pda, ret.dtype)
@@ -1367,11 +1367,7 @@ def rad2deg(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     elif where is False:
         return pda
     else:
-        new_pda = pda
-        ret = 180 * (pda[where] / np.pi)
-        new_pda = cast(new_pda, ret.dtype)
-        new_pda[where] = ret
-        return new_pda
+        return _merge_where(pda[:], where, 180*(pda[where]/np.pi))
 
 
 @typechecked
@@ -1403,11 +1399,7 @@ def deg2rad(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     elif where is False:
         return pda
     else:
-        new_pda = pda
-        ret = np.pi * pda[where] / 180
-        new_pda = cast(new_pda, ret.dtype)
-        new_pda[where] = ret
-        return new_pda
+        return _merge_where(pda[:], where, (np.pi*pda[where]/180))
 
 
 def _hash_helper(a):
