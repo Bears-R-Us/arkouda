@@ -1,3 +1,4 @@
+import subprocess
 import importlib
 import os
 
@@ -68,6 +69,7 @@ def pytest_configure(config):
     pytest.seed = None if config.getoption("seed") == "" else eval(config.getoption("seed"))
     pytest.prob_size = [eval(x) for x in config.getoption("size").split(",")]
     pytest.test_running_mode = TestRunningMode(os.getenv("ARKOUDA_RUNNING_MODE", "CLASS_SERVER"))
+    pytest.host = subprocess.check_output("hostname").decode("utf-8").strip()
 
 
 @pytest.fixture(scope="session", autouse=True)

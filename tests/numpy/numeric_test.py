@@ -1,4 +1,3 @@
-import subprocess
 from math import isclose, sqrt
 
 import numpy as np
@@ -310,9 +309,7 @@ class TestNumeric:
 
     #   log and exp tests were identical, and so have been combined.
 
-    host = subprocess.check_output("hostname").decode("utf-8").strip()
-
-    @pytest.mark.skipif(host == "horizon", reason="Fails on horizon")
+    @pytest.mark.skipif(pytest.host == "horizon", reason="Fails on horizon")
     @pytest.mark.skip_if_max_rank_less_than(2)
     @pytest.mark.parametrize("num_type1", NO_BOOL)
     @pytest.mark.parametrize("num_type2", NO_BOOL)
