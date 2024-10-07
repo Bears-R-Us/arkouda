@@ -108,6 +108,8 @@ module SparseMatrix {
             const iStart = rt * nRowsPerTask + iRange.low,
                   iStop = if rt == nRowTasks-1 then iRange.last else (rt+1) * nRowsPerTask + iRange.low - 1;
 
+            // TODO: try to avoid repeated 'contains' checks here (e.g, by directly querying the
+            //       local subdomain's array of non-zero indices)
             for i in iStart..iStop {
               for j in jRange {
                 if spsMat.domain.contains((i,j))
@@ -142,6 +144,8 @@ module SparseMatrix {
             var idxAgg = newDstAggregator(int),
                 valAgg = newDstAggregator(spsMat.eltType);
 
+            // TODO: try to avoid repeated 'contains' checks here (e.g, by directly iterating
+            //       over the local subdomain's array of non-zero indices)
             for i in iStart..iStop {
               var idx = colBlockStartOffsets.localAccess[i, colBlockIdx];
               for j in jRange {
@@ -195,6 +199,8 @@ module SparseMatrix {
             const jStart = ct * nColsPerTask + jRange.low,
                   jStop = if ct == nColTasks-1 then jRange.last else (ct+1) * nColsPerTask + jRange.low - 1;
 
+            // TODO: try to avoid repeated 'contains' checks here (e.g, by directly querying the
+            //       local subdomain's array of non-zero indices)
             for i in iRange {
               for j in jStart..jStop {
                 if spsMat.domain.contains((i,j))
@@ -229,6 +235,8 @@ module SparseMatrix {
             var idxAgg = newDstAggregator(int),
                 valAgg = newDstAggregator(spsMat.eltType);
 
+            // TODO: try to avoid repeated 'contains' checks here (e.g, by directly iterating
+            //       over the local subdomain's array of non-zero indices)
             for j in jStart..jStop {
               var idx = rowBlockStartOffsets.localAccess[rowBlockIdx, j];
               for i in iRange {
