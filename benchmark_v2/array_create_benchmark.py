@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from context import arkouda as ak
+import arkouda as ak
 
 OPS = ("zeros", "ones", "randint")
 TYPES = ("int64", "float64", "uint64")
