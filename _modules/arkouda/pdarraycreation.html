@@ -648,16 +648,19 @@
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
                 <span class="s2">&quot;Array exceeds allowed transfer size. Increase ak.client.maxTransferBytes to allow&quot;</span>
             <span class="p">)</span>
-        <span class="c1">#   Make a copy to avoid error #3757</span>
-        <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">flags</span><span class="p">[</span><span class="s2">&quot;F_CONTIGUOUS&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">a</span><span class="o">.</span><span class="n">flags</span><span class="p">[</span><span class="s2">&quot;OWNDATA&quot;</span><span class="p">]:</span>
+            <span class="c1"># Make a copy if the array was shallow-transposed (to avoid error #3757)</span>
+            <span class="n">a_</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">a_</span> <span class="o">=</span> <span class="n">a</span>
         <span class="c1"># Pack binary array data into a bytes object with a command header</span>
         <span class="c1"># including the dtype and size. If the server has a different byteorder</span>
         <span class="c1"># than our numpy array we need to swap to match since the server expects</span>
         <span class="c1"># native endian bytes</span>
-        <span class="n">aview</span> <span class="o">=</span> <span class="n">_array_memview</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="n">aview</span> <span class="o">=</span> <span class="n">_array_memview</span><span class="p">(</span><span class="n">a_</span><span class="p">)</span>
         <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;array&lt;</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
-            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="s2">&quot;seg_string&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;array&lt;</span><span class="si">{</span><span class="n">a_</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">a_</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">a_</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="s2">&quot;seg_string&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
             <span class="n">payload</span><span class="o">=</span><span class="n">aview</span><span class="p">,</span>
             <span class="n">send_binary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
