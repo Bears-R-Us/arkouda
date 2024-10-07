@@ -416,6 +416,7 @@ Module Contents
 
 
    .. py:attribute:: permutation
+      :type:  Union[arkouda.pdarrayclass.pdarray, None]
       :value: None
 
 

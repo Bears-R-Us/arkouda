@@ -383,6 +383,7 @@ Functions
    arkouda.expm1
    arkouda.export
    arkouda.eye
+   arkouda.flip
    arkouda.floor
    arkouda.fmod
    arkouda.format_float_positional
@@ -29161,6 +29162,23 @@ Package Contents
        The actual size of these types depends on the specific `np.dtype`
        instantiation.
 
+
+
+.. py:function:: flip(x: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], /, *, axis: Union[int, Tuple[int, Ellipsis], NoneType] = None) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]
+
+   Reverse an array's values along a particular axis or axes.
+
+   :param x: Reverse the order of elements in an array along the given axis.
+
+             The shape of the array is preserved, but the elements are reordered.
+   :type x: pdarray, Strings, or Categorical
+   :param axis: The axis or axes along which to flip the array. If None, flip the array along all axes.
+   :type axis: int or Tuple[int, ...], optional
+
+   :returns: An array with the entries of axis reversed.
+   :rtype: pdarray, Strings, or Categorical
+
+   .. note:: This differs from numpy as it actually reverses the data, rather than presenting a view.
 
 
 .. py:class:: float16(value)
