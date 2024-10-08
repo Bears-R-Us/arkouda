@@ -27,7 +27,6 @@ from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.strings import Strings
 
-
 __all__ = [
     "array",
     "zeros",
@@ -205,7 +204,7 @@ def array(
     >>> type(strings)
     <class 'arkouda.strings.Strings'>
     """
-    from arkouda.numeric import cast as akcast
+    from arkouda.numpy import cast as akcast
 
     # If a is already a pdarray, do nothing
     if isinstance(a, pdarray):
@@ -284,6 +283,7 @@ def array(
             raise RuntimeError(f"Unhandled dtype {a.dtype}")
     else:
         from arkouda.util import _infer_shape_from_size
+
         shape, ndim, full_size = _infer_shape_from_size(a.shape)
 
         # Do not allow arrays that are too large
@@ -291,14 +291,19 @@ def array(
             raise RuntimeError(
                 "Array exceeds allowed transfer size. Increase ak.client.maxTransferBytes to allow"
             )
+        if a.flags["F_CONTIGUOUS"] and not a.flags["OWNDATA"]:
+            # Make a copy if the array was shallow-transposed (to avoid error #3757)
+            a_ = a.copy()
+        else:
+            a_ = a
         # Pack binary array data into a bytes object with a command header
         # including the dtype and size. If the server has a different byteorder
         # than our numpy array we need to swap to match since the server expects
         # native endian bytes
-        aview = _array_memview(a)
+        aview = _array_memview(a_)
         rep_msg = generic_msg(
-            cmd=f"array<{a.dtype.name},{ndim}>",
-            args={"dtype": a.dtype.name, "shape": tuple(a.shape), "seg_string": False},
+            cmd=f"array<{a_.dtype.name},{ndim}>",
+            args={"dtype": a_.dtype.name, "shape": tuple(a_.shape), "seg_string": False},
             payload=aview,
             send_binary=True,
         )
@@ -478,6 +483,7 @@ def zeros(
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
     from arkouda.util import _infer_shape_from_size
+
     shape, ndim, full_size = _infer_shape_from_size(size)
 
     if ndim > get_max_array_rank():
@@ -538,6 +544,7 @@ def ones(
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
     from arkouda.util import _infer_shape_from_size
+
     shape, ndim, full_size = _infer_shape_from_size(size)
 
     if ndim > get_max_array_rank():
@@ -607,6 +614,7 @@ def full(
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
     from arkouda.util import _infer_shape_from_size
+
     shape, ndim, full_size = _infer_shape_from_size(size)
 
     if ndim > get_max_array_rank():

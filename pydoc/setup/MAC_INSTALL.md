@@ -152,7 +152,7 @@ If you need more information, please visit the [Chapel Quickstart Guide](https:/
 **Step 9**
 > Use `make` to build Chapel
 > ```bash
-> make -j 16
+> make -j 8  # you can bump this up 16 if you have enough memory
 > ```
 
 **Step 10**

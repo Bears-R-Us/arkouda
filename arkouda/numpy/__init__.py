@@ -95,4 +95,5 @@ from arkouda.numpy.ma import *
 from arkouda.numpy.polynomial import *
 from arkouda.numpy.rec import *
 
-from ._numeric import floor
+from ._numeric import *
+from ._manipulation_functions import *

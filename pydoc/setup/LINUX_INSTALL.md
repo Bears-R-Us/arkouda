@@ -83,7 +83,7 @@ export CHPL_COMM=none
 
 # Build Chapel
 cd $CHPL_HOME
-make -j 16
+make -j 8  # you can bump this up 16 if you have enough memory
 
 # Build chpldoc to enable generation of Arkouda docs
 make chpldoc

@@ -125,9 +125,10 @@ class TestDataFrame:
         if both_ak:
             assert_almost_equal(a, a2, atol=atol, rtol=rtol)
         assert_almost_equivalent(convert_left(a), convert_right(a2), atol=atol, rtol=rtol)
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_almost_equal(a, a3, atol=atol, rtol=rtol)
+        with pytest.raises(AssertionError):
             assert_almost_equivalent(convert_left(a), convert_right(a3), atol=atol, rtol=rtol)
 
         idx = Index(a)
@@ -137,9 +138,10 @@ class TestDataFrame:
         if both_ak:
             assert_almost_equal(idx, idx2, atol=atol, rtol=rtol)
         assert_almost_equivalent(convert_left(idx), convert_right(idx2), atol=atol, rtol=rtol)
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_almost_equal(idx, idx3, atol=atol, rtol=rtol)
+        with pytest.raises(AssertionError):
             assert_almost_equivalent(convert_left(idx), convert_right(idx3), atol=atol, rtol=rtol)
 
         s = Series(a)
@@ -149,9 +151,10 @@ class TestDataFrame:
         if both_ak:
             assert_almost_equal(s, s2, atol=atol, rtol=rtol)
         assert_almost_equivalent(convert_left(s), convert_right(s2), atol=atol, rtol=rtol)
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_almost_equal(s, s3, atol=atol, rtol=rtol)
+        with pytest.raises(AssertionError):
             assert_almost_equivalent(convert_left(s), convert_right(s3), atol=atol, rtol=rtol)
 
         df = DataFrame({"col1": a}, index=idx)
@@ -161,10 +164,43 @@ class TestDataFrame:
         if both_ak:
             assert_almost_equal(df, df2, atol=atol, rtol=rtol)
         assert_almost_equivalent(convert_left(df), convert_right(df2), atol=atol, rtol=rtol)
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_almost_equal(df, df3, atol=atol, rtol=rtol)
+        with pytest.raises(AssertionError):
             assert_almost_equivalent(convert_left(df), convert_right(df3), atol=atol, rtol=rtol)
+
+    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("left_as_arkouda", [True, False])
+    @pytest.mark.parametrize("right_as_arkouda", [True, False])
+    def test_assert_almost_equal_multi_dim(self, size, left_as_arkouda, right_as_arkouda):
+
+        both_ak = left_as_arkouda and right_as_arkouda
+        convert_left = self.get_converter(left_as_arkouda)
+        convert_right = self.get_converter(right_as_arkouda)
+
+        shape = (2, 2, size)
+
+        rng = ak.random.default_rng()
+        atol = 0.001
+        rtol = 0.001
+        a = ak.arange(size * 4, dtype="float64")
+        a2 = self.perturb(a, atol=atol, rtol=rtol, rng=rng)
+        a3 = a + rtol + atol
+
+        a = a.reshape(shape)
+        a2 = a2.reshape(shape)
+        a3 = a3.reshape(shape)
+
+        if both_ak:
+            assert_almost_equal(a, a2, atol=atol, rtol=rtol)
+        assert_almost_equivalent(convert_left(a), convert_right(a2), atol=atol, rtol=rtol)
+        if both_ak:
+            with pytest.raises(AssertionError):
+                assert_almost_equal(a, a3, atol=atol, rtol=rtol)
+        with pytest.raises(AssertionError):
+            assert_almost_equivalent(convert_left(a), convert_right(a3), atol=atol, rtol=rtol)
 
     def test_assert_almost_equal_scalars(self):
         atol = 0.001
@@ -174,12 +210,14 @@ class TestDataFrame:
         assert_almost_equivalent(True, True, atol=atol, rtol=rtol)
         with pytest.raises(AssertionError):
             assert_almost_equal(True, False, atol=atol, rtol=rtol)
+        with pytest.raises(AssertionError):
             assert_almost_equivalent(True, False, atol=atol, rtol=rtol)
 
         assert_almost_equal(1.0, 1.0, atol=atol, rtol=rtol)
         assert_almost_equivalent(1.0, 1.0, atol=atol, rtol=rtol)
         with pytest.raises(AssertionError):
             assert_almost_equal(1.0, 1.5, atol=atol, rtol=rtol)
+        with pytest.raises(AssertionError):
             assert_almost_equivalent(1.0, 1.5, atol=atol, rtol=rtol)
 
     @pytest.mark.parametrize("size", pytest.prob_size)
@@ -197,9 +235,10 @@ class TestDataFrame:
         if both_ak:
             assert_index_equal(i1, i2, exact=False)
         assert_index_equivalent(convert_left(i1), convert_right(i2), exact=False)
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_index_equal(i1, i2, exact=True)
+        with pytest.raises(AssertionError):
             assert_index_equivalent(convert_left(i1), convert_right(i2), exact=True)
 
         # check_names
@@ -215,9 +254,10 @@ class TestDataFrame:
             assert_index_equal(i3, i5, check_names=False)
         assert_index_equivalent(convert_left(i3), convert_right(i5), check_names=False)
 
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_index_equal(i3, i5, check_names=True)
+        with pytest.raises(AssertionError):
             assert_index_equivalent(convert_left(i3), convert_right(i5), check_names=True)
 
     @pytest.mark.parametrize("size", pytest.prob_size)
@@ -244,17 +284,20 @@ class TestDataFrame:
             assert_index_equal(i1, i3, check_order=False)
         assert_index_equivalent(convert_left(i1), convert_right(i3), check_order=False)
 
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_index_equal(i1, i3, check_order=True)
+        with pytest.raises(AssertionError):
             assert_index_equivalent(convert_left(i1), convert_right(i3), check_order=True)
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_index_equal(i1, i3, check_categorical=False)
-            assert_index_equivalent(convert_left(i1), convert_right(i3), check_categorical=False)
         with pytest.raises(AssertionError):
-            if both_ak:
+            assert_index_equivalent(convert_left(i1), convert_right(i3), check_categorical=False)
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_index_equal(i1, i4, check_categorical=False)
+        with pytest.raises(AssertionError):
             assert_index_equivalent(convert_left(i1), convert_right(i4), check_categorical=False)
         if both_ak:
             assert_index_equal(i1, i5, check_order=True, check_categorical=True)
@@ -277,9 +320,10 @@ class TestDataFrame:
         if both_ak:
             assert_index_equal(i1, i2, check_exact=False)
         assert_index_equivalent(convert_left(i1), convert_right(i2), check_exact=False)
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_index_equal(i1, i2, check_exact=True)
+        with pytest.raises(AssertionError):
             assert_index_equivalent(convert_left(i1), convert_right(i2), check_exact=True)
 
         # rtol
@@ -305,17 +349,19 @@ class TestDataFrame:
         )
 
         i3_2rtol = Index(ak.arange(size) + ak.arange(size) * 2 * rtol)
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_index_equal(i3_float, i3_2rtol, check_exact=False, rtol=rtol)
+        with pytest.raises(AssertionError):
             assert_index_equivalent(
                 convert_left(i3_float), convert_right(i3_2rtol), check_exact=False, rtol=rtol
             )
 
         i3_2atol = Index(ak.arange(size) + 2 * atol)
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_index_equal(i3_float, i3_2atol, check_exact=False, atol=atol)
+        with pytest.raises(AssertionError):
             assert_index_equivalent(
                 convert_left(i3_float), convert_right(i3_2atol), check_exact=False, atol=atol
             )
@@ -488,9 +534,10 @@ class TestDataFrame:
         if both_ak:
             assert_series_equal(s, s_diff_name, check_names=False)
         assert_series_equivalent(convert_left(s), convert_right(s_diff_name), check_names=False)
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_series_equal(s, s_diff_name, check_names=True)
+        with pytest.raises(AssertionError):
             assert_series_equivalent(convert_left(s), convert_right(s_diff_name), check_names=True)
 
     @pytest.mark.parametrize("size", pytest.prob_size)
@@ -517,15 +564,17 @@ class TestDataFrame:
         assert_series_equivalent(
             convert_left(s), convert_right(s_float), check_dtype=False, check_index_type=False
         )
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_series_equal(s, s_float, check_dtype=False, check_index_type=True)
+        with pytest.raises(AssertionError):
             assert_series_equivalent(
                 convert_left(s), convert_right(s_float), check_dtype=False, check_index_type=True
             )
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_series_equal(s, s_float, check_dtype=True, check_index_type=False)
+        with pytest.raises(AssertionError):
             assert_series_equivalent(
                 convert_left(s), convert_right(s_float), check_dtype=True, check_index_type=False
             )
@@ -535,9 +584,10 @@ class TestDataFrame:
         if both_ak:
             assert_series_equal(s, s_diff_index, check_index=False)
         assert_series_equivalent(convert_left(s), convert_right(s_diff_index), check_index=False)
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_series_equal(s, s_diff_index, check_index=True)
+        with pytest.raises(AssertionError):
             assert_series_equivalent(convert_left(s), convert_right(s_diff_index), check_index=True)
 
         rng = ak.random.default_rng()
@@ -575,15 +625,17 @@ class TestDataFrame:
         assert_series_equivalent(
             convert_left(s_float), convert_right(s_rtol_atol), check_exact=False, atol=atol, rtol=rtol
         )
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_series_equal(s_float, s_2rtol, check_exact=False, rtol=rtol)
+        with pytest.raises(AssertionError):
             assert_series_equivalent(
                 convert_left(s_float), convert_right(s_2rtol), check_exact=False, rtol=rtol
             )
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_series_equal(s_float, s_2atol, check_exact=False, atol=atol)
+        with pytest.raises(AssertionError):
             assert_series_equivalent(
                 convert_left(s_float), convert_right(s_2atol), check_exact=False, atol=atol
             )
@@ -604,9 +656,10 @@ class TestDataFrame:
         assert_series_equivalent(
             convert_left(s_ordered_index), convert_right(s_unordered_index), check_like=True
         )
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_series_equal(s_ordered_index, s_unordered_index, check_like=False)
+        with pytest.raises(AssertionError):
             assert_series_equivalent(
                 convert_left(s_ordered_index), convert_right(s_unordered_index), check_like=False
             )
@@ -635,9 +688,10 @@ class TestDataFrame:
         if both_ak:
             assert_series_equal(s3a, s3a)
         assert_series_equivalent(convert_left(s3a), convert_right(s3a))
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_series_equal(s3a, s3b, check_categorical=True, check_category_order=True)
+        with pytest.raises(AssertionError):
             assert_series_equivalent(
                 convert_left(s3a), convert_right(s3b), check_categorical=True, check_category_order=True
             )
@@ -696,9 +750,10 @@ class TestDataFrame:
         if both_ak:
             assert_frame_equal(df, df_cpy, check_dtype=False)
         assert_frame_equivalent(convert_left(df), convert_right(df_cpy), check_dtype=False)
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_frame_equal(df, df_cpy, check_dtype=True)
+        with pytest.raises(AssertionError):
             assert_frame_equivalent(convert_left(df), convert_right(df_cpy), check_dtype=True)
 
     @pytest.mark.parametrize("size", pytest.prob_size)
@@ -716,9 +771,10 @@ class TestDataFrame:
         if both_ak:
             assert_frame_equal(df, df_float_index, check_index_type=False)
         assert_frame_equivalent(convert_left(df), convert_right(df_float_index), check_index_type=False)
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_frame_equal(df, df_float_index, check_index_type=True)
+        with pytest.raises(AssertionError):
             assert_frame_equivalent(
                 convert_left(df), convert_right(df_float_index), check_index_type=True
             )
@@ -737,9 +793,10 @@ class TestDataFrame:
         if both_ak:
             assert_frame_equal(df_name1, df_name2, check_names=False)
         assert_frame_equivalent(convert_left(df_name1), convert_right(df_name2), check_names=False)
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_frame_equal(df_name1, df_name2, check_names=True)
+        with pytest.raises(AssertionError):
             assert_frame_equivalent(convert_left(df_name1), convert_right(df_name2), check_names=True)
 
     @pytest.mark.parametrize("size", pytest.prob_size)
@@ -757,18 +814,20 @@ class TestDataFrame:
         if both_ak:
             assert_frame_equal(df, df_sorted, check_like=True)
         assert_frame_equivalent(convert_left(df), convert_right(df_sorted), check_like=True)
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_frame_equal(df, df_sorted, check_like=False)
+        with pytest.raises(AssertionError):
             assert_frame_equivalent(convert_left(df), convert_right(df_sorted), check_like=False)
 
         df_new_col_order = df[["bi", "userID", "day", "item", "amount", "userName"]]
         if both_ak:
             assert_frame_equal(df, df_new_col_order, check_like=True)
         assert_frame_equivalent(convert_left(df), convert_right(df_new_col_order), check_like=True)
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_frame_equal(df, df_new_col_order, check_column_type=True)
+        with pytest.raises(AssertionError):
             assert_frame_equivalent(
                 convert_left(df), convert_right(df_new_col_order), check_column_type=True
             )
@@ -790,9 +849,10 @@ class TestDataFrame:
         if both_ak:
             assert_frame_equal(df, df_ordered, check_categorical=False)
         assert_frame_equivalent(convert_left(df), convert_right(df_ordered), check_categorical=False)
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_frame_equal(df, df_ordered, check_categorical=True)
+        with pytest.raises(AssertionError):
             assert_frame_equivalent(convert_left(df), convert_right(df_ordered), check_categorical=True)
 
     @pytest.mark.parametrize("size", pytest.prob_size)
@@ -806,7 +866,7 @@ class TestDataFrame:
         # check_exact
         # rtol
         # atol
-        rng = ak.random.default_rng()
+        rng = ak.random.default_rng(seed=17)
         atol = 0.001
         rtol = 0.001
 
@@ -822,19 +882,24 @@ class TestDataFrame:
             convert_left(df), convert_right(df_rtol_atol), check_exact=False, atol=atol, rtol=rtol
         )
 
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_frame_equal(df, df_rtol_atol, check_exact=True)
-            assert_frame_equivalent(convert_left(df), convert_right(df_rtol_atol), check_exact=True)
         with pytest.raises(AssertionError):
-            if both_ak:
+            assert_frame_equivalent(convert_left(df), convert_right(df_rtol_atol), check_exact=True)
+
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_frame_equal(df, df_rtol_atol, check_exact=False, rtol=rtol)
+        with pytest.raises(AssertionError):
             assert_frame_equivalent(
                 convert_left(df), convert_right(df_rtol_atol), check_exact=False, rtol=rtol
             )
-        with pytest.raises(AssertionError):
-            if both_ak:
+
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_frame_equal(df, df_rtol_atol, check_exact=False, atol=atol)
+        with pytest.raises(AssertionError):
             assert_frame_equivalent(
                 convert_left(df), convert_right(df_rtol_atol), check_exact=False, atol=atol
             )
@@ -847,7 +912,6 @@ class TestDataFrame:
         convert_left = self.get_converter(left_as_arkouda)
         convert_right = self.get_converter(right_as_arkouda)
 
-        size = 10
         a = ak.arange(size)
         a2 = a + 1
         idx = Index(a)
@@ -860,34 +924,60 @@ class TestDataFrame:
         if both_ak:
             assert_equal(a, a)
         assert_equivalent(convert_left(a), convert_right(a))
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_equal(a, a2)
+        with pytest.raises(AssertionError):
             assert_equivalent(convert_left(a), convert_right(a2))
 
         if both_ak:
             assert_equal(idx, idx)
         assert_equivalent(convert_left(idx), convert_right(idx))
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_equal(idx, idx2)
+        with pytest.raises(AssertionError):
             assert_equivalent(convert_left(idx), convert_right(idx2))
 
         if both_ak:
             assert_equal(s, s)
         assert_equivalent(convert_left(s), convert_right(s))
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_equal(s, s2)
+        with pytest.raises(AssertionError):
             assert_equivalent(convert_left(s), convert_right(s2))
 
         if both_ak:
             assert_equal(df, df)
         assert_equivalent(convert_left(df), convert_right(df))
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_equal(df, df2)
+        with pytest.raises(AssertionError):
             assert_equivalent(convert_left(df), convert_right(df2))
+
+    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("left_as_arkouda", [True, False])
+    @pytest.mark.parametrize("right_as_arkouda", [True, False])
+    def test_assert_equal_multi_dim(self, size, left_as_arkouda, right_as_arkouda):
+        both_ak = left_as_arkouda and right_as_arkouda
+        convert_left = self.get_converter(left_as_arkouda)
+        convert_right = self.get_converter(right_as_arkouda)
+
+        shape = (2, 2, size)
+        a = ak.arange(4 * size).reshape(shape)
+        a2 = a + 1
+
+        if both_ak:
+            assert_equal(a, a)
+        assert_equivalent(convert_left(a), convert_right(a))
+        if both_ak:
+            with pytest.raises(AssertionError):
+                assert_equal(a, a2)
+        with pytest.raises(AssertionError):
+            assert_equivalent(convert_left(a), convert_right(a2))
 
     def test_assert_equal_scalars(self):
 
@@ -909,6 +999,7 @@ class TestDataFrame:
 
         with pytest.raises(AssertionError):
             assert_equal(n, n2)
+        with pytest.raises(AssertionError):
             assert_equivalent(n, n2)
 
     def test_assert_contains_all(self):
@@ -940,15 +1031,15 @@ class TestDataFrame:
         convert_left = self.get_converter(left_as_arkouda)
         convert_right = self.get_converter(right_as_arkouda)
 
-        size = 10
         a = ak.arange(size)
         a2 = a + 1
         if both_ak:
             assert_arkouda_array_equal(a, a)
         assert_arkouda_array_equivalent(convert_left(a), convert_right(a))
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_arkouda_array_equal(a, a2)
+        with pytest.raises(AssertionError):
             assert_arkouda_array_equivalent(convert_left(a), convert_right(a2))
 
         s = ak.array(["a", "b", "b"])
@@ -956,9 +1047,10 @@ class TestDataFrame:
         if both_ak:
             assert_arkouda_array_equal(s, s)
         assert_arkouda_array_equivalent(convert_left(s), convert_right(s))
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_arkouda_array_equal(s, s2)
+        with pytest.raises(AssertionError):
             assert_arkouda_array_equivalent(convert_left(s), convert_right(s2))
 
         c = Categorical(s)
@@ -966,20 +1058,44 @@ class TestDataFrame:
         if both_ak:
             assert_arkouda_array_equal(c, c)
         assert_arkouda_array_equivalent(convert_left(c), convert_right(c))
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_arkouda_array_equal(c, c2)
+        with pytest.raises(AssertionError):
             assert_arkouda_array_equivalent(convert_left(c), convert_right(c2))
 
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_arkouda_array_equal(a, s)
+        with pytest.raises(AssertionError):
             assert_arkouda_array_equivalent(convert_left(a), convert_right(s))
 
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_arkouda_array_equal(s, c)
+        with pytest.raises(AssertionError):
             assert_arkouda_array_equivalent(convert_left(s), convert_right(c))
+
+    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("left_as_arkouda", [True, False])
+    @pytest.mark.parametrize("right_as_arkouda", [True, False])
+    def test_assert_arkouda_array_equal_multi_dim(self, size, left_as_arkouda, right_as_arkouda):
+        both_ak = left_as_arkouda and right_as_arkouda
+        convert_left = self.get_converter(left_as_arkouda)
+        convert_right = self.get_converter(right_as_arkouda)
+
+        shape = (2, 2, size)
+        a = ak.arange(4 * size).reshape(shape)
+        a2 = a + 1
+        if both_ak:
+            assert_arkouda_array_equal(a, a)
+        assert_arkouda_array_equivalent(convert_left(a), convert_right(a))
+        if both_ak:
+            with pytest.raises(AssertionError):
+                assert_arkouda_array_equal(a, a2)
+        with pytest.raises(AssertionError):
+            assert_arkouda_array_equivalent(convert_left(a), convert_right(a2))
 
     def test_assert_arkouda_segarray_equal(self):
 
@@ -1015,7 +1131,8 @@ class TestDataFrame:
         if both_ak:
             assert_arkouda_array_equal(a, a)
         assert_arkouda_array_equivalent(convert_left(a), convert_right(a))
-        with pytest.raises(AssertionError):
-            if both_ak:
+        if both_ak:
+            with pytest.raises(AssertionError):
                 assert_arkouda_array_equal(a, a2)
+        with pytest.raises(AssertionError):
             assert_arkouda_array_equivalent(convert_left(a), convert_right(a2))

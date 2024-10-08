@@ -17,6 +17,7 @@ module SegmentedMsg {
   use Map;
   use CTypes;
   use IOUtils;
+  use CommAggregation;
 
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
@@ -1186,6 +1187,37 @@ module SegmentedMsg {
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
+  proc flipStringMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    const name = msgArgs.getValueOf("obj");
+
+    // check to make sure symbols defined
+    st.checkTable(name);
+    var strings = getSegString(name, st);
+    ref origVals = strings.values.a;
+    ref offs = strings.offsets.a;
+    const lengths = strings.getLengths();
+
+    ref retOffs = makeDistArray(lengths.domain, int);
+    forall i in lengths.domain with (var valAgg = newDstAggregator(int)) {
+      valAgg.copy(retOffs[lengths.domain.high - i], lengths[i]);
+    }
+    retOffs = (+ scan retOffs) - retOffs;
+
+    var flippedVals = makeDistArray(strings.values.a.domain, uint(8));
+    forall (off, len, j) in zip(offs, lengths, ..#offs.size) with (var valAgg = newDstAggregator(uint(8))) {
+      var i = 0;
+      for b in interpretAsBytes(origVals, off..#len, borrow=true) {
+        valAgg.copy(flippedVals[retOffs[lengths.domain.high - j] + i], b:uint(8));
+        i += 1;
+      }
+    }
+
+    var retString = getSegString(retOffs, flippedVals, st);
+    var repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".format(retString.nBytes);
+    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+    return new MsgTuple(repMsg, MsgType.NORMAL);
+  }
+
   use CommandMap;
   registerFunction("segmentLengths", segmentLengthsMsg, getModuleName());
   registerFunction("caseChange", caseChangeMsg, getModuleName());
@@ -1210,4 +1242,5 @@ module SegmentedMsg {
   registerFunction("segmentedWhere", segmentedWhereMsg, getModuleName());
   registerFunction("segmentedFull", segmentedFullMsg, getModuleName());
   registerFunction("getSegStringProperty", getSegStringPropertyMsg, getModuleName());
+  registerFunction("flipString", flipStringMsg, getModuleName());
 }

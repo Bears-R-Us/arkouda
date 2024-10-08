@@ -6,7 +6,6 @@ __version__ = get_versions()["version"]
 del get_versions
 
 from arkouda.numpy import *
-from arkouda.array_view import *
 from arkouda.client import *
 from arkouda.client_dtypes import *
 from arkouda.pdarrayclass import *
@@ -14,7 +13,6 @@ from arkouda.sorting import *
 from arkouda.pdarraysetops import *
 from arkouda.pdarraycreation import *
 from arkouda.pdarraymanipulation import *
-from arkouda.numeric import *
 from arkouda.groupbyclass import *
 from arkouda.strings import *
 from arkouda.join import *

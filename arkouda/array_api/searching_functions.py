@@ -1,17 +1,16 @@
 from __future__ import annotations
 
-from .array_object import Array
-from ._dtypes import _real_numeric_dtypes, _real_floating_dtypes
+from typing import Literal, Optional, Tuple, cast
 
-from typing import Optional, Tuple, Literal, cast
-
-from .manipulation_functions import squeeze, reshape, broadcast_arrays
-
-from arkouda.client import generic_msg
-from arkouda.pdarrayclass import parse_single_value, create_pdarray, create_pdarrays
-from arkouda.pdarraycreation import scalar_array
-from arkouda.numeric import cast as akcast
 import arkouda as ak
+from arkouda.client import generic_msg
+from arkouda.numpy import cast as akcast
+from arkouda.pdarrayclass import create_pdarray, create_pdarrays, parse_single_value
+from arkouda.pdarraycreation import scalar_array
+
+from ._dtypes import _real_floating_dtypes, _real_numeric_dtypes
+from .array_object import Array
+from .manipulation_functions import broadcast_arrays, reshape, squeeze
 
 
 def argmax(x: Array, /, *, axis: Optional[int] = None, keepdims: bool = False) -> Array:
@@ -185,7 +184,7 @@ def searchsorted(
         _x1 = x1
 
     resp = generic_msg(
-        cmd=f"searchSorted{x2.ndim}D",
+        cmd=f"searchSorted<1,{x2.ndim}>",
         args={
             "x1": _x1._array,
             "x2": x2._array,

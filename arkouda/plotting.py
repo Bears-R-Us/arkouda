@@ -1,12 +1,14 @@
 import math
+
 import numpy as np
 from matplotlib import pyplot as plt
+
 from arkouda.dataframe import DataFrame
-from arkouda.timeclass import Datetime, Timedelta, date_range, timedelta_range
+from arkouda.groupbyclass import GroupBy
+from arkouda.numpy import histogram, isnan
 from arkouda.pdarrayclass import skew
 from arkouda.pdarraycreation import arange
-from arkouda.numeric import histogram, isnan
-from arkouda.groupbyclass import GroupBy
+from arkouda.timeclass import Datetime, Timedelta, date_range, timedelta_range
 
 
 def plot_dist(b, h, log=True, xlabel=None, newfig=True):

@@ -11,155 +11,88 @@ module SetMsg {
   use RadixSortLSD;
   use Unique;
   use Reflection;
+  use BigInteger;
 
-  private config const logLevel = ServerConfig.logLevel;
-  private config const logChannel = ServerConfig.logChannel;
-  const sLogger = new Logger(logLevel, logChannel);
+  @arkouda.instantiateAndRegister
+  proc uniqueValues(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
+    where (array_dtype != BigInteger.bigint) && (array_dtype != uint(8))
+  {
+    const name = msgArgs["name"],
+          eIn = st[msgArgs["name"]]: SymEntry(array_dtype, array_nd),
+          eFlat = if array_nd == 1 then eIn.a else flatten(eIn.a);
 
-  @arkouda.registerND
-  proc uniqueValuesMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-    param pn = Reflection.getRoutineName();
-    const name = msgArgs.getValueOf("name"),
-          rname = st.nextName();
+    const eSorted = radixSortLSD_keys(eFlat);
+    const eUnique = uniqueFromSorted(eSorted, needCounts=false);
 
-    var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
-
-    proc getUniqueVals(type t): MsgTuple throws {
-      const eIn = toSymEntry(gEnt, t, nd),
-            eFlat = if nd == 1 then eIn.a else flatten(eIn.a);
-
-      const eSorted = radixSortLSD_keys(eFlat);
-      const eUnique = uniqueFromSorted(eSorted, needCounts=false);
-
-      st.addEntry(rname, createSymEntry(eUnique));
-
-      const repMsg = "created " + st.attrib(rname);
-      sLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
-      return new MsgTuple(repMsg, MsgType.NORMAL);
-    }
-
-    select gEnt.dtype {
-      when DType.Int64 do return getUniqueVals(int);
-      // when DType.UInt8 do return getUniqueVals(uint(8));
-      when DType.UInt64 do return getUniqueVals(uint);
-      when DType.Float64 do return getUniqueVals(real);
-      when DType.Bool do return getUniqueVals(bool);
-      otherwise {
-        var errorMsg = notImplementedError(getRoutineName(),gEnt.dtype);
-        sLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
-        return new MsgTuple(errorMsg, MsgType.ERROR);
-      }
-    }
+    return st.insert(new shared SymEntry(eUnique));
   }
 
-  @arkouda.registerND
-  proc uniqueCountsMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-    param pn = Reflection.getRoutineName();
-    const name = msgArgs.getValueOf("name"),
-          uname = st.nextName(),
-          cname = st.nextName();
-
-    var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
-
-    proc getUniqueVals(type t): MsgTuple throws {
-      const eIn = toSymEntry(gEnt, t, nd),
-            eFlat = if nd == 1 then eIn.a else flatten(eIn.a);
-
-      const eSorted = radixSortLSD_keys(eFlat);
-      const (eUnique, eCounts) = uniqueFromSorted(eSorted);
-
-      st.addEntry(uname, createSymEntry(eUnique));
-      st.addEntry(cname, createSymEntry(eCounts));
-
-      const repMsg = "created " + st.attrib(uname) + "+created " + st.attrib(cname);
-      sLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
-      return new MsgTuple(repMsg, MsgType.NORMAL);
-    }
-
-    select gEnt.dtype {
-      when DType.Int64 do return getUniqueVals(int);
-      // when DType.UInt8 do return getUniqueVals(uint(8));
-      when DType.UInt64 do return getUniqueVals(uint);
-      when DType.Float64 do return getUniqueVals(real);
-      when DType.Bool do return getUniqueVals(bool);
-      otherwise {
-        var errorMsg = notImplementedError(getRoutineName(),gEnt.dtype);
-        sLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
-        return new MsgTuple(errorMsg, MsgType.ERROR);
-      }
-    }
+  proc uniqueValues(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
+    where (array_dtype == BigInteger.bigint) || (array_dtype == uint(8))
+  {
+      return MsgTuple.error("unique_values does not support the %s dtype".format(array_dtype:string));
   }
 
-  @arkouda.registerND
-  proc uniqueInverseMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-    param pn = Reflection.getRoutineName();
+  @arkouda.instantiateAndRegister
+  proc uniqueCounts(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws {
     const name = msgArgs.getValueOf("name"),
-          uname = st.nextName(),
-          iname = st.nextName();
+          eIn = st[msgArgs["name"]]: SymEntry(array_dtype, array_nd),
+          eFlat = if array_nd == 1 then eIn.a else flatten(eIn.a);
 
-    var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+    const eSorted = radixSortLSD_keys(eFlat);
+    const (eUnique, eCounts) = uniqueFromSorted(eSorted);
 
-    proc getUniqueVals(type t): MsgTuple throws {
-      const eIn = toSymEntry(gEnt, t, nd),
-            eFlat = if nd == 1 then eIn.a else flatten(eIn.a);
-
-      const (eUnique, _, inv) = uniqueSortWithInverse(eFlat);
-      st.addEntry(uname, createSymEntry(eUnique));
-      st.addEntry(iname, createSymEntry(if nd == 1 then inv else unflatten(inv, eIn.a.shape)));
-
-      const repMsg = "created " + st.attrib(uname) + "+created " + st.attrib(iname);
-      sLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
-      return new MsgTuple(repMsg, MsgType.NORMAL);
-    }
-
-    select gEnt.dtype {
-      when DType.Int64 do return getUniqueVals(int);
-      // when DType.UInt8 do return getUniqueVals(uint(8));
-      when DType.UInt64 do return getUniqueVals(uint);
-      when DType.Float64 do return getUniqueVals(real);
-      when DType.Bool do return getUniqueVals(bool);
-      otherwise {
-        var errorMsg = notImplementedError(getRoutineName(),gEnt.dtype);
-        sLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
-        return new MsgTuple(errorMsg, MsgType.ERROR);
-      }
-    }
+    return MsgTuple.fromResponses([
+                                    st.insert(new shared SymEntry(eUnique)),
+                                    st.insert(new shared SymEntry(eCounts)),
+                                  ]);
   }
 
-  @arkouda.registerND
-  proc uniqueAllMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-    param pn = Reflection.getRoutineName();
+  proc uniqueCounts(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
+    where (array_dtype == BigInteger.bigint) || (array_dtype == uint(8))
+  {
+      return MsgTuple.error("unique_counts does not support the %s dtype".format(array_dtype:string));
+  }
+
+  @arkouda.instantiateAndRegister
+  proc uniqueInverse(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws {
     const name = msgArgs.getValueOf("name"),
-          rnames = for 0..<4 do st.nextName();
+          eIn = st[msgArgs["name"]]: SymEntry(array_dtype, array_nd),
+          eFlat = if array_nd == 1 then eIn.a else flatten(eIn.a);
 
-    var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+    const (eUnique, _, inv) = uniqueSortWithInverse(eFlat);
 
-    proc getUniqueVals(type t): MsgTuple throws {
-      const eIn = toSymEntry(gEnt, t, nd),
-            eFlat = if nd == 1 then eIn.a else flatten(eIn.a);
+    return MsgTuple.fromResponses([
+                                    st.insert(new shared SymEntry(eUnique)),
+                                    st.insert(new shared SymEntry(if array_nd == 1 then inv else unflatten(inv, eIn.a.shape))),
+                                  ]);
+  }
 
-      const (eUnique, eCounts, inv, eIndices) = uniqueSortWithInverse(eFlat, needIndices=true);
-      st.addEntry(rnames[0], createSymEntry(eUnique));
-      st.addEntry(rnames[1], createSymEntry(eIndices));
-      st.addEntry(rnames[2], createSymEntry(if nd == 1 then inv else unflatten(inv, eIn.a.shape)));
-      st.addEntry(rnames[3], createSymEntry(eCounts));
+  proc uniqueInverse(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
+    where (array_dtype == BigInteger.bigint) || (array_dtype == uint(8))
+  {
+      return MsgTuple.error("unique_inverse does not support the %s dtype".format(array_dtype:string));
+  }
 
-      const repMsg = try! "+".join([rn in rnames] "created " + st.attrib(rn));
-      sLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
-      return new MsgTuple(repMsg, MsgType.NORMAL);
-    }
+  @arkouda.instantiateAndRegister
+  proc uniqueAll(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws {
+    const name = msgArgs.getValueOf("name"),
+          eIn = st[msgArgs["name"]]: SymEntry(array_dtype, array_nd),
+          eFlat = if array_nd == 1 then eIn.a else flatten(eIn.a);
 
-    select gEnt.dtype {
-      when DType.Int64 do return getUniqueVals(int);
-      // when DType.UInt8 do return getUniqueVals(uint(8));
-      when DType.UInt64 do return getUniqueVals(uint);
-      when DType.Float64 do return getUniqueVals(real);
-      when DType.Bool do return getUniqueVals(bool);
-      otherwise {
-        var errorMsg = notImplementedError(getRoutineName(),gEnt.dtype);
-        sLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
-        return new MsgTuple(errorMsg, MsgType.ERROR);
-      }
-    }
+    const (eUnique, eCounts, inv, eIndices) = uniqueSortWithInverse(eFlat, needIndices=true);
+
+    return MsgTuple.fromResponses([
+                                    st.insert(new shared SymEntry(eUnique)),
+                                    st.insert(new shared SymEntry(eIndices)),
+                                    st.insert(new shared SymEntry(if array_nd == 1 then inv else unflatten(inv, eIn.a.shape))),
+                                    st.insert(new shared SymEntry(eCounts)),
+                                  ]);
+  }
+
+  proc uniqueAll(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
+    where (array_dtype == BigInteger.bigint) || (array_dtype == uint(8))
+  {
+      return MsgTuple.error("unique_all does not support the %s dtype".format(array_dtype:string));
   }
 }

@@ -4,6 +4,7 @@ import json
 import os
 import random
 from collections import UserDict
+from functools import reduce
 from typing import Callable, Dict, List, Optional, Tuple, Union, cast
 from warnings import warn
 
@@ -17,18 +18,19 @@ from arkouda import sort as aksort
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, maxTransferBytes
 from arkouda.client_dtypes import BitVector, Fields, IPv4
-from arkouda.numpy.dtypes import bigint
-from arkouda.numpy.dtypes import bool_ as akbool
-from arkouda.numpy.dtypes import float64 as akfloat64
-from arkouda.numpy.dtypes import int64 as akint64
-from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.groupbyclass import GROUPBY_REDUCTION_TYPES
 from arkouda.groupbyclass import GroupBy as akGroupBy
 from arkouda.groupbyclass import unique
 from arkouda.index import Index, MultiIndex
 from arkouda.join import inner_join
-from arkouda.numeric import cast as akcast
-from arkouda.numeric import cumsum, where
+from arkouda.numpy import cast as akcast
+from arkouda.numpy import cumsum, where
+from arkouda.numpy.dtypes import _is_dtype_in_union, bigint
+from arkouda.numpy.dtypes import bool_ as akbool
+from arkouda.numpy.dtypes import float64 as akfloat64
+from arkouda.numpy.dtypes import int64 as akint64
+from arkouda.numpy.dtypes import numeric_scalars
+from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.pdarrayclass import RegistrationError, pdarray
 from arkouda.pdarraycreation import arange, array, create_pdarray, full, zeros
 from arkouda.pdarraysetops import concatenate, in1d, intersect1d
@@ -105,12 +107,46 @@ class DataFrameGroupBy:
     """
 
     def __init__(self, gb, df, gb_key_names=None, as_index=True):
+
         self.gb = gb
         self.df = df
         self.gb_key_names = gb_key_names
         self.as_index = as_index
         for attr in ["nkeys", "permutation", "unique_keys", "segments"]:
             setattr(self, attr, getattr(gb, attr))
+
+        self.dropna = self.gb.dropna
+        self.where_not_nan = None
+        self.all_non_nan = False
+
+        if self.dropna:
+            from arkouda import all as ak_all
+            from arkouda import isnan
+
+            # calculate ~isnan on each key then & them all together
+            # keep up with if they're all_non_nan, so we can skip indexing later
+            key_cols = (
+                [df[k] for k in gb_key_names] if isinstance(gb_key_names, List) else [df[gb_key_names]]
+            )
+            where_key_not_nan = [
+                ~isnan(col)
+                for col in key_cols
+                if isinstance(col, pdarray) and _is_dtype_in_union(col.dtype, numeric_scalars)
+            ]
+
+            if len(where_key_not_nan) == 0:
+                # if empty then none of the keys are pdarray, so non are nan
+                self.all_non_nan = True
+            else:
+                self.where_not_nan = reduce(lambda x, y: x & y, where_key_not_nan)
+                self.all_non_nan = ak_all(self.where_not_nan)
+
+    def _get_df_col(self, c):
+        # helper function to mask out the values where the keys are nan when dropna is True
+        if not self.dropna or self.all_non_nan:
+            return self.df.data[c]
+        else:
+            return self.df.data[c][self.where_not_nan]
 
     @classmethod
     def _make_aggop(cls, opname):
@@ -148,18 +184,18 @@ class DataFrameGroupBy:
             if isinstance(colnames, List):
                 if isinstance(self.gb_key_names, str):
                     return DataFrame(
-                        {c: self.gb.aggregate(self.df.data[c], opname)[1] for c in colnames},
+                        {c: self.gb.aggregate(self._get_df_col(c), opname)[1] for c in colnames},
                         index=Index(self.gb.unique_keys, name=self.gb_key_names),
                     )
                 elif isinstance(self.gb_key_names, list) and len(self.gb_key_names) == 1:
                     return DataFrame(
-                        {c: self.gb.aggregate(self.df.data[c], opname)[1] for c in colnames},
+                        {c: self.gb.aggregate(self._get_df_col(c), opname)[1] for c in colnames},
                         index=Index(self.gb.unique_keys, name=self.gb_key_names[0]),
                     )
                 elif isinstance(self.gb_key_names, list):
                     column_dict = dict(zip(self.gb_key_names, self.unique_keys))
                     for c in colnames:
-                        column_dict[c] = self.gb.aggregate(self.df.data[c], opname)[1]
+                        column_dict[c] = self.gb.aggregate(self._get_df_col(c), opname)[1]
                     return DataFrame(column_dict)
                 else:
                     return None

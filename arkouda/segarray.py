@@ -9,14 +9,14 @@ from warnings import warn
 import numpy as np
 
 from arkouda.client import generic_msg
+from arkouda.groupbyclass import GroupBy, broadcast
+from arkouda.join import gen_ranges
+from arkouda.logger import getArkoudaLogger
+from arkouda.numpy import cumsum
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import int_scalars, isSupportedInt, str_
 from arkouda.numpy.dtypes import uint64 as akuint64
-from arkouda.groupbyclass import GroupBy, broadcast
-from arkouda.join import gen_ranges
-from arkouda.logger import getArkoudaLogger
-from arkouda.numeric import cumsum
 from arkouda.pdarrayclass import RegistrationError, create_pdarray, is_sorted, pdarray
 from arkouda.pdarraycreation import arange, array, ones, zeros
 from arkouda.pdarraysetops import concatenate

@@ -16,6 +16,119 @@ default_encoding = ["ascii", "idna"]
 default_compression = [None, "snappy", "gzip", "brotli", "zstd", "lz4"]
 
 
+def pytest_addoption(parser):
+    parser.addoption(
+        "--optional-parquet", action="store_true", default=False, help="run optional parquet tests"
+    )
+
+    parser.addoption(
+        "--size",
+        action="store",
+        default="10**8",
+        help="Benchmark only option. Problem size: length of array to use for benchmarks.",
+    )
+    parser.addoption(
+        "--trials",
+        action="store",
+        default="5",
+        help="Benchmark only option. Problem size: length of array to use for benchmarks. For tests that run "
+        "as many trials as possible in a given time, will be treated as number of seconds to run for.",
+    )
+    parser.addoption(
+        "--seed",
+        action="store",
+        default="",
+        help="Benchmark only option. Value to initialize random number generator.",
+    )
+    parser.addoption(
+        "--dtype",
+        action="store",
+        default="",
+        help="Benchmark only option. Dtypes to run benchmarks against. Comma separated list "
+        "(NO SPACES) allowing for multiple. Accepted values: int64, uint64, bigint, float64, bool, str and mixed."
+        "Mixed is used to generate sets of multiple types.",
+    )
+    parser.addoption(
+        "--numpy",
+        action="store_true",
+        default=False,
+        help="Benchmark only option. When set, runs numpy comparison benchmarks.",
+    )
+    parser.addoption(
+        "--maxbits",
+        action="store",
+        default="-1",
+        help="Benchmark only option. Only applies to bigint testing."
+        "Maximum number of bits, so values > 2**max_bits will wraparound. -1 is interpreted as no maximum.",
+    )
+    parser.addoption(
+        "--alpha", action="store", default="1.0", help="Benchmark only option. Scalar multiple"
+    )
+    parser.addoption(
+        "--randomize",
+        action="store_true",
+        default=False,
+        help="Benchmark only option. Fill arrays with random values instead of ones",
+    )
+    parser.addoption(
+        "--index_size",
+        action="store",
+        default="",
+        help="Benchmark only option. Length of index array (number of gathers to perform)",
+    )
+    parser.addoption(
+        "--value_size",
+        action="store",
+        default="",
+        help="Benchmark only option.Length of array from which values are gathered",
+    )
+    parser.addoption(
+        "--encoding",
+        action="store",
+        default="",
+        help="Benchmark only option. Only applies to encoding benchmarks."
+        "Comma separated list (NO SPACES) allowing for multiple"
+        "Encoding to be used. Accepted values: idna, ascii",
+    )
+    parser.addoption(
+        "--io_only_write",
+        action="store_true",
+        default=False,
+        help="Benchmark only option. Only write the files; files will not be removed",
+    )
+    parser.addoption(
+        "--io_only_read",
+        action="store_true",
+        default=False,
+        help="Benchmark only option. Only read the files; files will not be removed",
+    )
+    parser.addoption(
+        "--io_only_delete",
+        action="store_true",
+        default=False,
+        help="Benchmark only option. Only delete files created from writing with this benchmark",
+    )
+    parser.addoption(
+        "--io_files_per_loc",
+        action="store",
+        default="1",
+        help="Benchmark only option. Number of files to create per locale",
+    )
+    parser.addoption(
+        "--io_compression",
+        action="store",
+        default="",
+        help="Benchmark only option. Compression types to run IO benchmarks against. Comma delimited list"
+        "(NO SPACES) allowing for multiple. Accepted values: none, snappy, gzip, brotli, zstd, and lz4",
+    )
+    parser.addoption(
+        "--io_path",
+        action="store",
+        default=os.path.join(os.getcwd(), "ak_io_benchmark"),
+        help="Benchmark only option. Target path for measuring read/write rates",
+    )
+
+
 def pytest_configure(config):
     pytest.prob_size = eval(config.getoption("size"))
     pytest.trials = eval(config.getoption("trials"))
@@ -28,8 +141,12 @@ def pytest_configure(config):
     pytest.numpy = config.getoption("numpy")
     encode_str = config.getoption("encoding")
     pytest.encoding = default_encoding if encode_str == "" else encode_str.split(",")
-    pytest.idx_size = None if config.getoption("index_size") == "" else eval(config.getoption("index_size"))
-    pytest.val_size = None if config.getoption("value_size") == "" else eval(config.getoption("value_size"))
+    pytest.idx_size = (
+        None if config.getoption("index_size") == "" else eval(config.getoption("index_size"))
+    )
+    pytest.val_size = (
+        None if config.getoption("value_size") == "" else eval(config.getoption("value_size"))
+    )
 
     # IO settings
     comp_str = config.getoption("io_compression")
@@ -64,11 +181,7 @@ def startup_teardown():
                 e,
             )
     else:
-        print(
-            "in client stack test mode with host: {} port: {}".format(
-                server, port
-            )
-        )
+        print("in client stack test mode with host: {} port: {}".format(server, port))
 
     yield
 
@@ -85,9 +198,7 @@ def manage_connection():
     server = os.getenv("ARKOUDA_SERVER_HOST", "localhost")
     timeout = int(os.getenv("ARKOUDA_CLIENT_TIMEOUT", 5))
     try:
-        ak.connect(
-            server=server, port=port, timeout=timeout
-        )
+        ak.connect(server=server, port=port, timeout=timeout)
     except Exception as e:
         raise ConnectionError(e)
 

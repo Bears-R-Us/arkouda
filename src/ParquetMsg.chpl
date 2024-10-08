@@ -172,7 +172,7 @@ module ParquetMsg {
   }
 
   proc readStrFilesByName(ref A: [] ?t, filenames: [] string, sizes: [] int, dsetname: string) throws {
-    extern proc c_readStrColumnByName(filename, arr_chpl, colname, batchSize, errMsg): int;
+    extern proc c_readStrColumnByName(filename, arr_chpl, colname, numElems, batchSize, errMsg): int;
     var (subdoms, length) = getSubdomains(sizes);
     
     coforall loc in A.targetLocales() do on loc {
@@ -188,7 +188,7 @@ module ParquetMsg {
             var col: [filedom] t;
 
             if c_readStrColumnByName(filename.localize().c_str(), c_ptrTo(col),
-                                     dsetname.localize().c_str(),
+                                     dsetname.localize().c_str(), filedom.size,
                                      batchSize, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
               pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
             }
@@ -1525,7 +1525,8 @@ module ParquetMsg {
       var segment_ct: [0..#ncols] int;
       var seg_sizes_str: [0..#ncols] int; // Track the sizes of string columns and # of segments in segarray str column
       var val_sizes_str: [0..#ncols] int; // Track # of values making strings coming to locale
-      var seg_sizes_int: [0..#ncols] int; // only fill in sizes for int, uint segarray columns
+      var seg_sizes_int: [0..#ncols] int; // only fill in sizes for int segarray columns
+      var seg_sizes_uint: [0..#ncols] int; // only fill in sizes for uint segarray columns
       var seg_sizes_real: [0..#ncols] int; // only fill in sizes for float segarray columns
       var seg_sizes_bool: [0..#ncols] int; // only fill in sizes for bool segarray columns
       forall (i, column, ot) in zip(0..#ncols, sym_names, col_objTypes) {
@@ -1578,7 +1579,7 @@ module ParquetMsg {
               seg_sizes_int[i] = x;
             }
             when DType.UInt64 {
-              seg_sizes_int[i] = x;
+              seg_sizes_uint[i] = x;
             }
             when DType.Float64 {
               seg_sizes_real[i] = x;
@@ -1609,7 +1610,9 @@ module ParquetMsg {
       var locSize_str: int = + reduce seg_sizes_str;
       var str_vals: [0..#locSize_str] uint(8);
       var locSize_int: int = + reduce seg_sizes_int;
-      var int_vals: [0..#locSize_int] int; //int and uint written the same so no conversions will be needed
+      var int_vals: [0..#locSize_int] int;
+      var locSize_uint: int = + reduce seg_sizes_uint;
+      var uint_vals: [0..#locSize_uint] uint;
       var locSize_real: int = + reduce seg_sizes_real;
       var real_vals: [0..#locSize_real] real;
       var locSize_bool: int = + reduce seg_sizes_bool;
@@ -1618,11 +1621,12 @@ module ParquetMsg {
       // indexes for which values go to which columns
       var str_idx = (+ scan seg_sizes_str) - seg_sizes_str;
       var int_idx = (+ scan seg_sizes_int) - seg_sizes_int;
+      var uint_idx = (+ scan seg_sizes_uint) - seg_sizes_uint;
       var real_idx = (+ scan seg_sizes_real) - seg_sizes_real;
       var bool_idx = (+ scan seg_sizes_bool) - seg_sizes_bool;
 
       // populate data based on object and data types
-      forall (i, column, ot, si, ui, ri, bi, segidx) in zip(0..#ncols, sym_names, col_objTypes, str_idx, int_idx, real_idx, bool_idx, segment_idx) {
+      forall (i, column, ot, si, ii, ui, ri, bi, segidx) in zip(0..#ncols, sym_names, col_objTypes, str_idx, int_idx, uint_idx, real_idx, bool_idx, segment_idx) {
         // generate the local c string list of column names
         c_names[i] = my_column_names[i].localize().c_str();
 
@@ -1683,13 +1687,13 @@ module ParquetMsg {
                   const endValIdx = if (lastSegment == localSegments[locDom.high]) then lastValIdx else S[locDom.high + 1] - 1;
                   var valIdxRange = startValIdx..endValIdx;
                   ref olda = values.a;
-                  int_vals[ui..#valIdxRange.size] = olda[valIdxRange];
                   if !int_vals.domain.isEmpty() {
-                    ptrList[i] = c_ptrTo(int_vals[ui]): c_ptr(void);
+                    int_vals[ii..#valIdxRange.size] = olda[valIdxRange];
+                    ptrList[i] = c_ptrTo(int_vals[ii]): c_ptr(void);
                   }
                 }
                 when DType.UInt64 {
-                  segarray_sizes[i] = seg_sizes_int[i];
+                  segarray_sizes[i] = seg_sizes_uint[i];
                   var values = toSymEntry(valEntry, uint);
                   const lastValIdx = values.a.domain.high;
 
@@ -1698,9 +1702,9 @@ module ParquetMsg {
                   var endValIdx = if (lastSegment == localSegments[locDom.high]) then lastValIdx else S[locDom.high + 1] - 1;
                   var valIdxRange = startValIdx..endValIdx;
                   ref olda = values.a;
-                  int_vals[ui..#valIdxRange.size] = olda[valIdxRange]: int;
-                  if !int_vals.domain.isEmpty() {
-                    ptrList[i] = c_ptrTo(int_vals[ui]): c_ptr(void);
+                  if !uint_vals.domain.isEmpty() {
+                    uint_vals[ui..#valIdxRange.size] = olda[valIdxRange];
+                    ptrList[i] = c_ptrTo(uint_vals[ui]): c_ptr(void);
                   }
                 }
                 when DType.Float64 {
@@ -1713,8 +1717,8 @@ module ParquetMsg {
                   var endValIdx = if (lastSegment == localSegments[locDom.high]) then lastValIdx else S[locDom.high + 1] - 1;
                   var valIdxRange = startValIdx..endValIdx;
                   ref olda = values.a;
-                  real_vals[ri..#valIdxRange.size] = olda[valIdxRange];
                   if !real_vals.domain.isEmpty() {
+                    real_vals[ri..#valIdxRange.size] = olda[valIdxRange];
                     ptrList[i] = c_ptrTo(real_vals[ri]): c_ptr(void);
                   }
                 }
@@ -1728,8 +1732,8 @@ module ParquetMsg {
                   var endValIdx = if (lastSegment == localSegments[locDom.high]) then lastValIdx else S[locDom.high + 1] - 1;
                   var valIdxRange = startValIdx..endValIdx;
                   ref olda = values.a;
-                  bool_vals[bi..#valIdxRange.size] = olda[valIdxRange];
                   if !bool_vals.domain.isEmpty() {
+                    bool_vals[bi..#valIdxRange.size] = olda[valIdxRange];
                     ptrList[i] = c_ptrTo(bool_vals[bi]): c_ptr(void);
                   }
                 }
@@ -1757,8 +1761,8 @@ module ParquetMsg {
                     
                     var endValIdx = if (lastOffsetIdx == offIdxRange.high) then lastValIdx else oldOff[offIdxRange.high + 1] - 1;
                     var valIdxRange = startValIdx..endValIdx;
-                    str_vals[si..#valIdxRange.size] = oldVal[valIdxRange];
                     if !str_vals.domain.isEmpty() {
+                      str_vals[si..#valIdxRange.size] = oldVal[valIdxRange];
                       ptrList[i] = c_ptrTo(str_vals[si]): c_ptr(void);
                     }
                   }

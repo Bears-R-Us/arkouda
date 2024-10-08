@@ -11,7 +11,7 @@ module ArgSortMsg
 
     use Time;
     use Math only;
-    private use Sort;
+    private use ArkoudaSortCompat;
     
     use Reflection only;
     
@@ -39,9 +39,9 @@ module ArgSortMsg
 
     proc dynamicTwoArrayRadixSort(ref Data:[], comparator:?rec=new DefaultComparator()) {
       if Data._instance.isDefaultRectangular() {
-        Sort.TwoArrayRadixSort.twoArrayRadixSort(Data, comparator);
+        ArkoudaSortCompat.TwoArrayRadixSort.twoArrayRadixSort(Data, comparator);
       } else {
-        Sort.TwoArrayDistributedRadixSort.twoArrayDistributedRadixSort(Data, comparator);
+        ArkoudaSortCompat.TwoArrayDistributedRadixSort.twoArrayDistributedRadixSort(Data, comparator);
       }
     }
 
@@ -64,7 +64,7 @@ module ArgSortMsg
     };
     config const defaultSortAlgorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD;
 
-    proc getSortingAlgoritm(algoName:string) throws{
+    proc getSortingAlgorithm(algoName:string) throws{
       var algorithm = defaultSortAlgorithm;
       if algoName != "" {
         try {
@@ -86,7 +86,7 @@ module ArgSortMsg
     // (isInt(x(0)) || isUint(x(0)) || isReal(x(0))) {
     
     import Reflection.canResolveMethod;
-    record ContrivedComparator {
+    record ContrivedComparator: keyPartComparator {
       const dc = new DefaultComparator();
       proc keyPart(a, i: int) {
         if canResolveMethod(dc, "keyPart", a, 0) {
@@ -123,9 +123,9 @@ module ArgSortMsg
             part = makePart(x[1]);
           }
           if i > x[0].size {
-            return (-1, 0:uint(64));
+            return (keyPartStatus.pre, 0:uint(64));
           } else {
-            return (0, part);
+            return (keyPartStatus.returned, part);
           }
         } else {
           for param j in 0..<x.size {
@@ -134,9 +134,9 @@ module ArgSortMsg
             }
           }
           if i >= x.size {
-            return (-1, 0:uint(64));
+            return (keyPartStatus.pre, 0:uint(64));
           } else {
-            return (0, part);
+            return (keyPartStatus.returned, part);
           }
         }
       }
@@ -430,7 +430,7 @@ module ArgSortMsg
     {
         const name = msgArgs["name"],
               algoName = msgArgs["algoName"].toScalar(string),
-              algorithm = getSortingAlgoritm(algoName),
+              algorithm = getSortingAlgorithm(algoName),
               axis =  msgArgs["axis"].toScalar(int),
               symEntry = st[msgArgs["name"]]: SymEntry(array_dtype, array_nd),
               vals = if (array_dtype == bool) then (symEntry.a:int) else (symEntry.a: array_dtype);
@@ -449,7 +449,7 @@ module ArgSortMsg
         const name = msgArgs["name"].toScalar(string),
               strings = getSegString(name, st),
               algoName = msgArgs["algoName"].toScalar(string),
-              algorithm = getSortingAlgoritm(algoName);
+              algorithm = getSortingAlgorithm(algoName);
 
         // check and throw if over memory limit
         overMemLimit((8 * strings.size * 8)

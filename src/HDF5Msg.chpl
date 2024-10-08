@@ -381,7 +381,7 @@ module HDF5Msg {
             Name of the group or dataset the attributes are being written to.
 
         objType: string
-            The type of the object stored in the parent. ArrayView, pdarray, or strings
+            The type of the object stored in the parent. pdarray, or strings
 
         dtype: C_HDF5.hid_t
             id of the C_HDF5 datatype of the data contained in the object. Used to check for boolean datasets
@@ -655,47 +655,6 @@ module HDF5Msg {
     }
 
     /*
-        Writes Attributes specific to a multidimensional array.
-            - objType = ArrayView
-            - Rank: int - rank of the dataset
-            - Shape: [] int - stores the shape of object.
-        Calls to writeArkoudaMetaData to write the arkouda metadata
-    */
-    proc writeArrayViewAttrs(file_id: C_HDF5.hid_t, dset_name: string, objType: string, shape, dtype:C_HDF5.hid_t) throws {
-        h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                        "Writing ArrayView Attrs");
-        //open the created dset so we can add attributes.
-        var dset_id: C_HDF5.hid_t = C_HDF5.H5Oopen(file_id, dset_name.localize().c_str(), C_HDF5.H5P_DEFAULT);
-
-        // Create the attribute space
-        var attrSpaceId: C_HDF5.hid_t = C_HDF5.H5Screate(C_HDF5.H5S_SCALAR);
-        var attr_id: C_HDF5.hid_t;
-
-        // Store the rank of the dataset. Required to read so that shape can be built
-        attr_id = C_HDF5.H5Acreate2(dset_id, "Rank".c_str(), getHDF5Type(int), attrSpaceId, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
-        var s = shape.size; // needed to localize in the event that shape is not local.
-        C_HDF5.H5Awrite(attr_id, getHDF5Type(int), c_ptrTo(s));
-        C_HDF5.H5Aclose(attr_id);
-
-        C_HDF5.H5Sclose(attrSpaceId);
-        attrSpaceId= C_HDF5.H5Screate(C_HDF5.H5S_SIMPLE);
-        var adim: [0..#1] C_HDF5.hsize_t = shape.size:C_HDF5.hsize_t;
-        C_HDF5.H5Sset_extent_simple(attrSpaceId, 1, c_ptrTo(adim), c_ptrTo(adim));
-
-        attr_id = C_HDF5.H5Acreate2(dset_id, "Shape".c_str(), getHDF5Type(shape.a.eltType), attrSpaceId, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
-        var localShape = new lowLevelLocalizingSlice(shape.a, 0..#shape.size);
-        C_HDF5.H5Awrite(attr_id, getHDF5Type(shape.a.eltType), localShape.ptr);
-        C_HDF5.H5Aclose(attr_id);
-
-        // close the space and the dataset
-        C_HDF5.H5Sclose(attrSpaceId);
-        C_HDF5.H5Oclose(dset_id);
-
-        // add arkouda meta data attributes
-        writeArkoudaMetaData(file_id, dset_name, objType, dtype);
-    }
-
-    /*
         writes 1D array to dataset in single file
     */
     proc writeLocalDset(file_id: C_HDF5.hid_t, dset_name: string, A, dimension: int, type t) throws{
@@ -744,195 +703,8 @@ module HDF5Msg {
                 H5LTmake_dataset_WAR(file_id, dset_name.localize().c_str(), 1, c_ptrTo(dims), dType, c_ptrTo(A.localSlice(locDom)));
             }
 
-            // write the appropriate attributes
-            if shape_name != "" {
-                // write attributes for multi-dim array
-                var shape_sym: borrowed GenSymEntry = getGenericTypedArrayEntry(shape_name, st);
-                var shape = toSymEntry(shape_sym, int);
-                writeArrayViewAttrs(file_id, dset_name, objType, shape, dType);
-            }
-            else {
-                // write attributes for arkouda meta info otherwise
-                writeArkoudaMetaData(file_id, dset_name, objType, dType);
-            }
-        }
-    }
+            writeArkoudaMetaData(file_id, dset_name, objType, dType);
 
-    /*
-        Process and write an Arkouda ArrayView to HDF5.
-    */
-    proc arrayView_tohdfMsg(msgArgs: MessageArgs, st: borrowed SymTab) throws {
-        // access integer representation of APPEND/TRUNCATE
-        var mode: int = msgArgs.get("write_mode").getIntValue();
-
-        var filename: string = msgArgs.getValueOf("filename");
-        var entry = st.lookup(msgArgs.getValueOf("values"));
-        var file_format = msgArgs.get("file_format").getIntValue();
-        var overwrite: bool = if msgArgs.contains("overwrite")
-                                then msgArgs.get("overwrite").getBoolValue()
-                                else false;
-
-        const entryDtype = msgArgs.get("values").getDType();
-
-        var dset_name = msgArgs.getValueOf("dset");
-        const objType = msgArgs.getValueOf("objType");
-
-        select file_format {
-            when SINGLE_FILE {
-                var f = prepFiles(filename, mode);
-                var file_id = C_HDF5.H5Fopen(f.c_str(), C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
-                if file_id < 0 { // HF5open returns negative value on failure
-                    C_HDF5.H5Fclose(file_id);
-                    var errorMsg = "Failure accessing file %s.".format(f);
-                    throw getErrorWithContext(
-                           msg=errorMsg,
-                           lineNumber=getLineNumber(),
-                           routineName=getRoutineName(), 
-                           moduleName=getModuleName(),
-                           errorClass="FileNotFoundError");
-                }
-
-                // validate that the dataset does not already exist
-                validateDataset(file_id, f, dset_name, overwrite);
-
-                var shape_sym: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("shape"), st);
-                var shape = toSymEntry(shape_sym, int);
-                var dims: int = * reduce shape.a;
-
-                var dtype: C_HDF5.hid_t;
-                
-                select entryDtype {
-                    when DType.Int64 {
-                        var flat = toSymEntry(toGenSymEntry(entry), int);
-                        var localFlat: [0..#flat.size] int = flat.a;
-                        
-                        writeLocalDset(file_id, dset_name, c_ptrTo(localFlat), dims, int);
-                        dtype = getHDF5Type(int);
-                    }
-                    when DType.UInt64 {
-                        var flat = toSymEntry(toGenSymEntry(entry), uint);
-                        var localFlat: [0..#flat.size] uint = flat.a;
-                        
-                        writeLocalDset(file_id, dset_name, c_ptrTo(localFlat), dims, uint);
-                        dtype = getHDF5Type(uint);
-                    }
-                    when DType.Float64 {
-                        var flat = toSymEntry(toGenSymEntry(entry), real);
-                        var localFlat: [0..#flat.size] real = flat.a;
-                        
-                        writeLocalDset(file_id, dset_name, c_ptrTo(localFlat), dims, real);
-                        dtype = getHDF5Type(real);
-                    }
-                    when DType.Bool {
-                        var flat = toSymEntry(toGenSymEntry(entry), bool);
-                        var localFlat: [0..#flat.size] bool = flat.a;
-                        
-                        writeLocalDset(file_id, dset_name, c_ptrTo(localFlat), dims, bool);
-                        dtype = C_HDF5.H5T_NATIVE_HBOOL;
-                    }
-                    when DType.BigInt {
-                        var symEnt = toSymEntry(toGenSymEntry(entry), bigint);
-                        var limbs = bigintToUint(symEnt);
-
-                        // create the group
-                        validateGroup(file_id, f, dset_name, overwrite); // stored as group - group uses the dataset name
-                        var max_bits = symEnt.max_bits;
-                        writeBigIntMetaData(file_id, dset_name, max_bits, limbs.size);
-
-                        // write limbs
-                        for (i, l) in zip(0..#limbs.size, limbs) {
-                            var local_limb: [0..#l.size] uint = l.a;
-                            writeLocalDset(file_id, "%s/Limb_%i".format(dset_name, i), c_ptrTo(local_limb), l.size, uint);
-                            writeArkoudaMetaData(file_id, "%s/Limb_%i".format(dset_name, i), objType, getDataType(uint));
-                        }
-                    }
-                    otherwise {
-                        var errorMsg = unrecognizedTypeError("arrayView_tohdfMsg", dtype2str(entryDtype));
-                        throw getErrorWithContext(
-                           msg=errorMsg,
-                           lineNumber=getLineNumber(),
-                           routineName=getRoutineName(), 
-                           moduleName=getModuleName(),
-                           errorClass="TypeError");
-                    }
-                }
-                // write attributes for multi-dim array
-                writeArrayViewAttrs(file_id, dset_name, objType, shape, dtype);
-                C_HDF5.H5Fclose(file_id);
-            }
-            when MULTI_FILE {
-                select entryDtype {
-                    when DType.Int64 {
-                        var e = toSymEntry(toGenSymEntry(entry), int);
-                        var filenames = prepFiles(filename, mode, e.a);
-                        writeDistDset(filenames, dset_name, objType, overwrite, e.a, st, msgArgs.getValueOf("shape"));
-                    }
-                    when DType.UInt64 {
-                        var e = toSymEntry(toGenSymEntry(entry), uint);
-                        var filenames = prepFiles(filename, mode, e.a);
-                        writeDistDset(filenames, dset_name, objType, overwrite, e.a, st, msgArgs.getValueOf("shape"));
-                    }
-                    when DType.Float64 {
-                        var e = toSymEntry(toGenSymEntry(entry), real);
-                        var filenames = prepFiles(filename, mode, e.a);
-                        writeDistDset(filenames, dset_name, objType, overwrite, e.a, st, msgArgs.getValueOf("shape"));
-                    }
-                    when DType.Bool {
-                        var e = toSymEntry(toGenSymEntry(entry), bool);
-                        var filenames = prepFiles(filename, mode, e.a);
-                        writeDistDset(filenames, dset_name, objType, overwrite, e.a, st, msgArgs.getValueOf("shape"));
-                    }
-                    when DType.BigInt {
-                        var symEnt = toSymEntry(toGenSymEntry(entry), bigint);
-                        var limbs = bigintToUint(symEnt);
-                        var filenames = prepFiles(filename, mode, limbs[0].a);
-                        var max_bits = symEnt.max_bits;
-                        var num_limbs = limbs.size;
-
-                        // need to add the group to all files
-                        coforall (loc, idx) in zip(limbs[0].a.targetLocales(), filenames.domain) with (ref max_bits, ref num_limbs) do on loc {
-                            const localeFilename = filenames[idx];
-                            h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                        "%s exists? %?".format(localeFilename, exists(localeFilename)));
-
-                            var file_id = C_HDF5.H5Fopen(localeFilename.c_str(), C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
-                            defer { // Close the file on scope exit
-                                C_HDF5.H5Fclose(file_id);
-                            }
-
-                            // create the group and generate metadata
-                            validateGroup(file_id, localeFilename, dset_name, overwrite);
-                            writeBigIntMetaData(file_id, dset_name, max_bits, num_limbs);
-                            var shape_sym: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("shape"), st);
-                            var shape = toSymEntry(shape_sym, int);
-                            writeArrayViewAttrs(file_id, dset_name, objType, shape, getHDF5Type(uint));
-                        }
-
-                        // write limbs
-                        for (i, l) in zip(0..#limbs.size, limbs) {
-                            var local_limb: [0..#l.size] uint = l.a;
-                            writeDistDset(filenames, "/%s/Limb_%i".format(dset_name, i), "pdarray", overwrite, l.a, st);
-                        }
-                    }
-                    otherwise {
-                        var errorMsg = unrecognizedTypeError("multiDimArray_tohdfMsg", dtype2str(entryDtype));
-                        throw getErrorWithContext(
-                           msg=errorMsg,
-                           lineNumber=getLineNumber(),
-                           routineName=getRoutineName(), 
-                           moduleName=getModuleName(),
-                           errorClass="TypeError");
-                    }
-                }
-            }
-            otherwise {
-                throw getErrorWithContext(
-                           msg="Unknown file format. Expecting 0 (single file) or 1 (file per locale). Found %i".format(file_format),
-                           lineNumber=getLineNumber(),
-                           routineName=getRoutineName(), 
-                           moduleName=getModuleName(),
-                           errorClass="IllegalArgumentError");
-            }
         }
     }
 
@@ -2862,10 +2634,6 @@ module HDF5Msg {
         var objType: ObjType = msgArgs.getValueOf("objType").toUpper(): ObjType;
 
         select objType {
-            when ObjType.ARRAYVIEW {
-                // call handler for arrayview write msg
-                arrayView_tohdfMsg(msgArgs, st);
-            }
             when ObjType.PDARRAY, ObjType.DATETIME, ObjType.TIMEDELTA, ObjType.IPV4 {
                 // call handler for pdarray write
                 pdarray_tohdfMsg(msgArgs, st);
@@ -3287,61 +3055,6 @@ module HDF5Msg {
                 }
             }
         }
-    }
-
-    /*
-        Read an ArrayView object from the files provided into a distributed array
-    */
-    proc arrayView_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, ref validFiles: [] bool, st: borrowed SymTab): (string, ObjType, string) throws {
-        var file_id = C_HDF5.H5Fopen(filenames[0].c_str(), C_HDF5.H5F_ACC_RDONLY, 
-                                           C_HDF5.H5P_DEFAULT);
-        var dset_id: C_HDF5.hid_t = C_HDF5.H5Oopen(file_id, dset.c_str(), C_HDF5.H5P_DEFAULT);
-
-        // check if rank is attr and then get.
-        var rank: int;
-        if C_HDF5.H5Aexists_by_name(dset_id, ".".c_str(), "Rank", C_HDF5.H5P_DEFAULT) > 0 {
-            var rank_id: C_HDF5.hid_t = C_HDF5.H5Aopen_by_name(dset_id, ".".c_str(), "Rank", C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
-            var attr_type: C_HDF5.hid_t = C_HDF5.H5Aget_type(rank_id);
-            C_HDF5.H5Aread(rank_id, getHDF5Type(int), c_ptrTo(rank));
-        }
-        else{
-            // Return error that file does not have required attrs
-            var errorMsg = "Rank Attribute was not located in %s. This attribute is required to process multi-dimensional data.".format(filenames[0]);
-            h5Logger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            throw getErrorWithContext(
-                             msg=errorMsg,
-                             lineNumber=getLineNumber(), 
-                             routineName=getRoutineName(), 
-                             moduleName=getModuleName(), 
-                             errorClass='AttributeNotFoundError');
-        }
-
-        // check if shape attr is present and read it
-        var shape: [0..#rank] int;
-        if C_HDF5.H5Aexists_by_name(dset_id, ".".c_str(), "Shape", C_HDF5.H5P_DEFAULT) > 0 {
-            var shape_id: C_HDF5.hid_t = C_HDF5.H5Aopen_by_name(dset_id, ".".c_str(), "Shape", C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
-            var attr_type: C_HDF5.hid_t = C_HDF5.H5Aget_type(shape_id);
-            C_HDF5.H5Aread(shape_id, getHDF5Type(shape.eltType), c_ptrTo(shape));
-        }
-        else {
-            // Return error that file does not have required attrs
-            var errorMsg = "Shape Attribute was not located in %s. This attribute is required to process multi-dimensional data.".format(filenames[0]);
-            h5Logger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            throw getErrorWithContext(
-                             msg=errorMsg,
-                             lineNumber=getLineNumber(), 
-                             routineName=getRoutineName(), 
-                             moduleName=getModuleName(), 
-                             errorClass='AttributeNotFoundError');
-        }
-
-        C_HDF5.H5Oclose(dset_id);
-        C_HDF5.H5Fclose(file_id);
-        
-        var sname = st.nextName();
-        st.addEntry(sname, createSymEntry(shape));
-        var rname = readPdarrayFromFile(filenames, dset, dataclass, bytesize, isSigned, validFiles, st);
-        return (dset, ObjType.ARRAYVIEW, "%s+%s".format(rname, sname));
     }
 
     proc readBigIntPdarrayFromFile(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, validFiles: [] bool, st: borrowed SymTab): string throws {
@@ -4193,16 +3906,6 @@ module HDF5Msg {
             when ObjType.SEGARRAY {
                 (subdoms, len, skips) = get_subdoms(filenames, dset + "/" + SEGMENTED_OFFSET_NAME, validFiles);
             }
-            when ObjType.ARRAYVIEW {
-                var errorMsg = "ArrayView Objects do not support tagging";
-                h5Logger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                throw getErrorWithContext(
-                                    msg=errorMsg,
-                                    lineNumber=getLineNumber(), 
-                                    routineName=getRoutineName(), 
-                                    moduleName=getModuleName(), 
-                                    errorClass='UnhandledDatatypeError');
-            }
             otherwise {
                 var errorMsg = "Unknown object type found";
                 h5Logger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -4389,9 +4092,6 @@ module HDF5Msg {
             }
 
             select objType {
-                when ObjType.ARRAYVIEW {
-                    rtnData.pushBack(arrayView_readhdfMsg(filenames, dsetName, dataclass, bytesize, isSigned, validFiles, st));
-                }
                 when ObjType.PDARRAY, ObjType.IPV4, ObjType.DATETIME, ObjType.TIMEDELTA {
                     rtnData.pushBack(pdarray_readhdfMsg(filenames, dsetName, dataclass, bytesize, isSigned, validFiles, st));
                 }
