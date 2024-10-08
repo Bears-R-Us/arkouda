@@ -79,6 +79,18 @@ module SparseMatrix {
     return spsMat.domain.localSubdomain();
   }
 
+  proc getLSA(const ref spsMat, rowBlockIdx: int, colBlockIdx: int) const ref
+    where spsMat.chpl_isNonDistributedArray()
+  {
+    return spsMat;
+  }
+
+  proc getLSA(const ref spsMat, rowBlockIdx: int, colBlockIdx: int) const ref
+    where !spsMat.chpl_isNonDistributedArray()
+  {
+    return spsMat.getLocalSubarray(rowBlockIdx, colBlockIdx);
+  }
+
   /*
     Fill the rows, cols, and vals arrays with the non-zero indices and values
     from the sparse matrix in row-major order.
@@ -123,11 +135,13 @@ module SparseMatrix {
     coforall (rowBlockIdx, colBlockIdx) in grid.domain with (ref rows, ref cols, ref vals) {
       on grid[rowBlockIdx, colBlockIdx] {
         const lsd = getLSD(spsMat);
+        const ref lsa = getLSA(spsMat, rowBlockIdx, colBlockIdx);
 
         forall i in lsd.rows() with (var idxAgg = newDstAggregator(int),
-                                     var valAgg = newDstAggregator(spsMat.eltType)) {
+                                     var valAgg = newDstAggregator(spsMat.eltType),
+                                     const ref lsa) {
           var idx = colBlockStartOffsets.localAccess[i, colBlockIdx];
-          for (j, v) in spsMat.colsAndVals(i) {
+          for (j, v) in lsa.colsAndVals(i) {
             idxAgg.copy(rows[idx], i);
             idxAgg.copy(cols[idx], j);
             valAgg.copy(vals[idx], v);
@@ -182,12 +196,14 @@ module SparseMatrix {
     coforall (rowBlockIdx, colBlockIdx) in grid.domain with (ref rows, ref cols, ref vals) {
       on grid[rowBlockIdx, colBlockIdx] {
         const lsd = getLSD(spsMat);
+        const ref lsa = getLSA(spsMat, rowBlockIdx, colBlockIdx);
 
         forall j in lsd.cols() with (var idxAgg = newDstAggregator(int),
-                                     var valAgg = newDstAggregator(spsMat.eltType)) {
+                                     var valAgg = newDstAggregator(spsMat.eltType),
+                                     const ref lsa) {
           var idx = rowBlockStartOffsets.localAccess[rowBlockIdx, j];
 
-          for (i, v) in spsMat.rowsAndVals(j) {
+          for (i, v) in lsa.rowsAndVals(j) {
             idxAgg.copy(rows[idx], i);
             idxAgg.copy(cols[idx], j);
             valAgg.copy(vals[idx], v);
