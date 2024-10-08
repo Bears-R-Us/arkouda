@@ -61,10 +61,10 @@ module Histogram
         return hist;
     }
 
-    proc histogramGlobalAtomic(x: [?aD] ?etype, y: [aD] etype, xMin: etype, xMax: etype, yMin: etype, yMax: etype, numXBins: int, numYBins: int, xBinWidth: real, yBinWidth: real) throws {
+    proc histogramGlobalAtomic(x: [?aD] ?etype1, y: [aD] ?etype2, xMin: etype1, xMax: etype1, yMin: etype2, yMax: etype2, numXBins: int, numYBins: int, xBinWidth: real, yBinWidth: real) throws {
         const totNumBins = numXBins * numYBins;
         var hD = makeDistDom(totNumBins);
-        var atomicHist: [hD] atomic int;
+        var atomicHist: [hD] atomic real;
 
         // count into atomic histogram
         forall (xi, yi) in zip(x, y) {
@@ -78,7 +78,7 @@ module Histogram
             atomicHist[(xiBin * numYBins) + yiBin].add(1);
         }
 
-        var hist = makeDistArray(totNumBins,int);
+        var hist = makeDistArray(totNumBins,real);
         // copy from atomic histogram to normal histogram
         [(e,ae) in zip(hist, atomicHist)] e = ae.read();
         try! hgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -132,10 +132,10 @@ module Histogram
         return hist;
     }
 
-    proc histogramLocalAtomic(x: [?aD] ?etype, y: [aD] etype, xMin: etype, xMax: etype, yMin: etype, yMax: etype, numXBins: int, numYBins: int, xBinWidth: real, yBinWidth: real) throws {
+    proc histogramLocalAtomic(x: [?aD] ?etype1, y: [aD] ?etype2, xMin: etype1, xMax: etype1, yMin: etype2, yMax: etype2, numXBins: int, numYBins: int, xBinWidth: real, yBinWidth: real) throws {
         const totNumBins = numXBins * numYBins;
         // allocate per-locale atomic histogram
-        var atomicHist: [PrivateSpace] [0..#totNumBins] atomic int;
+        var atomicHist: [PrivateSpace] [0..#totNumBins] atomic real;
 
         // count into per-locale private atomic histogram
         forall (xi, yi) in zip(x, y) {
@@ -147,11 +147,11 @@ module Histogram
         }
 
         // +reduce across per-locale histograms to get counts
-        var lHist: [0..#totNumBins] int;
+        var lHist: [0..#totNumBins] real;
         forall i in PrivateSpace with (+ reduce lHist) do
           lHist reduce= atomicHist[i].read();
 
-        var hist = makeDistArray(totNumBins,int);
+        var hist = makeDistArray(totNumBins,real);
         hist = lHist;
         return hist;
     }
@@ -195,9 +195,9 @@ module Histogram
         return hist;
     }
 
-    proc histogramReduceIntent(x: [?aD] ?etype, y: [aD] etype, xMin: etype, xMax: etype, yMin: etype, yMax: etype, numXBins: int, numYBins: int, xBinWidth: real, yBinWidth: real) throws {
+    proc histogramReduceIntent(x: [?aD] ?etype1, y: [aD] ?etype2, xMin: etype1, xMax: etype1, yMin: etype2, yMax: etype2, numXBins: int, numYBins: int, xBinWidth: real, yBinWidth: real) throws {
         const totNumBins = numXBins * numYBins;
-        var gHist: [0..#totNumBins] int;
+        var gHist: [0..#totNumBins] real;
 
         // count into per-task/per-locale histogram and then reduce as tasks complete
         forall (xi, yi) in zip(x, y) with (+ reduce gHist) {
@@ -208,7 +208,7 @@ module Histogram
             gHist[(xiBin * numYBins) + yiBin] += 1;
         }
 
-        var hist = makeDistArray(totNumBins,int);
+        var hist = makeDistArray(totNumBins,real);
         hist = gHist;
         return hist;
     }

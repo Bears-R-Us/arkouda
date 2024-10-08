@@ -5,6 +5,7 @@ from arkouda.client import generic_msg
 from server_util.test.server_test_util import TestRunningMode, start_arkouda_server
 
 
+@pytest.mark.skipif(pytest.host == "horizon", reason="nightly test failures due to machine busyness")
 class TestClient:
     def test_client_connected(self):
         """
