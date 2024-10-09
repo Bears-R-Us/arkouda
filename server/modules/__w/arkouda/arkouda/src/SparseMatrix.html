@@ -136,7 +136,37 @@
 </div>
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SparseMatrix.fillSparseMatrix">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">fillSparseMatrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">spsMat</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">A:</span> <span class="pre">[?D]</span> <span class="pre">?eltType</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SparseMatrix.fillSparseMatrix" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">fillSparseMatrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">spsMat</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">A:</span> <span class="pre">[?D]</span> <span class="pre">?eltType</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">l:</span> <span class="pre">layout</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SparseMatrix.fillSparseMatrix" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="SparseMatrix.getGrid">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getGrid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">spsMat</span></em><span class="sig-paren">)</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">spsMat.chpl_isNonDistributedArray()</span></em><a class="headerlink" href="#SparseMatrix.getGrid" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getGrid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">spsMat</span></em><span class="sig-paren">)</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">!spsMat.chpl_isNonDistributedArray()</span></em></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="SparseMatrix.getLSD">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getLSD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">spsMat</span></em><span class="sig-paren">)</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">spsMat.chpl_isNonDistributedArray()</span></em><a class="headerlink" href="#SparseMatrix.getLSD" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getLSD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">spsMat</span></em><span class="sig-paren">)</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">!spsMat.chpl_isNonDistributedArray()</span></em></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="SparseMatrix.getLSA">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getLSA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">spsMat</span></em>, <em class="sig-param"><span class="pre">rowBlockIdx:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">colBlockIdx:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">const</span> <span class="pre">ref</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">spsMat.chpl_isNonDistributedArray()</span></em><a class="headerlink" href="#SparseMatrix.getLSA" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getLSA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">spsMat</span></em>, <em class="sig-param"><span class="pre">rowBlockIdx:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">colBlockIdx:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">const</span> <span class="pre">ref</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">!spsMat.chpl_isNonDistributedArray()</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
@@ -149,23 +179,26 @@ from the sparse matrix in row-major order.</p>
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SparseMatrix.sparseMatToPdarrayCSC">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">sparseMatToPdarrayCSC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">spsMat</span></em>, <em class="sig-param"><span class="pre">ref</span> <span class="pre">rows</span></em>, <em class="sig-param"><span class="pre">ref</span> <span class="pre">cols</span></em>, <em class="sig-param"><span class="pre">ref</span> <span class="pre">vals</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SparseMatrix.sparseMatToPdarrayCSC" title="Link to this definition">¶</a></dt>
-<dd><p>Fill the rows, cols, and vals arrays with the non-zero indices and values
-from the sparse matrix in col-major order.</p>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="SparseMatrix.flattenedExScanCSR">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">flattenedExScanCSR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">nnzPerColBlock:</span> <span class="pre">[?d]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">nRowGroups:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">nTasksPerRowBlock:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">nRowsPerGroup:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SparseMatrix.flattenedExScanCSR" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt class="sig sig-object chpl" id="SparseMatrix.flattenedExScanCSC">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">flattenedExScanCSC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">nnzPerRowBlock:</span> <span class="pre">[?d]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">nColGroups:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">nTasksPerColBlock:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">nColsPerGroup:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SparseMatrix.flattenedExScanCSC" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="SparseMatrix.rowMajorExScan">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">rowMajorExScan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">nnzPerColBlock:</span> <span class="pre">[?d]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">grid:</span> <span class="pre">[]</span> <span class="pre">locale</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">pdom</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SparseMatrix.rowMajorExScan" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="SparseMatrix.colMajorExScan">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">colMajorExScan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">nnzPerRowBlock:</span> <span class="pre">[?d]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">grid:</span> <span class="pre">[]</span> <span class="pre">locale</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">pdom</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SparseMatrix.colMajorExScan" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SparseMatrix.sparseMatMatMult">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">sparseMatMatMult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">B</span></em>, <em class="sig-param"><span class="pre">ref</span> <span class="pre">spsData</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SparseMatrix.sparseMatMatMult" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">sparseMatMatMult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">B</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SparseMatrix.sparseMatMatMult" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">sparseMatMatMult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">B</span></em>, <em class="sig-param"><span class="pre">ref</span> <span class="pre">spsData</span></em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
@@ -180,7 +213,7 @@ from the sparse matrix in col-major order.</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SparseMatrix.randSparseMatrix">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">randSparseMatrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">size</span></em>, <em class="sig-param"><span class="pre">density</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">layout</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">distributed</span> <span class="pre">=</span> <span class="pre">false</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">eltType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SparseMatrix.randSparseMatrix" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">randSparseMatrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">size</span></em>, <em class="sig-param"><span class="pre">density</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">layout</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">eltType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SparseMatrix.randSparseMatrix" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </section>

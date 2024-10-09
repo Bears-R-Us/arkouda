@@ -81,3 +81,7 @@ or
    :returns: type
    
 
+.. function:: proc makeSparseDomain(size: int, param matLayout)
+
+.. function:: proc makeSparseArray(size: int, type eltType, param matLayout)
+

@@ -31,10 +31,6 @@ or
 
    .. method:: proc ref add(idx: 2*(int), val: int)
 
-.. function:: proc randSparseDomain(parentDom, density, param matLayout, param distributed) where distributed == false
-
-.. function:: proc randSparseDomain(parentDom, density, param matLayout, param distributed) where distributed == true
-
 .. function:: proc emptySparseDomLike(Mat)
 
 .. function:: proc writeSparseMatrix(msg, Arr)

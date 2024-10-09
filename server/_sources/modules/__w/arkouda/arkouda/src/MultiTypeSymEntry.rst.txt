@@ -488,8 +488,6 @@ or
 
 .. function:: proc createSparseSymEntry(a, size, param matLayout, type eltType) throws
 
-.. function:: proc makeSparseArray(size, type eltType, param matLayout)
-
 .. class:: GeneratorSymEntry : AbstractSymEntry
 
    .. attribute:: type etype

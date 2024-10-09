@@ -25,7 +25,19 @@ or
 
    SparseMatrix/*
 
-.. function:: proc fillSparseMatrix(ref spsMat, const A: [?D] ?eltType) throws
+.. function:: proc fillSparseMatrix(ref spsMat, const A: [?D] ?eltType, param l: layout) throws
+
+.. function:: proc getGrid(const ref spsMat) where spsMat.chpl_isNonDistributedArray()
+
+.. function:: proc getGrid(const ref spsMat) where !spsMat.chpl_isNonDistributedArray()
+
+.. function:: proc getLSD(const ref spsMat) where spsMat.chpl_isNonDistributedArray()
+
+.. function:: proc getLSD(const ref spsMat) where !spsMat.chpl_isNonDistributedArray()
+
+.. function:: proc getLSA(const ref spsMat, rowBlockIdx: int, colBlockIdx: int) const ref where spsMat.chpl_isNonDistributedArray()
+
+.. function:: proc getLSA(const ref spsMat, rowBlockIdx: int, colBlockIdx: int) const ref where !spsMat.chpl_isNonDistributedArray()
 
 .. function:: proc sparseMatToPdarrayCSR(const ref spsMat, ref rows, ref cols, ref vals)
 
@@ -36,14 +48,11 @@ or
 
 .. function:: proc sparseMatToPdarrayCSC(const ref spsMat, ref rows, ref cols, ref vals)
 
-   
-   Fill the rows, cols, and vals arrays with the non-zero indices and values
-   from the sparse matrix in col-major order.
-   
+.. function:: proc rowMajorExScan(in nnzPerColBlock: [?d] int, grid: [] locale, const ref pdom)
 
-.. function:: proc flattenedExScanCSR(in nnzPerColBlock: [?d] int, nRowGroups: int, nTasksPerRowBlock: int, nRowsPerGroup: int)
+.. function:: proc colMajorExScan(in nnzPerRowBlock: [?d] int, grid: [] locale, const ref pdom)
 
-.. function:: proc flattenedExScanCSC(in nnzPerRowBlock: [?d] int, nColGroups: int, nTasksPerColBlock: int, nColsPerGroup: int)
+.. function:: proc sparseMatMatMult(A, B)
 
 .. function:: proc sparseMatMatMult(A, B, ref spsData)
 
@@ -51,5 +60,5 @@ or
 
 .. function:: proc denseMatMatMult(A, B)
 
-.. function:: proc randSparseMatrix(size, density, param layout, param distributed = false, type eltType)
+.. function:: proc randSparseMatrix(size, density, param layout, type eltType)
 
