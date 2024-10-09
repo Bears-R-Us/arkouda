@@ -14,11 +14,11 @@ def _generate_test_data():
 
 
 @pytest.mark.benchmark(group="AK_Flatten")
-def bench_flatten_nonregex(benchmark):
+def bench_split_nonregex(benchmark):
     thickrange, nbytes = _generate_test_data()
 
-    benchmark.pedantic(thickrange.flatten, args=["_"], rounds=pytest.trials)
-    benchmark.extra_info["description"] = "Measures the performance of Strings.flatten"
+    benchmark.pedantic(thickrange.split, args=["_"], rounds=pytest.trials)
+    benchmark.extra_info["description"] = "Measures the performance of Strings.split"
     benchmark.extra_info["problem_size"] = pytest.prob_size
     benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
         (nbytes / benchmark.stats["mean"]) / 2**30
@@ -26,11 +26,11 @@ def bench_flatten_nonregex(benchmark):
 
 
 @pytest.mark.benchmark(group="AK_Flatten")
-def bench_flatten_regexliteral(benchmark):
+def bench_split_regexliteral(benchmark):
     thickrange, nbytes = _generate_test_data()
 
-    benchmark.pedantic(thickrange.flatten, args=["_"], kwargs={"regex": True}, rounds=pytest.trials)
-    benchmark.extra_info["description"] = "Measures the performance of Strings.flatten"
+    benchmark.pedantic(thickrange.split, args=["_"], kwargs={"regex": True}, rounds=pytest.trials)
+    benchmark.extra_info["description"] = "Measures the performance of Strings.split"
     benchmark.extra_info["problem_size"] = pytest.prob_size
     benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
         (nbytes / benchmark.stats["mean"]) / 2**30
@@ -38,11 +38,11 @@ def bench_flatten_regexliteral(benchmark):
 
 
 @pytest.mark.benchmark(group="AK_Flatten")
-def bench_flatten_regexpattern(benchmark):
+def bench_split_regexpattern(benchmark):
     thickrange, nbytes = _generate_test_data()
 
-    benchmark.pedantic(thickrange.flatten, args=["_+"], kwargs={"regex": True}, rounds=pytest.trials)
-    benchmark.extra_info["description"] = "Measures the performance of Strings.flatten"
+    benchmark.pedantic(thickrange.split, args=["_+"], kwargs={"regex": True}, rounds=pytest.trials)
+    benchmark.extra_info["description"] = "Measures the performance of Strings.split"
     benchmark.extra_info["problem_size"] = pytest.prob_size
     benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
         (nbytes / benchmark.stats["mean"]) / 2**30

@@ -52,7 +52,7 @@ class TestRegex:
     def test_empty_string_patterns(self):
         lit_str = ["0 String 0", "^", " "]
         ak_str = ak.array(lit_str)
-        has_regex_arg = ["contains", "startswith", "endswith", "peel", "flatten"]
+        has_regex_arg = ["contains", "startswith", "endswith", "peel", "split"]
 
         for pattern in "", "|", "^":
             TestRegex.match_objects_helper(pattern, lit_str)
@@ -74,7 +74,7 @@ class TestRegex:
             # peel is broken on one char strings with patterns that match empty string
             # str split and non-regex flatten don't work with empty separator, so
             # it makes sense for the regex versions to return a value error
-            for fn in "peel", "split", "flatten":
+            for fn in "peel", "regex_split", "split":
                 func = getattr(ak_str, fn)
                 with pytest.raises(ValueError):
                     func(pattern, regex=True) if fn in has_regex_arg else func(pattern)
@@ -92,8 +92,8 @@ class TestRegex:
             "endswith",
             "findall",
             "peel",
+            "regex_split",
             "split",
-            "flatten",
         ):
             for s, pat in zip([ak.array([""]), ak.array(["0 String 0"])], ["", "$"]):
                 func = getattr(s, fn)
@@ -133,13 +133,13 @@ class TestRegex:
         # verify fluid programming with Match object doesn't raise a RuntimeError
         ak.array(["1_2___", "____", "3", "__4___5____6___7", ""]).search("_+").find_matches()
 
-    def test_split(self):
+    def test_regex_split(self):
         strings = ak.array(
             ["", "____", "_1_2____", "3___4___", "5", "__6__", "___7", "__8___9____10____11"]
         )
         pattern = "_+"
         maxsplit = 3
-        split, split_map = strings.split(pattern, maxsplit, return_segments=True)
+        split, split_map = strings.regex_split(pattern, maxsplit, return_segments=True)
         for i in range(strings.size):
             re_split = re.split(pattern, strings[i], maxsplit)
             ak_split = (
@@ -251,7 +251,7 @@ class TestRegex:
         assert ["", "", "1f2g"] == d_right.to_list()
         assert ["", "", "__f____g"] == u_right.to_list()
 
-    def test_regex_flatten(self):
+    def test_regex_on_split(self):
         orig = ak.array(["one|two", "three|four|five", "six", "seven|eight|nine|ten|", "eleven"])
         digit = ak.array(["one1two", "three2four3five", "six", "seven4eight5nine6ten7", "eleven"])
         under = ak.array(
@@ -274,7 +274,7 @@ class TestRegex:
         ]
         answer_map = [0, 2, 5, 6, 11]
         for pattern, strings in zip(["|", "\\d", "_+"], [orig, digit, under]):
-            ak_flat, ak_map = strings.flatten(pattern, return_segments=True, regex=pattern != "|")
+            ak_flat, ak_map = strings.split(pattern, return_segments=True, regex=pattern != "|")
             assert answer_flat == ak_flat.to_list()
             assert answer_map == ak_map.to_list()
 
@@ -285,8 +285,8 @@ class TestRegex:
         answer_flat = ["", "", "", "", "1", "2", "3", "4", "", "5"]
         answer_map = [0, 1, 3, 6, 9]
 
-        orig_flat, orig_map = orig.flatten("|", return_segments=True)
-        regex_flat, regex_map = regex.flatten("_+", return_segments=True, regex=True)
+        orig_flat, orig_map = orig.split("|", return_segments=True)
+        regex_flat, regex_map = regex.split("_+", return_segments=True, regex=True)
 
         assert answer_flat == orig_flat.to_list()
         assert answer_flat == regex_flat.to_list()
