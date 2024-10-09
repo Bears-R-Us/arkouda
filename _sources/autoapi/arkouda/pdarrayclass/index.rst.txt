@@ -1145,7 +1145,11 @@ Module Contents
 
 
 
-   .. py:attribute:: shape
+   .. py:property:: shape
+      Return the shape of an array.
+
+      :returns: The elements of the shape tuple give the lengths of the corresponding array dimensions.
+      :rtype: tuple of int
 
 
    .. py:attribute:: size
