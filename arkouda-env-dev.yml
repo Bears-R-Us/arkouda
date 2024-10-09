@@ -23,6 +23,7 @@ dependencies:
   - scipy<=1.13.1
   - pytest>=6.0
   - pytest-env
+  # - chapel-py
 
   # Developer dependencies
   - pexpect
@@ -49,4 +50,3 @@ dependencies:
     - furo # sphinx theme
     - myst-parser
     - linkify-it-py
-

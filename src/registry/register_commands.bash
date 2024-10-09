@@ -16,11 +16,11 @@ then
     :
 else
     # if not sucessfull (likely due to mismatched python version), try again with the current python environment
-    echo "...attempting to use chapel-py bindings from existing environment instead"
     if python3 $1/register_commands.py $2 $3 $4;
     then
         :
     else
-        echo "Unable to register commands; falling back to default 'Commands.chpl' file"
+        echo "Unable to register commands; make sure 'chapel-py' is installed"
+        exit 1
     fi
 fi

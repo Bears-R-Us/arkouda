@@ -47,6 +47,18 @@ Location: /opt/homebrew/Caskroom/miniforge/base/envs/arkouda/lib/python3.12/site
 
 The `chpl` compiler will be executed with `-I`, `-L` and `-rpath` for each path in your `Makefile.paths`
 
+#### installing the `chapel-py` dependency
+
+Next, the `chpl` compiler's frontend Python bindings (aka `chapel-py`) need to be installed. This is a Python library that gives Arkouda's build system access to the Chapel compiler's frontend, which is used to support Arkouda's command-registration annotations. The library can be installed using the following command:
+
+```
+(cd $CHPL_HOME && make chapel-py-venv)
+```
+
+This adds `chapel-py` to a Python environment shipped with Chapel. When building Arkouda, that environment will be invoked temporarily to use `chapel-py`. To manually build and install `chapel-py` in your Python or Anaconda environment, see the instructions in the next section.
+
+Note: if the above command fails (potentially due to a stale virtual environment), try running `make clobber` from `$CHPL_HOME/third-party/chpl-venv`, and then rerun the above command.
+
 ### Installing Dependencies Manually
 
 *Please Note: This step is to only be performed if you are NOT using dependencies from a conda/pip env. If you attempt to use both, it is possible that version mismatches will cause build failures*.
@@ -118,6 +130,14 @@ rm -rf build-client-env
 pip install dist/arkouda*.whl
 # or
 pip install dist/arkouda*.tar.gz
+```
+
+#### installing the `chapel-py` dependency manually
+
+To manually install `chapel-py`, navigate to `$CHPL_HOME/tools/chapel-py/`, and:
+
+```
+pip install -e .
 ```
 
 ## Build the Server
