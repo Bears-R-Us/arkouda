@@ -291,7 +291,7 @@ def array(
             raise RuntimeError(
                 "Array exceeds allowed transfer size. Increase ak.client.maxTransferBytes to allow"
             )
-        if a.flags["F_CONTIGUOUS"] and not a.flags["OWNDATA"]:
+        if a.ndim > 1 and a.flags["F_CONTIGUOUS"] and not a.flags["OWNDATA"]:
             # Make a copy if the array was shallow-transposed (to avoid error #3757)
             a_ = a.copy()
         else:
