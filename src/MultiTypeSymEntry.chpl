@@ -727,13 +727,6 @@ module MultiTypeSymEntry
         return new shared SparseSymEntry(a, size, matLayout, eltType);
     }
 
-    proc makeSparseArray(size, type eltType, param matLayout) {
-        const dom = {1..size, 1..size};
-        var spsDom: sparse subdomain(dom) dmapped new dmap(new CS(compressRows=(matLayout==layout.CSR)));
-        var A: [spsDom] eltType;
-        return A;
-    }
-
 
     class GeneratorSymEntry:AbstractSymEntry {
         type etype;
