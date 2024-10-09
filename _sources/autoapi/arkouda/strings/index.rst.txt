@@ -338,43 +338,6 @@ Module Contents
 
 
 
-   .. py:method:: flatten(delimiter: str, return_segments: bool = False, regex: bool = False) -> Union[Strings, Tuple]
-
-      Unpack delimiter-joined substrings into a flat array.
-
-      :param delimiter: Characters used to split strings into substrings
-      :type delimiter: str
-      :param return_segments: If True, also return mapping of original strings to first substring
-                              in return array.
-      :type return_segments: bool
-      :param regex: Indicates whether delimiter is a regular expression
-                    Note: only handles regular expressions supported by re2
-                    (does not support lookaheads/lookbehinds)
-      :type regex: bool
-
-      :returns: * *Strings* -- Flattened substrings with delimiters removed
-                * *pdarray, int64 (optional)* -- For each original string, the index of first corresponding substring
-                  in the return array
-
-      .. seealso:: :obj:`peel`, :obj:`rpeel`
-
-      .. rubric:: Examples
-
-      >>> orig = ak.array(['one|two', 'three|four|five', 'six'])
-      >>> orig.flatten('|')
-      array(['one', 'two', 'three', 'four', 'five', 'six'])
-      >>> flat, map = orig.flatten('|', return_segments=True)
-      >>> map
-      array([0, 2, 5])
-      >>> under = ak.array(['one_two', 'three_____four____five', 'six'])
-      >>> under_flat, under_map = under.flatten('_+', return_segments=True, regex=True)
-      >>> under_flat
-      array(['one', 'two', 'three', 'four', 'five', 'six'])
-      >>> under_map
-      array([0, 2, 5])
-
-
-
    .. py:method:: from_parts(offset_attrib: Union[arkouda.pdarrayclass.pdarray, str], bytes_attrib: Union[arkouda.pdarrayclass.pdarray, str]) -> Strings
       :staticmethod:
 
@@ -1009,6 +972,32 @@ Module Contents
 
 
 
+   .. py:method:: regex_split(pattern: Union[bytes, arkouda.numpy.dtypes.str_scalars], maxsplit: int = 0, return_segments: bool = False) -> Union[Strings, Tuple]
+
+      Returns a new Strings split by the occurrences of pattern.
+      If maxsplit is nonzero, at most maxsplit splits occur
+
+      :param pattern: Regex used to split strings into substrings
+      :type pattern: str
+      :param maxsplit: The max number of pattern match occurences in each element to split.
+                       The default maxsplit=0 splits on all occurences
+      :type maxsplit: int
+      :param return_segments: If True, return mapping of original strings to first substring
+                              in return array.
+      :type return_segments: bool
+
+      :returns: * *Strings* -- Substrings with pattern matches removed
+                * *pdarray, int64 (optional)* -- For each original string, the index of first corresponding substring
+                  in the return array
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
+      >>> strings.split('_+', maxsplit=2, return_segments=True)
+      (array(['1', '2', '', '', '', '3', '', '4', '5____6___7', '']), array([0 3 5 6 9]))
+
+
+
    .. py:method:: register(user_defined_name: str) -> Strings
 
       Register this Strings object with a user defined name in the arkouda server
@@ -1161,29 +1150,40 @@ Module Contents
 
 
 
-   .. py:method:: split(pattern: Union[bytes, arkouda.numpy.dtypes.str_scalars], maxsplit: int = 0, return_segments: bool = False) -> Union[Strings, Tuple]
+   .. py:method:: split(delimiter: str, return_segments: bool = False, regex: bool = False) -> Union[Strings, Tuple]
 
-      Returns a new Strings split by the occurrences of pattern.
-      If maxsplit is nonzero, at most maxsplit splits occur
+      Unpack delimiter-joined substrings into a flat array.
 
-      :param pattern: Regex used to split strings into substrings
-      :type pattern: str
-      :param maxsplit: The max number of pattern match occurences in each element to split.
-                       The default maxsplit=0 splits on all occurences
-      :type maxsplit: int
-      :param return_segments: If True, return mapping of original strings to first substring
+      :param delimiter: Characters used to split strings into substrings
+      :type delimiter: str
+      :param return_segments: If True, also return mapping of original strings to first substring
                               in return array.
       :type return_segments: bool
+      :param regex: Indicates whether delimiter is a regular expression
+                    Note: only handles regular expressions supported by re2
+                    (does not support lookaheads/lookbehinds)
+      :type regex: bool
 
-      :returns: * *Strings* -- Substrings with pattern matches removed
+      :returns: * *Strings* -- Flattened substrings with delimiters removed
                 * *pdarray, int64 (optional)* -- For each original string, the index of first corresponding substring
                   in the return array
 
+      .. seealso:: :obj:`peel`, :obj:`rpeel`
+
       .. rubric:: Examples
 
-      >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
-      >>> strings.split('_+', maxsplit=2, return_segments=True)
-      (array(['1', '2', '', '', '', '3', '', '4', '5____6___7', '']), array([0 3 5 6 9]))
+      >>> orig = ak.array(['one|two', 'three|four|five', 'six'])
+      >>> orig.flatten('|')
+      array(['one', 'two', 'three', 'four', 'five', 'six'])
+      >>> flat, map = orig.flatten('|', return_segments=True)
+      >>> map
+      array([0, 2, 5])
+      >>> under = ak.array(['one_two', 'three_____four____five', 'six'])
+      >>> under_flat, under_map = under.flatten('_+', return_segments=True, regex=True)
+      >>> under_flat
+      array(['one', 'two', 'three', 'four', 'five', 'six'])
+      >>> under_map
+      array([0, 2, 5])
 
 
 
