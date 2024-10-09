@@ -27,12 +27,12 @@ class TestUtilFunctions:
         assert xp.all(a)
 
         a[3, 4] = False
-        assert ~xp.all(a)
+        assert not xp.all(a)
 
     @pytest.mark.skip_if_max_rank_less_than(2)
     def test_any(self):
         a = xp.zeros((10, 10), dtype=ak.bool_)
-        assert ~xp.any(a)
+        assert not xp.any(a)
 
         a[3, 4] = True
         assert xp.any(a)
