@@ -81,6 +81,8 @@ module Message {
             msg += (sym: borrowed GenSymEntry).attrib();
         } else if sym.isAssignableTo(SymbolEntryType.CompositeSymEntry) {
             msg += (sym: borrowed CompositeSymEntry).attrib();
+        } else if sym.isAssignableTo(SymbolEntryType.SparseSymEntry) {
+            msg += (sym: borrowed GenSparseSymEntry).attrib();
         }
 
         return new MsgTuple(

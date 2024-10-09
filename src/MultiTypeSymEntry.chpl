@@ -575,16 +575,16 @@ module MultiTypeSymEntry
 
     }
 
-    import SparseMatrix.layout;
+    import SparseMatrix.Layout;
     use LayoutCS;
 
 
     proc layoutToStr(param l) param {
         select l {
-            when layout.CSR {
+            when Layout.CSR {
                 return "CSR";
             }
-            when layout.CSC {
+            when Layout.CSC {
                 return "CSC";
             }
             otherwise {
@@ -618,34 +618,32 @@ module MultiTypeSymEntry
         /*
         layout of the sparse array: CSC or CSR
         */
-        param matLayout : layout;
+        param matLayout : Layout;
 
         /*
         'a' is the distributed sparse array
         */
-        var a = makeSparseArray(tupShape[0], etype, matLayout); // Hardcode 2D matrix for now
+        // Hardcode 2D matrix for now (makeSparseArray accepts a 2-tuple shape)
+        var a = makeSparseArray((...tupShape), etype, matLayout);
 
         /*
-          Create a SparseSymEntry from a shape and element type, etc.
-
-          :args len: size of each dimension
-          :type len: int
-
-          :arg etype: type to be instantiated
-          :type etype: type
+          Create a SparseSymEntry from a sparse array
         */
-        proc init(a, size, param matLayout, type eltType) {
+        proc init(a: [?D] ?eltType, param matLayout)
+            where a.domain.parentDom.rank == 2 // Hardcode a 2D matrix for now
+        {
+            const size = D.shape[0] * D.shape[1];
             super.init(eltType, size, a.domain.getNNZ(), /*ndim*/2, layoutToStr(matLayout)); // Hardcode a 2D matrix for now
             this.entryType = SymbolEntryType.SparseSymEntry;
             assignableTypes.add(this.entryType);
             this.etype = eltType;
             this.dimensions = 2; // Hardcode a 2D matrix for now
-            this.tupShape = (size,size); // Harcode a 2D matrix for now
+            this.tupShape = D.shape;
             this.matLayout = matLayout;
             this.a = a;
             init this;
             this.shape = tupShapeString(this.tupShape);
-            this.ndim = this.tupShape.size;
+            this.ndim = 2;
         }
 
         /*
@@ -689,7 +687,7 @@ module MultiTypeSymEntry
                 var backString = "";
                 for (i, j) in denseDom by -1 {
                     var row = i, col = j;
-                    if this.matLayout==layout.CSC {
+                    if this.matLayout==Layout.CSC {
                         row = j; // Iterate in Col Major Order for CSC
                         col = i; // To match SciPy behavior
                     }
@@ -721,10 +719,6 @@ module MultiTypeSymEntry
         proc deinit() {
             if logLevel == LogLevel.DEBUG {writeln("deinit SparseSymEntry");try! stdout.flush();}
         }
-    }
-
-    inline proc createSparseSymEntry(a, size, param matLayout, type eltType) throws {
-        return new shared SparseSymEntry(a, size, matLayout, eltType);
     }
 
 

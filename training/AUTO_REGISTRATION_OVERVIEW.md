@@ -158,6 +158,32 @@ result = create_pdarray(
 
 Other parameter classes can also be added to the configuration file and used in a similar manner (both to instantiate array-related arguments, or for a completely different set of generic arguments). Note that `"array"` is a special parameter-class because the `registerCommand` annotation uses it to instantiate array arguments.
 
+**Note about `param` Enum formals:**
+
+In order to make a (group of) procedures generic over an enum, it's values can be specified in
+the configuration file in the following format:
+
+```json
+{
+  "group": {
+    "field": {
+      "__enum__": "ModuleName.EnumName",
+      "__variants__": ["V1", "V2", "V3"]
+    }
+  }
+}
+```
+
+The `__enum__` field is used to add an import statement to `Commands.chpl`, so the module name where the enum is defined must be provided.
+
+The `__variants__` field specifies which variants of the enum the procedure should be instantiated for. For example, procedures with arguments in the form:
+
+```chapel
+param group_field[_...]: EnumName
+```
+
+will be instantiated with `EnumName.V1`, `EnumName.V2`, and `EnumName.V3`.
+
 <a id="iar-opt-out"></a>
 ### opting out of some instantiations
 

@@ -325,6 +325,13 @@ def clean_stamp_name(name):
     return name.translate(str.maketrans("[](),=", "______"))
 
 
+def clean_enum_name(name):
+    if "." in name:
+        return name.split(".")[-1]
+    else:
+        return name
+
+
 def stamp_generic_command(
     generic_proc_name, prefix, module_name, formals, line_num, is_user_proc
 ):
@@ -343,7 +350,11 @@ def stamp_generic_command(
         + ",".join(
             [
                 # if the generic formal is a 'type' convert it to its numpy dtype name
-                (chapel_scalar_types[v] if v in chapel_scalar_types else str(v))
+                (
+                    chapel_scalar_types[v]
+                    if v in chapel_scalar_types
+                    else clean_enum_name(str(v))
+                )
                 for _, v in formals.items()
             ]
         )
@@ -351,7 +362,10 @@ def stamp_generic_command(
     )
 
     stamp_name = f"ark_{clean_stamp_name(prefix)}_" + "_".join(
-        [str(v).replace("(", "").replace(")", "") for _, v in formals.items()]
+        [
+            clean_enum_name(str(v)).replace("(", "").replace(")", "")
+            for _, v in formals.items()
+        ]
     )
 
     stamp_formal_args = ", ".join([f"{k}={v}" for k, v in formals.items()])
@@ -396,6 +410,9 @@ def parse_param_class_value(value):
     Parse a value from the 'parameter_classes' field in the configuration file
 
     Allows scalars, lists of scalars, or strings that can be evaluated as lists
+
+    Also allows a dictionary with the fields '__enum__' and '__variants__' to
+    represent an enum its possible values
     """
     if isinstance(value, list):
         for v in value:
@@ -421,6 +438,9 @@ def parse_param_class_value(value):
             raise ValueError(
                 f"Could not create a list of parameter values from '{value}'"
             )
+    elif isinstance(value, dict) and "__enum__" in value and "__variants__" in value:
+        enum_name = value["__enum__"].split(".")[-1]
+        return [f"{enum_name}.{var}" for var in value["__variants__"]]
     else:
         raise ValueError(f"Invalid parameter value type ({type(value)}) for '{value}'")
 
@@ -926,6 +946,21 @@ def stamp_out_command(
         yield stamp
 
 
+def extract_enum_imports(config):
+    imports = []
+    for k in config.keys():
+        if isinstance(config[k], dict):
+            if "__enum__" in config[k].keys():
+                if "__variants__" not in config[k].keys():
+                    raise ValueError(
+                        f"enum '{k}' is missing '__variants__' field in configuration file"
+                    )
+                imports.append(f"import {config[k]['__enum__']};")
+            else:
+                imports += extract_enum_imports(config[k])
+    return imports
+
+
 def register_commands(config, source_files):
     """
     Create a chapel source file that registers all the procs annotated with the
@@ -937,6 +972,8 @@ def register_commands(config, source_files):
         "use BigInteger;",
         watermarkConfig(config),
     ]
+
+    stamps += extract_enum_imports(config)
 
     count = 0
 

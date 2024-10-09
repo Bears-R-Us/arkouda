@@ -11,6 +11,13 @@
                 "bigint"
             ]
         },
+        "sparse": {
+            "dtype": ["int"],
+            "layout": {
+                "__enum__": "SparseMatrix.Layout",
+                "__variants__": ["CSR", "CSC"]
+            }
+        },
         "binop": {
             "dtype": [
                 "int",
