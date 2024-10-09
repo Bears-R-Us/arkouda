@@ -398,6 +398,15 @@ Location: /opt/homebrew/Caskroom/miniforge/base/envs/arkouda/lib/python3.12/site
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">chpl</span></code> compiler will be executed with <code class="docutils literal notranslate"><span class="pre">-I</span></code>, <code class="docutils literal notranslate"><span class="pre">-L</span></code> and <code class="docutils literal notranslate"><span class="pre">-rpath</span></code> for each path in your <code class="docutils literal notranslate"><span class="pre">Makefile.paths</span></code></p>
 </section>
+<section id="installing-the-chapel-py-dependency">
+<h4>installing the <code class="docutils literal notranslate"><span class="pre">chapel-py</span></code> dependency<a class="headerlink" href="#installing-the-chapel-py-dependency" title="Link to this heading">¶</a></h4>
+<p>Next, the <code class="docutils literal notranslate"><span class="pre">chpl</span></code> compiler’s frontend Python bindings (aka <code class="docutils literal notranslate"><span class="pre">chapel-py</span></code>) need to be installed. This is a Python library that gives Arkouda’s build system access to the Chapel compiler’s frontend, which is used to support Arkouda’s command-registration annotations. The library can be installed using the following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(cd $CHPL_HOME &amp;&amp; make chapel-py-venv)
+</pre></div>
+</div>
+<p>This adds <code class="docutils literal notranslate"><span class="pre">chapel-py</span></code> to a Python environment shipped with Chapel. When building Arkouda, that environment will be invoked temporarily to use <code class="docutils literal notranslate"><span class="pre">chapel-py</span></code>. To manually build and install <code class="docutils literal notranslate"><span class="pre">chapel-py</span></code> in your Python or Anaconda environment, see the instructions in the next section.</p>
+<p>Note: if the above command fails (potentially due to a stale virtual environment), try running <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">clobber</span></code> from <code class="docutils literal notranslate"><span class="pre">$CHPL_HOME/third-party/chpl-venv</span></code>, and then rerun the above command.</p>
+</section>
 </section>
 <section id="installing-dependencies-manually">
 <h3>Installing Dependencies Manually<a class="headerlink" href="#installing-dependencies-manually" title="Link to this heading">¶</a></h3>
@@ -466,6 +475,13 @@ rm<span class="w"> </span>-rf<span class="w"> </span>build-client-env
 pip<span class="w"> </span>install<span class="w"> </span>dist/arkouda*.whl
 <span class="c1"># or</span>
 pip<span class="w"> </span>install<span class="w"> </span>dist/arkouda*.tar.gz
+</pre></div>
+</div>
+</section>
+<section id="installing-the-chapel-py-dependency-manually">
+<h4>installing the <code class="docutils literal notranslate"><span class="pre">chapel-py</span></code> dependency manually<a class="headerlink" href="#installing-the-chapel-py-dependency-manually" title="Link to this heading">¶</a></h4>
+<p>To manually install <code class="docutils literal notranslate"><span class="pre">chapel-py</span></code>, navigate to <code class="docutils literal notranslate"><span class="pre">$CHPL_HOME/tools/chapel-py/</span></code>, and:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="o">.</span>
 </pre></div>
 </div>
 </section>
@@ -589,6 +605,7 @@ Arkouda documentation homepage will be displayed.</p>
 <li><a class="reference internal" href="#using-environment-installed-dependencies-recommended">Using Environment Installed Dependencies <em>(Recommended)</em></a><ul>
 <li><a class="reference internal" href="#using-conda">Using <code class="docutils literal notranslate"><span class="pre">conda</span></code></a></li>
 <li><a class="reference internal" href="#using-pip">Using <code class="docutils literal notranslate"><span class="pre">pip</span></code></a></li>
+<li><a class="reference internal" href="#installing-the-chapel-py-dependency">installing the <code class="docutils literal notranslate"><span class="pre">chapel-py</span></code> dependency</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#installing-dependencies-manually">Installing Dependencies Manually</a><ul>
@@ -599,6 +616,7 @@ Arkouda documentation homepage will be displayed.</p>
 <li><a class="reference internal" href="#individual-installs">Individual Installs</a></li>
 <li><a class="reference internal" href="#arrow-install-troubleshooting">Arrow Install Troubleshooting</a></li>
 <li><a class="reference internal" href="#distributable-package">Distributable Package</a></li>
+<li><a class="reference internal" href="#installing-the-chapel-py-dependency-manually">installing the <code class="docutils literal notranslate"><span class="pre">chapel-py</span></code> dependency manually</a></li>
 </ul>
 </li>
 </ul>
