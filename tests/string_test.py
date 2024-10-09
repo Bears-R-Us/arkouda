@@ -6,6 +6,7 @@ import pandas as pd
 import pytest
 
 import arkouda as ak
+from arkouda.testing import assert_equal as ak_assert_equal
 
 ak.verbose = False
 N = 100
@@ -910,3 +911,10 @@ class TestString:
         for word in more_words:
             inds |= strings == word
         assert (inds == matches).all()
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_flatten(self, size):
+        base_words, _ = self.base_words(size)
+        strings = self.get_strings(size, base_words)
+
+        ak_assert_equal(strings.flatten(), strings)

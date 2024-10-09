@@ -2082,6 +2082,21 @@ class Strings:
         """
         return [self]
 
+    def flatten(self):
+        """
+        Return a copy of the array collapsed into one dimension.
+
+        Returns
+        -------
+        A copy of the input array, flattened to one dimension.
+
+        Note
+        ----
+        As multidimensional Strings are currently supported,
+        flatten on a Strings object will always return itself.
+        """
+        return self
+
     def to_ndarray(self) -> np.ndarray:
         """
         Convert the array to a np.ndarray, transferring array data from the

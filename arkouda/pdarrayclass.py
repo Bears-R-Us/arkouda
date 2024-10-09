@@ -533,8 +533,7 @@ class pdarray:
             except ValueError:
                 raise ValueError(f"shape mismatch {self.shape} {other.shape}")
             repMsg = generic_msg(
-                cmd=f"binopvv<{self.dtype},{other.dtype},{x1.ndim}>",
-                args={"op": op, "a": x1, "b": x2}
+                cmd=f"binopvv<{self.dtype},{other.dtype},{x1.ndim}>", args={"op": op, "a": x1, "b": x2}
             )
             if tmp_x1:
                 del x1
@@ -791,7 +790,7 @@ class pdarray:
                 raise ValueError(f"shape mismatch {self.shape} {other.shape}")
             generic_msg(
                 cmd=f"opeqvv<{self.dtype},{other.dtype},{self.ndim}>",
-                args={"op": op, "a": self, "b": other}
+                args={"op": op, "a": self, "b": other},
             )
             return self
         # pdarray binop scalar
@@ -1767,6 +1766,21 @@ class pdarray:
                     "shape": shape,
                 },
             ),
+        )
+
+    def flatten(self):
+        """
+        Return a copy of the array collapsed into one dimension.
+
+        Returns
+        -------
+        A copy of the input array, flattened to one dimension.
+        """
+        return create_pdarray(
+            generic_msg(
+                cmd=f"flatten<{self.dtype.name},{self.ndim}>",
+                args={"a": self},
+            )
         )
 
     def to_ndarray(self) -> np.ndarray:
