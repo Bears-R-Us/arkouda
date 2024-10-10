@@ -63,19 +63,6 @@ module SparseMatrixMsg {
         return MsgTuple.fromResponses(responses);
     }
 
-    // @arkouda.instantiateAndRegister("fill_sparse_vals")
-    // proc fillSparseMatrixMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
-    //                          type SparseSymEntry_etype, param SparseSymEntry_matLayout: Layout
-    // ): MsgTuple throws {
-    //     const e = st[msgArgs["matrix"]]: borrowed SparseSymEntry(SparseSymEntry_etype, 2, SparseSymEntry_matLayout),
-    //           vals = st[msgArgs["vals"]]: borrowed SymEntry(SparseSymEntry_etype, 1);
-
-    //     fillSparseMatrix(e.a, vals.a, SparseSymEntry_matLayout);
-
-    //     sparseLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Filled sparse Array with values");
-    //     return MsgTuple.success();
-    // }
-
     @arkouda.registerCommand("fill_sparse_vals")
     proc fillSparseMatrixMsg(matrix: borrowed SparseSymEntry(?), vals: [?d] ?t /* matrix.etype */) throws
         where t == matrix.etype && d.rank == 1
@@ -88,4 +75,5 @@ module SparseMatrixMsg {
     proc fillSparseMatrixMsg(matrix: borrowed SparseSymEntry(?), vals: [?d] ?t) throws
         where d.rank != 1 && t == matrix.etype
             do throw new Error("fillSparseMatrixMsg: vals must be rank 1");
+
 }
