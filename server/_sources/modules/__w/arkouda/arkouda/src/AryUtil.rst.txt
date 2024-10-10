@@ -300,6 +300,8 @@ or
    flatten a multi-dimensional array into a 1D array
    
 
+.. function:: proc flatten(const ref a: [?d] ?t): [] t throws where a.rank == 1
+
 .. record:: orderer
 
    .. attribute:: param rank: int

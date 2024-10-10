@@ -400,7 +400,7 @@ may override this limit by setting ak.client.maxTransferBytes to a larger
 value, but proceed with caution.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code>, <a class="reference internal" href="../autoapi/arkouda/index.html#id785" title="arkouda.Strings.to_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_list</span></code></a></p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code>, <a class="reference internal" href="../autoapi/arkouda/index.html#id789" title="arkouda.Strings.to_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_list</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;hello&quot;</span><span class="p">,</span> <span class="s2">&quot;my&quot;</span><span class="p">,</span> <span class="s2">&quot;world&quot;</span><span class="p">])</span>
@@ -607,7 +607,7 @@ is true)</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[<a class="reference internal" href="../autoapi/arkouda/index.html#id718" title="arkouda.Strings">Strings</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#id718" title="arkouda.Strings">Strings</a>]</p>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="../autoapi/arkouda/index.html#id721" title="arkouda.Strings">Strings</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#id721" title="arkouda.Strings">Strings</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -670,7 +670,7 @@ Note: only handles regular expressions supported by re2
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[<a class="reference internal" href="../autoapi/arkouda/index.html#id718" title="arkouda.Strings">Strings</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#id718" title="arkouda.Strings">Strings</a>]</p>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="../autoapi/arkouda/index.html#id721" title="arkouda.Strings">Strings</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#id721" title="arkouda.Strings">Strings</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -705,7 +705,7 @@ of this array, optionally inserting a delimiter.
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>other</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id718" title="arkouda.Strings"><em>Strings</em></a>) – The strings to join onto self’s strings</p></li>
+<li><p><strong>other</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id721" title="arkouda.Strings"><em>Strings</em></a>) – The strings to join onto self’s strings</p></li>
 <li><p><strong>delimiter</strong> (<em>str</em>) – String inserted between self and other</p></li>
 <li><p><strong>toLeft</strong> (<em>bool</em>) – If true, join other strings to the left of self. By default,
 other is joined to the right of self.</p></li>
@@ -715,7 +715,7 @@ other is joined to the right of self.</p></li>
 <dd class="field-even"><p>The array of joined strings</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#id718" title="arkouda.Strings">Strings</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#id721" title="arkouda.Strings">Strings</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -748,7 +748,7 @@ of this array, optionally inserting a delimiter.
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>other</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id718" title="arkouda.Strings"><em>Strings</em></a>) – The strings to join onto self’s strings</p></li>
+<li><p><strong>other</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id721" title="arkouda.Strings"><em>Strings</em></a>) – The strings to join onto self’s strings</p></li>
 <li><p><strong>delimiter</strong> (<a class="reference internal" href="../autoapi/arkouda/dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union"><em>Union</em></a><em>[</em><em>bytes</em><em>,</em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a><em>]</em>) – String inserted between self and other</p></li>
 </ul>
 </dd>
@@ -756,7 +756,7 @@ of this array, optionally inserting a delimiter.
 <dd class="field-even"><p>The array of joined strings, as other + self</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#id718" title="arkouda.Strings">Strings</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#id721" title="arkouda.Strings">Strings</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -784,6 +784,24 @@ of this array, optionally inserting a delimiter.
 <section id="flattening">
 <h3>Flattening<a class="headerlink" href="#flattening" title="Link to this heading">¶</a></h3>
 <p>Given an array of strings where each string encodes a variable-length sequence delimited by a common substring, flattening offers a method for unpacking the sequences into a flat array of individual elements. A mapping between original strings and new array elements can be preserved, if desired. This method can be used in pipe</p>
+<blockquote>
+<div><dl class="py method">
+<dt class="sig sig-object py" id="arkouda.Strings.flatten">
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">flatten</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/strings.html#Strings.flatten"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.Strings.flatten" title="Link to this definition">¶</a></dt>
+<dd><p>Return a copy of the array collapsed into one dimension.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A copy of the input array, flattened to one dimension.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>As multidimensional Strings are currently supported,
+flatten on a Strings object will always return itself.</p>
+</div>
+</dd></dl>
+
+</div></blockquote>
 </section>
 <section id="regular-expressions">
 <h3>Regular Expressions<a class="headerlink" href="#regular-expressions" title="Link to this heading">¶</a></h3>
@@ -976,7 +994,7 @@ The default count=0 replaces all occurences of pattern with repl</p></li>
 <dd class="field-even"><p>Strings with pattern matches replaced</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#id718" title="arkouda.Strings">Strings</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#id721" title="arkouda.Strings">Strings</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1316,7 +1334,10 @@ capture group is from</p></li>
 <li><a class="reference internal" href="#arkouda.Strings.lstick"><code class="docutils literal notranslate"><span class="pre">Strings.lstick()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#flattening">Flattening</a></li>
+<li><a class="reference internal" href="#flattening">Flattening</a><ul>
+<li><a class="reference internal" href="#arkouda.Strings.flatten"><code class="docutils literal notranslate"><span class="pre">Strings.flatten()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#regular-expressions">Regular Expressions</a><ul>
 <li><a class="reference internal" href="#arkouda.Strings.search"><code class="docutils literal notranslate"><span class="pre">Strings.search()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Strings.match"><code class="docutils literal notranslate"><span class="pre">Strings.match()</span></code></a></li>

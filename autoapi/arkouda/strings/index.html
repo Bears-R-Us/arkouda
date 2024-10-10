@@ -816,6 +816,22 @@ pattern match is from</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.strings.Strings.flatten">
+<span class="sig-name descname"><span class="pre">flatten</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/strings.html#Strings.flatten"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.strings.Strings.flatten" title="Link to this definition">¶</a></dt>
+<dd><p>Return a copy of the array collapsed into one dimension.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A copy of the input array, flattened to one dimension.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>As multidimensional Strings are currently supported,
+flatten on a Strings object will always return itself.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.strings.Strings.from_parts">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_parts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offset_attrib</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bytes_attrib</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/strings.html#Strings.from_parts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.strings.Strings.from_parts" title="Link to this definition">¶</a></dt>
 <dd><p>Factory method for creating a Strings object from an Arkouda server
@@ -2528,6 +2544,7 @@ their uppercase equivalent</p>
 <li><a class="reference internal" href="#arkouda.strings.Strings.equals"><code class="docutils literal notranslate"><span class="pre">Strings.equals()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.find_locations"><code class="docutils literal notranslate"><span class="pre">Strings.find_locations()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.findall"><code class="docutils literal notranslate"><span class="pre">Strings.findall()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.strings.Strings.flatten"><code class="docutils literal notranslate"><span class="pre">Strings.flatten()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.from_parts"><code class="docutils literal notranslate"><span class="pre">Strings.from_parts()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.from_return_msg"><code class="docutils literal notranslate"><span class="pre">Strings.from_return_msg()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.strings.Strings.fullmatch"><code class="docutils literal notranslate"><span class="pre">Strings.fullmatch()</span></code></a></li>

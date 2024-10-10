@@ -338,6 +338,19 @@ Module Contents
 
 
 
+   .. py:method:: flatten()
+
+      Return a copy of the array collapsed into one dimension.
+
+      :rtype: A copy of the input array, flattened to one dimension.
+
+      .. note::
+
+         As multidimensional Strings are currently supported,
+         flatten on a Strings object will always return itself.
+
+
+
    .. py:method:: from_parts(offset_attrib: Union[arkouda.pdarrayclass.pdarray, str], bytes_attrib: Union[arkouda.pdarrayclass.pdarray, str]) -> Strings
       :staticmethod:
 
