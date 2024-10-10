@@ -79,7 +79,7 @@ class Categorical:
     BinOps = frozenset(["==", "!="])
     RegisterablePieces = frozenset(["categories", "codes", "permutation", "segments", "_akNAcode"])
     RequiredPieces = frozenset(["categories", "codes", "_akNAcode"])
-    permutation = None
+    permutation: Union[pdarray, None] = None
     segments = None
     objType = "Categorical"
     dtype = akdtype(str_)  # this is being set for now because Categoricals only supported on Strings

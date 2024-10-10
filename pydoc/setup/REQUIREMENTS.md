@@ -38,6 +38,7 @@ The following python packages are required by the Arkouda client package.
 - `scipy<=1.13.1`
 - `pytest>=6.0`
 - `pytest-env`
+- `chapel-py` (to be installed manually, as it is shipped with Chapel)
 
 ### Developer Specific
 

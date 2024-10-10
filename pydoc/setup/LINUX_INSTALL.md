@@ -8,6 +8,7 @@ We encourage developers to fork the repo if they expect to make any changes to a
 They can then their fork and add the Bears-R-Us repo as a remote:
 ```bash
 git clone https://github.com/YOUR_FORK/arkouda.git
+cd arkouda
 git remote add upstream https://github.com/Bears-R-Us/arkouda.git
 ```
 

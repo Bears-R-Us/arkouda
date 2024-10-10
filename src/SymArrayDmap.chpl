@@ -1,6 +1,8 @@
 module SymArrayDmap {
     import ChplConfig;
+    import SparseMatrix.layout;
     public use BlockDist;
+    use LayoutCS;
 
     /*
         Available domain maps.
@@ -126,6 +128,36 @@ module SymArrayDmap {
     */
     proc makeDistDomType(size: int) type {
         return makeDistDom(size).type;
+    }
+
+    proc makeSparseDomain(size: int, param matLayout) {
+      const dom = {1..size, 1..size}; // TODO: only supporting square matrices for now?
+                                      // TODO: change domain to be zero based?
+      select MyDmap {
+        when Dmap.defaultRectangular {
+          var spsDom: sparse subdomain(dom) dmapped new dmap(new CS(compressRows=(matLayout==layout.CSR)));
+          return (spsDom, dom);
+        }
+        when Dmap.blockDist {
+          const locsPerDim = sqrt(numLocales:real): int,
+                grid = {0..<locsPerDim, 0..<locsPerDim},
+                localeGrid = reshape(Locales[0..<grid.size], grid);
+
+          type layoutType = CS(compressRows=(matLayout==layout.CSR));
+          const DenseBlkDom = dom dmapped new blockDist(boundingBox=dom,
+                                                        targetLocales=localeGrid,
+                                                        sparseLayoutType=layoutType);
+
+          var SD: sparse subdomain(DenseBlkDom);
+          return (SD, DenseBlkDom);
+        }
+      }
+    }
+
+    proc makeSparseArray(size: int, type eltType, param matLayout) {
+      const (sd, _) = makeSparseDomain(size, matLayout);
+      var arr: [sd] eltType;
+      return arr;
     }
 
 }

@@ -291,16 +291,19 @@ def array(
             raise RuntimeError(
                 "Array exceeds allowed transfer size. Increase ak.client.maxTransferBytes to allow"
             )
-        #   Make a copy to avoid error #3757
-        a = a.copy()
+        if a.ndim > 1 and a.flags["F_CONTIGUOUS"] and not a.flags["OWNDATA"]:
+            # Make a copy if the array was shallow-transposed (to avoid error #3757)
+            a_ = a.copy()
+        else:
+            a_ = a
         # Pack binary array data into a bytes object with a command header
         # including the dtype and size. If the server has a different byteorder
         # than our numpy array we need to swap to match since the server expects
         # native endian bytes
-        aview = _array_memview(a)
+        aview = _array_memview(a_)
         rep_msg = generic_msg(
-            cmd=f"array<{a.dtype.name},{ndim}>",
-            args={"dtype": a.dtype.name, "shape": tuple(a.shape), "seg_string": False},
+            cmd=f"array<{a_.dtype.name},{ndim}>",
+            args={"dtype": a_.dtype.name, "shape": tuple(a_.shape), "seg_string": False},
             payload=aview,
             send_binary=True,
         )

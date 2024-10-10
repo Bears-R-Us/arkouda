@@ -6,8 +6,8 @@ import time
 import arkouda as ak
 
 
-def time_flatten(N_per_locale, trials):
-    print(">>> arkouda flatten")
+def time_split(N_per_locale, trials):
+    print(">>> arkouda split")
     cfg = ak.get_config()
     N = N_per_locale * cfg["numLocales"]
     print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
@@ -21,17 +21,17 @@ def time_flatten(N_per_locale, trials):
     regex_pattern_times = []
     for i in range(trials):
         start = time.time()
-        non_regex = thickrange.flatten("_")
+        non_regex = thickrange.split("_")
         end = time.time()
         non_regex_times.append(end - start)
 
         start = time.time()
-        regex_literal = thickrange.flatten("_", regex=True)
+        regex_literal = thickrange.split("_", regex=True)
         end = time.time()
         regex_literal_times.append(end - start)
 
         start = time.time()
-        regex_pattern = thickrange.flatten("_+", regex=True)
+        regex_pattern = thickrange.split("_+", regex=True)
         end = time.time()
         regex_pattern_times.append(end - start)
 
@@ -44,22 +44,22 @@ def time_flatten(N_per_locale, trials):
     assert (regex_literal == answer).all()
     assert (regex_pattern == answer).all()
 
-    print("non-regex flatten with literal delimiter Average time = {:.4f} sec".format(avg_non_regex))
-    print("regex flatten with literal delimiter Average time = {:.4f} sec".format(avg_regex_literal))
-    print("regex flatten with pattern delimiter Average time = {:.4f} sec".format(avg_regex_pattern))
+    print("non-regex split with literal delimiter Average time = {:.4f} sec".format(avg_non_regex))
+    print("regex split with literal delimiter Average time = {:.4f} sec".format(avg_regex_literal))
+    print("regex split with pattern delimiter Average time = {:.4f} sec".format(avg_regex_pattern))
 
     print(
-        "non-regex flatten with literal delimiter Average rate = {:.4f} GiB/sec".format(
+        "non-regex split with literal delimiter Average rate = {:.4f} GiB/sec".format(
             nbytes / 2**30 / avg_non_regex
         )
     )
     print(
-        "regex flatten with literal delimiter Average rate = {:.4f} GiB/sec".format(
+        "regex split with literal delimiter Average rate = {:.4f} GiB/sec".format(
             nbytes / 2**30 / avg_regex_literal
         )
     )
     print(
-        "regex flatten with pattern delimiter Average rate = {:.4f} GiB/sec".format(
+        "regex split with pattern delimiter Average rate = {:.4f} GiB/sec".format(
             nbytes / 2**30 / avg_regex_pattern
         )
     )
@@ -72,19 +72,19 @@ def check_correctness():
     thickrange = thirds[0].stick(thirds[1], delimiter="_").stick(thirds[2], delimiter="_")
 
     answer = ak.cast(ak.arange(N * 3), "str")
-    assert (thickrange.flatten("_") == answer).all()
-    assert (thickrange.flatten("_", regex=True) == answer).all()
-    assert (thickrange.flatten("_+", regex=True) == answer).all()
+    assert (thickrange.split("_") == answer).all()
+    assert (thickrange.split("_", regex=True) == answer).all()
+    assert (thickrange.split("_+", regex=True) == answer).all()
 
 
 def create_parser():
     parser = argparse.ArgumentParser(
-        description="Measure the performance of regex and non-regex flatten on Strings."
+        description="Measure the performance of regex and non-regex split on Strings."
     )
     parser.add_argument("hostname", help="Hostname of arkouda server")
     parser.add_argument("port", type=int, help="Port of arkouda server")
     parser.add_argument(
-        "-n", "--size", type=int, default=10**5, help="Problem size: Number of Strings to flatten"
+        "-n", "--size", type=int, default=10**5, help="Problem size: Number of Strings to split"
     )
     parser.add_argument(
         "-t", "--trials", type=int, default=1, help="Number of times to run the benchmark"
@@ -112,5 +112,5 @@ if __name__ == "__main__":
 
     print("array size = {:,}".format(args.size))
     print("number of trials = ", args.trials)
-    time_flatten(args.size, args.trials)
+    time_split(args.size, args.trials)
     sys.exit(0)

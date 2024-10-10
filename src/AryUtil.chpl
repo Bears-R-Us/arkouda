@@ -944,6 +944,7 @@ module AryUtil
     /*
       flatten a multi-dimensional array into a 1D array
     */
+    @arkouda.registerCommand
     proc flatten(const ref a: [?d] ?t): [] t throws
       where a.rank > 1
     {
@@ -1001,6 +1002,12 @@ module AryUtil
       }
 
       return flat;
+    }
+
+    proc flatten(const ref a: [?d] ?t): [] t throws
+      where a.rank == 1
+    {
+      return a;
     }
 
     // helper for computing an array element's index from its order

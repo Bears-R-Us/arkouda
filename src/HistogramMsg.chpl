@@ -99,9 +99,9 @@ module HistogramMsg
         var yGenEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(yName, st);
 
         // helper nested procedure
-        proc histogramHelper(type t) throws {
-            var x = toSymEntry(xGenEnt,t);
-            var y = toSymEntry(yGenEnt,t);
+        proc histogramHelper(type t1, type t2) throws {
+            var x = toSymEntry(xGenEnt,t1);
+            var y = toSymEntry(yGenEnt,t2);            
             var xMin = min reduce x.a;
             var xMax = max reduce x.a;
             var yMin = min reduce y.a;
@@ -132,9 +132,15 @@ module HistogramMsg
             }
         }
         select (xGenEnt.dtype, yGenEnt.dtype) {
-            when (DType.Int64, DType.Int64)   {histogramHelper(int);}
-            when (DType.UInt64, DType.UInt64)  {histogramHelper(uint);}
-            when (DType.Float64, DType.Float64) {histogramHelper(real);}
+            when (DType.Int64, DType.Int64) {histogramHelper(int, int);}
+            when (DType.Int64, DType.UInt64) {histogramHelper(int, uint);}
+            when (DType.Int64, DType.Float64) {histogramHelper(int, real);}
+            when (DType.UInt64, DType.Int64) {histogramHelper(uint, int);}
+            when (DType.UInt64, DType.UInt64) {histogramHelper(uint, uint);}
+            when (DType.UInt64, DType.Float64) {histogramHelper(uint, real);}
+            when (DType.Float64, DType.Int64) {histogramHelper(real, int);}
+            when (DType.Float64, DType.UInt64) {histogramHelper(real, uint);}
+            when (DType.Float64, DType.Float64) {histogramHelper(real, real);}
             otherwise {
                 var errorMsg = notImplementedError(pn,"("+dtype2str(xGenEnt.dtype)+","+dtype2str(yGenEnt.dtype)+")");
                 hgmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);

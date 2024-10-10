@@ -1,4 +1,3 @@
-import subprocess
 from math import isclose, sqrt
 
 import numpy as np
@@ -310,14 +309,14 @@ class TestNumeric:
 
     #   log and exp tests were identical, and so have been combined.
 
-    host = subprocess.check_output("hostname").decode("utf-8").strip()
-
-    @pytest.mark.skipif(host == "horizon", reason="Fails on horizon")
+    @pytest.mark.skipif(pytest.host == "horizon", reason="Fails on horizon")
     @pytest.mark.skip_if_max_rank_less_than(2)
-    def test_histogram_multidim(self):
+    @pytest.mark.parametrize("num_type1", NO_BOOL)
+    @pytest.mark.parametrize("num_type2", NO_BOOL)
+    def test_histogram_multidim(self, num_type1, num_type2):
         # test 2d histogram
         seed = 1
-        ak_x, ak_y = ak.randint(1, 100, 1000, seed=seed), ak.randint(1, 100, 1000, seed=seed + 1)
+        ak_x, ak_y = ak.randint(1, 100, 1000, seed=seed, dtype=num_type1), ak.randint(1, 100, 1000, seed=seed + 1, dtype=num_type2)
         np_x, np_y = ak_x.to_ndarray(), ak_y.to_ndarray()
         np_hist, np_x_edges, np_y_edges = np.histogram2d(np_x, np_y)
         ak_hist, ak_x_edges, ak_y_edges = ak.histogram2d(ak_x, ak_y)
@@ -431,6 +430,7 @@ class TestNumeric:
             ak.arctan2(pda_num, pda_denom, where=True).to_ndarray(),
             equal_nan=True,
         )
+
         assert np.allclose(
             np.arctan2(na_num[0], na_denom, where=True),
             ak.arctan2(pda_num[0], pda_denom, where=True).to_ndarray(),

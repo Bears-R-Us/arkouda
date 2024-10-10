@@ -20,8 +20,6 @@ module SparseMatrixMsg {
     private config const logChannel = ServerConfig.logChannel;
     const sparseLogger = new Logger(logLevel, logChannel);
 
-    param distributed = true;
-
     proc randomSparseMatrixMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         var repMsg: string; // response message with the details of the new arr
 
@@ -34,14 +32,14 @@ module SparseMatrixMsg {
 
         select l {
             when "CSR" {
-                var aV = randSparseMatrix(size, density, layout.CSR, distributed, int); // Hardcode int for now and false for distributed
+                var aV = randSparseMatrix(size, density, layout.CSR, int);
                 st.addEntry(vName, createSparseSymEntry(aV, size, layout.CSR, int));
                 repMsg = "created " + st.attrib(vName);
                 sparseLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
                 return new MsgTuple(repMsg, MsgType.NORMAL);
             }
             when "CSC" {
-                var aV = randSparseMatrix(size, density, layout.CSC, distributed, int); // Hardcode int for now and false for distributed
+                var aV = randSparseMatrix(size, density, layout.CSC, int);
                 st.addEntry(vName, createSparseSymEntry(aV, size, layout.CSC, int));
                 repMsg = "created " + st.attrib(vName);
                 sparseLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
@@ -127,11 +125,11 @@ module SparseMatrixMsg {
         if gEnt.layoutStr=="CSC" {
             // Hardcode for int right now
             var sparrayEntry = gEnt.toSparseSymEntry(int, dimensions=2, layout.CSC);
-            fillSparseMatrix(sparrayEntry.a, vals.a);
+            fillSparseMatrix(sparrayEntry.a, vals.a, layout.CSC);
         } else if gEnt.layoutStr=="CSR" {
             // Hardcode for int right now
             var sparrayEntry = gEnt.toSparseSymEntry(int, dimensions=2, layout.CSR);
-            fillSparseMatrix(sparrayEntry.a, vals.a);
+            fillSparseMatrix(sparrayEntry.a, vals.a, layout.CSR);
         } else {
             throw getErrorWithContext(
                                     msg="unsupported layout for sparse matrix: %s".format(gEnt.layoutStr),
