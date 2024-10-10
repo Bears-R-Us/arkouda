@@ -533,8 +533,7 @@ class pdarray:
             except ValueError:
                 raise ValueError(f"shape mismatch {self.shape} {other.shape}")
             repMsg = generic_msg(
-                cmd=f"binopvv<{self.dtype},{other.dtype},{x1.ndim}>",
-                args={"op": op, "a": x1, "b": x2}
+                cmd=f"binopvv<{self.dtype},{other.dtype},{x1.ndim}>", args={"op": op, "a": x1, "b": x2}
             )
             if tmp_x1:
                 del x1
@@ -791,7 +790,7 @@ class pdarray:
                 raise ValueError(f"shape mismatch {self.shape} {other.shape}")
             generic_msg(
                 cmd=f"opeqvv<{self.dtype},{other.dtype},{self.ndim}>",
-                args={"op": op, "a": self, "b": other}
+                args={"op": op, "a": self, "b": other},
             )
             return self
         # pdarray binop scalar
@@ -1769,6 +1768,21 @@ class pdarray:
             ),
         )
 
+    def flatten(self):
+        """
+        Return a copy of the array collapsed into one dimension.
+
+        Returns
+        -------
+        A copy of the input array, flattened to one dimension.
+        """
+        return create_pdarray(
+            generic_msg(
+                cmd=f"flatten<{self.dtype.name},{self.ndim}>",
+                args={"a": self},
+            )
+        )
+
     def to_ndarray(self) -> np.ndarray:
         """
         Convert the array to a np.ndarray, transferring array data from the
@@ -2706,8 +2720,17 @@ def is_sorted(pda: pdarray) -> np.bool_:
     )
 
 
+def _get_axis_pdarray(axis: Optional[Union[int, Tuple[int, ...]]] = None):
+    from arkouda import array as ak_array
+
+    axis_list = []
+    if axis is not None:
+        axis_list = list(axis) if isinstance(axis, tuple) else [axis]
+
+    return ak_array(axis_list, dtype="int64")
+
 @typechecked
-def sum(pda: pdarray) -> numeric_and_bool_scalars:
+def sum(pda: pdarray, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> Union[numeric_and_bool_scalars, pdarray]:
     """
     Return the sum of all elements in the array.
 
@@ -2715,6 +2738,9 @@ def sum(pda: pdarray) -> numeric_and_bool_scalars:
     ----------
     pda : pdarray
         Values for which to calculate the sum
+    axis : int or Tuple[int, ...], optional
+        The axis or axes along which to compute the sum. If None, the sum of the entire array is
+        computed (returning a scalar-array).
 
     Returns
     -------
@@ -2728,11 +2754,15 @@ def sum(pda: pdarray) -> numeric_and_bool_scalars:
     RuntimeError
         Raised if there's a server-side error thrown
     """
+    axis_arry = _get_axis_pdarray(axis)
     repMsg = generic_msg(
-        cmd=f"reduce{pda.ndim}D", args={"op": "sum", "x": pda, "nAxes": 0, "axis": [], "skipNan": False}
+        cmd=f"sum<{pda.dtype.name},{pda.ndim},{axis_arry.ndim}>",
+        args={"x": pda, "axis": axis_arry, "skipNan": False},
     )
-    return parse_single_value(cast(str, repMsg))
-
+    if axis is None or len(axis_arry) == 0 or pda.ndim == 1:
+        return create_pdarray(cast(str, repMsg)).flatten()[0]
+    else:
+        return create_pdarray(cast(str, repMsg))
 
 @typechecked
 def dot(
@@ -2786,7 +2816,7 @@ def dot(
 
 
 @typechecked
-def prod(pda: pdarray) -> np.float64:
+def prod(pda: pdarray, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> Union[np.float64, pdarray]:
     """
     Return the product of all elements in the array. Return value is
     always a np.float64 or np.int64
@@ -2795,6 +2825,9 @@ def prod(pda: pdarray) -> np.float64:
     ----------
     pda : pdarray
         Values for which to calculate the product
+    axis : int or Tuple[int, ...], optional
+        The axis or axes along which to compute the sum. If None, the sum of the entire array is
+        computed (returning a scalar-array).
 
     Returns
     -------
@@ -2808,13 +2841,17 @@ def prod(pda: pdarray) -> np.float64:
     RuntimeError
         Raised if there's a server-side error thrown
     """
+    axis_arry = _get_axis_pdarray(axis)
     repMsg = generic_msg(
-        cmd=f"reduce{pda.ndim}D", args={"op": "prod", "x": pda, "nAxes": 0, "axis": [], "skipNan": False}
+        cmd=f"prod<{pda.dtype.name},{pda.ndim},{axis_arry.ndim}>",
+        args={"x": pda, "axis": axis_arry, "skipNan": False},
     )
-    return np.float64(parse_single_value(cast(str, repMsg)))
+    if axis is None or len(axis_arry) == 0 or pda.ndim == 1:
+        return create_pdarray(cast(str, repMsg)).flatten()[0]
+    else:
+        return create_pdarray(cast(str, repMsg))
 
-
-def min(pda: pdarray) -> numpy_scalars:
+def min(pda: pdarray, axis: Optional[Union[int, Tuple[int, ...]]] = None)->  Union[numpy_scalars, pdarray]:
     """
     Return the minimum value of the array.
 
@@ -2822,6 +2859,9 @@ def min(pda: pdarray) -> numpy_scalars:
     ----------
     pda : pdarray
         Values for which to calculate the min
+    axis : int or Tuple[int, ...], optional
+        The axis or axes along which to compute the sum. If None, the sum of the entire array is
+        computed (returning a scalar-array).
 
     Returns
     -------
@@ -2835,14 +2875,19 @@ def min(pda: pdarray) -> numpy_scalars:
     RuntimeError
         Raised if there's a server-side error thrown
     """
+    axis_arry = _get_axis_pdarray(axis)
     repMsg = generic_msg(
-        cmd=f"reduce{pda.ndim}D", args={"op": "min", "x": pda, "nAxes": 0, "axis": [], "skipNan": False}
+        cmd=f"min<{pda.dtype.name},{pda.ndim},{axis_arry.ndim}>",
+        args={"x": pda, "axis": axis_arry, "skipNan": False},
     )
-    return parse_single_value(cast(str, repMsg))
+    if axis is None or len(axis_arry) == 0 or pda.ndim == 1:
+        return create_pdarray(cast(str, repMsg)).flatten()[0]
+    else:
+        return create_pdarray(cast(str, repMsg))
 
 
 @typechecked
-def max(pda: pdarray) -> numpy_scalars:
+def max(pda: pdarray, axis: Optional[Union[int, Tuple[int, ...]]] = None)->  Union[numpy_scalars, pdarray]:
     """
     Return the maximum value of the array.
 
@@ -2850,6 +2895,9 @@ def max(pda: pdarray) -> numpy_scalars:
     ----------
     pda : pdarray
         Values for which to calculate the max
+    axis : int or Tuple[int, ...], optional
+        The axis or axes along which to compute the sum. If None, the sum of the entire array is
+        computed (returning a scalar-array).
 
     Returns
     -------
@@ -2863,10 +2911,15 @@ def max(pda: pdarray) -> numpy_scalars:
     RuntimeError
         Raised if there's a server-side error thrown
     """
+    axis_arry = _get_axis_pdarray(axis)
     repMsg = generic_msg(
-        cmd=f"reduce{pda.ndim}D", args={"op": "max", "x": pda, "nAxes": 0, "axis": [], "skipNan": False}
+        cmd=f"max<{pda.dtype.name},{pda.ndim},{axis_arry.ndim}>",
+        args={"x": pda, "axis": axis_arry, "skipNan": False},
     )
-    return parse_single_value(cast(str, repMsg))
+    if axis is None or len(axis_arry) == 0 or pda.ndim == 1:
+        return create_pdarray(cast(str, repMsg)).flatten()[0]
+    else:
+        return create_pdarray(cast(str, repMsg))
 
 
 @typechecked

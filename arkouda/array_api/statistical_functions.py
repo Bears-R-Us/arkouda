@@ -49,30 +49,13 @@ def max(
     if x.dtype not in _real_numeric_dtypes:
         raise TypeError("Only real numeric dtypes are allowed in max")
 
-    axis_list = []
-    if axis is not None:
-        axis_list = list(axis) if isinstance(axis, tuple) else [axis]
+    from arkouda import max as ak_max
 
-    resp = generic_msg(
-        cmd=f"reduce{x.ndim}D",
-        args={
-            "x": x._array,
-            "op": "max",
-            "nAxes": len(axis_list),
-            "axis": axis_list,
-            "skipNan": True,
-        },
-    )
-
-    if axis is None or x.ndim == 1:
-        return Array._new(scalar_array(parse_single_value(resp)))
+    arr = Array._new(ak_max(x._array, axis=axis))
+    if keepdims or axis is None or x.ndim == 1:
+        return arr
     else:
-        arr = Array._new(create_pdarray(resp))
-
-        if keepdims:
-            return arr
-        else:
-            return squeeze(arr, axis)
+        return squeeze(arr, axis)
 
 
 # this is a temporary fix to get mean working with XArray
@@ -154,30 +137,13 @@ def min(
     if x.dtype not in _real_numeric_dtypes:
         raise TypeError("Only real numeric dtypes are allowed in min")
 
-    axis_list = []
-    if axis is not None:
-        axis_list = list(axis) if isinstance(axis, tuple) else [axis]
+    from arkouda import min as ak_min
 
-    resp = generic_msg(
-        cmd=f"reduce{x.ndim}D",
-        args={
-            "x": x._array,
-            "op": "min",
-            "nAxes": len(axis_list),
-            "axis": axis_list,
-            "skipNan": True,
-        },
-    )
-
-    if axis is None or x.ndim == 1:
-        return Array._new(scalar_array(parse_single_value(resp)))
+    arr = Array._new(ak_min(x._array, axis=axis))
+    if keepdims or axis is None or x.ndim == 1:
+        return arr
     else:
-        arr = Array._new(create_pdarray(resp))
-
-        if keepdims:
-            return arr
-        else:
-            return squeeze(arr, axis)
+        return squeeze(arr, axis)
 
 
 def prod(
@@ -206,10 +172,6 @@ def prod(
     if x.dtype not in _numeric_dtypes:
         raise TypeError("Only numeric dtypes are allowed in prod")
 
-    axis_list = []
-    if axis is not None:
-        axis_list = list(axis) if isinstance(axis, tuple) else [axis]
-
     # cast to the appropriate dtype if necessary
     cast_to = _prod_sum_dtype(x.dtype) if dtype is None else dtype
     if cast_to != x.dtype:
@@ -217,26 +179,13 @@ def prod(
     else:
         x_op = x._array
 
-    resp = generic_msg(
-        cmd=f"reduce{x.ndim}D",
-        args={
-            "x": x_op,
-            "op": "prod",
-            "nAxes": len(axis_list),
-            "axis": axis_list,
-            "skipNan": True,
-        },
-    )
+    from arkouda import prod as ak_prod
 
-    if axis is None or x.ndim == 1:
-        return Array._new(scalar_array(parse_single_value(resp)))
+    arr = Array._new(ak_prod(x_op, axis=axis))
+    if keepdims or axis is None or x.ndim == 1:
+        return arr
     else:
-        arr = Array._new(create_pdarray(resp))
-
-        if keepdims:
-            return arr
-        else:
-            return squeeze(arr, axis)
+        return squeeze(arr, axis)
 
 
 # Not working with XArray yet, pending a fix for:
@@ -320,10 +269,6 @@ def sum(
     if x.dtype not in _numeric_dtypes:
         raise TypeError("Only numeric dtypes are allowed in sum")
 
-    axis_list = []
-    if axis is not None:
-        axis_list = list(axis) if isinstance(axis, tuple) else [axis]
-
     # cast to the appropriate dtype if necessary
     cast_to = _prod_sum_dtype(x.dtype) if dtype is None else dtype
     if cast_to != x.dtype:
@@ -331,26 +276,13 @@ def sum(
     else:
         x_op = x._array
 
-    resp = generic_msg(
-        cmd=f"reduce{x.ndim}D",
-        args={
-            "x": x_op,
-            "op": "sum",
-            "nAxes": len(axis_list),
-            "axis": axis_list,
-            "skipNan": True,
-        },
-    )
+    from arkouda import sum as ak_sum
 
-    if axis is None or x.ndim == 1:
-        return Array._new(scalar_array(parse_single_value(resp)))
+    arr = Array._new(ak_sum(x_op, axis=axis))
+    if keepdims or axis is None or x.ndim == 1:
+        return arr
     else:
-        arr = Array._new(create_pdarray(resp))
-
-        if keepdims:
-            return arr
-        else:
-            return squeeze(arr, axis)
+        return squeeze(arr, axis)
 
 
 # Not working with XArray yet, pending a fix for:
