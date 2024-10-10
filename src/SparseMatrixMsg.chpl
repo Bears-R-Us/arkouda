@@ -86,6 +86,6 @@ module SparseMatrixMsg {
             do throw new Error("fillSparseMatrixMsg: type mismatch between matrix and vals");
 
     proc fillSparseMatrixMsg(matrix: borrowed SparseSymEntry(?), vals: [?d] ?t) throws
-        where d.rank != 1
+        where d.rank != 1 && t == matrix.etype
             do throw new Error("fillSparseMatrixMsg: vals must be rank 1");
 }
