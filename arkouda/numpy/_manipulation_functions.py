@@ -81,8 +81,8 @@ def flip(
 
     elif isinstance(x, Strings):
         rep_msg = generic_msg(
-                cmd="flipString", args={"objType": x.objType, "obj": x.entry,  "size": x.size}
-            )
+            cmd="flipString", args={"objType": x.objType, "obj": x.entry, "size": x.size}
+        )
         return Strings.from_return_msg(cast(str, rep_msg))
     else:
         raise TypeError("flip only accepts type pdarray, Strings, or Categorical.")
