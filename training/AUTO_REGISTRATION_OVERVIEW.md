@@ -28,6 +28,8 @@ The following sections will go over both annotations in more detail, explaining 
     * [requirements and notes](#rc-requirements)
 * [The `instantiateAndRegister` annotation](#iar-annotation)
     * [parameter-classes and `registration-config.json`](#iar-param-classes)
+      * [Note about using non-SymEntry classes w/ `registerCommand`](#non-sym-entry-classes)
+      * [note about enum formals](#enum-formals)
     * [opting out of some instantiations](#iar-opt-out)
 * [Build System Notes](#build-system)
     * [`make register-commands`](#bs-make)
@@ -158,23 +160,89 @@ result = create_pdarray(
 
 Other parameter classes can also be added to the configuration file and used in a similar manner (both to instantiate array-related arguments, or for a completely different set of generic arguments). Note that `"array"` is a special parameter-class because the `registerCommand` annotation uses it to instantiate array arguments.
 
-**Note about `param` Enum formals:**
+<a id=non-sym-entry-classes></a>
+#### Note about using non-SymEntry classes w/ `registerCommand`:
+
+In the Arkouda server, pdarray's are stored in the symbol-table using the `SymEntry` class. Because the vast majority of Arkouda commands operate on pdarrays, those annotated with `@arkouda.registerCommand` are given special syntactic treatment. The build system knows how to convert back and forth between a standard Chapel Array, and a `SymEntry`. In other words, the following signature:
+
+```chapel
+@arkouda.registerCommand
+proc foo(ref x: [?d] ?t): [d] t { ... }
+```
+
+is essentially shorthand, so that command-implementors don't have to write a signature that involves the `SymEntry` class directly:
+
+```chapel
+@arkouda.registerCommand
+proc foo(x: borrowed SymEntry(?)): SymEntry(x.etype, x.dimensions) { ... }
+```
+
+For non-SymEntry symbols (i.e., any other class that inherits from the base symbol-table class type: `AbstractSymEntry`), such a shorthand does not exist. For example, assume we have the following generic symbol-table class type:
+
+```chapel
+class MySym: AbstractSymEntry {
+  type t;
+  param n: int;
+  ...
+}
+```
+
+To create a command that accepts a generic `MySym`, the signature should look like this:
+
+```chapel
+@arkouda.registerCommand
+proc bar(ms: borrowed MySym(?)): int { ... }
+```
+
+And a corresponding parameter class should be added to `registration-config.json`. It's name should match the name of the class type, and it should have one field for each generic field in the class:
+
+```json
+"parameter-classes": {
+  ...
+  "MySym": {
+    "t": ["int", "bigint"],
+    "n": [3, 4]
+  }
+}
+```
+
+At build-time, the generic fields in `bar`'s `MySym` argument will be instantiated for all permutations of the values in the configuration file (just as `SymEntry` is instantiated for the values in the `"array"` parameter-class). Each instantiation creates a unique command. In this example, those would be:
+
+* `bar<Int64,3>`
+* `bar<Int64,4>`
+* `bar<Bigint,3>`
+* `bar<Bigint,4>`
+
+
+**Warning:** partially instantiated formal types (e.g., `proc bar(ms: borrowed MySym(int, ?)))`) are not yet supported by `registerCommand`. To achieve such behavior, `instantiateAndRegister` should be used instead:
+
+```chapel
+proc bar(md: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param MySym_n: int): MsgTuple throws {
+  var ms = st[msgArgs['ms']]: borrowed MySym(int, MySym_n);
+  ...
+}
+```
+
+<a id="enum-formals"></a>
+#### Note about `param` Enum formals:
 
 In order to make a (group of) procedures generic over an enum, it's values can be specified in
 the configuration file in the following format:
 
 ```json
-{
+"parameter-classes": {
+  ...
   "group": {
     "field": {
       "__enum__": "ModuleName.EnumName",
       "__variants__": ["V1", "V2", "V3"]
     }
   }
+  ...
 }
 ```
 
-The `__enum__` field is used to add an import statement to `Commands.chpl`, so the module name where the enum is defined must be provided.
+The `__enum__` sub-field is used to add an import statement to `Commands.chpl`, so the module name where the enum is defined must be included.
 
 The `__variants__` field specifies which variants of the enum the procedure should be instantiated for. For example, procedures with arguments in the form:
 
@@ -182,7 +250,7 @@ The `__variants__` field specifies which variants of the enum the procedure shou
 param group_field[_...]: EnumName
 ```
 
-will be instantiated with `EnumName.V1`, `EnumName.V2`, and `EnumName.V3`.
+will be instantiated by `instantiateAndRegister` with the following values: `EnumName.V1`, `EnumName.V2`, and `EnumName.V3`.
 
 <a id="iar-opt-out"></a>
 ### opting out of some instantiations
