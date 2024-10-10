@@ -36,11 +36,11 @@ chapel_scalar_types = {
 # type and variable names from arkouda infrastructure that could conceivable be changed in the future:
 ARGS_FORMAL_INTENT = "<default-intent>"
 ARGS_FORMAL_NAME = "msgArgs"
-ARGS_FORMAL_TYPE = "borrowed MessageArgs"
+ARGS_FORMAL_TYPE = "MessageArgs"
 
 SYMTAB_FORMAL_INTENT = "<default-intent>"
 SYMTAB_FORMAL_NAME = "st"
-SYMTAB_FORMAL_TYPE = "borrowed SymTab"
+SYMTAB_FORMAL_TYPE = "SymTab"
 
 ARRAY_ENTRY_CLASS_NAME = "SymEntry"
 
@@ -233,9 +233,15 @@ def get_formals(fn, require_type_annotations):
                                     formalKind.LIST, name, sk, info=list_type
                                 )
                         elif call_name == "borrowed":
-                            ten = call_name + " " + list(te.actuals())[0].name()
+                            actuals = list(te.actuals())
+                            if isinstance(actuals[0], chapel.FnCall):
+                                # generic class formal (e.g., 'borrowed SparseSymEntry(?)')
+                                class_name = actuals[0].called_expression().name()
+                            else:
+                                # concrete class formal (e.g., 'borrowed MySymEntry')
+                                class_name = list(te.actuals())[0].name()
                             return FormalTypeSpec(
-                                formalKind.BORROWED_CLASS, name, sk, ten
+                                formalKind.BORROWED_CLASS, name, sk, class_name
                             )
                         else:
                             error_message(
@@ -498,9 +504,11 @@ def valid_generic_command_signature(fn, con_formals):
             or con_formals[1].name != ARGS_FORMAL_NAME
             or con_formals[1].storage_kind != ARGS_FORMAL_INTENT
             or con_formals[1].type_str != ARGS_FORMAL_TYPE
+            or con_formals[1].kind != formalKind.BORROWED_CLASS
             or con_formals[2].name != SYMTAB_FORMAL_NAME
             or con_formals[2].storage_kind != SYMTAB_FORMAL_INTENT
             or con_formals[2].type_str != SYMTAB_FORMAL_TYPE
+            or con_formals[2].kind != formalKind.BORROWED_CLASS
         ):
             return False
     else:
@@ -582,19 +590,63 @@ def unpack_array_arg(arg_name, array_count, finfo, domain_queries, dtype_queries
     )
 
 
-def unpack_user_symbol(arg_name, symbol_class):
+def unpack_generic_symbol_arg(arg_name, symbol_class_name, symbol_count, symbol_param_class):
     """
-    Generate the code to unpack a user-defined symbol from the symbol table.
+    Generate the code to unpack a non-array symbol-table entry class (a class that
+    inherits from 'AbstractSymEntry').
 
-    - symbol_class should inherit from 'AbstractSymEntry'
-    - generic user-defined symbol types are not yet supported
+    Note: the 'SymEntry' class is handled in a special manner by 'unpack_array_arg'
 
     Example:
     ```
-    var x = st[msgArgs['x']]: MySymbolType;
+    var x = st[msgArgs['x']]: borrowed MySymbolType(<generic parameters>);
     ```
     """
-    return f"\tvar {arg_name} = {SYMTAB_FORMAL_NAME}[{ARGS_FORMAL_NAME}['{arg_name}']]: {symbol_class};"
+    generic_args = []
+    generic_arg_strings = []
+
+    for k in symbol_param_class.keys():
+        generic_arg_name = f"{symbol_class_name}_{k}_{symbol_count}"
+        generic_arg_strings.append(f"{k}={generic_arg_name}")
+
+        # TODO: analyze the type itself in the Arkouda source code to ensure that the
+        # values in the configuration file are valid for the generic fields in the
+        # symbol class's type-constructor call. Also use that information to more accurately
+        # acquire the FormalTypeSpec information here
+        if isinstance(symbol_param_class[k], list):
+            if symbol_param_class[k][0] in chapel_scalar_types.keys():
+                storage_kind = "type"
+                type_str = None
+            else:
+                storage_kind = "param"
+                type_str = (
+                    "int"  # TODO: also support strings and other param-able types here
+                )
+        elif (
+            isinstance(symbol_param_class[k], dict)
+            and "__enum__" in symbol_param_class[k].keys()
+        ):
+            storage_kind = "param"
+            type_str = symbol_param_class[k]["__enum__"].split(".")[-1]
+        else:
+            raise ValueError(
+                f"invalid parameter value type ({type(symbol_param_class[k])}) in symbol class '{symbol_class_name}'"
+            )
+
+        generic_args.append(
+            FormalTypeSpec(
+                formalKind.SCALAR,
+                generic_arg_name,
+                storage_kind=storage_kind,
+                type_str=type_str,
+            )
+        )
+
+    return (
+        f"\tvar {arg_name} = {SYMTAB_FORMAL_NAME}[{ARGS_FORMAL_NAME}['{arg_name}']]: "
+        + f"borrowed {symbol_class_name}({','.join(generic_arg_strings)});",
+        generic_args,
+    )
 
 
 def unpack_scalar_arg(arg_name, arg_type):
@@ -683,7 +735,7 @@ def gen_signature(user_proc_name, generic_args=None):
     return (proc, name)
 
 
-def gen_arg_unpacking(formals):
+def gen_arg_unpacking(formals, config):
     """
     Generate argument unpacking code for a message handler procedure
 
@@ -693,6 +745,9 @@ def gen_arg_unpacking(formals):
     generic_args = []
     array_arg_counter = 0
     scalar_arg_counter = 0
+
+    # counters for generic arguments used in non 'SymEntry' symbol classes
+    sym_entry_arg_counters = {}
 
     array_domain_queries = {}
     array_dtype_queries = {}
@@ -758,6 +813,27 @@ def gen_arg_unpacking(formals):
                 ttype = ttype.value
 
             unpack_lines.append(unpack_tuple_arg(formal_spec.name, tsize, ttype))
+        elif formal_spec.kind == formalKind.BORROWED_CLASS:
+            if formal_spec.type_str in config["parameter_classes"].keys():
+                if sym_entry_arg_counters.get(formal_spec.type_str) is None:
+                    sym_entry_arg_counters[formal_spec.type_str] = 0
+                    count = 0
+                else:
+                    count = sym_entry_arg_counters[formal_spec.type_str]
+                    sym_entry_arg_counters[formal_spec.type_str] += 1
+
+                code, gen_args = unpack_generic_symbol_arg(
+                    formal_spec.name,
+                    formal_spec.type_str,
+                    count,
+                    config["parameter_classes"][formal_spec.type_str],
+                )
+                unpack_lines.append(code)
+                generic_args += gen_args
+            else:
+                raise ValueError(
+                    f"borrowed class type {formal_spec.type_str} does not have a corresponding parameter class in the configuration file"
+                )
         else:
             # a scalar formal with a generic type
             if formal_spec.type_str is not None:
@@ -835,7 +911,7 @@ def gen_response(result=None, is_symbol=False):
         return f"\treturn {RESPONSE_TYPE_NAME}.success();"
 
 
-def gen_command_proc(name, return_type, formals, mod_name):
+def gen_command_proc(name, return_type, formals, mod_name, config):
     """
     Generate a chapel command procedure that calls a user-defined procedure
 
@@ -860,7 +936,7 @@ def gen_command_proc(name, return_type, formals, mod_name):
 
     """
 
-    arg_unpack, command_formals = gen_arg_unpacking(formals)
+    arg_unpack, command_formals = gen_arg_unpacking(formals, config)
     is_generic_command = len(command_formals) > 0
     signature, cmd_name = gen_signature(name, command_formals)
     fn_call, result_name = gen_user_function_call(
@@ -1014,7 +1090,7 @@ def register_commands(config, source_files):
                 continue
 
             (cmd_proc, cmd_name, is_generic_cmd, cmd_gen_formals) = gen_command_proc(
-                name, fn.return_type(), con_formals, mod_name
+                name, fn.return_type(), con_formals, mod_name, config
             )
 
             file_stamps.append(cmd_proc)

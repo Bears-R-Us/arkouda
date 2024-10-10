@@ -22,21 +22,21 @@ module SparseMatrixMsg {
 
     @arkouda.instantiateAndRegister("random_sparse_matrix")
     proc randomSparseMatrix(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
-                            type sparse_dtype, param sparse_layout: Layout
+                            type SparseSymEntry_etype, param SparseSymEntry_matLayout: Layout
     ): MsgTuple throws {
         const shape = msgArgs["shape"].toScalarTuple(int, 2), // Hardcode 2D for now
               density = msgArgs["density"].toScalar(real);
 
-        const aV = randSparseMatrix(shape, density, sparse_layout, sparse_dtype);
-        return st.insert(new shared SparseSymEntry(aV, sparse_layout));
+        const aV = randSparseMatrix(shape, density, SparseSymEntry_matLayout, SparseSymEntry_etype);
+        return st.insert(new shared SparseSymEntry(aV, SparseSymEntry_matLayout));
     }
 
     @arkouda.instantiateAndRegister("sparse_matrix_matrix_mult")
     proc sparseMatrixMatrixMultMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
-                                   type sparse_dtype
+                                   type SparseSymEntry_etype
     ): MsgTuple throws {
-        const e1 = st[msgArgs["arg1"]]: borrowed SparseSymEntry(sparse_dtype, 2, Layout.CSC),
-              e2 = st[msgArgs["arg2"]]: borrowed SparseSymEntry(sparse_dtype, 2, Layout.CSR);
+        const e1 = st[msgArgs["arg1"]]: borrowed SparseSymEntry(SparseSymEntry_etype, 2, Layout.CSC),
+              e2 = st[msgArgs["arg2"]]: borrowed SparseSymEntry(SparseSymEntry_etype, 2, Layout.CSR);
 
         const aV = sparseMatMatMult(e1.a, e2.a);
         return st.insert(new shared SparseSymEntry(aV, Layout.CSR));
@@ -44,16 +44,16 @@ module SparseMatrixMsg {
 
     @arkouda.instantiateAndRegister("sparse_to_pdarrays")
     proc sparseMatrixtoPdarray(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
-                               type sparse_dtype, param sparse_layout: Layout
+                               type SparseSymEntry_etype, param SparseSymEntry_matLayout: Layout
     ): MsgTuple throws {
-        const e = st[msgArgs["matrix"]]: borrowed SparseSymEntry(sparse_dtype, 2, sparse_layout);
+        const e = st[msgArgs["matrix"]]: borrowed SparseSymEntry(SparseSymEntry_etype, 2, SparseSymEntry_matLayout);
 
         const size = e.nnz;
         var rows = makeDistArray(size, int),
             cols = makeDistArray(size, int),
-            vals = makeDistArray(size, sparse_dtype);
+            vals = makeDistArray(size, SparseSymEntry_etype);
 
-        sparseMatToPdarray(e.a, rows, cols, vals, sparse_layout);
+        sparseMatToPdarray(e.a, rows, cols, vals, SparseSymEntry_matLayout);
 
         var responses: [0..2] MsgTuple;
         responses[0] = st.insert(new shared SymEntry(rows));
@@ -63,17 +63,29 @@ module SparseMatrixMsg {
         return MsgTuple.fromResponses(responses);
     }
 
-    @arkouda.instantiateAndRegister("fill_sparse_vals")
-    proc fillSparseMatrixMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
-                             type sparse_dtype, param sparse_layout: Layout
-    ): MsgTuple throws {
-        const e = st[msgArgs["matrix"]]: borrowed SparseSymEntry(sparse_dtype, 2, sparse_layout),
-              vals = st[msgArgs["vals"]]: borrowed SymEntry(sparse_dtype, 1);
+    // @arkouda.instantiateAndRegister("fill_sparse_vals")
+    // proc fillSparseMatrixMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+    //                          type SparseSymEntry_etype, param SparseSymEntry_matLayout: Layout
+    // ): MsgTuple throws {
+    //     const e = st[msgArgs["matrix"]]: borrowed SparseSymEntry(SparseSymEntry_etype, 2, SparseSymEntry_matLayout),
+    //           vals = st[msgArgs["vals"]]: borrowed SymEntry(SparseSymEntry_etype, 1);
 
-        fillSparseMatrix(e.a, vals.a, sparse_layout);
+    //     fillSparseMatrix(e.a, vals.a, SparseSymEntry_matLayout);
 
-        sparseLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Filled sparse Array with values");
-        return MsgTuple.success();
-    }
+    //     sparseLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Filled sparse Array with values");
+    //     return MsgTuple.success();
+    // }
 
+    @arkouda.registerCommand("fill_sparse_vals")
+    proc fillSparseMatrixMsg(matrix: borrowed SparseSymEntry(?), vals: [?d] ?t /* matrix.etype */) throws
+        where t == matrix.etype && d.rank == 1
+            do fillSparseMatrix(matrix.a, vals, matrix.matLayout);
+
+    proc fillSparseMatrixMsg(matrix: borrowed SparseSymEntry(?), vals: [?d] ?t) throws
+        where t != matrix.etype
+            do throw new Error("fillSparseMatrixMsg: type mismatch between matrix and vals");
+
+    proc fillSparseMatrixMsg(matrix: borrowed SparseSymEntry(?), vals: [?d] ?t) throws
+        where d.rank != 1
+            do throw new Error("fillSparseMatrixMsg: vals must be rank 1");
 }

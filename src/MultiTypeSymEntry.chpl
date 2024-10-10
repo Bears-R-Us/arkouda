@@ -606,7 +606,7 @@ module MultiTypeSymEntry
         number of dimensions, to be passed back to the `GenSparseSymEntry` so that
         we are able to make it visible to the Python client
         */
-        param dimensions: int;
+        param dimensions: int; // TODO: should we only support 2D sparse arrays and remove this field?
 
         /*
         the actual shape of the array, this has to live here, since GenSparseSymEntry

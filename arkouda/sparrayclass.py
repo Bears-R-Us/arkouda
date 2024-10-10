@@ -131,8 +131,14 @@ class sparray:
     """"""
 
     def fill_vals(self, a: pdarray):
+        if self.dtype != a.dtype:
+            raise ValueError("sparray and pdarray must have the same dtype for fill_vals")
+
+        if a.ndim != 1:
+            raise ValueError("pdarray must be 1D for fill_vals")
+
         generic_msg(
-            cmd=f"fill_sparse_vals<{self.dtype},{self.layout}>",
+            cmd=f"fill_sparse_vals<{self.dtype},2,{self.layout},{a.dtype},1>",
             args={"matrix": self, "vals": a}
         )
 

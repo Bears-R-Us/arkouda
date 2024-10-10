@@ -153,8 +153,8 @@ module SymArrayDmap {
       }
     }
 
-    proc makeSparseArray(shape: 2*int, type eltType, param matLayout: Layout) {
-      const (sd, _) = makeSparseDomain(shape, matLayout);
+    proc makeSparseArray(m: int, n: int, type eltType, param matLayout: Layout) {
+      const (sd, _) = makeSparseDomain((m, n), matLayout);
       var arr: [sd] eltType;
       return arr;
     }
