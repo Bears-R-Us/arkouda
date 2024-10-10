@@ -352,7 +352,7 @@ class TestSeries:
         assert np.allclose(data_int.isnull().values.to_ndarray(), expected_int.values.to_ndarray())
         assert np.allclose(data_int.notna().values.to_ndarray(), ~expected_int.values.to_ndarray())
         assert np.allclose(data_int.notnull().values.to_ndarray(), ~expected_int.values.to_ndarray())
-        assert ~data_int.hasnans()
+        assert not data_int.hasnans()
 
     def test_isna_float(self):
         # Test case with float data type
@@ -374,7 +374,7 @@ class TestSeries:
         assert np.allclose(
             data_string.notnull().values.to_ndarray(), ~expected_string.values.to_ndarray()
         )
-        assert ~data_string.hasnans()
+        assert not data_string.hasnans()
 
     def test_fillna(self):
         data = ak.Series([1, np.nan, 3, np.nan, 5])
