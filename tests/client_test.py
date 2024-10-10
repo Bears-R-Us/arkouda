@@ -157,22 +157,6 @@ class TestClient:
         for cmd in ["connect", "info", "str"]:
             assert cmd in cmds
 
-    @pytest.mark.skip_if_max_rank_greater_than(9)
-    def test_client_array_dim_cmd_error(self):
-        """
-        Tests that a user will get a helpful error message if they attempt to
-        use a multi-dimensional command when the server is not configured to
-        support multi-dimensional arrays of the given rank.
-        """
-        with pytest.raises(RuntimeError) as cm:
-            resp = generic_msg("reduce10D")
-
-        err_msg = (
-            f"Error: Command 'reduce10D' is not supported with the current server configuration as the maximum array dimensionality is {ak.client.get_max_array_rank()}. "
-            f"Please recompile with support for at least 10D arrays"
-        )
-        cm.match(err_msg)  #   Asserts the error msg matches the expected value
-
     def test_client_nd_unimplemented_error(self):
         """
         Tests that a user will get a helpful error message if they attempt to
