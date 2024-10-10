@@ -5,6 +5,9 @@ from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.logger import getArkoudaLogger
 from arkouda.sparrayclass import create_sparray, sparray
+from typing import Union
+from arkouda.dtypes import int64
+from arkouda.dtypes import dtype as akdtype
 
 __all__ = ["random_sparse_matrix", "sparse_matrix_matrix_mult"]
 
@@ -12,7 +15,9 @@ logger = getArkoudaLogger(name="sparsematrix")
 
 
 @typechecked
-def random_sparse_matrix(size: int, density: float, layout: str) -> sparray:
+def random_sparse_matrix(
+    size: int, density: float, layout: str, dtype: Union[type, str] = int64
+) -> sparray:
     """
     Create a random sparse matrix with the specified number of rows and columns
     and the specified density. The density is the fraction of non-zero elements
@@ -26,7 +31,7 @@ def random_sparse_matrix(size: int, density: float, layout: str) -> sparray:
     density : float
         The fraction of non-zero elements in the matrix
     dtype : Union[DTypes, str]
-        The dtype of the elements in the matrix
+        The dtype of the elements in the matrix (default is int64)
 
     Returns
     -------
@@ -41,15 +46,15 @@ def random_sparse_matrix(size: int, density: float, layout: str) -> sparray:
     """
     if density < 0.0 or density > 1.0:
         raise ValueError("density must be in the range [0,1]")
+
+    if layout not in ["CSR", "CSC"]:
+        raise ValueError("layout must be 'CSR' or 'CSC'")
+
     repMsg = generic_msg(
-        cmd="random_sparse_matrix",
+        cmd=f"random_sparse_matrix<{akdtype(dtype)},{layout}>",
         args={
-            # "dtype": dtype,
-            "size": size,
+            "shape": tuple([size, size]),
             "density": density,
-            # shape : always 2D
-            "layout": layout,
-            # distributed ? maybe always true? maybe not for now
         },
     )
 
@@ -75,8 +80,10 @@ def sparse_matrix_matrix_mult(A, B: sparray) -> sparray:
     """
     if not (isinstance(A, sparray) and isinstance(B, sparray)):
         raise TypeError("A and B must be sparrays for sparse_matrix_matrix_mult")
+    if not A.dtype == B.dtype:
+        raise ValueError("A and B must have the same dtype for sparse matrix multiplication")
     repMsg = generic_msg(
-        cmd="sparse_matrix_matrix_mult",
+        cmd=f"sparse_matrix_matrix_mult<{A.dtype}>",
         args={"arg1": A.name, "arg2": B.name},
     )
 
