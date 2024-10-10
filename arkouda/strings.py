@@ -1224,7 +1224,7 @@ class Strings:
         return self._get_matcher(pattern).get_match(MatchType.FULLMATCH, self)
 
     @typechecked()
-    def split(
+    def regex_split(
         self, pattern: Union[bytes, str_scalars], maxsplit: int = 0, return_segments: bool = False
     ) -> Union[Strings, Tuple]:
         """
@@ -1560,7 +1560,7 @@ class Strings:
         self._empty_pattern_verification(substr)
         return self.contains(substr + "$", regex=True)
 
-    def flatten(
+    def split(
         self, delimiter: str, return_segments: bool = False, regex: bool = False
     ) -> Union[Strings, Tuple]:
         """Unpack delimiter-joined substrings into a flat array.
@@ -1609,7 +1609,7 @@ class Strings:
                 re.compile(delimiter)
             except Exception as e:
                 raise ValueError(e)
-            return self.split(delimiter, return_segments=return_segments)
+            return self.regex_split(delimiter, return_segments=return_segments)
         else:
             cmd = "segmentedFlatten"
             repMsg = cast(
