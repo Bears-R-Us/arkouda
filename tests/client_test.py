@@ -3,7 +3,7 @@ import pytest
 import arkouda as ak
 from arkouda.client import generic_msg
 from server_util.test.server_test_util import TestRunningMode, start_arkouda_server
-
+import pudb
 
 @pytest.mark.skipif(pytest.host == "horizon", reason="nightly test failures due to machine busyness")
 class TestClient:
@@ -27,7 +27,7 @@ class TestClient:
 
         assert not ak.client.connected
         try:
-            ak.connect(server=pytest.server, port=pytest.port)
+            ak.connect(server=pytest.server, port=pytest.port, timeout=10)
         except Exception as e:
             raise AssertionError(e)
 
