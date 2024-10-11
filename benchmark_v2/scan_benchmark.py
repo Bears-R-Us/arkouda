@@ -6,7 +6,7 @@ import arkouda as ak
 OPS = ("cumsum", "cumprod")
 TYPES = ("int64", "float64")
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Scan")
 @pytest.mark.parametrize("op", OPS)
 @pytest.mark.parametrize("dtype", TYPES)
@@ -35,7 +35,7 @@ def bench_ak_scan(benchmark, op, dtype):
             (nbytes / benchmark.stats["mean"]) / 2**30
         )
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Numpy_Scan")
 @pytest.mark.parametrize("op", OPS)
 @pytest.mark.parametrize("dtype", TYPES)

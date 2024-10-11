@@ -6,7 +6,7 @@ import numpy as np
 TYPES = ["int64", "uint64", "float64", "str"]
 NUM_ARR = [1, 2, 8, 16]
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Arkouda_CoArgSort")
 @pytest.mark.parametrize("numArrays", NUM_ARR)
 @pytest.mark.parametrize("dtype", TYPES)
@@ -38,7 +38,7 @@ def bench_coargsort(benchmark, dtype, numArrays):
             (nbytes / benchmark.stats["mean"]) / 2**30
         )
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="NumPy_CoArgSort")
 @pytest.mark.parametrize("numArrays", NUM_ARR)
 @pytest.mark.parametrize("dtype", TYPES)

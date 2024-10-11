@@ -21,7 +21,7 @@ def do_argsort(data, algo):
     else:
         return ak.coargsort(data, algo)
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Sort_Cases")
 @pytest.mark.parametrize("algo", SortingAlgorithm)
 @pytest.mark.parametrize("dtype", TYPES)
@@ -68,7 +68,7 @@ def _generate_power_law_data():
 
     return ((ub ** (a + 1) - 1) * y + 1) ** (1 / (a + 1))
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Sort_Cases")
 @pytest.mark.parametrize("algo", SortingAlgorithm)
 @pytest.mark.parametrize("dtype", TYPES)
@@ -90,7 +90,7 @@ def bench_power_law(benchmark, algo, dtype):
             (nbytes / benchmark.stats["mean"]) / 2**30
         )
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Sort_Cases")
 @pytest.mark.parametrize("algo", SortingAlgorithm)
 def bench_rmat(benchmark, algo):
@@ -130,7 +130,7 @@ def bench_rmat(benchmark, algo):
         (nbytes / benchmark.stats["mean"]) / 2**30
     )
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Sort_Cases")
 @pytest.mark.parametrize("algo", SortingAlgorithm)
 @pytest.mark.parametrize("mode", ("concat", "interleaved"))
@@ -162,7 +162,7 @@ def bench_block_sorted(benchmark, algo, mode):
         (nbytes / benchmark.stats["mean"]) / 2**30
     )
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Sort_Cases")
 @pytest.mark.parametrize("algo", SortingAlgorithm)
 def bench_refinement(benchmark, algo):
@@ -186,7 +186,7 @@ def bench_refinement(benchmark, algo):
         (nbytes / benchmark.stats["mean"]) / 2**30
     )
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Sort_Cases")
 @pytest.mark.parametrize("algo", SortingAlgorithm)
 def bench_time_like(benchmark, algo):
@@ -214,7 +214,7 @@ def bench_time_like(benchmark, algo):
         (nbytes / benchmark.stats["mean"]) / 2**30
     )
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Sort_Cases")
 @pytest.mark.parametrize("algo", SortingAlgorithm)
 def bench_ip_like(benchmark, algo):

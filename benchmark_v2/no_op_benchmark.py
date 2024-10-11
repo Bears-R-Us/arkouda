@@ -4,7 +4,7 @@ import pytest
 
 SECONDS = pytest.trials
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Arkouda_No_Op",
                        max_time=SECONDS
                        )
@@ -17,7 +17,7 @@ def bench_ak_noop(benchmark):
     benchmark.extra_info["transfer_rate"] = f"{benchmark.stats['rounds'] / benchmark.stats['total']:.4f} " \
                                             f"operations per second"
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Arkouda_No_Op",
                        max_time=SECONDS
                        )

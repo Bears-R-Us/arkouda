@@ -8,7 +8,7 @@ SEARCHES = {
     "Regex_Pattern": ["\\d string \\d", True]
 }
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.parametrize("s", SEARCHES)
 def bench_substring_search(benchmark, s):
     cfg = ak.get_config()
