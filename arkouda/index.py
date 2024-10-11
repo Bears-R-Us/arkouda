@@ -4,6 +4,7 @@ import builtins
 import json
 from typing import TYPE_CHECKING, List, Optional, Tuple, Union
 
+import numpy as np
 import pandas as pd
 from numpy import array as ndarray
 from numpy import dtype as npdtype
@@ -16,7 +17,7 @@ from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import float64 as akfloat64
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.pdarrayclass import RegistrationError, pdarray
-from arkouda.pdarraycreation import arange, array, create_pdarray, ones
+from arkouda.pdarraycreation import array, create_pdarray, ones
 from arkouda.pdarraysetops import argsort, in1d
 from arkouda.sorting import coargsort
 from arkouda.util import convert_if_categorical, generic_concat, get_callback
@@ -179,16 +180,9 @@ class Index:
         return values != other_values
 
     def _dtype_of_list_values(self, lst):
-        from arkouda.numpy.dtypes import dtype
 
         if isinstance(lst, list):
-            d = dtype(type(lst[0]))
-            for item in lst:
-                assert dtype(type(item)) == d, (
-                    f"Values of Index must all be same type.  "
-                    f"Types {d} and {dtype(type(item))} do not match."
-                )
-            return d
+            return np.array(lst).dtype
         else:
             raise TypeError("Index Types must match")
 
@@ -227,7 +221,7 @@ class Index:
                 return "integer"
             elif _is_dtype_in_union(self.dtype, float_scalars):
                 return "floating"
-            elif self.dtype == "<U":
+            elif str(self.dtype).startswith("<U"):
                 return "string"
         return self.values.inferred_type
 
@@ -352,6 +346,102 @@ class Index:
             return True
         else:
             return akall(self == other)
+
+    def _reindex(self, perm):
+        if isinstance(self, MultiIndex):
+            return MultiIndex(self[perm].levels, name=self.name, names=self.names)
+        elif isinstance(self.values, list):
+            if not isinstance(perm, list):
+                perm = perm.to_list()
+            return Index([self.values[i] for i in perm], name=self.name, allow_list=True)
+        else:
+            return Index(self.values[perm], name=self.name)
+
+    @typechecked
+    def sort_values(
+        self, ascending: bool = True, return_indexer: bool = False, na_position="last"
+    ) -> Union[Index, Tuple]:
+        """
+        Return a sorted copy of the index,
+        and optionally return the indices that sorted the index itself.
+
+        Parameters
+        ----------
+        return_indexer : bool, default False
+            Should the indices that would sort the index be returned.
+        ascending : bool, default True
+            Should the index values be sorted in an ascending order.
+        na_position : {'first' or 'last'}, default 'last'
+            Argument 'first' puts NaNs at the beginning, 'last' puts NaNs at
+            the end.
+
+        Returns
+        -------
+        sorted_index : arkouda.Index
+            Sorted copy of the index.
+        indexer : arkouda.pdarray or list, optional
+            The indices that the index itself was sorted by.
+
+        Examples
+        --------
+        >>> idx = ak.Index([10, 100, 1, 1000])
+        >>> idx
+        Index([10, 100, 1, 1000], dtype='int64')
+
+        Sort values in ascending order (default behavior).
+
+        >>> idx.sort_values()
+        Index([1, 10, 100, 1000], dtype='int64')
+
+        Sort values in descending order, and also get the indices `idx` was
+        sorted by.
+
+        >>> idx.sort_values(ascending=False, return_indexer=True)
+        (Index([1000, 100, 10, 1], dtype='int64'), array([3, 1, 0, 2]))
+
+        """
+        from arkouda.util import is_float
+
+        if na_position not in ["first", "last"]:
+            raise ValueError('na_position must be "first" or "last".')
+
+        if isinstance(self, MultiIndex):
+            perm = coargsort(self.levels, ascending=ascending)
+        elif isinstance(self.values, list):
+            from numpy import argsort as np_argsort
+
+            if ascending is True:
+                perm = np_argsort(self.values).tolist()
+            else:
+                perm = np_argsort(self.values)[::-1].tolist()
+
+            from numpy import isnan as np_isnan
+
+            if isinstance(perm, list):
+                is_nan = np_isnan(self.values)[perm]
+
+                if na_position == "last":
+                    perm = np.concatenate([perm[~is_nan], perm[is_nan]]).tolist()
+                else:
+                    perm = np.concatenate([perm[is_nan], perm[~is_nan]]).tolist()
+
+        elif isinstance(self.values, pdarray) and is_float(self.values):
+
+            from arkouda import concatenate
+            from arkouda import isnan as ak_isnan
+
+            perm = argsort(self.values, ascending=ascending)
+
+            is_nan = ak_isnan(self.values)[perm]
+            if na_position == "last":
+                perm = concatenate([perm[~is_nan], perm[is_nan]])
+            else:
+                perm = concatenate([perm[is_nan], perm[~is_nan]])
+
+        if return_indexer:
+            return self._reindex(perm), perm
+        else:
+            return self._reindex(perm)
 
     def memory_usage(self, unit="B"):
         """
@@ -612,7 +702,7 @@ class Index:
             if isinstance(self.values, pdarray) and self.dtype in (akint64, akfloat64):
                 i = argsort(-self.values)
             else:
-                i = argsort(self.values)[arange(self.size - 1, -1, -1)]
+                i = argsort(self.values)[::-1]
         else:
             i = argsort(self.values)
         return i
@@ -1074,6 +1164,7 @@ class MultiIndex(Index):
         names: Optional[list[str]] = None,
     ):
         self.registered_name: Optional[str] = None
+
         if isinstance(data, MultiIndex):
             self.levels = data.levels
         elif isinstance(data, pd.MultiIndex):
@@ -1396,7 +1487,7 @@ class MultiIndex(Index):
     def argsort(self, ascending=True):
         i = coargsort(self.index)
         if not ascending:
-            i = i[arange(self.size - 1, -1, -1)]
+            i = i[::-1]
         return i
 
     def concat(self, other):
