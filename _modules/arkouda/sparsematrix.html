@@ -357,6 +357,9 @@
 <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
 <span class="kn">from</span> <span class="nn">arkouda.logger</span> <span class="kn">import</span> <span class="n">getArkoudaLogger</span>
 <span class="kn">from</span> <span class="nn">arkouda.sparrayclass</span> <span class="kn">import</span> <span class="n">create_sparray</span><span class="p">,</span> <span class="n">sparray</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">int64</span>
+<span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">akdtype</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;random_sparse_matrix&quot;</span><span class="p">,</span> <span class="s2">&quot;sparse_matrix_matrix_mult&quot;</span><span class="p">]</span>
 
@@ -366,7 +369,9 @@
 <div class="viewcode-block" id="random_sparse_matrix">
 <a class="viewcode-back" href="../../autoapi/arkouda/sparsematrix/index.html#arkouda.sparsematrix.random_sparse_matrix">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">random_sparse_matrix</span><span class="p">(</span><span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">density</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">layout</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">sparray</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">random_sparse_matrix</span><span class="p">(</span>
+    <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">density</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">layout</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">int64</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">sparray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a random sparse matrix with the specified number of rows and columns</span>
 <span class="sd">    and the specified density. The density is the fraction of non-zero elements</span>
@@ -380,7 +385,7 @@
 <span class="sd">    density : float</span>
 <span class="sd">        The fraction of non-zero elements in the matrix</span>
 <span class="sd">    dtype : Union[DTypes, str]</span>
-<span class="sd">        The dtype of the elements in the matrix</span>
+<span class="sd">        The dtype of the elements in the matrix (default is int64)</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -395,15 +400,15 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">density</span> <span class="o">&lt;</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="n">density</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;density must be in the range [0,1]&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">layout</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;CSR&quot;</span><span class="p">,</span> <span class="s2">&quot;CSC&quot;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;layout must be &#39;CSR&#39; or &#39;CSC&#39;&quot;</span><span class="p">)</span>
+
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;random_sparse_matrix&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;random_sparse_matrix&lt;</span><span class="si">{</span><span class="n">akdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">layout</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-            <span class="c1"># &quot;dtype&quot;: dtype,</span>
-            <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">size</span><span class="p">,</span>
+            <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">]),</span>
             <span class="s2">&quot;density&quot;</span><span class="p">:</span> <span class="n">density</span><span class="p">,</span>
-            <span class="c1"># shape : always 2D</span>
-            <span class="s2">&quot;layout&quot;</span><span class="p">:</span> <span class="n">layout</span><span class="p">,</span>
-            <span class="c1"># distributed ? maybe always true? maybe not for now</span>
         <span class="p">},</span>
     <span class="p">)</span>
 
@@ -432,8 +437,10 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">sparray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">sparray</span><span class="p">)):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;A and B must be sparrays for sparse_matrix_matrix_mult&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">A</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">B</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;A and B must have the same dtype for sparse matrix multiplication&quot;</span><span class="p">)</span>
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;sparse_matrix_matrix_mult&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;sparse_matrix_matrix_mult&lt;</span><span class="si">{</span><span class="n">A</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;arg1&quot;</span><span class="p">:</span> <span class="n">A</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;arg2&quot;</span><span class="p">:</span> <span class="n">B</span><span class="o">.</span><span class="n">name</span><span class="p">},</span>
     <span class="p">)</span>
 

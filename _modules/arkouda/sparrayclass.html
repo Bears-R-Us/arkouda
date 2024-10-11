@@ -478,7 +478,9 @@
         <span class="c1"># check dtype for error</span>
         <span class="k">if</span> <span class="n">dtype_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">NumericDTypes</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported dtype </span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">responseArrays</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;sparse_to_pdarrays&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;matrix&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">})</span>
+        <span class="n">responseArrays</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;sparse_to_pdarrays&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;matrix&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">}</span>
+        <span class="p">)</span>
         <span class="n">array_list</span> <span class="o">=</span> <span class="n">create_pdarrays</span><span class="p">(</span><span class="n">responseArrays</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">array_list</span></div>
 
@@ -488,7 +490,16 @@
 <div class="viewcode-block" id="sparray.fill_vals">
 <a class="viewcode-back" href="../../autoapi/arkouda/sparrayclass/index.html#arkouda.sparray.fill_vals">[docs]</a>
     <span class="k">def</span> <span class="nf">fill_vals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">):</span>
-        <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;fill_sparse_vals&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;matrix&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;vals&quot;</span><span class="p">:</span> <span class="n">a</span><span class="p">})</span></div>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;sparray and pdarray must have the same dtype for fill_vals&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;pdarray must be 1D for fill_vals&quot;</span><span class="p">)</span>
+
+        <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;fill_sparse_vals&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,2,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,1&gt;&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;matrix&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;vals&quot;</span><span class="p">:</span> <span class="n">a</span><span class="p">}</span>
+        <span class="p">)</span></div>
 </div>
 
 

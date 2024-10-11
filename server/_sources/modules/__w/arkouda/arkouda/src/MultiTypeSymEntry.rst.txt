@@ -434,28 +434,18 @@ or
       For now, each dimension is assumed to be equal.
       
 
-   .. attribute:: param matLayout: layout
+   .. attribute:: param matLayout: Layout
 
       
       layout of the sparse array: CSC or CSR
       
 
-   .. attribute:: var a = makeSparseArray(tupShape[0], etype, matLayout)
+   .. attribute:: var a = makeSparseArray(...tupShape, etype, matLayout)
+
+   .. method:: proc init(a: [?D] ?eltType, param matLayout) where a.domain.parentDom.rank == 2
 
       
-      'a' is the distributed sparse array
-      
-
-   .. method:: proc init(a, size, param matLayout, type eltType)
-
-      
-      Create a SparseSymEntry from a shape and element type, etc.
-      
-      :args len: size of each dimension
-      :type len: int
-      
-      :arg etype: type to be instantiated
-      :type etype: type
+      Create a SparseSymEntry from a sparse array
       
 
    .. method:: override proc entry__str__(thresh: int = 6, prefix: string = "noprefix", suffix: string = "nosuffix", baseFormat: string = "%\?"): string throws
@@ -485,8 +475,6 @@ or
       
       Verbose flag utility method
       
-
-.. function:: proc createSparseSymEntry(a, size, param matLayout, type eltType) throws
 
 .. class:: GeneratorSymEntry : AbstractSymEntry
 

@@ -16,7 +16,7 @@ Functions
 Module Contents
 ---------------
 
-.. py:function:: random_sparse_matrix(size: int, density: float, layout: str) -> arkouda.sparrayclass.sparray
+.. py:function:: random_sparse_matrix(size: int, density: float, layout: str, dtype: Union[type, str] = int64) -> arkouda.sparrayclass.sparray
 
    Create a random sparse matrix with the specified number of rows and columns
    and the specified density. The density is the fraction of non-zero elements
@@ -27,7 +27,7 @@ Module Contents
    :type size: int
    :param density: The fraction of non-zero elements in the matrix
    :type density: float
-   :param dtype: The dtype of the elements in the matrix
+   :param dtype: The dtype of the elements in the matrix (default is int64)
    :type dtype: Union[DTypes, str]
 
    :returns: A sparse matrix with the specified number of rows and columns

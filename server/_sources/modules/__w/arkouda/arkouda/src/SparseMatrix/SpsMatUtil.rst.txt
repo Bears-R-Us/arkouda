@@ -17,7 +17,7 @@ or
 
    import SparseMatrix.SpsMatUtil;
 
-.. enum:: enum layout { CSR, CSC }
+.. enum:: enum Layout { CSR, CSC }
 
    .. enumconstant:: enum constant CSR
 

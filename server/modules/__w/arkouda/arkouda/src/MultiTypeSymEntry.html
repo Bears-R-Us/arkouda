@@ -884,28 +884,19 @@ For now, each dimension is assumed to be equal.</p>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SparseSymEntry.matLayout">
-<em class="property"><span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">matLayout</span></span><em class="property"> <span class="pre">:</span> <span class="pre">layout</span></em><a class="headerlink" href="#MultiTypeSymEntry.SparseSymEntry.matLayout" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">matLayout</span></span><em class="property"> <span class="pre">:</span> <span class="pre">Layout</span></em><a class="headerlink" href="#MultiTypeSymEntry.SparseSymEntry.matLayout" title="Link to this definition">¶</a></dt>
 <dd><p>layout of the sparse array: CSC or CSR</p>
 </dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SparseSymEntry.a">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">a</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">makeSparseArray(tupShape[0],</span> <span class="pre">etype,</span> <span class="pre">matLayout)</span></em><a class="headerlink" href="#MultiTypeSymEntry.SparseSymEntry.a" title="Link to this definition">¶</a></dt>
-<dd><p>‘a’ is the distributed sparse array</p>
-</dd></dl>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">a</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">makeSparseArray(...tupShape,</span> <span class="pre">etype,</span> <span class="pre">matLayout)</span></em><a class="headerlink" href="#MultiTypeSymEntry.SparseSymEntry.a" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SparseSymEntry.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a</span></em>, <em class="sig-param"><span class="pre">size</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">matLayout</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">eltType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.SparseSymEntry.init" title="Link to this definition">¶</a></dt>
-<dd><p>Create a SparseSymEntry from a shape and element type, etc.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Args len<span class="colon">:</span></dt>
-<dd class="field-odd"><p>size of each dimension</p>
-</dd>
-<dt class="field-even">Arguments<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>etype</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">type</span></code></span> – type to be instantiated</p>
-</dd>
-</dl>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?D]</span> <span class="pre">?eltType</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">matLayout</span></em><span class="sig-paren">)</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">a.domain.parentDom.rank</span> <span class="pre">==</span> <span class="pre">2</span></em><a class="headerlink" href="#MultiTypeSymEntry.SparseSymEntry.init" title="Link to this definition">¶</a></dt>
+<dd><p>Create a SparseSymEntry from a sparse array</p>
 </dd></dl>
 
 <dl class="chpl method">
@@ -954,11 +945,6 @@ Matrices with nnz greater than or equal to threshold will print the first 3 and 
 </dd></dl>
 
 </dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="MultiTypeSymEntry.createSparseSymEntry">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">createSparseSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a</span></em>, <em class="sig-param"><span class="pre">size</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">matLayout</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">eltType</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.createSparseSymEntry" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GeneratorSymEntry">
