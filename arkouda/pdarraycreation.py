@@ -1052,7 +1052,7 @@ def randint(
     >>> ak.randint(1, 5, 10, dtype=ak.bool, seed=2)
     array([False, True, True, True, True, False, True, True, True, True])
     """
-    from arkouda.random import randint
+    from arkouda.numpy.random import randint
 
     return randint(low=low, high=high, size=size, dtype=dtype, seed=seed)
 
@@ -1147,7 +1147,7 @@ def standard_normal(size: int_scalars, seed: Union[None, int_scalars] = None) ->
     >>> ak.standard_normal(3,1)
     array([-0.68586185091150265, 1.1723810583573375, 0.567584107142031])
     """
-    from arkouda.random import standard_normal
+    from arkouda.numpy.random import standard_normal
 
     return standard_normal(size=size, seed=seed)
 
