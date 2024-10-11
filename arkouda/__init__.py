@@ -42,5 +42,4 @@ from arkouda.util import (
 )
 from arkouda.scipy.special import *
 from arkouda.scipy import *
-from arkouda.random import *
 from arkouda.testing import *
