@@ -11,6 +11,7 @@ Submodules
    :maxdepth: 1
 
    /autoapi/arkouda/numpy/dtypes/index
+   /autoapi/arkouda/numpy/random/index
 
 
 Attributes

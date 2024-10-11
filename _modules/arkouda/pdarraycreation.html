@@ -277,6 +277,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/matcher/index.html">arkouda.matcher</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/arkouda/numpy/index.html">arkouda.numpy</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.numpy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/numpy/dtypes/index.html">arkouda.numpy.dtypes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/numpy/random/index.html">arkouda.numpy.random</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/pdarrayclass/index.html">arkouda.pdarrayclass</a></li>
@@ -1377,7 +1378,7 @@
 
 
 <div class="viewcode-block" id="randint">
-<a class="viewcode-back" href="../../autoapi/arkouda/pdarraycreation/index.html#arkouda.randint">[docs]</a>
+<a class="viewcode-back" href="../../usage/creation.html#arkouda.randint">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">randint</span><span class="p">(</span>
     <span class="n">low</span><span class="p">:</span> <span class="n">numeric_scalars</span><span class="p">,</span>
@@ -1445,7 +1446,7 @@
 <span class="sd">    &gt;&gt;&gt; ak.randint(1, 5, 10, dtype=ak.bool, seed=2)</span>
 <span class="sd">    array([False, True, True, True, True, False, True, True, True, True])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">arkouda.random</span> <span class="kn">import</span> <span class="n">randint</span>
+    <span class="kn">from</span> <span class="nn">arkouda.numpy.random</span> <span class="kn">import</span> <span class="n">randint</span>
 
     <span class="k">return</span> <span class="n">randint</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="n">high</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span></div>
 
@@ -1546,7 +1547,7 @@
 <span class="sd">    &gt;&gt;&gt; ak.standard_normal(3,1)</span>
 <span class="sd">    array([-0.68586185091150265, 1.1723810583573375, 0.567584107142031])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">arkouda.random</span> <span class="kn">import</span> <span class="n">standard_normal</span>
+    <span class="kn">from</span> <span class="nn">arkouda.numpy.random</span> <span class="kn">import</span> <span class="n">standard_normal</span>
 
     <span class="k">return</span> <span class="n">standard_normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span></div>
 
