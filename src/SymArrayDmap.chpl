@@ -1,6 +1,6 @@
 module SymArrayDmap {
     import ChplConfig;
-    import SparseMatrix.layout;
+    import SparseMatrix.Layout;
     public use BlockDist;
     use LayoutCS;
 
@@ -130,12 +130,11 @@ module SymArrayDmap {
         return makeDistDom(size).type;
     }
 
-    proc makeSparseDomain(size: int, param matLayout) {
-      const dom = {1..size, 1..size}; // TODO: only supporting square matrices for now?
-                                      // TODO: change domain to be zero based?
+    proc makeSparseDomain(shape: 2*int, param matLayout: Layout) {
+      const dom = {1..shape[0], 1..shape[1]}; // TODO: change domain to be zero based?
       select MyDmap {
         when Dmap.defaultRectangular {
-          var spsDom: sparse subdomain(dom) dmapped new dmap(new CS(compressRows=(matLayout==layout.CSR)));
+          var spsDom: sparse subdomain(dom) dmapped new dmap(new CS(compressRows=(matLayout==Layout.CSR)));
           return (spsDom, dom);
         }
         when Dmap.blockDist {
@@ -143,7 +142,7 @@ module SymArrayDmap {
                 grid = {0..<locsPerDim, 0..<locsPerDim},
                 localeGrid = reshape(Locales[0..<grid.size], grid);
 
-          type layoutType = CS(compressRows=(matLayout==layout.CSR));
+          type layoutType = CS(compressRows=(matLayout==Layout.CSR));
           const DenseBlkDom = dom dmapped new blockDist(boundingBox=dom,
                                                         targetLocales=localeGrid,
                                                         sparseLayoutType=layoutType);
@@ -154,8 +153,8 @@ module SymArrayDmap {
       }
     }
 
-    proc makeSparseArray(size: int, type eltType, param matLayout) {
-      const (sd, _) = makeSparseDomain(size, matLayout);
+    proc makeSparseArray(m: int, n: int, type eltType, param matLayout: Layout) {
+      const (sd, _) = makeSparseDomain((m, n), matLayout);
       var arr: [sd] eltType;
       return arr;
     }

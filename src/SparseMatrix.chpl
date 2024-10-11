@@ -6,7 +6,7 @@ module SparseMatrix {
   use CommAggregation;
 
   // Quick and dirty, not permanent
-  proc fillSparseMatrix(ref spsMat, const A: [?D] ?eltType, param l: layout) throws {
+  proc fillSparseMatrix(ref spsMat, const A: [?D] ?eltType, param l: Layout) throws {
     if A.rank != 1 then
         throw getErrorWithContext(
                         msg="fill vals requires a 1D array; got a %iD array".format(A.rank),
@@ -40,7 +40,7 @@ module SparseMatrix {
     //   spsMat[i,j] = A[idx];
     // }
 
-    if l == layout.CSR {
+    if l == Layout.CSR {
       var idx = 0;
       for i in spsMat.domain.parentDom.dim(0) {
         for j in spsMat.domain.parentDom.dim(1) {
@@ -95,7 +95,9 @@ module SparseMatrix {
     Fill the rows, cols, and vals arrays with the non-zero indices and values
     from the sparse matrix in row-major order.
   */
-  proc sparseMatToPdarrayCSR(const ref spsMat, ref rows, ref cols, ref vals) {
+  proc sparseMatToPdarray(const ref spsMat, ref rows, ref cols, ref vals, param layout: Layout)
+    where layout == Layout.CSR
+  {
     // // serial algorithm (for reference):
     // var idx = 0;
     // for i in spsMat.domain.parentDom.dim(0) {
@@ -156,7 +158,9 @@ module SparseMatrix {
   //   Fill the rows, cols, and vals arrays with the non-zero indices and values
   //   from the sparse matrix in col-major order.
   // */
-  proc sparseMatToPdarrayCSC(const ref spsMat, ref rows, ref cols, ref vals) {
+  proc sparseMatToPdarray(const ref spsMat, ref rows, ref cols, ref vals, param layout: Layout)
+    where layout == Layout.CSC
+  {
     // // serial algorithm (for reference):
     // var idx = 0;
     // for j in spsMat.domain.parentDom.dim(1) {
@@ -450,9 +454,9 @@ module SparseMatrix {
     return C;
   }
 
-  proc randSparseMatrix(size, density, param layout, type eltType) {
+  proc randSparseMatrix(shape: 2*int, density, param layout, type eltType) {
     import SymArrayDmap.makeSparseDomain;
-    var (SD, dense) = makeSparseDomain(size, layout);
+    var (SD, dense) = makeSparseDomain(shape, layout);
 
     // randomly include index pairs based on provided density
     for (i,j) in dense do
@@ -471,7 +475,7 @@ module SparseMatrix {
 
     use BlockDist, LayoutCS, Map, Random;
 
-    enum layout {
+    enum Layout {
       CSR,
       CSC
     };

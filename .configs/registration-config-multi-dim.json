@@ -11,6 +11,14 @@
                 "bigint"
             ]
         },
+        "SparseSymEntry": {
+            "etype": ["int"],
+            "dimensions": [2],
+            "matLayout": {
+                "__enum__": "SparseMatrix.Layout",
+                "__variants__": ["CSR", "CSC"]
+            }
+        },
         "binop": {
             "dtype": [
                 "int",
