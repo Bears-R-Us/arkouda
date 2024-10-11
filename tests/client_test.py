@@ -7,6 +7,7 @@ from server_util.test.server_test_util import TestRunningMode, start_arkouda_ser
 
 @pytest.mark.skipif(pytest.host == "horizon", reason="nightly test failures due to machine busyness")
 class TestClient:
+    @pytest.mark.timeout(60)
     def test_client_connected(self):
         """
         Tests the following methods:
