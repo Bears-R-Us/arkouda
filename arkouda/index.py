@@ -400,6 +400,7 @@ class Index:
         (Index([1000, 100, 10, 1], dtype='int64'), array([3, 1, 0, 2]))
 
         """
+        from arkouda.util import is_float
 
         if na_position not in ["first", "last"]:
             raise ValueError('na_position must be "first" or "last".')
@@ -413,33 +414,29 @@ class Index:
                 perm = np_argsort(self.values).tolist()
             else:
                 perm = np_argsort(self.values)[::-1].tolist()
-        else:
-            perm = argsort(self.values, ascending=ascending)
 
-        from arkouda.util import is_float
+            from numpy import isnan as np_isnan
 
-        if isinstance(self.values, pdarray) and is_float(self.values):
+            if isinstance(perm, list):
+                is_nan = np_isnan(self.values)[perm]
+
+                if na_position == "last":
+                    perm = np.concatenate([perm[~is_nan], perm[is_nan]]).tolist()
+                else:
+                    perm = np.concatenate([perm[is_nan], perm[~is_nan]]).tolist()
+
+        elif isinstance(self.values, pdarray) and is_float(self.values):
+
             from arkouda import concatenate
             from arkouda import isnan as ak_isnan
+
+            perm = argsort(self.values, ascending=ascending)
 
             is_nan = ak_isnan(self.values)[perm]
             if na_position == "last":
                 perm = concatenate([perm[~is_nan], perm[is_nan]])
             else:
                 perm = concatenate([perm[is_nan], perm[~is_nan]])
-
-        elif isinstance(self.values, list):
-            from numpy import isnan as np_isnan
-
-            is_nan = np_isnan(self.values)[perm]
-            perm = np.array(perm)
-
-            if na_position == "last":
-                perm = np.concatenate([perm[~is_nan], perm[is_nan]])
-            else:
-                perm = np.concatenate([perm[is_nan], perm[~is_nan]])
-
-            perm = perm.tolist()
 
         if return_indexer:
             return self._reindex(perm), perm
@@ -1184,13 +1181,6 @@ class MultiIndex(Index):
         else:
             raise TypeError("MultiIndex should be an iterable, ak.MultiIndex, or pd.MutiIndex")
 
-        # =======
-        #         if not (isinstance(levels, list) or isinstance(levels, tuple)):
-        #             raise TypeError("MultiIndex should be an iterable")
-        #         elif isinstance(levels, tuple):
-        #             levels = list(levels)
-        #         self.levels = levels
-        # >>>>>>> cad665d0c (Closes #3177 Index.sort_values)
         first = True
         for col in self.levels:
             # col can be a python int which doesn't have a size attribute
