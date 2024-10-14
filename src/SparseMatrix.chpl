@@ -494,7 +494,6 @@ module SparseMatrix {
     var A: [SD] eltType;
     for i in 0..<rows.size {
       A[rows[i], cols[i]] = vals[i];
-      writeln("A[", rows[i], ",", cols[i], "] = ", vals[i]);
     }
 
     return A;
