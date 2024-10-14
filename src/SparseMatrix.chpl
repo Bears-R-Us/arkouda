@@ -467,17 +467,33 @@ module SparseMatrix {
     return A;
   }
 
-  proc sparseMatFromArrays(rows, cols, vals, shape: 2*int, param layout, type eltType) {
+  proc sparseMatFromArrays(rows, cols, vals, shape: 2*int, param layout, type eltType) throws {
     import SymArrayDmap.makeSparseDomain;
     var (SD, dense) = makeSparseDomain(shape, layout);
 
-    for i in 0..rows.size {
+    for i in 0..<rows.size {
+      if SD.contains((rows[i], cols[i])) then
+        throw getErrorWithContext(
+                                  msg="Duplicate index (%i, %i) in sparse matrix".format(rows[i], cols[i]),
+                                  lineNumber=getLineNumber(),
+                                  routineName=getRoutineName(),
+                                  moduleName=getModuleName(),
+                                  errorClass="InvalidArgumentError"
+                                  );
+      if rows[i] < 1 || rows[i] > shape[0] || cols[i] < 1 || cols[i] > shape[1] then
+        throw getErrorWithContext(
+                                  msg="Index (%i, %i) out of bounds for sparse matrix of shape (%i, %i)".format(rows[i], cols[i], shape[0], shape[1]),
+                                  lineNumber=getLineNumber(),
+                                  routineName=getRoutineName(),
+                                  moduleName=getModuleName(),
+                                  errorClass="InvalidArgumentError"
+                                  );
       SD += (rows[i], cols[i]);
     }
 
     var A: [SD] eltType;
-    for i in 0..rows.size {
-      A[rows[i], cols[i]] = vals[i]; // This will error if the index is not in the domain
+    for i in 0..<rows.size {
+      A[rows[i], cols[i]] = vals[i];
       writeln("A[", rows[i], ",", cols[i], "] = ", vals[i]);
     }
 

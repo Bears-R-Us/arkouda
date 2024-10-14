@@ -94,8 +94,7 @@ def sparse_matrix_matrix_mult(A, B: sparray) -> sparray:
     return create_sparray(repMsg)
 
 
-@typechecked
-def create_sparse_matrix(rows: pdarray, cols: pdarray, vals: pdarray, layout: str) -> sparray:
+def create_sparse_matrix(size: int, rows: pdarray, cols: pdarray, vals: pdarray, layout: str) -> sparray:
     """
     Create a sparse matrix from three pdarrays representing the row indices,
     column indices, and values of the non-zero elements of the matrix.
@@ -130,7 +129,7 @@ def create_sparse_matrix(rows: pdarray, cols: pdarray, vals: pdarray, layout: st
     if vals_dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {vals.dtype}")
 
-    shape = (rows.size, cols.size)
+    shape = (size, size)
     repMsg = generic_msg(
         cmd=f"sparse_matrix_from_pdarrays<{vals.dtype},{layout}>",
         args={"rows": rows.name, "cols": cols.name, "vals": vals.name, "shape": shape},
