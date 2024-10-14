@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import builtins
-from typing import Optional, Sequence, Union, cast
+from typing import List, Optional, Sequence, Union, cast
 
 import numpy as np
 from typeguard import typechecked
@@ -117,7 +117,8 @@ class sparray:
     [array([1 1 1 ... 100 100 100]), array([17 21 29 ... 75 77 85]), array([0 0 0 ... 0 0 0])]
     """
 
-    def to_pdarray(self):
+    @typechecked
+    def to_pdarray(self) -> List[pdarray]:
         dtype = self.dtype
         dtype_name = cast(np.dtype, dtype).name
         # check dtype for error
