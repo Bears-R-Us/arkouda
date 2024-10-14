@@ -31,7 +31,7 @@ module SparseMatrix {
                         moduleName=getModuleName(),
                         errorClass="IllegalArgumentError"
                         );
-    
+
     // Note: this simplified loop cannot be used because iteration over spsMat.domain
     //       occures one locale at a time (i.e., the first spsMat.domain.parDom.localSubdomain(Locales[0]).size
     //       values from 'A' are deposited on locale 0, and so on), rather than depositing
@@ -464,6 +464,23 @@ module SparseMatrix {
           SD += (i,j);
 
     var A: [SD] eltType;
+    return A;
+  }
+
+  proc sparseMatFromArrays(rows, cols, vals, shape: 2*int, param layout, type eltType) {
+    import SymArrayDmap.makeSparseDomain;
+    var (SD, dense) = makeSparseDomain(shape, layout);
+
+    for i in 0..rows.size {
+      SD += (rows[i], cols[i]);
+    }
+
+    var A: [SD] eltType;
+    for i in 0..rows.size {
+      A[rows[i], cols[i]] = vals[i]; // This will error if the index is not in the domain
+      writeln("A[", rows[i], ",", cols[i], "] = ", vals[i]);
+    }
+
     return A;
   }
 

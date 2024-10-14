@@ -139,7 +139,7 @@ class sparray:
 
         generic_msg(
             cmd=f"fill_sparse_vals<{self.dtype},2,{self.layout},{a.dtype},1>",
-            args={"matrix": self, "vals": a}
+            args={"matrix": self, "vals": a},
         )
 
 
