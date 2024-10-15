@@ -43,11 +43,6 @@ module UtilMsg {
       return y;
   }
 
-  proc clip(const ref x: [?d] ?t, min: real, max: real): [d] t throws 
-    where (t != int) && (t != real) && (t != uint(8)) && (t != uint(64)){
-      throw new Error("clip does not support dtype %s".format(t:string));
-  }
-
   /*
     Compute the n'th order discrete difference along a given axis
 
@@ -93,11 +88,6 @@ module UtilMsg {
       } // d2 deinit here
       return d1[outDom];
     }
-  }
-
-  proc diff(x: [?d] ?t, n: int, axis: int): [d] t throws 
-    where (t != real) && (t != int) && (t != uint(8)) && (t != uint(64)){
-      throw new Error("diff does not support dtype %s".format(t:string));
   }
 
   // helper to create a domain that's 'n' elements smaller in the 'axis' dimension

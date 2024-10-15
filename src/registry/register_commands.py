@@ -7,7 +7,7 @@ import chapel
 
 DEFAULT_MODS = ["MsgProcessing", "GenSymIO"]
 
-registerAttr = ("arkouda.registerCommand", ["name"])
+registerAttr = ("arkouda.registerCommand", ["name", "ignoreWhereClause"])
 instAndRegisterAttr = ("arkouda.instantiateAndRegister", ["prefix"])
 
 # chapel types and their numpy equivalents
@@ -105,6 +105,9 @@ class FormalQuery:
     def name(self):
         return self.name
 
+    def __str__(self):
+        return f"?{self.name}"
+
 
 class FormalQueryRef:
     def __init__(self, name):
@@ -113,6 +116,9 @@ class FormalQueryRef:
     def name(self):
         return self.name
 
+    def __str__(self):
+        return f"QRef: '{self.name}'"
+
 
 class StaticTypeInfo:
     def __init__(self, value):
@@ -120,6 +126,9 @@ class StaticTypeInfo:
 
     def value(self):
         return self.value
+
+    def __str__(self):
+        return f"static: '{self.value}'"
 
 
 class formalKind(Enum):
@@ -169,6 +178,9 @@ class FormalTypeSpec:
             if self.type_str
             else f"{self.storage_kind} {self.name}"
         )
+
+    def __str__(self):
+        return f"{self.kind} [{self.storage_kind} {self.name}: {self.type_str}] (info: {self.info})"
 
 
 def get_formals(fn, require_type_annotations):
@@ -741,7 +753,10 @@ def gen_arg_unpacking(formals, config):
     """
     Generate argument unpacking code for a message handler procedure
 
-    Returns the chapel code to unpack the arguments, and a list of generic arguments
+    Returns a tuple containing:
+    * the chapel code to unpack the arguments
+    * a list of generic arguments
+    * a map of array domain/type queries to their corresponding generic arguments
     """
     unpack_lines = []
     generic_args = []
@@ -852,7 +867,11 @@ def gen_arg_unpacking(formals, config):
                     generic_args += scalar_args
                     scalar_arg_counter += 1
 
-    return ("\n".join(unpack_lines), generic_args)
+    return (
+        "\n".join(unpack_lines),
+        generic_args,
+        {**array_domain_queries, **array_dtype_queries},
+    )
 
 
 def gen_user_function_call(name, arg_names, mod_name, user_rt):
@@ -926,8 +945,8 @@ def gen_command_proc(name, return_type, formals, mod_name, config):
         * the chapel code for the command procedure
         * the name of the command procedure
         * a boolean indicating whether the command has generic (param/type) formals
-        * a list of tuples in the format (name, storage kind, type expression)
-            representing the generic formals of the command procedure
+        * a list of FormalTypeSpec representing the command procedure's generic formals
+        * a table of domain/type queries used in array formals mapped to their respective generic arguments
 
     proc <cmd_name>(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, <param/type args...>): MsgTuple throws {
         <unpack arguments>(<param/type args...>)
@@ -938,7 +957,7 @@ def gen_command_proc(name, return_type, formals, mod_name, config):
 
     """
 
-    arg_unpack, command_formals = gen_arg_unpacking(formals, config)
+    arg_unpack, command_formals, query_table = gen_arg_unpacking(formals, config)
     is_generic_command = len(command_formals) > 0
     signature, cmd_name = gen_signature(name, command_formals)
     fn_call, result_name = gen_user_function_call(
@@ -989,7 +1008,7 @@ def gen_command_proc(name, return_type, formals, mod_name, config):
         [signature, arg_unpack, fn_call, symbol_creation, response, "}"]
     )
 
-    return (command_proc, cmd_name, is_generic_command, command_formals)
+    return (command_proc, cmd_name, is_generic_command, command_formals, query_table)
 
 
 # TODO: use the compiler's built-in support for where-clause evaluation and resolution
@@ -1011,8 +1030,8 @@ class WCNode:
         else:
             self.node = WCLiteral(ast)
 
-    def eval(self, args):
-        return self.node.eval(args)
+    def eval(self, args, translation_table=None):
+        return self.node.eval(args, translation_table)
 
     def __str__(self):
         return self.node.__str__()
@@ -1028,14 +1047,14 @@ class WCBinOP(WCNode):
         self.lhs = WCNode(actuals[0])
         self.rhs = WCNode(actuals[1])
 
-    def eval(self, args):
-        lhse = self.lhs.eval(args)
-        rhse = self.rhs.eval(args)
+    def eval(self, args, translation_table=None):
+        lhse = self.lhs.eval(args, translation_table)
+        rhse = self.rhs.eval(args, translation_table)
 
         if self.op == "==":
-            return lhse == rhse
+            return str(lhse) == str(rhse)
         elif self.op == "!=":
-            return lhse != rhse
+            return str(lhse) != str(rhse)
         elif self.op == "<":
             return int(lhse) < int(rhse)
         elif self.op == "<=":
@@ -1064,11 +1083,11 @@ class WCUnaryOP(WCNode):
         self.op = ast.op()
         self.operand = WCNode(list(ast.actuals())[0])
 
-    def eval(self, args):
+    def eval(self, args, translation_table=None):
         if self.op == "!":
-            return not bool(self.operand.eval(args))
+            return not bool(self.operand.eval(args, translation_table))
         elif self.op == "-":
-            return -int(self.operand.eval(args))
+            return -int(self.operand.eval(args, translation_table))
         else:
             error_message(
                 "evaluating where-clause",
@@ -1085,10 +1104,10 @@ class WCFunc(WCNode):
         self.name = ast.called_expression().name()
         self.actuals = [WCNode(a) for a in list(ast.actuals())]
 
-    def eval(self, args):
+    def eval(self, args, translation_table=None):
         # TODO: this is a really bad way to do this. the compiler should be leveraged much more heavily here
         if self.name == "isIntegralType":
-            return self.actuals[0].eval(args) in [
+            return self.actuals[0].eval(args, translation_table) in [
                 "int",
                 "int(8)",
                 "int(16)",
@@ -1101,15 +1120,23 @@ class WCFunc(WCNode):
                 "uint(64)",
             ]
         if self.name == "isRealType":
-            return self.actuals[0].eval(args) in ["real", "real(32)", "real(64)"]
+            return self.actuals[0].eval(args, translation_table) in [
+                "real",
+                "real(32)",
+                "real(64)",
+            ]
         if self.name == "isComplexType":
-            return self.actuals[0].eval(args) in [
+            return self.actuals[0].eval(args, translation_table) in [
                 "complex",
                 "complex(64)",
                 "complex(128)",
             ]
         if self.name == "isImagType":
-            return self.actuals[0].eval(args) in ["imag", "imag(32)", "imag(64)"]
+            return self.actuals[0].eval(args, translation_table) in [
+                "imag",
+                "imag(32)",
+                "imag(64)",
+            ]
         else:
             error_message(
                 "evaluating where-clause",
@@ -1134,12 +1161,16 @@ class WCLiteral(WCNode):
             # 🥲
             if self.value == "BigInteger.bigint":
                 self.value = "bigint"
+            if self.value.endswith(".rank"):
+                self.value = self.value.split(".")[0]
         else:
             raise ValueError("invalid where-clause literal")
 
-    def eval(self, args):
+    def eval(self, args, translation_table=None):
         if self.value in args:
             return args[self.value]
+        elif translation_table is not None and self.value in translation_table:
+            return args[translation_table[self.value]]
         else:
             return self.value
 
@@ -1148,7 +1179,15 @@ class WCLiteral(WCNode):
 
 
 def stamp_out_command(
-    config, formals, name, cmd_prefix, mod_name, line_num, iar_annotation, wc
+    config,
+    formals,
+    name,
+    cmd_prefix,
+    mod_name,
+    line_num,
+    iar_annotation,
+    wc,
+    query_table=None,
 ):
     """
     Yield instantiations of a generic command with using the
@@ -1167,13 +1206,14 @@ def stamp_out_command(
     * line_num: the line number of the annotated procedure
     * iar_annotation: a boolean indicating whether the command procedure was annotated with 'instantiateAndRegister'
     * wc: the where clause of the annotated procedure
+    * query_table: a dictionary mapping query names to their corresponding generic formal names
 
     The name of the instantiated command will be in the format: 'cmd_prefix<v1, v2, ...>'
     where v1, v2, ... are the values of the generic formals
     """
     formal_perms = generic_permutations(config, formals)
 
-    if iar_annotation and wc is not None:
+    if wc is not None:
         wc_node = WCNode(wc)
     else:
         wc_node = None
@@ -1181,7 +1221,7 @@ def stamp_out_command(
     for fp in formal_perms:
         # skip instantiation for this permutation if the where clause evaluates to false
         if wcn := wc_node:
-            if not wcn.eval(fp):
+            if not wcn.eval(fp, query_table):
                 continue
         stamp = stamp_generic_command(
             name, cmd_prefix, mod_name, fp, line_num, iar_annotation
@@ -1248,6 +1288,10 @@ def register_commands(config, source_files):
             else:
                 command_prefix = name
 
+            ignore_where_clause = False
+            if iwc := attr_call["ignoreWhereClause"]:
+                ignore_where_clause = bool(iwc.value())
+
             if len(gen_formals) > 0:
                 error_message(
                     f"registering '{name}'",
@@ -1256,8 +1300,8 @@ def register_commands(config, source_files):
                 )
                 continue
 
-            (cmd_proc, cmd_name, is_generic_cmd, cmd_gen_formals) = gen_command_proc(
-                name, fn.return_type(), con_formals, mod_name, config
+            (cmd_proc, cmd_name, is_generic_cmd, cmd_gen_formals, query_table) = (
+                gen_command_proc(name, fn.return_type(), con_formals, mod_name, config)
             )
 
             file_stamps.append(cmd_proc)
@@ -1273,7 +1317,8 @@ def register_commands(config, source_files):
                         mod_name,
                         line_num,
                         False,
-                        fn.where_clause(),
+                        fn.where_clause() if not ignore_where_clause else None,
+                        query_table,
                     ):
                         file_stamps.append(stamp)
                 except ValueError as e:

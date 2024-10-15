@@ -945,9 +945,9 @@ module AryUtil
       flatten a multi-dimensional array into a 1D array
     */
     @arkouda.registerCommand
-    proc flatten(const ref a: [?d] ?t): [] t throws
-      where a.rank > 1
-    {
+    proc flatten(const ref a: [?d] ?t): [] t throws {
+      if a.rank == 1 then return a;
+
       var flat = makeDistArray(d.size, t);
 
       // ranges of flat indices owned by each locale
@@ -1002,12 +1002,6 @@ module AryUtil
       }
 
       return flat;
-    }
-
-    proc flatten(const ref a: [?d] ?t): [] t throws
-      where a.rank == 1
-    {
-      return a;
     }
 
     // helper for computing an array element's index from its order

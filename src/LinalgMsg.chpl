@@ -276,11 +276,6 @@ module LinalgMsg {
         return ret;
     }
 
-    proc transpose(array: [?d] ?t): [d] t throws
-    where d.rank < 2 {
-      throw new Error("Matrix transpose with arrays of dimension < 2 is not supported");
-    }
-
     /*
         Compute the generalized dot product of two tensors along the specified axis.
 
