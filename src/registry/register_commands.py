@@ -1031,23 +1031,29 @@ class WCBinOP(WCNode):
     def eval(self, args):
         lhse = self.lhs.eval(args)
         rhse = self.rhs.eval(args)
-        match self.op:
-            case "==":
-                return lhse == rhse
-            case "!=":
-                return lhse != rhse
-            case "<":
-                return int(lhse) < int(rhse)
-            case "<=":
-                return int(lhse) <= int(rhse)
-            case ">":
-                return int(lhse) > int(rhse)
-            case ">=":
-                return int(lhse) >= int(rhse)
-            case "&&":
-                return bool(lhse) and bool(rhse)
-            case "||":
-                return bool(lhse) or bool(rhse)
+
+        if self.op == "==":
+            return lhse == rhse
+        elif self.op == "!=":
+            return lhse != rhse
+        elif self.op == "<":
+            return int(lhse) < int(rhse)
+        elif self.op == "<=":
+            return int(lhse) <= int(rhse)
+        elif self.op == ">":
+            return int(lhse) > int(rhse)
+        elif self.op == ">=":
+            return int(lhse) >= int(rhse)
+        elif self.op == "&&":
+            return bool(lhse) and bool(rhse)
+        elif self.op == "||":
+            return bool(lhse) or bool(rhse)
+        else:
+            error_message(
+                "evaluating where-clause",
+                f"binary operator '{self.op}' not yet supported in where-clauses",
+            )
+            return True
 
     def __str__(self):
         return f"({self.lhs} {self.op} {self.rhs})"
@@ -1059,11 +1065,16 @@ class WCUnaryOP(WCNode):
         self.operand = WCNode(list(ast.actuals())[0])
 
     def eval(self, args):
-        match self.op:
-            case "!":
-                return not bool(self.operand.eval(args))
-            case "-":
-                return -int(self.operand.eval(args))
+        if self.op == "!":
+            return not bool(self.operand.eval(args))
+        elif self.op == "-":
+            return -int(self.operand.eval(args))
+        else:
+            error_message(
+                "evaluating where-clause",
+                f"unary operator '{self.op}' not yet supported in where-clauses",
+            )
+            return True
 
     def __str__(self):
         return f"{self.op}{self.operand}"
