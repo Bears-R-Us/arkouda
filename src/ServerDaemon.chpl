@@ -657,28 +657,13 @@ module ServerDaemon {
                         when "ruok" {
                             repMsg = new MsgTuple("imok", MsgType.NORMAL);
                         }
-                        otherwise { // Look up in CommandMap or Binary CommandMap
+                        otherwise { // Look up in CommandMap
                             if commandMap.contains(cmd) {
                                 repMsg = executeCommand(cmd, msgArgs, st);
                             } else {
-                                const (multiDimCommand, nd, rawCmd) = getNDSpec(cmd),
-                                      command1D = rawCmd + "1D";
-                                if multiDimCommand && nd > ServerConfig.MaxArrayDims && commandMap.contains(command1D) {
-                                    const errMsg = "Error: Command '%s' is not supported with the current server configuration "
-                                                    .format(cmd) +
-                                                    "as the maximum array dimensionality is %i. Please recompile with support for at least %iD arrays"
-                                                    .format(ServerConfig.MaxArrayDims, nd);
-                                    sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errMsg);
-                                    repMsg = new MsgTuple(errMsg, MsgType.ERROR);
-                                } else if multiDimCommand && commandMap.contains(rawCmd) {
-                                    const errMsg = "Error: Command '%s' is not supported for multidimensional arrays".format(rawCmd);
-                                    sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errMsg);
-                                    repMsg = new MsgTuple(errMsg, MsgType.ERROR);
-                                } else {
-                                    const errorMsg = "Unrecognized command: %s".format(cmd);
-                                    sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                                    repMsg = new MsgTuple(errorMsg, MsgType.ERROR);
-                                }
+                                const errorMsg = "Unrecognized command: %s".format(cmd);
+                                sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                                repMsg = MsgTuple.error(errorMsg);
                             }
                         }
                     }
@@ -739,23 +724,6 @@ module ServerDaemon {
                                                                             elapsed));
             this.shutdown(); 
         }
-    }
-
-    /*
-      Determines whether a command contains an ND specification, e.g. 1D, 2D, 3D, etc.
-
-      If it does, returns a tuple containing (true, <array-dimension>, "<raw_cmd>")
-      Otherwise, returns (false, 0, "")
-    */
-    private proc getNDSpec(cmd: string): (bool, int, string) {
-        import Regex.regex;
-
-        const ndCmd = try! new regex("([a-zA-Z_]+)(\\d+)?D");
-        var cmdString: string, nd: int;
-        if ndCmd.match(cmd, cmdString, nd) {
-            if nd != 0 then return (true, nd, cmdString);
-        }
-        return (false, 0, "");
     }
 
     /**
