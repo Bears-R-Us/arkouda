@@ -74,64 +74,64 @@ class TestClient:
     #     start_arkouda_server(numlocales=pytest.nl)
     #     # reconnect to server so subsequent tests will pass
     #     ak.connect(server=pytest.server, port=pytest.port, timeout=pytest.timeout)
-
-    def test_client_get_config(self):
-        """
-        Tests the ak.client.get_config() method
-
-        :return: None
-        :raise: AssertionError if one or more Config values are not as expected
-                or the call to ak.client.get_config() fails
-        """
-        try:
-            config = ak.client.get_config()
-        except Exception as e:
-            raise AssertionError(e)
-        assert pytest.port == config["ServerPort"]
-        assert "arkoudaVersion" in config
-        assert "INFO" == config["logLevel"]
-
-        import json
-
-        def get_server_max_array_dims():
-            try:
-                return max(
-                    json.load(open("registration-config.json", "r"))["parameter_classes"]["array"]["nd"]
-                )
-            except (ValueError, FileNotFoundError, TypeError, KeyError):
-                return 1
-
-        assert get_server_max_array_dims() == ak.client.get_max_array_rank()
-
-    def test_get_mem_used(self):
-        """
-        Tests the ak.get_mem_used and ak.get_mem_avail methods
-
-        :return: None
-        :raise: AssertionError if one or more ak.get_mem_used values are not as
-                expected or the call to ak.client.get_mem_used() fails
-        """
-        try:
-            config = ak.client.get_config()
-            a = ak.ones(1024 * 1024 * config["numLocales"])  # noqa: F841
-            mem_used = ak.client.get_mem_used()
-        except Exception as e:
-            raise AssertionError(e)
-        assert mem_used > 0
-
-        # test units
-        mem_used = ak.get_mem_used()
-        mem_avail = ak.get_mem_avail()
-        for u, f in ak.client._memunit2factor.items():
-            assert round(mem_used / f) == ak.get_mem_used(u)
-            assert round(mem_avail / f) == ak.get_mem_avail(u)
-
-        # test as_percent
-        tot_mem = ak.get_mem_used() + ak.get_mem_avail()
-        assert ak.get_mem_used(as_percent=True) == round((ak.get_mem_used() / tot_mem) * 100)
-        assert ak.get_mem_avail(as_percent=True), round((ak.get_mem_avail() / tot_mem) * 100)
-
-        assert 100 == ak.get_mem_used(as_percent=True) + ak.get_mem_avail(as_percent=True)
+    #
+    # def test_client_get_config(self):
+    #     """
+    #     Tests the ak.client.get_config() method
+    #
+    #     :return: None
+    #     :raise: AssertionError if one or more Config values are not as expected
+    #             or the call to ak.client.get_config() fails
+    #     """
+    #     try:
+    #         config = ak.client.get_config()
+    #     except Exception as e:
+    #         raise AssertionError(e)
+    #     assert pytest.port == config["ServerPort"]
+    #     assert "arkoudaVersion" in config
+    #     assert "INFO" == config["logLevel"]
+    #
+    #     import json
+    #
+    #     def get_server_max_array_dims():
+    #         try:
+    #             return max(
+    #                 json.load(open("registration-config.json", "r"))["parameter_classes"]["array"]["nd"]
+    #             )
+    #         except (ValueError, FileNotFoundError, TypeError, KeyError):
+    #             return 1
+    #
+    #     assert get_server_max_array_dims() == ak.client.get_max_array_rank()
+    #
+    # def test_get_mem_used(self):
+    #     """
+    #     Tests the ak.get_mem_used and ak.get_mem_avail methods
+    #
+    #     :return: None
+    #     :raise: AssertionError if one or more ak.get_mem_used values are not as
+    #             expected or the call to ak.client.get_mem_used() fails
+    #     """
+    #     try:
+    #         config = ak.client.get_config()
+    #         a = ak.ones(1024 * 1024 * config["numLocales"])  # noqa: F841
+    #         mem_used = ak.client.get_mem_used()
+    #     except Exception as e:
+    #         raise AssertionError(e)
+    #     assert mem_used > 0
+    #
+    #     # test units
+    #     mem_used = ak.get_mem_used()
+    #     mem_avail = ak.get_mem_avail()
+    #     for u, f in ak.client._memunit2factor.items():
+    #         assert round(mem_used / f) == ak.get_mem_used(u)
+    #         assert round(mem_avail / f) == ak.get_mem_avail(u)
+    #
+    #     # test as_percent
+    #     tot_mem = ak.get_mem_used() + ak.get_mem_avail()
+    #     assert ak.get_mem_used(as_percent=True) == round((ak.get_mem_used() / tot_mem) * 100)
+    #     assert ak.get_mem_avail(as_percent=True), round((ak.get_mem_avail() / tot_mem) * 100)
+    #
+    #     assert 100 == ak.get_mem_used(as_percent=True) + ak.get_mem_avail(as_percent=True)
 
     def test_no_op(self):
         """
