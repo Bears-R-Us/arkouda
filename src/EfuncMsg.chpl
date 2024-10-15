@@ -47,9 +47,6 @@ module EfuncMsg
 //  This comment will be updated as other functions are rewritten, and deleted
 //  once the rewrite is complete.
 
-//  Error-throwing versions of each function are indented below their "parents"
-//  in order to improve readability.
-
     @arkouda.registerCommand (name="sin")
     proc sine (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return sin(x); }
