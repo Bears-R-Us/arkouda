@@ -339,7 +339,7 @@ def clean_enum_name(name):
 
 
 def stamp_generic_command(
-    generic_proc_name, prefix, module_name, formals, line_num, is_user_proc
+    generic_proc_name, prefix, module_name, formals, line_num, iar_annotation
 ):
     """
     Create code to stamp out and register a generic command using a generic
@@ -376,8 +376,8 @@ def stamp_generic_command(
 
     stamp_formal_args = ", ".join([f"{k}={v}" for k, v in formals.items()])
 
-    # use qualified naming if generic_proc belongs in a use defined module to avoid name conflicts
-    call = f"{module_name}.{generic_proc_name}" if is_user_proc else generic_proc_name
+    # use qualified naming if generic_proc belongs in a user defined module to avoid name conflicts
+    call = f"{module_name}.{generic_proc_name}" if iar_annotation else generic_proc_name
 
     proc = (
         f"proc {stamp_name}(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): {RESPONSE_TYPE_NAME} throws do\n"
@@ -590,7 +590,9 @@ def unpack_array_arg(arg_name, array_count, finfo, domain_queries, dtype_queries
     )
 
 
-def unpack_generic_symbol_arg(arg_name, symbol_class_name, symbol_count, symbol_param_class):
+def unpack_generic_symbol_arg(
+    arg_name, symbol_class_name, symbol_count, symbol_param_class
+):
     """
     Generate the code to unpack a non-array symbol-table entry class (a class that
     inherits from 'AbstractSymEntry').
@@ -990,8 +992,152 @@ def gen_command_proc(name, return_type, formals, mod_name, config):
     return (command_proc, cmd_name, is_generic_command, command_formals)
 
 
+# TODO: use the compiler's built-in support for where-clause evaluation and resolution
+#       instead of re-implementing it in a much less robust manner here
+class WCNode:
+    def __init__(self, ast):
+        if isinstance(ast, chapel.OpCall):
+            if ast.is_binary_op():
+                self.node = WCBinOP(ast)
+            else:
+                self.node = WCUnaryOP(ast)
+        elif isinstance(ast, chapel.FnCall):
+            # 'int(8)' for example should be treated as a literal type name, not a function call
+            call_name = ast.called_expression().name()
+            if call_name in chapel_scalar_types.keys():
+                self.node = WCLiteral(call_name, list(ast.actuals())[0].text())
+            else:
+                self.node = WCFunc(ast)
+        else:
+            self.node = WCLiteral(ast)
+
+    def eval(self, args):
+        return self.node.eval(args)
+
+    def __str__(self):
+        return self.node.__str__()
+
+    def __repr__(self):
+        return self.node.__str__()
+
+
+class WCBinOP(WCNode):
+    def __init__(self, ast):
+        self.op = ast.op()
+        actuals = list(ast.actuals())
+        self.lhs = WCNode(actuals[0])
+        self.rhs = WCNode(actuals[1])
+
+    def eval(self, args):
+        lhse = self.lhs.eval(args)
+        rhse = self.rhs.eval(args)
+        match self.op:
+            case "==":
+                return lhse == rhse
+            case "!=":
+                return lhse != rhse
+            case "<":
+                return int(lhse) < int(rhse)
+            case "<=":
+                return int(lhse) <= int(rhse)
+            case ">":
+                return int(lhse) > int(rhse)
+            case ">=":
+                return int(lhse) >= int(rhse)
+            case "&&":
+                return bool(lhse) and bool(rhse)
+            case "||":
+                return bool(lhse) or bool(rhse)
+
+    def __str__(self):
+        return f"({self.lhs} {self.op} {self.rhs})"
+
+
+class WCUnaryOP(WCNode):
+    def __init__(self, ast):
+        self.op = ast.op()
+        self.operand = WCNode(list(ast.actuals())[0])
+
+    def eval(self, args):
+        match self.op:
+            case "!":
+                return not bool(self.operand.eval(args))
+            case "-":
+                return -int(self.operand.eval(args))
+
+    def __str__(self):
+        return f"{self.op}{self.operand}"
+
+
+class WCFunc(WCNode):
+    def __init__(self, ast):
+        self.name = ast.called_expression().name()
+        self.actuals = [WCNode(a) for a in list(ast.actuals())]
+
+    def eval(self, args):
+        # TODO: this is a really bad way to do this. the compiler should be leveraged much more heavily here
+        if self.name == "isIntegralType":
+            return self.actuals[0].eval(args) in [
+                "int",
+                "int(8)",
+                "int(16)",
+                "int(32)",
+                "int(64)",
+                "uint",
+                "uint(8)",
+                "uint(16)",
+                "uint(32)",
+                "uint(64)",
+            ]
+        if self.name == "isRealType":
+            return self.actuals[0].eval(args) in ["real", "real(32)", "real(64)"]
+        if self.name == "isComplexType":
+            return self.actuals[0].eval(args) in [
+                "complex",
+                "complex(64)",
+                "complex(128)",
+            ]
+        if self.name == "isImagType":
+            return self.actuals[0].eval(args) in ["imag", "imag(32)", "imag(64)"]
+        else:
+            error_message(
+                "evaluating where-clause",
+                f"general function calls not yet supported in where-clauses; ignoring function: {self.name}",
+            )
+            return True
+
+    def __str__(self):
+        return f"{self.name}({', '.join([str(a) for a in self.actuals])})"
+
+
+class WCLiteral(WCNode):
+    def __init__(self, ast, width=None):
+        if width is not None:
+            self.value = f"{ast}({width})"
+        elif isinstance(ast, chapel.Identifier):
+            self.value = ast.name()
+        elif isinstance(ast, chapel.IntLiteral):
+            self.value = ast.text()
+        elif isinstance(ast, chapel.Dot):
+            self.value = ast.receiver().name() + "." + ast.field()
+            # 🥲
+            if self.value == "BigInteger.bigint":
+                self.value = "bigint"
+        else:
+            raise ValueError("invalid where-clause literal")
+
+    def eval(self, args):
+        if self.value in args:
+            return args[self.value]
+        else:
+            return self.value
+
+    def __str__(self):
+        return self.value
+
+
 def stamp_out_command(
-    config, formals, name, cmd_prefix, mod_name, line_num, is_user_proc
+    config, formals, name, cmd_prefix, mod_name, line_num, iar_annotation, wc
 ):
     """
     Yield instantiations of a generic command with using the
@@ -1007,15 +1153,28 @@ def stamp_out_command(
     * cmd_prefix: the prefix to use for the command names
     * mod_name: the name of the module containing the command procedure
         (or the user-defined procedure that the command calls)
+    * line_num: the line number of the annotated procedure
+    * iar_annotation: a boolean indicating whether the command procedure was annotated with 'instantiateAndRegister'
+    * wc: the where clause of the annotated procedure
 
     The name of the instantiated command will be in the format: 'cmd_prefix<v1, v2, ...>'
     where v1, v2, ... are the values of the generic formals
     """
     formal_perms = generic_permutations(config, formals)
 
+    if iar_annotation and wc is not None:
+        wc_node = WCNode(wc)
+        print(name, wc_node)
+    else:
+        wc_node = None
+
     for fp in formal_perms:
+        # skip instantiation for this permutation if the where clause evaluates to false
+        if wcn := wc_node:
+            if not wcn.eval(fp):
+                continue
         stamp = stamp_generic_command(
-            name, cmd_prefix, mod_name, fp, line_num, is_user_proc
+            name, cmd_prefix, mod_name, fp, line_num, iar_annotation
         )
         yield stamp
 
@@ -1104,6 +1263,7 @@ def register_commands(config, source_files):
                         mod_name,
                         line_num,
                         False,
+                        fn.where_clause(),
                     ):
                         file_stamps.append(stamp)
                 except ValueError as e:
@@ -1143,7 +1303,14 @@ def register_commands(config, source_files):
 
             try:
                 for stamp in stamp_out_command(
-                    config, gen_formals, name, command_prefix, mod_name, line_num, True
+                    config,
+                    gen_formals,
+                    name,
+                    command_prefix,
+                    mod_name,
+                    line_num,
+                    True,
+                    fn.where_clause(),
                 ):
                     file_stamps.append(stamp)
                     count += 1

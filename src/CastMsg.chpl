@@ -25,7 +25,8 @@ module CastMsg {
     type array_dtype_to,
     param array_nd: int
   ): MsgTuple throws
-    where !(isFloatingType(array_dtype_from) && array_dtype_to == bigint) &&
+    where !((isRealType(array_dtype_from) || isImagType(array_dtype_from) || isComplexType(array_dtype_from))
+            && array_dtype_to == bigint) &&
           !(array_dtype_from == bigint && array_dtype_to == bool)
   {
     const a = st[msgArgs["name"]]: SymEntry(array_dtype_from, array_nd);
