@@ -106,8 +106,8 @@ def startup_teardown():
 def manage_connection():
     import arkouda as ak
 
-    import time
-    time.sleep(1)
+    # import time
+    # time.sleep(3)
     try:
         ak.connect(server=pytest.server, port=pytest.port, timeout=pytest.timeout)
         pytest.max_rank = get_max_array_rank()
