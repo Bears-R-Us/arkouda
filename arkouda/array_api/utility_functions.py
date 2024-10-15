@@ -146,6 +146,9 @@ def pad(
     if mode != "constant":
         raise NotImplementedError(f"pad mode '{mode}' is not supported")
 
+    if array.dtype == ak.bigint:
+        raise RuntimeError("Error executing command: pad does not support dtype bigint")
+
     if "constant_values" not in kwargs:
         cvals = 0
     else:
