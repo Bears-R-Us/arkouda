@@ -15,10 +15,6 @@ module CastMsg {
   private config const logChannel = ServerConfig.logChannel;
   const castLogger = new Logger(logLevel, logChannel);
 
-  proc isFloatingType(type t) param : bool {
-    return isRealType(t) || isImagType(t) || isComplexType(t);
-  }
-
   @arkouda.instantiateAndRegister(prefix="cast")
   proc castArray(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
     type array_dtype_from,
@@ -39,22 +35,6 @@ module CastMsg {
         type2str(array_dtype_to)
       ));
     }
-  }
-
-  // cannot cast float types to bigint, cannot cast bigint to bool
-  proc castArray(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
-    type array_dtype_from,
-    type array_dtype_to,
-    param array_nd: int
-  ): MsgTuple throws
-    where (isFloatingType(array_dtype_from) && array_dtype_to == bigint) ||
-          (array_dtype_from == bigint && array_dtype_to == bool)
-  {
-    return MsgTuple.error(
-      "cannot cast array of type %s to %s".format(
-      type2str(array_dtype_from),
-      type2str(array_dtype_to)
-    ));
   }
 
   @arkouda.instantiateAndRegister(prefix="castToStrings")

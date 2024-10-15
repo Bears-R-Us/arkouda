@@ -380,16 +380,6 @@ module ReductionMsg
 
 
     // simple and efficient 'nonzero' implementation for 1D arrays
-    proc nonzero(
-      cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
-      type array_dtype,
-      param array_nd: int
-    ): MsgTuple throws
-      where array_dtype == bigint
-    {
-      return MsgTuple.error("nonzero is not supported for bigint arrays");
-    }
-
     proc nonzero1D(x: [?d] ?t): [] int throws {
       const nTasksPerLoc = here.maxTaskPar;
       var nnzPerTask: [0..<numLocales] [0..<nTasksPerLoc] int;

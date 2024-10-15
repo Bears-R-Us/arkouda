@@ -61,13 +61,6 @@ module LinalgMsg {
         return st.insert(e);
     }
 
-
-    proc eye(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype): MsgTuple throws 
-       where array_dtype == BigInteger.bigint
-    {
-        return MsgTuple.error("eye does not support the bigint dtype");
-    }
-
     //  tril and triu are identical except for the argument they pass to triluHandler (true for upper, false for lower)
     //  The zeros are written into the upper (or lower) triangle of the array, offset by the value of diag.
 
@@ -79,11 +72,6 @@ module LinalgMsg {
         return triluHandler(cmd, msgArgs, st, array_dtype, array_nd, false);
     }
 
-    proc tril(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws 
-    where array_nd < 2 {
-        return MsgTuple.error("Array must be at least 2 dimensional for 'tril'");
-    }
-
     //  Create an array from an existing array with its lower triangle zeroed out
 
     @arkouda.instantiateAndRegister
@@ -92,13 +80,9 @@ module LinalgMsg {
         return triluHandler(cmd, msgArgs, st, array_dtype, array_nd, true);
     }
 
-    proc triu(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws 
-    where array_nd < 2 {
-        return MsgTuple.error("Array must be at least 2 dimensional for 'triu'");
-    }
-
-    //  Fetch the arguments, call zeroTri, return result. 
-
+    //  Fetch the arguments, call zeroTri, return result.
+    // TODO: support instantiating param bools with 'true' and 'false' s.t. we'd have 'triluHandler<true>' and 'triluHandler<false>'
+    //       cmds if this procedure were annotated instead of the two above.
     proc triluHandler(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
                       type array_dtype, param array_nd: int, param upper: bool
     ): MsgTuple throws {
@@ -193,16 +177,6 @@ module LinalgMsg {
 
         return st.insert(eOut);
 
-    }
-
-    proc matmul(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype_x1, type array_dtype_x2, param array_nd: int): MsgTuple throws
-        where (array_nd < 2) && (array_dtype_x1 != BigInteger.bigint) && (array_dtype_x2 != BigInteger.bigint) {
-            return MsgTuple.error("Matrix multiplication with arrays of dimension < 2 is not supported");
-    }
-
-    proc matmul(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype_x1, type array_dtype_x2, param array_nd: int): MsgTuple throws
-        where (array_dtype_x1 == BigInteger.bigint) || (array_dtype_x2 == BigInteger.bigint) {
-            return MsgTuple.error("Matrix multiplication with arrays of bigint type is not supported");
     }
 
     proc compute_result_type_matmul(type t1, type t2) type {
@@ -364,22 +338,6 @@ module LinalgMsg {
         if t1 == uint(8) || t2 == uint(8) then return uint(8);
         if t1 == uint(64) || t2 == uint(64) then return uint(64);
         return bool;
-    }
-
-    proc vecdot(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype_x1, type array_dtype_x2, param array_nd: int): MsgTuple throws
-        where (array_nd < 2)  && ((array_dtype_x1 != bool) || (array_dtype_x2 != bool)) 
-            && (array_dtype_x1 != BigInteger.bigint) && (array_dtype_x2 != BigInteger.bigint)  {
-            return MsgTuple.error("VecDot with arrays of dimension < 2 is not supported");
-    }
-
-    proc vecdot(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype_x1, type array_dtype_x2, param array_nd: int): MsgTuple throws
-        where (array_dtype_x1 == bool) && (array_dtype_x2 == bool) {
-            return MsgTuple.error("VecDot with arrays both of type bool is not supported");
-    }
-
-    proc vecdot(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype_x1, type array_dtype_x2, param array_nd: int): MsgTuple throws
-        where (array_dtype_x1 == BigInteger.bigint) || (array_dtype_x2 == BigInteger.bigint) {
-            return MsgTuple.error("VecDot with arrays of type bigint is not supported");
     }
 
     // @arkouda.registerND(???)

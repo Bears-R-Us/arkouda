@@ -27,12 +27,6 @@ module SetMsg {
     return st.insert(new shared SymEntry(eUnique));
   }
 
-  proc uniqueValues(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
-    where (array_dtype == BigInteger.bigint) || (array_dtype == uint(8))
-  {
-      return MsgTuple.error("unique_values does not support the %s dtype".format(array_dtype:string));
-  }
-
   @arkouda.instantiateAndRegister
   proc uniqueCounts(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws {
     const name = msgArgs.getValueOf("name"),

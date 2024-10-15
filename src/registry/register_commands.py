@@ -1164,7 +1164,6 @@ def stamp_out_command(
 
     if iar_annotation and wc is not None:
         wc_node = WCNode(wc)
-        print(name, wc_node)
     else:
         wc_node = None
 
