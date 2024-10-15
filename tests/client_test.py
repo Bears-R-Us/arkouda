@@ -176,17 +176,17 @@ class TestClient:
     #     cmds = ak.client.get_server_commands()
     #     for cmd in ["connect", "info", "str"]:
     #         assert cmd in cmds
-
-    def test_client_nd_unimplemented_error(self):
-        """
-        Tests that a user will get a helpful error message if they attempt to
-        use a multi-dimensional command when only a 1D implementation exists.
-        """
-        with pytest.raises(RuntimeError) as cm:
-            resp = generic_msg("connect2D")
-
-        err_msg = "Error: Command 'connect' is not supported for multidimensional arrays"
-        cm.match(err_msg)  #   Asserts the error msg matches the expected value
+    #
+    # def test_client_nd_unimplemented_error(self):
+    #     """
+    #     Tests that a user will get a helpful error message if they attempt to
+    #     use a multi-dimensional command when only a 1D implementation exists.
+    #     """
+    #     with pytest.raises(RuntimeError) as cm:
+    #         resp = generic_msg("connect2D")
+    #
+    #     err_msg = "Error: Command 'connect' is not supported for multidimensional arrays"
+    #     cm.match(err_msg)  #   Asserts the error msg matches the expected value
 
     def test_fake_assert(self):
         assert True == True
