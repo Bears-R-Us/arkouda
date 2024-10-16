@@ -387,7 +387,7 @@
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">to_list</span></code></p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code>, <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.SegArray.to_list" title="arkouda.SegArray.to_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_list</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">segarr</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">SegArray</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">]),</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">12</span><span class="p">))</span>
@@ -586,7 +586,7 @@ corresponding sub-array of self).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>other</strong> (<a class="reference internal" href="../autoapi/arkouda/segarray/index.html#arkouda.segarray.SegArray" title="arkouda.segarray.SegArray"><em>SegArray</em></a>) – Array of sub-arrays to append</p></li>
+<li><p><strong>other</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.SegArray" title="arkouda.SegArray"><em>SegArray</em></a>) – Array of sub-arrays to append</p></li>
 <li><p><strong>axis</strong> (<em>0</em><em> or </em><em>1</em>) – Whether to append vertically (0) or horizontally (1). If axis=1, other
 must be same size as self.</p></li>
 </ul>
@@ -596,7 +596,7 @@ must be same size as self.</p></li>
 axis=1: New SegArray of same length, with pairs of sub-arrays concatenated</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/segarray/index.html#arkouda.segarray.SegArray" title="arkouda.segarray.SegArray">SegArray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.SegArray" title="arkouda.SegArray">SegArray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -613,7 +613,7 @@ axis=1: New SegArray of same length, with pairs of sub-arrays concatenated</p>
 <dd class="field-even"><p>Copy of original SegArray with values from x appended to each sub-array</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/segarray/index.html#arkouda.segarray.SegArray" title="arkouda.segarray.SegArray">SegArray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.SegArray" title="arkouda.SegArray">SegArray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -657,13 +657,13 @@ each value in the returned SegArray was repeated in the original SegArray.</p></
 <dd><p>Computes the union of 2 SegArrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="../autoapi/arkouda/segarray/index.html#arkouda.segarray.SegArray" title="arkouda.segarray.SegArray"><em>SegArray</em></a>) – SegArray to compute against</p>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.SegArray" title="arkouda.SegArray"><em>SegArray</em></a>) – SegArray to compute against</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Segments are the 1d union of the segments of self and other</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/segarray/index.html#arkouda.segarray.SegArray" title="arkouda.segarray.SegArray">SegArray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.SegArray" title="arkouda.SegArray">SegArray</a></p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -695,13 +695,13 @@ each value in the returned SegArray was repeated in the original SegArray.</p></
 <dd><p>Computes the intersection of 2 SegArrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="../autoapi/arkouda/segarray/index.html#arkouda.segarray.SegArray" title="arkouda.segarray.SegArray"><em>SegArray</em></a>) – SegArray to compute against</p>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.SegArray" title="arkouda.SegArray"><em>SegArray</em></a>) – SegArray to compute against</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Segments are the 1d intersections of the segments of self and other</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/segarray/index.html#arkouda.segarray.SegArray" title="arkouda.segarray.SegArray">SegArray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.SegArray" title="arkouda.SegArray">SegArray</a></p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -733,13 +733,13 @@ each value in the returned SegArray was repeated in the original SegArray.</p></
 <dd><p>Computes the set difference of 2 SegArrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="../autoapi/arkouda/segarray/index.html#arkouda.segarray.SegArray" title="arkouda.segarray.SegArray"><em>SegArray</em></a>) – SegArray to compute against</p>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.SegArray" title="arkouda.SegArray"><em>SegArray</em></a>) – SegArray to compute against</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Segments are the 1d set difference of the segments of self and other</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/segarray/index.html#arkouda.segarray.SegArray" title="arkouda.segarray.SegArray">SegArray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.SegArray" title="arkouda.SegArray">SegArray</a></p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -771,13 +771,13 @@ each value in the returned SegArray was repeated in the original SegArray.</p></
 <dd><p>Computes the symmetric difference of 2 SegArrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="../autoapi/arkouda/segarray/index.html#arkouda.segarray.SegArray" title="arkouda.segarray.SegArray"><em>SegArray</em></a>) – SegArray to compute against</p>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.SegArray" title="arkouda.SegArray"><em>SegArray</em></a>) – SegArray to compute against</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Segments are the 1d symmetric difference of the segments of self and other</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/segarray/index.html#arkouda.segarray.SegArray" title="arkouda.segarray.SegArray">SegArray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.SegArray" title="arkouda.SegArray">SegArray</a></p>
 </dd>
 </dl>
 <div class="admonition seealso">

@@ -425,12 +425,15 @@ Module Contents
    :raises RuntimeError: Raised if there's a server-side error thrown
 
 
-.. py:function:: max(pda: pdarray) -> arkouda.numpy.dtypes.numpy_scalars
+.. py:function:: max(pda: pdarray, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None) -> Union[arkouda.numpy.dtypes.numpy_scalars, pdarray]
 
    Return the maximum value of the array.
 
    :param pda: Values for which to calculate the max
    :type pda: pdarray
+   :param axis: The axis or axes along which to compute the sum. If None, the sum of the entire array is
+                computed (returning a scalar).
+   :type axis: int or Tuple[int, ...], optional
 
    :returns: The max calculated from the pda
    :rtype: numpy_scalars
@@ -491,12 +494,15 @@ Module Contents
    :raises RuntimeError: Raised if there's a server-side error thrown
 
 
-.. py:function:: min(pda: pdarray) -> arkouda.numpy.dtypes.numpy_scalars
+.. py:function:: min(pda: pdarray, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None) -> Union[arkouda.numpy.dtypes.numpy_scalars, pdarray]
 
    Return the minimum value of the array.
 
    :param pda: Values for which to calculate the min
    :type pda: pdarray
+   :param axis: The axis or axes along which to compute the sum. If None, the sum of the entire array is
+                computed (returning a scalar).
+   :type axis: int or Tuple[int, ...], optional
 
    :returns: The min calculated from the pda
    :rtype: numpy_scalars
@@ -913,7 +919,7 @@ Module Contents
    .. py:attribute:: itemsize
 
 
-   .. py:method:: max() -> arkouda.numpy.dtypes.numpy_scalars
+   .. py:method:: max() -> Union[arkouda.numpy.dtypes.numpy_scalars, pdarray]
 
       Return the maximum value of the array.
 
@@ -942,7 +948,7 @@ Module Contents
 
 
 
-   .. py:method:: min() -> arkouda.numpy.dtypes.numpy_scalars
+   .. py:method:: min() -> Union[arkouda.numpy.dtypes.numpy_scalars, pdarray]
 
       Return the minimum value of the array.
 
@@ -1005,7 +1011,7 @@ Module Contents
 
 
 
-   .. py:method:: prod() -> numpy.float64
+   .. py:method:: prod() -> Union[numpy.float64, pdarray]
 
       Return the product of all elements in the array. Return value is
       always a np.float64 or np.int64.
@@ -1207,7 +1213,7 @@ Module Contents
 
 
 
-   .. py:method:: sum() -> arkouda.numpy.dtypes.numeric_and_bool_scalars
+   .. py:method:: sum() -> Union[arkouda.numpy.dtypes.numeric_and_bool_scalars, pdarray]
 
       Return the sum of all elements in the array.
 
@@ -1632,13 +1638,16 @@ Module Contents
    array([0, 1, 8, 3, 64])
 
 
-.. py:function:: prod(pda: pdarray) -> numpy.float64
+.. py:function:: prod(pda: pdarray, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None) -> Union[numpy.float64, pdarray]
 
    Return the product of all elements in the array. Return value is
    always a np.float64 or np.int64
 
    :param pda: Values for which to calculate the product
    :type pda: pdarray
+   :param axis: The axis or axes along which to compute the sum. If None, the sum of the entire array is
+                computed (returning a scalar).
+   :type axis: int or Tuple[int, ...], optional
 
    :returns: The product calculated from the pda
    :rtype: numpy_scalars
@@ -1746,12 +1755,15 @@ Module Contents
    unbiased estimate of the standard deviation per se.
 
 
-.. py:function:: sum(pda: pdarray) -> arkouda.numpy.dtypes.numeric_and_bool_scalars
+.. py:function:: sum(pda: pdarray, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None) -> Union[arkouda.numpy.dtypes.numeric_and_bool_scalars, pdarray]
 
    Return the sum of all elements in the array.
 
    :param pda: Values for which to calculate the sum
    :type pda: pdarray
+   :param axis: The axis or axes along which to compute the sum. If None, the sum of the entire array is
+                computed (returning a scalar).
+   :type axis: int or Tuple[int, ...], optional
 
    :returns: The sum of all elements in the array
    :rtype: np.float64
