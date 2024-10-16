@@ -1106,36 +1106,34 @@ class WCFunc(WCNode):
 
     def eval(self, args, translation_table=None):
         # TODO: this is a really bad way to do this. the compiler should be leveraged much more heavily here
+        arg = self.actuals[0].eval(args, translation_table)
         if self.name == "isIntegralType":
-            return self.actuals[0].eval(args, translation_table) in [
-                "int",
-                "int(8)",
-                "int(16)",
-                "int(32)",
-                "int(64)",
-                "uint",
-                "uint(8)",
-                "uint(16)",
-                "uint(32)",
-                "uint(64)",
+            return arg in [
+                "int8",
+                "int16",
+                "int32",
+                "int64",
+                "uint8",
+                "uint16",
+                "uint32",
+                "uint64",
             ]
-        if self.name == "isRealType":
-            return self.actuals[0].eval(args, translation_table) in [
-                "real",
-                "real(32)",
-                "real(64)",
+        elif self.name == "isRealType":
+            return arg in [
+                "float32",
+                "float64",
             ]
-        if self.name == "isComplexType":
-            return self.actuals[0].eval(args, translation_table) in [
+        elif self.name == "isComplexType":
+            return arg in [
                 "complex",
-                "complex(64)",
-                "complex(128)",
+                "complex64",
+                "complex128",
             ]
-        if self.name == "isImagType":
-            return self.actuals[0].eval(args, translation_table) in [
+        elif self.name == "isImagType":
+            return arg in [
                 "imag",
-                "imag(32)",
-                "imag(64)",
+                "imag32",
+                "imag64",
             ]
         else:
             error_message(
@@ -1148,12 +1146,20 @@ class WCFunc(WCNode):
         return f"{self.name}({', '.join([str(a) for a in self.actuals])})"
 
 
+def canonicalize_type_name(name):
+    if name in chapel_scalar_types:
+        return chapel_scalar_types[name]
+    else:
+        return name
+
+
 class WCLiteral(WCNode):
     def __init__(self, ast, width=None):
+        # note: scalar type names are canonicalized to ensure 'int' == 'int(64)' (for example)
         if width is not None:
-            self.value = f"{ast}({width})"
+            self.value = canonicalize_type_name(f"{ast}({width})")
         elif isinstance(ast, chapel.Identifier):
-            self.value = ast.name()
+            self.value = canonicalize_type_name(ast.name())
         elif isinstance(ast, chapel.IntLiteral):
             self.value = ast.text()
         elif isinstance(ast, chapel.Dot):
@@ -1162,15 +1168,15 @@ class WCLiteral(WCNode):
             if self.value == "BigInteger.bigint":
                 self.value = "bigint"
             if self.value.endswith(".rank"):
-                self.value = self.value.split(".")[0]
+                self.value = self.value.split(".")[0]  # ex: d1.rank -> d1
         else:
             raise ValueError("invalid where-clause literal")
 
     def eval(self, args, translation_table=None):
         if self.value in args:
-            return args[self.value]
+            return canonicalize_type_name(args[self.value])
         elif translation_table is not None and self.value in translation_table:
-            return args[translation_table[self.value]]
+            return canonicalize_type_name(args[translation_table[self.value]])
         else:
             return self.value
 
