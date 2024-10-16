@@ -922,10 +922,13 @@ def arange(*args, **kwargs) -> pdarray:
         repMsg = generic_msg(
             cmd="arange", args={"start": start, "stop": stop, "stride": stride, "dtype": arg_dtype}
         )
-        return (
-            create_pdarray(repMsg, max_bits=max_bits)
-            if dtype == akint64
-            else array(create_pdarray(repMsg), max_bits=max_bits, dtype=dtype)
+        return cast(
+            pdarray,
+            (
+                create_pdarray(repMsg, max_bits=max_bits)
+                if dtype == akint64
+                else array(create_pdarray(repMsg), max_bits=max_bits, dtype=dtype)
+            ),
         )
     else:
         raise TypeError(
