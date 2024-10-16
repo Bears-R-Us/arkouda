@@ -189,6 +189,4 @@ class TestClient:
         cm.match(err_msg)  #   Asserts the error msg matches the expected value
 
     def test_fake_assert(self):
-        # import time
-        # time.sleep(3)
         assert True == True

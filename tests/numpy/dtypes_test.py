@@ -25,8 +25,6 @@ SUPPORTED_NP_DTYPES = [
 class TestDTypes:
 
     def test_resolve_scalar_dtype(self):
-        # import time
-        # time.sleep(3)
         for b in True, False:
             assert "bool" == dtypes.resolve_scalar_dtype(b)
 
