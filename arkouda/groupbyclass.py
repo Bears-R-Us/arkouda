@@ -32,7 +32,7 @@ from arkouda.numpy.dtypes import int_scalars
 from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.pdarrayclass import RegistrationError, create_pdarray, is_sorted, pdarray
 from arkouda.pdarraycreation import arange, full
-from arkouda.random import default_rng
+from arkouda.numpy.random import default_rng
 from arkouda.sorting import argsort, sort
 from arkouda.strings import Strings
 
@@ -149,8 +149,10 @@ def unique(
     else:
         unique_keys = tuple(a[unique_key_indices] for a in pda)
     if return_groups:
-        groups = unique_keys, permutation, segments, nkeys
-        return *groups, unique_key_indices if return_indices else groups
+        if return_indices:
+            return unique_keys, permutation, segments, nkeys, unique_key_indices
+        else:
+            return unique_keys, permutation, segments, nkeys
     else:
         return unique_keys
 

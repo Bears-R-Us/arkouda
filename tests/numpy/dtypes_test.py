@@ -60,9 +60,9 @@ class TestDTypes:
         float_scalars = Union[float, np.float64, np.float32]
         assert _is_dtype_in_union(np.float64, float_scalars)
         # Test with a type not present in the union
-        assert ~_is_dtype_in_union(np.int64, float_scalars)
+        assert not _is_dtype_in_union(np.int64, float_scalars)
         # Test with a non-Union type
-        assert ~_is_dtype_in_union(np.float64, float)
+        assert not _is_dtype_in_union(np.float64, float)
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize(

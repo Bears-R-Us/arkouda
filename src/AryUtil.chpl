@@ -310,10 +310,12 @@ module AryUtil
       :returns: a tuple of sizes where the specified axes have a size of 1
     */
     proc reducedShape(shape: ?N*int, axes: [] int): N*int {
+      const emptyAxes = (N==1)||(axes.size==0);
+      
       var ret: N*int,
           f: int = 0;
       for param i in 0..<N {
-        if axes.find(i, f)
+        if emptyAxes || axes.find(i, f)
           then ret[i] = 1;
           else ret[i] = shape[i];
       }

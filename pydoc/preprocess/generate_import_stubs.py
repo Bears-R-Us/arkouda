@@ -132,7 +132,7 @@ def write_stub(module, filename, all_only=False, allow_arkouda=False):
                             f.write(f"    def {func_name}{signature}:\n")
                         else:
                             try:
-                                signature = str(inspect.signature(func))
+                                signature = reformat_signature(str(inspect.signature(func)))
                                 if "self" not in signature:
                                     signature = signature.replace("(", "(self, ")
                                 f.write(f"    def {func_name}{signature}:\n")
@@ -155,6 +155,7 @@ def main():
 
     write_stub(aknp, "arkouda/numpy.pyi", all_only=False, allow_arkouda=True)
     write_stub(aknp.dtypes, "arkouda/numpy/dtypes.pyi", all_only=False, allow_arkouda=True)
+    write_stub(aknp.random, "arkouda/numpy/random.pyi", all_only=False, allow_arkouda=True)
     write_stub(akscipy, "arkouda/scipy.pyi", all_only=True, allow_arkouda=True)
     write_stub(akscipyStats, "arkouda/scipy/stats.pyi", all_only=True, allow_arkouda=True)
     write_stub(akscipySpecial, "arkouda/scipy/special.pyi", all_only=True, allow_arkouda=True)
