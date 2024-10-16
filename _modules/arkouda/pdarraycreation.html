@@ -1310,10 +1310,13 @@
         <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;arange&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span> <span class="s2">&quot;stop&quot;</span><span class="p">:</span> <span class="n">stop</span><span class="p">,</span> <span class="s2">&quot;stride&quot;</span><span class="p">:</span> <span class="n">stride</span><span class="p">,</span> <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">arg_dtype</span><span class="p">}</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="p">(</span>
-            <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">,</span> <span class="n">max_bits</span><span class="o">=</span><span class="n">max_bits</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="n">akint64</span>
-            <span class="k">else</span> <span class="n">array</span><span class="p">(</span><span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">),</span> <span class="n">max_bits</span><span class="o">=</span><span class="n">max_bits</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span>
+            <span class="n">pdarray</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">,</span> <span class="n">max_bits</span><span class="o">=</span><span class="n">max_bits</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="n">akint64</span>
+                <span class="k">else</span> <span class="n">array</span><span class="p">(</span><span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">),</span> <span class="n">max_bits</span><span class="o">=</span><span class="n">max_bits</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="p">),</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>

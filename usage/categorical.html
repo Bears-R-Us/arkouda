@@ -374,7 +374,7 @@ work in initialization.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>values</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id721" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a><em>, </em><em>pd.Categorical</em>) – Values to convert to categories</p></li>
+<li><p><strong>values</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id597" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a><em>, </em><em>pd.Categorical</em>) – Values to convert to categories</p></li>
 <li><p><strong>NAvalue</strong> (<em>str scalar</em>) – The value to use to represent missing/null data</p></li>
 </ul>
 </dd>
@@ -385,7 +385,7 @@ work in initialization.</p>
 <dd><p>The set of category labels (determined automatically)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#id721" title="arkouda.Strings">Strings</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#id597" title="arkouda.Strings">Strings</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -396,7 +396,7 @@ work in initialization.</p>
 <dd><p>The category indices of the values or -1 for N/A</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#id883" title="arkouda.int64">int64</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#id747" title="arkouda.int64">int64</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -407,7 +407,7 @@ work in initialization.</p>
 <dd><p>The permutation that groups the values in the same order as categories</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#id883" title="arkouda.int64">int64</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#id747" title="arkouda.int64">int64</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -418,7 +418,7 @@ work in initialization.</p>
 <dd><p>When values are grouped, the starting offset of each group</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#id883" title="arkouda.int64">int64</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#id747" title="arkouda.int64">int64</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -481,11 +481,11 @@ time. If not, please use the normal constructor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>codes</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#id883" title="arkouda.int64"><em>int64</em></a>) – Category indices of each value</p></li>
-<li><p><strong>categories</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id721" title="arkouda.Strings"><em>Strings</em></a>) – Unique category labels</p></li>
-<li><p><strong>permutation</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#id883" title="arkouda.int64"><em>int64</em></a>) – The permutation that groups the values in the same order
+<li><p><strong>codes</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#id747" title="arkouda.int64"><em>int64</em></a>) – Category indices of each value</p></li>
+<li><p><strong>categories</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id597" title="arkouda.Strings"><em>Strings</em></a>) – Unique category labels</p></li>
+<li><p><strong>permutation</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#id747" title="arkouda.int64"><em>int64</em></a>) – The permutation that groups the values in the same order
 as categories</p></li>
-<li><p><strong>segments</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#id883" title="arkouda.int64"><em>int64</em></a>) – When values are grouped, the starting offset of each group</p></li>
+<li><p><strong>segments</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#id747" title="arkouda.int64"><em>int64</em></a>) – When values are grouped, the starting offset of each group</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
