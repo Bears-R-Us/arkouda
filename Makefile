@@ -581,9 +581,15 @@ test-clean:
 	$(RM) $(TEST_TARGETS) $(addsuffix _real,$(TEST_TARGETS))
 
 size_bm = 10**8
+DATE := $(shell date '+%Y_%m_%d_%H_%M_%S')
+out=benchmark_v2/data/benchmark_stats_$(DATE).json
 .PHONY: benchmark
 benchmark:
-	python3 -m pytest -c benchmark.ini --benchmark-autosave --benchmark-storage=file://benchmark_v2/.benchmarks --size=$(size_bm)
+	mkdir -p benchmark_v2/data
+	python3 -m pytest -c benchmark.ini --benchmark-autosave --benchmark-storage=file://benchmark_v2/.benchmarks --size=$(size_bm) --benchmark-json=$(out)
+	python3 benchmark_v2/reformat_benchmark_results.py --benchmark-data $(out)
+
+	
 
 version:
 	@echo $(VERSION);

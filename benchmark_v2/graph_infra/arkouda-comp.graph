@@ -1,0 +1,11 @@
+perfkeys: total time :
+graphkeys: Compile Time
+files: comp-time.dat
+graphtitle: Build Time
+ylabel: Time (sec)
+
+perfkeys: Statements emitted:
+graphkeys: Statements Emitted
+files: emitted-code-size.dat
+graphtitle:  Emitted Code Size
+ylabel: Statements

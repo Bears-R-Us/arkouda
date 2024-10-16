@@ -229,6 +229,7 @@ jobs:
         pip install pytest-benchmark==4.0.0
         make install-iconv
         echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" >> Makefile.paths
+        mkdir -p benchmark_v2/data
     - name: Install Chapel frontend bindings
       run: |
         (cd $CHPL_HOME/tools/chapel-py && python3 -m pip install .)

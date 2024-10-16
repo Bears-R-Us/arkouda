@@ -1,0 +1,149 @@
+perfkeys: Average rate =
+graphkeys: Stream GiB/s
+files: stream.dat
+graphtitle: Stream Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: Average rate =
+graphkeys: Argsort GiB/s
+files: argsort.dat
+graphtitle: Argsort Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: 1-array Average rate =, 2-array Average rate =, 8-array Average rate =, 16-array Average rate =
+graphkeys: 1 array Coargsort GiB/s, 2 array Coargsort GiB/s, 8 array Coargsort GiB/s, 16 array Coargsort GiB/s
+files: coargsort.dat, coargsort.dat, coargsort.dat, coargsort.dat
+graphtitle: Coargsort Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: 1-array Average rate =, 2-array Average rate =, 8-array Average rate =, 16-array Average rate =
+graphkeys: 1 array Groupby GiB/s, 2 array Groupby GiB/s, 8 array Groupby GiB/s, 16 array Groupby GiB/s
+files: groupby.dat, groupby.dat, groupby.dat, groupby.dat
+graphtitle: Groupby Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: Aggregate sum Average rate =, Aggregate xor Average rate =, Aggregate and Average rate =, Aggregate or Average rate =, Aggregate mean Average rate =
+graphkeys: sum (GiB/s), xor (GiB/s), and (GiB/s), or (GiB/s), mean (GiB/s)
+files: aggregate.dat, aggregate.dat, aggregate.dat, aggregate.dat, aggregate.dat
+graphtitle: Grouped Aggregation Performance (Tier 1)
+ylabel: Performance (GiB/s)
+
+perfkeys: Aggregate min Average rate =, Aggregate max Average rate =, Aggregate argmin Average rate =, Aggregate argmax Average rate =, Aggregate prod Average rate =
+graphkeys: min (GiB/s), max (GiB/s), argmin (GiB/s), argmax (GiB/s), prod (GiB/s)
+files: aggregate.dat, aggregate.dat, aggregate.dat, aggregate.dat, aggregate.dat
+graphtitle: Grouped Aggregation Performance (Tier 2)
+ylabel: Performance (GiB/s)
+
+perfkeys: Aggregate any Average rate =, Aggregate all Average rate =, Aggregate nunique Average rate =
+graphkeys: any (GiB/s), all (GiB/s), nunique (GiB/s)
+files: aggregate.dat, aggregate.dat, aggregate.dat
+graphtitle: Grouped Aggregation Performance (Tier 3)
+ylabel: Performance (GiB/s)
+    
+perfkeys: Average rate =
+graphkeys: Gather GiB/s
+files: gather.dat
+graphtitle: Gather Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: Average rate =
+graphkeys: Scatter GiB/s
+files: scatter.dat
+graphtitle: Scatter Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: cumsum Average rate =, cumprod Average rate =
+graphkeys: Cumsum GiB/s, Cumprod GiB/s
+files: scan.dat, scan.dat
+graphtitle: Scan Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: sum Average rate =, prod Average rate =, min Average rate =, max Average rate =
+graphkeys: Sum GiB/s, Prod GiB/s, Min GiB/s, Max GiB/s
+files: reduce.dat, reduce.dat, reduce.dat, reduce.dat
+graphtitle: Reduce Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: Medium average rate =, Large average rate =
+graphkeys: Medium GiB/s, Large GiB/s
+files: in1d.dat, in1d.dat
+graphtitle: in1d Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: intersect1d Average rate =, union1d Average rate =, setxor1d Average rate =, setdiff1d Average rate =
+graphkeys: Intersect GiB/s, Union GiB/s, Xor GiB/s, Diff GiB/s
+files: setops.dat, setops.dat, setops.dat, setops.dat
+graphtitle: Set Operations Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: zeros Average rate =, ones Average rate =, randint Average rate =
+graphkeys: Zeros GiB/s, Ones GiB/s, Randint GiB/s
+files: array_create.dat, array_create.dat, array_create.dat
+graphtitle: Array Creation Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: to_ndarray Average rate =, ak.array Average rate =
+graphkeys: to_ndarray GiB/s, ak.array GiB/s
+files: array_transfer.dat, array_transfer.dat
+graphtitle: Array Transfer Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: write Average rate HDF5 =, read Average rate HDF5 =
+graphkeys: Write GiB/s, Read GiB/s
+files: IO.dat, IO.dat
+graphtitle: IO Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: write Average rate HDF5 =, read Average rate HDF5 =
+graphkeys: Write GiB/s, Read GiB/s
+files: multiIO.dat, multiIO.dat
+graphtitle: HDF5 10 Files/Loc IO Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: write Average rate none =, write Average rate snappy =, write Average rate gzip =, write Average rate brotli =, write Average rate zstd =, write Average rate lz4 =, read Average rate none =, read Average rate snappy =, read Average rate gzip =, read Average rate brotli =, read Average rate zstd =, read Average rate lz4 =
+graphkeys: Write no compression GiB/s, Write snappy GiB/s, Write gzip GiB/s, Write brotli GiB/s, Write zstd GiB/s, Write lz4 GiB/s, Read no compression GiB/s, Read snappy GiB/s, Read gzip GiB/s, Read brotli GiB/s, Read zstd GiB/s, Read lz4 GiB/s
+repeat-files: parquetIO.dat
+graphtitle: Parquet IO Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: write Average rate none =, write Average rate snappy =, write Average rate gzip =, write Average rate brotli =, write Average rate zstd =, write Average rate lz4 =, read Average rate none =, read Average rate snappy =, read Average rate gzip =, read Average rate brotli =, read Average rate zstd =, read Average rate lz4 =
+graphkeys: Write no compression GiB/s, Write snappy GiB/s, Write gzip GiB/s, Write brotli GiB/s, Write zstd GiB/s, Write lz4 GiB/s, Read no compression GiB/s, Read snappy GiB/s, Read gzip GiB/s, Read brotli GiB/s, Read zstd GiB/s, Read lz4 GiB/s
+repeat-files: parquetMultiIO.dat
+graphtitle: Parquet 10 Files/Loc IO Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: write Average rate CSV =, read Average rate CSV =
+graphkeys: Write GiB/s, Read GiB/s
+repeat-files: csvIO.dat
+graphtitle: CSV IO Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: non-regex with literal substring Average rate =, regex with literal substring Average rate =, regex with pattern Average rate =
+graphkeys: non-regex with literal substring GiB/s, regex with literal substring GiB/s, regex with pattern GiB/s
+files: substring_search.dat, substring_search.dat, substring_search.dat
+graphtitle: Substring Search Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: non-regex flatten with literal delimiter Average rate =, regex flatten with literal delimiter Average rate =, regex flatten with pattern delimiter Average rate =
+graphkeys: non-regex flatten with literal delimiter GiB/s, regex flatten with literal delimiter GiB/s, regex flatten with pattern delimiter GiB/s
+files: flatten.dat, flatten.dat, flatten.dat
+graphtitle: Flatten Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: _get_head_tail_server Average time =, _get_head_tail Average time =
+graphkeys: _get_head_tail_server Average time s, _get_head_tail Average time s
+files: dataframe.dat, dataframe.dat
+graphtitle: DataFrame Display Performance
+ylabel: Time (Seconds)
+
+perfkeys: Average idna encode rate =, Average idna decode rate =, Average ascii encode rate =, Average ascii decode rate =
+graphkeys: idna encode GiB/s, idna decode GiB/s, ascii encode GiB/s, ascii decode GiB/s
+files: encode.dat, encode.dat, encode.dat, encode.dat
+graphtitle: Encode/Decode Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: Average rate =
+graphkeys: Noop ops/s
+files: noop.dat
+graphtitle: Noop Performance
+ylabel: Performance (ops/s)
