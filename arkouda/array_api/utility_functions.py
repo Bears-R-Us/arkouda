@@ -69,7 +69,7 @@ def clip(a: Array, a_min, a_max, /) -> Array:
         The maximum value
     """
     if a.dtype == ak.bigint or a.dtype == ak.bool_:
-        raise RuntimeError(f"Error executing command: diff clip not support dtype {a.dtype}")
+        raise RuntimeError(f"Error executing command: clip does not support dtype {a.dtype}")
 
     return Array._new(
         create_pdarray(
