@@ -157,8 +157,17 @@ module AryUtil
     }
 
     proc validateNegativeAxes(axes: list(int), param nd: int): (bool, list(int)) {
-      const (valid, ret) = validateNegativeAxes(axes.toArray(), nd);
-      return (valid, new list(ret));
+      var ret = new list(int);
+      for a in axes {
+        if a >= 0 && a < nd {
+          ret.pushBack(a);
+        } else if a < 0 && a >= -nd {
+          ret.pushBack(nd + a);
+        } else {
+          return (false, ret);
+        }
+      }
+      return (true, ret);
     }
 
     /*
@@ -334,7 +343,13 @@ module AryUtil
     }
 
     proc reducedShape(shape: ?N*int, axes: list(int)): N*int {
-      return reducedShape(shape, axes.toArray());
+      var ret: N*int;
+      for param i in 0..<N {
+        if N == 1 || axes.contains(i)
+          then ret[i] = 1;
+          else ret[i] = shape[i];
+      }
+      return ret;
     }
 
     /*

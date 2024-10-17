@@ -2750,7 +2750,7 @@ def sum(
     axis_ = [] if axis is None else ([axis,] if isinstance(axis, int) else list(axis))
     repMsg = generic_msg(
         cmd=f"sum<{pda.dtype.name},{pda.ndim}>",
-        args={"x": pda, "axis": axis, "skipNan": False},
+        args={"x": pda, "axis": axis_, "skipNan": False},
     )
     if axis is None or len(axis_) == 0 or pda.ndim == 1:
         # TODO: remove call to 'flatten'
