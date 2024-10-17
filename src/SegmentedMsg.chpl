@@ -1204,14 +1204,13 @@ module SegmentedMsg {
     retOffs = (+ scan retOffs) - retOffs;
 
     var flippedVals = makeDistArray(strings.values.a.domain, uint(8));
-    forall (off, len, j) in zip(offs, lengths, ..#offs.size) with (var valAgg = newDstAggregator(uint(8))) {
+    forall (off, len, j) in zip(offs, lengths, 0..) with (var valAgg = newDstAggregator(uint(8))) {
       var i = 0;
       for b in interpretAsBytes(origVals, off..#len, borrow=true) {
         valAgg.copy(flippedVals[retOffs[lengths.domain.high - j] + i], b:uint(8));
         i += 1;
       }
     }
-
     var retString = getSegString(retOffs, flippedVals, st);
     var repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".format(retString.nBytes);
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
