@@ -3,6 +3,7 @@ import pytest
 
 TYPES = ("int64", "float64", "bigint")
 
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="ArrayTransfer_tondarray")
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_array_transfer_tondarray(benchmark, dtype):
@@ -27,7 +28,7 @@ def bench_array_transfer_tondarray(benchmark, dtype):
             (nb / benchmark.stats["mean"]) / 2 ** 30)
         benchmark.extra_info["max_bit"] = pytest.max_bits  # useful when looking at bigint
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="ArrayTransfer_ak.array")
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_array_transfer_akarray(benchmark, dtype):

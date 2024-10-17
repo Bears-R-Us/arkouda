@@ -12,7 +12,7 @@ def _generate_test_data():
 
     return thickrange, nbytes
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Flatten")
 def bench_split_nonregex(benchmark):
     thickrange, nbytes = _generate_test_data()
@@ -24,7 +24,7 @@ def bench_split_nonregex(benchmark):
         (nbytes / benchmark.stats["mean"]) / 2**30
     )
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Flatten")
 def bench_split_regexliteral(benchmark):
     thickrange, nbytes = _generate_test_data()
@@ -36,7 +36,7 @@ def bench_split_regexliteral(benchmark):
         (nbytes / benchmark.stats["mean"]) / 2**30
     )
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Flatten")
 def bench_split_regexpattern(benchmark):
     thickrange, nbytes = _generate_test_data()

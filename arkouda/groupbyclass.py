@@ -149,8 +149,10 @@ def unique(
     else:
         unique_keys = tuple(a[unique_key_indices] for a in pda)
     if return_groups:
-        groups = unique_keys, permutation, segments, nkeys
-        return *groups, unique_key_indices if return_indices else groups
+        if return_indices:
+            return unique_keys, permutation, segments, nkeys, unique_key_indices
+        else:
+            return unique_keys, permutation, segments, nkeys
     else:
         return unique_keys
 

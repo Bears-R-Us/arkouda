@@ -7,7 +7,7 @@ OPS = ("intersect", "union", "setdiff", "setxor")
 OPS1D = ("intersect1d", "union1d", "setxor1d", "setdiff1d")
 TYPES = ("int64", "uint64")
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Segarray_Setops")
 @pytest.mark.parametrize("op", OPS)
 @pytest.mark.parametrize("dtype", TYPES)
@@ -48,7 +48,7 @@ def bench_segarr_setops(benchmark, op, dtype):
             (nbytes / benchmark.stats["mean"]) / 2**30
         )
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Setops")
 @pytest.mark.parametrize("op", OPS1D)
 @pytest.mark.parametrize("dtype", TYPES)
@@ -78,7 +78,7 @@ def bench_ak_setops(benchmark, op, dtype):
             (nbytes / benchmark.stats["mean"]) / 2**30
         )
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Numpy_Setops")
 @pytest.mark.parametrize("op", OPS1D)
 @pytest.mark.parametrize("dtype", TYPES)

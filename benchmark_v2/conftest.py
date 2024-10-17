@@ -127,6 +127,12 @@ def pytest_addoption(parser):
         default=os.path.join(os.getcwd(), "ak_io_benchmark"),
         help="Benchmark only option. Target path for measuring read/write rates",
     )
+    parser.addoption(
+        "--correctness_only",
+        default=False,
+        action="store_true",
+        help="Only check correctness, not performance.",
+    )
 
 
 def pytest_configure(config):
@@ -156,6 +162,8 @@ def pytest_configure(config):
     pytest.io_path = config.getoption("io_path")
     pytest.io_read = config.getoption("io_only_read")
     pytest.io_write = config.getoption("io_only_write")
+
+    pytest.correctness_only = config.getoption("correctness_only")
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -208,3 +216,17 @@ def manage_connection():
         ak.disconnect()
     except Exception as e:
         raise ConnectionError(e)
+
+
+@pytest.fixture(autouse=True)
+def skip_correctness_only(request):
+    if request.node.get_closest_marker("skip_correctness_only"):
+        if request.node.get_closest_marker("skip_correctness_only").args[0] == pytest.correctness_only:
+            pytest.skip("this test requires --correctness_only != {}".format(pytest.correctness_only))
+
+
+@pytest.fixture(autouse=True)
+def skip_numpy(request):
+    if request.node.get_closest_marker("skip_numpy"):
+        if request.node.get_closest_marker("skip_numpy").args[0] == pytest.numpy:
+            pytest.skip("this test requires --numpy != {}".format(pytest.numpy))

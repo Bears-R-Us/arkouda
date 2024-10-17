@@ -37,7 +37,7 @@ def generate_arrays(dtype, numArrays):
         arrays = arrays[0]
     return arrays, totalbytes
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="GroupBy_Creation")
 @pytest.mark.parametrize("numArrays", NUM_ARR)
 @pytest.mark.parametrize("dtype", TYPES)
