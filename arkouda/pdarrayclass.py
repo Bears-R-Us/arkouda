@@ -2747,7 +2747,7 @@ def sum(
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    axis_ = tuple(axis) if axis is not None else ()
+    axis_ = [] if axis is None else ([axis,] if isinstance(axis, int) else list(axis))
     repMsg = generic_msg(
         cmd=f"sum<{pda.dtype.name},{pda.ndim}>",
         args={"x": pda, "axis": axis, "skipNan": False},
@@ -2836,7 +2836,7 @@ def prod(pda: pdarray, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> Un
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    axis_ = tuple(axis) if axis is not None else ()
+    axis_ = [] if axis is None else ([axis,] if isinstance(axis, int) else list(axis))
     repMsg = generic_msg(
         cmd=f"prod<{pda.dtype.name},{pda.ndim}>",
         args={"x": pda, "axis": axis_, "skipNan": False},
@@ -2873,7 +2873,7 @@ def min(
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    axis_ = tuple(axis) if axis is not None else ()
+    axis_ = [] if axis is None else ([axis,] if isinstance(axis, int) else list(axis))
     repMsg = generic_msg(
         cmd=f"min<{pda.dtype.name},{pda.ndim}>",
         args={"x": pda, "axis": axis_, "skipNan": False},
@@ -2911,7 +2911,7 @@ def max(
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    axis_ = tuple(axis) if axis is not None else ()
+    axis_ = [] if axis is None else ([axis,] if isinstance(axis, int) else list(axis))
     repMsg = generic_msg(
         cmd=f"max<{pda.dtype.name},{pda.ndim}>",
         args={"x": pda, "axis": axis_, "skipNan": False},

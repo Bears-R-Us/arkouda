@@ -157,7 +157,8 @@ module AryUtil
     }
 
     proc validateNegativeAxes(axes: list(int), param nd: int): (bool, list(int)) {
-      return new list(validateNegativeAxes(axes.toArray(), nd));
+      const (valid, ret) = validateNegativeAxes(axes.toArray(), nd);
+      return (valid, new list(ret));
     }
 
     /*
