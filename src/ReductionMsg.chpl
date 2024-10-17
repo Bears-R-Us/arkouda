@@ -7,6 +7,7 @@ module ReductionMsg
     use Reflection only;
     use CommAggregation;
     use BigInteger;
+    use List;
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -123,25 +124,13 @@ module ReductionMsg
       }
     }
 
-
-
-
     @arkouda.registerCommand
-    proc sum(ref x:[?d] ?t, axis: [?d2] int, skipNan: bool): [] t throws 
-      where (t==int || t==real || t==uint(64)) && (x.rank == 1) && (axis.rank == 1)  {
-        return makeDistArray([(+ reduce x)]);
-    }
-
-    proc sum(ref x:[?d] ?t, axis: [?d2] int, skipNan: bool): [] int throws 
-      where (t==bool) && (x.rank == 1) && (axis.rank == 1)  {
-      return makeDistArray([(+ reduce x:int)]);
-    }
-
-    proc sum(ref x:[?d] ?t, axis: [?d2] int, skipNan: bool): [] throws 
-      where (t==int || t==real || t==uint(64) || t==bool) && (x.rank != 1) && (axis.rank == 1) {
+    proc sum(ref x:[?d] ?t, axis: list(int), skipNan: bool): [] throws
+      where t==int || t==real || t==uint(64) || t==bool
+    {
       use SliceReductionOps;
-
       type opType = if t == bool then int else t;
+      if d.rank == 1 then return (+ reduce x:opType);
 
       const (valid, axes) = validateNegativeAxes(axis, x.rank);
       if !valid {
@@ -149,7 +138,6 @@ module ReductionMsg
       } else {
         const outShape = reducedShape(x.shape, axes);
         var ret = makeDistArray((...outShape), opType);
-        
         if (ret.size==1) {
           ret[ret.domain.low] = (+ reduce x:opType);
         }else{
@@ -160,16 +148,6 @@ module ReductionMsg
         }
         return ret;
       }
-    }   
-
-    proc sum(ref x:[?d] ?t, axis: [?d2] int, skipNan: bool): [d2] t throws 
-    where (t==int || t==real || t==uint(64) || t==bool) && (axis.rank != 1) {
-      throw new Error("sum only accepts axis of rank 1.");
-    }
-
-    proc sum(ref x:[?d] ?t, axis: [?d2] int, skipNan: bool): [d2] t throws 
-    where (t!=int && t!=real && t!=uint(64) && t!=bool) {
-      throw new Error("sum does not support type %s".format(type2str(t)));
     }
 
     @arkouda.registerCommand

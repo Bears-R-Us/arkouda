@@ -156,6 +156,10 @@ module AryUtil
       return (true, ret);
     }
 
+    proc validateNegativeAxes(axes: list(int), param nd: int): (bool, list(int)) {
+      return new list(validateNegativeAxes(axes.toArray(), nd));
+    }
+
     /*
       Get a domain that selects out the idx'th set of indices along the specified axes
 
@@ -326,6 +330,10 @@ module AryUtil
       var ret = shape;
       ret[axis] = 1;
       return ret;
+    }
+
+    proc reducedShape(shape: ?N*int, axes: list(int)): N*int {
+      return reducedShape(shape, axes.toArray());
     }
 
     /*

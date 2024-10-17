@@ -2757,12 +2757,11 @@ def sum(
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    axis_arry = _get_axis_pdarray(axis)
     repMsg = generic_msg(
-        cmd=f"sum<{pda.dtype.name},{pda.ndim},{axis_arry.ndim}>",
-        args={"x": pda, "axis": axis_arry, "skipNan": False},
+        cmd=f"sum<{pda.dtype.name},{pda.ndim}>",
+        args={"x": pda, "axis": axis, "skipNan": False},
     )
-    if axis is None or len(axis_arry) == 0 or pda.ndim == 1:
+    if axis is None or len(axis) == 0 or pda.ndim == 1:
         return create_pdarray(cast(str, repMsg)).flatten()[0]
     else:
         return create_pdarray(cast(str, repMsg))
