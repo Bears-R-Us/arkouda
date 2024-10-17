@@ -353,16 +353,20 @@
           <h1>Source code for arkouda.sparsematrix</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">typeguard</span> <span class="kn">import</span> <span class="n">typechecked</span>
 
 <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
-<span class="kn">from</span> <span class="nn">arkouda.logger</span> <span class="kn">import</span> <span class="n">getArkoudaLogger</span>
-<span class="kn">from</span> <span class="nn">arkouda.sparrayclass</span> <span class="kn">import</span> <span class="n">create_sparray</span><span class="p">,</span> <span class="n">sparray</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
-<span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">int64</span>
 <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">akdtype</span>
+<span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">int64</span>
+<span class="kn">from</span> <span class="nn">arkouda.logger</span> <span class="kn">import</span> <span class="n">getArkoudaLogger</span>
+<span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes.dtypes</span> <span class="kn">import</span> <span class="n">NumericDTypes</span>
+<span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">pdarray</span>
+<span class="kn">from</span> <span class="nn">arkouda.sparrayclass</span> <span class="kn">import</span> <span class="n">create_sparray</span><span class="p">,</span> <span class="n">sparray</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;random_sparse_matrix&quot;</span><span class="p">,</span> <span class="s2">&quot;sparse_matrix_matrix_mult&quot;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;random_sparse_matrix&quot;</span><span class="p">,</span> <span class="s2">&quot;sparse_matrix_matrix_mult&quot;</span><span class="p">,</span> <span class="s2">&quot;create_sparse_matrix&quot;</span><span class="p">]</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">getArkoudaLogger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;sparsematrix&quot;</span><span class="p">)</span>
 
@@ -443,6 +447,53 @@
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;sparse_matrix_matrix_mult&lt;</span><span class="si">{</span><span class="n">A</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;arg1&quot;</span><span class="p">:</span> <span class="n">A</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;arg2&quot;</span><span class="p">:</span> <span class="n">B</span><span class="o">.</span><span class="n">name</span><span class="p">},</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">create_sparray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="create_sparse_matrix">
+<a class="viewcode-back" href="../../autoapi/arkouda/sparsematrix/index.html#arkouda.sparsematrix.create_sparse_matrix">[docs]</a>
+<span class="k">def</span> <span class="nf">create_sparse_matrix</span><span class="p">(</span><span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">rows</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">cols</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">vals</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">layout</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">sparray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a sparse matrix from three pdarrays representing the row indices,</span>
+<span class="sd">    column indices, and values of the non-zero elements of the matrix.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    rows : pdarray</span>
+<span class="sd">        The row indices of the non-zero elements</span>
+<span class="sd">    cols : pdarray</span>
+<span class="sd">        The column indices of the non-zero elements</span>
+<span class="sd">    vals : pdarray</span>
+<span class="sd">        The values of the non-zero elements</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    sparray</span>
+<span class="sd">        A sparse matrix with the specified row and column indices and values</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cols</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;rows, cols, and vals must be pdarrays for create_sparse_matrix&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">rows</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">cols</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">vals</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;rows, cols, and vals must be 1D for create_sparse_matrix&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">rows</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">cols</span><span class="o">.</span><span class="n">size</span> <span class="ow">and</span> <span class="n">rows</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">vals</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;rows, cols, and vals must have the same size for create_sparse_matrix&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">rows</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">int64</span> <span class="ow">and</span> <span class="n">cols</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">int64</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;rows and cols must have dtype int64 for create_sparse_matrix&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">layout</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;CSR&quot;</span><span class="p">,</span> <span class="s2">&quot;CSC&quot;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;layout must be &#39;CSR&#39; or &#39;CSC&#39;&quot;</span><span class="p">)</span>
+
+    <span class="n">vals_dtype_name</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">vals</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+    <span class="c1"># check dtype for error</span>
+    <span class="k">if</span> <span class="n">vals_dtype_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">NumericDTypes</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported dtype </span><span class="si">{</span><span class="n">vals</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;sparse_matrix_from_pdarrays&lt;</span><span class="si">{</span><span class="n">vals</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">layout</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;rows&quot;</span><span class="p">:</span> <span class="n">rows</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;cols&quot;</span><span class="p">:</span> <span class="n">cols</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;vals&quot;</span><span class="p">:</span> <span class="n">vals</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">shape</span><span class="p">},</span>
     <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">create_sparray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>

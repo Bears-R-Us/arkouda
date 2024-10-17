@@ -9,12 +9,29 @@ Functions
 
 .. autoapisummary::
 
+   arkouda.sparsematrix.create_sparse_matrix
    arkouda.sparsematrix.random_sparse_matrix
    arkouda.sparsematrix.sparse_matrix_matrix_mult
 
 
 Module Contents
 ---------------
+
+.. py:function:: create_sparse_matrix(size: int, rows: arkouda.pdarrayclass.pdarray, cols: arkouda.pdarrayclass.pdarray, vals: arkouda.pdarrayclass.pdarray, layout: str) -> arkouda.sparrayclass.sparray
+
+   Create a sparse matrix from three pdarrays representing the row indices,
+   column indices, and values of the non-zero elements of the matrix.
+
+   :param rows: The row indices of the non-zero elements
+   :type rows: pdarray
+   :param cols: The column indices of the non-zero elements
+   :type cols: pdarray
+   :param vals: The values of the non-zero elements
+   :type vals: pdarray
+
+   :returns: A sparse matrix with the specified row and column indices and values
+   :rtype: sparray
+
 
 .. py:function:: random_sparse_matrix(size: int, density: float, layout: str, dtype: Union[type, str] = int64) -> arkouda.sparrayclass.sparray
 

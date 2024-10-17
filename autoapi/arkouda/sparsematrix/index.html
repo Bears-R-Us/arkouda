@@ -364,10 +364,13 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.sparsematrix.random_sparse_matrix" title="arkouda.sparsematrix.random_sparse_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_sparse_matrix</span></code></a>(→ arkouda.sparrayclass.sparray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.sparsematrix.create_sparse_matrix" title="arkouda.sparsematrix.create_sparse_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_sparse_matrix</span></code></a>(→ arkouda.sparrayclass.sparray)</p></td>
+<td><p>Create a sparse matrix from three pdarrays representing the row indices,</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.sparsematrix.random_sparse_matrix" title="arkouda.sparsematrix.random_sparse_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_sparse_matrix</span></code></a>(→ arkouda.sparrayclass.sparray)</p></td>
 <td><p>Create a random sparse matrix with the specified number of rows and columns</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.sparsematrix.sparse_matrix_matrix_mult" title="arkouda.sparsematrix.sparse_matrix_matrix_mult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sparse_matrix_matrix_mult</span></code></a>(→ arkouda.sparrayclass.sparray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.sparsematrix.sparse_matrix_matrix_mult" title="arkouda.sparsematrix.sparse_matrix_matrix_mult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sparse_matrix_matrix_mult</span></code></a>(→ arkouda.sparrayclass.sparray)</p></td>
 <td><p>Multiply two sparse matrices.</p></td>
 </tr>
 </tbody>
@@ -376,6 +379,28 @@
 </section>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.sparsematrix.create_sparse_matrix">
+<span class="sig-prename descclassname"><span class="pre">arkouda.sparsematrix.</span></span><span class="sig-name descname"><span class="pre">create_sparse_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rows</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">cols</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">layout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../sparrayclass/index.html#arkouda.sparrayclass.sparray" title="arkouda.sparrayclass.sparray"><span class="pre">arkouda.sparrayclass.sparray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/sparsematrix.html#create_sparse_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.sparsematrix.create_sparse_matrix" title="Link to this definition">¶</a></dt>
+<dd><p>Create a sparse matrix from three pdarrays representing the row indices,
+column indices, and values of the non-zero elements of the matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rows</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The row indices of the non-zero elements</p></li>
+<li><p><strong>cols</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The column indices of the non-zero elements</p></li>
+<li><p><strong>vals</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The values of the non-zero elements</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A sparse matrix with the specified row and column indices and values</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.sparray" title="arkouda.sparray">sparray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.sparsematrix.random_sparse_matrix">
 <span class="sig-prename descclassname"><span class="pre">arkouda.sparsematrix.</span></span><span class="sig-name descname"><span class="pre">random_sparse_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">density</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">int64</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../sparrayclass/index.html#arkouda.sparrayclass.sparray" title="arkouda.sparrayclass.sparray"><span class="pre">arkouda.sparrayclass.sparray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/sparsematrix.html#random_sparse_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.sparsematrix.random_sparse_matrix" title="Link to this definition">¶</a></dt>
@@ -485,6 +510,7 @@ and the specified density</p>
 <li><a class="reference internal" href="#">arkouda.sparsematrix</a><ul>
 <li><a class="reference internal" href="#functions">Functions</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
+<li><a class="reference internal" href="#arkouda.sparsematrix.create_sparse_matrix"><code class="docutils literal notranslate"><span class="pre">create_sparse_matrix()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.sparsematrix.random_sparse_matrix"><code class="docutils literal notranslate"><span class="pre">random_sparse_matrix()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.sparsematrix.sparse_matrix_matrix_mult"><code class="docutils literal notranslate"><span class="pre">sparse_matrix_matrix_mult()</span></code></a></li>
 </ul>

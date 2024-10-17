@@ -68,6 +68,12 @@ Module Contents
 
       :type: int_scalars
 
+   .. attribute:: nnz
+
+      The number of non-zero elements in the array
+
+      :type: int_scalars
+
    .. attribute:: ndim
 
       The rank of the array (currently only rank 2 arrays supported)
@@ -120,6 +126,6 @@ Module Contents
    .. py:attribute:: size
 
 
-   .. py:method:: to_pdarray()
+   .. py:method:: to_pdarray() -> List[arkouda.pdarrayclass.pdarray]
 
 

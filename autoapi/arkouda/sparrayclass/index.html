@@ -455,6 +455,17 @@ instances directly.</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.sparrayclass.sparray.nnz">
+<span class="sig-name descname"><span class="pre">nnz</span></span><a class="headerlink" href="#arkouda.sparrayclass.sparray.nnz" title="Link to this definition">¶</a></dt>
+<dd><p>The number of non-zero elements in the array</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int_scalars" title="arkouda.dtypes.int_scalars">int_scalars</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.sparrayclass.sparray.ndim">
 <span class="sig-name descname"><span class="pre">ndim</span></span><a class="headerlink" href="#arkouda.sparrayclass.sparray.ndim" title="Link to this definition">¶</a></dt>
 <dd><p>The rank of the array (currently only rank 2 arrays supported)</p>
@@ -529,23 +540,23 @@ instances directly.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="arkouda.sparrayclass.sparray.nnz">
-<span class="sig-name descname"><span class="pre">nnz</span></span><a class="headerlink" href="#arkouda.sparrayclass.sparray.nnz" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
 <dt class="sig sig-object py" id="id5">
-<span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#id5" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">nnz</span></span><a class="headerlink" href="#id5" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id6">
-<span class="sig-name descname"><span class="pre">size</span></span><a class="headerlink" href="#id6" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#id6" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">size</span></span><a class="headerlink" href="#id7" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.sparrayclass.sparray.to_pdarray">
-<span class="sig-name descname"><span class="pre">to_pdarray</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/sparrayclass.html#sparray.to_pdarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.sparrayclass.sparray.to_pdarray" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">to_pdarray</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/arkouda/sparrayclass.html#sparray.to_pdarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.sparrayclass.sparray.to_pdarray" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -617,6 +628,7 @@ instances directly.</p>
 <li><a class="reference internal" href="#arkouda.sparrayclass.sparray.name"><code class="docutils literal notranslate"><span class="pre">sparray.name</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.sparrayclass.sparray.dtype"><code class="docutils literal notranslate"><span class="pre">sparray.dtype</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.sparrayclass.sparray.size"><code class="docutils literal notranslate"><span class="pre">sparray.size</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.sparrayclass.sparray.nnz"><code class="docutils literal notranslate"><span class="pre">sparray.nnz</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.sparrayclass.sparray.ndim"><code class="docutils literal notranslate"><span class="pre">sparray.ndim</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.sparrayclass.sparray.shape"><code class="docutils literal notranslate"><span class="pre">sparray.shape</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.sparrayclass.sparray.layout"><code class="docutils literal notranslate"><span class="pre">sparray.layout</span></code></a></li>
@@ -627,9 +639,9 @@ instances directly.</p>
 <li><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">sparray.layout</span></code></a></li>
 <li><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">sparray.name</span></code></a></li>
 <li><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">sparray.ndim</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.sparrayclass.sparray.nnz"><code class="docutils literal notranslate"><span class="pre">sparray.nnz</span></code></a></li>
-<li><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">sparray.shape</span></code></a></li>
-<li><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">sparray.size</span></code></a></li>
+<li><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">sparray.nnz</span></code></a></li>
+<li><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">sparray.shape</span></code></a></li>
+<li><a class="reference internal" href="#id7"><code class="docutils literal notranslate"><span class="pre">sparray.size</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.sparrayclass.sparray.to_pdarray"><code class="docutils literal notranslate"><span class="pre">sparray.to_pdarray()</span></code></a></li>
 </ul>
 </li>

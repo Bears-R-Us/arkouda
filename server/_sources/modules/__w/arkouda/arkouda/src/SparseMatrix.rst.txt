@@ -62,3 +62,5 @@ or
 
 .. function:: proc randSparseMatrix(shape: 2*(int), density, param layout, type eltType)
 
+.. function:: proc sparseMatFromArrays(rows, cols, vals, shape: 2*(int), param layout, type eltType) throws
+
