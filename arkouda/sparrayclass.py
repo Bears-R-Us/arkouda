@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import builtins
-from typing import Optional, Sequence, Union, cast
+from typing import List, Optional, Sequence, Union, cast
 
 import numpy as np
 from typeguard import typechecked
@@ -36,6 +36,8 @@ class sparray:
         The element type of the array
     size : int_scalars
         The size of any one dimension of the array (all dimensions are assumed to be equal sized for now)
+    nnz: int_scalars
+        The number of non-zero elements in the array
     ndim : int_scalars
         The rank of the array (currently only rank 2 arrays supported)
     shape : Sequence[int]
@@ -71,7 +73,7 @@ class sparray:
 
     def __del__(self):
         try:
-            logger.debug(f"deleting pdarray with name {self.name}")
+            logger.debug(f"deleting sparray with name {self.name}")
             generic_msg(cmd="delete", args={"name": self.name})
         except (RuntimeError, AttributeError):
             pass
@@ -90,7 +92,7 @@ class sparray:
     def __getitem__(self, key):
         raise NotImplementedError("sparray does not support __getitem__")
 
-    def __str__(self):  # This won't work out of the box for sparrays need to add this in later
+    def __str__(self):
         from arkouda.client import sparrayIterThresh
 
         return generic_msg(cmd="str", args={"array": self, "printThresh": sparrayIterThresh})
@@ -116,7 +118,7 @@ class sparray:
     """
 
     @typechecked
-    def to_pdarray(self):
+    def to_pdarray(self) -> List[pdarray]:
         dtype = self.dtype
         dtype_name = cast(np.dtype, dtype).name
         # check dtype for error
@@ -139,7 +141,7 @@ class sparray:
 
         generic_msg(
             cmd=f"fill_sparse_vals<{self.dtype},2,{self.layout},{a.dtype},1>",
-            args={"matrix": self, "vals": a}
+            args={"matrix": self, "vals": a},
         )
 
 

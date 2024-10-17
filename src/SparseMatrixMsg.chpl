@@ -76,4 +76,17 @@ module SparseMatrixMsg {
         where d.rank != 1 && t == matrix.etype
             do throw new Error("fillSparseMatrixMsg: vals must be rank 1");
 
+    @arkouda.instantiateAndRegister("sparse_matrix_from_pdarrays")
+    proc sparseMatrixFromPdarrays(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+                                  type SparseSymEntry_etype, param SparseSymEntry_matLayout: Layout
+    ): MsgTuple throws {
+        const rows = st[msgArgs["rows"]]: borrowed SymEntry(int, 1),
+              cols = st[msgArgs["cols"]]: borrowed SymEntry(int, 1),
+              vals = st[msgArgs["vals"]]: borrowed SymEntry(SparseSymEntry_etype, 1),
+              shape = msgArgs["shape"].toScalarTuple(int, 2); // Hardcode 2D for now
+
+        const aV = sparseMatFromArrays(rows.a, cols.a, vals.a, shape, SparseSymEntry_matLayout, SparseSymEntry_etype);
+        return st.insert(new shared SparseSymEntry(aV, SparseSymEntry_matLayout));
+    }
+
 }
