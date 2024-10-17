@@ -339,11 +339,6 @@ module MsgProcessing
         return msg;
     }
 
-    proc chunkInfoAsString(array: [?d] ?t): string throws 
-        where (t != bool) && (t != int(64)) && (t != uint(64)) && (t != uint(8)) && (t != real){
-        throw new Error("chunkInfo does not support dtype %s".format(t:string));
-    }
-
     @arkouda.registerCommand
     proc chunkInfoAsArray(array: [?d] ?t):[] int throws
     where (t == bool) || (t == int(64)) || (t == uint(64)) || (t == uint(8)) ||(t == real) {
@@ -356,10 +351,5 @@ module MsgProcessing
                 blockSizes[i,loc.id] = locDom.dim(i).low;
         }
         return blockSizes;
-    }
-
-    proc chunkInfoAsArray(array: [?d] ?t): [d] int throws 
-        where (t != bool) && (t != int(64)) && (t != uint(64)) && (t != uint(8)) && (t != real){
-        throw new Error("chunkInfo does not support dtype %s".format(t:string));
     }
 }

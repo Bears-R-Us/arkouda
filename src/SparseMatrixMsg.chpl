@@ -63,7 +63,7 @@ module SparseMatrixMsg {
         return MsgTuple.fromResponses(responses);
     }
 
-    @arkouda.registerCommand("fill_sparse_vals")
+    @arkouda.registerCommand("fill_sparse_vals", ignoreWhereClause=true)
     proc fillSparseMatrixMsg(matrix: borrowed SparseSymEntry(?), vals: [?d] ?t /* matrix.etype */) throws
         where t == matrix.etype && d.rank == 1
             do fillSparseMatrix(matrix.a, vals, matrix.matLayout);

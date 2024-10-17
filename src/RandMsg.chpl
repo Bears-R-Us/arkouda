@@ -75,12 +75,6 @@ module RandMsg
         return st.insert(e);
     }
 
-    proc randint(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
-        where array_dtype == BigInteger.bigint
-    {
-        return MsgTuple.error("randint does not support the bigint dtype");
-    }
-
     @arkouda.instantiateAndRegister
     proc randomNormal(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd: int): MsgTuple throws {
         const shape = msgArgs["shape"].toScalarTuple(int, array_nd),
@@ -117,12 +111,6 @@ module RandMsg
         return st.insert(new shared GeneratorSymEntry(generator, state));
     }
 
-    proc createGenerator(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype): MsgTuple throws
-        where array_dtype == BigInteger.bigint
-    {
-        return MsgTuple.error("createGenerator does not support the bigint dtype");
-    }
-
     @arkouda.instantiateAndRegister
     proc uniformGenerator(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
         where array_dtype != BigInteger.bigint
@@ -149,12 +137,6 @@ module RandMsg
             rng.fill(uniformEntry.a, low, high);
         }
         return st.insert(uniformEntry);
-    }
-
-    proc uniformGenerator(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
-        where array_dtype == BigInteger.bigint
-    {
-        return MsgTuple.error("uniformGenerator does not support the bigint dtype");
     }
 
 
@@ -252,6 +234,9 @@ module RandMsg
 
     @arkouda.instantiateAndRegister
     proc standardNormalGenerator(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd): MsgTuple throws
+        do return standardNormalGeneratorHelp(cmd, msgArgs, st, array_nd);
+
+    proc standardNormalGeneratorHelp(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd): MsgTuple throws
         where array_nd == 1
     {
         const name = msgArgs["name"],                           // generator name
@@ -287,7 +272,7 @@ module RandMsg
     }
 
 
-    proc standardNormalGenerator(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd): MsgTuple throws
+    proc standardNormalGeneratorHelp(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd): MsgTuple throws
         where array_nd > 1
     {
         const name = msgArgs["name"],                           // generator name
@@ -387,6 +372,9 @@ module RandMsg
 
     @arkouda.instantiateAndRegister
     proc standardExponential(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd): MsgTuple throws
+        do return standardExponentialHelp(cmd, msgArgs, st, array_nd);
+
+    proc standardExponentialHelp(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd): MsgTuple throws
         where array_nd == 1
     {
         const name = msgArgs["name"],                                   // generator name
@@ -421,7 +409,7 @@ module RandMsg
         }
     }
 
-    proc standardExponential(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd): MsgTuple throws
+    proc standardExponentialHelp(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd): MsgTuple throws
         where array_nd > 1
     {
         const name = msgArgs["name"],                                   // generator name
@@ -567,12 +555,6 @@ module RandMsg
         }
     }
 
-    proc choice(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype): MsgTuple throws
-        where array_dtype == BigInteger.bigint
-    {
-        return MsgTuple.error("choice does not support the bigint dtype");
-    }
-
     inline proc logisticGenerator(mu: real, scale: real, ref rs) {
         var U = rs.next(0, 1);
 
@@ -693,7 +675,10 @@ module RandMsg
     }
 
     @arkouda.instantiateAndRegister
-    proc shuffle(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws 
+    proc shuffle(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
+        do return shuffleHelp(cmd, msgArgs, st, array_dtype, array_nd);
+
+    proc shuffleHelp(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws 
         where array_nd == 1
     {
         const name = msgArgs["name"],
@@ -715,7 +700,7 @@ module RandMsg
         return MsgTuple.success();
     }
 
-    proc shuffle(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws 
+    proc shuffleHelp(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws 
         where array_nd != 1
     {
         const name = msgArgs["name"],
