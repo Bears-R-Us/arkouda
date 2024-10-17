@@ -34,7 +34,7 @@ def _create_np_array(size, op, dtype, seed):
 
     return a
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK Array Create")
 @pytest.mark.parametrize("op", OPS)
 @pytest.mark.parametrize("dtype", TYPES)
@@ -56,7 +56,7 @@ def bench_ak_array_create(benchmark, op, dtype):
         benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
             (nbytes / benchmark.stats["mean"]) / 2 ** 30)
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="NP Array Create")
 @pytest.mark.parametrize("op", OPS)
 @pytest.mark.parametrize("dtype", TYPES)

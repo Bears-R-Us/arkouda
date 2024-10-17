@@ -16,7 +16,7 @@ def _perform_or_binop(a, b):
 def _perform_shift_binop(a):
     return a >> 10
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Bigint Bitwise Binops")
 @pytest.mark.parametrize("op", OPS)
 def bench_ak_bitwise_binops(benchmark, op):

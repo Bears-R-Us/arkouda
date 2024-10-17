@@ -8,7 +8,7 @@ TYPES = ("int64", "float64", "bool")
 def _run_scatter(a, i, v):
     a[i] = v
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Scatter")
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_ak_scatter(benchmark, dtype):
@@ -41,7 +41,7 @@ def bench_ak_scatter(benchmark, dtype):
     benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
         (bytes_per_sec / 2 ** 30))
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="NumPy_Scatter")
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_np_scatter(benchmark, dtype):
