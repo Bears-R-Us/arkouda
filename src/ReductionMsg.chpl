@@ -41,9 +41,10 @@ module ReductionMsg
       Supports: 'sum', 'prod', 'min', 'max'
     */
 
-    // proc argTypeReductionMessage(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-    //   throw new Error("This code should never be called.");
-    // }
+    proc argTypeReductionMessage(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
+      halt("argTypeReductionMessage should never be called.");
+      throw new Error("argTypeReductionMessage  is no longer implemented.");
+    }
 
     @arkouda.registerCommand
     proc sum(ref x:[?d] ?t, axis: [?d2] int, skipNan: bool): [] t throws 
