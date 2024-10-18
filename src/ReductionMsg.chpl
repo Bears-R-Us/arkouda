@@ -42,7 +42,7 @@ module ReductionMsg
     */
 
 
-    @arkouda.registerND(cmd_prefix="reduce")
+    // @arkouda.registerND(cmd_prefix="reduce")
     proc argTypeReductionMessage(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
       use SliceReductionOps;
       param pn = Reflection.getRoutineName();
