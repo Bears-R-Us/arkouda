@@ -124,13 +124,16 @@ module ReductionMsg
       }
     }
 
+    proc reductionReturnType(type t) type
+      do return if t == bool then int else t;
+
     @arkouda.registerCommand
-    proc sum(ref x:[?d] ?t, axis: list(int), skipNan: bool): [] throws
+    proc sum(ref x:[?d] ?t, axis: list(int), skipNan: bool): [] reductionReturnType(t) throws
       where t==int || t==real || t==uint(64) || t==bool
     {
       use SliceReductionOps;
 
-      type opType = if t == bool then int else t;
+      type opType = reductionReturnType(t);
       if d.rank == 1 then return makeDistArray([(+ reduce x:opType)]);
 
       const (valid, axes) = validateNegativeAxes(axis, x.rank);
@@ -152,11 +155,11 @@ module ReductionMsg
     }
 
     @arkouda.registerCommand
-    proc prod(ref x:[?d] ?t, axis: list(int), skipNan: bool): [] throws
+    proc prod(ref x:[?d] ?t, axis: list(int), skipNan: bool): [] reductionReturnType(t) throws
       where t==int || t==real || t==uint(64) || t==bool {
       use SliceReductionOps;
 
-      type opType = if t == bool then int else t;
+      type opType = reductionReturnType(t);
       if d.rank == 1 then return makeDistArray([(* reduce x:opType)]);
 
       const (valid, axes) = validateNegativeAxes(axis, x.rank);
@@ -178,11 +181,11 @@ module ReductionMsg
     }
 
     @arkouda.registerCommand
-    proc max(ref x:[?d] ?t, axis: list(int), skipNan: bool): [] throws
+    proc max(ref x:[?d] ?t, axis: list(int), skipNan: bool): [] reductionReturnType(t) throws
       where t==int || t==real || t==uint(64) || t==bool {
       use SliceReductionOps;
 
-      type opType = if t == bool then int else t;
+      type opType = reductionReturnType(t);
       if d.rank == 1 then return makeDistArray([(max reduce x:opType)]);
 
       const (valid, axes) = validateNegativeAxes(axis, x.rank);
@@ -204,11 +207,11 @@ module ReductionMsg
     }
 
     @arkouda.registerCommand
-    proc min(ref x:[?d] ?t, axis: list(int), skipNan: bool): [] throws
+    proc min(ref x:[?d] ?t, axis: list(int), skipNan: bool): [] reductionReturnType(t) throws
       where t==int || t==real || t==uint(64) || t==bool {
       use SliceReductionOps;
 
-      type opType = if t == bool then int else t;
+      type opType = reductionReturnType(t);
       if d.rank == 1 then return makeDistArray([(min reduce x:opType)]);
 
       const (valid, axes) = validateNegativeAxes(axis, x.rank);
