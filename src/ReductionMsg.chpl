@@ -42,7 +42,7 @@ module ReductionMsg
     */
 
     proc argTypeReductionMessage(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-      halt("argTypeReductionMessage should never be called.");
+
       throw new Error("argTypeReductionMessage  is no longer implemented.");
     }
 
