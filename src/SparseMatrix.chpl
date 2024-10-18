@@ -6,7 +6,7 @@ module SparseMatrix {
   use CommAggregation;
 
   // Quick and dirty, not permanent
-  proc fillSparseMatrix(ref spsMat, const A: [?D] ?eltType, param l: layout) throws {
+  proc fillSparseMatrix(ref spsMat, const A: [?D] ?eltType, param l: Layout) throws {
     if A.rank != 1 then
         throw getErrorWithContext(
                         msg="fill vals requires a 1D array; got a %iD array".format(A.rank),
@@ -31,7 +31,7 @@ module SparseMatrix {
                         moduleName=getModuleName(),
                         errorClass="IllegalArgumentError"
                         );
-    
+
     // Note: this simplified loop cannot be used because iteration over spsMat.domain
     //       occures one locale at a time (i.e., the first spsMat.domain.parDom.localSubdomain(Locales[0]).size
     //       values from 'A' are deposited on locale 0, and so on), rather than depositing
@@ -40,7 +40,7 @@ module SparseMatrix {
     //   spsMat[i,j] = A[idx];
     // }
 
-    if l == layout.CSR {
+    if l == Layout.CSR {
       var idx = 0;
       for i in spsMat.domain.parentDom.dim(0) {
         for j in spsMat.domain.parentDom.dim(1) {
@@ -95,7 +95,9 @@ module SparseMatrix {
     Fill the rows, cols, and vals arrays with the non-zero indices and values
     from the sparse matrix in row-major order.
   */
-  proc sparseMatToPdarrayCSR(const ref spsMat, ref rows, ref cols, ref vals) {
+  proc sparseMatToPdarray(const ref spsMat, ref rows, ref cols, ref vals, param layout: Layout)
+    where layout == Layout.CSR
+  {
     // // serial algorithm (for reference):
     // var idx = 0;
     // for i in spsMat.domain.parentDom.dim(0) {
@@ -156,7 +158,9 @@ module SparseMatrix {
   //   Fill the rows, cols, and vals arrays with the non-zero indices and values
   //   from the sparse matrix in col-major order.
   // */
-  proc sparseMatToPdarrayCSC(const ref spsMat, ref rows, ref cols, ref vals) {
+  proc sparseMatToPdarray(const ref spsMat, ref rows, ref cols, ref vals, param layout: Layout)
+    where layout == Layout.CSC
+  {
     // // serial algorithm (for reference):
     // var idx = 0;
     // for j in spsMat.domain.parentDom.dim(1) {
@@ -450,9 +454,9 @@ module SparseMatrix {
     return C;
   }
 
-  proc randSparseMatrix(size, density, param layout, type eltType) {
+  proc randSparseMatrix(shape: 2*int, density, param layout, type eltType) {
     import SymArrayDmap.makeSparseDomain;
-    var (SD, dense) = makeSparseDomain(size, layout);
+    var (SD, dense) = makeSparseDomain(shape, layout);
 
     // randomly include index pairs based on provided density
     for (i,j) in dense do
@@ -460,6 +464,38 @@ module SparseMatrix {
           SD += (i,j);
 
     var A: [SD] eltType;
+    return A;
+  }
+
+  proc sparseMatFromArrays(rows, cols, vals, shape: 2*int, param layout, type eltType) throws {
+    import SymArrayDmap.makeSparseDomain;
+    var (SD, dense) = makeSparseDomain(shape, layout);
+
+    for i in 0..<rows.size {
+      if SD.contains((rows[i], cols[i])) then
+        throw getErrorWithContext(
+                                  msg="Duplicate index (%i, %i) in sparse matrix".format(rows[i], cols[i]),
+                                  lineNumber=getLineNumber(),
+                                  routineName=getRoutineName(),
+                                  moduleName=getModuleName(),
+                                  errorClass="InvalidArgumentError"
+                                  );
+      if rows[i] < 1 || rows[i] > shape[0] || cols[i] < 1 || cols[i] > shape[1] then
+        throw getErrorWithContext(
+                                  msg="Index (%i, %i) out of bounds for sparse matrix of shape (%i, %i)".format(rows[i], cols[i], shape[0], shape[1]),
+                                  lineNumber=getLineNumber(),
+                                  routineName=getRoutineName(),
+                                  moduleName=getModuleName(),
+                                  errorClass="InvalidArgumentError"
+                                  );
+      SD += (rows[i], cols[i]);
+    }
+
+    var A: [SD] eltType;
+    for i in 0..<rows.size {
+      A[rows[i], cols[i]] = vals[i];
+    }
+
     return A;
   }
 
@@ -471,7 +507,7 @@ module SparseMatrix {
 
     use BlockDist, LayoutCS, Map, Random;
 
-    enum layout {
+    enum Layout {
       CSR,
       CSC
     };

@@ -1,6 +1,7 @@
 import arkouda as ak
 import pytest
 
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="BigInt_Conversion")
 def bench_to_bigint(benchmark):
     cfg = ak.get_config()
@@ -25,6 +26,7 @@ def bench_to_bigint(benchmark):
         (tot_bytes / benchmark.stats["mean"]) / 2 ** 30)
     benchmark.extra_info["max_bits"] = pytest.max_bits
 
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="BigInt_Conversion")
 def bench_from_bigint(benchmark):
     cfg = ak.get_config()

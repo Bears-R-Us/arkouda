@@ -7,7 +7,7 @@ DTYPES = ["int64", "float64", "bigint"]
 def run_test(a, b, alpha):
     return a + b * alpha
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="ak_stream")
 @pytest.mark.parametrize("dtype", DTYPES)
 def bench_ak_stream(benchmark, dtype):

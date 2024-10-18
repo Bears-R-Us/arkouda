@@ -5,7 +5,7 @@ import pytest
 OPS = ("sum", "prod", "min", "max")
 TYPES = ("int64", "float64")
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Arkouda_Reduce")
 @pytest.mark.parametrize("op", OPS)
 @pytest.mark.parametrize("dtype", TYPES)
@@ -33,7 +33,7 @@ def bench_ak_reduce(benchmark, op, dtype):
             (nbytes / benchmark.stats["mean"]) / 2 ** 30
         )
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Numpy_Reduce")
 @pytest.mark.parametrize("op", OPS)
 @pytest.mark.parametrize("dtype", TYPES)

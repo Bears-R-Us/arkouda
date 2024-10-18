@@ -24,7 +24,7 @@ def run_agg(g, vals, op):
 
     return vals.size + vals.itemsize
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="GroupBy.aggregate")
 @pytest.mark.parametrize("op", ak.GroupBy.Reductions)
 def bench_aggs(benchmark, op):

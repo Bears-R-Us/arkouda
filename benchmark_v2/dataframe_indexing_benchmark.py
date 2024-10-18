@@ -32,7 +32,7 @@ def generate_dataframe():
             )
     return ak.DataFrame(df_dict)
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Dataframe_Indexing")
 @pytest.mark.parametrize("op", OPS)
 def bench_ak_dataframe(benchmark, op):

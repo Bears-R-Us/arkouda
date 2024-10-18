@@ -36,7 +36,7 @@ def _generate_data(loc):
 
     return random_strings if loc == "Good" else sorted_strings
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="String_Locality")
 @pytest.mark.parametrize("op", OPS)
 @pytest.mark.parametrize("loc", LOCALITY)

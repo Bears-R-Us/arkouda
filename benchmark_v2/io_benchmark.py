@@ -65,7 +65,7 @@ def _generate_df(N, dtype, returnDict=False):
     }
     return df_dict if returnDict else ak.DataFrame(df_dict)
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Arkouda_IO_Write_HDF5")
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_ak_write_hdf(benchmark, dtype):
@@ -90,7 +90,7 @@ def bench_ak_write_hdf(benchmark, dtype):
             (nbytes / benchmark.stats["mean"]) / 2**30
         )
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Arkouda_IO_Write_Parquet")
 @pytest.mark.parametrize("dtype", TYPES)
 @pytest.mark.parametrize("comp", COMPRESSIONS)
@@ -117,7 +117,7 @@ def bench_ak_write_parquet(benchmark, dtype, comp):
             (nbytes / benchmark.stats["mean"]) / 2**30
         )
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Arkouda_IO_Write_Parquet")
 @pytest.mark.parametrize("dtype", TYPES)
 @pytest.mark.parametrize("comp", COMPRESSIONS)
@@ -147,7 +147,7 @@ def bench_ak_write_parquet_multi(benchmark, dtype, comp):
             (nbytes / benchmark.stats["mean"]) / 2**30
         )
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Arkouda_IO_Write_Parquet")
 @pytest.mark.parametrize("dtype", TYPES)
 @pytest.mark.parametrize("comp", COMPRESSIONS)
@@ -176,7 +176,7 @@ def bench_ak_write_parquet_append(benchmark, dtype, comp):
             (nbytes / benchmark.stats["mean"]) / 2**30
         )
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Arkouda_IO_Read_HDF5")
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_ak_read_hdf(benchmark, dtype):
@@ -198,7 +198,7 @@ def bench_ak_read_hdf(benchmark, dtype):
             (nbytes / benchmark.stats["mean"]) / 2**30
         )
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Arkouda_IO_Read_Parquet")
 @pytest.mark.parametrize("dtype", TYPES)
 @pytest.mark.parametrize("comp", COMPRESSIONS)
@@ -221,7 +221,7 @@ def bench_ak_read_parquet(benchmark, dtype, comp):
             (nbytes / benchmark.stats["mean"]) / 2**30
         )
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Arkouda_IO_Read_Parquet")
 @pytest.mark.parametrize("dtype", TYPES)
 @pytest.mark.parametrize("comp", COMPRESSIONS)
@@ -248,7 +248,7 @@ def bench_ak_read_parquet_multi_column(benchmark, dtype, comp):
             (nbytes / benchmark.stats["mean"]) / 2**30
         )
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Arkouda_IO_Delete")
 def bench_ak_delete(benchmark):
     if pytest.io_delete or (not pytest.io_write and not pytest.io_read):
