@@ -345,7 +345,7 @@ module AryUtil
     proc reducedShape(shape: ?N*int, axes: list(int)): N*int {
       var ret: N*int;
       for param i in 0..<N {
-        if N == 1 || axes.contains(i)
+        if N == 1 || axes.size == 0 || axes.contains(i)
           then ret[i] = 1;
           else ret[i] = shape[i];
       }
