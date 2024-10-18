@@ -31,9 +31,13 @@ module SortMsg
 
     /* sort takes pdarray and returns a sorted copy of the array */
     @arkouda.registerCommand
-    proc sort(array: [?d] ?t, alg: string, axis: int): [d] t throws 
-    where ((t == real) || (t == int) || (t == uint(64))) && (d.rank == 1) {
+    proc sort(array: [?d] ?t, alg: string, axis: int): [d] t throws
+      where ((t == real) || (t == int) || (t == uint(64)))
+        do return sortHelp(array, alg, axis);
 
+    proc sortHelp(array: [?d] ?t, alg: string, axis: int): [d] t throws
+      where d.rank == 1
+    {
       var algorithm: SortingAlgorithm = ArgSortMsg.getSortingAlgorithm(alg);
       const itemsize = dtypeSize(whichDtype(t));
       overMemLimit(radixSortLSD_keys_memEst(d.size, itemsize));
@@ -48,9 +52,9 @@ module SortMsg
       }
     }
 
-    proc sort(array: [?d] ?t, alg: string, axis: int): [d] t throws 
-    where ((t == real) || (t==int) || (t==uint(64))) && (d.rank > 1) {
-
+    proc sortHelp(array: [?d] ?t, alg: string, axis: int): [d] t throws
+      where d.rank > 1
+    {
       var algorithm: SortingAlgorithm = ArgSortMsg.getSortingAlgorithm(alg);
       const itemsize = dtypeSize(whichDtype(t));
       overMemLimit(radixSortLSD_keys_memEst(d.size, itemsize));
@@ -91,16 +95,11 @@ module SortMsg
       return sorted;
     }
 
-    proc sort(array: [?d] ?t, alg: string, axis: int): [d] t throws 
-    where ((t != real) && (t!=int) && (t!=uint(64))) {
-      throw new Error("sort does not support type %s".format(type2str(t)));
-    }
-
     // https://data-apis.org/array-api/latest/API_specification/generated/array_api.searchsorted.html#array_api.searchsorted
     @arkouda.registerCommand
     proc searchSorted(x1: [?d1] real, x2: [?d2] real, side: string): [d2] int throws
-    where (d1.rank == 1) {
-
+      where d1.rank == 1
+    {
       if side != "left" && side != "right" {
           throw new Error("searchSorted side must be a string with value 'left' or 'right'.");
       }
@@ -121,11 +120,6 @@ module SortMsg
       }
 
       return ret;
-    }
-
-    proc searchSorted(x1: [?d1] real, x2: [?d2] real, side: string): [d2] int throws
-    where (d1.rank != 1){
-      throw new Error("searchSorted only arrays x1 of dimension 1.");
     }
 
     record leftCmp: relativeComparator {
