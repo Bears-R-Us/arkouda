@@ -4,6 +4,14 @@ arkouda.sorting
 .. py:module:: arkouda.sorting
 
 
+Attributes
+----------
+
+.. autoapisummary::
+
+   arkouda.sorting.SortingAlgorithm
+
+
 Functions
 ---------
 
@@ -16,6 +24,8 @@ Functions
 
 Module Contents
 ---------------
+
+.. py:data:: SortingAlgorithm
 
 .. py:function:: argsort(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, axis: arkouda.numpy.dtypes.int_scalars = 0) -> arkouda.pdarrayclass.pdarray
 

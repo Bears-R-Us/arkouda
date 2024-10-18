@@ -75,6 +75,7 @@ Attributes
    arkouda.PZERO
    arkouda.RegisteredSymbols
    arkouda.SEG_SUFFIX
+   arkouda.SortingAlgorithm
    arkouda.VAL_SUFFIX
    arkouda.e
    arkouda.euler_gamma
@@ -20772,6 +20773,8 @@ Package Contents
    information.
 
 
+
+.. py:data:: SortingAlgorithm
 
 .. py:class:: StrDType(obj, align=False, copy=False)
 
