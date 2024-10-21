@@ -43,12 +43,6 @@ module GenSymIO {
         return st.insert(new shared SymEntry(makeArrayFromBytes(msgArgs.payload, shape, array_dtype)));
     }
 
-    proc array(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
-        where array_dtype == bigint
-    {
-        return MsgTuple.error("Array creation from binary payload is not supported for bigint arrays");
-    }
-
     proc makeArrayFromBytes(ref payload: bytes, shape: ?N*int, type t): [] t throws {
         var size = 1;
         for s in shape do size *= s;
@@ -136,12 +130,6 @@ module GenSymIO {
         }
         const size = array.size*c_sizeof(array_dtype):int;
         return MsgTuple.payload(bytes.createAdoptingBuffer(ptr:c_ptr(uint(8)), size, size));
-    }
-
-    proc tondarray(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
-        where array_dtype == bigint
-    {
-        return MsgTuple.error("cannot create ndarray from bigint array");
     }
 
     /*

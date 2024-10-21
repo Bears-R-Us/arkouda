@@ -68,6 +68,9 @@ def clip(a: Array, a_min, a_max, /) -> Array:
     a_max : scalar
         The maximum value
     """
+    if a.dtype == ak.bigint or a.dtype == ak.bool_:
+        raise RuntimeError(f"Error executing command: clip does not support dtype {a.dtype}")
+
     return Array._new(
         create_pdarray(
             generic_msg(
@@ -99,6 +102,9 @@ def diff(a: Array, /, n: int = 1, axis: int = -1, prepend=None, append=None) -> 
     append : Array, optional
         Array to append to `a` along `axis` before calculating the difference.
     """
+    if a.dtype == ak.bigint or a.dtype == ak.bool_:
+        raise RuntimeError(f"Error executing command: diff does not support dtype {a.dtype}")
+
     if prepend is not None and append is not None:
         a_ = concat((prepend, a, append), axis=axis)
     elif prepend is not None:
@@ -145,6 +151,9 @@ def pad(
     """
     if mode != "constant":
         raise NotImplementedError(f"pad mode '{mode}' is not supported")
+
+    if array.dtype == ak.bigint:
+        raise RuntimeError("Error executing command: pad does not support dtype bigint")
 
     if "constant_values" not in kwargs:
         cvals = 0

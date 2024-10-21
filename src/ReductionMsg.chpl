@@ -7,6 +7,7 @@ module ReductionMsg
     use Reflection only;
     use CommAggregation;
     use BigInteger;
+    use List;
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -123,25 +124,17 @@ module ReductionMsg
       }
     }
 
-
-
+    proc reductionReturnType(type t) type
+      do return if t == bool then int else t;
 
     @arkouda.registerCommand
-    proc sum(ref x:[?d] ?t, axis: [?d2] int, skipNan: bool): [] t throws 
-      where (t==int || t==real || t==uint(64)) && (x.rank == 1) && (axis.rank == 1)  {
-        return makeDistArray([(+ reduce x)]);
-    }
-
-    proc sum(ref x:[?d] ?t, axis: [?d2] int, skipNan: bool): [] int throws 
-      where (t==bool) && (x.rank == 1) && (axis.rank == 1)  {
-      return makeDistArray([(+ reduce x:int)]);
-    }
-
-    proc sum(ref x:[?d] ?t, axis: [?d2] int, skipNan: bool): [] throws 
-      where (t==int || t==real || t==uint(64) || t==bool) && (x.rank != 1) && (axis.rank == 1) {
+    proc sum(ref x:[?d] ?t, axis: list(int), skipNan: bool): [] reductionReturnType(t) throws
+      where t==int || t==real || t==uint(64) || t==bool
+    {
       use SliceReductionOps;
 
-      type opType = if t == bool then int else t;
+      type opType = reductionReturnType(t);
+      if d.rank == 1 then return makeDistArray([(+ reduce x:opType)]);
 
       const (valid, axes) = validateNegativeAxes(axis, x.rank);
       if !valid {
@@ -149,7 +142,6 @@ module ReductionMsg
       } else {
         const outShape = reducedShape(x.shape, axes);
         var ret = makeDistArray((...outShape), opType);
-        
         if (ret.size==1) {
           ret[ret.domain.low] = (+ reduce x:opType);
         }else{
@@ -160,34 +152,15 @@ module ReductionMsg
         }
         return ret;
       }
-    }   
-
-    proc sum(ref x:[?d] ?t, axis: [?d2] int, skipNan: bool): [d2] t throws 
-    where (t==int || t==real || t==uint(64) || t==bool) && (axis.rank != 1) {
-      throw new Error("sum only accepts axis of rank 1.");
-    }
-
-    proc sum(ref x:[?d] ?t, axis: [?d2] int, skipNan: bool): [d2] t throws 
-    where (t!=int && t!=real && t!=uint(64) && t!=bool) {
-      throw new Error("sum does not support type %s".format(type2str(t)));
     }
 
     @arkouda.registerCommand
-    proc prod(ref x:[?d] ?t, axis: [?d2] int, skipNan: bool): [] t throws 
-      where (t==int || t==real || t==uint(64)) && (x.rank == 1) && (axis.rank == 1)  {
-        return makeDistArray([(* reduce x)]);
-    }
-
-    proc prod(ref x:[?d] ?t, axis: [?d2] int, skipNan: bool): [] int throws 
-      where (t==bool) && (x.rank == 1) && (axis.rank == 1)  {
-      return makeDistArray([(* reduce x:int)]);
-    }
-
-    proc prod(ref x:[?d] ?t, axis: [?d2] int, skipNan: bool): [] throws 
-      where (t==int || t==real || t==uint(64) || t==bool) && (x.rank != 1) && (axis.rank == 1) {
+    proc prod(ref x:[?d] ?t, axis: list(int), skipNan: bool): [] reductionReturnType(t) throws
+      where t==int || t==real || t==uint(64) || t==bool {
       use SliceReductionOps;
 
-      type opType = if t == bool then int else t;
+      type opType = reductionReturnType(t);
+      if d.rank == 1 then return makeDistArray([(* reduce x:opType)]);
 
       const (valid, axes) = validateNegativeAxes(axis, x.rank);
       if !valid {
@@ -205,35 +178,15 @@ module ReductionMsg
         }
         return ret;
       }
-    }   
-
-    proc prod(ref x:[?d] ?t, axis: [?d2] int, skipNan: bool): [d2] t throws 
-    where (t==int || t==real || t==uint(64) || t==bool) && (axis.rank != 1) {
-      throw new Error("prod only accepts axis of rank 1.");
     }
-
-    proc prod(ref x:[?d] ?t, axis: [?d2] int, skipNan: bool): [d2] t throws 
-    where (t!=int && t!=real && t!=uint(64) && t!=bool) {
-      throw new Error("prod does not support type %s".format(type2str(t)));
-    }
-
 
     @arkouda.registerCommand
-    proc max(ref x:[?d] ?t, axis: [?d2] int, skipNan: bool): [] t throws 
-      where (t==int || t==real || t==uint(64)) && (x.rank == 1) && (axis.rank == 1)  {
-        return makeDistArray([(max reduce x)]);
-    }
-
-    proc max(ref x:[?d] ?t, axis: [?d2] int, skipNan: bool): [] int throws 
-      where (t==bool) && (x.rank == 1) && (axis.rank == 1)  {
-      return makeDistArray([(max reduce x:int)]);
-    }
-
-    proc max(ref x:[?d] ?t, axis: [?d2] int, skipNan: bool): [] throws 
-      where (t==int || t==real || t==uint(64) || t==bool) && (x.rank != 1) && (axis.rank == 1) {
+    proc max(ref x:[?d] ?t, axis: list(int), skipNan: bool): [] reductionReturnType(t) throws
+      where t==int || t==real || t==uint(64) || t==bool {
       use SliceReductionOps;
 
-      type opType = if t == bool then int else t;
+      type opType = reductionReturnType(t);
+      if d.rank == 1 then return makeDistArray([(max reduce x:opType)]);
 
       const (valid, axes) = validateNegativeAxes(axis, x.rank);
       if !valid {
@@ -251,34 +204,15 @@ module ReductionMsg
         }
         return ret;
       }
-    }   
-
-    proc max(ref x:[?d] ?t, axis: [?d2] int, skipNan: bool): [d2] t throws 
-    where (t==int || t==real || t==uint(64) || t==bool) && (axis.rank != 1) {
-      throw new Error("max only accepts axis of rank 1.");
-    }
-
-    proc max(ref x:[?d] ?t, axis: [?d2] int, skipNan: bool): [d2] t throws 
-    where (t!=int && t!=real && t!=uint(64) && t!=bool) {
-      throw new Error("max does not support type %s".format(type2str(t)));
     }
 
     @arkouda.registerCommand
-    proc min(ref x:[?d] ?t, axis: [?d2] int, skipNan: bool): [] t throws 
-      where (t==int || t==real || t==uint(64)) && (x.rank == 1) && (axis.rank == 1)  {
-        return makeDistArray([(min reduce x)]);
-    }
-
-    proc min(ref x:[?d] ?t, axis: [?d2] int, skipNan: bool): [] int throws 
-      where (t==bool) && (x.rank == 1) && (axis.rank == 1)  {
-      return makeDistArray([(min reduce x:int)]);
-    }
-
-    proc min(ref x:[?d] ?t, axis: [?d2] int, skipNan: bool): [] throws 
-      where (t==int || t==real || t==uint(64) || t==bool) && (x.rank != 1) && (axis.rank == 1) {
+    proc min(ref x:[?d] ?t, axis: list(int), skipNan: bool): [] reductionReturnType(t) throws
+      where t==int || t==real || t==uint(64) || t==bool {
       use SliceReductionOps;
 
-      type opType = if t == bool then int else t;
+      type opType = reductionReturnType(t);
+      if d.rank == 1 then return makeDistArray([(min reduce x:opType)]);
 
       const (valid, axes) = validateNegativeAxes(axis, x.rank);
       if !valid {
@@ -296,16 +230,6 @@ module ReductionMsg
         }
         return ret;
       }
-    }   
-
-    proc min(ref x:[?d] ?t, axis: [?d2] int, skipNan: bool): [d2] t throws 
-    where (t==int || t==real || t==uint(64) || t==bool) && (axis.rank != 1) {
-      throw new Error("min only accepts axis of rank 1.");
-    }
-
-    proc min(ref x:[?d] ?t, axis: [?d2] int, skipNan: bool): [d2] t throws 
-    where (t!=int && t!=real && t!=uint(64) && t!=bool) {
-      throw new Error("min does not support type %s".format(type2str(t)));
     }
 
     /*
@@ -558,16 +482,6 @@ module ReductionMsg
 
 
     // simple and efficient 'nonzero' implementation for 1D arrays
-    proc nonzero(
-      cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
-      type array_dtype,
-      param array_nd: int
-    ): MsgTuple throws
-      where array_dtype == bigint
-    {
-      return MsgTuple.error("nonzero is not supported for bigint arrays");
-    }
-
     proc nonzero1D(x: [?d] ?t): [] int throws {
       const nTasksPerLoc = here.maxTaskPar;
       var nnzPerTask: [0..<numLocales] [0..<nTasksPerLoc] int;

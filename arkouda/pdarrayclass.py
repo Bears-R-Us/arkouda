@@ -2720,16 +2720,6 @@ def is_sorted(pda: pdarray) -> np.bool_:
     )
 
 
-def _get_axis_pdarray(axis: Optional[Union[int, Tuple[int, ...]]] = None):
-    from arkouda import array as ak_array
-
-    axis_list = []
-    if axis is not None:
-        axis_list = list(axis) if isinstance(axis, tuple) else [axis]
-
-    return ak_array(axis_list, dtype="int64")
-
-
 @typechecked
 def sum(
     pda: pdarray, axis: Optional[Union[int, Tuple[int, ...]]] = None
@@ -2757,12 +2747,13 @@ def sum(
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    axis_arry = _get_axis_pdarray(axis)
+    axis_ = [] if axis is None else ([axis,] if isinstance(axis, int) else list(axis))
     repMsg = generic_msg(
-        cmd=f"sum<{pda.dtype.name},{pda.ndim},{axis_arry.ndim}>",
-        args={"x": pda, "axis": axis_arry, "skipNan": False},
+        cmd=f"sum<{pda.dtype.name},{pda.ndim}>",
+        args={"x": pda, "axis": axis_, "skipNan": False},
     )
-    if axis is None or len(axis_arry) == 0 or pda.ndim == 1:
+    if axis is None or len(axis_) == 0 or pda.ndim == 1:
+        # TODO: remove call to 'flatten'
         return create_pdarray(cast(str, repMsg)).flatten()[0]
     else:
         return create_pdarray(cast(str, repMsg))
@@ -2845,12 +2836,12 @@ def prod(pda: pdarray, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> Un
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    axis_arry = _get_axis_pdarray(axis)
+    axis_ = [] if axis is None else ([axis,] if isinstance(axis, int) else list(axis))
     repMsg = generic_msg(
-        cmd=f"prod<{pda.dtype.name},{pda.ndim},{axis_arry.ndim}>",
-        args={"x": pda, "axis": axis_arry, "skipNan": False},
+        cmd=f"prod<{pda.dtype.name},{pda.ndim}>",
+        args={"x": pda, "axis": axis_, "skipNan": False},
     )
-    if axis is None or len(axis_arry) == 0 or pda.ndim == 1:
+    if axis is None or len(axis_) == 0 or pda.ndim == 1:
         return create_pdarray(cast(str, repMsg)).flatten()[0]
     else:
         return create_pdarray(cast(str, repMsg))
@@ -2882,12 +2873,12 @@ def min(
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    axis_arry = _get_axis_pdarray(axis)
+    axis_ = [] if axis is None else ([axis,] if isinstance(axis, int) else list(axis))
     repMsg = generic_msg(
-        cmd=f"min<{pda.dtype.name},{pda.ndim},{axis_arry.ndim}>",
-        args={"x": pda, "axis": axis_arry, "skipNan": False},
+        cmd=f"min<{pda.dtype.name},{pda.ndim}>",
+        args={"x": pda, "axis": axis_, "skipNan": False},
     )
-    if axis is None or len(axis_arry) == 0 or pda.ndim == 1:
+    if axis is None or len(axis_) == 0 or pda.ndim == 1:
         return create_pdarray(cast(str, repMsg)).flatten()[0]
     else:
         return create_pdarray(cast(str, repMsg))
@@ -2920,12 +2911,12 @@ def max(
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    axis_arry = _get_axis_pdarray(axis)
+    axis_ = [] if axis is None else ([axis,] if isinstance(axis, int) else list(axis))
     repMsg = generic_msg(
-        cmd=f"max<{pda.dtype.name},{pda.ndim},{axis_arry.ndim}>",
-        args={"x": pda, "axis": axis_arry, "skipNan": False},
+        cmd=f"max<{pda.dtype.name},{pda.ndim}>",
+        args={"x": pda, "axis": axis_, "skipNan": False},
     )
-    if axis is None or len(axis_arry) == 0 or pda.ndim == 1:
+    if axis is None or len(axis_) == 0 or pda.ndim == 1:
         return create_pdarray(cast(str, repMsg)).flatten()[0]
     else:
         return create_pdarray(cast(str, repMsg))

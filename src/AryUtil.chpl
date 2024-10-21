@@ -156,6 +156,20 @@ module AryUtil
       return (true, ret);
     }
 
+    proc validateNegativeAxes(axes: list(int), param nd: int): (bool, list(int)) {
+      var ret = new list(int);
+      for a in axes {
+        if a >= 0 && a < nd {
+          ret.pushBack(a);
+        } else if a < 0 && a >= -nd {
+          ret.pushBack(nd + a);
+        } else {
+          return (false, ret);
+        }
+      }
+      return (true, ret);
+    }
+
     /*
       Get a domain that selects out the idx'th set of indices along the specified axes
 
@@ -325,6 +339,16 @@ module AryUtil
     proc reducedShape(shape: ?N*int, axis: int): N*int {
       var ret = shape;
       ret[axis] = 1;
+      return ret;
+    }
+
+    proc reducedShape(shape: ?N*int, axes: list(int)): N*int {
+      var ret: N*int;
+      for param i in 0..<N {
+        if N == 1 || axes.size == 0 || axes.contains(i)
+          then ret[i] = 1;
+          else ret[i] = shape[i];
+      }
       return ret;
     }
 
@@ -947,9 +971,9 @@ module AryUtil
       flatten a multi-dimensional array into a 1D array
     */
     @arkouda.registerCommand
-    proc flatten(const ref a: [?d] ?t): [] t throws
-      where a.rank > 1
-    {
+    proc flatten(const ref a: [?d] ?t): [] t throws {
+      if a.rank == 1 then return a;
+
       var flat = makeDistArray(d.size, t);
 
       // ranges of flat indices owned by each locale
@@ -1004,12 +1028,6 @@ module AryUtil
       }
 
       return flat;
-    }
-
-    proc flatten(const ref a: [?d] ?t): [] t throws
-      where a.rank == 1
-    {
-      return a;
     }
 
     // helper for computing an array element's index from its order
