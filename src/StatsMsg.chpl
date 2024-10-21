@@ -85,15 +85,6 @@ module StatsMsg {
       return (+ reduce ((x:real - mx) * (y:real - my))) / (dx.size - 1):real;
     }
 
-    // above registration will instantiate `cov` for all combinations of array ranks
-    // even though it is only valid when the ranks are the same
-    // (respecting the where clause in the signature is future work for 'registerCommand')
-    proc cov(const ref x: [?dx], const ref y: [?dy]): real throws
-      where dx.rank != dy.rank
-    {
-      throw new Error("x and y must have the same rank");
-    }
-
     @arkouda.registerCommand()
     proc corr(const ref x: [?dx] ?tx, const ref y: [?dy] ?ty): real throws
       where dx.rank == dy.rank
@@ -105,15 +96,6 @@ module StatsMsg {
             my = mean(y);
 
       return cov(x, y) / (std(x, 1) * std(y, 1));
-    }
-
-    // above registration will instantiate `corr` for all combinations of array ranks
-    // even though it is only valid when the ranks are the same
-    // (respecting the where clause in the signature is future work for 'registerCommand')
-    proc corr(const ref x: [?dx], const ref y: [?dy]): real throws
-      where dx.rank != dy.rank
-    {
-      throw new Error("x and y must have the same rank");
     }
 
     @arkouda.registerCommand()

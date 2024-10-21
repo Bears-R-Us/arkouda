@@ -206,12 +206,6 @@ module IndexingMsg
         }
     }
 
-    proc multiPDArrayIndex(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype_a, type array_dtype_idx, param array_nd: int): MsgTuple throws
-        where array_dtype_idx != int && array_dtype_idx != uint
-    {
-        return MsgTuple.error("Invalid index type: %s; must be 'int' or 'uint'".format(type2str(array_dtype_idx)));
-    }
-
     private proc multiIndexShape(inShape: ?N*int, idxDims: [?d] int, outSize: int): (bool, int, N*int) {
         var minShape: N*int = inShape,
             firstRank = -1;
@@ -958,14 +952,6 @@ module IndexingMsg
         }
 
         return st.insert(new shared SymEntry(y, x.max_bits));
-    }
-
-    proc takeAlongAxis(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
-        type array_dtype_x,
-        type array_dtype_idx,
-        param array_nd: int
-    ): MsgTuple throws {
-        return MsgTuple.error("Cannot take along axis with non-integer index array");
     }
 
     use CommandMap;
