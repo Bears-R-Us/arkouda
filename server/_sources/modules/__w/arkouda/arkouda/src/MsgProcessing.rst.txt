@@ -194,9 +194,5 @@ or
    and 0 and 20 in the second dimension.
    
 
-.. function:: proc chunkInfoAsString(array: [?d] ?t): string throws where t != bool && t != int(64) && t != uint(64) && t != uint(8) && t != real
-
 .. function:: proc chunkInfoAsArray(array: [?d] ?t): [] int throws where t == bool || t == int(64) || t == uint(64) || t == uint(8) || t == real
-
-.. function:: proc chunkInfoAsArray(array: [?d] ?t): [d] int throws where t != bool && t != int(64) && t != uint(64) && t != uint(8) && t != real
 

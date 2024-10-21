@@ -84,6 +84,8 @@ or
              and the array of modified axes
    
 
+.. function:: proc validateNegativeAxes(axes: list(int), param nd: int): (bool, list(int))
+
 .. function:: proc domOnAxis(D: domain(?), idx: D.rank*int, axes: int ...?NA): domain(?) where NA <= D.rank
 
    
@@ -157,6 +159,8 @@ or
    
 
 .. function:: proc reducedShape(shape: ?N*int, axis: int): N*int
+
+.. function:: proc reducedShape(shape: ?N*int, axes: list(int)): N*int
 
 .. function:: proc aStats(a: [?D] int): (int, int, real, real, real)
 
@@ -294,13 +298,11 @@ or
    unflatten a 1D array into a multi-dimensional array of the given shape
    
 
-.. function:: proc flatten(const ref a: [?d] ?t): [] t throws where a.rank > 1
+.. function:: proc flatten(const ref a: [?d] ?t): [] t throws
 
    
    flatten a multi-dimensional array into a 1D array
    
-
-.. function:: proc flatten(const ref a: [?d] ?t): [] t throws where a.rank == 1
 
 .. record:: orderer
 
