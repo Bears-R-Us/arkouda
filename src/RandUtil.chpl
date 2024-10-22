@@ -37,6 +37,7 @@ module RandUtil {
 
     enum GenerationFunction {
       ExponentialGenerator,
+      GammaGenerator,
       LogisticGenerator,
       NormalGenerator,
       PoissonGenerator,
@@ -48,7 +49,8 @@ module RandUtil {
     proc uniformStreamPerElem(ref randArr: [?D] ?t, ref rng, param function: GenerationFunction, hasSeed: bool,
                                                                 const lam: scalarOrArray(?) = new scalarOrArray(),
                                                                 const mu: scalarOrArray(?) = new scalarOrArray(),
-                                                                const scale: scalarOrArray(?) = new scalarOrArray()) throws {
+                                                                const scale: scalarOrArray(?) = new scalarOrArray(),
+                                                                const kArg: scalarOrArray(?) = new scalarOrArray()) throws {
         if hasSeed {
             // use a fixed number of elements per stream instead of relying on number of locales or numTasksPerLoc because these
             // can vary from run to run / machine to mahchine. And it's important for the same seed to give the same results
@@ -83,6 +85,9 @@ module RandUtil {
                                     when GenerationFunction.ExponentialGenerator {
                                         agg.copy(randArr[i], standardExponentialZig(realRS, uintRS));
                                     }
+                                    when GenerationFunction.GammaGenerator {
+                                        agg.copy(randArr[i], gammaGenerator(kArg[i], realRS));
+                                    }
                                     when GenerationFunction.LogisticGenerator {
                                         agg.copy(randArr[i], logisticGenerator(mu[i], scale[i], realRS));
                                     }
@@ -107,6 +112,9 @@ module RandUtil {
                                 select function {
                                     when GenerationFunction.ExponentialGenerator {
                                         randArr[i] = standardExponentialZig(realRS, uintRS);
+                                    }
+                                    when GenerationFunction.GammaGenerator {
+                                        randArr[i] = gammaGenerator(kArg[i], realRS);
                                     }
                                     when GenerationFunction.LogisticGenerator {
                                         randArr[i] = logisticGenerator(mu[i], scale[i], realRS);
@@ -133,6 +141,9 @@ module RandUtil {
                 select function {
                     when GenerationFunction.ExponentialGenerator {
                         rv = standardExponentialZig(realRS, uintRS);
+                    }
+                    when GenerationFunction.GammaGenerator {
+                        rv = gammaGenerator(kArg[i], realRS);
                     }
                     when GenerationFunction.LogisticGenerator {
                         rv = logisticGenerator(mu[i], scale[i], realRS);

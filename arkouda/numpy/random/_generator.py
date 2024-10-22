@@ -513,6 +513,45 @@ class Generator:
             return self._np_generator.random()
         return self.uniform(size=size)
 
+    def standard_gamma(self, shape, size=None):
+        """
+        TODO
+
+        Notes
+        -----
+        The probability density function for the Gamma distribution is
+
+        .. math::
+            p(x) = x^{k-1} \frac{e^{\frac{-x}{\theta}}}{\theta^k \Gamma(k)}
+        """
+        from arkouda.util import _infer_shape_from_size
+
+        if size is None:
+            # delegate to numpy when return size is 1
+            return self._np_generator.standard_gamma(shape=shape)
+
+        # rename shape to avoid conflict, it's also referred to as k
+        # in the numpy doc string
+        is_single_k, k_arg = float_array_or_scalar_helper("logistic", "shape", shape, size)
+
+        shape, ndim, full_size = _infer_shape_from_size(size)
+        if full_size < 0:
+            raise ValueError("The size parameter must be > 0")
+
+        rep_msg = generic_msg(
+            cmd=f"standardGamma<{ndim}>",
+            args={
+                "name": self._name_dict[akdtype("float64")],
+                "size": shape,
+                "is_single_k": is_single_k,
+                "k_arg": k_arg,
+                "has_seed": self._seed is not None,
+                "state": self._state,
+            },
+        )
+        self._state += full_size
+        return create_pdarray(rep_msg)
+
     def standard_normal(self, size=None, method="zig"):
         r"""
         Draw samples from a standard Normal distribution (mean=0, stdev=1).
