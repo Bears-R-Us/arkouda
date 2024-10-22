@@ -438,6 +438,43 @@ module RandMsg
         }
     }
 
+    inline proc gammaGenerator(kArg: real, ref rs) {
+        // TODO fill this in i guess
+        if kArg == 1.0 {
+            // Okay for now im just gonna pick one but we should use method here somehow
+            // maybe not bc zig requires two generators, so inverse is simpler
+            return standardExponentialInvCDF(1, rs);
+        }
+        else if kArg == 0.0 {
+            return 0.0;
+        }
+    }
+
+    @arkouda.instantiateAndRegister
+    proc standardGamma(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd): MsgTuple throws {
+        const name = msgArgs["name"],
+              shape = msgArgs["size"].toScalarTuple(int, array_nd),
+              isSingleK = msgArgs["is_single_k"].toScalar(bool),
+              kStr = msgArgs["k_arg"].toScalar(string),
+            //   method = msgArgs["method"].toScalar(string),
+            // TODO add method cause this calls exponential which calls normal
+              hasSeed = msgArgs["has_seed"].toScalar(bool),
+              state = msgArgs["state"].toScalar(int);
+
+        // TODO update: remember that kStr maps to shape on the client
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "name: %? shape %? k %s state %i".format(name, shape, kStr, state));
+
+        var generatorEntry = st[name]: borrowed GeneratorSymEntry(real);
+        ref rng = generatorEntry.generator;
+        if state != 1 then rng.skipTo(state-1);
+
+        var gammaArr = makeDistArray(size, real);
+        const kArg = new scalarOrArray(kStr, !isSingleK, st);
+        uniformStreamPerElem(gammaArr, rng, GenerationFunction.GammaGenerator, hasSeed, mu=mu, scale=scale);
+        return st.insert(createSymEntry(logisticArr));
+    }
+
     proc segmentedSampleMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         const genName = msgArgs["genName"],                                 // generator name
               permName = msgArgs["perm"],                                   // values array name
