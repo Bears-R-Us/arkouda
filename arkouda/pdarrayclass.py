@@ -2734,8 +2734,6 @@ def _reduces_to_single_value(axis, ndim) -> bool:
 
 
 # helper function for sum, min, max, prod
-
-
 @typechecked
 def _common_reduction(
     kind: str,
