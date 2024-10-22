@@ -13,7 +13,7 @@ from arkouda.client import generic_msg
 from arkouda.infoclass import information, list_symbol_table
 from arkouda.logger import getArkoudaLogger
 from arkouda.match import Match, MatchType
-from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS
+from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, bool_scalars
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import int_scalars, resolve_scalar_dtype, str_, str_scalars
 from arkouda.pdarrayclass import RegistrationError
@@ -272,10 +272,10 @@ class Strings:
             )
         return create_pdarray(generic_msg(cmd=cmd, args=args))
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other):  # type: ignore
         return self._binop(other, "==")
 
-    def __ne__(self, other) -> bool:
+    def __ne__(self, other):  # type: ignore
         return self._binop(cast(Strings, other), "!=")
 
     def __getitem__(self, key):
@@ -339,7 +339,7 @@ class Strings:
         """
         return "string"
 
-    def equals(self, other) -> bool:
+    def equals(self, other) -> bool_scalars:
         """
         Whether Strings are the same size and all entries are equal.
 
@@ -369,9 +369,10 @@ class Strings:
             if other.size != self.size:
                 return False
             else:
-                return akall(self == other)
-        else:
-            return False
+                result = akall(self == other)
+                if isinstance(result, (bool, np.bool_)):
+                    return result
+        return False
 
     def get_lengths(self) -> pdarray:
         """

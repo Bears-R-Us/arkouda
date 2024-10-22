@@ -5,8 +5,8 @@ import pytest
 
 import arkouda as ak
 from arkouda.client import get_max_array_rank
-from arkouda.dtypes import dtype as akdtype
-from arkouda.dtypes import str_
+from arkouda.numpy.dtypes import dtype as akdtype
+from arkouda.numpy.dtypes import str_
 
 ARRAY_TYPES = [ak.int64, ak.float64, ak.bool_, ak.uint64, str_]
 NUMERIC_TYPES = [ak.int64, ak.float64, ak.bool_, ak.uint64]

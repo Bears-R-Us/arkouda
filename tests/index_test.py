@@ -316,26 +316,26 @@ class TestIndex:
 
     def test_equal_levels(self):
         m = ak.MultiIndex(
-            [ak.arange(3), ak.arange(3) * -1, ak.array(["a", 'b","c', "d"])],
+            [ak.arange(3), ak.arange(3) * -1, ak.array(["a", "b", "c"])],
             names=["col1", "col2", "col3"],
         )
 
         m2 = ak.MultiIndex(
-            [ak.arange(3), ak.arange(3) * -1, ak.array(["a", 'b","c', "d"])],
+            [ak.arange(3), ak.arange(3) * -1, ak.array(["a", "b", "c"])],
             names=["A", "B", "C"],
         )
 
         assert m.equal_levels(m2)
 
         m3 = ak.MultiIndex(
-            [ak.arange(3), ak.arange(3) * -1, ak.array(["a", 'b","c', "d"]), 2 * ak.arange(3)],
+            [ak.arange(3), ak.arange(3) * -1, ak.array(["a", "b", "c"]), 2 * ak.arange(3)],
             names=["col1", "col2", "col3"],
         )
 
         assert not m.equal_levels(m3)
 
         m4 = ak.MultiIndex(
-            [ak.arange(3), ak.arange(3) * 2, ak.array(["a", 'b","c', "d"])],
+            [ak.arange(3), ak.arange(3) * 2, ak.array(["a", "b", "c"])],
             names=["col1", "col2", "col3"],
         )
 
