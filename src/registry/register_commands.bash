@@ -8,13 +8,14 @@ if [ -z "$CHPL_HOME" ]; then
         exit 1
     fi
 fi
-
+echo "$CHPL_HOME"
 if $CHPL_HOME/util/config/run-in-venv-with-python-bindings.bash \
     python3 $1/register_commands.py $2 $3 $4;
 then
     # registering commands with prebuilt python bindings suceeded
     :
 else
+    echo "invoking via chpl-venv failed, trying env build..."
     # if not sucessfull (likely due to mismatched python version), try again with the current python environment
     if python3 $1/register_commands.py $2 $3 $4;
     then
