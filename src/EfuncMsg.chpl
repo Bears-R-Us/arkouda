@@ -45,7 +45,7 @@ module EfuncMsg
 //    The function below is intended to cause an error in the register-commands process.
 
     @arkouda.registerCommand(name="bogus")
-    proc putmask (mask : [?d1] bool, ref a : [d1] ?ta, v : [?d2] ?tv, param array_nd : int ) : int 
+    proc bogus (mask : [?d1] bool, ref a : [d1] ?ta, v : [?d2] ?tv, param array_nd : int ) : int 
         { return 1; }
 
     @arkouda.registerND
