@@ -49,8 +49,7 @@ RESPONSE_TYPE_NAME = "MsgTuple"
 
 def error_message(message, details, loc=None):
     if loc:
-        info = str(loc).split(":")
-        print(" [", info[0], ":", info[1], "] ", file=sys.stderr, end="")
+        print(" [", loc.path(), ":", loc.start()[0], "] ", file=sys.stderr, end="")
 
     print("Error ", message, ": ", details, file=sys.stderr)
 
