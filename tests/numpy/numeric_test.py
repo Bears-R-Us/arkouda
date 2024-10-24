@@ -316,7 +316,9 @@ class TestNumeric:
     def test_histogram_multidim(self, num_type1, num_type2):
         # test 2d histogram
         seed = 1
-        ak_x, ak_y = ak.randint(1, 100, 1000, seed=seed, dtype=num_type1), ak.randint(1, 100, 1000, seed=seed + 1, dtype=num_type2)
+        ak_x, ak_y = ak.randint(1, 100, 1000, seed=seed, dtype=num_type1), ak.randint(
+            1, 100, 1000, seed=seed + 1, dtype=num_type2
+        )
         np_x, np_y = ak_x.to_ndarray(), ak_y.to_ndarray()
         np_hist, np_x_edges, np_y_edges = np.histogram2d(np_x, np_y)
         ak_hist, ak_x_edges, ak_y_edges = ak.histogram2d(ak_x, ak_y)
@@ -348,7 +350,14 @@ class TestNumeric:
         na = np.linspace(1, 10, 10).astype(num_type)
         pda = ak.array(na, dtype=num_type)
 
-        for npfunc, akfunc in ((np.log, ak.log), (np.exp, ak.exp)):
+        for npfunc, akfunc in (
+            (np.exp, ak.exp),
+            (np.log, ak.log),
+            (np.expm1, ak.expm1),
+            (np.log2, ak.log2),
+            (np.log10, ak.log10),
+            (np.log1p, ak.log1p),
+        ):
             assert np.allclose(npfunc(na), akfunc(pda).to_ndarray())
         with pytest.raises(TypeError):
             akfunc(np.array([range(0, 10)]).astype(num_type))

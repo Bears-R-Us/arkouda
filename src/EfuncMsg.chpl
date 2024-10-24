@@ -25,22 +25,166 @@ module EfuncMsg
 
     extern proc fmod(x: real, y: real): real;
 
+    // Major rewrite as of 10/24.
 
-    /* These ops are functions which take an array and produce an array.
+    // All functions (except hash) have been written using the new interface.
+    // Note that the instantiations that throw errors are indented under their parents.
+    // This is intended to improve the readability of the code.
 
-       **Dev Note:** Do scans fit here also? I think so... vector = scanop(vector)
+    // some of the proc names below are creative, so as not to conflict with built-in
+    // chapel functions.
+
+    /* The first block consists of functions which take an array and produce an array.
+
+       **Dev Note from previous versions:**
+       Do scans fit here also? I think so... vector = scanop(vector)
        parse and respond to efunc "elemental function" message
        vector = efunc(vector) 
 
-      :arg reqMsg: request containing (cmd,efunc,name)
-      :type reqMsg: string 
+     */
 
-      :arg st: SymTab to act on
-      :type st: borrowed SymTab 
+    @arkouda.registerCommand(name="abs")
+    proc absolut (const ref pda : [?d] ?t) : [d] t throws
+        where (t==int || t==real)  { return abs(pda) ; } // TODO maybe: allow uint and return pda
 
-      :returns: (MsgTuple)
-      :throws: `UndefinedSymbolError(name)`
-      */
+    proc absolut (const ref pda : [?d] ?t) : [d] t throws 
+        { throw new Error ("abs does not support type %s".format(type2str(t))) ; }
+
+    @arkouda.registerCommand(name="square")
+    proc boxy (const ref pda : [?d] ?t) : [d] t throws
+        where (t==int || t==real || t==uint)  { return square(pda) ; }
+
+    proc boxy (const ref pda : [?d] ?t) : [d] t throws 
+        { throw new Error ("square does not support type %s".format(type2str(t))) ; }
+
+    @arkouda.registerCommand(name="exp")
+    proc expo (const ref pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint)  { return exp(pda) ; }
+
+    proc expo (const ref pda : [?d] ?t) : [d] real throws 
+        { throw new Error ("exp does not support type %s".format(type2str(t))) ; }
+
+    @arkouda.registerCommand(name="expm1")
+    proc expom (const ref pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint)  { return expm1(pda) ; }
+
+    proc expom (const ref pda : [?d] ?t) : [d] real throws 
+        { throw new Error ("expm1 does not support type %s".format(type2str(t))) ; }
+
+    @arkouda.registerCommand(name="log")
+    proc log_e (const ref pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint)  { return log(pda) ; }
+
+    proc log_e (const ref pda : [?d] ?t) : [d] real throws 
+        { throw new Error ("log does not support type %s".format(type2str(t))) ; }
+
+    @arkouda.registerCommand(name="log1p")
+    proc log_1p (const ref pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint)  { return log1p(pda) ; }
+
+    proc log_1p (const ref pda : [?d] ?t) : [d] real throws 
+        { throw new Error ("log1p does not support type %s".format(type2str(t))) ; }
+
+//  chapel log2 returns ints when given ints, so the input has been cast to real.
+
+    @arkouda.registerCommand(name="log2")
+    proc log_2 (const ref pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint)  { return log2(pda:real) ; }
+
+    proc log_2 (const ref pda : [?d] ?t) : [d] real throws 
+        { throw new Error ("log2 does not support type %s".format(type2str(t))) ; }
+
+    @arkouda.registerCommand(name="log10")
+    proc log_10 (const ref pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint)  { return log10(pda) ; }
+
+    proc log_10 (const ref pda : [?d] ?t) : [d] real throws 
+        { throw new Error ("log10 does not support type %s".format(type2str(t))) ; }
+
+    @arkouda.registerCommand (name="sin")
+    proc sine (const ref pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint) { return sin(pda); }
+       
+    proc sine (const ref pda : [?d] ?t) : [d] real throws
+        { throw new Error ("sin does not support type %s".format(type2str(t))) ; }
+
+    @arkouda.registerCommand (name="cos")
+    proc cosine (pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint) { return cos(pda); }
+       
+    proc cosine (pda : [?d] ?t) : [d] real throws
+        { throw new Error ("cos does not support type %s".format(type2str(t))) ; }
+
+    @arkouda.registerCommand (name="tan")
+    proc tangent (pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint) { return tan(pda); }
+       
+    proc tangent (pda : [?d] ?t) : [d] real throws
+        { throw new Error ("tan does not support type %s".format(type2str(t))) ; }
+
+    @arkouda.registerCommand (name="arcsin")
+    proc arcsine (pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint) { return asin(pda); }
+       
+    proc arcsine (pda : [?d] ?t) : [d] real throws
+        { throw new Error ("arcsin does not support type %s".format(type2str(t))) ; }
+
+    @arkouda.registerCommand (name="arccos")
+    proc arccosine (pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint) { return acos(pda); }
+       
+    proc arccosine (pda : [?d] ?t) : [d] real throws
+        { throw new Error ("arccos does not support type %s".format(type2str(t))) ; }
+
+    @arkouda.registerCommand (name="arctan")
+    proc arctangent (pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint) { return atan(pda); }
+       
+    proc arctangent (pda : [?d] ?t) : [d] real throws
+        { throw new Error ("arctan does not support type %s".format(type2str(t))) ; }
+
+    @arkouda.registerCommand (name="sinh")
+    proc hypsine (pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint) { return sinh(pda); }
+       
+    proc hypsine (pda : [?d] ?t) : [d] real throws
+        { throw new Error ("sinh does not support type %s".format(type2str(t))) ; }
+
+    @arkouda.registerCommand (name="cosh")
+    proc hypcosine (pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint) { return cosh(pda); }
+       
+    proc hypcosine (pda : [?d] ?t) : [d] real throws
+        { throw new Error ("cosh does not support type %s".format(type2str(t))) ; }
+
+    @arkouda.registerCommand (name="tanh")
+    proc hyptangent (pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint) { return tanh(pda); }
+       
+    proc hyptangent (pda : [?d] ?t) : [d] real throws
+        { throw new Error ("tanh does not support type %s".format(type2str(t))) ; }
+
+    @arkouda.registerCommand (name="arcsinh")
+    proc archypsine (pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint) { return asinh(pda); }
+       
+    proc archypsine (pda : [?d] ?t) : [d] real throws
+        { throw new Error ("arcsinh does not support type %s".format(type2str(t))) ; }
+
+    @arkouda.registerCommand (name="arccosh")
+    proc archypcosine (pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint) { return acosh(pda); }
+       
+    proc archypcosine (pda : [?d] ?t) : [d] real throws
+        { throw new Error ("arccosh does not support type %s".format(type2str(t))) ; }
+
+    @arkouda.registerCommand (name="arctanh")
+    proc archyptangent (pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint) { return atanh(pda); }
+       
+    proc archyptangent (pda : [?d] ?t) : [d] real throws
+        { throw new Error ("arctanh does not support type %s".format(type2str(t))) ; }
+
 
     @arkouda.registerND
     proc efuncMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
@@ -61,23 +205,11 @@ module EfuncMsg
                 ref ea = e.a;
                 select efunc
                 {
-                    when "abs" {
-                        st.addEntry(rname, new shared SymEntry(abs(ea)));
-                    }
-                    when "log" {
-                        st.addEntry(rname, new shared SymEntry(log(ea)));
-                    }
                     when "round" {
                         st.addEntry(rname, new shared SymEntry(ea));
                     }
                     when "sgn" {
                         st.addEntry(rname, new shared SymEntry(sgn(ea)));
-                    }
-                    when "exp" {
-                        st.addEntry(rname, new shared SymEntry(exp(ea)));
-                    }
-                    when "square" {
-                        st.addEntry(rname, new shared SymEntry(square(ea)));
                     }
                     when "cumsum" {
                         if nd == 1 {
@@ -100,42 +232,6 @@ module EfuncMsg
                             eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                             return new MsgTuple(errorMsg, MsgType.ERROR);
                         }
-                    }
-                    when "sin" {
-                        st.addEntry(rname, new shared SymEntry(sin(ea)));
-                    }
-                    when "cos" {
-                        st.addEntry(rname, new shared SymEntry(cos(ea)));
-                    }
-                    when "tan" {
-                        st.addEntry(rname, new shared SymEntry(tan(ea)));
-                    }
-                    when "arcsin" {
-                        st.addEntry(rname, new shared SymEntry(asin(ea)));
-                    }
-                    when "arccos" {
-                        st.addEntry(rname, new shared SymEntry(acos(ea)));
-                    }
-                    when "arctan" {
-                        st.addEntry(rname, new shared SymEntry(atan(ea)));
-                    }
-                    when "sinh" {
-                        st.addEntry(rname, new shared SymEntry(sinh(ea)));
-                    }
-                    when "cosh" {
-                        st.addEntry(rname, new shared SymEntry(cosh(ea)));
-                    }
-                    when "tanh" {
-                        st.addEntry(rname, new shared SymEntry(tanh(ea)));
-                    }
-                    when "arcsinh" {
-                        st.addEntry(rname, new shared SymEntry(asinh(ea)));
-                    }
-                    when "arccosh" {
-                        st.addEntry(rname, new shared SymEntry(acosh(ea)));
-                    }
-                    when "arctanh" {
-                        st.addEntry(rname, new shared SymEntry(atanh(ea)));
                     }
                     when "hash64" {
                         overMemLimit(numBytes(int) * e.size);
@@ -183,9 +279,6 @@ module EfuncMsg
                 ref ea = e.a;
                 select efunc
                 {
-                    when "abs" {
-                        st.addEntry(rname, new shared SymEntry(abs(ea)));
-                    }
                     when "ceil" {
                         st.addEntry(rname, new shared SymEntry(ceil(ea)));
                     }
@@ -210,27 +303,6 @@ module EfuncMsg
                     when "isnan" {
                         st.addEntry(rname, new shared SymEntry(isNan(ea)));
                     }
-                    when "log" {
-                        st.addEntry(rname, new shared SymEntry(log(ea)));
-                    }
-                    when "log1p" {
-                        st.addEntry(rname, new shared SymEntry(log1p(ea)));
-                    }
-                    when "log2" {
-                        st.addEntry(rname, new shared SymEntry(log2(ea)));
-                    }
-                    when "log10" {
-                        st.addEntry(rname, new shared SymEntry(log10(ea)));
-                    }
-                    when "exp" {
-                        st.addEntry(rname, new shared SymEntry(exp(ea)));
-                    }
-                    when "expm1" {
-                        st.addEntry(rname, new shared SymEntry(expm1(ea)));
-                    }
-                    when "square" {
-                        st.addEntry(rname, new shared SymEntry(square(ea)));
-                    }
                     when "cumsum" {
                         if nd == 1 {
                             // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
@@ -252,42 +324,6 @@ module EfuncMsg
                             eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                             return new MsgTuple(errorMsg, MsgType.ERROR);
                         }
-                    }
-                    when "sin" {
-                        st.addEntry(rname, new shared SymEntry(sin(ea)));
-                    }
-                    when "cos" {
-                        st.addEntry(rname, new shared SymEntry(cos(ea)));
-                    }
-                    when "tan" {
-                        st.addEntry(rname, new shared SymEntry(tan(ea)));
-                    }
-                    when "arcsin" {
-                        st.addEntry(rname, new shared SymEntry(asin(ea)));
-                    }
-                    when "arccos" {
-                        st.addEntry(rname, new shared SymEntry(acos(ea)));
-                    }
-                    when "arctan" {
-                        st.addEntry(rname, new shared SymEntry(atan(ea)));
-                    }
-                    when "sinh" {
-                        st.addEntry(rname, new shared SymEntry(sinh(ea)));
-                    }
-                    when "cosh" {
-                        st.addEntry(rname, new shared SymEntry(cosh(ea)));
-                    }
-                    when "tanh" {
-                        st.addEntry(rname, new shared SymEntry(tanh(ea)));
-                    }
-                    when "arcsinh" {
-                        st.addEntry(rname, new shared SymEntry(asinh(ea)));
-                    }
-                    when "arccosh" {
-                        st.addEntry(rname, new shared SymEntry(acosh(ea)));
-                    }
-                    when "arctanh" {
-                        st.addEntry(rname, new shared SymEntry(atanh(ea)));
                     }
                     when "hash64" {
                         overMemLimit(numBytes(real) * e.size);
@@ -397,42 +433,6 @@ module EfuncMsg
                             return new MsgTuple(errorMsg, MsgType.ERROR);
                         }
                     }
-                    when "sin" {
-                        st.addEntry(rname, new shared SymEntry(sin(ea)));
-                    }
-                    when "cos" {
-                        st.addEntry(rname, new shared SymEntry(cos(ea)));
-                    }
-                    when "tan" {
-                        st.addEntry(rname, new shared SymEntry(tan(ea)));
-                    }
-                    when "arcsin" {
-                        st.addEntry(rname, new shared SymEntry(asin(ea)));
-                    }
-                    when "arccos" {
-                        st.addEntry(rname, new shared SymEntry(acos(ea)));
-                    }
-                    when "arctan" {
-                        st.addEntry(rname, new shared SymEntry(atan(ea)));
-                    }
-                    when "sinh" {
-                        st.addEntry(rname, new shared SymEntry(sinh(ea)));
-                    }
-                    when "cosh" {
-                        st.addEntry(rname, new shared SymEntry(cosh(ea)));
-                    }
-                    when "tanh" {
-                        st.addEntry(rname, new shared SymEntry(tanh(ea)));
-                    }
-                    when "arcsinh" {
-                        st.addEntry(rname, new shared SymEntry(asinh(ea)));
-                    }
-                    when "arccosh" {
-                        st.addEntry(rname, new shared SymEntry(acosh(ea)));
-                    }
-                    when "arctanh" {
-                        st.addEntry(rname, new shared SymEntry(atanh(ea)));
-                    }
                     when "parity" {
                         st.addEntry(rname, new shared SymEntry(parity(ea)));
                     }
@@ -454,15 +454,6 @@ module EfuncMsg
                         // Put first array's attrib in repMsg and let common
                         // code append second array's attrib
                         repMsg += "created " + st.attrib(rname2) + "+";
-                    }
-                    when "log" {
-                        st.addEntry(rname, new shared SymEntry(log(ea)));
-                    }
-                    when "exp" {
-                        st.addEntry(rname, new shared SymEntry(exp(ea)));
-                    }
-                    when "square" {
-                        st.addEntry(rname, new shared SymEntry(square(ea)));
                     }
                     when "not" {
                         st.addEntry(rname, new shared SymEntry(!e.a));
