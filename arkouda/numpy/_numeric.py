@@ -96,6 +96,19 @@ __all__ = [
     "ErrorMode",
 ]
 
+# merge_where comes in handy in arctan2 and some other functions.
+
+
+def merge_where(new_pda, where, ret):
+    new_pda = cast(new_pda, ret.dtype)
+    new_pda[where] = ret
+    return new_pda
+
+
+def datatype_check(the_dtype, allowed_list, name):
+    if not (the_dtype in allowed_list):
+        raise TypeError(f"{the_dtype} is not implemented in {name}")
+
 
 class ErrorMode(Enum):
     strict = "strict"
@@ -232,10 +245,9 @@ def abs(pda: pdarray) -> pdarray:
     array([5, 4, 3, 2, 1])
     """
     repMsg = generic_msg(
-        cmd=f"efunc{pda.ndim}D",
+        cmd=f"abs<{pda.dtype},{pda.ndim}>",
         args={
-            "func": "abs",
-            "array": pda,
+            "pda": pda,
         },
     )
     return create_pdarray(type_cast(str, repMsg))
@@ -568,83 +580,83 @@ def log(pda: pdarray) -> pdarray:
     >>> ak.log(A) / np.log(2)
     array([0, 3.3219280948873626, 6.6438561897747253])
     """
+    datatype_check(pda.dtype, [float, int, ak_uint64], "log")
     repMsg = generic_msg(
-        cmd=f"efunc{pda.ndim}D",
+        cmd=f"log<{pda.dtype},{pda.ndim}>",
         args={
-            "func": "log",
-            "array": pda,
+            "pda": pda,
         },
     )
     return create_pdarray(type_cast(str, repMsg))
 
 
 @typechecked
-def log10(x: pdarray) -> pdarray:
+def log10(pda: pdarray) -> pdarray:
     """
     Return the element-wise base 10 log of the array.
 
     Parameters
     __________
-    x : pdarray
+    pda : pdarray
         array to compute on
 
     Returns
     _______
     pdarray contain values of the base 10 log
     """
+    datatype_check(pda.dtype, [float, int, ak_uint64], "log10")
     repMsg = generic_msg(
-        cmd=f"efunc{x.ndim}D",
+        cmd=f"log10<{pda.dtype},{pda.ndim}>",
         args={
-            "func": "log10",
-            "array": x,
+            "pda": pda,
         },
     )
     return create_pdarray(type_cast(str, repMsg))
 
 
 @typechecked
-def log2(x: pdarray) -> pdarray:
+def log2(pda: pdarray) -> pdarray:
     """
     Return the element-wise base 2 log of the array.
 
     Parameters
     __________
-    x : pdarray
+    pda : pdarray
         array to compute on
 
     Returns
     _______
     pdarray contain values of the base 2 log
     """
+    datatype_check(pda.dtype, [float, int, ak_uint64], "log2")
     repMsg = generic_msg(
-        cmd=f"efunc{x.ndim}D",
+        cmd=f"log2<{pda.dtype},{pda.ndim}>",
         args={
-            "func": "log2",
-            "array": x,
+            "pda": pda,
         },
     )
     return create_pdarray(type_cast(str, repMsg))
 
 
 @typechecked
-def log1p(x: pdarray) -> pdarray:
+def log1p(pda: pdarray) -> pdarray:
     """
     Return the element-wise natural log of one plus the array.
 
     Parameters
     __________
-    x : pdarray
+    pda : pdarray
         array to compute on
 
     Returns
     _______
     pdarray contain values of the natural log of one plus the array
     """
+    datatype_check(pda.dtype, [float, int, ak_uint64], "log1p")
     repMsg = generic_msg(
-        cmd=f"efunc{x.ndim}D",
+        cmd=f"log1p<{pda.dtype},{pda.ndim}>",
         args={
-            "func": "log1p",
-            "array": x,
+            "pda": pda,
         },
     )
     return create_pdarray(repMsg)
@@ -679,11 +691,11 @@ def exp(pda: pdarray) -> pdarray:
     array([11.84010843172504, 46.454368507659211, 5.5571769623557188,
            33.494295836924771, 13.478894913238722])
     """
+    datatype_check(pda.dtype, [float, int, ak_uint64], "exp")
     repMsg = generic_msg(
-        cmd=f"efunc{pda.ndim}D",
+        cmd=f"exp<{pda.dtype},{pda.ndim}>",
         args={
-            "func": "exp",
-            "array": pda,
+            "pda": pda,
         },
     )
     return create_pdarray(type_cast(str, repMsg))
@@ -718,11 +730,11 @@ def expm1(pda: pdarray) -> pdarray:
     array([10.84010843172504, 45.454368507659211, 4.5571769623557188,
            32.494295836924771, 12.478894913238722])
     """
+    datatype_check(pda.dtype, [float, int, ak_uint64], "expm1")
     repMsg = generic_msg(
-        cmd=f"efunc{pda.ndim}D",
+        cmd=f"expm1<{pda.dtype},{pda.ndim}>",
         args={
-            "func": "expm1",
-            "array": pda,
+            "pda": pda,
         },
     )
     return create_pdarray(type_cast(str, repMsg))
@@ -753,14 +765,70 @@ def square(pda: pdarray) -> pdarray:
     >>> ak.square(ak.arange(1,5))
     array([1, 4, 9, 16])
     """
+
+    datatype_check(pda.dtype, [float, int, ak_uint64], "square")
     repMsg = generic_msg(
-        cmd=f"efunc{pda.ndim}D",
+        cmd=f"square<{pda.dtype},{pda.ndim}>",
         args={
-            "func": "square",
-            "array": pda,
+            "pda": pda,
         },
     )
     return create_pdarray(type_cast(str, repMsg))
+
+
+def _trig_helper(pda: pdarray, func: str, where: Union[bool, pdarray] = True) -> pdarray:
+    """
+    Returns the result of the input trig function acting element-wise on the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+    func : string
+        The designated trig function that is passed in
+    where : Boolean or pdarray
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the respective trig function. Elsewhere,
+        it will retain its original value. Default set to True.
+
+    Returns
+    -------
+    pdarray
+        A pdarray with the trig function applied at each element of pda
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+        Raised if input is not real or int or uint
+        Raised if where condition is not type Boolean
+    """
+    datatype_check(pda.dtype, [float, int, ak_uint64], func)
+    if where is True:
+        repMsg = type_cast(
+            str,
+            generic_msg(
+                cmd=f"{func}<{pda.dtype},{pda.ndim}>",
+                args={
+                    "pda": pda,
+                },
+            ),
+        )
+        return create_pdarray(repMsg)
+    elif where is False:
+        return pda
+    else:
+        if where.dtype != bool:
+            raise TypeError(f"where must have dtype bool, got {where.dtype} instead")
+        repMsg = type_cast(
+            str,
+            generic_msg(
+                cmd=f"{func}<{pda.dtype},{pda.ndim}>",
+                args={
+                    "pda": pda[where],
+                },
+            ),
+        )
+        return merge_where(pda[:], where, create_pdarray(repMsg))
 
 
 @typechecked
@@ -1272,66 +1340,6 @@ def arctanh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
         Raised if the parameters are not a pdarray or numeric scalar.
     """
     return _trig_helper(pda, "arctanh", where)
-
-
-def _trig_helper(pda: pdarray, func: str, where: Union[bool, pdarray] = True) -> pdarray:
-    """
-    Returns the result of the input trig function acting element-wise on the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-    func : string
-        The designated trig function that is passed in
-    where : Boolean or pdarray
-        This condition is applied over the input. At locations where the condition is True, the
-        corresponding value will be acted on by the respective trig function. Elsewhere,
-        it will retain its original value. Default set to True.
-
-    Returns
-    -------
-    pdarray
-        A pdarray with the trig function applied at each element of pda
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray
-    TypeError
-        Raised if where condition is not type Boolean
-    """
-    if where is True:
-        repMsg = type_cast(
-            str,
-            generic_msg(
-                cmd=f"efunc{pda.ndim}D",
-                args={
-                    "func": func,
-                    "array": pda,
-                },
-            ),
-        )
-        return create_pdarray(repMsg)
-    elif where is False:
-        return pda
-    else:
-        if where.dtype != bool:
-            raise TypeError(f"where must have dtype bool, got {where.dtype} instead")
-        repMsg = type_cast(
-            str,
-            generic_msg(
-                cmd=f"efunc{pda.ndim}D",
-                args={
-                    "func": func,
-                    "array": pda[where],
-                },
-            ),
-        )
-        new_pda = pda[:]
-        ret = create_pdarray(repMsg)
-        new_pda = cast(new_pda, ret.dtype)
-        new_pda[where] = ret
-        return new_pda
 
 
 @typechecked
@@ -2292,10 +2300,8 @@ def array_equal(pda_a: pdarray, pda_b: pdarray, equal_nan: bool = False):
 
 
 def putmask(
-     A : pdarray ,
-     mask : pdarray,
-     Values : pdarray
- ) :  # doesn't return anything, as A is overwritten in place
+    A: pdarray, mask: pdarray, Values: pdarray
+):  # doesn't return anything, as A is overwritten in place
     """
     Overwrites elements of A with elements from B based upon a mask array.
     Similar to numpy.putmask, where mask = False, A retains its original value,
