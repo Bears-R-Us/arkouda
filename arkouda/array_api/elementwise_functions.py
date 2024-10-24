@@ -106,10 +106,7 @@ def bitwise_and(x1: Array, x2: Array, /) -> Array:
     """
     Compute the element-wise bitwise AND of two arrays.
     """
-    if (
-        x1.dtype not in _integer_or_boolean_dtypes
-        or x2.dtype not in _integer_or_boolean_dtypes
-    ):
+    if x1.dtype not in _integer_or_boolean_dtypes or x2.dtype not in _integer_or_boolean_dtypes:
         raise TypeError("Only integer or boolean dtypes are allowed in bitwise_and")
     # Call result type here just to raise on disallowed type combinations
     _result_type(x1.dtype, x2.dtype)
@@ -141,10 +138,7 @@ def bitwise_or(x1: Array, x2: Array, /) -> Array:
     """
     Compute the element-wise bitwise OR of two arrays.
     """
-    if (
-        x1.dtype not in _integer_or_boolean_dtypes
-        or x2.dtype not in _integer_or_boolean_dtypes
-    ):
+    if x1.dtype not in _integer_or_boolean_dtypes or x2.dtype not in _integer_or_boolean_dtypes:
         raise TypeError("Only integer or boolean dtypes are allowed in bitwise_or")
     # Call result type here just to raise on disallowed type combinations
     _result_type(x1.dtype, x2.dtype)
@@ -169,10 +163,7 @@ def bitwise_xor(x1: Array, x2: Array, /) -> Array:
     """
     Compute the element-wise bitwise XOR of two arrays.
     """
-    if (
-        x1.dtype not in _integer_or_boolean_dtypes
-        or x2.dtype not in _integer_or_boolean_dtypes
-    ):
+    if x1.dtype not in _integer_or_boolean_dtypes or x2.dtype not in _integer_or_boolean_dtypes:
         raise TypeError("Only integer or boolean dtypes are allowed in bitwise_xor")
     # Call result type here just to raise on disallowed type combinations
     _result_type(x1.dtype, x2.dtype)
@@ -410,14 +401,7 @@ def logical_not(x: Array, /) -> Array:
     """
     Compute the element-wise logical NOT of a boolean array.
     """
-    repMsg = ak.generic_msg(
-        cmd=f"efunc{x._array.ndim}D",
-        args={
-            "func": "not",
-            "array": x._array,
-        },
-    )
-    return Array._new(ak.create_pdarray(repMsg))
+    return ~x
 
 
 def logical_or(x1: Array, x2: Array, /) -> Array:

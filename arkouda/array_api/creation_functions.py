@@ -2,12 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, List, Optional, Tuple, Union, cast
 
-from arkouda.client import generic_msg
 import numpy as np
-from arkouda.pdarrayclass import create_pdarray, pdarray, _to_pdarray
-from arkouda.pdarraycreation import scalar_array
+
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import resolve_scalar_dtype
+from arkouda.pdarrayclass import _to_pdarray, pdarray
 
 if TYPE_CHECKING:
     from ._typing import (
@@ -17,6 +16,7 @@ if TYPE_CHECKING:
         NestedSequence,
         SupportsBufferProtocol,
     )
+
 import arkouda as ak
 
 
@@ -83,9 +83,7 @@ def asarray(
     elif isinstance(obj, np.ndarray):
         return Array._new(_to_pdarray(obj, dt=dtype))
     else:
-        raise ValueError(
-            "asarray not implemented for 'NestedSequence' or 'SupportsBufferProtocol'"
-        )
+        raise ValueError("asarray not implemented for 'NestedSequence' or 'SupportsBufferProtocol'")
 
 
 def arange(
@@ -155,9 +153,7 @@ def empty(
         )
 
 
-def empty_like(
-    x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None
-) -> Array:
+def empty_like(x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None) -> Array:
     """
     Return a new array whose shape and dtype match the input array, without initializing entries.
     """
@@ -217,17 +213,8 @@ def eye(
     if n_cols is not None:
         cols = n_cols
 
-    repMsg = generic_msg(
-        cmd="eye",
-        args={
-            "dtype": np.dtype(dtype).name,
-            "rows": n_rows,
-            "cols": cols,
-            "diag": k,
-        },
-    )
-
-    return Array._new(create_pdarray(repMsg))
+    from arkouda import dtype as akdtype
+    return Array._new(ak.eye(rows=n_rows, cols=cols, diag=k, dt=akdtype(dtype)))
 
 
 def from_dlpack(x: object, /) -> Array:
@@ -312,9 +299,7 @@ def ones(
     return a
 
 
-def ones_like(
-    x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None
-) -> Array:
+def ones_like(x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None) -> Array:
     """
     Return a new array whose shape and dtype match the input array, filled with ones.
     """
@@ -328,15 +313,7 @@ def tril(x: Array, /, *, k: int = 0) -> Array:
     """
     from .array_object import Array
 
-    repMsg = generic_msg(
-        cmd=f"tril{x._array.ndim}D",
-        args={
-            "array": x._array.name,
-            "diag": k,
-        },
-    )
-
-    return Array._new(create_pdarray(repMsg))
+    return Array._new(ak.tril(x._array, diag=k))
 
 
 def triu(x: Array, /, *, k: int = 0) -> Array:
@@ -344,17 +321,10 @@ def triu(x: Array, /, *, k: int = 0) -> Array:
     Create a new array with the values from `x` above the `k`-th diagonal, and
     all other elements zero.
     """
+
     from .array_object import Array
 
-    repMsg = generic_msg(
-        cmd=f"triu{x._array.ndim}D",
-        args={
-            "array": x._array.name,
-            "diag": k,
-        },
-    )
-
-    return Array._new(create_pdarray(repMsg))
+    return Array._new(ak.triu(x._array, k))
 
 
 def zeros(
@@ -372,31 +342,14 @@ def zeros(
     if device not in ["cpu", None]:
         raise ValueError(f"Unsupported device {device!r}")
 
-    if isinstance(shape, tuple):
-        if shape == ():
-            return Array._new(scalar_array(0, dtype=dtype))
-        else:
-            ndim = len(shape)
-    else:
-        if shape == 0:
-            return Array._new(scalar_array(0, dtype=dtype))
-        else:
-            ndim = 1
+    return_dtype = akdtype(dtype)
+    if dtype is None:
+        return_dtype = akdtype(ak.float64)
 
-    dtype = akdtype(dtype)  # normalize dtype
-    dtype_name = cast(np.dtype, dtype).name
-
-    repMsg = generic_msg(
-        cmd=f"create<{dtype_name},{ndim}>",
-        args={"shape": shape},
-    )
-
-    return Array._new(create_pdarray(repMsg))
+    return Array._new(ak.zeros(shape, return_dtype))
 
 
-def zeros_like(
-    x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None
-) -> Array:
+def zeros_like(x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[Device] = None) -> Array:
     """
     Return a new array whose shape and dtype match the input array, filled with zeros.
     """
