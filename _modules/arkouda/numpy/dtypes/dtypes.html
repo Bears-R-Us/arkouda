@@ -378,6 +378,7 @@
 <span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;_datatype_check&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ARKOUDA_SUPPORTED_DTYPES&quot;</span><span class="p">,</span>
     <span class="s2">&quot;DType&quot;</span><span class="p">,</span>
     <span class="s2">&quot;DTypeObjects&quot;</span><span class="p">,</span>
@@ -435,6 +436,11 @@
     <span class="s2">&quot;uint64&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{:n}</span><span class="s2">&quot;</span><span class="p">,</span>
     <span class="s2">&quot;bigint&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{:n}</span><span class="s2">&quot;</span><span class="p">,</span>
 <span class="p">}</span>
+
+
+<span class="k">def</span> <span class="nf">_datatype_check</span><span class="p">(</span><span class="n">the_dtype</span><span class="p">,</span> <span class="n">allowed_list</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">the_dtype</span> <span class="ow">in</span> <span class="n">allowed_list</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> only implements types </span><span class="si">{</span><span class="n">allowed_list</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="dtype">
