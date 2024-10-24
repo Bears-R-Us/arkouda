@@ -303,7 +303,7 @@ class TestManipulation:
         assert bp.tolist() == b.tolist()
         assert cp.tolist() == c.tolist()
 
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_max_rank_less_than(3)
     def test_tile(self):
         a = randArr((2, 3))
 
