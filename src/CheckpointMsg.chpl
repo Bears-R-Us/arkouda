@@ -30,8 +30,6 @@ module CheckpointMsg {
     }
     return new MsgTuple("Checkpointed yo", MsgType.NORMAL);
   }
-  use CommandMap;
-  registerFunction("checkpoint", checkpointMsg, getModuleName());
 
   proc checkpointLoadMsg(cmd: string, msgArgs: borrowed MessageArgs,
                          st: borrowed SymTab): MsgTuple throws {
@@ -53,7 +51,6 @@ module CheckpointMsg {
     var repMsg = buildReadAllMsgJson(rnames, false, 0, l, st);
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
-  registerFunction("loadcheckpoint", checkpointLoadMsg, getModuleName());
 
   private proc saveArr(path, name, entry) throws {
     const mdName = Path.joinPath(path, ".".join(name, metadataExt));
@@ -110,4 +107,7 @@ module CheckpointMsg {
     return (name, entryVal);
   }
 
+  use CommandMap;
+  registerFunction("checkpoint", checkpointMsg, getModuleName());
+  registerFunction("loadcheckpoint", checkpointLoadMsg, getModuleName());
 }
