@@ -53,7 +53,7 @@ class TestPdarrayCreation:
             ak.array(np.ones(shape), dtype),
         ]:
             assert isinstance(pda, ak.pdarray)
-            assert pda.shape == list(shape)
+            assert pda.shape == shape
             assert dtype == pda.dtype
 
     @pytest.mark.skip_if_max_rank_greater_than(3)
@@ -248,7 +248,7 @@ class TestPdarrayCreation:
         assert isinstance(test_array, ak.pdarray)
         assert size == len(test_array)
         assert array_type == test_array.dtype
-        assert [size] == test_array.shape
+        assert (size,) == test_array.shape
         assert ((0 <= test_array) & (test_array <= size)).all()
 
     # (The above function tests randint with various ARRAY dtypes; the function below
@@ -259,7 +259,7 @@ class TestPdarrayCreation:
             assert isinstance(test_array, ak.pdarray)
             assert 1000 == len(test_array)
             assert ak.int64 == test_array.dtype
-            assert [1000] == test_array.shape
+            assert (1000,) == test_array.shape
             assert ((0 <= test_array) & (test_array <= 1000)).all()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
@@ -334,7 +334,7 @@ class TestPdarrayCreation:
         test_array = ak.uniform(size)
         assert isinstance(test_array, ak.pdarray)
         assert ak.float64 == test_array.dtype
-        assert [size] == test_array.shape
+        assert (size,) == test_array.shape
 
         u_array = ak.uniform(size=3, low=0, high=5, seed=0)
         assert [0.30013431967121934, 0.47383036230759112, 1.0441791878997098] == u_array.to_list()
@@ -372,7 +372,7 @@ class TestPdarrayCreation:
         zeros = ak.zeros(shape, dtype)
         assert isinstance(zeros, ak.pdarray)
         assert dtype == zeros.dtype
-        assert zeros.shape == list(shape)
+        assert zeros.shape == shape
         assert (0 == zeros).all()
 
     @pytest.mark.skip_if_max_rank_greater_than(3)
@@ -412,7 +412,7 @@ class TestPdarrayCreation:
         shape = (2, 2, size)
         ones = ak.ones(shape, dtype)
         assert isinstance(ones, ak.pdarray)
-        assert ones.shape == list(shape)
+        assert ones.shape == shape
         assert dtype == ones.dtype
         assert (1 == ones).all()
 
@@ -464,7 +464,7 @@ class TestPdarrayCreation:
         type_full = ak.full(shape, 1, dtype)
         assert isinstance(type_full, ak.pdarray)
         assert dtype == type_full.dtype
-        assert type_full.shape == list(shape)
+        assert type_full.shape == shape
         assert (1 == type_full).all()
 
     @pytest.mark.skip_if_max_rank_greater_than(3)
@@ -737,7 +737,7 @@ class TestPdarrayCreation:
     def test_mulitdimensional_array_creation(self):
         a = ak.array([[0, 0], [0, 1], [1, 1]])
         assert isinstance(a, ak.pdarray)
-        assert a.shape == [3, 2]
+        assert a.shape == (3, 2)
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [bool, np.float64, np.int64, str])

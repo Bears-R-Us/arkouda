@@ -565,7 +565,7 @@ class TestParquet:
 
     def test_segarray_string(self, par_test_base_tmp):
         words = ak.array(["one,two,three", "uno,dos,tres"])
-        strs, segs = words.split(",", return_segments=True)
+        strs, segs = words.regex_split(",", return_segments=True)
         x = ak.SegArray(segs, strs)
 
         with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
@@ -1865,7 +1865,7 @@ class TestHDF5:
 
     def test_segarray_str_hdf5(self, hdf_test_base_tmp):
         words = ak.array(["one,two,three", "uno,dos,tres"])
-        strs, segs = words.split(",", return_segments=True)
+        strs, segs = words.regex_split(",", return_segments=True)
 
         x = ak.SegArray(segs, strs)
         with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:

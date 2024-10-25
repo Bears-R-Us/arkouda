@@ -7,6 +7,7 @@ module ReductionMsg
     use Reflection only;
     use CommAggregation;
     use BigInteger;
+    use List;
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -22,7 +23,6 @@ module ReductionMsg
     use RadixSortLSD;
 
     private config const lBins = 2**25 * numLocales;
-
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const rmLogger = new Logger(logLevel, logChannel);
@@ -34,99 +34,112 @@ module ReductionMsg
     const basicReductionOps = {"sum", "prod", "min", "max"},
           boolReductionOps = {"any", "all", "is_sorted", "is_locally_sorted"},
           idxReductionOps = {"argmin", "argmax"};
+    
+    proc reductionReturnType(type t) type
+      do return if t == bool then int else t;
 
-    /*
-      Compute an array reduction along one or more axes
-      (where the result has the same data type as the input array)
-
-      Supports: 'sum', 'prod', 'min', 'max'
-    */
-    @arkouda.registerND(cmd_prefix="reduce")
-    proc argTypeReductionMessage(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
+    @arkouda.registerCommand
+    proc sum(ref x:[?d] ?t, axis: list(int), skipNan: bool): [] reductionReturnType(t) throws
+      where t==int || t==real || t==uint(64) || t==bool
+    {
       use SliceReductionOps;
-      param pn = Reflection.getRoutineName();
-      const x = msgArgs.getValueOf("x"),
-            op = msgArgs.getValueOf("op"),
-            nAxes = msgArgs.get("nAxes").getIntValue(),
-            axesRaw = msgArgs.get("axis").toScalarArray(int, nAxes),
-            skipNan = msgArgs.get("skipNan").getBoolValue(),
-            rname = st.nextName();
 
-      var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(x, st);
+      type opType = reductionReturnType(t);
+      if d.rank == 1 then return makeDistArray([(+ reduce x:opType)]);
 
-      if !basicReductionOps.contains(op) {
-        const errorMsg = notImplementedError(pn,op,gEnt.dtype);
-        rmLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
-        return new MsgTuple(errorMsg, MsgType.ERROR);
-      }
-
-      proc computeReduction(type t): MsgTuple throws {
-        const eIn = toSymEntry(gEnt, t, nd);
-        type opType = if t == bool then int else t;
-
-        if nd == 1 || nAxes == 0 {
-          var s: opType;
-          select op {
-            when "sum" do s = if skipNan then sumSkipNan(eIn.a, opType) else (+ reduce eIn.a:opType):opType;
-            when "prod" do s = if skipNan then prodSkipNan(eIn.a, opType) else (* reduce eIn.a:opType):opType;
-            when "min" do s = if skipNan then getMinSkipNan(eIn.a) else min reduce eIn.a;
-            when "max" do s = if skipNan then getMaxSkipNan(eIn.a) else max reduce eIn.a;
-            otherwise halt("unreachable");
-          }
-
-          const scalarValue = if (t == bool && (op == "min" || op == "max"))
-            then "bool " + bool2str(if s == 1 then true else false)
-            else (type2str(opType) + " " + type2fmt(opType)).format(s);
-          rmLogger.debug(getModuleName(),pn,getLineNumber(),scalarValue);
-          return new MsgTuple(scalarValue, MsgType.NORMAL);
-        } else {
-          const (valid, axes) = validateNegativeAxes(axesRaw, nd);
-          if !valid {
-            var errorMsg = "Invalid axis value(s) '%?' in slicing reduction".format(axesRaw);
-            rmLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg,MsgType.ERROR);
-          } else {
-            const outShape = reducedShape(eIn.a.shape, axes);
-            var eOut = st.addEntry(rname, outShape, opType);
-
-            forall sliceIdx in domOffAxis(eIn.a.domain, axes) {
-              const sliceDom = domOnAxis(eIn.a.domain, sliceIdx, axes);
-              var s: opType;
-              select op {
-                when "sum" do s = if skipNan
-                  then sumSkipNan(eIn.a, sliceDom, opType)
-                  else sum(eIn.a, sliceDom, opType);
-                when "prod" do s =if skipNan
-                  then prodSkipNan(eIn.a, sliceDom, opType)
-                  else prod(eIn.a, sliceDom, opType);
-                when "min" do s = if skipNan
-                  then getMinSkipNan(eIn.a, sliceDom)
-                  else getMin(eIn.a, sliceDom);
-                when "max" do s = if skipNan
-                  then getMaxSkipNan(eIn.a, sliceDom)
-                  else getMax(eIn.a, sliceDom);
-                otherwise halt("unreachable");
-              }
-              eOut.a[sliceIdx] = s;
-            }
-
-            const repMsg = "created " + st.attrib(rname);
-            rmLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
-            return new MsgTuple(repMsg, MsgType.NORMAL);
+      const (valid, axes) = validateNegativeAxes(axis, x.rank);
+      if !valid {
+        throw new Error("Invalid axis value(s) '%?' in slicing reduction".format(axis));
+      } else {
+        const outShape = reducedShape(x.shape, axes);
+        var ret = makeDistArray((...outShape), opType);
+        if (ret.size==1) {
+          ret[ret.domain.low] = (+ reduce x:opType);
+        }else{
+          forall sliceIdx in domOffAxis(x.domain, axes) {
+            const sliceDom = domOnAxis(x.domain, sliceIdx, axes);
+            ret[sliceIdx] = sumSlice(x, sliceDom, opType, skipNan);
           }
         }
+        return ret;
       }
+    }
 
-      select gEnt.dtype {
-        when DType.Int64 do return computeReduction(int);
-        when DType.UInt64 do return computeReduction(uint);
-        when DType.Float64 do return computeReduction(real);
-        when DType.Bool do return computeReduction(bool);
-        otherwise {
-          var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
-          rmLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
-          return new MsgTuple(errorMsg,MsgType.ERROR);
+    @arkouda.registerCommand
+    proc prod(ref x:[?d] ?t, axis: list(int), skipNan: bool): [] reductionReturnType(t) throws
+      where t==int || t==real || t==uint(64) || t==bool {
+      use SliceReductionOps;
+
+      type opType = reductionReturnType(t);
+      if d.rank == 1 then return makeDistArray([(* reduce x:opType)]);
+
+      const (valid, axes) = validateNegativeAxes(axis, x.rank);
+      if !valid {
+        throw new Error("Invalid axis value(s) '%?' in slicing reduction".format(axis));
+      } else {
+        const outShape = reducedShape(x.shape, axes);
+        var ret = makeDistArray((...outShape), opType);
+        if (ret.size==1) {
+          ret[ret.domain.low] = (* reduce x:opType);
+        }else{
+          forall sliceIdx in domOffAxis(x.domain, axes) {
+            const sliceDom = domOnAxis(x.domain, sliceIdx, axes);
+            ret[sliceIdx] = prodSlice(x, sliceDom, opType, skipNan);
+          }
         }
+        return ret;
+      }
+    }
+
+    @arkouda.registerCommand
+    proc max(ref x:[?d] ?t, axis: list(int), skipNan: bool): [] reductionReturnType(t) throws
+      where t==int || t==real || t==uint(64) || t==bool {
+      use SliceReductionOps;
+
+      type opType = reductionReturnType(t);
+      if d.rank == 1 then return makeDistArray([(max reduce x:opType)]);
+
+      const (valid, axes) = validateNegativeAxes(axis, x.rank);
+      if !valid {
+        throw new Error("Invalid axis value(s) '%?' in slicing reduction".format(axis));
+      } else {
+        const outShape = reducedShape(x.shape, axes);
+        var ret = makeDistArray((...outShape), opType);
+        if (ret.size==1) {
+          ret[ret.domain.low] = (max reduce x:opType);
+        }else{
+          forall sliceIdx in domOffAxis(x.domain, axes) {
+            const sliceDom = domOnAxis(x.domain, sliceIdx, axes);
+            ret[sliceIdx] = getMaxSlice(x, sliceDom, skipNan);
+          }
+        }
+        return ret;
+      }
+    }
+
+    @arkouda.registerCommand
+    proc min(ref x:[?d] ?t, axis: list(int), skipNan: bool): [] reductionReturnType(t) throws
+      where t==int || t==real || t==uint(64) || t==bool {
+      use SliceReductionOps;
+
+      type opType = reductionReturnType(t);
+      if d.rank == 1 then return makeDistArray([(min reduce x:opType)]);
+
+      const (valid, axes) = validateNegativeAxes(axis, x.rank);
+      if !valid {
+        throw new Error("Invalid axis value(s) '%?' in slicing reduction".format(axis));
+      } else {
+        const outShape = reducedShape(x.shape, axes);
+        var ret = makeDistArray((...outShape), opType);
+        if (ret.size==1) {
+          ret[ret.domain.low] = (min reduce x:opType);
+        }else{
+          forall sliceIdx in domOffAxis(x.domain, axes) {
+            const sliceDom = domOnAxis(x.domain, sliceIdx, axes);
+            ret[sliceIdx] = getMinSlice(x, sliceDom, skipNan);
+          }
+        }
+        return ret;
       }
     }
 
@@ -380,16 +393,6 @@ module ReductionMsg
 
 
     // simple and efficient 'nonzero' implementation for 1D arrays
-    proc nonzero(
-      cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
-      type array_dtype,
-      param array_nd: int
-    ): MsgTuple throws
-      where array_dtype == bigint
-    {
-      return MsgTuple.error("nonzero is not supported for bigint arrays");
-    }
-
     proc nonzero1D(x: [?d] ?t): [] int throws {
       const nTasksPerLoc = here.maxTaskPar;
       var nnzPerTask: [0..<numLocales] [0..<nTasksPerLoc] int;
@@ -456,74 +459,54 @@ module ReductionMsg
         return sum == a.size;
       }
 
-      proc sum(ref a: [] ?t, slice, type opType): opType {
+      proc sumSlice(ref a: [?d] ?t, slice, type opType, skipNan: bool): opType {
         var sum = 0:opType;
-        forall i in slice with (+ reduce sum) do sum += a[i]:opType;
-        return sum;
-      }
-
-      proc sumSkipNan(ref a: [?d], type opType): opType
-        do return sumSkipNan(a, d, opType);
-
-      proc sumSkipNan(ref a: [] ?t, slice, type opType): opType {
-        var sum = 0:opType;
-        forall i in slice with (+ reduce sum) {
-          if isArgandType(t) { if isNan(a[i]) then continue; }
-          sum += a[i]:opType;
+        if skipNan{
+          forall i in slice with (+ reduce sum) {
+            if isArgandType(t) { if isNan(a[i]) then continue; }
+            sum += a[i]:opType;
+          }
+        }else{
+          forall i in slice with (+ reduce sum) do sum += a[i]:opType;
         }
         return sum;
       }
 
-      proc prod(ref a: [] ?t, slice, type opType): opType {
+      proc prodSlice(ref a: [] ?t, slice, type opType, skipNan: bool): opType {
         var prod = 1.0; // always use real(64) to avoid int overflow
-        forall i in slice with (* reduce prod) do prod *= a[i]:opType;
-        return prod: opType;
-      }
-
-      proc prodSkipNan(ref a: [?d], type opType): opType
-        do return prodSkipNan(a, d, opType);
-
-      proc prodSkipNan(ref a: [] ?t, slice, type opType): opType {
-        var prod = 1.0; // always use real(64) to avoid int overflow
-        forall i in slice with (* reduce prod) {
-          if isArgandType(t) { if isNan(a[i]) then continue; }
-          prod *= a[i]:opType;
+        if skipNan{
+          forall i in slice with (* reduce prod) {
+            if isArgandType(t) { if isNan(a[i]) then continue; }
+            prod *= a[i]:opType;
+          }
+        }else{
+          forall i in slice with (* reduce prod) do prod *= a[i]:opType;
         }
-        return prod: opType;
+        return prod:opType;
       }
 
-      proc getMin(ref a: [] ?t, slice): t {
+      proc getMinSlice(ref a: [] ?t, slice, skipNan: bool): t {
         var minVal = max(t);
-        forall i in slice with (min reduce minVal) do minVal reduce= a[i];
-        return minVal;
-      }
-
-      proc getMinSkipNan(ref a: [?d] ?t): t
-        do return getMinSkipNan(a, d);
-
-      proc getMinSkipNan(ref a: [] ?t, slice): t {
-        var minVal = max(t);
-        forall i in slice with (min reduce minVal) {
-          if isArgandType(t) { if isNan(a[i]) then continue; }
-          minVal reduce= a[i];
+        if skipNan{
+          forall i in slice with (min reduce minVal) {
+            if isArgandType(t) { if isNan(a[i]) then continue; }
+            minVal reduce= a[i];
+          }
+        }else{
+          forall i in slice with (min reduce minVal) do minVal reduce= a[i];
         }
         return minVal;
       }
 
-      proc getMax(ref a: [] ?t, slice): t {
+      proc getMaxSlice(ref a: [] ?t, slice, skipNan: bool): t {
         var maxVal = min(t);
-        forall i in slice with (max reduce maxVal) do maxVal reduce= a[i];
-        return maxVal;
-      }
-
-      proc getMaxSkipNan(ref a: [?d] ?t): t
-        do return getMaxSkipNan(a, d);
-
-      proc getMaxSkipNan(ref a: [] ?t, slice): t {
-        var maxVal = min(t);
-        forall i in slice with (max reduce maxVal) {
-          if isArgandType(t) { if isNan(a[i]) then continue; }
-          maxVal reduce= a[i];
+        if skipNan{
+          forall i in slice with (max reduce maxVal) {
+            if isArgandType(t) { if isNan(a[i]) then continue; }
+            maxVal reduce= a[i];
+          }
+        }else{
+          forall i in slice with (max reduce maxVal) do maxVal reduce= a[i];
         }
         return maxVal;
       }

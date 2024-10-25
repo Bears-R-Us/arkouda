@@ -130,9 +130,17 @@ install-zmq:
 HDF5_MAJ_MIN_VER := 1.14
 HDF5_VER := 1.14.4
 HDF5_NAME_VER := hdf5-$(HDF5_VER)
+
+# new hdf5 path requires underscored delimited and "v" prepended
+UNDERSCORED_LINK_HDF5_MAJ_MIN_VER := v1_14
+UNDERSCORED_LINK_HDF5_VER := v1_14_4
+
 HDF5_BUILD_DIR := $(DEP_BUILD_DIR)/$(HDF5_NAME_VER)
 HDF5_INSTALL_DIR := $(DEP_INSTALL_DIR)/hdf5-install
-HDF5_LINK :=  https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-$(HDF5_MAJ_MIN_VER)/$(HDF5_NAME_VER)/src/$(HDF5_NAME_VER).tar.gz
+
+# I think this seems good, but I don't love the hardcoded "-3" I'd like some input on that
+HDF5_LINK := https://support.hdfgroup.org/releases/hdf5/$(UNDERSCORED_LINK_HDF5_MAJ_MIN_VER)/$(UNDERSCORED_LINK_HDF5_VER)/downloads/$(HDF5_NAME_VER)-3.tar.gz
+
 install-hdf5:
 	@echo "Installing HDF5"
 	rm -rf $(HDF5_BUILD_DIR) $(HDF5_INSTALL_DIR)

@@ -81,6 +81,8 @@ module Message {
             msg += (sym: borrowed GenSymEntry).attrib();
         } else if sym.isAssignableTo(SymbolEntryType.CompositeSymEntry) {
             msg += (sym: borrowed CompositeSymEntry).attrib();
+        } else if sym.isAssignableTo(SymbolEntryType.SparseSymEntry) {
+            msg += (sym: borrowed GenSparseSymEntry).attrib();
         }
 
         return new MsgTuple(
@@ -118,8 +120,11 @@ module Message {
 
     proc type MsgTuple.fromScalar(scalar: ?t): MsgTuple throws {
         import NumPyDType;
+        const dTypeName = type2str(t);
+        if dTypeName == "undef"
+            then throw new Error("Unknown scalar type '%s' in MsgTuple.fromScalar".format(t:string));
         return new MsgTuple(
-            msg = "%s %s".format(type2str(t), NumPyDType.type2fmt(t)).format(scalar),
+            msg = "%s %s".format(dTypeName, NumPyDType.type2fmt(t)).format(scalar),
             msgType = MsgType.NORMAL,
             msgFormat = MsgFormat.STRING,
             payload = b""

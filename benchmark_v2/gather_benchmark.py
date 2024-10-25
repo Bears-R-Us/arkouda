@@ -11,7 +11,7 @@ def _run_gather(a, i):
     """
     return a[i]
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Gather")
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_ak_gather(benchmark, dtype):
@@ -56,7 +56,7 @@ def bench_ak_gather(benchmark, dtype):
         benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
             (bytes_per_sec / 2 ** 30))
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="NumPy_Gather")
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_np_gather(benchmark, dtype):

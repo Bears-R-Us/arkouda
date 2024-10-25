@@ -8,7 +8,7 @@ THRESHOLD = 2**23
 SIZES = {"MEDIUM": THRESHOLD - 1, "LARGE": THRESHOLD + 1}
 MAXSTRLEN = 5
 
-
+@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Arkouda_in1d")
 @pytest.mark.parametrize("dtype", TYPES)
 @pytest.mark.parametrize("size", SIZES)

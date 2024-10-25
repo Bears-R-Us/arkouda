@@ -15,7 +15,7 @@ from arkouda.numpy.dtypes import bool_ as ak_bool
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import float64 as ak_float64
 from arkouda.numpy.dtypes import int64 as ak_int64
-from arkouda.numpy.dtypes import int64 as akint64
+from arkouda.numpy.dtypes import uint64 as ak_uint64
 from arkouda.numpy.dtypes import (
     int_scalars,
     isSupportedNumber,
@@ -23,7 +23,7 @@ from arkouda.numpy.dtypes import (
     resolve_scalar_dtype,
     str_,
 )
-from arkouda.numpy.dtypes import uint64 as ak_uint64
+from arkouda.numpy.dtypes import _datatype_check
 from arkouda.pdarrayclass import all as ak_all
 from arkouda.pdarrayclass import any as ak_any
 from arkouda.pdarrayclass import argmax, create_pdarray, pdarray, sum
@@ -101,6 +101,17 @@ class ErrorMode(Enum):
     strict = "strict"
     ignore = "ignore"
     return_validity = "return_validity"
+
+
+# TODO: standardize error checking in python interface
+
+# merge_where comes in handy in arctan2 and some other functions.
+
+
+def _merge_where(new_pda, where, ret):
+    new_pda = cast(new_pda, ret.dtype)
+    new_pda[where] = ret
+    return new_pda
 
 
 @typechecked
@@ -1296,18 +1307,16 @@ def _trig_helper(pda: pdarray, func: str, where: Union[bool, pdarray] = True) ->
     Raises
     ------
     TypeError
-        Raised if the parameter is not a pdarray
-    TypeError
-        Raised if where condition is not type Boolean
+        Raised if pda is not a pdarray or if is not real or int or uint, or if where is not Boolean
     """
+    _datatype_check(pda.dtype, [ak_float64, ak_int64, ak_uint64], func)
     if where is True:
         repMsg = type_cast(
             str,
             generic_msg(
-                cmd=f"efunc{pda.ndim}D",
+                cmd=f"{func}<{pda.dtype},{pda.ndim}>",
                 args={
-                    "func": func,
-                    "array": pda,
+                    "x": pda,
                 },
             ),
         )
@@ -1320,18 +1329,13 @@ def _trig_helper(pda: pdarray, func: str, where: Union[bool, pdarray] = True) ->
         repMsg = type_cast(
             str,
             generic_msg(
-                cmd=f"efunc{pda.ndim}D",
+                cmd=f"{func}<{pda.dtype},{pda.ndim}>",
                 args={
-                    "func": func,
-                    "array": pda[where],
+                    "x": pda[where],
                 },
             ),
         )
-        new_pda = pda[:]
-        ret = create_pdarray(repMsg)
-        new_pda = cast(new_pda, ret.dtype)
-        new_pda[where] = ret
-        return new_pda
+        return _merge_where(pda[:], where, create_pdarray(repMsg))
 
 
 @typechecked
@@ -1363,11 +1367,7 @@ def rad2deg(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     elif where is False:
         return pda
     else:
-        new_pda = pda
-        ret = 180 * (pda[where] / np.pi)
-        new_pda = cast(new_pda, ret.dtype)
-        new_pda[where] = ret
-        return new_pda
+        return _merge_where(pda[:], where, 180*(pda[where]/np.pi))
 
 
 @typechecked
@@ -1399,11 +1399,7 @@ def deg2rad(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     elif where is False:
         return pda
     else:
-        new_pda = pda
-        ret = np.pi * pda[where] / 180
-        new_pda = cast(new_pda, ret.dtype)
-        new_pda[where] = ret
-        return new_pda
+        return _merge_where(pda[:], where, (np.pi*pda[where]/180))
 
 
 def _hash_helper(a):
@@ -2292,10 +2288,8 @@ def array_equal(pda_a: pdarray, pda_b: pdarray, equal_nan: bool = False):
 
 
 def putmask(
-     A : pdarray ,
-     mask : pdarray,
-     Values : pdarray
- ) :  # doesn't return anything, as A is overwritten in place
+    A: pdarray, mask: pdarray, Values: pdarray
+):  # doesn't return anything, as A is overwritten in place
     """
     Overwrites elements of A with elements from B based upon a mask array.
     Similar to numpy.putmask, where mask = False, A retains its original value,
@@ -2363,7 +2357,7 @@ def putmask(
     return
 
 
-def eye(rows: int_scalars, cols: int_scalars, diag: int_scalars = 0, dt: type = akint64):
+def eye(rows: int_scalars, cols: int_scalars, diag: int_scalars = 0, dt: type = ak_int64):
     """
     Return a pdarray with zeros everywhere except along a diagonal, which is all ones.
     The matrix need not be square.

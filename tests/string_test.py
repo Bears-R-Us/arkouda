@@ -6,6 +6,7 @@ import pandas as pd
 import pytest
 
 import arkouda as ak
+from arkouda.testing import assert_equal as ak_assert_equal
 
 ak.verbose = False
 N = 100
@@ -451,14 +452,14 @@ class TestString:
         str_ans = "['string 0', 'string 1', 'string 2', ... , 'string 98', 'string 99', 'string 100']"
         assert str_ans == str(strings)
 
-    def test_flatten(self):
+    def test_split(self):
         orig = ak.array(["one|two", "three|four|five", "six"])
-        flat, mapping = orig.flatten("|", return_segments=True)
+        flat, mapping = orig.split("|", return_segments=True)
         assert flat.to_list() == ["one", "two", "three", "four", "five", "six"]
         assert mapping.to_list() == [0, 2, 5]
         thirds = [ak.cast(ak.arange(i, 99, 3), "str") for i in range(3)]
         thickrange = thirds[0].stick(thirds[1], delimiter=", ").stick(thirds[2], delimiter=", ")
-        flatrange = thickrange.flatten(", ")
+        flatrange = thickrange.split(", ")
         assert ak.cast(flatrange, "int64").to_list(), np.arange(99).tolist()
 
     def test_get_lengths(self):
@@ -910,3 +911,10 @@ class TestString:
         for word in more_words:
             inds |= strings == word
         assert (inds == matches).all()
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_flatten(self, size):
+        base_words, _ = self.base_words(size)
+        strings = self.get_strings(size, base_words)
+
+        ak_assert_equal(strings.flatten(), strings)
