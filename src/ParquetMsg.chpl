@@ -534,7 +534,7 @@ module ParquetMsg {
         }
       }
     // Only warn when files are being overwritten in truncate mode
-    return filesExist && mode == TRUNCATE;
+    return (filesExist && mode == TRUNCATE, filenames);
   }
 
   proc createEmptyParquetFile(filename: string, dsetname: string, dtype: int, compression: int) throws {
@@ -1168,18 +1168,22 @@ module ParquetMsg {
     select dataType {
       when DType.Int64 {
         var e = toSymEntry(toGenSymEntry(entry), int);
-        warnFlag = write1DDistArrayParquet(filename, dsetname, dtypestr, compression:int, mode, e.a);
+        warnFlag = write1DDistArrayParquet(filename, dsetname, dtypestr,
+                                           compression:int, mode, e.a)[0];
       }
       when DType.UInt64 {
         var e = toSymEntry(toGenSymEntry(entry), uint);
-        warnFlag = write1DDistArrayParquet(filename, dsetname, dtypestr, compression:int, mode, e.a);
+        warnFlag = write1DDistArrayParquet(filename, dsetname, dtypestr,
+                                           compression:int, mode, e.a)[0];
       }
       when DType.Bool {
         var e = toSymEntry(toGenSymEntry(entry), bool);
-        warnFlag = write1DDistArrayParquet(filename, dsetname, dtypestr, compression:int, mode, e.a);
+        warnFlag = write1DDistArrayParquet(filename, dsetname, dtypestr,
+                                           compression:int, mode, e.a)[0];
       } when DType.Float64 {
         var e = toSymEntry(toGenSymEntry(entry), real);
-        warnFlag = write1DDistArrayParquet(filename, dsetname, dtypestr, compression:int, mode, e.a);
+        warnFlag = write1DDistArrayParquet(filename, dsetname, dtypestr,
+                                           compression:int, mode, e.a)[0];
       } otherwise {
         var errorMsg = "Writing Parquet files not supported for %s type".format(msgArgs.getValueOf("dtype"));
         pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
