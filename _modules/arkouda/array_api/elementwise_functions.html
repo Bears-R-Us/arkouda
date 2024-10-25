@@ -488,10 +488,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise bitwise AND of two arrays.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="p">(</span>
-        <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_integer_or_boolean_dtypes</span>
-        <span class="ow">or</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_integer_or_boolean_dtypes</span>
-    <span class="p">):</span>
+    <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_integer_or_boolean_dtypes</span> <span class="ow">or</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_integer_or_boolean_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only integer or boolean dtypes are allowed in bitwise_and&quot;</span><span class="p">)</span>
     <span class="c1"># Call result type here just to raise on disallowed type combinations</span>
     <span class="n">_result_type</span><span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
@@ -532,10 +529,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise bitwise OR of two arrays.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="p">(</span>
-        <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_integer_or_boolean_dtypes</span>
-        <span class="ow">or</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_integer_or_boolean_dtypes</span>
-    <span class="p">):</span>
+    <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_integer_or_boolean_dtypes</span> <span class="ow">or</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_integer_or_boolean_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only integer or boolean dtypes are allowed in bitwise_or&quot;</span><span class="p">)</span>
     <span class="c1"># Call result type here just to raise on disallowed type combinations</span>
     <span class="n">_result_type</span><span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
@@ -566,10 +560,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise bitwise XOR of two arrays.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="p">(</span>
-        <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_integer_or_boolean_dtypes</span>
-        <span class="ow">or</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_integer_or_boolean_dtypes</span>
-    <span class="p">):</span>
+    <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_integer_or_boolean_dtypes</span> <span class="ow">or</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_integer_or_boolean_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only integer or boolean dtypes are allowed in bitwise_xor&quot;</span><span class="p">)</span>
     <span class="c1"># Call result type here just to raise on disallowed type combinations</span>
     <span class="n">_result_type</span><span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
@@ -882,14 +873,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise logical NOT of a boolean array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;efunc</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
-        <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;func&quot;</span><span class="p">:</span> <span class="s2">&quot;not&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span>
-        <span class="p">},</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="o">~</span><span class="n">x</span></div>
 
 
 

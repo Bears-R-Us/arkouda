@@ -356,13 +356,13 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">type_cast</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">no_type_check</span>
-<span class="kn">from</span> <span class="nn">arkouda.groupbyclass</span> <span class="kn">import</span> <span class="n">groupable</span>
+
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">typeguard</span> <span class="kn">import</span> <span class="n">typechecked</span>
 
 <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
 <span class="kn">from</span> <span class="nn">arkouda.dtypes</span> <span class="kn">import</span> <span class="n">str_</span> <span class="k">as</span> <span class="n">akstr_</span>
-<span class="kn">from</span> <span class="nn">arkouda.groupbyclass</span> <span class="kn">import</span> <span class="n">GroupBy</span>
+<span class="kn">from</span> <span class="nn">arkouda.groupbyclass</span> <span class="kn">import</span> <span class="n">GroupBy</span><span class="p">,</span> <span class="n">groupable</span>
 <span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">DTypes</span><span class="p">,</span> <span class="n">bigint</span>
 <span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">bool_</span> <span class="k">as</span> <span class="n">ak_bool</span>
 <span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">akdtype</span>
@@ -379,7 +379,13 @@
 <span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">_datatype_check</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="nb">all</span> <span class="k">as</span> <span class="n">ak_all</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="nb">any</span> <span class="k">as</span> <span class="n">ak_any</span>
-<span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">argmax</span><span class="p">,</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">,</span> <span class="nb">sum</span>
+<span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">argmax</span><span class="p">,</span>
+    <span class="n">broadcast_if_needed</span><span class="p">,</span>
+    <span class="n">create_pdarray</span><span class="p">,</span>
+    <span class="n">pdarray</span><span class="p">,</span>
+    <span class="nb">sum</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">arkouda.pdarraycreation</span> <span class="kn">import</span> <span class="n">array</span><span class="p">,</span> <span class="n">linspace</span><span class="p">,</span> <span class="n">scalar_array</span>
 <span class="kn">from</span> <span class="nn">arkouda.sorting</span> <span class="kn">import</span> <span class="n">sort</span>
 <span class="kn">from</span> <span class="nn">arkouda.strings</span> <span class="kn">import</span> <span class="n">Strings</span>
@@ -1821,7 +1827,7 @@
     <span class="k">elif</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">pda</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">_merge_where</span><span class="p">(</span><span class="n">pda</span><span class="p">[:],</span> <span class="n">where</span><span class="p">,</span> <span class="mi">180</span><span class="o">*</span><span class="p">(</span><span class="n">pda</span><span class="p">[</span><span class="n">where</span><span class="p">]</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="n">_merge_where</span><span class="p">(</span><span class="n">pda</span><span class="p">[:],</span> <span class="n">where</span><span class="p">,</span> <span class="mi">180</span> <span class="o">*</span> <span class="p">(</span><span class="n">pda</span><span class="p">[</span><span class="n">where</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span></div>
 
 
 
@@ -1856,7 +1862,7 @@
     <span class="k">elif</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">pda</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">_merge_where</span><span class="p">(</span><span class="n">pda</span><span class="p">[:],</span> <span class="n">where</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">pda</span><span class="p">[</span><span class="n">where</span><span class="p">]</span><span class="o">/</span><span class="mi">180</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="n">_merge_where</span><span class="p">(</span><span class="n">pda</span><span class="p">[:],</span> <span class="n">where</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">pda</span><span class="p">[</span><span class="n">where</span><span class="p">]</span> <span class="o">/</span> <span class="mi">180</span><span class="p">))</span></div>
 
 
 
@@ -3098,17 +3104,18 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">pdaLeft</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="n">pdaRight</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;matmul requires matrices of matching rank.&quot;</span><span class="p">)</span>
+
     <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;matmul&lt;</span><span class="si">{</span><span class="n">pdaLeft</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pdaRight</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pdaLeft</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
     <span class="n">args</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;x1&quot;</span><span class="p">:</span> <span class="n">pdaLeft</span><span class="p">,</span>
         <span class="s2">&quot;x2&quot;</span><span class="p">:</span> <span class="n">pdaRight</span><span class="p">,</span>
     <span class="p">}</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
-        <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="n">cmd</span><span class="p">,</span>
-            <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="p">)</span></div>
+    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="n">cmd</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
 
 
 
@@ -3149,19 +3156,28 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;vecdot requires matrices of matching rank.&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;vector requires matrices of rank 2 or more.&quot;</span><span class="p">)</span>
+
+    <span class="n">x1b</span><span class="p">,</span> <span class="n">x2b</span><span class="p">,</span> <span class="n">tmp_x1</span><span class="p">,</span> <span class="n">tmp_x2</span> <span class="o">=</span> <span class="n">broadcast_if_needed</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
     <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;vecdot&lt;</span><span class="si">{</span><span class="n">x1</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">x2</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">x1</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
     <span class="n">args</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;x1&quot;</span><span class="p">:</span> <span class="n">x1</span><span class="p">,</span>
-        <span class="s2">&quot;x2&quot;</span><span class="p">:</span> <span class="n">x2</span><span class="p">,</span>
+        <span class="s2">&quot;x1&quot;</span><span class="p">:</span> <span class="n">x1b</span><span class="p">,</span>
+        <span class="s2">&quot;x2&quot;</span><span class="p">:</span> <span class="n">x2b</span><span class="p">,</span>
         <span class="s2">&quot;bcShape&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span>
         <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
     <span class="p">}</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
-        <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="n">cmd</span><span class="p">,</span>
-            <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="p">)</span></div>
+
+    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="n">cmd</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">tmp_x1</span><span class="p">:</span>
+        <span class="k">del</span> <span class="n">x1</span>
+    <span class="k">if</span> <span class="n">tmp_x2</span><span class="p">:</span>
+        <span class="k">del</span> <span class="n">x2</span>
+
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
 
 </pre></div>
         </article>

@@ -856,6 +856,9 @@
     <span class="k">if</span> <span class="n">ndim</span> <span class="o">&gt;</span> <span class="n">get_max_array_rank</span><span class="p">():</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;array rank </span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> exceeds maximum of </span><span class="si">{</span><span class="n">get_max_array_rank</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
+    <span class="k">if</span> <span class="n">shape</span> <span class="o">==</span> <span class="p">():</span>
+        <span class="k">return</span> <span class="n">scalar_array</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;create&lt;</span><span class="si">{</span><span class="n">dtype_name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">shape</span><span class="p">})</span>
 
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">,</span> <span class="n">max_bits</span><span class="o">=</span><span class="n">max_bits</span><span class="p">)</span></div>

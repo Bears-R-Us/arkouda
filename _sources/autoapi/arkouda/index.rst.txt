@@ -48019,7 +48019,7 @@ Package Contents
    array([0.30013431967121934, 0.47383036230759112, 1.0441791878997098])
 
 
-.. py:function:: union1d(pda1: arkouda.groupbyclass.groupable, pda2: arkouda.groupbyclass.groupable) -> Union[arkouda.pdarrayclass.pdarray, arkouda.groupbyclass.groupable]
+.. py:function:: union1d(pda1: arkouda.groupbyclass.groupable, pda2: arkouda.groupbyclass.groupable) -> arkouda.groupbyclass.groupable
 
    Find the union of two arrays/List of Arrays.
 
