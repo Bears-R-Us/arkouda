@@ -373,7 +373,7 @@ class TestNumeric:
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
-    def test_square(self, num_type):
+    def test_square(self, prob_size, num_type):
         nda = np.arange(prob_size).astype(num_type)
         if num_type != ak.uint64 :
             nda = nda - prob_size//2
@@ -382,7 +382,7 @@ class TestNumeric:
         assert np.allclose(np.square(nda), ak.square(pda).to_ndarray())
 
         with pytest.raises(TypeError):
-            ak.square(np.array([range(-10, 10)]).astype(BOOL))
+            ak.square(np.array([range(-10, 10)]).astype(ak.bool_))
 
     @pytest.mark.parametrize("num_type1", NO_BOOL)
     @pytest.mark.parametrize("num_type2", NO_BOOL)
