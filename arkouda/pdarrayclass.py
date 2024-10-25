@@ -2753,8 +2753,7 @@ def sum(
         args={"x": pda, "axis": axis_, "skipNan": False},
     )
     if axis is None or len(axis_) == 0 or pda.ndim == 1:
-        # TODO: remove call to 'flatten'
-        return create_pdarray(cast(str, repMsg)).flatten()[0]
+        return create_pdarray(cast(str, repMsg))[(0,)*pda.ndim]
     else:
         return create_pdarray(cast(str, repMsg))
 
@@ -2842,7 +2841,7 @@ def prod(pda: pdarray, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> Un
         args={"x": pda, "axis": axis_, "skipNan": False},
     )
     if axis is None or len(axis_) == 0 or pda.ndim == 1:
-        return create_pdarray(cast(str, repMsg)).flatten()[0]
+        return create_pdarray(cast(str, repMsg))[(0,)*pda.ndim]
     else:
         return create_pdarray(cast(str, repMsg))
 
@@ -2879,7 +2878,7 @@ def min(
         args={"x": pda, "axis": axis_, "skipNan": False},
     )
     if axis is None or len(axis_) == 0 or pda.ndim == 1:
-        return create_pdarray(cast(str, repMsg)).flatten()[0]
+        return create_pdarray(cast(str, repMsg))[(0,)*pda.ndim]
     else:
         return create_pdarray(cast(str, repMsg))
 
@@ -2917,7 +2916,7 @@ def max(
         args={"x": pda, "axis": axis_, "skipNan": False},
     )
     if axis is None or len(axis_) == 0 or pda.ndim == 1:
-        return create_pdarray(cast(str, repMsg)).flatten()[0]
+        return create_pdarray(cast(str, repMsg))[(0,)*pda.ndim]
     else:
         return create_pdarray(cast(str, repMsg))
 
