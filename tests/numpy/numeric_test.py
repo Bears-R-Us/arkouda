@@ -2,6 +2,7 @@ from math import isclose, sqrt
 
 import numpy as np
 import pytest
+import warnings
 
 import arkouda as ak
 from arkouda.client import get_max_array_rank
@@ -348,7 +349,9 @@ class TestNumeric:
         na = np.linspace(1, 10, 10).astype(num_type)
         pda = ak.array(na, dtype=num_type)
 
-        for npfunc, akfunc in ((np.log, ak.log), (np.exp, ak.exp)):
+        for (npfunc, akfunc) in ( (np.exp,ak.exp), (np.log,ak.log) , \
+                                  (np.expm1,ak.expm1),  (np.log2,ak.log2), \
+                                  (np.log10,ak.log10),  (np.log1p,ak.log1p) ) :
             assert np.allclose(npfunc(na), akfunc(pda).to_ndarray())
         with pytest.raises(TypeError):
             akfunc(np.array([range(0, 10)]).astype(num_type))
@@ -367,6 +370,18 @@ class TestNumeric:
 
         with pytest.raises(TypeError):
             ak.abs(np.array([range(0, 10)]).astype(num_type))
+
+    @pytest.mark.parametrize("num_type", NO_BOOL)
+    def test_square(self, num_type):
+        nda = np.arange(prob_size).astype(num_type)
+        if num_type != ak.uint64 :
+            nda = nda - prob_size//2
+        pda = ak.array(nda)
+
+        assert np.allclose(np.square(nda), ak.square(pda).to_ndarray())
+
+        with pytest.raises(TypeError):
+            ak.square(np.array([range(-10, 10)]).astype(BOOL))
 
     @pytest.mark.parametrize("num_type1", NO_BOOL)
     @pytest.mark.parametrize("num_type2", NO_BOOL)
@@ -549,7 +564,7 @@ class TestNumeric:
 
     def test_isnan(self):
         """
-        Test efunc `isnan`; it returns a pdarray of element-wise T/F values for whether it is NaN
+        Test isnan; it returns a pdarray of element-wise T/F values for whether it is NaN
         (not a number)
         """
         npa = np.array([1, 2, None, 3, 4], dtype="float64")
@@ -564,6 +579,20 @@ class TestNumeric:
         ark_s_string = ak.array(["a", "b", "c"])
         with pytest.raises(TypeError):
             ak.isnan(ark_s_string)
+
+    def test_isinf_isfinite(self) :
+        """
+        Test isinf and isfinite.  These return pdarrays of T/F values as appropriate.
+        """
+        nda = np.array([0,9999.9999])
+        pda = ak.array(nda)
+        warnings.filterwarnings("ignore")
+        nda_blowup = np.exp(nda)
+        warnings.filterwarnings("default")
+        pda_blowup = ak.exp(pda)
+        assert (np.isinf(nda_blowup) == ak.isinf(pda_blowup).to_ndarray()).all()
+        assert (np.isfinite(nda_blowup) == ak.isfinite(pda_blowup).to_ndarray()).all()
+        
 
     def test_str_cat_cast(self):
         test_strs = [

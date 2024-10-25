@@ -131,6 +131,81 @@ module EfuncMsg
     proc archyptangent (x : [?d] ?t) : [d] real throws
         { throw new Error ("arctanh does not support type %s".format(type2str(t))) ; }
 
+//  This sections adds abs, square, all the exp and log functions, and the boolean "is" functions.
+
+    @arkouda.registerCommand(name="abs")
+    proc absolut (const ref pda : [?d] ?t) : [d] t throws
+        where (t==int || t==real)  { return abs(pda) ; } // TODO maybe: allow uint and return pda
+
+    proc absolut (const ref pda : [?d] ?t) : [d] t throws
+        { throw new Error ("abs does not support type %s".format(type2str(t))) ; }
+
+    @arkouda.registerCommand(name="square")
+    proc boxy (const ref pda : [?d] ?t) : [d] t throws
+        where (t==int || t==real || t==uint)  { return square(pda) ; }
+
+    proc boxy (const ref pda : [?d] ?t) : [d] t throws
+        { throw new Error ("square does not support type %s".format(type2str(t))) ; }
+
+    @arkouda.registerCommand(name="exp")
+    proc expo (const ref pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint)  { return exp(pda) ; }
+
+    proc expo (const ref pda : [?d] ?t) : [d] real throws
+        { throw new Error ("exp does not support type %s".format(type2str(t))) ; }
+
+    @arkouda.registerCommand(name="expm1")
+    proc expom (const ref pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint)  { return expm1(pda) ; }
+
+    proc expom (const ref pda : [?d] ?t) : [d] real throws
+        { throw new Error ("expm1 does not support type %s".format(type2str(t))) ; }
+
+    @arkouda.registerCommand(name="log")
+    proc log_e (const ref pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint)  { return log(pda) ; }
+
+    proc log_e (const ref pda : [?d] ?t) : [d] real throws
+        { throw new Error ("log does not support type %s".format(type2str(t))) ; }
+
+    @arkouda.registerCommand(name="log1p")
+    proc log_1p (const ref pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint)  { return log1p(pda) ; }
+
+    proc log_1p (const ref pda : [?d] ?t) : [d] real throws
+        { throw new Error ("log1p does not support type %s".format(type2str(t))) ; }
+
+//  chapel log2 returns ints when given ints, so the input has been cast to real.
+
+    @arkouda.registerCommand(name="log2")
+    proc log_2 (const ref pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint)  { return log2(pda:real) ; }
+
+    proc log_2 (const ref pda : [?d] ?t) : [d] real throws
+        { throw new Error ("log2 does not support type %s".format(type2str(t))) ; }
+
+    @arkouda.registerCommand(name="log10")
+    proc log_10 (const ref pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint)  { return log10(pda) ; }
+
+    proc log_10 (const ref pda : [?d] ?t) : [d] real throws
+        { throw new Error ("log10 does not support type %s".format(type2str(t))) ; }
+
+//  Note that there are no where clauses for the following 3 boolean functions, as the
+//  new interface doesn't require it.
+
+    @arkouda.registerCommand(name="isinf")
+    proc muchTooBig (pda : [?d] real) : [d] bool { return (isInf(pda)) ; }
+
+    @arkouda.registerCommand(name="isnan")
+    proc muchTooSmall (pda : [?d] real) : [d] bool { return (isNan(pda)) ; }
+
+    @arkouda.registerCommand(name="isfinite")
+    proc justRight (pda : [?d] real) : [d] bool { return (isFinite(pda)) ; }
+
+//
+
+
 //  End of rewrite section -- delete this comment after all of EfuncMsg is rewritten.
 
     @arkouda.registerND
@@ -152,23 +227,11 @@ module EfuncMsg
                 ref ea = e.a;
                 select efunc
                 {
-                    when "abs" {
-                        st.addEntry(rname, new shared SymEntry(abs(ea)));
-                    }
-                    when "log" {
-                        st.addEntry(rname, new shared SymEntry(log(ea)));
-                    }
                     when "round" {
                         st.addEntry(rname, new shared SymEntry(ea));
                     }
                     when "sgn" {
                         st.addEntry(rname, new shared SymEntry(sgn(ea)));
-                    }
-                    when "exp" {
-                        st.addEntry(rname, new shared SymEntry(exp(ea)));
-                    }
-                    when "square" {
-                        st.addEntry(rname, new shared SymEntry(square(ea)));
                     }
                     when "cumsum" {
                         if nd == 1 {
@@ -238,9 +301,6 @@ module EfuncMsg
                 ref ea = e.a;
                 select efunc
                 {
-                    when "abs" {
-                        st.addEntry(rname, new shared SymEntry(abs(ea)));
-                    }
                     when "ceil" {
                         st.addEntry(rname, new shared SymEntry(ceil(ea)));
                     }
@@ -255,36 +315,6 @@ module EfuncMsg
                     }
                     when "sgn" {
                         st.addEntry(rname, new shared SymEntry(sgn(ea)));
-                    }
-                    when "isfinite" {
-                        st.addEntry(rname, new shared SymEntry(isFinite(ea)));
-                    }
-                    when "isinf" {
-                        st.addEntry(rname, new shared SymEntry(isInf(ea)));
-                    }
-                    when "isnan" {
-                        st.addEntry(rname, new shared SymEntry(isNan(ea)));
-                    }
-                    when "log" {
-                        st.addEntry(rname, new shared SymEntry(log(ea)));
-                    }
-                    when "log1p" {
-                        st.addEntry(rname, new shared SymEntry(log1p(ea)));
-                    }
-                    when "log2" {
-                        st.addEntry(rname, new shared SymEntry(log2(ea)));
-                    }
-                    when "log10" {
-                        st.addEntry(rname, new shared SymEntry(log10(ea)));
-                    }
-                    when "exp" {
-                        st.addEntry(rname, new shared SymEntry(exp(ea)));
-                    }
-                    when "expm1" {
-                        st.addEntry(rname, new shared SymEntry(expm1(ea)));
-                    }
-                    when "square" {
-                        st.addEntry(rname, new shared SymEntry(square(ea)));
                     }
                     when "cumsum" {
                         if nd == 1 {
@@ -437,15 +467,6 @@ module EfuncMsg
                         // Put first array's attrib in repMsg and let common
                         // code append second array's attrib
                         repMsg += "created " + st.attrib(rname2) + "+";
-                    }
-                    when "log" {
-                        st.addEntry(rname, new shared SymEntry(log(ea)));
-                    }
-                    when "exp" {
-                        st.addEntry(rname, new shared SymEntry(exp(ea)));
-                    }
-                    when "square" {
-                        st.addEntry(rname, new shared SymEntry(square(ea)));
                     }
                     when "not" {
                         st.addEntry(rname, new shared SymEntry(!e.a));
