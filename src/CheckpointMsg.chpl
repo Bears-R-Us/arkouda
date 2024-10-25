@@ -9,7 +9,6 @@ module CheckpointMsg {
   use Message;
   use ParquetMsg;
   use IOUtils;
-  /*use ArkoudaMapCompat;*/
 
   config param metadataExt = "md";
   config param dataExt = "data";
