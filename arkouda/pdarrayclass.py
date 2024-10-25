@@ -2720,10 +2720,14 @@ def is_sorted(pda: pdarray) -> np.bool_:
     )
 
 
+# check whether a reduction of the given axes on an 'ndim' dimensional array
+# would result in a single scalar value
 def _reduces_to_single_value(axis, ndim) -> bool:
     if len(axis) == 0 or ndim == 1:
+        # if no axes are specified or the array is 1D, the result is a scalar
         return True
     elif len(axis) == ndim:
+        # if all axes are specified, the result is a scalar
         axes = set(axis)
         for i in range(ndim):
             if i not in axes:
@@ -2731,6 +2735,29 @@ def _reduces_to_single_value(axis, ndim) -> bool:
         return True
     else:
         return False
+
+
+# helper function for sum, min, max, prod
+def _comon_reduction(
+    pda: pdarray, axis: Optional[Union[int, Tuple[int, ...]]], kind: str
+) -> Union[numeric_and_bool_scalars, pdarray]:
+    if kind not in ["sum", "min", "max", "prod"]:
+        raise ValueError(f"Unsupported reduction type: {kind}")
+
+    axis_ = [] if axis is None else ([axis,] if isinstance(axis, int) else list(axis))
+
+    if _reduces_to_single_value(axis_, pda.ndim):
+        return parse_single_value(cast(str, generic_msg(
+            cmd=f"{kind}All<{pda.dtype.name},{pda.ndim}>",
+            args={"x": pda, "skipNan": False},
+        )))
+    else:
+        return create_pdarray(
+            generic_msg(
+                cmd=f"{kind}<{pda.dtype.name},{pda.ndim}>",
+                args={"x": pda, "axis": axis_, "skipNan": False},
+            )
+        )
 
 
 @typechecked
@@ -2760,19 +2787,7 @@ def sum(
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    axis_ = [] if axis is None else ([axis,] if isinstance(axis, int) else list(axis))
-    if _reduces_to_single_value(axis_, pda.ndim):
-        parse_single_value(cast(str,generic_msg(
-            cmd=f"sumAll<{pda.dtype.name},{pda.ndim}>",
-            args={"x": pda, "skipNan": False},
-        )))
-    else:
-        return create_pdarray(
-            generic_msg(
-                cmd=f"sum<{pda.dtype.name},{pda.ndim}>",
-                args={"x": pda, "axis": axis_, "skipNan": False},
-            )
-        )
+    return _comon_reduction(pda, axis, "sum")
 
 
 @typechecked
@@ -2852,15 +2867,7 @@ def prod(pda: pdarray, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> Un
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    axis_ = [] if axis is None else ([axis,] if isinstance(axis, int) else list(axis))
-    repMsg = generic_msg(
-        cmd=f"prod<{pda.dtype.name},{pda.ndim}>",
-        args={"x": pda, "axis": axis_, "skipNan": False},
-    )
-    if axis is None or len(axis_) == 0 or pda.ndim == 1:
-        return create_pdarray(cast(str, repMsg))[(0,)*pda.ndim]
-    else:
-        return create_pdarray(cast(str, repMsg))
+    return _comon_reduction(pda, axis, "prod")
 
 
 def min(
@@ -2889,15 +2896,7 @@ def min(
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    axis_ = [] if axis is None else ([axis,] if isinstance(axis, int) else list(axis))
-    repMsg = generic_msg(
-        cmd=f"min<{pda.dtype.name},{pda.ndim}>",
-        args={"x": pda, "axis": axis_, "skipNan": False},
-    )
-    if axis is None or len(axis_) == 0 or pda.ndim == 1:
-        return create_pdarray(cast(str, repMsg))[(0,)*pda.ndim]
-    else:
-        return create_pdarray(cast(str, repMsg))
+    return _comon_reduction(pda, axis, "min")
 
 
 @typechecked
@@ -2927,15 +2926,7 @@ def max(
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    axis_ = [] if axis is None else ([axis,] if isinstance(axis, int) else list(axis))
-    repMsg = generic_msg(
-        cmd=f"max<{pda.dtype.name},{pda.ndim}>",
-        args={"x": pda, "axis": axis_, "skipNan": False},
-    )
-    if axis is None or len(axis_) == 0 or pda.ndim == 1:
-        return create_pdarray(cast(str, repMsg))[(0,)*pda.ndim]
-    else:
-        return create_pdarray(cast(str, repMsg))
+    return _comon_reduction(pda, axis, "max")
 
 
 @typechecked
