@@ -7,6 +7,8 @@ from arkouda.testing import assert_equal
 
 seed = pytest.seed
 
+DTYPES = ["uint64", "uint8", "int64", "float64", "bigint", "bool"]
+
 
 class TestNumpyManipulationFunctions:
 
@@ -54,3 +56,35 @@ class TestNumpyManipulationFunctions:
         # test case when c.permutation = None
         c2 = Categorical(c.to_pandas())
         assert_equal(ak.flip(c2), c2[::-1])
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", DTYPES)
+    def test_squeeze_1D(self, size, dtype):
+        x = ak.arange(size, dtype=dtype)
+        assert_equal(ak.squeeze(x), ak.arange(size, dtype=dtype))
+
+        y = 1
+        assert_equal(ak.squeeze(y), ak.array([1]))
+
+        z = ak.array([1])
+        assert_equal(ak.squeeze(z), ak.array([1]))
+
+    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", DTYPES)
+    def test_squeeze(self, size, dtype):
+
+        if dtype == "bigint":
+            pytest.skip("Skip until #3870 is resolved.")
+
+        x = ak.arange(size, dtype=dtype).reshape((1, size, 1))
+        assert_equal(ak.squeeze(x, axis=None), ak.arange(size, dtype=dtype))
+        assert_equal(ak.squeeze(x, axis=0), ak.arange(size, dtype=dtype).reshape((size, 1)))
+        assert_equal(ak.squeeze(x, axis=2), ak.arange(size, dtype=dtype).reshape((1, size)))
+        assert_equal(ak.squeeze(x, axis=(0, 2)), ak.arange(size, dtype=dtype))
+
+        y = 1
+        assert_equal(ak.squeeze(y), ak.array([1]))
+
+        z = ak.array([[[1]]])
+        assert_equal(ak.squeeze(z), ak.array([1]))
