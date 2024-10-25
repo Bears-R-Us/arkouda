@@ -353,19 +353,18 @@
           <h1>Source code for arkouda.numpy._manipulation_functions</h1><div class="highlight"><pre>
 <span></span><span class="c1"># from __future__ import annotations</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">cast</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 
-<span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
-<span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">create_pdarray</span>
-<span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">pdarray</span>
-<span class="kn">from</span> <span class="nn">arkouda.strings</span> <span class="kn">import</span> <span class="n">Strings</span>
+<span class="kn">from</span> <span class="nn">typeguard</span> <span class="kn">import</span> <span class="n">typechecked</span>
+
 <span class="kn">from</span> <span class="nn">arkouda.categorical</span> <span class="kn">import</span> <span class="n">Categorical</span>
+<span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
+<span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">bool_scalars</span>
+<span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span>
+<span class="kn">from</span> <span class="nn">arkouda.pdarraycreation</span> <span class="kn">import</span> <span class="n">array</span> <span class="k">as</span> <span class="n">ak_array</span>
+<span class="kn">from</span> <span class="nn">arkouda.strings</span> <span class="kn">import</span> <span class="n">Strings</span>
 
-
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;flip&quot;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;flip&quot;</span><span class="p">,</span> <span class="s2">&quot;squeeze&quot;</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="flip">
@@ -441,6 +440,89 @@
         <span class="k">return</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;flip only accepts type pdarray, Strings, or Categorical.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="squeeze">
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.squeeze">[docs]</a>
+<span class="nd">@typechecked</span>
+<span class="k">def</span> <span class="nf">squeeze</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">bool_scalars</span><span class="p">],</span> <span class="o">/</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Remove degenerate (size one) dimensions from an array.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : pdarray</span>
+<span class="sd">        The array to squeeze</span>
+<span class="sd">    axis : int or Tuple[int, ...]</span>
+<span class="sd">        The axis or axes to squeeze (must have a size of one).</span>
+<span class="sd">        If axis = None, all dimensions of size 1 will be squeezed.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray</span>
+<span class="sd">        A copy of x with the dimensions specified in the axis argument removed.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">    &gt;&gt;&gt; ak.connect()</span>
+<span class="sd">    &gt;&gt;&gt; x = ak.arange(10).reshape((1, 10, 1))</span>
+<span class="sd">    &gt;&gt;&gt; x</span>
+<span class="sd">    array([array([array([0]) array([1]) array([2]) array([3])....</span>
+<span class="sd">     array([4]) array([5]) array([6]) array([7]) array([8]) array([9])])])</span>
+<span class="sd">    &gt;&gt;&gt; x.shape</span>
+<span class="sd">    (1, 10, 1)</span>
+<span class="sd">    &gt;&gt;&gt; ak.squeeze(x,axis=None)</span>
+<span class="sd">    array([0 1 2 3 4 5 6 7 8 9])</span>
+<span class="sd">    &gt;&gt;&gt; ak.squeeze(x,axis=None).shape</span>
+<span class="sd">    (10,)</span>
+<span class="sd">    &gt;&gt;&gt; ak.squeeze(x,axis=2)</span>
+<span class="sd">    array([array([0 1 2 3 4 5 6 7 8 9])])</span>
+<span class="sd">    &gt;&gt;&gt; ak.squeeze(x,axis=2).shape</span>
+<span class="sd">    (1, 10)</span>
+<span class="sd">    &gt;&gt;&gt; ak.squeeze(x,axis=(0,2))</span>
+<span class="sd">    array([0 1 2 3 4 5 6 7 8 9])</span>
+<span class="sd">    &gt;&gt;&gt; ak.squeeze(x,axis=(0,2)).shape</span>
+<span class="sd">    (10,)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">_val_isinstance_of_union</span>
+
+    <span class="k">if</span> <span class="n">_val_isinstance_of_union</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">)</span> <span class="ow">or</span> <span class="n">_val_isinstance_of_union</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bool_scalars</span><span class="p">):</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">([</span><span class="n">x</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_axis</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="c1">#   Can&#39;t squeeze over every dimension, so remove one if necessary</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_axis</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">):</span>
+                <span class="n">_axis</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="n">axis</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">_axis</span><span class="p">)</span>
+
+        <span class="n">nAxes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="mi">1</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
+                <span class="n">cast</span><span class="p">(</span>
+                    <span class="nb">str</span><span class="p">,</span>
+                    <span class="n">generic_msg</span><span class="p">(</span>
+                        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;squeeze&lt;</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">nAxes</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+                        <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span>
+                            <span class="s2">&quot;nAxes&quot;</span><span class="p">:</span> <span class="n">nAxes</span><span class="p">,</span>
+                            <span class="s2">&quot;axes&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">axis</span><span class="p">],</span>
+                        <span class="p">},</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to squeeze array: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Failed to squeeze array.&quot;</span><span class="p">)</span></div>
 
 </pre></div>
         </article>

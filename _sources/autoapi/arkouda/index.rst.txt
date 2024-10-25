@@ -535,6 +535,7 @@ Functions
    arkouda.sort
    arkouda.sqrt
    arkouda.square
+   arkouda.squeeze
    arkouda.standard_normal
    arkouda.std
    arkouda.string_operators
@@ -45940,6 +45941,43 @@ Package Contents
 
    >>> ak.square(ak.arange(1,5))
    array([1, 4, 9, 16])
+
+
+.. py:function:: squeeze(x: Union[arkouda.pdarrayclass.pdarray, float, numpy.float64, numpy.float32, int, numpy.int8, numpy.int16, numpy.int32, numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64, bool, numpy.bool_], /, axis: Union[NoneType, int, Tuple[int, Ellipsis]] = None) -> arkouda.pdarrayclass.pdarray
+
+   Remove degenerate (size one) dimensions from an array.
+
+   :param x: The array to squeeze
+   :type x: pdarray
+   :param axis: The axis or axes to squeeze (must have a size of one).
+                If axis = None, all dimensions of size 1 will be squeezed.
+   :type axis: int or Tuple[int, ...]
+
+   :returns: A copy of x with the dimensions specified in the axis argument removed.
+   :rtype: pdarray
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> ak.connect()
+   >>> x = ak.arange(10).reshape((1, 10, 1))
+   >>> x
+   array([array([array([0]) array([1]) array([2]) array([3])....
+    array([4]) array([5]) array([6]) array([7]) array([8]) array([9])])])
+   >>> x.shape
+   (1, 10, 1)
+   >>> ak.squeeze(x,axis=None)
+   array([0 1 2 3 4 5 6 7 8 9])
+   >>> ak.squeeze(x,axis=None).shape
+   (10,)
+   >>> ak.squeeze(x,axis=2)
+   array([array([0 1 2 3 4 5 6 7 8 9])])
+   >>> ak.squeeze(x,axis=2).shape
+   (1, 10)
+   >>> ak.squeeze(x,axis=(0,2))
+   array([0 1 2 3 4 5 6 7 8 9])
+   >>> ak.squeeze(x,axis=(0,2)).shape
+   (10,)
 
 
 .. py:function:: standard_normal(size: arkouda.numpy.dtypes.int_scalars, seed: Union[None, arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.pdarrayclass.pdarray
