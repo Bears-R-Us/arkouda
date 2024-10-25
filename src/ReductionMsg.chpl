@@ -37,30 +37,53 @@ module ReductionMsg
     
     proc reductionReturnType(type t) type
       do return if t == bool then int else t;
+    
+    // @arkouda.instantiateAndRegister
+    // proc sum(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws {
+    //   use SliceReductionOps;
+
+    //   const x = st[msgArgs['x']]: SymEntry(array_dtype, array_nd),
+    //         axis = msgArgs['axis'].toScalarList(int),
+    //         skipNan = msgArgs['skipNan'].toScalar(bool);
+
+    //   type opType = reductionReturnType(t);
+
+    //   if d.rank == 1 || axis.size == 0 {
+    //     return MsgTuple.fromScalar(+ reduce x.a:opType);
+    //   } else {
+    //     const (valid, axes) = validateNegativeAxes(axis);
+    //     if valid {
+    //       const outShape = reducedShape(x.tupShape, axes);
+    //       var ret = makeDistArray((...outShape), opType);
+
+    //     } else {
+
+    //     }
+    //   }
+    // }
 
     @arkouda.registerCommand
-    proc sum(ref x:[?d] ?t, axis: list(int), skipNan: bool): [] reductionReturnType(t) throws
+    proc sumAll(const ref x: [?d] ?t, skipNan: bool): reductionReturnType(t) throws
       where t==int || t==real || t==uint(64) || t==bool
     {
       use SliceReductionOps;
+      return sumSlice(x, x.domain, reductionReturnType(t), skipNan);
+    }
 
+    @arkouda.registerCommand
+    proc sum(const ref x: [?d] ?t, axis: list(int), skipNan: bool): [] reductionReturnType(t) throws
+      where t==int || t==real || t==uint(64) || t==bool
+    {
+      use SliceReductionOps;
       type opType = reductionReturnType(t);
-      if d.rank == 1 then return makeDistArray([(+ reduce x:opType)]);
-
       const (valid, axes) = validateNegativeAxes(axis, x.rank);
       if !valid {
         throw new Error("Invalid axis value(s) '%?' in slicing reduction".format(axis));
       } else {
         const outShape = reducedShape(x.shape, axes);
         var ret = makeDistArray((...outShape), opType);
-        if (ret.size==1) {
-          ret[ret.domain.low] = (+ reduce x:opType);
-        }else{
-          forall sliceIdx in domOffAxis(x.domain, axes) {
-            const sliceDom = domOnAxis(x.domain, sliceIdx, axes);
-            ret[sliceIdx] = sumSlice(x, sliceDom, opType, skipNan);
-          }
-        }
+        forall (sliceDom, sliceIdx) in axisSlices(x.domain, axes)
+          do ret[sliceIdx] = sumSlice(x, sliceDom, opType, skipNan);
         return ret;
       }
     }
@@ -459,7 +482,7 @@ module ReductionMsg
         return sum == a.size;
       }
 
-      proc sumSlice(ref a: [?d] ?t, slice, type opType, skipNan: bool): opType {
+      proc sumSlice(const ref a: [?d] ?t, slice, type opType, skipNan: bool): opType {
         var sum = 0:opType;
         if skipNan{
           forall i in slice with (+ reduce sum) {

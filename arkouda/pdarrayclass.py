@@ -2720,6 +2720,19 @@ def is_sorted(pda: pdarray) -> np.bool_:
     )
 
 
+def _reduces_to_single_value(axis, ndim) -> bool:
+    if len(axis) == 0 or ndim == 1:
+        return True
+    elif len(axis) == ndim:
+        axes = set(axis)
+        for i in range(ndim):
+            if i not in axes:
+                return False
+        return True
+    else:
+        return False
+
+
 @typechecked
 def sum(
     pda: pdarray, axis: Optional[Union[int, Tuple[int, ...]]] = None
@@ -2748,14 +2761,18 @@ def sum(
         Raised if there's a server-side error thrown
     """
     axis_ = [] if axis is None else ([axis,] if isinstance(axis, int) else list(axis))
-    repMsg = generic_msg(
-        cmd=f"sum<{pda.dtype.name},{pda.ndim}>",
-        args={"x": pda, "axis": axis_, "skipNan": False},
-    )
-    if axis is None or len(axis_) == 0 or pda.ndim == 1:
-        return create_pdarray(cast(str, repMsg))[(0,)*pda.ndim]
+    if _reduces_to_single_value(axis_, pda.ndim):
+        parse_single_value(cast(str,generic_msg(
+            cmd=f"sumAll<{pda.dtype.name},{pda.ndim}>",
+            args={"x": pda, "skipNan": False},
+        )))
     else:
-        return create_pdarray(cast(str, repMsg))
+        return create_pdarray(
+            generic_msg(
+                cmd=f"sum<{pda.dtype.name},{pda.ndim}>",
+                args={"x": pda, "axis": axis_, "skipNan": False},
+            )
+        )
 
 
 @typechecked
