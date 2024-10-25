@@ -47,6 +47,8 @@ __all__ = [
     "restore",
     "receive",
     "receive_dataframe",
+    "checkpoint",
+    "load_checkpoint",
 ]
 
 ARKOUDA_HDF5_FILE_METADATA_GROUP = "_arkouda_metadata"
@@ -1997,6 +1999,25 @@ def read(
         raise RuntimeError(f"Invalid File Type detected, {ftype}")
 
 
+def checkpoint(varNames,path="checkpoint"):
+    namesToIds = {}
+    names = []
+    ids = []
+    for name in varNames:
+        if isinstance(varNames[name], pdarray):
+            namesToIds[name] = varNames[name].name
+            names.insert(0,name)
+    return cast(str, generic_msg(cmd="checkpoint", args={"path"    : path,
+                                                         "numArrs" : len(names),
+                                                         "names"   : names,
+                                                         "ids"     : ids}))
+
+def load_checkpoint(path="checkpoint"):
+    rep_msg = generic_msg(cmd="loadcheckpoint", args={"path":path})
+    rep = json.loads(rep_msg)
+    return _build_objects(rep)
+        
+    
 def read_tagged_data(
     filenames: Union[str, List[str]],
     datasets: Optional[Union[str, List[str]]] = None,
