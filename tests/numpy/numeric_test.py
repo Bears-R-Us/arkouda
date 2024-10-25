@@ -372,6 +372,7 @@ class TestNumeric:
             ak.abs(np.array([range(0, 10)]).astype(num_type))
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_square(self, num_type):
         nda = np.arange(prob_size).astype(num_type)
         if num_type != ak.uint64 :
