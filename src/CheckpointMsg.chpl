@@ -26,15 +26,36 @@ module CheckpointMsg {
 
     for (name, entry) in zip(st.tab.keys(), st.tab.values()) {
       var e = toSymEntry(toGenSymEntry(entry), int);
-      try! checkpointArr(path, name, e);
+      try! saveArr(path, name, e);
     }
     return new MsgTuple("Checkpointed yo", MsgType.NORMAL);
   }
   use CommandMap;
   registerFunction("checkpoint", checkpointMsg, getModuleName());
 
-  private proc checkpointArr(path, name, entry) throws {
+  proc checkpointLoadMsg(cmd: string, msgArgs: borrowed MessageArgs,
+                         st: borrowed SymTab): MsgTuple throws {
+    var path = msgArgs.getValueOf("path");
+    if !exists(path) {
+      var errorMsg = "Directory not found: " + path;
+      return new MsgTuple(errorMsg, MsgType.ERROR);
+    }
 
+    var rnames: list((string, ObjType, string));
+
+    for mdName in glob(path+"/*"+metadataExt) {
+      var (name, entry) = loadArr(path, mdName);
+      st.addEntry(name, entry);
+      rnames.pushBack((name, ObjType.PDARRAY, name));
+    }
+    var l = new list(string);
+    use GenSymIO;
+    var repMsg = buildReadAllMsgJson(rnames, false, 0, l, st);
+    return new MsgTuple(repMsg, MsgType.NORMAL);
+  }
+  registerFunction("loadcheckpoint", checkpointLoadMsg, getModuleName());
+
+  private proc saveArr(path, name, entry) throws {
     const mdName = Path.joinPath(path, ".".join(name, metadataExt));
 
     var mdFile = IO.open(mdName, ioMode.cw);
@@ -42,7 +63,6 @@ module CheckpointMsg {
     mdWriter.writeln(name);
     mdWriter.writeln(entry.size);
     mdWriter.writeln(entry.a.targetLocales().size);
-
 
     const dataName = Path.joinPath(path, ".".join(name, dataExt));
     const (warnFlag, filenames) = write1DDistArrayParquet(dataName, 'asd',
@@ -90,32 +110,4 @@ module CheckpointMsg {
     return (name, entryVal);
   }
 
-  proc checkpointLoadMsg(cmd: string, msgArgs: borrowed MessageArgs,
-                         st: borrowed SymTab): MsgTuple throws {
-    var path = msgArgs.getValueOf("path");
-    if !exists(path) {
-      var errorMsg = "Directory not found: " + path;
-      return new MsgTuple(errorMsg, MsgType.ERROR);
-    }
-
-    var rnames: list((string, ObjType, string));
-
-    for mdName in glob(path+"/*"+metadataExt) {
-      /*var fileSize = filename[filename.find("-")+1..filename.rfind("_")-1]:int;*/
-      /*var name = filename[filename.find("/")+1..filename.find("-")-1];*/
-      /*var entryVal = new shared SymEntry(fileSize, int);*/
-      /*readFilesByName(entryVal.a, [filename], [fileSize], "asd", 0);*/
-
-      var (name, entry) = loadArr(path, mdName);
-      /*var rname = st.nextName();*/
-      st.addEntry(name, entry);
-      rnames.pushBack((name, ObjType.PDARRAY, name));
-    }
-    var l = new list(string);
-    use GenSymIO;
-    var repMsg = buildReadAllMsgJson(rnames, false, 0, l, st);
-    return new MsgTuple(repMsg, MsgType.NORMAL);
-  }
- 
-  registerFunction("loadcheckpoint", checkpointLoadMsg, getModuleName());
 }
