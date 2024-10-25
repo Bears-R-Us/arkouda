@@ -450,10 +450,10 @@ def isfinite(pda: pdarray) -> pdarray:
     >>> ak.isfinite(ak.array[1.0, 2.0, ak.inf])
     array([True, True, False])
     """
+    datatype_check (pda.dtype,[float],'isfinite')
     repMsg = generic_msg(
-        cmd=f"efunc{pda.ndim}D",
+        cmd=f"isfinite<{pda.ndim}>",
         args={
-            "func": "isfinite",
             "array": pda,
         },
     )
@@ -487,10 +487,10 @@ def isinf(pda: pdarray) -> pdarray:
     >>> ak.isinf(ak.array[1.0, 2.0, ak.inf])
     array([False, False, True])
     """
+    datatype_check (pda.dtype,[float],'isinf')
     repMsg = generic_msg(
-        cmd=f"efunc{pda.ndim}D",
+        cmd=f"isinf<{pda.ndim}>",
         args={
-            "func": "isinf",
             "array": pda,
         },
     )
@@ -528,15 +528,13 @@ def isnan(pda: pdarray) -> pdarray:
 
     if is_numeric(pda) and not is_float(pda):
         from arkouda.pdarraycreation import full
-
         return full(pda.size, False, dtype=bool)
     elif not is_numeric(pda):
         raise TypeError("isnan only supports pdarray of numeric type.")
 
     repMsg = generic_msg(
-        cmd=f"efunc{pda.ndim}D",
+        cmd=f"isnan<{pda.ndim}>",
         args={
-            "func": "isnan",
             "array": pda,
         },
     )
