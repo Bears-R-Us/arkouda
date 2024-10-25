@@ -143,7 +143,22 @@ module ParquetMsg {
     return (rgSubdomains, offset);
   }
 
-  proc readFilesByName(ref A: [] ?t, ref whereNull: [] bool, filenames: [] string, sizes: [] int, dsetname: string, ty, byteLength=-1, hasNonFloatNulls=false) throws {
+  inline proc readFilesByName(ref A: [] ?t, filenames: [] string, sizes: [] int,
+                              dsetname: string, ty, byteLength=-1,
+                              hasNonFloatNulls=false) throws {
+    var dummy = [false];
+    readFilesByName(A, dummy, filenames, sizes, dsetname, ty, byteLength,
+                    hasNonFloatNulls, hasWhereNull=false);
+  }
+
+  /*
+     whereNull will be populated by the CPP interface, where `true` would mean a
+   0 (null) having been read.
+   */
+  proc readFilesByName(ref A: [] ?t, ref whereNull: [] bool,
+                       filenames: [] string, sizes: [] int, dsetname: string,
+                       ty, byteLength=-1, hasNonFloatNulls=false,
+                       param hasWhereNull=true) throws {
     extern proc c_readColumnByName(filename, arr_chpl, where_null_chpl, colNum, numElems, startIdx, batchSize, byteLength, hasNonFloatNulls, errMsg): int;
 
     var (subdoms, length) = getSubdomains(sizes);
@@ -159,8 +174,14 @@ module ParquetMsg {
           const intersection = domain_intersection(locdom, filedom);
           if intersection.size > 0 {
             var pqErr = new parquetErrorMsg();
-            if c_readColumnByName(filename.localize().c_str(), c_ptrTo(A[intersection.low]), c_ptrTo(whereNull[intersection.low]),
-                                  dsetname.localize().c_str(), intersection.size, intersection.low - off,
+            var whereNullPtr = if hasWhereNull
+                                  then c_ptrTo(whereNull[intersection.low])
+                                  else nil;
+            if c_readColumnByName(filename.localize().c_str(),
+                                  c_ptrTo(A[intersection.low]),
+                                  whereNullPtr,
+                                  dsetname.localize().c_str(),
+                                  intersection.size, intersection.low - off,
                                   batchSize, byteLength, hasNonFloatNulls,
                                   c_ptrTo(pqErr.errMsg)) == ARROWERROR {
               pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
