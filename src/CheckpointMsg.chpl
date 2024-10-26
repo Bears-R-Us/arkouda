@@ -46,7 +46,7 @@ module CheckpointMsg {
     var rnames: list((string, ObjType, string));
 
     for mdName in glob(path+"/*"+metadataExt) {
-      if mdName == serverMetadataName then continue;
+      if mdName == Path.joinPath(path, serverMetadataName) then continue;
       var (name, entry) = loadArr(path, mdName, loadedId);
       writeln("name before replace ", name);
       /*name = name.replace(loadedId, st.serverid);*/
