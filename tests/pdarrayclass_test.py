@@ -1,3 +1,5 @@
+from typing import Optional, Tuple, Union
+
 import numpy as np
 import pytest
 
@@ -5,6 +7,14 @@ import arkouda as ak
 from arkouda.testing import assert_equal as ak_assert_equal
 
 SEED = 314159
+import numpy
+
+import arkouda.pdarrayclass
+
+REDUCTION_OPS = ["max", "min", "prod", "sum", "any", "all"]
+DTYPES = ["int64", "float64", "bool", "uint64"]
+
+#   TODO unint8 ???
 
 
 class TestPdarrayClass:
@@ -42,79 +52,100 @@ class TestPdarrayClass:
         b = a.reshape((2, 2, size / 4))
         ak_assert_equal(b.flatten(), a)
 
-    def test_prod(self):
-        a = ak.arange(10) + 1
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", DTYPES)
+    def test_is_sorted(self, size, dtype):
+        a = ak.arange(size, dtype=dtype)
+        assert ak.is_sorted(a)
 
-        assert ak.prod(a) == 3628800
+        b = ak.flip(a)
+        assert not ak.is_sorted(b)
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
-    def test_prod_multidim(self):
-        a = ak.ones((2, 3, 4))
-        a = a + a
-
-        assert ak.prod(a) == 2**24
-
-        aProd0 = ak.prod(a, axis=0)
-        assert aProd0.shape == (1, 3, 4)
-        assert aProd0[0, 0, 0] == 2**2
-
-        aProd02 = ak.prod(a, axis=(1, 2))
-        assert aProd02.shape == (2, 1, 1)
-        assert aProd02[0, 0, 0] == 2**12
-
-    def test_sum(self):
-        a = ak.ones(10)
-
-        assert ak.sum(a) == 10
+        c = ak.randint(0, size // 10, size)
+        assert not ak.is_sorted(c)
 
     @pytest.mark.skip_if_max_rank_less_than(3)
-    def test_sum_multidim(self):
-        a = ak.ones((2, 3, 4))
+    @pytest.mark.parametrize("dtype", DTYPES)
+    def test_is_sorted_multidim(self, dtype):
+        a = ak.array(ak.randint(0, 100, (5, 7, 4), dtype=dtype, seed=SEED))
+        assert not ak.is_sorted(a)
 
-        assert ak.sum(a) == 24
+        x = ak.arange(10).reshape((2, 5))
+        assert ak.is_sorted(x)
 
-        aSum0 = ak.sum(a, axis=0)
-        assert aSum0.shape == (1, 3, 4)
-        assert aSum0[0, 0, 0] == 2
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", DTYPES)
+    def test_is_locally_sorted(self, size, dtype):
+        from arkouda.pdarrayclass import is_locally_sorted
 
-        aSum02 = ak.sum(a, axis=(1, 2))
-        assert aSum02.shape == (2, 1, 1)
-        assert aSum02[0, 0, 0] == 12
+        a = ak.arange(size)
+        assert is_locally_sorted(a)
 
-    def test_max(self):
-        a = ak.arange(10)
-        assert ak.max(a) == 9
+        assert not is_locally_sorted(ak.flip(a))
+
+        b = ak.randint(0, size // 10, size)
+        assert not is_locally_sorted(b)
 
     @pytest.mark.skip_if_max_rank_less_than(3)
-    def test_max(self):
+    @pytest.mark.parametrize("dtype", DTYPES)
+    def test_is_locally_sorted_multidim(self, dtype):
+        from arkouda.pdarrayclass import is_locally_sorted
+
         a = ak.array(ak.randint(0, 100, (5, 7, 4), dtype=ak.int64, seed=SEED))
-        a[3, 6, 2] = 101
+        assert not is_locally_sorted(a)
 
-        assert ak.max(a) == 101
+        x = ak.arange(10).reshape((2, 5))
+        assert is_locally_sorted(x)
 
-        aMax0 = ak.max(a, axis=0)
-        assert aMax0.shape == (1, 7, 4)
-        assert aMax0[0, 6, 2] == 101
+    def assert_reduction_ops_match(
+        self, op: str, pda: ak.pdarray, axis: Optional[Union[int, Tuple[int, ...]]] = None
+    ):
+        from arkouda.testing import assert_equivalent as ak_assert_equivalent
 
-        aMax02 = ak.max(a, axis=(0, 2))
-        assert aMax02.shape == (1, 7, 1)
-        assert aMax02[0, 6, 0] == 101
+        ak_op = getattr(arkouda.pdarrayclass, op)
+        np_op = getattr(numpy, op)
+        nda = pda.to_ndarray()
 
-    def test_min(self):
-        a = ak.arange(10) + 2
-        assert ak.min(a) == 2
+        # TODO: remove cast when #3864 is resolved.
+        ak_result = ak_op(pda, axis=axis)
+        if op in ["max", "min"] and pda.dtype == ak.bool_:
+            if isinstance(ak_result, ak.pdarray):
+                ak_result = ak.cast(ak_result, dt=ak.bool_)
+            else:
+                ak_result = np.bool_(ak_result)
+
+        ak_assert_equivalent(ak_result, np_op(nda, axis=axis))
+
+    @pytest.mark.parametrize("op", REDUCTION_OPS)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", DTYPES)
+    @pytest.mark.parametrize("arry_gen", [ak.zeros, ak.ones, ak.arange])
+    @pytest.mark.parametrize("axis", [0, (0,), None])
+    def test_reductions_match_numpy_1D(self, op, size, dtype, arry_gen, axis):
+        size = min(size, 1000) if op == "prod" else size
+        pda = arry_gen(size, dtype=dtype)
+        self.assert_reduction_ops_match(op, pda, axis=axis)
 
     @pytest.mark.skip_if_max_rank_less_than(3)
-    def test_min(self):
-        a = ak.array(ak.randint(0, 100, (5, 7, 4), dtype=ak.int64, seed=SEED))
-        a[3, 6, 2] = -1
+    @pytest.mark.parametrize("op", REDUCTION_OPS)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", DTYPES)
+    @pytest.mark.parametrize("arry_gen", [ak.zeros, ak.ones])
+    @pytest.mark.parametrize("axis", [None, 0, 1, (0, 2), (0, 1, 2)])
+    def test_reductions_match_numpy_3D_zeros(self, op, size, dtype, arry_gen, axis):
+        size = min(size // 3, 100) if op == "prod" else size // 3
+        pda = arry_gen((size, size, size), dtype=dtype)
+        self.assert_reduction_ops_match(op, pda, axis=axis)
 
-        assert ak.min(a) == -1
+    @pytest.mark.parametrize("op", REDUCTION_OPS)
+    @pytest.mark.parametrize("axis", [0, (0,), None])
+    def test_reductions_match_numpy_1D_TF(self, op, axis):
+        pda = ak.array([True, True, False, True, True, True, True, True])
+        self.assert_reduction_ops_match(op, pda, axis=axis)
 
-        aMin0 = ak.min(a, axis=0)
-        assert aMin0.shape == (1, 7, 4)
-        assert aMin0[0, 6, 2] == -1
-
-        aMin02 = ak.min(a, axis=(0, 2))
-        assert aMin02.shape == (1, 7, 1)
-        assert aMin02[0, 6, 0] == -1
+    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.parametrize("op", REDUCTION_OPS)
+    @pytest.mark.parametrize("axis", [None, 0, 1, (0, 2), (0, 1, 2)])
+    def test_reductions_match_numpy_3D_TF(self, op, axis):
+        pda = ak.array([True, True, False, True, True, True, True, True]).reshape((2, 2, 2))
+        self.assert_reduction_ops_match(op, pda, axis=axis)
