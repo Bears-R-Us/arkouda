@@ -2740,7 +2740,7 @@ def _reduces_to_single_value(axis, ndim) -> bool:
 # helper function for sum, min, max, prod
 def _comon_reduction(
     pda: pdarray, axis: Optional[Union[int, Tuple[int, ...]]], kind: str
-) -> Union[numeric_and_bool_scalars, pdarray]:
+):
     if kind not in ["sum", "min", "max", "prod"]:
         raise ValueError(f"Unsupported reduction type: {kind}")
 

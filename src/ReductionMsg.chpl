@@ -69,7 +69,9 @@ module ReductionMsg
       where t==int || t==real || t==uint(64) || t==bool
     {
       use SliceReductionOps;
-      return prodSlice(x, x.domain, reductionReturnType(t), skipNan);
+      if skipNan
+        then return prodSlice(x, x.domain, reductionReturnType(t), true);
+        else return * reduce x:reductionReturnType(t);
     }
 
     @arkouda.registerCommand
