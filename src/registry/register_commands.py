@@ -974,6 +974,13 @@ def gen_command_proc(name, return_type, formals, mod_name, config):
         )
     ]
 
+    def return_type_fn_name():
+        if isinstance(return_type, chapel.FnCall):
+            if ce := return_type.called_expression():
+                if isinstance(ce, chapel.Identifier):
+                    return ce.name()
+        return None
+
     # assume the returned type is a symbol if it's an identifier that is not a scalar or type-query reference
     # or if it is a type-constructor call for a class that inherits from 'AbstractSymEntry'
     returns_symbol = (
@@ -985,7 +992,8 @@ def gen_command_proc(name, return_type, formals, mod_name, config):
         )
         or (
             # TODO: do resolution to ensure that this is a class type that inherits from 'AbstractSymEntry'
-            isinstance(return_type, chapel.FnCall)
+            return_type_fn_name() is not None
+            and return_type_fn_name() in ["SymEntry",] + list(config["parameter_classes"].keys())
         )
     )
     returns_array = (

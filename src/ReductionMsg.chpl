@@ -34,111 +34,109 @@ module ReductionMsg
     const basicReductionOps = {"sum", "prod", "min", "max"},
           boolReductionOps = {"any", "all", "is_sorted", "is_locally_sorted"},
           idxReductionOps = {"argmin", "argmax"};
-    
+
     proc reductionReturnType(type t) type
       do return if t == bool then int else t;
 
     @arkouda.registerCommand
-    proc sum(ref x:[?d] ?t, axis: list(int), skipNan: bool): [] reductionReturnType(t) throws
+    proc sumAll(const ref x: [?d] ?t, skipNan: bool): reductionReturnType(t) throws
       where t==int || t==real || t==uint(64) || t==bool
     {
       use SliceReductionOps;
+      return sumSlice(x, x.domain, reductionReturnType(t), skipNan);
+    }
 
+    @arkouda.registerCommand
+    proc sum(const ref x: [?d] ?t, axis: list(int), skipNan: bool): [] reductionReturnType(t) throws
+      where t==int || t==real || t==uint(64) || t==bool
+    {
+      use SliceReductionOps;
       type opType = reductionReturnType(t);
-      if d.rank == 1 then return makeDistArray([(+ reduce x:opType)]);
-
       const (valid, axes) = validateNegativeAxes(axis, x.rank);
       if !valid {
         throw new Error("Invalid axis value(s) '%?' in slicing reduction".format(axis));
       } else {
         const outShape = reducedShape(x.shape, axes);
         var ret = makeDistArray((...outShape), opType);
-        if (ret.size==1) {
-          ret[ret.domain.low] = (+ reduce x:opType);
-        }else{
-          forall sliceIdx in domOffAxis(x.domain, axes) {
-            const sliceDom = domOnAxis(x.domain, sliceIdx, axes);
-            ret[sliceIdx] = sumSlice(x, sliceDom, opType, skipNan);
-          }
-        }
+        forall (sliceDom, sliceIdx) in axisSlices(x.domain, axes)
+          do ret[sliceIdx] = sumSlice(x, sliceDom, opType, skipNan);
         return ret;
       }
     }
 
     @arkouda.registerCommand
-    proc prod(ref x:[?d] ?t, axis: list(int), skipNan: bool): [] reductionReturnType(t) throws
+    proc prodAll(const ref x:[?d] ?t, skipNan: bool): reductionReturnType(t) throws
+      where t==int || t==real || t==uint(64) || t==bool
+    {
+      use SliceReductionOps;
+      if skipNan
+        then return prodSlice(x, x.domain, reductionReturnType(t), true);
+        else return * reduce x:reductionReturnType(t);
+    }
+
+    @arkouda.registerCommand
+    proc prod(const ref x:[?d] ?t, axis: list(int), skipNan: bool): [] reductionReturnType(t) throws
       where t==int || t==real || t==uint(64) || t==bool {
       use SliceReductionOps;
-
       type opType = reductionReturnType(t);
-      if d.rank == 1 then return makeDistArray([(* reduce x:opType)]);
-
       const (valid, axes) = validateNegativeAxes(axis, x.rank);
       if !valid {
         throw new Error("Invalid axis value(s) '%?' in slicing reduction".format(axis));
       } else {
         const outShape = reducedShape(x.shape, axes);
         var ret = makeDistArray((...outShape), opType);
-        if (ret.size==1) {
-          ret[ret.domain.low] = (* reduce x:opType);
-        }else{
-          forall sliceIdx in domOffAxis(x.domain, axes) {
-            const sliceDom = domOnAxis(x.domain, sliceIdx, axes);
-            ret[sliceIdx] = prodSlice(x, sliceDom, opType, skipNan);
-          }
-        }
+        forall (sliceDom, sliceIdx) in axisSlices(x.domain, axes)
+          do ret[sliceIdx] = prodSlice(x, sliceDom, opType, skipNan);
         return ret;
       }
     }
 
     @arkouda.registerCommand
-    proc max(ref x:[?d] ?t, axis: list(int), skipNan: bool): [] reductionReturnType(t) throws
+    proc maxAll(const ref x:[?d] ?t, skipNan: bool): reductionReturnType(t) throws
+      where t==int || t==real || t==uint(64) || t==bool
+    {
+      use SliceReductionOps;
+      return getMaxSlice(x, x.domain, skipNan);
+    }
+
+    @arkouda.registerCommand
+    proc max(const ref x:[?d] ?t, axis: list(int), skipNan: bool): [] reductionReturnType(t) throws
       where t==int || t==real || t==uint(64) || t==bool {
       use SliceReductionOps;
-
       type opType = reductionReturnType(t);
-      if d.rank == 1 then return makeDistArray([(max reduce x:opType)]);
-
       const (valid, axes) = validateNegativeAxes(axis, x.rank);
       if !valid {
         throw new Error("Invalid axis value(s) '%?' in slicing reduction".format(axis));
       } else {
         const outShape = reducedShape(x.shape, axes);
         var ret = makeDistArray((...outShape), opType);
-        if (ret.size==1) {
-          ret[ret.domain.low] = (max reduce x:opType);
-        }else{
-          forall sliceIdx in domOffAxis(x.domain, axes) {
-            const sliceDom = domOnAxis(x.domain, sliceIdx, axes);
-            ret[sliceIdx] = getMaxSlice(x, sliceDom, skipNan);
-          }
-        }
+        forall (sliceDom, sliceIdx) in axisSlices(x.domain, axes)
+          do ret[sliceIdx] = getMaxSlice(x, sliceDom, skipNan);
         return ret;
       }
     }
 
     @arkouda.registerCommand
-    proc min(ref x:[?d] ?t, axis: list(int), skipNan: bool): [] reductionReturnType(t) throws
+    proc minAll(const ref x:[?d] ?t, skipNan: bool): reductionReturnType(t) throws
+      where t==int || t==real || t==uint(64) || t==bool
+    {
+      use SliceReductionOps;
+      return getMinSlice(x, x.domain, skipNan);
+    }
+
+    @arkouda.registerCommand
+    proc min(const ref x:[?d] ?t, axis: list(int), skipNan: bool): [] reductionReturnType(t) throws
       where t==int || t==real || t==uint(64) || t==bool {
       use SliceReductionOps;
-
       type opType = reductionReturnType(t);
-      if d.rank == 1 then return makeDistArray([(min reduce x:opType)]);
-
       const (valid, axes) = validateNegativeAxes(axis, x.rank);
       if !valid {
         throw new Error("Invalid axis value(s) '%?' in slicing reduction".format(axis));
       } else {
         const outShape = reducedShape(x.shape, axes);
         var ret = makeDistArray((...outShape), opType);
-        if (ret.size==1) {
-          ret[ret.domain.low] = (min reduce x:opType);
-        }else{
-          forall sliceIdx in domOffAxis(x.domain, axes) {
-            const sliceDom = domOnAxis(x.domain, sliceIdx, axes);
-            ret[sliceIdx] = getMinSlice(x, sliceDom, skipNan);
-          }
-        }
+        forall (sliceDom, sliceIdx) in axisSlices(x.domain, axes)
+          do ret[sliceIdx] = getMinSlice(x, sliceDom, skipNan);
         return ret;
       }
     }
@@ -459,7 +457,7 @@ module ReductionMsg
         return sum == a.size;
       }
 
-      proc sumSlice(ref a: [?d] ?t, slice, type opType, skipNan: bool): opType {
+      proc sumSlice(const ref a: [?d] ?t, slice, type opType, skipNan: bool): opType {
         var sum = 0:opType;
         if skipNan{
           forall i in slice with (+ reduce sum) {
@@ -472,7 +470,7 @@ module ReductionMsg
         return sum;
       }
 
-      proc prodSlice(ref a: [] ?t, slice, type opType, skipNan: bool): opType {
+      proc prodSlice(const ref a: [] ?t, slice, type opType, skipNan: bool): opType {
         var prod = 1.0; // always use real(64) to avoid int overflow
         if skipNan{
           forall i in slice with (* reduce prod) {
@@ -485,7 +483,7 @@ module ReductionMsg
         return prod:opType;
       }
 
-      proc getMinSlice(ref a: [] ?t, slice, skipNan: bool): t {
+      proc getMinSlice(const ref a: [] ?t, slice, skipNan: bool): t {
         var minVal = max(t);
         if skipNan{
           forall i in slice with (min reduce minVal) {
@@ -498,7 +496,7 @@ module ReductionMsg
         return minVal;
       }
 
-      proc getMaxSlice(ref a: [] ?t, slice, skipNan: bool): t {
+      proc getMaxSlice(const ref a: [] ?t, slice, skipNan: bool): t {
         var maxVal = min(t);
         if skipNan{
           forall i in slice with (max reduce maxVal) {
