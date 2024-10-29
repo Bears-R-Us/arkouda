@@ -219,9 +219,6 @@ Module Contents
    .. py:attribute:: show_int
 
 
-   .. py:attribute:: width
-
-
 .. py:class:: IPv4(values)
 
    Bases: :py:obj:`arkouda.pdarrayclass.pdarray`

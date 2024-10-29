@@ -549,6 +549,7 @@ Module Contents
    .. py:property:: inferred_type
       :type: str
 
+
       Return a string of the type inferred from the values.
 
 

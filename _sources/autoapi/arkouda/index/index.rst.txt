@@ -70,11 +70,13 @@ Module Contents
 
 
    .. py:property:: index
+
       This is maintained to support older code
 
 
    .. py:property:: inferred_type
       :type: str
+
 
       Return a string of the type inferred from the values.
 
@@ -99,6 +101,7 @@ Module Contents
 
 
    .. py:property:: is_unique
+
       Property indicating if all values in the index are unique
       :rtype: bool - True if all values are unique, False otherwise.
 
@@ -161,16 +164,19 @@ Module Contents
 
 
    .. py:property:: names
+
       Return Index or MultiIndex names.
 
 
    .. py:property:: ndim
+
       Number of dimensions of the underlying data, by definition 1.
 
       .. seealso:: :obj:`MultiIndex.ndim`
 
 
    .. py:property:: nlevels
+
       Integer number of levels in this Index.
       An Index will always have 1 level.
       .. seealso:: :obj:`MultiIndex.nlevels`
@@ -508,6 +514,7 @@ Module Contents
    .. py:property:: dtype
       :type: numpy.dtype
 
+
       Return the dtype object of the underlying data.
 
 
@@ -518,20 +525,17 @@ Module Contents
 
 
 
-   .. py:attribute:: first
-      :value: True
-
-
-
    .. py:method:: get_level_values(level: Union[str, int])
 
 
    .. py:property:: index
+
       This is maintained to support older code
 
 
    .. py:property:: inferred_type
       :type: str
+
 
       Return a string of the type inferred from the values.
 
@@ -585,14 +589,17 @@ Module Contents
 
 
    .. py:property:: name
+
       Return Index or MultiIndex name.
 
 
    .. py:property:: names
+
       Return Index or MultiIndex names.
 
 
    .. py:property:: ndim
+
       Number of dimensions of the underlying data, by definition 1.
 
       .. seealso:: :obj:`Index.ndim`
@@ -600,6 +607,7 @@ Module Contents
 
    .. py:property:: nlevels
       :type: int
+
 
       Integer number of levels in this MultiIndex.
 

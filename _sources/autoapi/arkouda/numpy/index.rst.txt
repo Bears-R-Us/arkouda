@@ -3580,6 +3580,7 @@ Module Contents
 
 
    .. py:property:: smallest_normal
+
       Return the value for the smallest normal.
 
       :returns: **smallest_normal** -- Value for the smallest normal.
@@ -3590,6 +3591,7 @@ Module Contents
 
 
    .. py:property:: tiny
+
       Return the value for tiny, alias of smallest_normal.
 
       :returns: **tiny** -- Value for the smallest normal, alias of smallest_normal.
@@ -4405,10 +4407,12 @@ Module Contents
 
 
    .. py:property:: max
+
       Maximum value of given dtype.
 
 
    .. py:property:: min
+
       Minimum value of given dtype.
 
 

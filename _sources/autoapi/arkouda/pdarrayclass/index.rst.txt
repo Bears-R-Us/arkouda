@@ -870,6 +870,7 @@ Module Contents
    .. py:property:: inferred_type
       :type: Union[str, None]
 
+
       Return a string of the type inferred from the values.
 
 
@@ -972,6 +973,7 @@ Module Contents
 
 
    .. py:property:: nbytes
+
       The size of the pdarray in bytes.
 
       :returns: The size of the pdarray in bytes.
@@ -1160,6 +1162,7 @@ Module Contents
 
 
    .. py:property:: shape
+
       Return the shape of an array.
 
       :returns: The elements of the shape tuple give the lengths of the corresponding array dimensions.

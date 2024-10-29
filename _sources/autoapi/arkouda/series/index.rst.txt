@@ -56,6 +56,7 @@ Module Contents
 
 
    .. py:property:: at
+
       Accesses entries of a Series by label
 
       :param key: The key or container of keys to access entries for
@@ -262,6 +263,7 @@ Module Contents
    .. py:property:: iat
       :type: Series
 
+
       Accesses entries of a Series by position
 
       :param key: The positions or container of positions to access entries for
@@ -270,6 +272,7 @@ Module Contents
 
    .. py:property:: iloc
       :type: Series
+
 
       Accesses entries of a Series by position
 
@@ -386,6 +389,7 @@ Module Contents
 
    .. py:property:: loc
       :type: Series
+
 
       Accesses entries of a Series by label
 

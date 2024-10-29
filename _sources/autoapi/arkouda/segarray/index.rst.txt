@@ -377,6 +377,7 @@ Module Contents
 
 
    .. py:property:: nbytes
+
       The size of the segarray in bytes.
 
       :returns: The size of the segarray in bytes.

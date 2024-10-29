@@ -334,6 +334,7 @@ Module Contents
    .. py:property:: inferred_type
       :type: str
 
+
       Return a string of the type inferred from the values.
 
 
@@ -377,6 +378,7 @@ Module Contents
 
 
    .. py:property:: nbytes
+
       The size of the Categorical in bytes.
 
       :returns: The size of the Categorical in bytes.
