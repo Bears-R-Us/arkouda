@@ -8,6 +8,7 @@ import arkouda as ak
 from arkouda.client import get_max_array_rank
 from arkouda.dtypes import dtype as akdtype
 from arkouda.dtypes import str_
+from arkouda.testing import assert_almost_equivalent as ak_assert_almost_equivalent
 
 ARRAY_TYPES = [ak.int64, ak.float64, ak.bool_, ak.uint64, str_]
 NUMERIC_TYPES = [ak.int64, ak.float64, ak.bool_, ak.uint64]
@@ -345,14 +346,16 @@ class TestNumeric:
                     assert np.allclose(np_edge.tolist(), ak_edge.to_list())
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
-    def test_log_and_exp(self, num_type):
+    @pytest.mark.parametrize("op", ["exp", "log", "expm1", "log2", "log10", "log1p"])
+    def test_log_and_exp(self, num_type, op):
         na = np.linspace(1, 10, 10).astype(num_type)
         pda = ak.array(na, dtype=num_type)
 
-        for (npfunc, akfunc) in ( (np.exp,ak.exp), (np.log,ak.log) , \
-                                  (np.expm1,ak.expm1),  (np.log2,ak.log2), \
-                                  (np.log10,ak.log10),  (np.log1p,ak.log1p) ) :
-            assert np.allclose(npfunc(na), akfunc(pda).to_ndarray())
+        akfunc = getattr(ak,op)
+        npfunc = getattr(np, op)
+
+        ak_assert_almost_equivalent(akfunc(pda), npfunc(na))
+
         with pytest.raises(TypeError):
             akfunc(np.array([range(0, 10)]).astype(num_type))
 

@@ -51,129 +51,75 @@ module EfuncMsg
     proc sine (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return sin(x); }
        
-    proc sine (x : [?d] ?t) : [d] real throws
-        { throw new Error ("sin does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="cos")
     proc cosine (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return cos(x); }
        
-    proc cosine (x : [?d] ?t) : [d] real throws
-        { throw new Error ("cos does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="tan")
     proc tangent (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return tan(x); }
        
-    proc tangent (x : [?d] ?t) : [d] real throws
-        { throw new Error ("tan does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="arcsin")
     proc arcsine (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return asin(x); }
        
-    proc arcsine (x : [?d] ?t) : [d] real throws
-        { throw new Error ("arcsin does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="arccos")
     proc arccosine (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return acos(x); }
        
-    proc arccosine (x : [?d] ?t) : [d] real throws
-        { throw new Error ("arccos does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="arctan")
     proc arctangent (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return atan(x); }
        
-    proc arctangent (x : [?d] ?t) : [d] real throws
-        { throw new Error ("arctan does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="sinh")
     proc hypsine (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return sinh(x); }
        
-    proc hypsine (x : [?d] ?t) : [d] real throws
-        { throw new Error ("sinh does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="cosh")
     proc hypcosine (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return cosh(x); }
        
-    proc hypcosine (x : [?d] ?t) : [d] real throws
-        { throw new Error ("cosh does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="tanh")
     proc hyptangent (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return tanh(x); }
        
-    proc hyptangent (x : [?d] ?t) : [d] real throws
-        { throw new Error ("tanh does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="arcsinh")
     proc archypsine (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return asinh(x); }
        
-    proc archypsine (x : [?d] ?t) : [d] real throws
-        { throw new Error ("arcsinh does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="arccosh")
     proc archypcosine (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return acosh(x); }
        
-    proc archypcosine (x : [?d] ?t) : [d] real throws
-        { throw new Error ("arccosh does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="arctanh")
     proc archyptangent (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return atanh(x); }
        
-    proc archyptangent (x : [?d] ?t) : [d] real throws
-        { throw new Error ("arctanh does not support type %s".format(type2str(t))) ; }
-
 //  This sections adds abs, square, all the exp and log functions, and the boolean "is" functions.
 
     @arkouda.registerCommand(name="abs")
     proc absolut (const ref pda : [?d] ?t) : [d] t throws
         where (t==int || t==real)  { return abs(pda) ; } // TODO maybe: allow uint and return pda
 
-    proc absolut (const ref pda : [?d] ?t) : [d] t throws
-        { throw new Error ("abs does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand(name="square")
     proc boxy (const ref pda : [?d] ?t) : [d] t throws
         where (t==int || t==real || t==uint)  { return square(pda) ; }
-
-    proc boxy (const ref pda : [?d] ?t) : [d] t throws
-        { throw new Error ("square does not support type %s".format(type2str(t))) ; }
 
     @arkouda.registerCommand(name="exp")
     proc expo (const ref pda : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint)  { return exp(pda) ; }
 
-    proc expo (const ref pda : [?d] ?t) : [d] real throws
-        { throw new Error ("exp does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand(name="expm1")
     proc expom (const ref pda : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint)  { return expm1(pda) ; }
-
-    proc expom (const ref pda : [?d] ?t) : [d] real throws
-        { throw new Error ("expm1 does not support type %s".format(type2str(t))) ; }
 
     @arkouda.registerCommand(name="log")
     proc log_e (const ref pda : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint)  { return log(pda) ; }
 
-    proc log_e (const ref pda : [?d] ?t) : [d] real throws
-        { throw new Error ("log does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand(name="log1p")
     proc log_1p (const ref pda : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint)  { return log1p(pda) ; }
-
-    proc log_1p (const ref pda : [?d] ?t) : [d] real throws
-        { throw new Error ("log1p does not support type %s".format(type2str(t))) ; }
 
 //  chapel log2 returns ints when given ints, so the input has been cast to real.
 
@@ -181,29 +127,18 @@ module EfuncMsg
     proc log_2 (const ref pda : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint)  { return log2(pda:real) ; }
 
-    proc log_2 (const ref pda : [?d] ?t) : [d] real throws
-        { throw new Error ("log2 does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand(name="log10")
     proc log_10 (const ref pda : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint)  { return log10(pda) ; }
 
-    proc log_10 (const ref pda : [?d] ?t) : [d] real throws
-        { throw new Error ("log10 does not support type %s".format(type2str(t))) ; }
-
-//  Note that there are no where clauses for the following 3 boolean functions, as the
-//  new interface doesn't require it.
-
     @arkouda.registerCommand(name="isinf")
-    proc muchTooBig (pda : [?d] real) : [d] bool { return (isInf(pda)) ; }
+    proc isinf_ (pda : [?d] real) : [d] bool { return (isInf(pda)) ; }
 
     @arkouda.registerCommand(name="isnan")
-    proc muchTooSmall (pda : [?d] real) : [d] bool { return (isNan(pda)) ; }
+    proc isnan_ (pda : [?d] real) : [d] bool { return (isNan(pda)) ; }
 
     @arkouda.registerCommand(name="isfinite")
-    proc justRight (pda : [?d] real) : [d] bool { return (isFinite(pda)) ; }
-
-//
+    proc isfinite_ (pda : [?d] real) : [d] bool { return (isFinite(pda)) ; }
 
 
 //  End of rewrite section -- delete this comment after all of EfuncMsg is rewritten.
