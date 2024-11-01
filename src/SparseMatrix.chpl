@@ -560,13 +560,12 @@ module SparseMatrix {
     //
     //  public use LayoutCSUtil, SparseBlockDistUtil;
 
-    use BlockDist, LayoutCS, Map, Random;
+    use BlockDist, Map, Random;
 
     enum Layout {
       CSR,
       CSC
     };
-    // public use layout;
 
     config const seed = 0;
 
@@ -615,9 +614,10 @@ module SparseMatrix {
     // create a new sparse matrix from a map from sparse indices to values
     //
     proc makeSparseMat(parentDom, spsData) {
+      use ArkoudaSparseMatrixCompat;
       use Sort;
 
-      var CDom: sparse subdomain(parentDom) dmapped new dmap(new CS());
+      var CDom: sparse subdomain(parentDom) dmapped getSparseDom(Layout.CSR);
       var inds: [0..<spsData.size] 2*int;
       for (idx, i) in zip(spsData.keys(), 0..) do
         inds[i] = idx;
