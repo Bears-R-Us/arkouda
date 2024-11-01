@@ -4,7 +4,7 @@ import builtins
 import json
 from functools import reduce
 from math import ceil
-from typing import List, Optional, Sequence, Tuple, Union, cast
+from typing import TYPE_CHECKING, List, Optional, Sequence, Tuple, Union, cast
 
 import numpy as np
 from typeguard import typechecked
@@ -14,7 +14,7 @@ from arkouda.infoclass import information, pretty_print_information
 from arkouda.logger import getArkoudaLogger
 from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, DTypes, bigint
 from arkouda.numpy.dtypes import bool_ as akbool
-from arkouda.numpy.dtypes import dtype
+from arkouda.numpy.dtypes import bool_scalars, dtype
 from arkouda.numpy.dtypes import float64 as akfloat64
 from arkouda.numpy.dtypes import get_byteorder, get_server_byteorder
 from arkouda.numpy.dtypes import int64 as akint64
@@ -22,13 +22,37 @@ from arkouda.numpy.dtypes import (
     int_scalars,
     isSupportedInt,
     isSupportedNumber,
-    numeric_and_bool_scalars,
     numeric_scalars,
     numpy_scalars,
     resolve_scalar_dtype,
 )
 from arkouda.numpy.dtypes import str_ as akstr_
 from arkouda.numpy.dtypes import uint64 as akuint64
+
+if TYPE_CHECKING:
+
+    def numeric_reduce(
+        pda,
+        axis: Optional[Union[int, Tuple[int, ...]]] = None,
+        keepdims: bool = False,
+    ) -> Union[numpy_scalars, pdarray]:
+        pass
+
+    sum = numeric_reduce
+    prod = numeric_reduce
+    max = numeric_reduce
+    min = numeric_reduce
+
+    def boolean_reduce(
+        pda, axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False
+    ) -> Union[bool_scalars, pdarray]:
+        pass
+
+    is_sorted = boolean_reduce
+    is_locally_sorted = boolean_reduce
+    all = boolean_reduce
+    any = boolean_reduce
+
 
 __all__ = [
     "pdarray",
@@ -69,12 +93,13 @@ __all__ = [
     "broadcast_to_shape",
     "_to_pdarray",
 ]
-
 logger = getArkoudaLogger(name="pdarrayclass")
+
+SUPPORTED_REDUCTION_OPS = ["any", "all", "isSorted", "isSortedLocally", "max", "min", "sum", "prod"]
 
 
 @typechecked
-def parse_single_value(msg: str) -> object:
+def parse_single_value(msg: str) -> Union[numpy_scalars, int]:
     """
     Attempt to convert a scalar return value from the arkouda server to a
     numpy scalar in Python. The user should not call this function directly.
@@ -408,7 +433,7 @@ class pdarray:
             generic_msg(cmd="set_max_bits", args={"array": self, "max_bits": max_bits})
             self._max_bits = max_bits
 
-    def equals(self, other) -> bool:
+    def equals(self, other) -> bool_scalars:
         """
         Whether pdarrays are the same size and all entries are equal.
 
@@ -438,9 +463,10 @@ class pdarray:
             if other.size != self.size:
                 return False
             else:
-                return all(self == other)
-        else:
-            return False
+                result = all(self == other)
+                if isinstance(result, (bool, np.bool_)):
+                    return result
+        return False
 
     def format_other(self, other) -> str:
         """
@@ -718,7 +744,7 @@ class pdarray:
     def __ge__(self, other):
         return self._binop(other, ">=")
 
-    def __eq__(self, other):
+    def __eq__(self, other):  # type: ignore
         if other is None:
             return False
         elif (self.dtype == "bool_") and (isinstance(other, pdarray) and (other.dtype == "bool_")):
@@ -726,7 +752,7 @@ class pdarray:
         else:
             return self._binop(other, "==")
 
-    def __ne__(self, other):
+    def __ne__(self, other):  # type: ignore
         if (self.dtype == "bool_") and (isinstance(other, pdarray) and (other.dtype == "bool_")):
             return self ^ other
         else:
@@ -1240,17 +1266,21 @@ class pdarray:
             cmd=cmd, args={"array": self, "dtype": self.dtype.name, "val": self.format_other(value)}
         )
 
-    def any(self) -> np.bool_:
+    def any(
+        self, axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False
+    ) -> Union[bool_scalars, pdarray]:
         """
         Return True iff any element of the array evaluates to True.
         """
-        return any(self)
+        return any(self, axis=axis, keepdims=keepdims)
 
-    def all(self) -> np.bool_:
+    def all(
+        self, axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False
+    ) -> Union[bool_scalars, pdarray]:
         """
         Return True iff all elements of the array evaluate to True.
         """
-        return all(self)
+        return all(self, axis=axis, keepdims=keepdims)
 
     def is_registered(self) -> np.bool_:
         """
@@ -1325,7 +1355,9 @@ class pdarray:
         """
         pretty_print_information(self._list_component_names())
 
-    def is_sorted(self) -> np.bool_:
+    def is_sorted(
+        self, axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False
+    ) -> Union[bool_scalars, pdarray]:
         """
         Return True iff the array is monotonically non-decreasing.
 
@@ -1345,32 +1377,48 @@ class pdarray:
         RuntimeError
             Raised if there's a server-side error thrown
         """
-        return is_sorted(self)
+        return is_sorted(self, axis=axis, keepdims=keepdims)  # noqa: F821
 
-    def sum(self) -> Union[numeric_and_bool_scalars, pdarray]:
+    def sum(
+        self,
+        axis: Optional[Union[int, Tuple[int, ...]]] = None,
+        keepdims: bool = False,
+    ) -> Union[numpy_scalars, pdarray]:
         """
         Return the sum of all elements in the array.
         """
-        return sum(self)
+        return sum(self, axis=axis, keepdims=keepdims)
 
-    def prod(self) -> Union[np.float64, pdarray]:
+    def prod(
+        self,
+        axis: Optional[Union[int, Tuple[int, ...]]] = None,
+        keepdims: bool = False,
+    ) -> Union[numpy_scalars, pdarray]:
         """
         Return the product of all elements in the array. Return value is
         always a np.float64 or np.int64.
         """
-        return prod(self)
+        return prod(self, axis=axis, keepdims=keepdims)  # noqa: F821
 
-    def min(self) -> Union[numpy_scalars, pdarray]:
+    def min(
+        self,
+        axis: Optional[Union[int, Tuple[int, ...]]] = None,
+        keepdims: bool = False,
+    ) -> Union[numpy_scalars, pdarray]:
         """
         Return the minimum value of the array.
         """
-        return min(self)
+        return min(self, axis=axis, keepdims=keepdims)
 
-    def max(self) -> Union[numpy_scalars, pdarray]:
+    def max(
+        self,
+        axis: Optional[Union[int, Tuple[int, ...]]] = None,
+        keepdims: bool = False,
+    ) -> Union[numpy_scalars, pdarray]:
         """
         Return the maximum value of the array.
         """
-        return max(self)
+        return max(self, axis=axis, keepdims=keepdims)
 
     def argmin(self) -> Union[np.int64, np.uint64]:
         """
@@ -2622,20 +2670,40 @@ def clear() -> None:
     generic_msg(cmd="clear")
 
 
-@typechecked
-def any(pda: pdarray) -> np.bool_:
-    """
-    Return True iff any element of the array evaluates to True.
+def _make_reduction_func(
+    op,
+    function_descriptor="Return reduction of a pdarray by an operation along an axis.",
+    return_descriptor="",
+    return_dtype="numpy_scalars",
+):
+    if op not in SUPPORTED_REDUCTION_OPS:
+        raise ValueError(f"value {op} not supported by _reduce_by_op.")
+
+    @typechecked
+    def op_func(
+        pda: pdarray,
+        axis: Optional[Union[int, Tuple[int, ...]]] = None,
+        keepdims: bool = False,
+    ) -> Union[numpy_scalars, pdarray]:
+        return _common_reduction(op, pda, axis, keepdims=keepdims)
+
+    op_func.__doc__ = f"""
+    {function_descriptor}
 
     Parameters
     ----------
     pda : pdarray
         The pdarray instance to be evaluated
+    axis : int or Tuple[int, ...], optional
+        The axis or axes along which to compute the sum. If None, the sum of the entire array is
+        computed (returning a scalar).
+    keepdims : bool, optional
+        Whether to keep the singleton dimension(s) along `axis` in the result.
 
     Returns
     -------
-    bool
-        Indicates if 1..n pdarray elements evaluate to True
+    pdarray or {return_dtype}
+        {return_descriptor}
 
     Raises
     ------
@@ -2643,66 +2711,9 @@ def any(pda: pdarray) -> np.bool_:
         Raised if pda is not a pdarray instance
     RuntimeError
         Raised if there's a server-side error thrown
-    """
-    return parse_single_value(
-        generic_msg(cmd=f"reduce->bool{pda.ndim}D", args={"op": "any", "x": pda, "nAxes": 0, "axis": []})
-    )
+     """
 
-
-@typechecked
-def all(pda: pdarray) -> np.bool_:
-    """
-    Return True iff all elements of the array evaluate to True.
-
-    Parameters
-    ----------
-    pda : pdarray
-        The pdarray instance to be evaluated
-
-    Returns
-    -------
-    bool
-        Indicates if all pdarray elements evaluate to True
-
-    Raises
-    ------
-    TypeError
-        Raised if pda is not a pdarray instance
-    RuntimeError
-        Raised if there's a server-side error thrown
-    """
-    return parse_single_value(
-        generic_msg(cmd=f"reduce->bool{pda.ndim}D", args={"op": "all", "x": pda, "nAxes": 0, "axis": []})
-    )
-
-
-@typechecked
-def is_sorted(pda: pdarray) -> np.bool_:
-    """
-    Return True iff the array is monotonically non-decreasing.
-
-    Parameters
-    ----------
-    pda : pdarray
-        The pdarray instance to be evaluated
-
-    Returns
-    -------
-    bool
-        Indicates if the array is monotonically non-decreasing
-
-    Raises
-    ------
-    TypeError
-        Raised if pda is not a pdarray instance
-    RuntimeError
-        Raised if there's a server-side error thrown
-    """
-    return parse_single_value(
-        generic_msg(
-            cmd=f"reduce->bool{pda.ndim}D", args={"op": "is_sorted", "x": pda, "nAxes": 0, "axis": []}
-        )
-    )
+    return op_func
 
 
 # check whether a reduction of the given axes on an 'ndim' dimensional array
@@ -2723,8 +2734,45 @@ def _reduces_to_single_value(axis, ndim) -> bool:
 
 
 # helper function for sum, min, max, prod
-def _comon_reduction(pda: pdarray, axis: Optional[Union[int, Tuple[int, ...]]], kind: str):
-    if kind not in ["sum", "min", "max", "prod"]:
+
+
+@typechecked
+def _common_reduction(
+    kind: str,
+    pda: pdarray,
+    axis: Optional[Union[int, Tuple[int, ...], None]] = None,
+    keepdims: bool = False,
+) -> Union[numpy_scalars, pdarray]:
+    """
+    Return reduction of a pdarray by an operation along an axis.
+
+    Parameters
+    ----------
+    kind : str
+        The name of the reduction operation.  Must be a member of SUPPORTED_REDUCTION_OPS.
+    pda : pdarray
+        The pdarray instance to be evaluated
+    axis : int or Tuple[int, ...], optional
+        The axis or axes along which to compute the sum. If None, the sum of the entire array is
+        computed (returning a scalar).
+    keepdims : bool, optional
+        Whether to keep the singleton dimension(s) along `axis` in the result.
+    Returns
+    -------
+    bool
+
+    Raises
+    ------
+    TypeError
+        Raised if pda is not a pdarray instance
+    RuntimeError
+        Raised if there's a server-side error thrown
+    ValueError
+        Raised op is not a supported reduction operation.
+    """
+    from arkouda.numpy import squeeze
+
+    if kind not in SUPPORTED_REDUCTION_OPS:
         raise ValueError(f"Unsupported reduction type: {kind}")
 
     axis_ = (
@@ -2750,49 +2798,84 @@ def _comon_reduction(pda: pdarray, axis: Optional[Union[int, Tuple[int, ...]]], 
             )
         )
     else:
-        return create_pdarray(
+        result = create_pdarray(
             generic_msg(
                 cmd=f"{kind}<{pda.dtype.name},{pda.ndim}>",
                 args={"x": pda, "axis": axis_, "skipNan": False},
             )
         )
+        if keepdims or axis is None or pda.ndim == 1:
+            return result
+        else:
+            return squeeze(result, axis)
 
 
-@typechecked
-def sum(
-    pda: pdarray, axis: Optional[Union[int, Tuple[int, ...]]] = None
-) -> Union[numeric_and_bool_scalars, pdarray]:
-    """
-    Return the sum of all elements in the array.
+globals()["any"] = _make_reduction_func(
+    "any",
+    function_descriptor="Return True iff any element of the array evaluates to True.",
+    return_descriptor="Indicates if any pdarray element evaluates to True.",
+    return_dtype="bool",
+)
 
-    Parameters
-    ----------
-    pda : pdarray
-        Values for which to calculate the sum
-    axis : int or Tuple[int, ...], optional
-        The axis or axes along which to compute the sum. If None, the sum of the entire array is
-        computed (returning a scalar).
+globals()["all"] = _make_reduction_func(
+    "all",
+    function_descriptor="Return True iff all elements of the array evaluate to True.",
+    return_descriptor="Indicates if all pdarray elements evaluate to True.",
+    return_dtype="bool",
+)
 
-    Returns
-    -------
-    np.float64
-        The sum of all elements in the array
+globals()["is_sorted"] = _make_reduction_func(
+    "isSorted",
+    function_descriptor="Return True iff the array is monotonically non-decreasing.",
+    return_descriptor="Indicates if the array is monotonically non-decreasing.",
+    return_dtype="bool",
+)
 
-    Raises
-    ------
-    TypeError
-        Raised if pda is not a pdarray instance
-    RuntimeError
-        Raised if there's a server-side error thrown
-    """
-    return _comon_reduction(pda, axis, "sum")
+
+globals()["is_locally_sorted"] = _make_reduction_func(
+    "isSortedLocally",
+    function_descriptor="Return True iff the array is monotonically non-decreasing "
+    "on each locale where the data is stored.",
+    return_descriptor="Indicates if the array is monotonically non-decreasing on each locale.",
+    return_dtype="bool",
+)
+
+globals()["sum"] = _make_reduction_func(
+    "sum",
+    function_descriptor="Return the sum of all elements in the array.",
+    return_descriptor="The sum of all elements in the array.",
+    return_dtype="float64",
+)
+
+globals()["prod"] = _make_reduction_func(
+    "prod",
+    function_descriptor="Return the product of all elements in the array. "
+    "Return value is always a np.float64 or np.int64",
+    return_descriptor="The product calculated from the pda.",
+    return_dtype="numpy_scalars",
+)
+
+globals()["min"] = _make_reduction_func(
+    "min",
+    function_descriptor="Return the minimum value of the array.",
+    return_descriptor="The min calculated from the pda.",
+    return_dtype="numpy_scalars",
+)
+
+
+globals()["max"] = _make_reduction_func(
+    "max",
+    function_descriptor="Return the maximum value of the array.",
+    return_descriptor="The max calculated from the pda.",
+    return_dtype="numpy_scalars",
+)
 
 
 @typechecked
 def dot(
     pda1: Union[np.int64, np.float64, np.uint64, pdarray],
     pda2: Union[np.int64, np.float64, np.uint64, pdarray],
-) -> Union[np.int64, np.float64, np.uint64, pdarray]:
+) -> Union[numpy_scalars, pdarray]:
     """
     Returns the sum of the elementwise product of two arrays of the same size (the dot product) or
     the product of a singleton element and an array.
@@ -2837,94 +2920,6 @@ def dot(
             return sum(pda1 * pda2)
     else:
         return pda1 * pda2
-
-
-@typechecked
-def prod(pda: pdarray, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> Union[np.float64, pdarray]:
-    """
-    Return the product of all elements in the array. Return value is
-    always a np.float64 or np.int64
-
-    Parameters
-    ----------
-    pda : pdarray
-        Values for which to calculate the product
-    axis : int or Tuple[int, ...], optional
-        The axis or axes along which to compute the sum. If None, the sum of the entire array is
-        computed (returning a scalar).
-
-    Returns
-    -------
-    numpy_scalars
-        The product calculated from the pda
-
-    Raises
-    ------
-    TypeError
-        Raised if pda is not a pdarray instance
-    RuntimeError
-        Raised if there's a server-side error thrown
-    """
-    return _comon_reduction(pda, axis, "prod")
-
-
-def min(
-    pda: pdarray, axis: Optional[Union[int, Tuple[int, ...]]] = None
-) -> Union[numpy_scalars, pdarray]:
-    """
-    Return the minimum value of the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-        Values for which to calculate the min
-    axis : int or Tuple[int, ...], optional
-        The axis or axes along which to compute the sum. If None, the sum of the entire array is
-        computed (returning a scalar).
-
-    Returns
-    -------
-    numpy_scalars
-        The min calculated from the pda
-
-    Raises
-    ------
-    TypeError
-        Raised if pda is not a pdarray instance
-    RuntimeError
-        Raised if there's a server-side error thrown
-    """
-    return _comon_reduction(pda, axis, "min")
-
-
-@typechecked
-def max(
-    pda: pdarray, axis: Optional[Union[int, Tuple[int, ...]]] = None
-) -> Union[numpy_scalars, pdarray]:
-    """
-    Return the maximum value of the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-        Values for which to calculate the max
-    axis : int or Tuple[int, ...], optional
-        The axis or axes along which to compute the sum. If None, the sum of the entire array is
-        computed (returning a scalar).
-
-    Returns
-    -------
-    numpy_scalars:
-        The max calculated from the pda
-
-    Raises
-    ------
-    TypeError
-        Raised if pda is not a pdarray instance
-    RuntimeError
-        Raised if there's a server-side error thrown
-    """
-    return _comon_reduction(pda, axis, "max")
 
 
 @typechecked
@@ -3203,7 +3198,7 @@ def corr(x: pdarray, y: pdarray) -> np.float64:
 def divmod(
     x: Union[numeric_scalars, pdarray],
     y: Union[numeric_scalars, pdarray],
-    where: Union[bool, pdarray] = True,
+    where: Union[bool_scalars, pdarray] = True,
 ) -> Tuple[pdarray, pdarray]:
     """
     Parameters
@@ -3792,7 +3787,9 @@ def rotr(x, rot) -> pdarray:
 
 
 @typechecked
-def power(pda: pdarray, pwr: Union[int, float, pdarray], where: Union[bool, pdarray] = True) -> pdarray:
+def power(
+    pda: pdarray, pwr: Union[int, float, pdarray], where: Union[bool_scalars, pdarray] = True
+) -> pdarray:
     """
     Raises an array to a power. If where is given, the operation will only take place in the positions
     where the where condition is True.
@@ -3840,7 +3837,7 @@ def power(pda: pdarray, pwr: Union[int, float, pdarray], where: Union[bool, pdar
 
 
 @typechecked
-def sqrt(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
+def sqrt(pda: pdarray, where: Union[bool_scalars, pdarray] = True) -> pdarray:
     """
     Takes the square root of array. If where is given, the operation will only take place in
     the positions where the where condition is True.

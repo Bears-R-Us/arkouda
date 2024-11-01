@@ -8,7 +8,7 @@ from context import arkouda as ak
 from numpy import dtype as npdtype
 
 from arkouda import io_util
-from arkouda.dtypes import dtype
+from arkouda.numpy.dtypes import dtype
 from arkouda.index import Index
 from arkouda.pdarrayclass import pdarray
 
@@ -269,7 +269,7 @@ class IndexTest(ArkoudaTest):
             m2.get_level_values(-1 * m2.nlevels)
 
     def test_memory_usage(self):
-        from arkouda.dtypes import BigInt
+        from arkouda.numpy.dtypes import BigInt
         from arkouda.index import Index, MultiIndex
 
         idx = Index(ak.cast(ak.array([1, 2, 3]), dt="bigint"))

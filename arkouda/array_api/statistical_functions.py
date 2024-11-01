@@ -50,11 +50,7 @@ def max(
 
     from arkouda import max as ak_max
 
-    arr = Array._new(ak_max(x._array, axis=axis))
-    if keepdims or axis is None or x.ndim == 1:
-        return arr
-    else:
-        return squeeze(arr, axis)
+    return Array._new(ak_max(x._array, axis=axis, keepdims=keepdims))
 
 
 # this is a temporary fix to get mean working with XArray
@@ -138,11 +134,7 @@ def min(
 
     from arkouda import min as ak_min
 
-    arr = Array._new(ak_min(x._array, axis=axis))
-    if keepdims or axis is None or x.ndim == 1:
-        return arr
-    else:
-        return squeeze(arr, axis)
+    return Array._new(ak_min(x._array, axis=axis, keepdims=keepdims))
 
 
 def prod(
@@ -180,11 +172,7 @@ def prod(
 
     from arkouda import prod as ak_prod
 
-    arr = Array._new(ak_prod(x_op, axis=axis))
-    if keepdims or axis is None or x.ndim == 1:
-        return arr
-    else:
-        return squeeze(arr, axis)
+    return Array._new(ak_prod(x_op, axis=axis, keepdims=keepdims))
 
 
 # Not working with XArray yet, pending a fix for:
@@ -277,11 +265,7 @@ def sum(
 
     from arkouda import sum as ak_sum
 
-    arr = Array._new(ak_sum(x_op, axis=axis))
-    if keepdims or axis is None or x.ndim == 1:
-        return arr
-    else:
-        return squeeze(arr, axis)
+    return Array._new(ak_sum(x_op, axis=axis, keepdims=keepdims))
 
 
 # Not working with XArray yet, pending a fix for:
