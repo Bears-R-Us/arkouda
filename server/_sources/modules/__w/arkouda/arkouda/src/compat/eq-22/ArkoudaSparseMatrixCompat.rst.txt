@@ -17,3 +17,7 @@ or
 
    import ArkoudaSparseMatrixCompat;
 
+.. function:: proc getSparseDom(param layout: Layout)
+
+.. function:: proc getSparseDomType(param layout: Layout) type
+
