@@ -448,6 +448,44 @@ module RandMsg
         else if kArg == 0.0 {
             return 0.0;
         }
+        else if kArg < 1 {
+            var U = rs.next(0, 1);
+            // random_standard_exponential>
+            var V = random_standard_exponential(1, rs);
+            if (U <= 1.0 - kArg) {
+                var X = pow(U, 1.0 / kArg);
+                if (X <= V) {
+                    return X;
+                }
+            }
+            else {
+                var Y = -log((1.0 - U) / kArg);
+                X = pow(1.0 - kArg + kArg * Y, 1.0 / kArg);
+                if (X <= (V + Y)) {
+                    return X;
+                }
+            }
+        } 
+        else {
+            var b = kArg - 1/3;
+            var c = 1/sqrt(9 * b);
+            var count = 0;
+            while count < 10000 {
+                while V <= 0 {
+                    X = random_standard_normal(1, rs);
+                    V = 1.0 + c * X;
+                }
+                V = V * V * V;
+                var U = rs.next(0, 1);
+                if U < 1.0 - 0.0331 * (X * X) * (X * X) {
+                    return b * V;
+                }
+                if log(U) < 0.5 * X * X + b * (1.0 - V + log(V)) {
+                    return b * V;
+                }
+                count+= 1;
+            }
+        }
     }
 
     @arkouda.instantiateAndRegister
@@ -471,8 +509,8 @@ module RandMsg
 
         var gammaArr = makeDistArray(size, real);
         const kArg = new scalarOrArray(kStr, !isSingleK, st);
-        uniformStreamPerElem(gammaArr, rng, GenerationFunction.GammaGenerator, hasSeed, mu=mu, scale=scale);
-        return st.insert(createSymEntry(logisticArr));
+        uniformStreamPerElem(gammaArr, rng, GenerationFunction.GammaGenerator, hasSeed, kArg=kArg);
+        return st.insert(createSymEntry(gammaArr));
     }
 
     proc segmentedSampleMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
