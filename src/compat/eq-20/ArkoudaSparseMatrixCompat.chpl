@@ -1,5 +1,15 @@
 module ArkoudaSparseMatrixCompat {
   use SparseBlockDist;
+  use LayoutCS;
+  import SparseMatrix.SpsMatUtil.Layout;
+
+  proc getSparseDom(param layout: Layout) {
+    return new dmap(new CS(compressRows=(layout==Layout.CSR)));
+  }
+
+  proc getSparseDomType(param layout: Layout) type {
+    return CS(compressRows=(layout==Layout.CSR));
+  }
 
   proc SparseBlockDom.setLocalSubdomain(locIndices, loc: locale = here) {
     if loc != here then
