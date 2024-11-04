@@ -532,7 +532,7 @@ class Generator:
 
         # rename shape to avoid conflict, it's also referred to as k
         # in the numpy doc string
-        is_single_k, k_arg = float_array_or_scalar_helper("logistic", "shape", shape, size)
+        is_single_k, k_arg = float_array_or_scalar_helper("gamma", "shape", shape, size)
 
         shape, ndim, full_size = _infer_shape_from_size(size)
         if full_size < 0:
