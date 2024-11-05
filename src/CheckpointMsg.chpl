@@ -40,7 +40,7 @@ module CheckpointMsg {
       var e = toSymEntry(toGenSymEntry(entry), int);
       try! saveArr(cpPath, name, e);
     }
-    return new MsgTuple(cpName, MsgType.NORMAL);
+    return Msg.send(cpName);
   }
 
   proc checkpointLoadMsg(cmd: string, msgArgs: borrowed MessageArgs,
@@ -49,15 +49,13 @@ module CheckpointMsg {
     const nameArg = msgArgs.getValueOf("name");
 
     if !exists(basePath) {
-      var errorMsg = "The base save directory not found: " + basePath;
-      return new MsgTuple(errorMsg, MsgType.ERROR);
+      return Msg.error("The base save directory not found: " + basePath);
     }
 
     const cpPath = Path.joinPath(basePath, nameArg);
 
     if !exists(cpPath) {
-      var errorMsg = "The Arkouda save directory not found: " + cpPath;
-      return new MsgTuple(errorMsg, MsgType.ERROR);
+      return Msg.error("The Arkouda save directory not found: " + cpPath);
     }
 
     var loadedId: string;
@@ -84,8 +82,7 @@ module CheckpointMsg {
     }
     var l = new list(string);
     use GenSymIO;
-    var repMsg = buildReadAllMsgJson(rnames, false, 0, l, st);
-    return new MsgTuple(repMsg, MsgType.NORMAL);
+    return Msg.send(buildReadAllMsgJson(rnames, false, 0, l, st));
   }
 
   private proc saveServerMetadata(path, st: borrowed SymTab) throws {
