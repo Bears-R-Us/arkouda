@@ -576,8 +576,6 @@ module MultiTypeSymEntry
     }
 
     import SparseMatrix.Layout;
-    use LayoutCS;
-
 
     proc layoutToStr(param l) param {
         select l {
