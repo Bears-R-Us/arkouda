@@ -454,14 +454,16 @@ module RandMsg
                 var U = rs.next(0, 1);
                 var V = standardExponentialInvCDF(1, rs);
                 if (U <= 1.0 - kArg) {
-                    var X = pow(U, 1.0 / kArg);
+                    //can these be more effiection 
+                    var X = U ** (1.0 / kArg);
                     if (X <= V) {
                         return X;
                     }
                 }
                 else {
                     var Y = -log((1.0 - U) / kArg);
-                    var X = pow(1.0 - kArg + kArg * Y, 1.0 / kArg);
+                    //can these be more effiection 
+                    var X = (1.0 - kArg + kArg * Y) ** (1.0 / kArg);
                     if (X <= (V + Y)) {
                         return X;
                     }
