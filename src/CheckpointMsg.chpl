@@ -15,50 +15,73 @@ module CheckpointMsg {
   config param mdNameMaxLength = 256;
   config param serverMetadataName = "server."+metadataExt;
 
+
   proc checkpointMsg(cmd: string, msgArgs: borrowed MessageArgs,
                      st: borrowed SymTab): MsgTuple throws {
-    var path = msgArgs.getValueOf("path");
+    var basePath = msgArgs.getValueOf("path");
+    const nameArg = msgArgs.getValueOf("name");
 
-    writeln("in checkpoint msg");
+    if !exists(basePath) then
+      mkdir(basePath);
 
-    if !exists(path) then
-      mkdir(path);
+    const cpName = if nameArg.isEmpty() then st.serverid else nameArg;
+    const cpPath = Path.joinPath(basePath, cpName);
 
-    saveServerMetadata(path, st);
+    if !exists(cpPath) then
+      mkdir(cpPath);
+    else if isDir(cpPath) then
+      rmTree(cpPath);
+    else
+      remove(cpPath); // warn?
+
+    saveServerMetadata(cpPath, st);
 
     for (name, entry) in zip(st.tab.keys(), st.tab.values()) {
       var e = toSymEntry(toGenSymEntry(entry), int);
-      try! saveArr(path, name, e);
+      try! saveArr(cpPath, name, e);
     }
-    return new MsgTuple("Checkpointed yo", MsgType.NORMAL);
+    return new MsgTuple(cpName, MsgType.NORMAL);
   }
 
   proc checkpointLoadMsg(cmd: string, msgArgs: borrowed MessageArgs,
                          st: borrowed SymTab): MsgTuple throws {
-    var path = msgArgs.getValueOf("path");
-    if !exists(path) {
-      var errorMsg = "Directory not found: " + path;
+    var basePath = msgArgs.getValueOf("path");
+    const nameArg = msgArgs.getValueOf("name");
+
+    if !exists(basePath) {
+      var errorMsg = "The base save directory not found: " + basePath;
       return new MsgTuple(errorMsg, MsgType.ERROR);
     }
 
-    var loadedId = loadServerMetadata(path);
+    const cpPath = Path.joinPath(basePath, nameArg);
+
+    if !exists(cpPath) {
+      var errorMsg = "The Arkouda save directory not found: " + cpPath;
+      return new MsgTuple(errorMsg, MsgType.ERROR);
+    }
+
+    var loadedId: string;
+    try {
+      loadedId = loadServerMetadata(cpPath);
+    }
+    catch e: FileNotFoundError {
+      return Msg.error("Can't find the server metadata in the saved session.");
+    }
 
     var rnames: list((string, ObjType, string));
 
-    for mdName in glob(path+"/*"+metadataExt) {
-      if mdName == Path.joinPath(path, serverMetadataName) then continue;
-      var (name, entry) = loadArr(path, mdName, loadedId);
-      writeln("name before replace ", name);
-      /*name = name.replace(loadedId, st.serverid);*/
-      writeln("name after replace ", name);
+    // iterate over metadata while loading individual data for each metadata
+    for mdName in glob(cpPath+"/*"+metadataExt) {
+      // skip the server metadata
+      if mdName == Path.joinPath(cpPath, serverMetadataName) then continue;
+
+      // load the array (data and metadata)
+      var (name, entry) = loadArr(cpPath, mdName, loadedId);
 
       st.addEntry(name, entry);
 
-      writeln("added entry ", name);
       rnames.pushBack((name, ObjType.PDARRAY, name));
     }
-    writeln("finished load loop ");
-    writeln(rnames);
     var l = new list(string);
     use GenSymIO;
     var repMsg = buildReadAllMsgJson(rnames, false, 0, l, st);
@@ -154,4 +177,15 @@ module CheckpointMsg {
   use CommandMap;
   registerFunction("checkpoint", checkpointMsg, getModuleName());
   registerFunction("loadcheckpoint", checkpointLoadMsg, getModuleName());
+
+  module Msg {
+    use Message;
+    inline proc error(msg: string) {
+      return new MsgTuple(msg, MsgType.ERROR);
+    }
+
+    inline proc send(msg) {
+      return new MsgTuple(msg, MsgType.NORMAL);
+    }
+  }
 }
