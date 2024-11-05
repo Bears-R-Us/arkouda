@@ -1,6 +1,7 @@
 module ArkoudaSparseMatrixCompat {
     use CompressedSparseLayout;
     import SparseMatrix.SpsMatUtil.Layout;
+    use BlockDist;
 
     proc getSparseDom(param layout: Layout) {
         select layout {
@@ -9,7 +10,16 @@ module ArkoudaSparseMatrixCompat {
         }
     }
 
-    proc getSparseDomType(param layout: Layout) type {
-        if layout == Layout.CSR then return csrLayout; else return cscLayout;
+   // see: https://github.com/chapel-lang/chapel/issues/26209
+    proc getDenseDom(dom, localeGrid, param layout: Layout) {
+        if layout == Layout.CSR {
+            return dom dmapped new blockDist(boundingBox=dom,
+                                             targetLocales=localeGrid,
+                                             sparseLayoutType=csrLayout);
+        } else {
+            return dom dmapped new blockDist(boundingBox=dom,
+                                             targetLocales=localeGrid,
+                                             sparseLayoutType=cscLayout);
+        }
     }
 }

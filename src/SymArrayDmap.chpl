@@ -142,10 +142,7 @@ module SymArrayDmap {
                 grid = {0..<locsPerDim, 0..<locsPerDim},
                 localeGrid = reshape(Locales[0..<grid.size], grid);
 
-          type layoutType = getSparseDomType(matLayout);
-          const DenseBlkDom = dom dmapped new blockDist(boundingBox=dom,
-                                                        targetLocales=localeGrid,
-                                                        sparseLayoutType=layoutType);
+          const DenseBlkDom = getDenseDom(dom, localeGrid, matLayout);
 
           var SD: sparse subdomain(DenseBlkDom);
           return (SD, DenseBlkDom);
