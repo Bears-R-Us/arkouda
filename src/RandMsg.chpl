@@ -450,8 +450,7 @@ module RandMsg
         }
         else if kArg < 1 {
             var U = rs.next(0, 1);
-            // random_standard_exponential>
-            var V = random_standard_exponential(1, rs);
+            var V = standardExponentialInvCDF(1, rs);
             if (U <= 1.0 - kArg) {
                 var X = pow(U, 1.0 / kArg);
                 if (X <= V) {
