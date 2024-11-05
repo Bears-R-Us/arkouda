@@ -449,25 +449,31 @@ module RandMsg
             return 0.0;
         }
         else if kArg < 1 {
-            var U = rs.next(0, 1);
-            var V = standardExponentialInvCDF(1, rs);
-            if (U <= 1.0 - kArg) {
-                var X = pow(U, 1.0 / kArg);
-                if (X <= V) {
-                    return X;
+            var count = 0;
+            while count < 10000 {
+                var U = rs.next(0, 1);
+                var V = standardExponentialInvCDF(1, rs);
+                if (U <= 1.0 - kArg) {
+                    var X = pow(U, 1.0 / kArg);
+                    if (X <= V) {
+                        return X;
+                    }
                 }
-            }
-            else {
-                var Y = -log((1.0 - U) / kArg);
-                X = pow(1.0 - kArg + kArg * Y, 1.0 / kArg);
-                if (X <= (V + Y)) {
-                    return X;
+                else {
+                    var Y = -log((1.0 - U) / kArg);
+                    var X = pow(1.0 - kArg + kArg * Y, 1.0 / kArg);
+                    if (X <= (V + Y)) {
+                        return X;
+                    }
                 }
+                count+= 1;
             }
         } 
         else {
             var b = kArg - 1/3;
             var c = 1/sqrt(9 * b);
+            var X;
+            var V;
             var count = 0;
             while count < 10000 {
                 while V <= 0 {
@@ -505,8 +511,8 @@ module RandMsg
         var generatorEntry = st[name]: borrowed GeneratorSymEntry(real);
         ref rng = generatorEntry.generator;
         if state != 1 then rng.skipTo(state-1);
-
-        var gammaArr = makeDistArray(size, real);
+        //state used to be shape
+        var gammaArr = makeDistArray((...shape), real);
         const kArg = new scalarOrArray(kStr, !isSingleK, st);
         uniformStreamPerElem(gammaArr, rng, GenerationFunction.GammaGenerator, hasSeed, kArg=kArg);
         return st.insert(createSymEntry(gammaArr));
