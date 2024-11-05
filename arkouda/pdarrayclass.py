@@ -12,7 +12,12 @@ from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.infoclass import information, pretty_print_information
 from arkouda.logger import getArkoudaLogger
-from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, DTypes, bigint
+from arkouda.numpy.dtypes import (
+    ARKOUDA_SUPPORTED_INTS,
+    NUMBER_FORMAT_STRINGS,
+    DTypes,
+    bigint,
+)
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import bool_scalars, dtype
 from arkouda.numpy.dtypes import float64 as akfloat64
@@ -30,10 +35,12 @@ from arkouda.numpy.dtypes import str_ as akstr_
 from arkouda.numpy.dtypes import uint64 as akuint64
 
 if TYPE_CHECKING:
-
+    #   These are dummy functions that are used only for type checking.
+    #   They communicate to mypy the expected input and output types,
+    #   in cases where the function is generated at runtime.
     def numeric_reduce(
-        pda,
-        axis: Optional[Union[int, Tuple[int, ...]]] = None,
+        pda: pdarray,
+        axis: Optional[Union[int_scalars, Tuple[int_scalars, ...]]] = None,
         keepdims: bool = False,
     ) -> Union[numpy_scalars, pdarray]:
         pass
@@ -44,7 +51,7 @@ if TYPE_CHECKING:
     min = numeric_reduce
 
     def boolean_reduce(
-        pda, axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False
+        pda, axis: Optional[Union[int_scalars, Tuple[int_scalars, ...]]] = None, keepdims: bool = False
     ) -> Union[bool_scalars, pdarray]:
         pass
 
@@ -52,6 +59,14 @@ if TYPE_CHECKING:
     is_locally_sorted = boolean_reduce
     all = boolean_reduce
     any = boolean_reduce
+
+    def index_reduce(
+        pda: pdarray, axis: Optional[Union[int_scalars, None]] = None, keepdims: bool = False
+    ) -> Union[akint64, akuint64, pdarray]:
+        pass
+
+    argmax = index_reduce
+    argmin = index_reduce
 
 
 __all__ = [
@@ -96,6 +111,8 @@ __all__ = [
 logger = getArkoudaLogger(name="pdarrayclass")
 
 SUPPORTED_REDUCTION_OPS = ["any", "all", "isSorted", "isSortedLocally", "max", "min", "sum", "prod"]
+
+SUPPORTED_INDEX_REDUCTION_OPS = ["argmin", "argmax"]
 
 
 @typechecked
@@ -1387,6 +1404,7 @@ class pdarray:
         """
         Return the sum of all elements in the array.
         """
+        #   Function is generated at runtime with _make_reduction_func.
         return sum(self, axis=axis, keepdims=keepdims)
 
     def prod(
@@ -1398,6 +1416,7 @@ class pdarray:
         Return the product of all elements in the array. Return value is
         always a np.float64 or np.int64.
         """
+        #   Function is generated at runtime with _make_reduction_func.
         return prod(self, axis=axis, keepdims=keepdims)  # noqa: F821
 
     def min(
@@ -1408,6 +1427,7 @@ class pdarray:
         """
         Return the minimum value of the array.
         """
+        #   Function is generated at runtime with _make_reduction_func.
         return min(self, axis=axis, keepdims=keepdims)
 
     def max(
@@ -1418,19 +1438,26 @@ class pdarray:
         """
         Return the maximum value of the array.
         """
+        #   Function is generated at runtime with _make_reduction_func.
         return max(self, axis=axis, keepdims=keepdims)
 
-    def argmin(self) -> Union[np.int64, np.uint64]:
+    def argmin(
+        self, axis: Optional[Union[int, None]] = None, keepdims: bool = False
+    ) -> Union[np.int64, np.uint64, pdarray]:
         """
         Return the index of the first occurrence of the array min value
         """
-        return argmin(self)
+        #   Function is generated at runtime with _make_index_reduction_func.
+        return argmin(self, axis=axis, keepdims=keepdims)
 
-    def argmax(self) -> Union[np.int64, np.uint64]:
+    def argmax(
+        self, axis: Optional[Union[int, None]] = None, keepdims: bool = False
+    ) -> Union[np.int64, np.uint64, pdarray]:
         """
         Return the index of the first occurrence of the array max value.
         """
-        return argmax(self)
+        #   Function is generated at runtime with _make_index_reduction_func.
+        return argmax(self, axis=axis, keepdims=keepdims)
 
     def mean(self) -> np.float64:
         """
@@ -2677,12 +2704,12 @@ def _make_reduction_func(
     return_dtype="numpy_scalars",
 ):
     if op not in SUPPORTED_REDUCTION_OPS:
-        raise ValueError(f"value {op} not supported by _reduce_by_op.")
+        raise ValueError(f"value {op} not supported by _make_reduction_func.")
 
     @typechecked
     def op_func(
         pda: pdarray,
-        axis: Optional[Union[int, Tuple[int, ...]]] = None,
+        axis: Optional[Union[int_scalars, Tuple[int_scalars, ...]]] = None,
         keepdims: bool = False,
     ) -> Union[numpy_scalars, pdarray]:
         return _common_reduction(op, pda, axis, keepdims=keepdims)
@@ -2693,9 +2720,9 @@ def _make_reduction_func(
     Parameters
     ----------
     pda : pdarray
-        The pdarray instance to be evaluated
+        The pdarray instance to be evaluated.
     axis : int or Tuple[int, ...], optional
-        The axis or axes along which to compute the sum. If None, the sum of the entire array is
+        The axis or axes along which to compute the sum. If None, the reduction of the entire array is
         computed (returning a scalar).
     keepdims : bool, optional
         Whether to keep the singleton dimension(s) along `axis` in the result.
@@ -2711,6 +2738,54 @@ def _make_reduction_func(
         Raised if pda is not a pdarray instance
     RuntimeError
         Raised if there's a server-side error thrown
+     """
+
+    return op_func
+
+
+def _make_index_reduction_func(
+    op,
+    function_descriptor="Return index reduction of a pdarray by an operation along an axis.",
+    return_descriptor="",
+    return_dtype="int64, uint64",
+):
+    if op not in SUPPORTED_INDEX_REDUCTION_OPS:
+        raise ValueError(f"value {op} not supported by _make_index_reduction_func.")
+
+    @typechecked
+    def op_func(
+        pda: pdarray,
+        axis: Optional[Union[int_scalars, None]] = None,
+        keepdims: bool = False,
+    ) -> Union[akuint64, akint64, pdarray]:
+        return _common_index_reduction(op, pda, axis, keepdims=keepdims)
+
+    op_func.__doc__ = f"""
+    {function_descriptor}
+
+    Parameters
+    ----------
+    pda : pdarray
+        The pdarray instance to be evaluated.
+    axis : int, optional
+        The axis along which to compute the index reduction.
+        If None, the reduction of the entire array is
+        computed (returning a scalar).
+    keepdims : bool, optional
+        Whether to keep the singleton dimension(s) along `axis` in the result.
+
+    Returns
+    -------
+    pdarray or {return_dtype}
+        {return_descriptor}
+
+    Raises
+    ------
+    TypeError
+        Raised if pda is not a pdarray instance.
+        Raised axis is not an int.
+    RuntimeError
+        Raised if there's a server-side error thrown.
      """
 
     return op_func
@@ -2738,7 +2813,7 @@ def _reduces_to_single_value(axis, ndim) -> bool:
 def _common_reduction(
     kind: str,
     pda: pdarray,
-    axis: Optional[Union[int, Tuple[int, ...], None]] = None,
+    axis: Optional[Union[int_scalars, Tuple[int_scalars, ...], None]] = None,
     keepdims: bool = False,
 ) -> Union[numpy_scalars, pdarray]:
     """
@@ -2749,22 +2824,22 @@ def _common_reduction(
     kind : str
         The name of the reduction operation.  Must be a member of SUPPORTED_REDUCTION_OPS.
     pda : pdarray
-        The pdarray instance to be evaluated
+        The pdarray instance to be evaluated.
     axis : int or Tuple[int, ...], optional
-        The axis or axes along which to compute the sum. If None, the sum of the entire array is
+        The axis or axes along which to compute the reduction. If None, the sum of the entire array is
         computed (returning a scalar).
     keepdims : bool, optional
         Whether to keep the singleton dimension(s) along `axis` in the result.
     Returns
     -------
-    bool
+    numpy_scalars, pdarray
 
     Raises
     ------
     TypeError
-        Raised if pda is not a pdarray instance
+        Raised if pda is not a pdarray instance.
     RuntimeError
-        Raised if there's a server-side error thrown
+        Raised if there's a server-side error thrown.
     ValueError
         Raised op is not a supported reduction operation.
     """
@@ -2780,7 +2855,7 @@ def _common_reduction(
             [
                 axis,
             ]
-            if isinstance(axis, int)
+            if isinstance(axis, ARKOUDA_SUPPORTED_INTS)
             else list(axis)
         )
     )
@@ -2806,6 +2881,64 @@ def _common_reduction(
             return result
         else:
             return squeeze(result, axis)
+
+
+# helper function for argmin, argmax
+@typechecked
+def _common_index_reduction(
+    kind: str,
+    pda: pdarray,
+    axis: Optional[Union[int_scalars, Tuple[int_scalars, ...], None]] = None,
+    keepdims: bool = False,
+) -> Union[akuint64, akint64, pdarray]:
+    """
+    Return reduction of a pdarray by an operation along an axis.
+
+    Parameters
+    ----------
+    kind : str
+        The name of the reduction operation.  Must be a member of SUPPORTED_INDEX_REDUCTION_OPS.
+    pda : pdarray
+        The pdarray instance to be evaluated.
+    axis : int or Tuple[int, ...], optional
+        The axis or axes along which to compute the reduction. If None, the sum of the entire array is
+        computed (returning a scalar).
+    keepdims : bool, optional
+        Whether to keep the singleton dimension(s) along `axis` in the result.
+    Returns
+    -------
+    int64
+
+    Raises
+    ------
+    TypeError
+        Raised if axis is not of type int.
+    """
+    if kind not in SUPPORTED_INDEX_REDUCTION_OPS:
+        raise ValueError(f"Unsupported reduction type: {kind}")
+
+    if pda.ndim == 1 or axis is None:
+        return parse_single_value(
+            generic_msg(
+                cmd=f"{kind}All<{pda.dtype.name},{pda.ndim}>",
+                args={"x": pda},
+            )
+        )
+    elif isinstance(axis, int):
+        result = create_pdarray(
+            generic_msg(
+                cmd=f"{kind}<{pda.dtype.name},{pda.ndim}>",
+                args={"x": pda, "axis": axis},
+            )
+        )
+        if keepdims is False:
+            from arkouda.numpy import squeeze
+
+            return squeeze(result, axis)
+        else:
+            return result
+    else:
+        raise TypeError("axis must by of type int.")
 
 
 globals()["any"] = _make_reduction_func(
@@ -2868,6 +3001,22 @@ globals()["max"] = _make_reduction_func(
     return_dtype="numpy_scalars",
 )
 
+globals()["argmin"] = _make_index_reduction_func(
+    "argmin",
+    function_descriptor="Return the argmin of the array along the specified axis.  "
+    "This is returned as the ordered index.",
+    return_descriptor="This argmin of the array.",
+    return_dtype="int64, uint64",
+)
+
+globals()["argmax"] = _make_index_reduction_func(
+    "argmax",
+    function_descriptor="Return the argmax of the array along the specified axis.  "
+    "This is returned as the ordered index.",
+    return_descriptor="This argmax of the array.",
+    return_dtype="int64, uint64",
+)
+
 
 @typechecked
 def dot(
@@ -2918,64 +3067,6 @@ def dot(
             return sum(pda1 * pda2)
     else:
         return pda1 * pda2
-
-
-@typechecked
-def argmin(pda: pdarray) -> Union[np.int64, np.uint64]:
-    """
-    Return the index of the first occurrence of the array min value.
-
-    Parameters
-    ----------
-    pda : pdarray
-        Values for which to calculate the argmin
-
-    Returns
-    -------
-    Union[np.int64, np.uint64]
-        The index of the argmin calculated from the pda
-
-    Raises
-    ------
-    TypeError
-        Raised if pda is not a pdarray instance
-    RuntimeError
-        Raised if there's a server-side error thrown
-    """
-    return parse_single_value(
-        generic_msg(
-            cmd=f"reduce->idx{pda.ndim}D", args={"op": "argmin", "x": pda, "hasAxis": False, "axis": 0}
-        )
-    )
-
-
-@typechecked
-def argmax(pda: pdarray) -> Union[np.int64, np.uint64]:
-    """
-    Return the index of the first occurrence of the array max value.
-
-    Parameters
-    ----------
-    pda : pdarray
-        Values for which to calculate the argmax
-
-    Returns
-    -------
-    Union[np.int64, np.uint64]
-        The index of the argmax calculated from the pda
-
-    Raises
-    ------
-    TypeError
-        Raised if pda is not a pdarray instance
-    RuntimeError
-        Raised if there's a server-side error thrown
-    """
-    return parse_single_value(
-        generic_msg(
-            cmd=f"reduce->idx{pda.ndim}D", args={"op": "argmax", "x": pda, "hasAxis": False, "axis": 0}
-        )
-    )
 
 
 @typechecked
