@@ -244,6 +244,7 @@ module EfuncMsg
     proc hash128 (cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int) : MsgTuple throws {
         return MsgTuple.error("hash128 does not support type %s".format(types2str(array_dtype)));
     }
+
 //  End of rewrite section -- delete this comment after all of EfuncMsg is rewritten.
 
     @arkouda.registerND

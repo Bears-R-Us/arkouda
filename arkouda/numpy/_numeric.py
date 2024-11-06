@@ -275,7 +275,7 @@ def ceil(pda: pdarray) -> pdarray:
     >>> ak.ceil(ak.linspace(1.1,5.5,5))
     array([2, 3, 4, 5, 6])
     """
-    _datatype_check (pda.dtype,[float],'ceil')
+    _datatype_check(pda.dtype, [float], 'ceil')
     repMsg = generic_msg(
         cmd=f"ceil<{pda.dtype},{pda.ndim}>",
         args={
@@ -309,7 +309,7 @@ def floor(pda: pdarray) -> pdarray:
     >>> ak.floor(ak.linspace(1.1,5.5,5))
     array([1, 2, 3, 4, 5])
     """
-    _datatype_check (pda.dtype,[float],'floor')
+    _datatype_check(pda.dtype, [float], 'floor')
     repMsg = generic_msg(
         cmd=f"floor<{pda.dtype},{pda.ndim}>",
         args={
@@ -343,7 +343,7 @@ def round(pda: pdarray) -> pdarray:
     >>> ak.round(ak.array([1.1, 2.5, 3.14159]))
     array([1, 3, 3])
     """
-    _datatype_check (pda.dtype,[float],'round')
+    _datatype_check(pda.dtype, [float], 'round')
     repMsg = generic_msg(
         cmd=f"round<{pda.dtype},{pda.ndim}>",
         args={
@@ -377,7 +377,7 @@ def trunc(pda: pdarray) -> pdarray:
     >>> ak.trunc(ak.array([1.1, 2.5, 3.14159]))
     array([1, 2, 3])
     """
-    _datatype_check (pda.dtype,[float],'trunc')
+    _datatype_check(pda.dtype, [float], 'trunc')
     repMsg = generic_msg(
         cmd=f"trunc<{pda.dtype},{pda.ndim}>",
         args={
@@ -1515,7 +1515,7 @@ def hash(
 def _hash_single(pda: pdarray, full: bool = True):
     if pda.dtype == bigint:
         return hash(pda.bigint_to_uint_arrays())
-    _datatype_check (pda.dtype,[float,int,ak_uint64],'hash')
+    _datatype_check (pda.dtype, [float, int, ak_uint64], 'hash')
     hname = "hash128" if full else "hash64"
     repMsg = type_cast(
         str,
