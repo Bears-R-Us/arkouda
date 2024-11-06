@@ -443,7 +443,7 @@ module RandMsg
         if kArg == 1.0 {
             // Okay for now im just gonna pick one but we should use method here somehow
             // maybe not bc zig requires two generators, so inverse is simpler
-            return standardExponentialInvCDF(1, rs);
+            return standardExponentialInvCDF(1, rs)[0];
         }
         else if kArg == 0.0 {
             return 0.0;
@@ -452,7 +452,7 @@ module RandMsg
             var count = 0;
             while count < 10000 {
                 var U = rs.next(0, 1);
-                var V = standardExponentialInvCDF(1, rs);
+                var V = standardExponentialInvCDF(1, rs)[0];
                 if (U <= 1.0 - kArg) {
                     //can these be more effiection 
                     var X = U ** (1.0 / kArg);
@@ -474,12 +474,12 @@ module RandMsg
         else {
             var b = kArg - 1/3;
             var c = 1/sqrt(9 * b);
-            var X;
-            var V;
+            var X = 0.0;
+            var V = 0.0;
             var count = 0;
             while count < 10000 {
                 while V <= 0 {
-                    X = random_standard_normal(1, rs);
+                    X = standardNormBoxMuller(1, rs)[0];
                     V = 1.0 + c * X;
                 }
                 V = V * V * V;
