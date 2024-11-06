@@ -475,7 +475,7 @@ module RandMsg
             var b = kArg - 1/3;
             var c = 1/sqrt(9 * b);
             var X = 0.0;
-            var V = 0.0;
+            var V = -1.0;
             var count = 0;
             while count < 10000 {
                 while V <= 0 {
