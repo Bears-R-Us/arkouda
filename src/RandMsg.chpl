@@ -438,7 +438,7 @@ module RandMsg
         }
     }
 
-    inline proc gammaGenerator(kArg: real, ref rs) {
+    inline proc gammaGenerator(kArg: real, ref rs) throws {
         // TODO fill this in i guess
         if kArg == 1.0 {
             // Okay for now im just gonna pick one but we should use method here somehow
@@ -470,6 +470,7 @@ module RandMsg
                 }
                 count+= 1;
             }
+            return -1; //change this return to something that says we were in a statistically less likely state
         } 
         else {
             var b = kArg - 1/3;
@@ -492,6 +493,7 @@ module RandMsg
                 }
                 count+= 1;
             }
+            return -1; //change this return to something that says we were in a statistically less likely state
         }
     }
 
