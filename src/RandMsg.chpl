@@ -470,7 +470,7 @@ module RandMsg
                 }
                 count+= 1;
             }
-            return -1; //change this return to something that says we were in a statistically less likely state
+            return -1.0;  // we failed 10000 times in a row which should practically never happen
         } 
         else {
             var b = kArg - 1/3;
@@ -493,7 +493,7 @@ module RandMsg
                 }
                 count+= 1;
             }
-            return -1; //change this return to something that says we were in a statistically less likely state
+            return -1.0;  // we failed 10000 times in a row which should practically never happen
         }
     }
 
