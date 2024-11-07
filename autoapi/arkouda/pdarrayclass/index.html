@@ -388,12 +388,6 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.all" title="arkouda.pdarrayclass.all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">all</span></code></a>(→ numpy.bool_)</p></td>
-<td><p>Return True iff all elements of the array evaluate to True.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.any" title="arkouda.pdarrayclass.any"><code class="xref py py-obj docutils literal notranslate"><span class="pre">any</span></code></a>(→ numpy.bool_)</p></td>
-<td><p>Return True iff any element of the array evaluates to True.</p></td>
-</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.argmax" title="arkouda.pdarrayclass.argmax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmax</span></code></a>(→ Union[numpy.int64, numpy.uint64])</p></td>
 <td><p>Return the index of the first occurrence of the array max value.</p></td>
 </tr>
@@ -430,17 +424,11 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.divmod" title="arkouda.pdarrayclass.divmod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">divmod</span></code></a>(→ Tuple[pdarray, pdarray])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.dot" title="arkouda.pdarrayclass.dot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dot</span></code></a>(→ Union[numpy.int64, numpy.float64, numpy.uint64, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.dot" title="arkouda.pdarrayclass.dot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dot</span></code></a>(→ Union[arkouda.numpy.dtypes.numpy_scalars, pdarray])</p></td>
 <td><p>Returns the sum of the elementwise product of two arrays of the same size (the dot product) or</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.fmod" title="arkouda.pdarrayclass.fmod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fmod</span></code></a>(→ pdarray)</p></td>
 <td><p>Returns the element-wise remainder of division.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.is_sorted" title="arkouda.pdarrayclass.is_sorted"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_sorted</span></code></a>(→ numpy.bool_)</p></td>
-<td><p>Return True iff the array is monotonically non-decreasing.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.max" title="arkouda.pdarrayclass.max"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max</span></code></a>(→ Union[arkouda.numpy.dtypes.numpy_scalars, pdarray])</p></td>
-<td><p>Return the maximum value of the array.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.maxk" title="arkouda.pdarrayclass.maxk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">maxk</span></code></a>(→ pdarray)</p></td>
 <td><p>Find the <cite>k</cite> maximum values of an array.</p></td>
@@ -448,26 +436,20 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.mean" title="arkouda.pdarrayclass.mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean</span></code></a>(→ numpy.float64)</p></td>
 <td><p>Return the mean of the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.min" title="arkouda.pdarrayclass.min"><code class="xref py py-obj docutils literal notranslate"><span class="pre">min</span></code></a>(→ Union[arkouda.numpy.dtypes.numpy_scalars, pdarray])</p></td>
-<td><p>Return the minimum value of the array.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.mink" title="arkouda.pdarrayclass.mink"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mink</span></code></a>(→ pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.mink" title="arkouda.pdarrayclass.mink"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mink</span></code></a>(→ pdarray)</p></td>
 <td><p>Find the <cite>k</cite> minimum values of an array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.mod" title="arkouda.pdarrayclass.mod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mod</span></code></a>(→ pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.mod" title="arkouda.pdarrayclass.mod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mod</span></code></a>(→ pdarray)</p></td>
 <td><p>Returns the element-wise remainder of division.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.parity" title="arkouda.pdarrayclass.parity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parity</span></code></a>(→ pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.parity" title="arkouda.pdarrayclass.parity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parity</span></code></a>(→ pdarray)</p></td>
 <td><p>Find the bit parity (XOR of all bits) for each integer in an array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.popcount" title="arkouda.pdarrayclass.popcount"><code class="xref py py-obj docutils literal notranslate"><span class="pre">popcount</span></code></a>(→ pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.popcount" title="arkouda.pdarrayclass.popcount"><code class="xref py py-obj docutils literal notranslate"><span class="pre">popcount</span></code></a>(→ pdarray)</p></td>
 <td><p>Find the population (number of bits set) for each integer in an array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.power" title="arkouda.pdarrayclass.power"><code class="xref py py-obj docutils literal notranslate"><span class="pre">power</span></code></a>(→ pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.power" title="arkouda.pdarrayclass.power"><code class="xref py py-obj docutils literal notranslate"><span class="pre">power</span></code></a>(→ pdarray)</p></td>
 <td><p>Raises an array to a power. If where is given, the operation will only take place in the positions</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.prod" title="arkouda.pdarrayclass.prod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prod</span></code></a>(→ Union[numpy.float64, pdarray])</p></td>
-<td><p>Return the product of all elements in the array. Return value is</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.rotl" title="arkouda.pdarrayclass.rotl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotl</span></code></a>(→ pdarray)</p></td>
 <td><p>Rotate bits of &lt;x&gt; to the left by &lt;rot&gt;.</p></td>
@@ -481,13 +463,10 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.std" title="arkouda.pdarrayclass.std"><code class="xref py py-obj docutils literal notranslate"><span class="pre">std</span></code></a>(→ numpy.float64)</p></td>
 <td><p>Return the standard deviation of values in the array. The standard</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.sum" title="arkouda.pdarrayclass.sum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sum</span></code></a>(...)</p></td>
-<td><p>Return the sum of all elements in the array.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.unregister_pdarray_by_name" title="arkouda.pdarrayclass.unregister_pdarray_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_pdarray_by_name</span></code></a>(→ None)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.unregister_pdarray_by_name" title="arkouda.pdarrayclass.unregister_pdarray_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_pdarray_by_name</span></code></a>(→ None)</p></td>
 <td><p>Unregister a named pdarray in the arkouda server which was previously</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.var" title="arkouda.pdarrayclass.var"><code class="xref py py-obj docutils literal notranslate"><span class="pre">var</span></code></a>(→ numpy.float64)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.var" title="arkouda.pdarrayclass.var"><code class="xref py py-obj docutils literal notranslate"><span class="pre">var</span></code></a>(→ numpy.float64)</p></td>
 <td><p>Return the variance of values in the array.</p></td>
 </tr>
 </tbody>
@@ -501,52 +480,6 @@
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">RegistrationError</span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#RegistrationError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.RegistrationError" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">Exception</span></code></p>
 <p>Error/Exception used when the Arkouda Server cannot register an object</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.pdarrayclass.all">
-<span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../numpy/index.html#arkouda.numpy.bool_" title="arkouda.numpy.bool_"><span class="pre">numpy.bool_</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.all" title="Link to this definition">¶</a></dt>
-<dd><p>Return True iff all elements of the array evaluate to True.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – The pdarray instance to be evaluated</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Indicates if all pdarray elements evaluate to True</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>TypeError</strong> – Raised if pda is not a pdarray instance</p></li>
-<li><p><strong>RuntimeError</strong> – Raised if there’s a server-side error thrown</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.pdarrayclass.any">
-<span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">any</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../numpy/index.html#arkouda.numpy.bool_" title="arkouda.numpy.bool_"><span class="pre">numpy.bool_</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#any"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.any" title="Link to this definition">¶</a></dt>
-<dd><p>Return True iff any element of the array evaluates to True.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – The pdarray instance to be evaluated</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Indicates if 1..n pdarray elements evaluate to True</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>TypeError</strong> – Raised if pda is not a pdarray instance</p></li>
-<li><p><strong>RuntimeError</strong> – Raised if there’s a server-side error thrown</p></li>
-</ul>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -864,7 +797,7 @@ cov(x, y) / (x.std(ddof=1) * y.std(ddof=1))</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.pdarrayclass.divmod">
-<span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">divmod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#divmod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.divmod" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">divmod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.bool_scalars" title="arkouda.numpy.dtypes.bool_scalars"><span class="pre">arkouda.numpy.dtypes.bool_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#divmod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.divmod" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -907,7 +840,7 @@ The mod is calculated by x % y</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.pdarrayclass.dot">
-<span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">dot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../numpy/index.html#arkouda.numpy.int64" title="arkouda.numpy.int64"><span class="pre">numpy.int64</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../numpy/index.html#arkouda.numpy.float64" title="arkouda.numpy.float64"><span class="pre">numpy.float64</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../numpy/index.html#arkouda.numpy.uint64" title="arkouda.numpy.uint64"><span class="pre">numpy.uint64</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pda2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../numpy/index.html#arkouda.numpy.int64" title="arkouda.numpy.int64"><span class="pre">numpy.int64</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../numpy/index.html#arkouda.numpy.float64" title="arkouda.numpy.float64"><span class="pre">numpy.float64</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../numpy/index.html#arkouda.numpy.uint64" title="arkouda.numpy.uint64"><span class="pre">numpy.uint64</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../numpy/index.html#arkouda.numpy.int64" title="arkouda.numpy.int64"><span class="pre">numpy.int64</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../numpy/index.html#arkouda.numpy.float64" title="arkouda.numpy.float64"><span class="pre">numpy.float64</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../numpy/index.html#arkouda.numpy.uint64" title="arkouda.numpy.uint64"><span class="pre">numpy.uint64</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#dot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.dot" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">dot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../numpy/index.html#arkouda.numpy.int64" title="arkouda.numpy.int64"><span class="pre">numpy.int64</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../numpy/index.html#arkouda.numpy.float64" title="arkouda.numpy.float64"><span class="pre">numpy.float64</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../numpy/index.html#arkouda.numpy.uint64" title="arkouda.numpy.uint64"><span class="pre">numpy.uint64</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pda2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../numpy/index.html#arkouda.numpy.int64" title="arkouda.numpy.int64"><span class="pre">numpy.int64</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../numpy/index.html#arkouda.numpy.float64" title="arkouda.numpy.float64"><span class="pre">numpy.float64</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../numpy/index.html#arkouda.numpy.uint64" title="arkouda.numpy.uint64"><span class="pre">numpy.uint64</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.numpy_scalars" title="arkouda.numpy.dtypes.numpy_scalars"><span class="pre">arkouda.numpy.dtypes.numpy_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#dot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.dot" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the sum of the elementwise product of two arrays of the same size (the dot product) or
 the product of a singleton element and an array.</p>
 <dl class="field-list simple">
@@ -956,56 +889,6 @@ the product of a singleton element and an array.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.pdarrayclass.is_sorted">
-<span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">is_sorted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../numpy/index.html#arkouda.numpy.bool_" title="arkouda.numpy.bool_"><span class="pre">numpy.bool_</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#is_sorted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.is_sorted" title="Link to this definition">¶</a></dt>
-<dd><p>Return True iff the array is monotonically non-decreasing.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – The pdarray instance to be evaluated</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Indicates if the array is monotonically non-decreasing</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>TypeError</strong> – Raised if pda is not a pdarray instance</p></li>
-<li><p><strong>RuntimeError</strong> – Raised if there’s a server-side error thrown</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.pdarrayclass.max">
-<span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">max</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.numpy_scalars" title="arkouda.numpy.dtypes.numpy_scalars"><span class="pre">arkouda.numpy.dtypes.numpy_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#max"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.max" title="Link to this definition">¶</a></dt>
-<dd><p>Return the maximum value of the array.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – Values for which to calculate the max</p></li>
-<li><p><strong>axis</strong> (<em>int</em><em> or </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em>) – The axis or axes along which to compute the sum. If None, the sum of the entire array is
-computed (returning a scalar).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The max calculated from the pda</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.numpy_scalars" title="arkouda.dtypes.numpy_scalars">numpy_scalars</a></p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>TypeError</strong> – Raised if pda is not a pdarray instance</p></li>
-<li><p><strong>RuntimeError</strong> – Raised if there’s a server-side error thrown</p></li>
-</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -1067,33 +950,6 @@ about a <cite>k</cite> of 5 million is where performance degredation has been ob
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>np.float64</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>TypeError</strong> – Raised if pda is not a pdarray instance</p></li>
-<li><p><strong>RuntimeError</strong> – Raised if there’s a server-side error thrown</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.pdarrayclass.min">
-<span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">min</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.numpy_scalars" title="arkouda.numpy.dtypes.numpy_scalars"><span class="pre">arkouda.numpy.dtypes.numpy_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#min"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.min" title="Link to this definition">¶</a></dt>
-<dd><p>Return the minimum value of the array.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – Values for which to calculate the min</p></li>
-<li><p><strong>axis</strong> (<em>int</em><em> or </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em>) – The axis or axes along which to compute the sum. If None, the sum of the entire array is
-computed (returning a scalar).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The min calculated from the pda</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.numpy_scalars" title="arkouda.dtypes.numpy_scalars">numpy_scalars</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1283,13 +1139,13 @@ instances directly.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarrayclass.pdarray.all">
-<span class="sig-name descname"><span class="pre">all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../numpy/index.html#arkouda.numpy.bool_" title="arkouda.numpy.bool_"><span class="pre">numpy.bool_</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#pdarray.all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.all" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.bool_scalars" title="arkouda.numpy.dtypes.bool_scalars"><span class="pre">arkouda.numpy.dtypes.bool_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#pdarray.all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.all" title="Link to this definition">¶</a></dt>
 <dd><p>Return True iff all elements of the array evaluate to True.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarrayclass.pdarray.any">
-<span class="sig-name descname"><span class="pre">any</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../numpy/index.html#arkouda.numpy.bool_" title="arkouda.numpy.bool_"><span class="pre">numpy.bool_</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#pdarray.any"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.any" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">any</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.bool_scalars" title="arkouda.numpy.dtypes.bool_scalars"><span class="pre">arkouda.numpy.dtypes.bool_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#pdarray.any"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.any" title="Link to this definition">¶</a></dt>
 <dd><p>Return True iff any element of the array evaluates to True.</p>
 </dd></dl>
 
@@ -1503,7 +1359,7 @@ bigint pdarray and the last item will be the lowest 64 bits.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarrayclass.pdarray.equals">
-<span class="sig-name descname"><span class="pre">equals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#pdarray.equals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.equals" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">equals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.bool_scalars" title="arkouda.numpy.dtypes.bool_scalars"><span class="pre">arkouda.numpy.dtypes.bool_scalars</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#pdarray.equals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.equals" title="Link to this definition">¶</a></dt>
 <dd><p>Whether pdarrays are the same size and all entries are equal.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1625,7 +1481,7 @@ of another object</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarrayclass.pdarray.is_sorted">
-<span class="sig-name descname"><span class="pre">is_sorted</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../numpy/index.html#arkouda.numpy.bool_" title="arkouda.numpy.bool_"><span class="pre">numpy.bool_</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#pdarray.is_sorted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.is_sorted" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">is_sorted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.bool_scalars" title="arkouda.numpy.dtypes.bool_scalars"><span class="pre">arkouda.numpy.dtypes.bool_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#pdarray.is_sorted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.is_sorted" title="Link to this definition">¶</a></dt>
 <dd><p>Return True iff the array is monotonically non-decreasing.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1653,7 +1509,7 @@ of another object</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarrayclass.pdarray.max">
-<span class="sig-name descname"><span class="pre">max</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.numpy_scalars" title="arkouda.numpy.dtypes.numpy_scalars"><span class="pre">arkouda.numpy.dtypes.numpy_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#pdarray.max"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.max" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">max</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.numpy_scalars" title="arkouda.numpy.dtypes.numpy_scalars"><span class="pre">arkouda.numpy.dtypes.numpy_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#pdarray.max"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.max" title="Link to this definition">¶</a></dt>
 <dd><p>Return the maximum value of the array.</p>
 </dd></dl>
 
@@ -1690,7 +1546,7 @@ of another object</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarrayclass.pdarray.min">
-<span class="sig-name descname"><span class="pre">min</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.numpy_scalars" title="arkouda.numpy.dtypes.numpy_scalars"><span class="pre">arkouda.numpy.dtypes.numpy_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#pdarray.min"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.min" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">min</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.numpy_scalars" title="arkouda.numpy.dtypes.numpy_scalars"><span class="pre">arkouda.numpy.dtypes.numpy_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#pdarray.min"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.min" title="Link to this definition">¶</a></dt>
 <dd><p>Return the minimum value of the array.</p>
 </dd></dl>
 
@@ -1776,7 +1632,7 @@ of another object</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarrayclass.pdarray.prod">
-<span class="sig-name descname"><span class="pre">prod</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../numpy/index.html#arkouda.numpy.float64" title="arkouda.numpy.float64"><span class="pre">numpy.float64</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#pdarray.prod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.prod" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">prod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.numpy_scalars" title="arkouda.numpy.dtypes.numpy_scalars"><span class="pre">arkouda.numpy.dtypes.numpy_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#pdarray.prod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.prod" title="Link to this definition">¶</a></dt>
 <dd><p>Return the product of all elements in the array. Return value is
 always a np.float64 or np.int64.</p>
 </dd></dl>
@@ -2022,7 +1878,7 @@ zero indexed, so the first bit is 0</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarrayclass.pdarray.sum">
-<span class="sig-name descname"><span class="pre">sum</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.numeric_and_bool_scalars" title="arkouda.numpy.dtypes.numeric_and_bool_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_and_bool_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#pdarray.sum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.sum" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">sum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.numpy_scalars" title="arkouda.numpy.dtypes.numpy_scalars"><span class="pre">arkouda.numpy.dtypes.numpy_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#pdarray.sum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.sum" title="Link to this definition">¶</a></dt>
 <dd><p>Return the sum of all elements in the array.</p>
 </dd></dl>
 
@@ -2482,7 +2338,7 @@ the file name is checked for _LOCALE#### to determine if it is distributed.</p><
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.pdarrayclass.power">
-<span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">power</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pwr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#power"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.power" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">power</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pwr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.bool_scalars" title="arkouda.numpy.dtypes.bool_scalars"><span class="pre">arkouda.numpy.dtypes.bool_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#power"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.power" title="Link to this definition">¶</a></dt>
 <dd><p>Raises an array to a power. If where is given, the operation will only take place in the positions
 where the where condition is True.</p>
 <p>Note:
@@ -2513,34 +2369,6 @@ Returns a pdarray of values raised to a power, under the boolean where condition
 <span class="go">array([0, 1, 8, 3, 64])</span>
 </pre></div>
 </div>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.pdarrayclass.prod">
-<span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">prod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../numpy/index.html#arkouda.numpy.float64" title="arkouda.numpy.float64"><span class="pre">numpy.float64</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#prod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.prod" title="Link to this definition">¶</a></dt>
-<dd><p>Return the product of all elements in the array. Return value is
-always a np.float64 or np.int64</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – Values for which to calculate the product</p></li>
-<li><p><strong>axis</strong> (<em>int</em><em> or </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em>) – The axis or axes along which to compute the sum. If None, the sum of the entire array is
-computed (returning a scalar).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The product calculated from the pda</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.numpy_scalars" title="arkouda.dtypes.numpy_scalars">numpy_scalars</a></p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>TypeError</strong> – Raised if pda is not a pdarray instance</p></li>
-<li><p><strong>RuntimeError</strong> – Raised if there’s a server-side error thrown</p></li>
-</ul>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -2603,7 +2431,7 @@ computed (returning a scalar).</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.pdarrayclass.sqrt">
-<span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">sqrt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#sqrt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.sqrt" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">sqrt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.bool_scalars" title="arkouda.numpy.dtypes.bool_scalars"><span class="pre">arkouda.numpy.dtypes.bool_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#sqrt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.sqrt" title="Link to this definition">¶</a></dt>
 <dd><p>Takes the square root of array. If where is given, the operation will only take place in
 the positions where the where condition is True.</p>
 <dl class="field-list simple">
@@ -2673,33 +2501,6 @@ estimate of the variance for normally distributed variables. The
 standard deviation computed in this function is the square root of
 the estimated variance, so even with <code class="docutils literal notranslate"><span class="pre">ddof=1</span></code>, it will not be an
 unbiased estimate of the standard deviation per se.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.pdarrayclass.sum">
-<span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">sum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.numeric_and_bool_scalars" title="arkouda.numpy.dtypes.numeric_and_bool_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_and_bool_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pdarrayclass.html#sum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarrayclass.sum" title="Link to this definition">¶</a></dt>
-<dd><p>Return the sum of all elements in the array.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – Values for which to calculate the sum</p></li>
-<li><p><strong>axis</strong> (<em>int</em><em> or </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em>) – The axis or axes along which to compute the sum. If None, the sum of the entire array is
-computed (returning a scalar).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The sum of all elements in the array</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>np.float64</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>TypeError</strong> – Raised if pda is not a pdarray instance</p></li>
-<li><p><strong>RuntimeError</strong> – Raised if there’s a server-side error thrown</p></li>
-</ul>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -2840,8 +2641,6 @@ normally distributed variables.</p>
 <li><a class="reference internal" href="#functions">Functions</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.RegistrationError"><code class="docutils literal notranslate"><span class="pre">RegistrationError</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.pdarrayclass.all"><code class="docutils literal notranslate"><span class="pre">all()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.pdarrayclass.any"><code class="docutils literal notranslate"><span class="pre">any()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.argmax"><code class="docutils literal notranslate"><span class="pre">argmax()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.argmaxk"><code class="docutils literal notranslate"><span class="pre">argmaxk()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.argmin"><code class="docutils literal notranslate"><span class="pre">argmin()</span></code></a></li>
@@ -2856,11 +2655,8 @@ normally distributed variables.</p>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.divmod"><code class="docutils literal notranslate"><span class="pre">divmod()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.dot"><code class="docutils literal notranslate"><span class="pre">dot()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.fmod"><code class="docutils literal notranslate"><span class="pre">fmod()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.pdarrayclass.is_sorted"><code class="docutils literal notranslate"><span class="pre">is_sorted()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.pdarrayclass.max"><code class="docutils literal notranslate"><span class="pre">max()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.maxk"><code class="docutils literal notranslate"><span class="pre">maxk()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.mean"><code class="docutils literal notranslate"><span class="pre">mean()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.pdarrayclass.min"><code class="docutils literal notranslate"><span class="pre">min()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.mink"><code class="docutils literal notranslate"><span class="pre">mink()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.mod"><code class="docutils literal notranslate"><span class="pre">mod()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.parity"><code class="docutils literal notranslate"><span class="pre">parity()</span></code></a></li>
@@ -2937,12 +2733,10 @@ normally distributed variables.</p>
 </li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.popcount"><code class="docutils literal notranslate"><span class="pre">popcount()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.power"><code class="docutils literal notranslate"><span class="pre">power()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.pdarrayclass.prod"><code class="docutils literal notranslate"><span class="pre">prod()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.rotl"><code class="docutils literal notranslate"><span class="pre">rotl()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.rotr"><code class="docutils literal notranslate"><span class="pre">rotr()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.sqrt"><code class="docutils literal notranslate"><span class="pre">sqrt()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.std"><code class="docutils literal notranslate"><span class="pre">std()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.pdarrayclass.sum"><code class="docutils literal notranslate"><span class="pre">sum()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.unregister_pdarray_by_name"><code class="docutils literal notranslate"><span class="pre">unregister_pdarray_by_name()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.var"><code class="docutils literal notranslate"><span class="pre">var()</span></code></a></li>
 </ul>

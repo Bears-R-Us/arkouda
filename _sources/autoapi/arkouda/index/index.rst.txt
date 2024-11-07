@@ -24,7 +24,7 @@ Module Contents
    .. py:method:: concat(other)
 
 
-   .. py:method:: equals(other: Index) -> bool
+   .. py:method:: equals(other: Index) -> arkouda.numpy.dtypes.bool_scalars
 
       Whether Indexes are the same size, and all entries are equal.
 

@@ -25,8 +25,6 @@ Functions
 
 .. autoapisummary::
 
-   arkouda.pdarrayclass.all
-   arkouda.pdarrayclass.any
    arkouda.pdarrayclass.argmax
    arkouda.pdarrayclass.argmaxk
    arkouda.pdarrayclass.argmin
@@ -41,22 +39,17 @@ Functions
    arkouda.pdarrayclass.divmod
    arkouda.pdarrayclass.dot
    arkouda.pdarrayclass.fmod
-   arkouda.pdarrayclass.is_sorted
-   arkouda.pdarrayclass.max
    arkouda.pdarrayclass.maxk
    arkouda.pdarrayclass.mean
-   arkouda.pdarrayclass.min
    arkouda.pdarrayclass.mink
    arkouda.pdarrayclass.mod
    arkouda.pdarrayclass.parity
    arkouda.pdarrayclass.popcount
    arkouda.pdarrayclass.power
-   arkouda.pdarrayclass.prod
    arkouda.pdarrayclass.rotl
    arkouda.pdarrayclass.rotr
    arkouda.pdarrayclass.sqrt
    arkouda.pdarrayclass.std
-   arkouda.pdarrayclass.sum
    arkouda.pdarrayclass.unregister_pdarray_by_name
    arkouda.pdarrayclass.var
 
@@ -70,34 +63,6 @@ Module Contents
 
 
    Error/Exception used when the Arkouda Server cannot register an object
-
-
-.. py:function:: all(pda: pdarray) -> numpy.bool_
-
-   Return True iff all elements of the array evaluate to True.
-
-   :param pda: The pdarray instance to be evaluated
-   :type pda: pdarray
-
-   :returns: Indicates if all pdarray elements evaluate to True
-   :rtype: bool
-
-   :raises TypeError: Raised if pda is not a pdarray instance
-   :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-.. py:function:: any(pda: pdarray) -> numpy.bool_
-
-   Return True iff any element of the array evaluates to True.
-
-   :param pda: The pdarray instance to be evaluated
-   :type pda: pdarray
-
-   :returns: Indicates if 1..n pdarray elements evaluate to True
-   :rtype: bool
-
-   :raises TypeError: Raised if pda is not a pdarray instance
-   :raises RuntimeError: Raised if there's a server-side error thrown
 
 
 .. py:function:: argmax(pda: pdarray) -> Union[numpy.int64, numpy.uint64]
@@ -335,7 +300,7 @@ Module Contents
    array([0, 0, 1, 0, 2, 0, 1, 0, 3, 0])
 
 
-.. py:function:: divmod(x: Union[arkouda.numpy.dtypes.numeric_scalars, pdarray], y: Union[arkouda.numpy.dtypes.numeric_scalars, pdarray], where: Union[bool, pdarray] = True) -> Tuple[pdarray, pdarray]
+.. py:function:: divmod(x: Union[arkouda.numpy.dtypes.numeric_scalars, pdarray], y: Union[arkouda.numpy.dtypes.numeric_scalars, pdarray], where: Union[arkouda.numpy.dtypes.bool_scalars, pdarray] = True) -> Tuple[pdarray, pdarray]
 
    :param x: The dividend array, the values that will be the numerator of the floordivision and will be
              acted on by the bases for modular division.
@@ -370,7 +335,7 @@ Module Contents
    (array([5 6 7 1 9]), array([5 0 7 3 9]))
 
 
-.. py:function:: dot(pda1: Union[numpy.int64, numpy.float64, numpy.uint64, pdarray], pda2: Union[numpy.int64, numpy.float64, numpy.uint64, pdarray]) -> Union[numpy.int64, numpy.float64, numpy.uint64, pdarray]
+.. py:function:: dot(pda1: Union[numpy.int64, numpy.float64, numpy.uint64, pdarray], pda2: Union[numpy.int64, numpy.float64, numpy.uint64, pdarray]) -> Union[arkouda.numpy.dtypes.numpy_scalars, pdarray]
 
    Returns the sum of the elementwise product of two arrays of the same size (the dot product) or
    the product of a singleton element and an array.
@@ -409,37 +374,6 @@ Module Contents
 
    :returns: Returns an array that contains the element-wise remainder of division.
    :rtype: pdarray
-
-
-.. py:function:: is_sorted(pda: pdarray) -> numpy.bool_
-
-   Return True iff the array is monotonically non-decreasing.
-
-   :param pda: The pdarray instance to be evaluated
-   :type pda: pdarray
-
-   :returns: Indicates if the array is monotonically non-decreasing
-   :rtype: bool
-
-   :raises TypeError: Raised if pda is not a pdarray instance
-   :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-.. py:function:: max(pda: pdarray, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None) -> Union[arkouda.numpy.dtypes.numpy_scalars, pdarray]
-
-   Return the maximum value of the array.
-
-   :param pda: Values for which to calculate the max
-   :type pda: pdarray
-   :param axis: The axis or axes along which to compute the sum. If None, the sum of the entire array is
-                computed (returning a scalar).
-   :type axis: int or Tuple[int, ...], optional
-
-   :returns: The max calculated from the pda
-   :rtype: numpy_scalars
-
-   :raises TypeError: Raised if pda is not a pdarray instance
-   :raises RuntimeError: Raised if there's a server-side error thrown
 
 
 .. py:function:: maxk(pda: pdarray, k: arkouda.numpy.dtypes.int_scalars) -> pdarray
@@ -489,23 +423,6 @@ Module Contents
 
    :returns: The mean calculated from the pda sum and size
    :rtype: np.float64
-
-   :raises TypeError: Raised if pda is not a pdarray instance
-   :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-.. py:function:: min(pda: pdarray, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None) -> Union[arkouda.numpy.dtypes.numpy_scalars, pdarray]
-
-   Return the minimum value of the array.
-
-   :param pda: Values for which to calculate the min
-   :type pda: pdarray
-   :param axis: The axis or axes along which to compute the sum. If None, the sum of the entire array is
-                computed (returning a scalar).
-   :type axis: int or Tuple[int, ...], optional
-
-   :returns: The min calculated from the pda
-   :rtype: numpy_scalars
 
    :raises TypeError: Raised if pda is not a pdarray instance
    :raises RuntimeError: Raised if there's a server-side error thrown
@@ -634,13 +551,13 @@ Module Contents
    .. py:attribute:: OpEqOps
 
 
-   .. py:method:: all() -> numpy.bool_
+   .. py:method:: all(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.bool_scalars, pdarray]
 
       Return True iff all elements of the array evaluate to True.
 
 
 
-   .. py:method:: any() -> numpy.bool_
+   .. py:method:: any(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.bool_scalars, pdarray]
 
       Return True iff any element of the array evaluates to True.
 
@@ -808,7 +725,7 @@ Module Contents
    .. py:attribute:: dtype
 
 
-   .. py:method:: equals(other) -> bool
+   .. py:method:: equals(other) -> arkouda.numpy.dtypes.bool_scalars
 
       Whether pdarrays are the same size and all entries are equal.
 
@@ -903,7 +820,7 @@ Module Contents
 
 
 
-   .. py:method:: is_sorted() -> numpy.bool_
+   .. py:method:: is_sorted(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.bool_scalars, pdarray]
 
       Return True iff the array is monotonically non-decreasing.
 
@@ -920,7 +837,7 @@ Module Contents
    .. py:attribute:: itemsize
 
 
-   .. py:method:: max() -> Union[arkouda.numpy.dtypes.numpy_scalars, pdarray]
+   .. py:method:: max(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numpy_scalars, pdarray]
 
       Return the maximum value of the array.
 
@@ -949,7 +866,7 @@ Module Contents
 
 
 
-   .. py:method:: min() -> Union[arkouda.numpy.dtypes.numpy_scalars, pdarray]
+   .. py:method:: min(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numpy_scalars, pdarray]
 
       Return the minimum value of the array.
 
@@ -1013,7 +930,7 @@ Module Contents
 
 
 
-   .. py:method:: prod() -> Union[numpy.float64, pdarray]
+   .. py:method:: prod(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numpy_scalars, pdarray]
 
       Return the product of all elements in the array. Return value is
       always a np.float64 or np.int64.
@@ -1216,7 +1133,7 @@ Module Contents
 
 
 
-   .. py:method:: sum() -> Union[arkouda.numpy.dtypes.numeric_and_bool_scalars, pdarray]
+   .. py:method:: sum(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numpy_scalars, pdarray]
 
       Return the sum of all elements in the array.
 
@@ -1609,7 +1526,7 @@ Module Contents
    array([0, 1, 1, 2, 1, 2, 2, 3, 1, 2])
 
 
-.. py:function:: power(pda: pdarray, pwr: Union[int, float, pdarray], where: Union[bool, pdarray] = True) -> pdarray
+.. py:function:: power(pda: pdarray, pwr: Union[int, float, pdarray], where: Union[arkouda.numpy.dtypes.bool_scalars, pdarray] = True) -> pdarray
 
    Raises an array to a power. If where is given, the operation will only take place in the positions
    where the where condition is True.
@@ -1639,24 +1556,6 @@ Module Contents
    array([0, 1, 8, 27, 64])
    >>> ak.power(a), 3, a % 2 == 0)
    array([0, 1, 8, 3, 64])
-
-
-.. py:function:: prod(pda: pdarray, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None) -> Union[numpy.float64, pdarray]
-
-   Return the product of all elements in the array. Return value is
-   always a np.float64 or np.int64
-
-   :param pda: Values for which to calculate the product
-   :type pda: pdarray
-   :param axis: The axis or axes along which to compute the sum. If None, the sum of the entire array is
-                computed (returning a scalar).
-   :type axis: int or Tuple[int, ...], optional
-
-   :returns: The product calculated from the pda
-   :rtype: numpy_scalars
-
-   :raises TypeError: Raised if pda is not a pdarray instance
-   :raises RuntimeError: Raised if there's a server-side error thrown
 
 
 .. py:function:: rotl(x, rot) -> pdarray
@@ -1701,7 +1600,7 @@ Module Contents
    array([0, 512, 512, 384, 256, 160, 96, 56, 32, 18])
 
 
-.. py:function:: sqrt(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray
+.. py:function:: sqrt(pda: pdarray, where: Union[arkouda.numpy.dtypes.bool_scalars, pdarray] = True) -> pdarray
 
    Takes the square root of array. If where is given, the operation will only take place in
    the positions where the where condition is True.
@@ -1756,23 +1655,6 @@ Module Contents
    standard deviation computed in this function is the square root of
    the estimated variance, so even with ``ddof=1``, it will not be an
    unbiased estimate of the standard deviation per se.
-
-
-.. py:function:: sum(pda: pdarray, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None) -> Union[arkouda.numpy.dtypes.numeric_and_bool_scalars, pdarray]
-
-   Return the sum of all elements in the array.
-
-   :param pda: Values for which to calculate the sum
-   :type pda: pdarray
-   :param axis: The axis or axes along which to compute the sum. If None, the sum of the entire array is
-                computed (returning a scalar).
-   :type axis: int or Tuple[int, ...], optional
-
-   :returns: The sum of all elements in the array
-   :rtype: np.float64
-
-   :raises TypeError: Raised if pda is not a pdarray instance
-   :raises RuntimeError: Raised if there's a server-side error thrown
 
 
 .. py:function:: unregister_pdarray_by_name(user_defined_name: str) -> None

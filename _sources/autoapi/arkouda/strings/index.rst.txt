@@ -256,7 +256,7 @@ Module Contents
       :type:  arkouda.pdarrayclass.pdarray
 
 
-   .. py:method:: equals(other) -> bool
+   .. py:method:: equals(other) -> arkouda.numpy.dtypes.bool_scalars
 
       Whether Strings are the same size and all entries are equal.
 

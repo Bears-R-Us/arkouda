@@ -357,7 +357,7 @@
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">reduce</span>
 <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">ceil</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">typeguard</span> <span class="kn">import</span> <span class="n">typechecked</span>
@@ -367,7 +367,7 @@
 <span class="kn">from</span> <span class="nn">arkouda.logger</span> <span class="kn">import</span> <span class="n">getArkoudaLogger</span>
 <span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">NUMBER_FORMAT_STRINGS</span><span class="p">,</span> <span class="n">DTypes</span><span class="p">,</span> <span class="n">bigint</span>
 <span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">bool_</span> <span class="k">as</span> <span class="n">akbool</span>
-<span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">dtype</span>
+<span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">bool_scalars</span><span class="p">,</span> <span class="n">dtype</span>
 <span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">float64</span> <span class="k">as</span> <span class="n">akfloat64</span>
 <span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">get_byteorder</span><span class="p">,</span> <span class="n">get_server_byteorder</span>
 <span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">int64</span> <span class="k">as</span> <span class="n">akint64</span>
@@ -375,13 +375,37 @@
     <span class="n">int_scalars</span><span class="p">,</span>
     <span class="n">isSupportedInt</span><span class="p">,</span>
     <span class="n">isSupportedNumber</span><span class="p">,</span>
-    <span class="n">numeric_and_bool_scalars</span><span class="p">,</span>
     <span class="n">numeric_scalars</span><span class="p">,</span>
     <span class="n">numpy_scalars</span><span class="p">,</span>
     <span class="n">resolve_scalar_dtype</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">str_</span> <span class="k">as</span> <span class="n">akstr_</span>
 <span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">uint64</span> <span class="k">as</span> <span class="n">akuint64</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="nf">numeric_reduce</span><span class="p">(</span>
+        <span class="n">pda</span><span class="p">,</span>
+        <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
+        <span class="k">pass</span>
+
+    <span class="nb">sum</span> <span class="o">=</span> <span class="n">numeric_reduce</span>
+    <span class="n">prod</span> <span class="o">=</span> <span class="n">numeric_reduce</span>
+    <span class="nb">max</span> <span class="o">=</span> <span class="n">numeric_reduce</span>
+    <span class="nb">min</span> <span class="o">=</span> <span class="n">numeric_reduce</span>
+
+    <span class="k">def</span> <span class="nf">boolean_reduce</span><span class="p">(</span>
+        <span class="n">pda</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">bool_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
+        <span class="k">pass</span>
+
+    <span class="n">is_sorted</span> <span class="o">=</span> <span class="n">boolean_reduce</span>
+    <span class="n">is_locally_sorted</span> <span class="o">=</span> <span class="n">boolean_reduce</span>
+    <span class="nb">all</span> <span class="o">=</span> <span class="n">boolean_reduce</span>
+    <span class="nb">any</span> <span class="o">=</span> <span class="n">boolean_reduce</span>
+
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;pdarray&quot;</span><span class="p">,</span>
@@ -422,12 +446,13 @@
     <span class="s2">&quot;broadcast_to_shape&quot;</span><span class="p">,</span>
     <span class="s2">&quot;_to_pdarray&quot;</span><span class="p">,</span>
 <span class="p">]</span>
-
 <span class="n">logger</span> <span class="o">=</span> <span class="n">getArkoudaLogger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;pdarrayclass&quot;</span><span class="p">)</span>
+
+<span class="n">SUPPORTED_REDUCTION_OPS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;any&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;isSorted&quot;</span><span class="p">,</span> <span class="s2">&quot;isSortedLocally&quot;</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="s2">&quot;min&quot;</span><span class="p">,</span> <span class="s2">&quot;sum&quot;</span><span class="p">,</span> <span class="s2">&quot;prod&quot;</span><span class="p">]</span>
 
 
 <span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">parse_single_value</span><span class="p">(</span><span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">parse_single_value</span><span class="p">(</span><span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy_scalars</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Attempt to convert a scalar return value from the arkouda server to a</span>
 <span class="sd">    numpy scalar in Python. The user should not call this function directly.</span>
@@ -765,7 +790,7 @@
 
 <div class="viewcode-block" id="pdarray.equals">
 <a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarray.equals">[docs]</a>
-    <span class="k">def</span> <span class="nf">equals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">equals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">bool_scalars</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Whether pdarrays are the same size and all entries are equal.</span>
 
@@ -795,9 +820,10 @@
             <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">False</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="bp">self</span> <span class="o">==</span> <span class="n">other</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span></div>
+                <span class="n">result</span> <span class="o">=</span> <span class="nb">all</span><span class="p">(</span><span class="bp">self</span> <span class="o">==</span> <span class="n">other</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">)):</span>
+                    <span class="k">return</span> <span class="n">result</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
 
 
 <div class="viewcode-block" id="pdarray.format_other">
@@ -1082,7 +1108,7 @@
     <span class="k">def</span> <span class="fm">__ge__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s2">&quot;&gt;=&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
         <span class="k">if</span> <span class="n">other</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;bool_&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;bool_&quot;</span><span class="p">)):</span>
@@ -1090,7 +1116,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s2">&quot;==&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;bool_&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;bool_&quot;</span><span class="p">)):</span>
             <span class="k">return</span> <span class="bp">self</span> <span class="o">^</span> <span class="n">other</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1612,20 +1638,24 @@
 
 <div class="viewcode-block" id="pdarray.any">
 <a class="viewcode-back" href="../../usage/histogram.html#arkouda.pdarray.any">[docs]</a>
-    <span class="k">def</span> <span class="nf">any</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">any</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">bool_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return True iff any element of the array evaluates to True.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="pdarray.all">
 <a class="viewcode-back" href="../../usage/histogram.html#arkouda.pdarray.all">[docs]</a>
-    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">bool_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return True iff all elements of the array evaluate to True.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="pdarray.is_registered">
@@ -1712,7 +1742,9 @@
 
 <div class="viewcode-block" id="pdarray.is_sorted">
 <a class="viewcode-back" href="../../usage/histogram.html#arkouda.pdarray.is_sorted">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_sorted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">is_sorted</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">bool_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return True iff the array is monotonically non-decreasing.</span>
 
@@ -1732,44 +1764,60 @@
 <span class="sd">        RuntimeError</span>
 <span class="sd">            Raised if there&#39;s a server-side error thrown</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">is_sorted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">is_sorted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span>  <span class="c1"># noqa: F821</span></div>
 
 
 <div class="viewcode-block" id="pdarray.sum">
 <a class="viewcode-back" href="../../usage/histogram.html#arkouda.pdarray.sum">[docs]</a>
-    <span class="k">def</span> <span class="nf">sum</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">numeric_and_bool_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">sum</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the sum of all elements in the array.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="pdarray.prod">
 <a class="viewcode-back" href="../../usage/histogram.html#arkouda.pdarray.prod">[docs]</a>
-    <span class="k">def</span> <span class="nf">prod</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">prod</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the product of all elements in the array. Return value is</span>
 <span class="sd">        always a np.float64 or np.int64.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">prod</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">prod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span>  <span class="c1"># noqa: F821</span></div>
 
 
 <div class="viewcode-block" id="pdarray.min">
 <a class="viewcode-back" href="../../usage/histogram.html#arkouda.pdarray.min">[docs]</a>
-    <span class="k">def</span> <span class="nf">min</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">min</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the minimum value of the array.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="pdarray.max">
 <a class="viewcode-back" href="../../usage/histogram.html#arkouda.pdarray.max">[docs]</a>
-    <span class="k">def</span> <span class="nf">max</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">max</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the maximum value of the array.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="pdarray.argmin">
@@ -3131,96 +3179,50 @@
 
 
 
-<div class="viewcode-block" id="any">
-<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.any">[docs]</a>
-<span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">any</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return True iff any element of the array evaluates to True.</span>
+<span class="k">def</span> <span class="nf">_make_reduction_func</span><span class="p">(</span>
+    <span class="n">op</span><span class="p">,</span>
+    <span class="n">function_descriptor</span><span class="o">=</span><span class="s2">&quot;Return reduction of a pdarray by an operation along an axis.&quot;</span><span class="p">,</span>
+    <span class="n">return_descriptor</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">return_dtype</span><span class="o">=</span><span class="s2">&quot;numpy_scalars&quot;</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="k">if</span> <span class="n">op</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">SUPPORTED_REDUCTION_OPS</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;value </span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> not supported by _reduce_by_op.&quot;</span><span class="p">)</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    pda : pdarray</span>
-<span class="sd">        The pdarray instance to be evaluated</span>
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span> <span class="nf">op_func</span><span class="p">(</span>
+        <span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
+        <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">_common_reduction</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">pda</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span>
 
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    bool</span>
-<span class="sd">        Indicates if 1..n pdarray elements evaluate to True</span>
+    <span class="n">op_func</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    </span><span class="si">{</span><span class="n">function_descriptor</span><span class="si">}</span>
 
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    TypeError</span>
-<span class="sd">        Raised if pda is not a pdarray instance</span>
-<span class="sd">    RuntimeError</span>
-<span class="sd">        Raised if there&#39;s a server-side error thrown</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">parse_single_value</span><span class="p">(</span>
-        <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;reduce-&gt;bool</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;any&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;nAxes&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="p">[]})</span>
-    <span class="p">)</span></div>
+<span class="s2">    Parameters</span>
+<span class="s2">    ----------</span>
+<span class="s2">    pda : pdarray</span>
+<span class="s2">        The pdarray instance to be evaluated</span>
+<span class="s2">    axis : int or Tuple[int, ...], optional</span>
+<span class="s2">        The axis or axes along which to compute the sum. If None, the sum of the entire array is</span>
+<span class="s2">        computed (returning a scalar).</span>
+<span class="s2">    keepdims : bool, optional</span>
+<span class="s2">        Whether to keep the singleton dimension(s) along `axis` in the result.</span>
 
+<span class="s2">    Returns</span>
+<span class="s2">    -------</span>
+<span class="s2">    pdarray or </span><span class="si">{</span><span class="n">return_dtype</span><span class="si">}</span>
+<span class="s2">        </span><span class="si">{</span><span class="n">return_descriptor</span><span class="si">}</span>
 
+<span class="s2">    Raises</span>
+<span class="s2">    ------</span>
+<span class="s2">    TypeError</span>
+<span class="s2">        Raised if pda is not a pdarray instance</span>
+<span class="s2">    RuntimeError</span>
+<span class="s2">        Raised if there&#39;s a server-side error thrown</span>
+<span class="s2">     &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="all">
-<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.all">[docs]</a>
-<span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return True iff all elements of the array evaluate to True.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    pda : pdarray</span>
-<span class="sd">        The pdarray instance to be evaluated</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    bool</span>
-<span class="sd">        Indicates if all pdarray elements evaluate to True</span>
-
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    TypeError</span>
-<span class="sd">        Raised if pda is not a pdarray instance</span>
-<span class="sd">    RuntimeError</span>
-<span class="sd">        Raised if there&#39;s a server-side error thrown</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">parse_single_value</span><span class="p">(</span>
-        <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;reduce-&gt;bool</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;nAxes&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="p">[]})</span>
-    <span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="is_sorted">
-<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.is_sorted">[docs]</a>
-<span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">is_sorted</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return True iff the array is monotonically non-decreasing.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    pda : pdarray</span>
-<span class="sd">        The pdarray instance to be evaluated</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    bool</span>
-<span class="sd">        Indicates if the array is monotonically non-decreasing</span>
-
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    TypeError</span>
-<span class="sd">        Raised if pda is not a pdarray instance</span>
-<span class="sd">    RuntimeError</span>
-<span class="sd">        Raised if there&#39;s a server-side error thrown</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">parse_single_value</span><span class="p">(</span>
-        <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;reduce-&gt;bool</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;is_sorted&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;nAxes&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="p">[]}</span>
-        <span class="p">)</span>
-    <span class="p">)</span></div>
-
+    <span class="k">return</span> <span class="n">op_func</span>
 
 
 <span class="c1"># check whether a reduction of the given axes on an &#39;ndim&#39; dimensional array</span>
@@ -3241,8 +3243,45 @@
 
 
 <span class="c1"># helper function for sum, min, max, prod</span>
-<span class="k">def</span> <span class="nf">_comon_reduction</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]],</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;sum&quot;</span><span class="p">,</span> <span class="s2">&quot;min&quot;</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="s2">&quot;prod&quot;</span><span class="p">]:</span>
+
+
+<span class="nd">@typechecked</span>
+<span class="k">def</span> <span class="nf">_common_reduction</span><span class="p">(</span>
+    <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
+    <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return reduction of a pdarray by an operation along an axis.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    kind : str</span>
+<span class="sd">        The name of the reduction operation.  Must be a member of SUPPORTED_REDUCTION_OPS.</span>
+<span class="sd">    pda : pdarray</span>
+<span class="sd">        The pdarray instance to be evaluated</span>
+<span class="sd">    axis : int or Tuple[int, ...], optional</span>
+<span class="sd">        The axis or axes along which to compute the sum. If None, the sum of the entire array is</span>
+<span class="sd">        computed (returning a scalar).</span>
+<span class="sd">    keepdims : bool, optional</span>
+<span class="sd">        Whether to keep the singleton dimension(s) along `axis` in the result.</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        Raised if pda is not a pdarray instance</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        Raised if there&#39;s a server-side error thrown</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Raised op is not a supported reduction operation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">arkouda.numpy</span> <span class="kn">import</span> <span class="n">squeeze</span>
+
+    <span class="k">if</span> <span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">SUPPORTED_REDUCTION_OPS</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported reduction type: </span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="n">axis_</span> <span class="o">=</span> <span class="p">(</span>
@@ -3268,45 +3307,77 @@
             <span class="p">)</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span>
             <span class="n">generic_msg</span><span class="p">(</span>
                 <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="n">axis_</span><span class="p">,</span> <span class="s2">&quot;skipNan&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
             <span class="p">)</span>
         <span class="p">)</span>
+        <span class="k">if</span> <span class="n">keepdims</span> <span class="ow">or</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">pda</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">squeeze</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="sum">
-<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.sum">[docs]</a>
-<span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">sum</span><span class="p">(</span>
-    <span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">numeric_and_bool_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return the sum of all elements in the array.</span>
+<span class="nb">globals</span><span class="p">()[</span><span class="s2">&quot;any&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_make_reduction_func</span><span class="p">(</span>
+    <span class="s2">&quot;any&quot;</span><span class="p">,</span>
+    <span class="n">function_descriptor</span><span class="o">=</span><span class="s2">&quot;Return True iff any element of the array evaluates to True.&quot;</span><span class="p">,</span>
+    <span class="n">return_descriptor</span><span class="o">=</span><span class="s2">&quot;Indicates if any pdarray element evaluates to True.&quot;</span><span class="p">,</span>
+    <span class="n">return_dtype</span><span class="o">=</span><span class="s2">&quot;bool&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    pda : pdarray</span>
-<span class="sd">        Values for which to calculate the sum</span>
-<span class="sd">    axis : int or Tuple[int, ...], optional</span>
-<span class="sd">        The axis or axes along which to compute the sum. If None, the sum of the entire array is</span>
-<span class="sd">        computed (returning a scalar).</span>
+<span class="nb">globals</span><span class="p">()[</span><span class="s2">&quot;all&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_make_reduction_func</span><span class="p">(</span>
+    <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+    <span class="n">function_descriptor</span><span class="o">=</span><span class="s2">&quot;Return True iff all elements of the array evaluate to True.&quot;</span><span class="p">,</span>
+    <span class="n">return_descriptor</span><span class="o">=</span><span class="s2">&quot;Indicates if all pdarray elements evaluate to True.&quot;</span><span class="p">,</span>
+    <span class="n">return_dtype</span><span class="o">=</span><span class="s2">&quot;bool&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    np.float64</span>
-<span class="sd">        The sum of all elements in the array</span>
+<span class="nb">globals</span><span class="p">()[</span><span class="s2">&quot;is_sorted&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_make_reduction_func</span><span class="p">(</span>
+    <span class="s2">&quot;isSorted&quot;</span><span class="p">,</span>
+    <span class="n">function_descriptor</span><span class="o">=</span><span class="s2">&quot;Return True iff the array is monotonically non-decreasing.&quot;</span><span class="p">,</span>
+    <span class="n">return_descriptor</span><span class="o">=</span><span class="s2">&quot;Indicates if the array is monotonically non-decreasing.&quot;</span><span class="p">,</span>
+    <span class="n">return_dtype</span><span class="o">=</span><span class="s2">&quot;bool&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    TypeError</span>
-<span class="sd">        Raised if pda is not a pdarray instance</span>
-<span class="sd">    RuntimeError</span>
-<span class="sd">        Raised if there&#39;s a server-side error thrown</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_comon_reduction</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="s2">&quot;sum&quot;</span><span class="p">)</span></div>
 
+<span class="nb">globals</span><span class="p">()[</span><span class="s2">&quot;is_locally_sorted&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_make_reduction_func</span><span class="p">(</span>
+    <span class="s2">&quot;isSortedLocally&quot;</span><span class="p">,</span>
+    <span class="n">function_descriptor</span><span class="o">=</span><span class="s2">&quot;Return True iff the array is monotonically non-decreasing &quot;</span>
+    <span class="s2">&quot;on each locale where the data is stored.&quot;</span><span class="p">,</span>
+    <span class="n">return_descriptor</span><span class="o">=</span><span class="s2">&quot;Indicates if the array is monotonically non-decreasing on each locale.&quot;</span><span class="p">,</span>
+    <span class="n">return_dtype</span><span class="o">=</span><span class="s2">&quot;bool&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">globals</span><span class="p">()[</span><span class="s2">&quot;sum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_make_reduction_func</span><span class="p">(</span>
+    <span class="s2">&quot;sum&quot;</span><span class="p">,</span>
+    <span class="n">function_descriptor</span><span class="o">=</span><span class="s2">&quot;Return the sum of all elements in the array.&quot;</span><span class="p">,</span>
+    <span class="n">return_descriptor</span><span class="o">=</span><span class="s2">&quot;The sum of all elements in the array.&quot;</span><span class="p">,</span>
+    <span class="n">return_dtype</span><span class="o">=</span><span class="s2">&quot;float64&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">globals</span><span class="p">()[</span><span class="s2">&quot;prod&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_make_reduction_func</span><span class="p">(</span>
+    <span class="s2">&quot;prod&quot;</span><span class="p">,</span>
+    <span class="n">function_descriptor</span><span class="o">=</span><span class="s2">&quot;Return the product of all elements in the array. &quot;</span>
+    <span class="s2">&quot;Return value is always a np.float64 or np.int64&quot;</span><span class="p">,</span>
+    <span class="n">return_descriptor</span><span class="o">=</span><span class="s2">&quot;The product calculated from the pda.&quot;</span><span class="p">,</span>
+    <span class="n">return_dtype</span><span class="o">=</span><span class="s2">&quot;numpy_scalars&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">globals</span><span class="p">()[</span><span class="s2">&quot;min&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_make_reduction_func</span><span class="p">(</span>
+    <span class="s2">&quot;min&quot;</span><span class="p">,</span>
+    <span class="n">function_descriptor</span><span class="o">=</span><span class="s2">&quot;Return the minimum value of the array.&quot;</span><span class="p">,</span>
+    <span class="n">return_descriptor</span><span class="o">=</span><span class="s2">&quot;The min calculated from the pda.&quot;</span><span class="p">,</span>
+    <span class="n">return_dtype</span><span class="o">=</span><span class="s2">&quot;numpy_scalars&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="nb">globals</span><span class="p">()[</span><span class="s2">&quot;max&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_make_reduction_func</span><span class="p">(</span>
+    <span class="s2">&quot;max&quot;</span><span class="p">,</span>
+    <span class="n">function_descriptor</span><span class="o">=</span><span class="s2">&quot;Return the maximum value of the array.&quot;</span><span class="p">,</span>
+    <span class="n">return_descriptor</span><span class="o">=</span><span class="s2">&quot;The max calculated from the pda.&quot;</span><span class="p">,</span>
+    <span class="n">return_dtype</span><span class="o">=</span><span class="s2">&quot;numpy_scalars&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <div class="viewcode-block" id="dot">
@@ -3315,7 +3386,7 @@
 <span class="k">def</span> <span class="nf">dot</span><span class="p">(</span>
     <span class="n">pda1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span>
     <span class="n">pda2</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the sum of the elementwise product of two arrays of the same size (the dot product) or</span>
 <span class="sd">    the product of a singleton element and an array.</span>
@@ -3360,103 +3431,6 @@
             <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">pda1</span> <span class="o">*</span> <span class="n">pda2</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">pda1</span> <span class="o">*</span> <span class="n">pda2</span></div>
-
-
-
-<div class="viewcode-block" id="prod">
-<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.prod">[docs]</a>
-<span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">prod</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return the product of all elements in the array. Return value is</span>
-<span class="sd">    always a np.float64 or np.int64</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    pda : pdarray</span>
-<span class="sd">        Values for which to calculate the product</span>
-<span class="sd">    axis : int or Tuple[int, ...], optional</span>
-<span class="sd">        The axis or axes along which to compute the sum. If None, the sum of the entire array is</span>
-<span class="sd">        computed (returning a scalar).</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    numpy_scalars</span>
-<span class="sd">        The product calculated from the pda</span>
-
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    TypeError</span>
-<span class="sd">        Raised if pda is not a pdarray instance</span>
-<span class="sd">    RuntimeError</span>
-<span class="sd">        Raised if there&#39;s a server-side error thrown</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_comon_reduction</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="s2">&quot;prod&quot;</span><span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="min">
-<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.min">[docs]</a>
-<span class="k">def</span> <span class="nf">min</span><span class="p">(</span>
-    <span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return the minimum value of the array.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    pda : pdarray</span>
-<span class="sd">        Values for which to calculate the min</span>
-<span class="sd">    axis : int or Tuple[int, ...], optional</span>
-<span class="sd">        The axis or axes along which to compute the sum. If None, the sum of the entire array is</span>
-<span class="sd">        computed (returning a scalar).</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    numpy_scalars</span>
-<span class="sd">        The min calculated from the pda</span>
-
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    TypeError</span>
-<span class="sd">        Raised if pda is not a pdarray instance</span>
-<span class="sd">    RuntimeError</span>
-<span class="sd">        Raised if there&#39;s a server-side error thrown</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_comon_reduction</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="s2">&quot;min&quot;</span><span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="max">
-<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.max">[docs]</a>
-<span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">max</span><span class="p">(</span>
-    <span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return the maximum value of the array.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    pda : pdarray</span>
-<span class="sd">        Values for which to calculate the max</span>
-<span class="sd">    axis : int or Tuple[int, ...], optional</span>
-<span class="sd">        The axis or axes along which to compute the sum. If None, the sum of the entire array is</span>
-<span class="sd">        computed (returning a scalar).</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    numpy_scalars:</span>
-<span class="sd">        The max calculated from the pda</span>
-
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    TypeError</span>
-<span class="sd">        Raised if pda is not a pdarray instance</span>
-<span class="sd">    RuntimeError</span>
-<span class="sd">        Raised if there&#39;s a server-side error thrown</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_comon_reduction</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">)</span></div>
 
 
 
@@ -3759,7 +3733,7 @@
 <span class="k">def</span> <span class="nf">divmod</span><span class="p">(</span>
     <span class="n">x</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span>
     <span class="n">y</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span>
-    <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">bool_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parameters</span>
@@ -4381,7 +4355,9 @@
 <div class="viewcode-block" id="power">
 <a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.power">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">power</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">pwr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">power</span><span class="p">(</span>
+    <span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">pwr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">bool_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Raises an array to a power. If where is given, the operation will only take place in the positions</span>
 <span class="sd">    where the where condition is True.</span>
@@ -4432,7 +4408,7 @@
 <div class="viewcode-block" id="sqrt">
 <a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.sqrt">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">sqrt</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">sqrt</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">bool_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Takes the square root of array. If where is given, the operation will only take place in</span>
 <span class="sd">    the positions where the where condition is True.</span>

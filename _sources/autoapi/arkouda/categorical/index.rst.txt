@@ -191,7 +191,7 @@ Module Contents
 
 
 
-   .. py:method:: equals(other) -> bool
+   .. py:method:: equals(other) -> arkouda.numpy.dtypes.bool_scalars
 
       Whether Categoricals are the same size and all entries are equal.
 

@@ -232,7 +232,7 @@ Module Contents
 
 
 
-   .. py:method:: hasnans() -> bool
+   .. py:method:: hasnans() -> bool_scalars
 
       Return True if there are any NaNs.
 

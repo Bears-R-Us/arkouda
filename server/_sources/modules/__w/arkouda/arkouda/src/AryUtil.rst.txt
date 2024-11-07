@@ -47,7 +47,7 @@ or
    :type x: []
    
 
-.. function:: proc isSorted(A: [?D] ?t): bool
+.. function:: proc isSorted(A: [?D] ?t): bool where D.rank == 1
 
    
    Determines if the passed array is sorted.
@@ -56,7 +56,7 @@ or
    
    
 
-.. function:: proc isSortedOver(A: [?D] ?t, slice, axisIdx: int)
+.. function:: proc isSortedOver(const ref A: [?D] ?t, const ref slice, axisIdx: int)
 
    
    Determines if the passed array is sorted along a given axis,

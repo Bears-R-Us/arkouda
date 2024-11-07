@@ -199,6 +199,7 @@ Functions
    arkouda.numpy.histogram
    arkouda.numpy.histogram2d
    arkouda.numpy.histogramdd
+   arkouda.numpy.isSupportedBool
    arkouda.numpy.isSupportedFloat
    arkouda.numpy.isSupportedInt
    arkouda.numpy.isSupportedNumber
@@ -4773,6 +4774,8 @@ Module Contents
 
 
 
+
+.. py:function:: isSupportedBool(num)
 
 .. py:function:: isSupportedFloat(num)
 

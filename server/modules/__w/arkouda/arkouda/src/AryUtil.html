@@ -174,7 +174,7 @@ Arrays larger than printThresh will print less data.</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.isSorted">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isSorted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A:</span> <span class="pre">[?D]</span> <span class="pre">?t</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#AryUtil.isSorted" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isSorted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A:</span> <span class="pre">[?D]</span> <span class="pre">?t</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">D.rank</span> <span class="pre">==</span> <span class="pre">1</span></em><a class="headerlink" href="#AryUtil.isSorted" title="Link to this definition">¶</a></dt>
 <dd><p>Determines if the passed array is sorted.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -185,7 +185,7 @@ Arrays larger than printThresh will print less data.</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.isSortedOver">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isSortedOver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A:</span> <span class="pre">[?D]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">slice</span></em>, <em class="sig-param"><span class="pre">axisIdx:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AryUtil.isSortedOver" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isSortedOver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">A:</span> <span class="pre">[?D]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">slice</span></em>, <em class="sig-param"><span class="pre">axisIdx:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AryUtil.isSortedOver" title="Link to this definition">¶</a></dt>
 <dd><p>Determines if the passed array is sorted along a given axis,
 within a slice domain.</p>
 <dl class="field-list simple">

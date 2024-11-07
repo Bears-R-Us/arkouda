@@ -9,6 +9,7 @@ Classes
 
 .. autoapisummary::
 
+   arkouda.dtypes.ARKOUDA_SUPPORTED_BOOLS
    arkouda.dtypes.ARKOUDA_SUPPORTED_DTYPES
    arkouda.dtypes.ARKOUDA_SUPPORTED_FLOATS
    arkouda.dtypes.ARKOUDA_SUPPORTED_INTS
@@ -60,6 +61,7 @@ Functions
    arkouda.dtypes.dtype
    arkouda.dtypes.get_byteorder
    arkouda.dtypes.get_server_byteorder
+   arkouda.dtypes.isSupportedBool
    arkouda.dtypes.isSupportedFloat
    arkouda.dtypes.isSupportedInt
    arkouda.dtypes.isSupportedNumber
@@ -68,6 +70,33 @@ Functions
 
 Package Contents
 ----------------
+
+.. py:class:: ARKOUDA_SUPPORTED_BOOLS
+
+   Built-in immutable sequence.
+
+   If no argument is given, the constructor returns an empty tuple.
+   If iterable is specified the tuple is initialized from iterable's items.
+
+   If the argument is a tuple, the return value is the same object.
+
+
+
+   .. py:method:: count(value, /)
+
+      Return number of occurrences of value.
+
+
+
+
+   .. py:method:: index(value, start=0, stop=9223372036854775807, /)
+
+      Return first index of value.
+
+      Raises ValueError if the value is not present.
+
+
+
 
 .. py:class:: ARKOUDA_SUPPORTED_DTYPES
 
@@ -1573,6 +1602,8 @@ Package Contents
    have 'name' always set. If 'inst' is False, then the alias can't be instantiated,
    this is used by e.g. typing.List and typing.Dict.
 
+
+.. py:function:: isSupportedBool(num)
 
 .. py:function:: isSupportedFloat(num)
 

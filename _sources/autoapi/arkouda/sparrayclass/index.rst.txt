@@ -41,7 +41,7 @@ Module Contents
        the pdarray instance
 
 
-.. py:class:: sparray(name: str, mydtype: Union[numpy.dtype, str], size: arkouda.dtypes.int_scalars, nnz: arkouda.dtypes.int_scalars, ndim: arkouda.dtypes.int_scalars, shape: Sequence[int], layout: str, itemsize: arkouda.dtypes.int_scalars, max_bits: Optional[int] = None)
+.. py:class:: sparray(name: str, mydtype: Union[numpy.dtype, str], size: arkouda.numpy.dtypes.int_scalars, nnz: arkouda.numpy.dtypes.int_scalars, ndim: arkouda.numpy.dtypes.int_scalars, shape: Sequence[int], layout: str, itemsize: arkouda.numpy.dtypes.int_scalars, max_bits: Optional[int] = None)
 
    The class for sparse arrays. This class contains only the
    attributies of the array; the data resides on the arkouda
