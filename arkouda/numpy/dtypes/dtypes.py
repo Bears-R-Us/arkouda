@@ -56,6 +56,7 @@ __all__ = [
     "int8",
     "intTypes",
     "int_scalars",
+    "isSupportedBool",
     "isSupportedFloat",
     "isSupportedInt",
     "isSupportedNumber",
@@ -245,6 +246,8 @@ class DType(Enum):
         return self.value
 
 
+ARKOUDA_SUPPORTED_BOOLS = (bool, np.bool_)
+
 ARKOUDA_SUPPORTED_INTS = (
     int,
     np.int8,
@@ -311,6 +314,10 @@ def isSupportedFloat(num):
 
 def isSupportedNumber(num):
     return isinstance(num, ARKOUDA_SUPPORTED_NUMBERS)
+
+
+def isSupportedBool(num):
+    return isinstance(num, ARKOUDA_SUPPORTED_BOOLS)
 
 
 def resolve_scalar_dtype(val: object) -> str:

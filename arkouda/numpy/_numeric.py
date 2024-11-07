@@ -8,7 +8,7 @@ import numpy as np
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
-from arkouda.dtypes import str_ as akstr_
+from arkouda.numpy.dtypes import str_ as akstr_
 from arkouda.groupbyclass import GroupBy, groupable
 from arkouda.numpy.dtypes import DTypes, bigint
 from arkouda.numpy.dtypes import bool_ as ak_bool

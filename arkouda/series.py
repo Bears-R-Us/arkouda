@@ -16,7 +16,7 @@ from arkouda.groupbyclass import GroupBy, groupable_element_type
 from arkouda.index import Index, MultiIndex
 from arkouda.numpy import cast as akcast
 from arkouda.numpy import isnan, value_counts
-from arkouda.numpy.dtypes import dtype, float64, int64
+from arkouda.numpy.dtypes import bool_scalars, dtype, float64, int64
 from arkouda.pdarrayclass import (
     RegistrationError,
     any,
@@ -1442,7 +1442,7 @@ class Series:
         """
         return self.notna()
 
-    def hasnans(self) -> bool:
+    def hasnans(self) -> bool_scalars:
         """
         Return True if there are any NaNs.
 
@@ -1465,9 +1465,11 @@ class Series:
         True
         """
         if is_float(self.values):
-            return any(isnan(self.values))
-        else:
-            return False
+            result = any(isnan(self.values))
+            if isinstance(result, (bool, np.bool_)):
+                return result
+
+        return False
 
     def fillna(self, value) -> Series:
         """

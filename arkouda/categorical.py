@@ -26,6 +26,7 @@ from arkouda.logger import getArkoudaLogger
 from arkouda.numpy import cast as akcast
 from arkouda.numpy import where
 from arkouda.numpy.dtypes import bool_ as akbool
+from arkouda.numpy.dtypes import bool_scalars
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import int_scalars, resolve_scalar_dtype, str_, str_scalars
@@ -290,7 +291,7 @@ class Categorical:
             new_categories = concatenate((new_categories, array([NAvalue])))
         return [arr.set_categories(new_categories, NAvalue=NAvalue) for arr in arrays]
 
-    def equals(self, other) -> bool:
+    def equals(self, other) -> bool_scalars:
         """
         Whether Categoricals are the same size and all entries are equal.
 
@@ -320,9 +321,11 @@ class Categorical:
             if other.size != self.size:
                 return False
             else:
-                return akall(self == other)
-        else:
-            return False
+                result = akall(self == other)
+                if isinstance(result, (bool, np.bool_)):
+                    return result
+
+        return False
 
     def set_categories(self, new_categories, NAvalue=None):
         """
