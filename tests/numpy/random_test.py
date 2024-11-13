@@ -237,7 +237,7 @@ class TestRandom:
         )
 
     def test_standard_gamma(self):
-        rng = ak.random.default_rng(17)
+        rng = ak.random.default_rng(12345)
         num_samples = 5
         # scalar shape
         scal_sample = rng.standard_gamma(2, size=num_samples).to_list()
@@ -246,14 +246,14 @@ class TestRandom:
         arr_sample = rng.standard_gamma(ak.arange(5), size=num_samples).to_list()
 
         # reset rng with same seed and ensure we get same results
-        rng = ak.random.default_rng(17)
+        rng = ak.random.default_rng(12345)
         assert rng.standard_gamma(2, size=num_samples).to_list() == scal_sample
         assert rng.standard_gamma(ak.arange(5), size=num_samples).to_list() == arr_sample
 
     def test_standard_gamma_hypothesis_testing(self):
         # I tested this many times without a set seed, but with no seed
         # it's expected to fail one out of every ~20 runs given a pval limit of 0.05.
-        rng = ak.random.default_rng(123)
+        rng = ak.random.default_rng(12345)
         num_samples = 10 ** 2
 
         k = rng.uniform(0, 10)
