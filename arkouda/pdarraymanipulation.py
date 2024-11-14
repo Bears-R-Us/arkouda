@@ -3,7 +3,7 @@ from typeguard import typechecked
 
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
-from arkouda.dtypes import dtype as akdtype
+from arkouda.numpy.dtypes import dtype as akdtype
 
 import numpy as np
 

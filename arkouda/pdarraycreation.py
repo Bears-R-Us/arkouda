@@ -489,6 +489,9 @@ def zeros(
     if ndim > get_max_array_rank():
         raise ValueError(f"array rank {ndim} exceeds maximum of {get_max_array_rank()}")
 
+    if shape == ():
+        return scalar_array(0, dtype=dtype)
+
     repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape})
 
     return create_pdarray(repMsg, max_bits=max_bits)

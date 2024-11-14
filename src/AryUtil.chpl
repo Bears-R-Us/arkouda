@@ -96,7 +96,7 @@ module AryUtil
       :arg A: array to check
 
     */
-    proc isSorted(A:[?D] ?t): bool {
+    proc isSorted(A:[?D] ?t): bool where D.rank == 1 {
         var sorted: bool;
         sorted = true;
         forall (a,i) in zip(A,D) with (&& reduce sorted) {
@@ -115,7 +115,7 @@ module AryUtil
       :arg slice: a slice domain (only the indices in this domain are checked)
       :arg axisIdx: the axis to check
     */
-    proc isSortedOver(A: [?D] ?t, slice, axisIdx: int) {
+    proc isSortedOver(const ref A: [?D] ?t, const ref slice, axisIdx: int) {
         var sorted = true;
         forall i in slice with (&& reduce sorted, var im1: D.rank*int) {
             if i[axisIdx] > slice.dim(axisIdx).low {

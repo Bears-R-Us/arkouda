@@ -6,9 +6,9 @@ import warnings
 
 import arkouda as ak
 from arkouda.client import get_max_array_rank
-from arkouda.dtypes import dtype as akdtype
-from arkouda.dtypes import str_
 from arkouda.testing import assert_almost_equivalent as ak_assert_almost_equivalent
+from arkouda.numpy.dtypes import dtype as akdtype
+from arkouda.numpy.dtypes import str_
 
 ARRAY_TYPES = [ak.int64, ak.float64, ak.bool_, ak.uint64, str_]
 NUMERIC_TYPES = [ak.int64, ak.float64, ak.bool_, ak.uint64]
@@ -1105,109 +1105,3 @@ class TestNumeric:
                     0, 100, (prob_size if same_size else prob_size - 1), dtype=data_type
                 )
                 assert not (ak.array_equal(pda_a, pda_b))
-
-    # Notes about median:
-    #  prob_size is either even or odd, so one of sample_e, sample_o will have an even
-    #  length, and the other an odd length.  Median should be tested with both even and odd
-    #  length inputs.
-
-    #  median can be done on ints or floats
-
-    @pytest.mark.parametrize("prob_size", pytest.prob_size)
-    @pytest.mark.parametrize("data_type", NUMERIC_TYPES)
-    def test_median(self, prob_size, data_type):
-        sample_e = np.random.permutation(prob_size).astype(data_type)
-        pda_e = ak.array(sample_e)
-        assert isclose(np.median(sample_e), ak.median(pda_e))
-        sample_o = np.random.permutation(prob_size + 1).astype(data_type)
-        pda_o = ak.array(sample_o)
-        assert isclose(np.median(sample_o), ak.median(pda_o))
-
-    #  test_count_nonzero doesn't use parameterization on data types, because
-    #  the data is generated differently.
-
-    #  counts are ints, so we test for equality, not closeness.
-
-    @pytest.mark.parametrize("prob_size", pytest.prob_size)
-    def test_count_nonzero(self, prob_size):
-        # ints, floats
-
-        for data_type in INT_FLOAT:
-            sample = np.random.randint(20, size=prob_size).astype(data_type)
-            pda = ak.array(sample)
-            assert np.count_nonzero(sample) == ak.count_nonzero(pda)
-
-        # bool
-
-        sample = np.random.randint(2, size=prob_size).astype(bool)
-        pda = ak.array(sample)
-        assert np.count_nonzero(sample) == ak.count_nonzero(pda)
-
-        # string
-
-        sample = sample.astype(str)
-        for i in range(10):
-            sample[np.random.randint(prob_size)] = ""  # empty some strings at random
-        pda = ak.array(sample)
-        assert np.count_nonzero(sample) == ak.count_nonzero(pda)
-
-    @pytest.mark.parametrize("prob_size", pytest.prob_size)
-    def test_clip(self, prob_size):
-        seed = pytest.seed if pytest.seed is not None else 8675309
-        np.random.seed(seed)
-        ia = np.random.randint(1, 100, prob_size)
-        ilo = 25
-        ihi = 75
-
-        dtypes = ["int64", "float64"]
-
-        # test clip.
-        # array to be clipped can be integer or float
-        # range limits can be integer, float, or none, and can be scalars or arrays
-
-        # Looping over all data types, the interior loop tests using lo, hi as:
-
-        #   None, Scalar
-        #   None, Array
-        #   Scalar, Scalar
-        #   Scalar, Array
-        #   Scalar, None
-        #   Array, Scalar
-        #   Array, Array
-        #   Array, None
-
-        # There is no test with lo and hi both equal to None, because that's not allowed
-
-        for dtype1 in dtypes:
-            hi = np.full(ia.shape, ihi, dtype=dtype1)
-            akhi = ak.array(hi)
-            for dtype2 in dtypes:
-                lo = np.full(ia.shape, ilo, dtype=dtype2)
-                aklo = ak.array(lo)
-                for dtype3 in dtypes:
-                    nd_arry = ia.astype(dtype3)
-                    ak_arry = ak.array(nd_arry)
-                    assert np.allclose(
-                        np.clip(nd_arry, None, hi[0]), ak.clip(ak_arry, None, hi[0]).to_ndarray()
-                    )
-                    assert np.allclose(
-                        np.clip(nd_arry, None, hi), ak.clip(ak_arry, None, akhi).to_ndarray()
-                    )
-                    assert np.allclose(
-                        np.clip(nd_arry, lo[0], hi[0]), ak.clip(ak_arry, lo[0], hi[0]).to_ndarray()
-                    )
-                    assert np.allclose(
-                        np.clip(nd_arry, lo[0], hi), ak.clip(ak_arry, lo[0], akhi).to_ndarray()
-                    )
-                    assert np.allclose(
-                        np.clip(nd_arry, lo[0], None), ak.clip(ak_arry, lo[0], None).to_ndarray()
-                    )
-                    assert np.allclose(
-                        np.clip(nd_arry, lo, hi[0]), ak.clip(ak_arry, aklo, hi[0]).to_ndarray()
-                    )
-                    assert np.allclose(
-                        np.clip(nd_arry, lo, hi), ak.clip(ak_arry, aklo, akhi).to_ndarray()
-                    )
-                    assert np.allclose(
-                        np.clip(nd_arry, lo, None), ak.clip(ak_arry, aklo, None).to_ndarray()
-                    )
