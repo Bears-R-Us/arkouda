@@ -51,423 +51,227 @@ module EfuncMsg
     proc sine (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return sin(x); }
        
-    proc sine (x : [?d] ?t) : [d] real throws
-        { throw new Error ("sin does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="cos")
     proc cosine (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return cos(x); }
        
-    proc cosine (x : [?d] ?t) : [d] real throws
-        { throw new Error ("cos does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="tan")
     proc tangent (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return tan(x); }
        
-    proc tangent (x : [?d] ?t) : [d] real throws
-        { throw new Error ("tan does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="arcsin")
     proc arcsine (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return asin(x); }
        
-    proc arcsine (x : [?d] ?t) : [d] real throws
-        { throw new Error ("arcsin does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="arccos")
     proc arccosine (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return acos(x); }
        
-    proc arccosine (x : [?d] ?t) : [d] real throws
-        { throw new Error ("arccos does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="arctan")
     proc arctangent (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return atan(x); }
        
-    proc arctangent (x : [?d] ?t) : [d] real throws
-        { throw new Error ("arctan does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="sinh")
     proc hypsine (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return sinh(x); }
        
-    proc hypsine (x : [?d] ?t) : [d] real throws
-        { throw new Error ("sinh does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="cosh")
     proc hypcosine (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return cosh(x); }
        
-    proc hypcosine (x : [?d] ?t) : [d] real throws
-        { throw new Error ("cosh does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="tanh")
     proc hyptangent (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return tanh(x); }
        
-    proc hyptangent (x : [?d] ?t) : [d] real throws
-        { throw new Error ("tanh does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="arcsinh")
     proc archypsine (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return asinh(x); }
        
-    proc archypsine (x : [?d] ?t) : [d] real throws
-        { throw new Error ("arcsinh does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="arccosh")
     proc archypcosine (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return acosh(x); }
        
-    proc archypcosine (x : [?d] ?t) : [d] real throws
-        { throw new Error ("arccosh does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="arctanh")
     proc archyptangent (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return atanh(x); }
        
-    proc archyptangent (x : [?d] ?t) : [d] real throws
-        { throw new Error ("arctanh does not support type %s".format(type2str(t))) ; }
+    @arkouda.registerCommand(name="abs")
+    proc absolut (const ref pda : [?d] ?t) : [d] t throws
+        where (t==int || t==real)  { return abs(pda) ; } // TODO maybe: allow uint and return pda
 
-//  End of rewrite section -- delete this comment after all of EfuncMsg is rewritten.
+    @arkouda.registerCommand(name="square")
+    proc boxy (const ref pda : [?d] ?t) : [d] t throws
+        where (t==int || t==real || t==uint)  { return square(pda) ; }
 
-    @arkouda.registerND
-    proc efuncMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-        param pn = Reflection.getRoutineName();
-        var repMsg: string; // response message; attributes of returned array(s) will be appended to this string
-        var name = msgArgs.getValueOf("array");
-        var efunc = msgArgs.getValueOf("func");
-        var rname = st.nextName();
+    @arkouda.registerCommand(name="exp")
+    proc expo (const ref pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint)  { return exp(pda) ; }
 
-        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+    @arkouda.registerCommand(name="expm1")
+    proc expom (const ref pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint)  { return expm1(pda) ; }
 
-        eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                           "cmd: %s efunc: %s pdarray: %s".format(cmd,efunc,st.attrib(name)));
+    @arkouda.registerCommand(name="log")
+    proc log_e (const ref pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint)  { return log(pda) ; }
 
-        select (gEnt.dtype) {
-            when (DType.Int64) {
-                var e = toSymEntry(gEnt,int, nd);
-                ref ea = e.a;
-                select efunc
-                {
-                    when "abs" {
-                        st.addEntry(rname, new shared SymEntry(abs(ea)));
-                    }
-                    when "log" {
-                        st.addEntry(rname, new shared SymEntry(log(ea)));
-                    }
-                    when "round" {
-                        st.addEntry(rname, new shared SymEntry(ea));
-                    }
-                    when "sgn" {
-                        st.addEntry(rname, new shared SymEntry(sgn(ea)));
-                    }
-                    when "exp" {
-                        st.addEntry(rname, new shared SymEntry(exp(ea)));
-                    }
-                    when "square" {
-                        st.addEntry(rname, new shared SymEntry(square(ea)));
-                    }
-                    when "cumsum" {
-                        if nd == 1 {
-                            // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-                            overMemLimit(numBytes(int) * e.size);
-                            st.addEntry(rname, new shared SymEntry(+ scan e.a));
-                        } else {
-                            var errorMsg = notImplementedError(pn,efunc,gEnt.dtype,nd);
-                            eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                            return new MsgTuple(errorMsg, MsgType.ERROR);
-                        }
-                    }
-                    when "cumprod" {
-                        if nd == 1 {
-                            // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-                            overMemLimit(numBytes(int) * e.size);
-                            st.addEntry(rname, new shared SymEntry(* scan e.a));
-                        } else {
-                            var errorMsg = notImplementedError(pn,efunc,gEnt.dtype,nd);
-                            eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                            return new MsgTuple(errorMsg, MsgType.ERROR);
-                        }
-                    }
-                    when "hash64" {
-                        overMemLimit(numBytes(int) * e.size);
-                        var a = st.addEntry(rname, e.tupShape, uint);
-                        forall (ai, x) in zip(a.a, e.a) {
-                            ai = sipHash64(x): uint;
-                        }
-                    }
-                    when "hash128" {
-                        overMemLimit(numBytes(int) * e.size * 2);
-                        var rname2 = st.nextName();
-                        var a1 = st.addEntry(rname2, e.tupShape, uint);
-                        var a2 = st.addEntry(rname, e.tupShape, uint);
-                        forall (a1i, a2i, x) in zip(a1.a, a2.a, e.a) {
-                            (a1i, a2i) = sipHash128(x): (uint, uint);
-                        }
-                        // Put first array's attrib in repMsg and let common
-                        // code append second array's attrib
-                        repMsg += "created " + st.attrib(rname2) + "+";
-                    }
-                    when "popcount" {
-                        st.addEntry(rname, new shared SymEntry(popCount(ea)));
-                    }
-                    when "parity" {
-                        st.addEntry(rname, new shared SymEntry(parity(ea)));
-                    }
-                    when "clz" {
-                        st.addEntry(rname, new shared SymEntry(clz(ea)));
-                    }
-                    when "ctz" {
-                        st.addEntry(rname, new shared SymEntry(ctz(ea)));
-                    }
-                    when "not" {
-                        st.addEntry(rname, new shared SymEntry(!e.a));
-                    }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,efunc,gEnt.dtype);
-                        eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);
-                    }
+    @arkouda.registerCommand(name="log1p")
+    proc log_1p (const ref pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint)  { return log1p(pda) ; }
+
+//  chapel log2 returns ints when given ints, so the input has been cast to real.
+
+    @arkouda.registerCommand(name="log2")
+    proc log_2 (const ref pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint)  { return log2(pda:real) ; }
+
+    @arkouda.registerCommand(name="log10")
+    proc log_10 (const ref pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint)  { return log10(pda) ; }
+
+    @arkouda.registerCommand(name="isinf")
+    proc isinf_ (pda : [?d] real) : [d] bool { return (isInf(pda)) ; }
+
+    @arkouda.registerCommand(name="isnan")
+    proc isnan_ (pda : [?d] real) : [d] bool { return (isNan(pda)) ; }
+
+    @arkouda.registerCommand(name="isfinite")
+    proc isfinite_ (pda : [?d] real) : [d] bool { return (isFinite(pda)) ; }
+
+    @arkouda.registerCommand (name="floor")
+    proc floor_ (pda : [?d] ?t) : [d] real throws
+        where (t==real) { return floor(pda); }
+
+    @arkouda.registerCommand (name="ceil")
+    proc ceil_ (pda : [?d] ?t) : [d] real throws
+        where (t==real) { return ceil(pda); }
+
+    @arkouda.registerCommand (name="round")
+    proc round_ (pda : [?d] ?t) : [d] real throws
+        where (t==real) { return round(pda); }
+
+    @arkouda.registerCommand (name="trunc")
+    proc trunc_ (pda : [?d] ?t) : [d] real throws
+        where (t==real) { return trunc(pda); }
+
+    @arkouda.registerCommand (name="popcount")
+    proc popcount_ (pda : [?d] ?t) : [d] t throws
+        where (t==int || t==uint) { return popCount(pda); }
+
+    @arkouda.registerCommand (name="parity")
+    proc parity_ (pda : [?d] ?t) : [d] t throws
+        where (t==int || t==uint) { return parity(pda); }
+
+    @arkouda.registerCommand (name="clz")
+    proc clz_ (pda : [?d] ?t) : [d] t throws
+        where (t==int || t==uint) { return clz(pda); }
+
+    @arkouda.registerCommand (name="ctz")
+    proc ctz_ (pda : [?d] ?t) : [d] t throws
+        where (t==int || t==uint) { return ctz(pda); }
+
+    @arkouda.registerCommand(name="not")
+    proc not_ (pda : [?d] ?t) : [d] bool throws
+        where (t==int || t==uint || t==bool) { return (!pda) ; }
+
+//  cumsum and cumprod
+
+
+    proc cumspReturnType(type t) type
+      do return if t == bool then int else t;
+
+
+    @arkouda.registerCommand(name="cumsum")
+    proc cumsum(x : [?d] ?t) : [d] cumspReturnType(t) throws
+        where (t==int || t==real || t==uint || t==bool) {
+            if x.rank == 1 {
+                overMemLimit(numBytes(int) * x.size) ;
+                if t == bool {
+                    var ix = makeDistArray(x.domain, int); // make a copy of bools as ints blah!
+                    ix = x:int ;
+                    return (+scan (ix));
+                } else {
+                    return (+scan x) ;
                 }
-            }
-            when (DType.Float64) {
-                var e = toSymEntry(gEnt,real, nd);
-                ref ea = e.a;
-                select efunc
-                {
-                    when "abs" {
-                        st.addEntry(rname, new shared SymEntry(abs(ea)));
-                    }
-                    when "ceil" {
-                        st.addEntry(rname, new shared SymEntry(ceil(ea)));
-                    }
-                    when "floor" {
-                        st.addEntry(rname, new shared SymEntry(floor(ea)));
-                    }
-                    when "round" {
-                        st.addEntry(rname, new shared SymEntry(round(ea)));
-                    }
-                    when "trunc" {
-                        st.addEntry(rname, new shared SymEntry(trunc(ea)));
-                    }
-                    when "sgn" {
-                        st.addEntry(rname, new shared SymEntry(sgn(ea)));
-                    }
-                    when "isfinite" {
-                        st.addEntry(rname, new shared SymEntry(isFinite(ea)));
-                    }
-                    when "isinf" {
-                        st.addEntry(rname, new shared SymEntry(isInf(ea)));
-                    }
-                    when "isnan" {
-                        st.addEntry(rname, new shared SymEntry(isNan(ea)));
-                    }
-                    when "log" {
-                        st.addEntry(rname, new shared SymEntry(log(ea)));
-                    }
-                    when "log1p" {
-                        st.addEntry(rname, new shared SymEntry(log1p(ea)));
-                    }
-                    when "log2" {
-                        st.addEntry(rname, new shared SymEntry(log2(ea)));
-                    }
-                    when "log10" {
-                        st.addEntry(rname, new shared SymEntry(log10(ea)));
-                    }
-                    when "exp" {
-                        st.addEntry(rname, new shared SymEntry(exp(ea)));
-                    }
-                    when "expm1" {
-                        st.addEntry(rname, new shared SymEntry(expm1(ea)));
-                    }
-                    when "square" {
-                        st.addEntry(rname, new shared SymEntry(square(ea)));
-                    }
-                    when "cumsum" {
-                        if nd == 1 {
-                            // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-                            overMemLimit(numBytes(real) * e.size);
-                            st.addEntry(rname, new shared SymEntry(+ scan e.a));
-                        } else {
-                            var errorMsg = notImplementedError(pn,efunc,gEnt.dtype,nd);
-                            eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                            return new MsgTuple(errorMsg, MsgType.ERROR);
-                        }
-                    }
-                    when "cumprod" {
-                        if nd == 1 {
-                            // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-                            overMemLimit(numBytes(real) * e.size);
-                            st.addEntry(rname, new shared SymEntry(* scan e.a));
-                        } else {
-                            var errorMsg = notImplementedError(pn,efunc,gEnt.dtype,nd);
-                            eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                            return new MsgTuple(errorMsg, MsgType.ERROR);
-                        }
-                    }
-                    when "hash64" {
-                        overMemLimit(numBytes(real) * e.size);
-                        var a = st.addEntry(rname, e.tupShape, uint);
-                        forall (ai, x) in zip(a.a, e.a) {
-                            ai = sipHash64(x): uint;
-                        }
-                    }
-                    when "hash128" {
-                        overMemLimit(numBytes(real) * e.size * 2);
-                        var rname2 = st.nextName();
-                        var a1 = st.addEntry(rname2, e.tupShape, uint);
-                        var a2 = st.addEntry(rname, e.tupShape, uint);
-                        forall (a1i, a2i, x) in zip(a1.a, a2.a, e.a) {
-                            (a1i, a2i) = sipHash128(x): (uint, uint);
-                        }
-                        // Put first array's attrib in repMsg and let common
-                        // code append second array's attrib
-                        repMsg += "created " + st.attrib(rname2) + "+";
-                    }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,efunc,gEnt.dtype);
-                        eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);
-                    }
-                }
-            }
-            when (DType.Bool) {
-                var e = toSymEntry(gEnt,bool, nd);
-                select efunc
-                {
-                    when "cumsum" {
-                        if nd == 1 {
-                            var ia = makeDistArray(e.a.domain, int); // make a copy of bools as ints blah!
-                            ia = e.a:int;
-                            // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-                            overMemLimit(numBytes(int) * ia.size);
-                            st.addEntry(rname, new shared SymEntry(+ scan ia));
-                        } else {
-                            var errorMsg = notImplementedError(pn,efunc,gEnt.dtype,nd);
-                            eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                            return new MsgTuple(errorMsg, MsgType.ERROR);
-                        }
-                    }
-                    when "cumprod" {
-                        if nd == 1 {
-                            var ia = makeDistArray(e.a.domain, int); // make a copy of bools as ints blah!
-                            ia = e.a:int;
-                            // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-                            overMemLimit(numBytes(int) * ia.size);
-                            st.addEntry(rname, new shared SymEntry(* scan ia));
-                        } else {
-                            var errorMsg = notImplementedError(pn,efunc,gEnt.dtype,nd);
-                            eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                            return new MsgTuple(errorMsg, MsgType.ERROR);
-                        }
-                    }
-                    when "not" {
-                        st.addEntry(rname, new shared SymEntry(!e.a));
-                    }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,efunc,gEnt.dtype);
-                        eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);
-                    }
-                }
-            }
-            when (DType.UInt64) {
-                var e = toSymEntry(gEnt,uint, nd);
-                ref ea = e.a;
-                select efunc
-                {
-                    when "popcount" {
-                        st.addEntry(rname, new shared SymEntry(popCount(ea)));
-                    }
-                    when "clz" {
-                        st.addEntry(rname, new shared SymEntry(clz(ea)));
-                    }
-                    when "ctz" {
-                        st.addEntry(rname, new shared SymEntry(ctz(ea)));
-                    }
-                    when "round" {
-                        st.addEntry(rname, new shared SymEntry(ea));
-                    }
-                    when "sgn" {
-                        st.addEntry(rname, new shared SymEntry(sgn(ea)));
-                    }
-                    when "cumsum" {
-                        if nd == 1 {
-                            // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-                            overMemLimit(numBytes(uint) * e.size);
-                            st.addEntry(rname, new shared SymEntry(+ scan e.a));
-                        } else {
-                            var errorMsg = notImplementedError(pn,efunc,gEnt.dtype,nd);
-                            eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                            return new MsgTuple(errorMsg, MsgType.ERROR);
-                        }
-                    }
-                    when "cumprod" {
-                        if nd == 1 {
-                            // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-                            overMemLimit(numBytes(uint) * e.size);
-                            st.addEntry(rname, new shared SymEntry(* scan e.a));
-                        } else {
-                            var errorMsg = notImplementedError(pn,efunc,gEnt.dtype,nd);
-                            eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                            return new MsgTuple(errorMsg, MsgType.ERROR);
-                        }
-                    }
-                    when "parity" {
-                        st.addEntry(rname, new shared SymEntry(parity(ea)));
-                    }
-                    when "hash64" {
-                        overMemLimit(numBytes(uint) * e.size);
-                        var a = st.addEntry(rname, e.tupShape, uint);
-                        forall (ai, x) in zip(a.a, e.a) {
-                            ai = sipHash64(x): uint;
-                        }
-                    }
-                    when "hash128" {
-                        overMemLimit(numBytes(uint) * e.size * 2);
-                        var rname2 = st.nextName();
-                        var a1 = st.addEntry(rname2, e.tupShape, uint);
-                        var a2 = st.addEntry(rname, e.tupShape, uint);
-                        forall (a1i, a2i, x) in zip(a1.a, a2.a, e.a) {
-                            (a1i, a2i) = sipHash128(x): (uint, uint);
-                        }
-                        // Put first array's attrib in repMsg and let common
-                        // code append second array's attrib
-                        repMsg += "created " + st.attrib(rname2) + "+";
-                    }
-                    when "log" {
-                        st.addEntry(rname, new shared SymEntry(log(ea)));
-                    }
-                    when "exp" {
-                        st.addEntry(rname, new shared SymEntry(exp(ea)));
-                    }
-                    when "square" {
-                        st.addEntry(rname, new shared SymEntry(square(ea)));
-                    }
-                    when "not" {
-                        st.addEntry(rname, new shared SymEntry(!e.a));
-                    }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,efunc,gEnt.dtype);
-                        eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);
-                    }
-                }
-            }
-            otherwise {
-                var errorMsg = unrecognizedTypeError(pn, dtype2str(gEnt.dtype));
-                eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
+            } else {
+                throw new Error ("Over mem limit in cumsum") ;
             }
         }
-        // Append instead of assign here, to allow for 2 return arrays from hash128
+   
+    @arkouda.registerCommand(name="cumprod")
+    proc cumprod(x : [?d] ?t) : [d] cumspReturnType(t) throws
+        where (t==int || t==real || t==uint || t==bool) {
+            if x.rank == 1 {
+                overMemLimit(numBytes(int) * x.size) ;
+                if t == bool {
+                    var ix = makeDistArray(x.domain, int); // make a copy of bools as ints blah!
+                    ix = x:int ;
+                    return (*scan (ix));
+                } else {
+                    return (*scan x) ;
+                }
+            } else {
+                throw new Error ("Over mem limit in cumprod") ;
+            }
+        }
+
+    // sgn is a special case.  It is the only thing that returns int(8).
+
+    @arkouda.registerCommand(name="sgn")
+    proc sign (pda : [?d] ?t) : [d] int(8) throws
+        where (t==int || t==real) { return (sgn(pda)); }
+
+    // Hashes are more of a challenge to unhook from the old interface, but they
+    // have been pulled out into their own functions.
+
+    @arkouda.instantiateAndRegister
+    proc hash64 (cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int) : MsgTuple throws 
+        where (array_dtype==real || array_dtype==int || array_dtype==uint) {
+        if array_nd != 1 {
+            return MsgTuple.error("hash64 does not support multi-dim yet.");
+        }
+        const efunc = msgArgs.getValueOf("x"),
+            e = st[msgArgs["x"]]: SymEntry(array_dtype,array_nd);
+        const rname = st.nextName();
+        overMemLimit(numBytes(array_dtype)*e.size);
+        var a = st.addEntry(rname, e.tupShape, uint);
+        forall (ai, x) in zip (a.a, e.a) {
+            ai = sipHash64(x) : uint ;
+        }
+        var repMsg = "created " + st.attrib(rname);
+        eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+    proc hash64 (cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int) : MsgTuple throws { 
+        return MsgTuple.error("hash64 does not support type %s".format(types2str(array_dtype)));
+    }
+
+    @arkouda.instantiateAndRegister
+    proc hash128 (cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int) : MsgTuple throws 
+        where (array_dtype==real || array_dtype==int || array_dtype==uint) {
+        if array_nd != 1 {
+            return MsgTuple.error("hash128 does not support multi-dim yet.");
+        }
+        const efunc = msgArgs.getValueOf("x"),
+            e = st[msgArgs["x"]]: SymEntry(array_dtype,array_nd);
+        const rname = st.nextName();
+        var rname2 = st.nextName();
+        overMemLimit(numBytes(array_dtype) * e.size * 2);
+        var a1 = st.addEntry(rname2, e.tupShape, uint);
+        var a2 = st.addEntry(rname, e.tupShape, uint);
+        forall (a1i, a2i, x) in zip(a1.a, a2.a, e.a) {
+            (a1i, a2i) = sipHash128(x): (uint, uint);
+        }
+        var repMsg = "created " + st.attrib(rname2) + "+";
         repMsg += "created " + st.attrib(rname);
         eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
+    proc hash128 (cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int) : MsgTuple throws {
+        return MsgTuple.error("hash128 does not support type %s".format(types2str(array_dtype)));
+    }
+
+//  End of rewrite section -- delete this comment after all of EfuncMsg is rewritten.
 
     private proc square(x) do return x * x;
     private proc log1p(x: real):real do return log(1.0 + x);

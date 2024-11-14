@@ -3527,10 +3527,9 @@ def popcount(pda: pdarray) -> pdarray:
         return sum(popcount(a) for a in pda.bigint_to_uint_arrays())  # type: ignore
     else:
         repMsg = generic_msg(
-            cmd=f"efunc{pda.ndim}D",
+            cmd=f"popcount<{pda.dtype},{pda.ndim}>",
             args={
-                "func": "popcount",
-                "array": pda,
+                "pda": pda,
             },
         )
         return create_pdarray(repMsg)
@@ -3568,10 +3567,9 @@ def parity(pda: pdarray) -> pdarray:
         return reduce(lambda x, y: x ^ y, [parity(a) for a in pda.bigint_to_uint_arrays()])
     else:
         repMsg = generic_msg(
-            cmd=f"efunc{pda.ndim}D",
+            cmd=f"parity<{pda.dtype},{pda.ndim}>",
             args={
-                "func": "parity",
-                "array": pda,
+                "pda": pda,
             },
         )
         return create_pdarray(repMsg)
@@ -3636,10 +3634,9 @@ def clz(pda: pdarray) -> pdarray:
         return lz
     else:
         repMsg = generic_msg(
-            cmd=f"efunc{pda.ndim}D",
+            cmd=f"clz<{pda.dtype},{pda.ndim}>",
             args={
-                "func": "clz",
-                "array": pda,
+                "pda": pda,
             },
         )
         return create_pdarray(repMsg)
@@ -3706,10 +3703,9 @@ def ctz(pda: pdarray) -> pdarray:
         return tz
     else:
         repMsg = generic_msg(
-            cmd=f"efunc{pda.ndim}D",
+            cmd=f"ctz<{pda.dtype},{pda.ndim}>",
             args={
-                "func": "ctz",
-                "array": pda,
+                "pda": pda,
             },
         )
         return create_pdarray(repMsg)
