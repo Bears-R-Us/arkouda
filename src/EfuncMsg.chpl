@@ -176,11 +176,46 @@ module EfuncMsg
 
 //  cumsum and cumprod
 
+//  The code below causes an anomaly.
+
+//  The currently-commented-out versions of cumsum and cumprod register correctly, if used
+//  instead of the currently-non-commented versions.  The intent is to register both cumsum
+//  and cumprod for data types int, uint, real, and bool.
+
+//  If the data type is int, uint, or real, the output type matches the input type.
+//  If the data type is bool, the output is it.
+
+//  However ...
+
+//  The non-commented versions of cumsum and cumprod only register the first case
+//  of the function, i.e. the file src/registry/Commands.chpl includes:
+
+//proc ark_cumsum_bool_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+//  return ark_reg_cumsum_generic(cmd, msgArgs, st, array_dtype_0=bool, array_nd_0=1);
+//  registerFunction('cumsum<bool,1>', ark_cumsum_bool_1, 'EfuncMsg', 211);
+
+//  and:
+
+// proc ark_cumprod_int_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+//   return ark_reg_cumprod_generic(cmd, msgArgs, st, array_dtype_0=int, array_nd_0=1);
+// registerFunction('cumprod<int64,1>', ark_cumprod_int_1, 'EfuncMsg', 233);
+//
+// proc ark_cumprod_uint_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+//   return ark_reg_cumprod_generic(cmd, msgArgs, st, array_dtype_0=uint, array_nd_0=1);
+// registerFunction('cumprod<uint64,1>', ark_cumprod_uint_1, 'EfuncMsg', 233);
+//
+// proc ark_cumprod_real_1(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws do
+//   return ark_reg_cumprod_generic(cmd, msgArgs, st, array_dtype_0=real, array_nd_0=1);
+// registerFunction('cumprod<float64,1>', ark_cumprod_real_1, 'EfuncMsg', 233);
+
+//  In short: cumsum and cumprod should both be registered for int, uint, real and bool.
+//  But in each case, this is done with two proc definitions that only differ by the types
+//  in the "where" clause, and only the first instance of the function is registered.
 
     proc cumspReturnType(type t) type
       do return if t == bool then int else t;
 
-
+/*
     @arkouda.registerCommand(name="cumsum")
     proc cumsum(x : [?d] ?t) : [d] cumspReturnType(t) throws
         where (t==int || t==real || t==uint || t==bool) {
@@ -197,7 +232,52 @@ module EfuncMsg
                 throw new Error ("Over mem limit in cumsum") ;
             }
         }
-   
+  */ 
+
+    @arkouda.registerCommand(name="cumsum")
+    proc cumsum(x : [?d] ?t) : [d] int throws
+        where (t==bool) {
+            if x.rank == 1 {
+                overMemLimit(numBytes(int) * x.size) ;
+                var ix = makeDistArray(x.domain, int); // make a copy of bools as ints blah!
+                ix = x:int ;
+                return (+scan (ix));
+            } else {
+                throw new Error ("Over mem limit in cumsum") ;
+            }
+        }
+    proc cumsum(x : [?d] ?t) : [d] t throws
+        where (t==int || t==real || t==uint) {
+            if x.rank == 1 {
+                overMemLimit(numBytes(int) * x.size) ;
+                return (+scan x) ;
+            } else {
+                throw new Error ("Over mem limit in cumsum") ;
+            }
+        }
+
+    @arkouda.registerCommand(name="cumprod")
+    proc cumprod(x : [?d] ?t) : [d] t throws
+        where (t==int || t==real || t==uint) {
+            if x.rank == 1 {
+                overMemLimit(numBytes(int) * x.size) ;
+                return (*scan x) ;
+            } else {
+                throw new Error ("Over mem limit in cumprod") ;
+            }
+        }
+    proc cumprod(x : [?d] ?t) : [d] int throws
+        where (t==bool) {
+            if x.rank == 1 {
+                overMemLimit(numBytes(int) * x.size) ;
+                var ix = makeDistArray(x.domain, int); // make a copy of bools as ints blah!
+                ix = x:int ;
+                return (*scan (ix));
+            } else {
+                throw new Error ("Over mem limit in cumprod") ;
+            }
+        }
+/*
     @arkouda.registerCommand(name="cumprod")
     proc cumprod(x : [?d] ?t) : [d] cumspReturnType(t) throws
         where (t==int || t==real || t==uint || t==bool) {
@@ -214,6 +294,7 @@ module EfuncMsg
                 throw new Error ("Over mem limit in cumprod") ;
             }
         }
+ */
 
     // sgn is a special case.  It is the only thing that returns int(8).
 
