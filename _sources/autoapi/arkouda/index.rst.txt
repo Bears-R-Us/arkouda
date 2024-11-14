@@ -37418,32 +37418,32 @@ Package Contents
    array([0, 3.3219280948873626, 6.6438561897747253])
 
 
-.. py:function:: log10(x: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+.. py:function:: log10(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
 
    Return the element-wise base 10 log of the array.
 
-   :param x: array to compute on
-   :type x: pdarray
+   :param pda: array to compute on
+   :type pda: pdarray
 
    :rtype: pdarray contain values of the base 10 log
 
 
-.. py:function:: log1p(x: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+.. py:function:: log1p(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
 
    Return the element-wise natural log of one plus the array.
 
-   :param x: array to compute on
-   :type x: pdarray
+   :param pda: array to compute on
+   :type pda: pdarray
 
    :rtype: pdarray contain values of the natural log of one plus the array
 
 
-.. py:function:: log2(x: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+.. py:function:: log2(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
 
    Return the element-wise base 2 log of the array.
 
-   :param x: array to compute on
-   :type x: pdarray
+   :param pda: array to compute on
+   :type pda: pdarray
 
    :rtype: pdarray contain values of the base 2 log
 
