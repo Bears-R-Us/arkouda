@@ -249,10 +249,9 @@ def abs(pda: pdarray) -> pdarray:
     array([5, 4, 3, 2, 1])
     """
     repMsg = generic_msg(
-        cmd=f"efunc{pda.ndim}D",
+        cmd=f"abs<{pda.dtype},{pda.ndim}>",
         args={
-            "func": "abs",
-            "array": pda,
+            "pda": pda,
         },
     )
     return create_pdarray(type_cast(str, repMsg))
@@ -456,10 +455,9 @@ def isfinite(pda: pdarray) -> pdarray:
     array([True, True, False])
     """
     repMsg = generic_msg(
-        cmd=f"efunc{pda.ndim}D",
+        cmd=f"isfinite<{pda.ndim}>",
         args={
-            "func": "isfinite",
-            "array": pda,
+            "pda": pda,
         },
     )
     return create_pdarray(type_cast(str, repMsg))
@@ -493,10 +491,9 @@ def isinf(pda: pdarray) -> pdarray:
     array([False, False, True])
     """
     repMsg = generic_msg(
-        cmd=f"efunc{pda.ndim}D",
+        cmd=f"isinf<{pda.ndim}>",
         args={
-            "func": "isinf",
-            "array": pda,
+            "pda": pda,
         },
     )
     return create_pdarray(type_cast(str, repMsg))
@@ -539,10 +536,9 @@ def isnan(pda: pdarray) -> pdarray:
         raise TypeError("isnan only supports pdarray of numeric type.")
 
     repMsg = generic_msg(
-        cmd=f"efunc{pda.ndim}D",
+        cmd=f"isnan<{pda.ndim}>",
         args={
-            "func": "isnan",
-            "array": pda,
+            "pda": pda,
         },
     )
     return create_pdarray(type_cast(str, repMsg))
@@ -586,82 +582,78 @@ def log(pda: pdarray) -> pdarray:
     array([0, 3.3219280948873626, 6.6438561897747253])
     """
     repMsg = generic_msg(
-        cmd=f"efunc{pda.ndim}D",
+        cmd=f"log<{pda.dtype},{pda.ndim}>",
         args={
-            "func": "log",
-            "array": pda,
+            "pda": pda,
         },
     )
     return create_pdarray(type_cast(str, repMsg))
 
 
 @typechecked
-def log10(x: pdarray) -> pdarray:
+def log10(pda: pdarray) -> pdarray:
     """
     Return the element-wise base 10 log of the array.
 
     Parameters
     __________
-    x : pdarray
-        array to compute on
+    pda : pdarray
+          array to compute on
 
     Returns
     _______
     pdarray contain values of the base 10 log
     """
     repMsg = generic_msg(
-        cmd=f"efunc{x.ndim}D",
+        cmd=f"log10<{pda.dtype},{pda.ndim}>",
         args={
-            "func": "log10",
-            "array": x,
+            "pda": pda,
         },
     )
     return create_pdarray(type_cast(str, repMsg))
 
 
 @typechecked
-def log2(x: pdarray) -> pdarray:
+def log2(pda: pdarray) -> pdarray:
     """
     Return the element-wise base 2 log of the array.
 
     Parameters
     __________
-    x : pdarray
-        array to compute on
+    pda : pdarray
+          array to compute on
 
     Returns
     _______
     pdarray contain values of the base 2 log
     """
     repMsg = generic_msg(
-        cmd=f"efunc{x.ndim}D",
+        cmd=f"log2<{pda.dtype},{pda.ndim}>",
         args={
-            "func": "log2",
-            "array": x,
+            "pda": pda,
         },
     )
     return create_pdarray(type_cast(str, repMsg))
 
 
 @typechecked
-def log1p(x: pdarray) -> pdarray:
+def log1p(pda: pdarray) -> pdarray:
     """
     Return the element-wise natural log of one plus the array.
 
     Parameters
     __________
-    x : pdarray
-        array to compute on
+    pda : pdarray
+          array to compute on
 
     Returns
     _______
     pdarray contain values of the natural log of one plus the array
     """
     repMsg = generic_msg(
-        cmd=f"efunc{x.ndim}D",
+        cmd=f"log1p<{pda.dtype},{pda.ndim}>",
         args={
-            "func": "log1p",
-            "array": x,
+            "pda": pda,
         },
     )
     return create_pdarray(repMsg)
@@ -697,10 +689,9 @@ def exp(pda: pdarray) -> pdarray:
            33.494295836924771, 13.478894913238722])
     """
     repMsg = generic_msg(
-        cmd=f"efunc{pda.ndim}D",
+        cmd=f"exp<{pda.dtype},{pda.ndim}>",
         args={
-            "func": "exp",
-            "array": pda,
+            "pda": pda,
         },
     )
     return create_pdarray(type_cast(str, repMsg))
@@ -736,10 +727,9 @@ def expm1(pda: pdarray) -> pdarray:
            32.494295836924771, 12.478894913238722])
     """
     repMsg = generic_msg(
-        cmd=f"efunc{pda.ndim}D",
+        cmd=f"expm1<{pda.dtype},{pda.ndim}>",
         args={
-            "func": "expm1",
-            "array": pda,
+            "pda": pda,
         },
     )
     return create_pdarray(type_cast(str, repMsg))
@@ -771,10 +761,9 @@ def square(pda: pdarray) -> pdarray:
     array([1, 4, 9, 16])
     """
     repMsg = generic_msg(
-        cmd=f"efunc{pda.ndim}D",
+        cmd=f"square<{pda.dtype},{pda.ndim}>",
         args={
-            "func": "square",
-            "array": pda,
+            "pda": pda,
         },
     )
     return create_pdarray(type_cast(str, repMsg))
