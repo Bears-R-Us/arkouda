@@ -3,7 +3,6 @@ from enum import Enum
 from typing import TYPE_CHECKING, List, Sequence, Tuple, TypeVar, Union
 from typing import cast as type_cast
 from typing import no_type_check
-from arkouda.groupbyclass import groupable
 import numpy as np
 from typeguard import typechecked
 
@@ -1515,7 +1514,7 @@ def hash(
 def _hash_single(pda: pdarray, full: bool = True):
     if pda.dtype == bigint:
         return hash(pda.bigint_to_uint_arrays())
-    _datatype_check (pda.dtype, [float, int, ak_uint64], 'hash')
+    _datatype_check(pda.dtype, [float, int, ak_uint64], 'hash')
     hname = "hash128" if full else "hash64"
     repMsg = type_cast(
         str,
