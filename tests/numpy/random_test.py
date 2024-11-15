@@ -254,7 +254,7 @@ class TestRandom:
         # I tested this many times without a set seed, but with no seed
         # it's expected to fail one out of every ~20 runs given a pval limit of 0.05.
         rng = ak.random.default_rng(12345)
-        num_samples = 10 ** 2
+        num_samples = 10 ** 3
 
         k = rng.uniform(0, 10)
         sample = rng.standard_gamma(k, size=num_samples)
