@@ -448,8 +448,7 @@ module RandMsg
         else if kArg == 0.0 {
             return 0.0;
         }
-        else 
-        if kArg < 1.0 {  // TODO ask the chpl team about the linter being weird
+        else if kArg < 1.0 {  // TODO ask the chpl team about the linter being weird
             var count = 0;
             while count < 10000000 {
                 var U = rs.next(0, 1);
