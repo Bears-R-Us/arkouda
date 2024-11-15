@@ -16,7 +16,6 @@ DTYPES = ["int64", "float64", "bool", "uint64"]
 
 #   TODO: add unint8 to DTYPES
 
-
 class TestPdarrayClass:
 
     @pytest.mark.skip_if_max_rank_less_than(2)
@@ -139,14 +138,7 @@ class TestPdarrayClass:
         np_op = getattr(numpy, op)
         nda = pda.to_ndarray()
 
-        # TODO: remove cast when #3864 is resolved.
         ak_result = ak_op(pda, axis=axis)
-        if op in ["max", "min"] and pda.dtype == ak.bool_:
-            if isinstance(ak_result, ak.pdarray):
-                ak_result = ak.cast(ak_result, dt=ak.bool_)
-            else:
-                ak_result = np.bool_(ak_result)
-
         ak_assert_equivalent(ak_result, np_op(nda, axis=axis))
 
     @pytest.mark.parametrize("op", REDUCTION_OPS)
