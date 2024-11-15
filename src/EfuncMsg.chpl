@@ -140,45 +140,6 @@ module EfuncMsg
     @arkouda.registerCommand(name="isfinite")
     proc isfinite_ (pda : [?d] real) : [d] bool { return (isFinite(pda)) ; }
 
-    @arkouda.registerCommand(name="square")
-    proc boxy (const ref pda : [?d] ?t) : [d] t throws
-        where (t==int || t==real || t==uint)  { return square(pda) ; }
-
-    @arkouda.registerCommand(name="exp")
-    proc expo (const ref pda : [?d] ?t) : [d] real throws
-        where (t==int || t==real || t==uint)  { return exp(pda) ; }
-
-    @arkouda.registerCommand(name="expm1")
-    proc expom (const ref pda : [?d] ?t) : [d] real throws
-        where (t==int || t==real || t==uint)  { return expm1(pda) ; }
-
-    @arkouda.registerCommand(name="log")
-    proc log_e (const ref pda : [?d] ?t) : [d] real throws
-        where (t==int || t==real || t==uint)  { return log(pda) ; }
-
-    @arkouda.registerCommand(name="log1p")
-    proc log_1p (const ref pda : [?d] ?t) : [d] real throws
-        where (t==int || t==real || t==uint)  { return log1p(pda) ; }
-
-//  chapel log2 returns ints when given ints, so the input has been cast to real.
-
-    @arkouda.registerCommand(name="log2")
-    proc log_2 (const ref pda : [?d] ?t) : [d] real throws
-        where (t==int || t==real || t==uint)  { return log2(pda:real) ; }
-
-    @arkouda.registerCommand(name="log10")
-    proc log_10 (const ref pda : [?d] ?t) : [d] real throws
-        where (t==int || t==real || t==uint)  { return log10(pda) ; }
-
-    @arkouda.registerCommand(name="isinf")
-    proc isinf_ (pda : [?d] real) : [d] bool { return (isInf(pda)) ; }
-
-    @arkouda.registerCommand(name="isnan")
-    proc isnan_ (pda : [?d] real) : [d] bool { return (isNan(pda)) ; }
-
-    @arkouda.registerCommand(name="isfinite")
-    proc isfinite_ (pda : [?d] real) : [d] bool { return (isFinite(pda)) ; }
-
     @arkouda.registerCommand (name="floor")
     proc floor_ (pda : [?d] ?t) : [d] real throws
         where (t==real) { return floor(pda); }
