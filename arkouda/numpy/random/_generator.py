@@ -522,7 +522,7 @@ class Generator:
         The probability density function for the Gamma distribution is
 
         .. math::
-            p(x) = x^{k-1} \frac{e^{\frac{-x}{\theta}}}{\theta^k \Gamma(k)}
+            p(x) = x^{k-1} \frac{e^{\frac{-x}{\theta}}}{\theta^k\Gamma(k)}
         """
         from arkouda.util import _infer_shape_from_size
 
