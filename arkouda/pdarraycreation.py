@@ -490,7 +490,6 @@ def zeros(
         raise ValueError(f"array rank {ndim} exceeds maximum of {get_max_array_rank()}")
 
     if shape == ():
-#   if not shape :
         return scalar_array(0, dtype=dtype)
 
     repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape})
