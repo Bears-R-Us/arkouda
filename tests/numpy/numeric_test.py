@@ -599,6 +599,13 @@ class TestNumeric:
             assert (np.isinf(nda_blowup) == ak.isinf(pda_blowup).to_ndarray()).all()
             assert (np.isfinite(nda_blowup) == ak.isfinite(pda_blowup).to_ndarray()).all()
 
+        def derive_multi_shape(r) :
+            i = 1
+            while i**r < prob_size :
+                i += 1
+            i = i if i**r <= prob_size else i-1
+            return i**r, r*[i]
+
         # first the 1D case, then the max rank case
 
         nda = alternate(0.0, 9999.9999, prob_size)
@@ -612,13 +619,7 @@ class TestNumeric:
         # only the max rank case is done, because only rank 1 and max_array_rank are
         # guaranteed to be covered by the arkouda interface.  In-between ranks may not be.
 
-        r = get_max_array_rank()
-        i = 1
-        while i**r < prob_size :
-            i += 1
-        i = i if i**r <= prob_size else i-1
-        newsize = i**r
-        newshape = r*[i]
+        newsize, newshape = derive_multi_shape (get_max_array_rank())
         nda = nda[0:newsize].reshape(newshape)
         pda = ak.array(nda)
         isinf_isfin_check(nda, pda)
