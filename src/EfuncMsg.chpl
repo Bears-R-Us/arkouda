@@ -161,10 +161,7 @@ module EfuncMsg
 
     @arkouda.instantiateAndRegister
     proc hash64 (cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int) : MsgTuple throws 
-        where (array_dtype==real || array_dtype==int || array_dtype==uint) {
-        if array_nd != 1 {
-            return MsgTuple.error("hash64 does not support multi-dim yet.");
-        }
+        where ((array_dtype==real || array_dtype==int || array_dtype==uint) && array_nd==1) {
         const efunc = msgArgs.getValueOf("x"),
             e = st[msgArgs["x"]]: SymEntry(array_dtype,array_nd);
         const rname = st.nextName();
@@ -177,16 +174,10 @@ module EfuncMsg
         eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
-    proc hash64 (cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int) : MsgTuple throws { 
-        return MsgTuple.error("hash64 does not support type %s".format(types2str(array_dtype)));
-    }
 
     @arkouda.instantiateAndRegister
     proc hash128 (cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int) : MsgTuple throws 
-        where (array_dtype==real || array_dtype==int || array_dtype==uint) {
-        if array_nd != 1 {
-            return MsgTuple.error("hash128 does not support multi-dim yet.");
-        }
+        where ((array_dtype==real || array_dtype==int || array_dtype==uint) && array_nd==1) {
         const efunc = msgArgs.getValueOf("x"),
             e = st[msgArgs["x"]]: SymEntry(array_dtype,array_nd);
         const rname = st.nextName();
@@ -201,9 +192,6 @@ module EfuncMsg
         repMsg += "created " + st.attrib(rname);
         eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
-    }
-    proc hash128 (cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int) : MsgTuple throws {
-        return MsgTuple.error("hash128 does not support type %s".format(types2str(array_dtype)));
     }
 
 //  End of rewrite section -- delete this comment after all of EfuncMsg is rewritten.

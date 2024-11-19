@@ -586,18 +586,42 @@ class TestNumeric:
         with pytest.raises(TypeError):
             ak.isnan(ark_s_string)
 
-    def test_isinf_isfinite(self):
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_isinf_isfinite(self, prob_size):
         """
         Test isinf and isfinite.  These return pdarrays of T/F values as appropriate.
         """
-        nda = np.array([0, 9999.9999])
+        def isinf_isfin_check(nda, pda) :
+            warnings.filterwarnings("ignore")
+            nda_blowup = np.exp(nda)
+            warnings.filterwarnings("default")
+            pda_blowup = ak.exp(pda)
+            assert (np.isinf(nda_blowup) == ak.isinf(pda_blowup).to_ndarray()).all()
+            assert (np.isfinite(nda_blowup) == ak.isfinite(pda_blowup).to_ndarray()).all()
+
+        # first the 1D case, then the max rank case
+
+        nda = alternate(0.0, 9999.9999, prob_size)
         pda = ak.array(nda)
-        warnings.filterwarnings("ignore")
-        nda_blowup = np.exp(nda)
-        warnings.filterwarnings("default")
-        pda_blowup = ak.exp(pda)
-        assert (np.isinf(nda_blowup) == ak.isinf(pda_blowup).to_ndarray()).all()
-        assert (np.isfinite(nda_blowup) == ak.isfinite(pda_blowup).to_ndarray()).all()
+        isinf_isfin_check(nda, pda)
+
+        # now the max rank case; find the largest i such that i**r < prob_size, prune
+        # and reshape nda so that it's of shape (i,i,...,i), and run the same test
+        # again.
+
+        # only the max rank case is done, because only rank 1 and max_array_rank are
+        # guaranteed to be covered by the arkouda interface.  In-between ranks may not be.
+
+        r = get_max_array_rank()
+        i = 1
+        while i**r < prob_size :
+            i += 1
+        i = i if i**r <= prob_size else i-1
+        newsize = i**r
+        newshape = r*[i]
+        nda = nda[0:newsize].reshape(newshape)
+        pda = ak.array(nda)
+        isinf_isfin_check(nda, pda)
 
     def test_str_cat_cast(self):
         test_strs = [
