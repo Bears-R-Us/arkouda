@@ -35251,7 +35251,7 @@ Package Contents
    Create a pdarray filled with fill_value.
 
    :param size: Size of the array (only rank-1 arrays supported)
-   :type size: int_scalars
+   :type size: int_scalars or tuple of int_scalars
    :param fill_value: Value with which the array will be filled
    :type fill_value: int_scalars
    :param dtype: Resulting array type, default float64
@@ -35284,7 +35284,7 @@ Package Contents
    Create a pdarray filled with fill_value.
 
    :param size: Size of the array (only rank-1 arrays supported)
-   :type size: int_scalars
+   :type size: int_scalars or tuple of int_scalars
    :param fill_value: Value with which the array will be filled
    :type fill_value: int_scalars
    :param dtype: Resulting array type, default float64
@@ -38058,7 +38058,7 @@ Package Contents
    Create a pdarray filled with ones.
 
    :param size: Size of the array (only rank-1 arrays supported)
-   :type size: int_scalars
+   :type size: int_scalars or tuple of int_scalars
    :param dtype: Resulting array type, default float64
    :type dtype: Union[float64, int64, bool]
    :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
@@ -38089,7 +38089,7 @@ Package Contents
    Create a pdarray filled with ones.
 
    :param size: Size of the array (only rank-1 arrays supported)
-   :type size: int_scalars
+   :type size: int_scalars or tuple of int_scalars
    :param dtype: Resulting array type, default float64
    :type dtype: Union[float64, int64, bool]
    :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
@@ -38120,7 +38120,7 @@ Package Contents
    Create a pdarray filled with ones.
 
    :param size: Size of the array (only rank-1 arrays supported)
-   :type size: int_scalars
+   :type size: int_scalars or tuple of int_scalars
    :param dtype: Resulting array type, default float64
    :type dtype: Union[float64, int64, bool]
    :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
@@ -38151,7 +38151,7 @@ Package Contents
    Create a pdarray filled with ones.
 
    :param size: Size of the array (only rank-1 arrays supported)
-   :type size: int_scalars
+   :type size: int_scalars or tuple of int_scalars
    :param dtype: Resulting array type, default float64
    :type dtype: Union[float64, int64, bool]
    :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
@@ -48645,7 +48645,7 @@ Package Contents
    Create a pdarray filled with zeros.
 
    :param size: Size of the array (only rank-1 arrays supported)
-   :type size: int_scalars
+   :type size: int_scalars or tuple of int_scalars
    :param dtype: Type of resulting array, default float64
    :type dtype: all_scalars
    :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
@@ -48676,7 +48676,7 @@ Package Contents
    Create a pdarray filled with zeros.
 
    :param size: Size of the array (only rank-1 arrays supported)
-   :type size: int_scalars
+   :type size: int_scalars or tuple of int_scalars
    :param dtype: Type of resulting array, default float64
    :type dtype: all_scalars
    :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
@@ -48707,7 +48707,7 @@ Package Contents
    Create a pdarray filled with zeros.
 
    :param size: Size of the array (only rank-1 arrays supported)
-   :type size: int_scalars
+   :type size: int_scalars or tuple of int_scalars
    :param dtype: Type of resulting array, default float64
    :type dtype: all_scalars
    :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
@@ -48738,7 +48738,7 @@ Package Contents
    Create a pdarray filled with zeros.
 
    :param size: Size of the array (only rank-1 arrays supported)
-   :type size: int_scalars
+   :type size: int_scalars or tuple of int_scalars
    :param dtype: Type of resulting array, default float64
    :type dtype: all_scalars
    :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
