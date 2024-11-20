@@ -41,6 +41,7 @@ Classes
 .. autoapisummary::
 
    arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES
+   arkouda.numpy.ARKOUDA_SUPPORTED_INTS
    arkouda.numpy.BoolDType
    arkouda.numpy.ByteDType
    arkouda.numpy.BytesDType
@@ -312,6 +313,33 @@ Module Contents
       Return the union of sets as a new set.
 
       (i.e. all elements that are in either set.)
+
+
+
+
+.. py:class:: ARKOUDA_SUPPORTED_INTS
+
+   Built-in immutable sequence.
+
+   If no argument is given, the constructor returns an empty tuple.
+   If iterable is specified the tuple is initialized from iterable's items.
+
+   If the argument is a tuple, the return value is the same object.
+
+
+
+   .. py:method:: count(value, /)
+
+      Return number of occurrences of value.
+
+
+
+
+   .. py:method:: index(value, start=0, stop=9223372036854775807, /)
+
+      Return first index of value.
+
+      Raises ValueError if the value is not present.
 
 
 

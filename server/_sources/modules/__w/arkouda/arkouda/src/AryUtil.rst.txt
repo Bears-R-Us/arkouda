@@ -312,5 +312,5 @@ or
 
    .. method:: proc init(shape: ?N*int)
 
-   .. method:: proc indexToOrder(idx: rank*int): int
+   .. method:: proc indexToOrder(idx: rank*?t): t where t == int || t == uint(64)
 

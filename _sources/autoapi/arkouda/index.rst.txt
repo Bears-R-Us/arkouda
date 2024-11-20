@@ -96,6 +96,7 @@ Classes
 .. autoapisummary::
 
    arkouda.ARKOUDA_SUPPORTED_DTYPES
+   arkouda.ARKOUDA_SUPPORTED_INTS
    arkouda.BitVector
    arkouda.BoolDType
    arkouda.ByteDType
@@ -300,9 +301,7 @@ Functions
    arkouda.arctan
    arkouda.arctan2
    arkouda.arctanh
-   arkouda.argmax
    arkouda.argmaxk
-   arkouda.argmin
    arkouda.argmink
    arkouda.argsort
    arkouda.argsort
@@ -640,6 +639,33 @@ Package Contents
       Return the union of sets as a new set.
 
       (i.e. all elements that are in either set.)
+
+
+
+
+.. py:class:: ARKOUDA_SUPPORTED_INTS
+
+   Built-in immutable sequence.
+
+   If no argument is given, the constructor returns an empty tuple.
+   If iterable is specified the tuple is initialized from iterable's items.
+
+   If the argument is a tuple, the return value is the same object.
+
+
+
+   .. py:method:: count(value, /)
+
+      Return number of occurrences of value.
+
+
+
+
+   .. py:method:: index(value, start=0, stop=9223372036854775807, /)
+
+      Return first index of value.
+
+      Raises ValueError if the value is not present.
 
 
 
@@ -30647,20 +30673,6 @@ Package Contents
    :raises TypeError: Raised if the parameters are not a pdarray or numeric scalar.
 
 
-.. py:function:: argmax(pda: pdarray) -> Union[numpy.int64, numpy.uint64]
-
-   Return the index of the first occurrence of the array max value.
-
-   :param pda: Values for which to calculate the argmax
-   :type pda: pdarray
-
-   :returns: The index of the argmax calculated from the pda
-   :rtype: Union[np.int64, np.uint64]
-
-   :raises TypeError: Raised if pda is not a pdarray instance
-   :raises RuntimeError: Raised if there's a server-side error thrown
-
-
 .. py:function:: argmaxk(pda: pdarray, k: arkouda.numpy.dtypes.int_scalars) -> pdarray
 
    Find the indices corresponding to the `k` maximum values of an array.
@@ -30697,20 +30709,6 @@ Package Contents
    array([4, 6, 0])
    >>> ak.argmaxk(A, 4)
    array([1, 4, 6, 0])
-
-
-.. py:function:: argmin(pda: pdarray) -> Union[numpy.int64, numpy.uint64]
-
-   Return the index of the first occurrence of the array min value.
-
-   :param pda: Values for which to calculate the argmin
-   :type pda: pdarray
-
-   :returns: The index of the argmin calculated from the pda
-   :rtype: Union[np.int64, np.uint64]
-
-   :raises TypeError: Raised if pda is not a pdarray instance
-   :raises RuntimeError: Raised if there's a server-side error thrown
 
 
 .. py:function:: argmink(pda: pdarray, k: arkouda.numpy.dtypes.int_scalars) -> pdarray
@@ -38297,7 +38295,7 @@ Package Contents
 
 
 
-   .. py:method:: argmax() -> Union[numpy.int64, numpy.uint64]
+   .. py:method:: argmax(axis: Optional[Union[int, None]] = None, keepdims: bool = False) -> Union[numpy.int64, numpy.uint64, pdarray]
 
       Return the index of the first occurrence of the array max value.
 
@@ -38317,7 +38315,7 @@ Package Contents
 
 
 
-   .. py:method:: argmin() -> Union[numpy.int64, numpy.uint64]
+   .. py:method:: argmin(axis: Optional[Union[int, None]] = None, keepdims: bool = False) -> Union[numpy.int64, numpy.uint64, pdarray]
 
       Return the index of the first occurrence of the array min value
 
@@ -39305,7 +39303,7 @@ Package Contents
 
 
 
-   .. py:method:: argmax() -> Union[numpy.int64, numpy.uint64]
+   .. py:method:: argmax(axis: Optional[Union[int, None]] = None, keepdims: bool = False) -> Union[numpy.int64, numpy.uint64, pdarray]
 
       Return the index of the first occurrence of the array max value.
 
@@ -39325,7 +39323,7 @@ Package Contents
 
 
 
-   .. py:method:: argmin() -> Union[numpy.int64, numpy.uint64]
+   .. py:method:: argmin(axis: Optional[Union[int, None]] = None, keepdims: bool = False) -> Union[numpy.int64, numpy.uint64, pdarray]
 
       Return the index of the first occurrence of the array min value
 
@@ -40313,7 +40311,7 @@ Package Contents
 
 
 
-   .. py:method:: argmax() -> Union[numpy.int64, numpy.uint64]
+   .. py:method:: argmax(axis: Optional[Union[int, None]] = None, keepdims: bool = False) -> Union[numpy.int64, numpy.uint64, pdarray]
 
       Return the index of the first occurrence of the array max value.
 
@@ -40333,7 +40331,7 @@ Package Contents
 
 
 
-   .. py:method:: argmin() -> Union[numpy.int64, numpy.uint64]
+   .. py:method:: argmin(axis: Optional[Union[int, None]] = None, keepdims: bool = False) -> Union[numpy.int64, numpy.uint64, pdarray]
 
       Return the index of the first occurrence of the array min value
 
@@ -41321,7 +41319,7 @@ Package Contents
 
 
 
-   .. py:method:: argmax() -> Union[numpy.int64, numpy.uint64]
+   .. py:method:: argmax(axis: Optional[Union[int, None]] = None, keepdims: bool = False) -> Union[numpy.int64, numpy.uint64, pdarray]
 
       Return the index of the first occurrence of the array max value.
 
@@ -41341,7 +41339,7 @@ Package Contents
 
 
 
-   .. py:method:: argmin() -> Union[numpy.int64, numpy.uint64]
+   .. py:method:: argmin(axis: Optional[Union[int, None]] = None, keepdims: bool = False) -> Union[numpy.int64, numpy.uint64, pdarray]
 
       Return the index of the first occurrence of the array min value
 
@@ -42329,7 +42327,7 @@ Package Contents
 
 
 
-   .. py:method:: argmax() -> Union[numpy.int64, numpy.uint64]
+   .. py:method:: argmax(axis: Optional[Union[int, None]] = None, keepdims: bool = False) -> Union[numpy.int64, numpy.uint64, pdarray]
 
       Return the index of the first occurrence of the array max value.
 
@@ -42349,7 +42347,7 @@ Package Contents
 
 
 
-   .. py:method:: argmin() -> Union[numpy.int64, numpy.uint64]
+   .. py:method:: argmin(axis: Optional[Union[int, None]] = None, keepdims: bool = False) -> Union[numpy.int64, numpy.uint64, pdarray]
 
       Return the index of the first occurrence of the array min value
 
@@ -43337,7 +43335,7 @@ Package Contents
 
 
 
-   .. py:method:: argmax() -> Union[numpy.int64, numpy.uint64]
+   .. py:method:: argmax(axis: Optional[Union[int, None]] = None, keepdims: bool = False) -> Union[numpy.int64, numpy.uint64, pdarray]
 
       Return the index of the first occurrence of the array max value.
 
@@ -43357,7 +43355,7 @@ Package Contents
 
 
 
-   .. py:method:: argmin() -> Union[numpy.int64, numpy.uint64]
+   .. py:method:: argmin(axis: Optional[Union[int, None]] = None, keepdims: bool = False) -> Union[numpy.int64, numpy.uint64, pdarray]
 
       Return the index of the first occurrence of the array min value
 

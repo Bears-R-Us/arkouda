@@ -365,7 +365,12 @@
 <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
 <span class="kn">from</span> <span class="nn">arkouda.infoclass</span> <span class="kn">import</span> <span class="n">information</span><span class="p">,</span> <span class="n">pretty_print_information</span>
 <span class="kn">from</span> <span class="nn">arkouda.logger</span> <span class="kn">import</span> <span class="n">getArkoudaLogger</span>
-<span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">NUMBER_FORMAT_STRINGS</span><span class="p">,</span> <span class="n">DTypes</span><span class="p">,</span> <span class="n">bigint</span>
+<span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ARKOUDA_SUPPORTED_INTS</span><span class="p">,</span>
+    <span class="n">NUMBER_FORMAT_STRINGS</span><span class="p">,</span>
+    <span class="n">DTypes</span><span class="p">,</span>
+    <span class="n">bigint</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">bool_</span> <span class="k">as</span> <span class="n">akbool</span>
 <span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">bool_scalars</span><span class="p">,</span> <span class="n">dtype</span>
 <span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">float64</span> <span class="k">as</span> <span class="n">akfloat64</span>
@@ -383,10 +388,12 @@
 <span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">uint64</span> <span class="k">as</span> <span class="n">akuint64</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-
+    <span class="c1">#   These are dummy functions that are used only for type checking.</span>
+    <span class="c1">#   They communicate to mypy the expected input and output types,</span>
+    <span class="c1">#   in cases where the function is generated at runtime.</span>
     <span class="k">def</span> <span class="nf">numeric_reduce</span><span class="p">(</span>
-        <span class="n">pda</span><span class="p">,</span>
-        <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
+        <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
         <span class="k">pass</span>
@@ -397,7 +404,7 @@
     <span class="nb">min</span> <span class="o">=</span> <span class="n">numeric_reduce</span>
 
     <span class="k">def</span> <span class="nf">boolean_reduce</span><span class="p">(</span>
-        <span class="n">pda</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">pda</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">bool_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
         <span class="k">pass</span>
 
@@ -405,6 +412,14 @@
     <span class="n">is_locally_sorted</span> <span class="o">=</span> <span class="n">boolean_reduce</span>
     <span class="nb">all</span> <span class="o">=</span> <span class="n">boolean_reduce</span>
     <span class="nb">any</span> <span class="o">=</span> <span class="n">boolean_reduce</span>
+
+    <span class="k">def</span> <span class="nf">index_reduce</span><span class="p">(</span>
+        <span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">akint64</span><span class="p">,</span> <span class="n">akuint64</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
+        <span class="k">pass</span>
+
+    <span class="n">argmax</span> <span class="o">=</span> <span class="n">index_reduce</span>
+    <span class="n">argmin</span> <span class="o">=</span> <span class="n">index_reduce</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -449,6 +464,8 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">getArkoudaLogger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;pdarrayclass&quot;</span><span class="p">)</span>
 
 <span class="n">SUPPORTED_REDUCTION_OPS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;any&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;isSorted&quot;</span><span class="p">,</span> <span class="s2">&quot;isSortedLocally&quot;</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="s2">&quot;min&quot;</span><span class="p">,</span> <span class="s2">&quot;sum&quot;</span><span class="p">,</span> <span class="s2">&quot;prod&quot;</span><span class="p">]</span>
+
+<span class="n">SUPPORTED_INDEX_REDUCTION_OPS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;argmin&quot;</span><span class="p">,</span> <span class="s2">&quot;argmax&quot;</span><span class="p">]</span>
 
 
 <span class="nd">@typechecked</span>
@@ -1777,6 +1794,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the sum of all elements in the array.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#   Function is generated at runtime with _make_reduction_func.</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span></div>
 
 
@@ -1791,6 +1809,7 @@
 <span class="sd">        Return the product of all elements in the array. Return value is</span>
 <span class="sd">        always a np.float64 or np.int64.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#   Function is generated at runtime with _make_reduction_func.</span>
         <span class="k">return</span> <span class="n">prod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span>  <span class="c1"># noqa: F821</span></div>
 
 
@@ -1804,6 +1823,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the minimum value of the array.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#   Function is generated at runtime with _make_reduction_func.</span>
         <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span></div>
 
 
@@ -1817,25 +1837,32 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the maximum value of the array.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#   Function is generated at runtime with _make_reduction_func.</span>
         <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="pdarray.argmin">
 <a class="viewcode-back" href="../../usage/histogram.html#arkouda.pdarray.argmin">[docs]</a>
-    <span class="k">def</span> <span class="nf">argmin</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">argmin</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the index of the first occurrence of the array min value</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">argmin</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+        <span class="c1">#   Function is generated at runtime with _make_index_reduction_func.</span>
+        <span class="k">return</span> <span class="n">argmin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="pdarray.argmax">
 <a class="viewcode-back" href="../../usage/histogram.html#arkouda.pdarray.argmax">[docs]</a>
-    <span class="k">def</span> <span class="nf">argmax</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">argmax</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the index of the first occurrence of the array max value.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">argmax</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+        <span class="c1">#   Function is generated at runtime with _make_index_reduction_func.</span>
+        <span class="k">return</span> <span class="n">argmax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="pdarray.mean">
@@ -3186,12 +3213,12 @@
     <span class="n">return_dtype</span><span class="o">=</span><span class="s2">&quot;numpy_scalars&quot;</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="k">if</span> <span class="n">op</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">SUPPORTED_REDUCTION_OPS</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;value </span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> not supported by _reduce_by_op.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;value </span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> not supported by _make_reduction_func.&quot;</span><span class="p">)</span>
 
     <span class="nd">@typechecked</span>
     <span class="k">def</span> <span class="nf">op_func</span><span class="p">(</span>
         <span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
-        <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
         <span class="k">return</span> <span class="n">_common_reduction</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">pda</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span>
@@ -3202,9 +3229,9 @@
 <span class="s2">    Parameters</span>
 <span class="s2">    ----------</span>
 <span class="s2">    pda : pdarray</span>
-<span class="s2">        The pdarray instance to be evaluated</span>
+<span class="s2">        The pdarray instance to be evaluated.</span>
 <span class="s2">    axis : int or Tuple[int, ...], optional</span>
-<span class="s2">        The axis or axes along which to compute the sum. If None, the sum of the entire array is</span>
+<span class="s2">        The axis or axes along which to compute the sum. If None, the reduction of the entire array is</span>
 <span class="s2">        computed (returning a scalar).</span>
 <span class="s2">    keepdims : bool, optional</span>
 <span class="s2">        Whether to keep the singleton dimension(s) along `axis` in the result.</span>
@@ -3220,6 +3247,54 @@
 <span class="s2">        Raised if pda is not a pdarray instance</span>
 <span class="s2">    RuntimeError</span>
 <span class="s2">        Raised if there&#39;s a server-side error thrown</span>
+<span class="s2">     &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">op_func</span>
+
+
+<span class="k">def</span> <span class="nf">_make_index_reduction_func</span><span class="p">(</span>
+    <span class="n">op</span><span class="p">,</span>
+    <span class="n">function_descriptor</span><span class="o">=</span><span class="s2">&quot;Return index reduction of a pdarray by an operation along an axis.&quot;</span><span class="p">,</span>
+    <span class="n">return_descriptor</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">return_dtype</span><span class="o">=</span><span class="s2">&quot;int64, uint64&quot;</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="k">if</span> <span class="n">op</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">SUPPORTED_INDEX_REDUCTION_OPS</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;value </span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> not supported by _make_index_reduction_func.&quot;</span><span class="p">)</span>
+
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span> <span class="nf">op_func</span><span class="p">(</span>
+        <span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
+        <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">akuint64</span><span class="p">,</span> <span class="n">akint64</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">_common_index_reduction</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">pda</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span>
+
+    <span class="n">op_func</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    </span><span class="si">{</span><span class="n">function_descriptor</span><span class="si">}</span>
+
+<span class="s2">    Parameters</span>
+<span class="s2">    ----------</span>
+<span class="s2">    pda : pdarray</span>
+<span class="s2">        The pdarray instance to be evaluated.</span>
+<span class="s2">    axis : int, optional</span>
+<span class="s2">        The axis along which to compute the index reduction.</span>
+<span class="s2">        If None, the reduction of the entire array is</span>
+<span class="s2">        computed (returning a scalar).</span>
+<span class="s2">    keepdims : bool, optional</span>
+<span class="s2">        Whether to keep the singleton dimension(s) along `axis` in the result.</span>
+
+<span class="s2">    Returns</span>
+<span class="s2">    -------</span>
+<span class="s2">    pdarray or </span><span class="si">{</span><span class="n">return_dtype</span><span class="si">}</span>
+<span class="s2">        </span><span class="si">{</span><span class="n">return_descriptor</span><span class="si">}</span>
+
+<span class="s2">    Raises</span>
+<span class="s2">    ------</span>
+<span class="s2">    TypeError</span>
+<span class="s2">        Raised if pda is not a pdarray instance.</span>
+<span class="s2">        Raised axis is not an int.</span>
+<span class="s2">    RuntimeError</span>
+<span class="s2">        Raised if there&#39;s a server-side error thrown.</span>
 <span class="s2">     &quot;&quot;&quot;</span>
 
     <span class="k">return</span> <span class="n">op_func</span>
@@ -3243,13 +3318,11 @@
 
 
 <span class="c1"># helper function for sum, min, max, prod</span>
-
-
 <span class="nd">@typechecked</span>
 <span class="k">def</span> <span class="nf">_common_reduction</span><span class="p">(</span>
     <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
-    <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3260,22 +3333,22 @@
 <span class="sd">    kind : str</span>
 <span class="sd">        The name of the reduction operation.  Must be a member of SUPPORTED_REDUCTION_OPS.</span>
 <span class="sd">    pda : pdarray</span>
-<span class="sd">        The pdarray instance to be evaluated</span>
+<span class="sd">        The pdarray instance to be evaluated.</span>
 <span class="sd">    axis : int or Tuple[int, ...], optional</span>
-<span class="sd">        The axis or axes along which to compute the sum. If None, the sum of the entire array is</span>
+<span class="sd">        The axis or axes along which to compute the reduction. If None, the sum of the entire array is</span>
 <span class="sd">        computed (returning a scalar).</span>
 <span class="sd">    keepdims : bool, optional</span>
 <span class="sd">        Whether to keep the singleton dimension(s) along `axis` in the result.</span>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    bool</span>
+<span class="sd">    numpy_scalars, pdarray</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    TypeError</span>
-<span class="sd">        Raised if pda is not a pdarray instance</span>
+<span class="sd">        Raised if pda is not a pdarray instance.</span>
 <span class="sd">    RuntimeError</span>
-<span class="sd">        Raised if there&#39;s a server-side error thrown</span>
+<span class="sd">        Raised if there&#39;s a server-side error thrown.</span>
 <span class="sd">    ValueError</span>
 <span class="sd">        Raised op is not a supported reduction operation.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -3291,7 +3364,7 @@
             <span class="p">[</span>
                 <span class="n">axis</span><span class="p">,</span>
             <span class="p">]</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">ARKOUDA_SUPPORTED_INTS</span><span class="p">)</span>
             <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
         <span class="p">)</span>
     <span class="p">)</span>
@@ -3317,6 +3390,64 @@
             <span class="k">return</span> <span class="n">result</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">squeeze</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+
+
+<span class="c1"># helper function for argmin, argmax</span>
+<span class="nd">@typechecked</span>
+<span class="k">def</span> <span class="nf">_common_index_reduction</span><span class="p">(</span>
+    <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
+    <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">akuint64</span><span class="p">,</span> <span class="n">akint64</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return reduction of a pdarray by an operation along an axis.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    kind : str</span>
+<span class="sd">        The name of the reduction operation.  Must be a member of SUPPORTED_INDEX_REDUCTION_OPS.</span>
+<span class="sd">    pda : pdarray</span>
+<span class="sd">        The pdarray instance to be evaluated.</span>
+<span class="sd">    axis : int or Tuple[int, ...], optional</span>
+<span class="sd">        The axis or axes along which to compute the reduction. If None, the sum of the entire array is</span>
+<span class="sd">        computed (returning a scalar).</span>
+<span class="sd">    keepdims : bool, optional</span>
+<span class="sd">        Whether to keep the singleton dimension(s) along `axis` in the result.</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    int64</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        Raised if axis is not of type int.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">SUPPORTED_INDEX_REDUCTION_OPS</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported reduction type: </span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">parse_single_value</span><span class="p">(</span>
+            <span class="n">generic_msg</span><span class="p">(</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">All&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">},</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span>
+            <span class="n">generic_msg</span><span class="p">(</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="n">axis</span><span class="p">},</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">keepdims</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">arkouda.numpy</span> <span class="kn">import</span> <span class="n">squeeze</span>
+
+            <span class="k">return</span> <span class="n">squeeze</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;axis must by of type int.&quot;</span><span class="p">)</span>
 
 
 <span class="nb">globals</span><span class="p">()[</span><span class="s2">&quot;any&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_make_reduction_func</span><span class="p">(</span>
@@ -3379,6 +3510,22 @@
     <span class="n">return_dtype</span><span class="o">=</span><span class="s2">&quot;numpy_scalars&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
+<span class="nb">globals</span><span class="p">()[</span><span class="s2">&quot;argmin&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_make_index_reduction_func</span><span class="p">(</span>
+    <span class="s2">&quot;argmin&quot;</span><span class="p">,</span>
+    <span class="n">function_descriptor</span><span class="o">=</span><span class="s2">&quot;Return the argmin of the array along the specified axis.  &quot;</span>
+    <span class="s2">&quot;This is returned as the ordered index.&quot;</span><span class="p">,</span>
+    <span class="n">return_descriptor</span><span class="o">=</span><span class="s2">&quot;This argmin of the array.&quot;</span><span class="p">,</span>
+    <span class="n">return_dtype</span><span class="o">=</span><span class="s2">&quot;int64, uint64&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">globals</span><span class="p">()[</span><span class="s2">&quot;argmax&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_make_index_reduction_func</span><span class="p">(</span>
+    <span class="s2">&quot;argmax&quot;</span><span class="p">,</span>
+    <span class="n">function_descriptor</span><span class="o">=</span><span class="s2">&quot;Return the argmax of the array along the specified axis.  &quot;</span>
+    <span class="s2">&quot;This is returned as the ordered index.&quot;</span><span class="p">,</span>
+    <span class="n">return_descriptor</span><span class="o">=</span><span class="s2">&quot;This argmax of the array.&quot;</span><span class="p">,</span>
+    <span class="n">return_dtype</span><span class="o">=</span><span class="s2">&quot;int64, uint64&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
 
 <div class="viewcode-block" id="dot">
 <a class="viewcode-back" href="../../autoapi/arkouda/pdarrayclass/index.html#arkouda.dot">[docs]</a>
@@ -3431,70 +3578,6 @@
             <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">pda1</span> <span class="o">*</span> <span class="n">pda2</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">pda1</span> <span class="o">*</span> <span class="n">pda2</span></div>
-
-
-
-<div class="viewcode-block" id="argmin">
-<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.argmin">[docs]</a>
-<span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">argmin</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return the index of the first occurrence of the array min value.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    pda : pdarray</span>
-<span class="sd">        Values for which to calculate the argmin</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    Union[np.int64, np.uint64]</span>
-<span class="sd">        The index of the argmin calculated from the pda</span>
-
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    TypeError</span>
-<span class="sd">        Raised if pda is not a pdarray instance</span>
-<span class="sd">    RuntimeError</span>
-<span class="sd">        Raised if there&#39;s a server-side error thrown</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">parse_single_value</span><span class="p">(</span>
-        <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;reduce-&gt;idx</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;argmin&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;hasAxis&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
-        <span class="p">)</span>
-    <span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="argmax">
-<a class="viewcode-back" href="../../usage/arithmetic.html#arkouda.argmax">[docs]</a>
-<span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">argmax</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return the index of the first occurrence of the array max value.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    pda : pdarray</span>
-<span class="sd">        Values for which to calculate the argmax</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    Union[np.int64, np.uint64]</span>
-<span class="sd">        The index of the argmax calculated from the pda</span>
-
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    TypeError</span>
-<span class="sd">        Raised if pda is not a pdarray instance</span>
-<span class="sd">    RuntimeError</span>
-<span class="sd">        Raised if there&#39;s a server-side error thrown</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">parse_single_value</span><span class="p">(</span>
-        <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;reduce-&gt;idx</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;argmax&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;hasAxis&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
-        <span class="p">)</span>
-    <span class="p">)</span></div>
 
 
 
