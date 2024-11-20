@@ -436,6 +436,7 @@ Functions
    arkouda.invert_permutation
    arkouda.ip_address
    arkouda.isSupportedBool
+   arkouda.isSupportedDType
    arkouda.isSupportedFloat
    arkouda.isSupportedInt
    arkouda.isSupportedInt
@@ -514,6 +515,7 @@ Functions
    arkouda.segarray
    arkouda.setdiff1d
    arkouda.setxor1d
+   arkouda.shape
    arkouda.sign
    arkouda.sin
    arkouda.sinh
@@ -36856,6 +36858,8 @@ Package Contents
 
 .. py:function:: isSupportedBool(num)
 
+.. py:function:: isSupportedDType(scalar)
+
 .. py:function:: isSupportedFloat(num)
 
 .. py:function:: isSupportedInt(num)
@@ -45543,6 +45547,30 @@ Package Contents
    >>> multib = [b, c, d]
    >>> ak.setxor1d(multia, multib)
    [array([2, 2, 4, 4, 5, 5]), array([2, 5, 2, 4, 4, 5]), array([2, 4, 5, 4, 2, 5])]
+
+
+.. py:function:: shape(a: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, bool, numpy.bool_, float, numpy.float64, numpy.float32, int, numpy.int8, numpy.int16, numpy.int32, numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64, numpy.str_, str]) -> Tuple
+
+   Return the shape of an array.
+
+   :param a: Input array.
+   :type a: pdarray
+
+   :returns: **shape** -- The elements of the shape tuple give the lengths of the
+             corresponding array dimensions.
+   :rtype: tuple of ints
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> ak.shape(ak.eye(3,2))
+   (3, 2)
+   >>> ak.shape([[1, 3]])
+   (1, 2)
+   >>> ak.shape([0])
+   (1,)
+   >>> ak.shape(0)
+   ()
 
 
 .. py:class:: short(value)

@@ -511,16 +511,19 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.dtypes.isSupportedBool" title="arkouda.dtypes.isSupportedBool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedBool</span></code></a>(num)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.dtypes.isSupportedFloat" title="arkouda.dtypes.isSupportedFloat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedFloat</span></code></a>(num)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.dtypes.isSupportedDType" title="arkouda.dtypes.isSupportedDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedDType</span></code></a>(scalar)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.dtypes.isSupportedInt" title="arkouda.dtypes.isSupportedInt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedInt</span></code></a>(num)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.dtypes.isSupportedFloat" title="arkouda.dtypes.isSupportedFloat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedFloat</span></code></a>(num)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.dtypes.isSupportedNumber" title="arkouda.dtypes.isSupportedNumber"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedNumber</span></code></a>(num)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.dtypes.isSupportedInt" title="arkouda.dtypes.isSupportedInt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedInt</span></code></a>(num)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.dtypes.resolve_scalar_dtype" title="arkouda.dtypes.resolve_scalar_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resolve_scalar_dtype</span></code></a>(→ str)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.dtypes.isSupportedNumber" title="arkouda.dtypes.isSupportedNumber"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedNumber</span></code></a>(num)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.dtypes.resolve_scalar_dtype" title="arkouda.dtypes.resolve_scalar_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resolve_scalar_dtype</span></code></a>(→ str)</p></td>
 <td><p>Try to infer what dtype arkouda_server should treat val as.</p></td>
 </tr>
 </tbody>
@@ -2002,6 +2005,11 @@ this is used by e.g. typing.List and typing.Dict.</p>
 <dd></dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="arkouda.dtypes.isSupportedDType">
+<span class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></span><span class="sig-name descname"><span class="pre">isSupportedDType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scalar</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numpy/dtypes/dtypes.html#isSupportedDType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.dtypes.isSupportedDType" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="arkouda.dtypes.isSupportedFloat">
 <span class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></span><span class="sig-name descname"><span class="pre">isSupportedFloat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numpy/dtypes/dtypes.html#isSupportedFloat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.dtypes.isSupportedFloat" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -3084,6 +3092,7 @@ Analogous to the builtin <cite>int.bit_count</cite> or <code class="docutils lit
 </li>
 <li><a class="reference internal" href="#arkouda.dtypes.int_scalars"><code class="docutils literal notranslate"><span class="pre">int_scalars</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dtypes.isSupportedBool"><code class="docutils literal notranslate"><span class="pre">isSupportedBool()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.dtypes.isSupportedDType"><code class="docutils literal notranslate"><span class="pre">isSupportedDType()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dtypes.isSupportedFloat"><code class="docutils literal notranslate"><span class="pre">isSupportedFloat()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dtypes.isSupportedInt"><code class="docutils literal notranslate"><span class="pre">isSupportedInt()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dtypes.isSupportedNumber"><code class="docutils literal notranslate"><span class="pre">isSupportedNumber()</span></code></a></li>

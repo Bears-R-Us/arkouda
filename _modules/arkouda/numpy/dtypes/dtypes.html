@@ -410,6 +410,7 @@
     <span class="s2">&quot;intTypes&quot;</span><span class="p">,</span>
     <span class="s2">&quot;int_scalars&quot;</span><span class="p">,</span>
     <span class="s2">&quot;isSupportedBool&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;isSupportedDType&quot;</span><span class="p">,</span>
     <span class="s2">&quot;isSupportedFloat&quot;</span><span class="p">,</span>
     <span class="s2">&quot;isSupportedInt&quot;</span><span class="p">,</span>
     <span class="s2">&quot;isSupportedNumber&quot;</span><span class="p">,</span>
@@ -694,6 +695,13 @@
 <a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/index.html#arkouda.dtypes.isSupportedBool">[docs]</a>
 <span class="k">def</span> <span class="nf">isSupportedBool</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">ARKOUDA_SUPPORTED_BOOLS</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="isSupportedDType">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/index.html#arkouda.dtypes.isSupportedDType">[docs]</a>
+<span class="k">def</span> <span class="nf">isSupportedDType</span><span class="p">(</span><span class="n">scalar</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalar</span><span class="p">,</span> <span class="n">ARKOUDA_SUPPORTED_DTYPES</span><span class="p">)</span></div>
 
 
 
