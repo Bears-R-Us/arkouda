@@ -1043,8 +1043,9 @@ module AryUtil
 
       // index -> order for the input array's indices
       // e.g., order = k + (nz * j) + (nz * ny * i)
-      inline proc indexToOrder(idx: rank*int): int {
-        var order = 0;
+      inline proc indexToOrder(idx: rank*?t): t
+      where (t==int) || (t==uint(64)) {
+        var order : t = 0;
         for param i in 0..<rank do order += idx[i] * accumRankSizes[rank - i - 1];
         return order;
       }

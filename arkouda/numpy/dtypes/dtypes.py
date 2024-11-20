@@ -27,6 +27,7 @@ from numpy import (
 __all__ = [
     "_datatype_check",
     "ARKOUDA_SUPPORTED_DTYPES",
+    "ARKOUDA_SUPPORTED_INTS",
     "DType",
     "DTypeObjects",
     "DTypes",
