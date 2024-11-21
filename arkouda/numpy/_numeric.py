@@ -3,7 +3,6 @@ from enum import Enum
 from typing import TYPE_CHECKING, List, Sequence, Tuple, TypeVar, Union
 from typing import cast as type_cast
 from typing import no_type_check
-
 import numpy as np
 from typeguard import typechecked
 
@@ -26,13 +25,7 @@ from arkouda.numpy.dtypes import (
 from arkouda.numpy.dtypes import _datatype_check
 from arkouda.pdarrayclass import all as ak_all
 from arkouda.pdarrayclass import any as ak_any
-from arkouda.pdarrayclass import (
-    argmax,
-    broadcast_if_needed,
-    create_pdarray,
-    pdarray,
-    sum,
-)
+from arkouda.pdarrayclass import argmax, broadcast_if_needed, create_pdarray, pdarray, sum
 from arkouda.pdarraycreation import array, linspace, scalar_array
 from arkouda.sorting import sort
 from arkouda.strings import Strings
@@ -281,10 +274,10 @@ def ceil(pda: pdarray) -> pdarray:
     >>> ak.ceil(ak.linspace(1.1,5.5,5))
     array([2, 3, 4, 5, 6])
     """
+    _datatype_check(pda.dtype, [float], 'ceil')
     repMsg = generic_msg(
-        cmd=f"efunc{pda.ndim}D",
+        cmd=f"ceil<{pda.dtype},{pda.ndim}>",
         args={
-            "func": "ceil",
             "array": pda,
         },
     )
@@ -315,11 +308,11 @@ def floor(pda: pdarray) -> pdarray:
     >>> ak.floor(ak.linspace(1.1,5.5,5))
     array([1, 2, 3, 4, 5])
     """
+    _datatype_check(pda.dtype, [float], 'floor')
     repMsg = generic_msg(
-        cmd=f"efunc{pda.ndim}D",
+        cmd=f"floor<{pda.dtype},{pda.ndim}>",
         args={
-            "func": "floor",
-            "array": pda,
+            "pda": pda,
         },
     )
     return create_pdarray(type_cast(str, repMsg))
@@ -349,11 +342,11 @@ def round(pda: pdarray) -> pdarray:
     >>> ak.round(ak.array([1.1, 2.5, 3.14159]))
     array([1, 3, 3])
     """
+    _datatype_check(pda.dtype, [float], 'round')
     repMsg = generic_msg(
-        cmd=f"efunc{pda.ndim}D",
+        cmd=f"round<{pda.dtype},{pda.ndim}>",
         args={
-            "func": "round",
-            "array": pda,
+            "pda": pda,
         },
     )
     return create_pdarray(type_cast(str, repMsg))
@@ -383,10 +376,10 @@ def trunc(pda: pdarray) -> pdarray:
     >>> ak.trunc(ak.array([1.1, 2.5, 3.14159]))
     array([1, 2, 3])
     """
+    _datatype_check(pda.dtype, [float], 'trunc')
     repMsg = generic_msg(
-        cmd=f"efunc{pda.ndim}D",
+        cmd=f"trunc<{pda.dtype},{pda.ndim}>",
         args={
-            "func": "trunc",
             "array": pda,
         },
     )
@@ -1362,7 +1355,7 @@ def rad2deg(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     elif where is False:
         return pda
     else:
-        return _merge_where(pda[:], where, 180 * (pda[where] / np.pi))
+        return _merge_where(pda[:], where, 180*(pda[where]/np.pi))
 
 
 @typechecked
@@ -1394,7 +1387,7 @@ def deg2rad(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     elif where is False:
         return pda
     else:
-        return _merge_where(pda[:], where, (np.pi * pda[where] / 180))
+        return _merge_where(pda[:], where, (np.pi*pda[where]/180))
 
 
 def _hash_helper(a):
@@ -1521,13 +1514,14 @@ def hash(
 def _hash_single(pda: pdarray, full: bool = True):
     if pda.dtype == bigint:
         return hash(pda.bigint_to_uint_arrays())
+    _datatype_check(pda.dtype, [float, int, ak_uint64], 'hash')
+    hname = "hash128" if full else "hash64"
     repMsg = type_cast(
         str,
         generic_msg(
-            cmd=f"efunc{pda.ndim}D",
+            cmd=f"{hname}<{pda.dtype},{pda.ndim}>",
             args={
-                "func": "hash128" if full else "hash64",
-                "array": pda,
+                "x": pda,
             },
         ),
     )
@@ -2588,18 +2582,17 @@ def matmul(pdaLeft: pdarray, pdaRight: pdarray):
     """
     if pdaLeft.ndim != pdaRight.ndim:
         raise ValueError("matmul requires matrices of matching rank.")
-
     cmd = f"matmul<{pdaLeft.dtype},{pdaRight.dtype},{pdaLeft.ndim}>"
     args = {
         "x1": pdaLeft,
         "x2": pdaRight,
     }
-    repMsg = generic_msg(
-        cmd=cmd,
-        args=args,
+    return create_pdarray(
+        generic_msg(
+            cmd=cmd,
+            args=args,
+        )
     )
-
-    return create_pdarray(repMsg)
 
 
 def vecdot(x1: pdarray, x2: pdarray):

@@ -141,82 +141,6 @@ module ReductionMsg
       }
     }
 
-    /*
-      Compute an array reduction along one or more axes.
-      (where the result has an integer data type)
-
-      Supports: 'argmin', 'argmax'
-    */
-    @arkouda.registerND(cmd_prefix="reduce->idx")
-    proc idxReductionMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param nd: int): MsgTuple throws {
-      use SliceReductionOps;
-      param pn = Reflection.getRoutineName();
-      const x = msgArgs.getValueOf("x"),
-            op = msgArgs.getValueOf("op"),
-            axis = msgArgs.get("axis").getPositiveIntValue(nd),
-            rname = st.nextName();
-
-      var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(x, st);
-
-      if !idxReductionOps.contains(op) {
-        const errorMsg = notImplementedError(pn,op,gEnt.dtype);
-        rmLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
-        return new MsgTuple(errorMsg, MsgType.ERROR);
-      }
-
-      proc computeReduction(type t): MsgTuple throws {
-        const eIn = toSymEntry(gEnt, t, nd);
-
-        if nd == 1 {
-          var s: int;
-          select op {
-            when "argmin" {
-              const (minVal, minLoc) = minloc reduce zip(eIn.a, eIn.a.domain);
-              s = minLoc;
-            }
-            when "argmax" {
-              const (maxVal, maxLoc) = maxloc reduce zip(eIn.a, eIn.a.domain);
-              s = maxLoc;
-            }
-            otherwise halt("unreachable");
-          }
-
-          const scalarValue = "int %i".format(s);
-          rmLogger.debug(getModuleName(),pn,getLineNumber(),scalarValue);
-          return new MsgTuple(scalarValue, MsgType.NORMAL);
-        } else {
-          const outShape = reducedShape(eIn.a.shape, axis);
-          var eOut = st.addEntry(rname, outShape, int);
-
-          forall sliceIdx in domOffAxis(eIn.a.domain, axis) {
-            const sliceDom = domOnAxis(eIn.a.domain, sliceIdx, axis);
-            var s: int;
-            select op {
-              when "argmin" do s = argmin(eIn.a, sliceDom, axis);
-              when "argmax" do s = argmax(eIn.a, sliceDom, axis);
-              otherwise halt("unreachable");
-            }
-            eOut.a[sliceIdx] = s;
-          }
-
-          const repMsg = "created " + st.attrib(rname);
-          rmLogger.info(getModuleName(),pn,getLineNumber(),repMsg);
-          return new MsgTuple(repMsg, MsgType.NORMAL);
-        }
-      }
-
-      select gEnt.dtype {
-        when DType.Int64 do return computeReduction(int);
-        when DType.UInt64 do return computeReduction(uint);
-        when DType.Float64 do return computeReduction(real);
-        when DType.Bool do return computeReduction(bool);
-        otherwise {
-          var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
-          rmLogger.error(getModuleName(),pn,getLineNumber(),errorMsg);
-          return new MsgTuple(errorMsg,MsgType.ERROR);
-        }
-      }
-    }
 
     @arkouda.instantiateAndRegister
     proc nonzero(
@@ -440,17 +364,46 @@ module ReductionMsg
         return maxVal;
       }
 
-      proc argmin(ref a: [?d] ?t, slice, axis: int): d.idxType {
+      // proc argminSlice(ref a: [?d] ?t, slice, axis: int): d.idxType {
+      //   var minValLoc = (max(t), d.low);
+      //   forall i in slice with (minloc reduce minValLoc) do minValLoc reduce= (a[i], i);
+      //   return minValLoc[1][axis];
+      // }
+
+      proc argminSlice(const ref a: [?d] ?t, slice): d.rank * d.idxType 
+      where a.rank > 1 {
         var minValLoc = (max(t), d.low);
         forall i in slice with (minloc reduce minValLoc) do minValLoc reduce= (a[i], i);
-        return minValLoc[1][axis];
+        return minValLoc[1];
       }
 
-      proc argmax(ref a: [?d] ?t, slice, axis: int): d.idxType {
+      proc argminSlice(const ref a: [?d] ?t, slice): d.idxType 
+      where a.rank == 1 {
+        var minValLoc = (max(t), d.low);
+        forall i in slice with (minloc reduce minValLoc) do minValLoc reduce= (a[i], i);
+        return minValLoc[1];
+      }
+
+      // proc argmaxSlice(ref a: [?d] ?t, slice, axis: int): d.idxType {
+      //   var maxValLoc = (min(t), d.low);
+      //   forall i in slice with (maxloc reduce maxValLoc) do maxValLoc reduce= (a[i], i);
+      //   return maxValLoc[1][axis];
+      // }
+
+      proc argmaxSlice(const ref a: [?d] ?t, slice): d.rank * d.idxType 
+      where a.rank > 1 {
         var maxValLoc = (min(t), d.low);
         forall i in slice with (maxloc reduce maxValLoc) do maxValLoc reduce= (a[i], i);
-        return maxValLoc[1][axis];
+        return maxValLoc[1];
       }
+
+      proc argmaxSlice(const ref a: [?d] ?t, slice): d.idxType 
+      where a.rank == 1 {
+        var maxValLoc = (min(t), d.low);
+        forall i in slice with (maxloc reduce maxValLoc) do maxValLoc reduce= (a[i], i);
+        return maxValLoc[1];
+      }
+
     }
 
     proc sizeReductionMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {

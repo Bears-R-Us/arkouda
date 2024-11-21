@@ -318,7 +318,9 @@ class TestNumeric:
     def test_histogram_multidim(self, num_type1, num_type2):
         # test 2d histogram
         seed = 1
-        ak_x, ak_y = ak.randint(1, 100, 1000, seed=seed, dtype=num_type1), ak.randint(1, 100, 1000, seed=seed + 1, dtype=num_type2)
+        ak_x, ak_y = ak.randint(1, 100, 1000, seed=seed, dtype=num_type1), ak.randint(
+            1, 100, 1000, seed=seed + 1, dtype=num_type2
+        )
         np_x, np_y = ak_x.to_ndarray(), ak_y.to_ndarray()
         np_hist, np_x_edges, np_y_edges = np.histogram2d(np_x, np_y)
         ak_hist, ak_x_edges, ak_y_edges = ak.histogram2d(ak_x, ak_y)
@@ -351,7 +353,7 @@ class TestNumeric:
         na = np.linspace(1, 10, 10).astype(num_type)
         pda = ak.array(na, dtype=num_type)
 
-        akfunc = getattr(ak,op)
+        akfunc = getattr(ak, op)
         npfunc = getattr(np, op)
 
         ak_assert_almost_equivalent(akfunc(pda), npfunc(na))
@@ -378,8 +380,8 @@ class TestNumeric:
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_square(self, prob_size, num_type):
         nda = np.arange(prob_size).astype(num_type)
-        if num_type != ak.uint64 :
-            nda = nda - prob_size//2
+        if num_type != ak.uint64:
+            nda = nda - prob_size // 2
         pda = ak.array(nda)
 
         assert np.allclose(np.square(nda), ak.square(pda).to_ndarray())
@@ -584,19 +586,43 @@ class TestNumeric:
         with pytest.raises(TypeError):
             ak.isnan(ark_s_string)
 
-    def test_isinf_isfinite(self) :
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_isinf_isfinite(self, prob_size):
         """
         Test isinf and isfinite.  These return pdarrays of T/F values as appropriate.
         """
-        nda = np.array([0,9999.9999])
+        def isinf_isfin_check(nda, pda) :
+            warnings.filterwarnings("ignore")
+            nda_blowup = np.exp(nda)
+            warnings.filterwarnings("default")
+            pda_blowup = ak.exp(pda)
+            assert (np.isinf(nda_blowup) == ak.isinf(pda_blowup).to_ndarray()).all()
+            assert (np.isfinite(nda_blowup) == ak.isfinite(pda_blowup).to_ndarray()).all()
+
+        def derive_multi_shape(r) :
+            i = 1
+            while i**r < prob_size :
+                i += 1
+            i = i if i**r <= prob_size else i-1
+            return i**r, r*[i]
+
+        # first the 1D case, then the max rank case
+
+        nda = alternate(0.0, 9999.9999, prob_size)
         pda = ak.array(nda)
-        warnings.filterwarnings("ignore")
-        nda_blowup = np.exp(nda)
-        warnings.filterwarnings("default")
-        pda_blowup = ak.exp(pda)
-        assert (np.isinf(nda_blowup) == ak.isinf(pda_blowup).to_ndarray()).all()
-        assert (np.isfinite(nda_blowup) == ak.isfinite(pda_blowup).to_ndarray()).all()
-        
+        isinf_isfin_check(nda, pda)
+
+        # now the max rank case; find the largest i such that i**r < prob_size, prune
+        # and reshape nda so that it's of shape (i,i,...,i), and run the same test
+        # again.
+
+        # only the max rank case is done, because only rank 1 and max_array_rank are
+        # guaranteed to be covered by the arkouda interface.  In-between ranks may not be.
+
+        newsize, newshape = derive_multi_shape (get_max_array_rank())
+        nda = nda[0:newsize].reshape(newshape)
+        pda = ak.array(nda)
+        isinf_isfin_check(nda, pda)
 
     def test_str_cat_cast(self):
         test_strs = [
@@ -914,7 +940,7 @@ class TestNumeric:
 
         # ints and bools are checked for equality; floats are checked for closeness
 
-        check = lambda a, b, t: (
+        check = lambda a, b, t: (  # noqa: E731
             np.allclose(a.tolist(), b.tolist()) if akdtype(t) == "float64" else (a == b).all()
         )
 
@@ -939,7 +965,7 @@ class TestNumeric:
 
         # ints and bools are checked for equality; floats are checked for closeness
 
-        check = lambda a, b, t: (
+        check = lambda a, b, t: (  # noqa: E731
             np.allclose(a.tolist(), b.tolist()) if akdtype(t) == "float64" else (a == b).all()
         )
 
@@ -965,7 +991,7 @@ class TestNumeric:
 
         # ints and bools are checked for equality; floats are checked for closeness
 
-        check = lambda a, b, t: (
+        check = lambda a, b, t: (  # noqa: E731
             np.allclose(a.tolist(), b.tolist()) if akdtype(t) == "float64" else (a == b).all()
         )
 
@@ -988,7 +1014,7 @@ class TestNumeric:
 
         # ints and bools are checked for equality; floats are checked for closeness
 
-        check = lambda a, b, t: (
+        check = lambda a, b, t: (  # noqa: E731
             np.allclose(a.tolist(), b.tolist()) if akdtype(t) == "float64" else (a == b).all()
         )
 
@@ -1012,7 +1038,7 @@ class TestNumeric:
 
         # ints and bools are checked for equality; floats are checked for closeness
 
-        check = lambda a, b, t: (
+        check = lambda a, b, t: (  # noqa: E731
             np.allclose(a.tolist(), b.tolist()) if akdtype(t) == "float64" else (a == b).all()
         )
 
@@ -1041,7 +1067,7 @@ class TestNumeric:
 
         # ints and bools are checked for equality; floats are checked for closeness
 
-        check = lambda a, b, t: (
+        check = lambda a, b, t: (  # noqa: E731
             np.allclose(a.tolist(), b.tolist()) if akdtype(t) == "float64" else (a == b).all()
         )
 
