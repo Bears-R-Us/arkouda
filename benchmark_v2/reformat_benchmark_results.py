@@ -133,8 +133,14 @@ def create_parser():
 
 
 def get_header_dict(directory_path):
-    """Get a dictionary there the keys are the benchmark name and the values are list of header fields for the .dat file."""
-    headers = read_files_in_directory(directory_path)
+    """
+    Returns a dictionary where the keys are the benchmark names and the
+    values are the lists of header fields for the associated .dat files.
+    The headers are read in from .perfkeys files in directory_path, when possible,
+    otherwise the default values are used.  The "# Date" field is also appended to each header.
+
+    """
+    headers = get_header_fields_from_directory(directory_path)
     for benchmark_name in BENCHMARKS:
         if benchmark_name not in headers.keys():
             headers[benchmark_name] = ["Average time =", "Average rate ="]
@@ -146,9 +152,13 @@ def get_header_dict(directory_path):
 
 
 # This algorithm for reading files into a dictionary was generated with assistance from Perplexity AI (2024).
-def read_files_in_directory(directory_path):
-    """Get a dictionary there the keys are the benchmark name and the values are list of header fields for the .dat file.
-    Only retrieves header fields in the .perfkeys files in the graph_infra directory."""
+def get_header_fields_from_directory(directory_path):
+    """
+    Returns a dictionary where the keys are the benchmark names and the
+    values are the lists of header fields for the associated .dat files.
+    Only retrieves header fields in the .perfkeys files in the graph_infra directory,
+    and does not include the default fields.
+    """
     # Dictionary to store file names and their contents
     file_contents = {}
 
@@ -180,6 +190,7 @@ def get_nested_value(data: dict, keys: list):
     """Look up a value in a dictionary using a list of keys."""
     for key in keys:
         if isinstance(data, dict):
+            # Replace data with data[key], using {} as the default option.
             data = data.get(key, {})
         else:
             return None
