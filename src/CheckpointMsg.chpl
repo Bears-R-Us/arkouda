@@ -16,8 +16,8 @@ module CheckpointMsg {
   config param serverMetadataName = "server."+metadataExt;
 
 
-  proc checkpointMsg(cmd: string, msgArgs: borrowed MessageArgs,
-                     st: borrowed SymTab): MsgTuple throws {
+  proc checkpointSaveMsg(cmd: string, msgArgs: borrowed MessageArgs,
+                         st: borrowed SymTab): MsgTuple throws {
     var basePath = msgArgs.getValueOf("path");
     const nameArg = msgArgs.getValueOf("name");
 
@@ -172,8 +172,8 @@ module CheckpointMsg {
   }
 
   use CommandMap;
-  registerFunction("checkpoint", checkpointMsg, getModuleName());
-  registerFunction("loadcheckpoint", checkpointLoadMsg, getModuleName());
+  registerFunction("save_checkpoint", checkpointSaveMsg, getModuleName());
+  registerFunction("load_checkpoint", checkpointLoadMsg, getModuleName());
 
   module Msg {
     use Message;
