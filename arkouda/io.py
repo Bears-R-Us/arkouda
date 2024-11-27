@@ -47,7 +47,7 @@ __all__ = [
     "restore",
     "receive",
     "receive_dataframe",
-    "checkpoint",
+    "save_checkpoint",
     "load_checkpoint",
 ]
 
@@ -1999,13 +1999,13 @@ def read(
         raise RuntimeError(f"Invalid File Type detected, {ftype}")
 
 
-def checkpoint(name="", path=".akdata"):
-    return cast(str, generic_msg(cmd="checkpoint", args={"name": name,
-                                                         "path": path}))
+def save_checkpoint(name="", path=".akdata"):
+    return cast(str, generic_msg(cmd="save_checkpoint", args={"name": name,
+                                                              "path": path}))
 
 def load_checkpoint(name, path=".akdata"):
-    rep_msg = generic_msg(cmd="loadcheckpoint", args={"name": name,
-                                                      "path": path})
+    rep_msg = generic_msg(cmd="load_checkpoint", args={"name": name,
+                                                       "path": path})
     rep = json.loads(rep_msg)
     return _build_objects(rep)
         
