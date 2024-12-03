@@ -27,7 +27,7 @@ def run_agg(g, vals, op):
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="GroupBy.aggregate")
 @pytest.mark.parametrize("op", ak.GroupBy.Reductions)
-def bench_aggs(benchmark, op):
+def bench_aggregate(benchmark, op):
     if op in ["any", "all"]:
         g, vals = setup_agg("bool")
     else:

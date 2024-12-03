@@ -1,0 +1,41 @@
+perfkeys: uniform int64 16-bit RadixSortLSD average rate =, uniform int64 32-bit RadixSortLSD average rate =, uniform int64 64-bit RadixSortLSD average rate =, uniform float64 RadixSortLSD average rate =, uniform int64 16-bit TwoArrayRadixSort average rate =, uniform int64 32-bit TwoArrayRadixSort average rate =, uniform int64 64-bit TwoArrayRadixSort average rate =, uniform float64 TwoArrayRadixSort average rate =
+graphkeys: 16-bit LSD, 32-bit LSD, 64-bit LSD, float64 LSD, 16-bit MSD, 32-bit MSD, 64-bit MSD, float64 MSD
+files: sort-cases.dat, sort-cases.dat, sort-cases.dat, sort-cases.dat, sort-cases.dat, sort-cases.dat, sort-cases.dat, sort-cases.dat
+graphtitle: Uniformly Distributed Data
+ylabel: Performance (GiB/s)
+
+perfkeys: power-law int64 RadixSortLSD average rate =, power-law float64 RadixSortLSD average rate =, power-law int64 TwoArrayRadixSort average rate =, power-law float64 TwoArrayRadixSort average rate =
+graphkeys: int64 32-bit LSD, float64 LSD, int64 32-bit MSD, float64 MSD
+files: sort-cases.dat, sort-cases.dat, sort-cases.dat, sort-cases.dat
+graphtitle: Power-Law Distributed Data
+ylabel: Performance (GiB/s)
+
+perfkeys: RMAT int64 RadixSortLSD average rate =, RMAT int64 TwoArrayRadixSort average rate =
+graphkeys: RMAT int64 LSD, RMAT int64 MSD
+files: sort-cases.dat, sort-cases.dat
+graphtitle: RMAT-Generated Edges (coargsort)
+ylabel: Performance (GiB/s)
+
+perfkeys: block-sorted concat int64 RadixSortLSD average rate =, block-sorted interleaved int64 RadixSortLSD average rate =, block-sorted concat int64 TwoArrayRadixSort average rate =, block-sorted interleaved int64 TwoArrayRadixSort average rate =
+graphkeys: concatenated 32-bit LSD, interleaved 32-bit LSD, concatenated 32-bit MSD, interleaved 32-bit MSD
+files: sort-cases.dat, sort-cases.dat, sort-cases.dat, sort-cases.dat
+graphtitle: Combinations of Sorted Arrays
+ylabel: Performance (GiB/s)
+
+perfkeys: refinement int64 RadixSortLSD average rate =, refinement int64 TwoArrayRadixSort average rate =
+graphkeys: 2*int64 LSD, 2*int64 MSD
+files: sort-cases.dat, sort-cases.dat
+graphtitle: Refinement of Sorted Array with an Unsorted Array (coargsort)
+ylabel: Performance (GiB/s)
+
+perfkeys: datetime64[ns] RadixSortLSD average rate =, datetime64[ns] TwoArrayRadixSort average rate =
+graphkeys: datetime64[ns] LSD, datetime64[ns] MSD
+files: sort-cases.dat, sort-cases.dat
+graphtitle: Simulated Timestamps with 1-Second Precision Stored as datetime64[ns]
+ylabel: Performance (GiB/s)
+
+perfkeys: IP-like 2*int64 RadixSortLSD average rate =, IP-like 2*int64 TwoArrayRadixSort average rate =
+graphkeys: IP-like LSD, IP-like MSD
+files: sort-cases.dat, sort-cases.dat
+graphtitle: Simulated 90/10 Mix of IPv4/IPv6 Addresses (cargsort)
+ylabel: Performance (GiB/s)
