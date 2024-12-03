@@ -973,3 +973,11 @@ class TestString:
         correct = set(list_1).union(set(list_2))
 
         assert set(output.to_ndarray()) == correct
+
+    def test_copy(self):
+        fixed_size = 100
+        a = ak.arange(fixed_size, dtype=ak.str_)
+        a_cpy = a.copy()
+
+        assert a_cpy is not a
+        ak_assert_equal(a, a_cpy)
