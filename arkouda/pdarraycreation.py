@@ -139,8 +139,9 @@ def from_series(series: pd.Series, dtype: Optional[Union[type, str]] = None) -> 
 
 
 def array(
-    a: Union[pdarray, np.ndarray, Iterable],
+    a: Union[pdarray, np.ndarray, Iterable, Strings],
     dtype: Union[np.dtype, type, str, None] = None,
+    copy: bool = True,
     max_bits: int = -1,
 ) -> Union[pdarray, Strings]:
     """
@@ -153,6 +154,10 @@ def array(
         Rank-1 array of a supported dtype
     dtype: np.dtype, type, or str
         The target dtype to cast values to
+    copy: bool=True, optional
+        If True (default), then the array data is copied.
+        Note that any copy of the data is deep, which differs from numpy.
+        For False it raises a ValueError if a copy cannot be avoided. Default: True.
     max_bits: int
         Specifies the maximum number of bits; only used for bigint pdarrays
 
@@ -167,6 +172,8 @@ def array(
     TypeError
         Raised if a is not a pdarray, np.ndarray, or Python Iterable such as a
         list, array, tuple, or deque
+
+        Raised if a Strings is called with dtype other than ak.str_
     RuntimeError
         Raised if a is not one-dimensional, nbytes > maxTransferBytes, a.dtype is
         not supported (not in DTypes), or if the product of a size and
@@ -206,9 +213,22 @@ def array(
     """
     from arkouda.numpy import cast as akcast
 
+    if copy is False:
+        if isinstance(a, (Strings, pdarray)):
+            return a
+        else:
+            raise ValueError(
+                "In ak.array, copy=False can only used with applied to pdarray objects."
+            )
+
+    if isinstance(a, Strings):
+        if dtype and dtype != "str_":
+            raise TypeError(f"Cannot cast Strings to dtype {dtype} in ak.array")
+        return a[:]
+
     # If a is already a pdarray, do nothing
     if isinstance(a, pdarray):
-        casted = a if dtype is None else akcast(a, dtype)
+        casted = a[:] if dtype is None else akcast(a, dtype)
         if dtype == bigint and max_bits != -1:
             casted.max_bits = max_bits
         return casted
