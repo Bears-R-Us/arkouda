@@ -749,6 +749,8 @@ Package Contents
 
 
    .. py:attribute:: reverse
+      :value: False
+
 
 
    .. py:attribute:: special_objType
@@ -772,6 +774,8 @@ Package Contents
 
 
    .. py:attribute:: width
+      :value: 64
+
 
 
 .. py:function:: BitVectorizer(width=64, reverse=False)
@@ -10816,6 +10820,8 @@ Package Contents
 
 
    .. py:attribute:: MSB_left
+      :value: True
+
 
 
    .. py:method:: format(x)
@@ -10842,12 +10848,18 @@ Package Contents
 
 
    .. py:attribute:: padchar
+      :value: '-'
+
 
 
    .. py:attribute:: separator
+      :value: ''
+
 
 
    .. py:attribute:: show_int
+      :value: True
+
 
 
 .. py:class:: Float16DType(obj, align=False, copy=False)
@@ -17830,6 +17842,8 @@ Package Contents
 
 
    .. py:attribute:: max_list_size
+      :value: 1000
+
 
 
    .. py:method:: memory_usage(unit='B')

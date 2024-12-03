@@ -103,6 +103,8 @@ Module Contents
 
 
    .. py:attribute:: reverse
+      :value: False
+
 
 
    .. py:attribute:: special_objType
@@ -126,6 +128,8 @@ Module Contents
 
 
    .. py:attribute:: width
+      :value: 64
+
 
 
 .. py:function:: BitVectorizer(width=64, reverse=False)
@@ -185,6 +189,8 @@ Module Contents
 
 
    .. py:attribute:: MSB_left
+      :value: True
+
 
 
    .. py:method:: format(x)
@@ -211,12 +217,18 @@ Module Contents
 
 
    .. py:attribute:: padchar
+      :value: '-'
+
 
 
    .. py:attribute:: separator
+      :value: ''
+
 
 
    .. py:attribute:: show_int
+      :value: True
+
 
 
 .. py:class:: IPv4(values)

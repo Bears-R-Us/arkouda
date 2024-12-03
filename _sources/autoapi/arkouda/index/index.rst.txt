@@ -139,6 +139,8 @@ Module Contents
 
 
    .. py:attribute:: max_list_size
+      :value: 1000
+
 
 
    .. py:method:: memory_usage(unit='B')
