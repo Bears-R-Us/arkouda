@@ -568,15 +568,25 @@ halts if this condition isn’t met.</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.unflatten">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unflatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">a:</span> <span class="pre">[?d]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">shape:</span> <span class="pre">?N*int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">[]</span> <span class="pre">t</span> <span class="pre">throws</span></em><a class="headerlink" href="#AryUtil.unflatten" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unflatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">a:</span> <span class="pre">[?d]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">shape:</span> <span class="pre">?N*int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">[]</span> <span class="pre">t</span> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">!=</span> <span class="pre">bigint</span></em><a class="headerlink" href="#AryUtil.unflatten" title="Link to this definition">¶</a></dt>
 <dd><p>unflatten a 1D array into a multi-dimensional array of the given shape</p>
 </dd></dl>
 
 <dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unflatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">a:</span> <span class="pre">[?d]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">shape:</span> <span class="pre">?N*int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">[]</span> <span class="pre">t</span> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">bigint</span></em></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.flatten">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">flatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">a:</span> <span class="pre">[?d]</span> <span class="pre">?t</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">[]</span> <span class="pre">t</span> <span class="pre">throws</span></em><a class="headerlink" href="#AryUtil.flatten" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">flatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">a:</span> <span class="pre">[?d]</span> <span class="pre">?t</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">[]</span> <span class="pre">t</span> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">!=</span> <span class="pre">bigint</span></em><a class="headerlink" href="#AryUtil.flatten" title="Link to this definition">¶</a></dt>
 <dd><p>flatten a multi-dimensional array into a 1D array</p>
 </dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">flatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">a:</span> <span class="pre">[?d]</span> <span class="pre">?t</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">[]</span> <span class="pre">t</span> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">bigint</span></em></dt>
+<dd></dd></dl>
 
 <dl class="chpl record">
 <dt class="sig sig-object chpl" id="AryUtil.orderer">

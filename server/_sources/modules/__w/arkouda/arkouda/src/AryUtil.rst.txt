@@ -292,17 +292,21 @@ or
 
 .. function:: proc appendAxis(shape: int, axis: int, param value: int): 2*(int) throws
 
-.. function:: proc unflatten(const ref a: [?d] ?t, shape: ?N*int): [] t throws
+.. function:: proc unflatten(const ref a: [?d] ?t, shape: ?N*int): [] t throws where t != bigint
 
    
    unflatten a 1D array into a multi-dimensional array of the given shape
    
 
-.. function:: proc flatten(const ref a: [?d] ?t): [] t throws
+.. function:: proc unflatten(const ref a: [?d] ?t, shape: ?N*int): [] t throws where t == bigint
+
+.. function:: proc flatten(const ref a: [?d] ?t): [] t throws where t != bigint
 
    
    flatten a multi-dimensional array into a 1D array
    
+
+.. function:: proc flatten(const ref a: [?d] ?t): [] t throws where t == bigint
 
 .. record:: orderer
 
