@@ -22,35 +22,47 @@ DTYPES = ["int64", "float64", "bool", "uint64"]
 class TestPdarrayClass:
 
     @pytest.mark.skip_if_max_rank_less_than(2)
-    def test_reshape(self):
-        a = ak.arange(4)
+    @pytest.mark.parametrize("dtype", DTYPES)
+    def test_reshape(self, dtype):
+        a = ak.arange(4, dtype=dtype)
         r = a.reshape((2, 2))
         assert r.shape == (2, 2)
         assert isinstance(r, ak.pdarray)
 
-    def test_shape(self):
-        a = ak.arange(4)
+    @pytest.mark.skip_if_max_rank_less_than(3)
+    def test_reshape_and_flatten_bug_reproducer(self):
+        dtype = "bigint"
+        size = 10
+        x = ak.arange(size, dtype=dtype).reshape((1, size, 1))
+        ak_assert_equal(x.flatten(), ak.arange(size, dtype=dtype))
+
+    @pytest.mark.parametrize("dtype", DTYPES)
+    def test_shape(self,dtype):
+        a = ak.arange(4,dtype=dtype)
         np_a = np.arange(4)
         assert isinstance(a.shape, tuple)
         assert a.shape == np_a.shape
 
     @pytest.mark.skip_if_max_rank_less_than(2)
-    def test_shape_multidim(self):
-        a = ak.arange(4).reshape((2, 2))
-        np_a = np.arange(4).reshape((2, 2))
+    @pytest.mark.parametrize("dtype", list(set(DTYPES) - set(["bool"])))
+    def test_shape_multidim(self,dtype):
+        a = ak.arange(4,dtype=dtype).reshape((2, 2))
+        np_a = np.arange(4,dtype=dtype).reshape((2, 2))
         assert isinstance(a.shape, tuple)
         assert a.shape == np_a.shape
 
     @pytest.mark.parametrize("size", pytest.prob_size)
-    def test_flatten(self, size):
-        a = ak.arange(size)
+    @pytest.mark.parametrize("dtype", DTYPES)
+    def test_flatten(self, size,dtype):
+        a = ak.arange(size,dtype=dtype)
         ak_assert_equal(a.flatten(), a)
 
     @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.parametrize("dtype", DTYPES)
     @pytest.mark.parametrize("size", pytest.prob_size)
-    def test_flatten(self, size):
+    def test_flatten(self, size,dtype):
         size = size - (size % 4)
-        a = ak.arange(size)
+        a = ak.arange(size,dtype=dtype)
         b = a.reshape((2, 2, size / 4))
         ak_assert_equal(b.flatten(), a)
 
@@ -104,11 +116,12 @@ class TestPdarrayClass:
     @pytest.mark.skip_if_nl_greater_than(2)
     @pytest.mark.skip_if_nl_less_than(2)
     @pytest.mark.parametrize("size", pytest.prob_size)
-    def test_is_locally_sorted_multi_locale(self, size):
+    @pytest.mark.parametrize("dtype", DTYPES)
+    def test_is_locally_sorted_multi_locale(self, size,dtype):
         from arkouda.pdarrayclass import is_locally_sorted, is_sorted
 
         size = size // 2
-        a = ak.concatenate([ak.arange(size), ak.arange(size)])
+        a = ak.concatenate([ak.arange(size,dtype=dtype), ak.arange(size,dtype=dtype)])
         assert is_locally_sorted(a)
         assert not is_sorted(a)
 
