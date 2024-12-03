@@ -8,7 +8,7 @@ import pandas as pd
 import pytest
 
 import arkouda as ak
-from arkouda.testing import assert_arkouda_array_equal
+from arkouda.testing import assert_arkouda_array_equal, assert_equivalent
 
 INT_SCALARS = list(ak.dtypes.int_scalars.__args__)
 NUMERIC_SCALARS = list(ak.dtypes.numeric_scalars.__args__)
@@ -364,6 +364,12 @@ class TestPdarrayCreation:
         assert dtype == zeros.dtype
         assert (0 == zeros).all()
 
+    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.parametrize("dtype", [int, ak.int64, float, ak.float64, bool, ak.bool_])
+    @pytest.mark.parametrize("shape", [0, 2, (2, 3)])
+    def test_ones_match_numpy(self, shape, dtype):
+        assert_equivalent(ak.zeros(shape, dtype=dtype), np.zeros(shape, dtype=dtype))
+
     @pytest.mark.skip_if_max_rank_less_than(3)
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [ak.int64, float, ak.float64, bool, ak.bool_, ak.bigint])
@@ -404,6 +410,12 @@ class TestPdarrayCreation:
         assert isinstance(ones, ak.pdarray)
         assert dtype == ones.dtype
         assert (1 == ones).all()
+
+    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.parametrize("dtype", [int, ak.int64, float, ak.float64, bool, ak.bool_])
+    @pytest.mark.parametrize("shape", [0, 2, (2, 3)])
+    def test_ones_match_numpy(self, shape, dtype):
+        assert_equivalent(ak.ones(shape, dtype=dtype), np.ones(shape, dtype=dtype))
 
     @pytest.mark.parametrize("dtype", [int, ak.int64, float, ak.float64, bool, ak.bool_, ak.bigint])
     @pytest.mark.parametrize("size", pytest.prob_size)
@@ -455,6 +467,14 @@ class TestPdarrayCreation:
         assert isinstance(type_full, ak.pdarray)
         assert dtype == type_full.dtype
         assert (1 == type_full).all()
+
+    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.parametrize("dtype", [int, ak.int64, float, ak.float64, bool, ak.bool_])
+    @pytest.mark.parametrize("shape", [0, 2, (2, 3)])
+    def test_full_match_numpy(self, shape, dtype):
+        assert_equivalent(
+            ak.full(shape, fill_value=2, dtype=dtype), np.full(shape, fill_value=2, dtype=dtype)
+        )
 
     @pytest.mark.skip_if_max_rank_less_than(3)
     @pytest.mark.parametrize("size", pytest.prob_size)

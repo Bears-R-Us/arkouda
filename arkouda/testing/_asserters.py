@@ -19,7 +19,7 @@ from arkouda import (
     pdarray,
     sort,
 )
-from arkouda import sum as aksum
+from arkouda.pdarrayclass import sum as aksum
 from arkouda.util import is_numeric
 
 DEBUG = True
@@ -310,7 +310,7 @@ def assert_index_equal(
             else:
                 mismatch = left != right
 
-            diff = aksum(mismatch.astype(int)) * 100.0 / len(left)
+            diff = aksum(mismatch.astype(int)).astype(float) * 100.0 / len(left)
             msg = f"{obj} values are different ({np.round(diff, 5)} %)"
             raise_assert_detail(obj, msg, left, right)
     else:
@@ -561,7 +561,7 @@ def assert_arkouda_pdarray_equal(
             if left.shape != right.shape:
                 raise_assert_detail(obj, f"{obj} shapes are different", left.shape, right.shape)
 
-            diff = aksum(left != right)
+            diff = aksum(left != right).astype(float)
 
             diff = diff * 100.0 / left.size
             msg = f"{obj} values are different ({np.round(diff, 5)} %)"
@@ -570,7 +570,7 @@ def assert_arkouda_pdarray_equal(
         raise AssertionError(err_msg)
 
     from arkouda import all as akall
-    from arkouda.dtypes import bigint, dtype
+    from arkouda.numpy.dtypes import bigint, dtype
 
     # compare shape and values
     # @TODO use ak.allclose
@@ -704,7 +704,7 @@ def assert_arkouda_strings_equal(
 
     def _raise(left: Strings, right: Strings, err_msg):
         if err_msg is None:
-            diff = aksum(left != right)
+            diff = aksum(left != right).astype(float)
             diff = diff * 100.0 / left.size
             msg = f"{obj} values are different ({np.round(diff, 5)} %)"
             raise_assert_detail(obj, msg, left, right, index_values=index_values)

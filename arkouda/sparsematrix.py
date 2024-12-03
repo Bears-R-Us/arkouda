@@ -6,8 +6,8 @@ import numpy as np
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
-from arkouda.dtypes import dtype as akdtype
-from arkouda.dtypes import int64
+from arkouda.numpy.dtypes import dtype as akdtype
+from arkouda.numpy.dtypes import int64
 from arkouda.logger import getArkoudaLogger
 from arkouda.numpy.dtypes.dtypes import NumericDTypes
 from arkouda.pdarrayclass import pdarray

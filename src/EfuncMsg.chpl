@@ -51,85 +51,148 @@ module EfuncMsg
     proc sine (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return sin(x); }
        
-    proc sine (x : [?d] ?t) : [d] real throws
-        { throw new Error ("sin does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="cos")
     proc cosine (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return cos(x); }
        
-    proc cosine (x : [?d] ?t) : [d] real throws
-        { throw new Error ("cos does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="tan")
     proc tangent (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return tan(x); }
        
-    proc tangent (x : [?d] ?t) : [d] real throws
-        { throw new Error ("tan does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="arcsin")
     proc arcsine (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return asin(x); }
        
-    proc arcsine (x : [?d] ?t) : [d] real throws
-        { throw new Error ("arcsin does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="arccos")
     proc arccosine (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return acos(x); }
        
-    proc arccosine (x : [?d] ?t) : [d] real throws
-        { throw new Error ("arccos does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="arctan")
     proc arctangent (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return atan(x); }
        
-    proc arctangent (x : [?d] ?t) : [d] real throws
-        { throw new Error ("arctan does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="sinh")
     proc hypsine (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return sinh(x); }
        
-    proc hypsine (x : [?d] ?t) : [d] real throws
-        { throw new Error ("sinh does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="cosh")
     proc hypcosine (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return cosh(x); }
        
-    proc hypcosine (x : [?d] ?t) : [d] real throws
-        { throw new Error ("cosh does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="tanh")
     proc hyptangent (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return tanh(x); }
        
-    proc hyptangent (x : [?d] ?t) : [d] real throws
-        { throw new Error ("tanh does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="arcsinh")
     proc archypsine (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return asinh(x); }
        
-    proc archypsine (x : [?d] ?t) : [d] real throws
-        { throw new Error ("arcsinh does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="arccosh")
     proc archypcosine (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return acosh(x); }
        
-    proc archypcosine (x : [?d] ?t) : [d] real throws
-        { throw new Error ("arccosh does not support type %s".format(type2str(t))) ; }
-
     @arkouda.registerCommand (name="arctanh")
     proc archyptangent (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint) { return atanh(x); }
        
-    proc archyptangent (x : [?d] ?t) : [d] real throws
-        { throw new Error ("arctanh does not support type %s".format(type2str(t))) ; }
+//  This sections adds abs, square, all the exp and log functions, and the boolean "is" functions.
+
+    @arkouda.registerCommand(name="abs")
+    proc absolut (const ref pda : [?d] ?t) : [d] t throws
+        where (t==int || t==real)  { return abs(pda) ; } // TODO maybe: allow uint and return pda
+
+    @arkouda.registerCommand(name="square")
+    proc boxy (const ref pda : [?d] ?t) : [d] t throws
+        where (t==int || t==real || t==uint)  { return square(pda) ; }
+
+    @arkouda.registerCommand(name="exp")
+    proc expo (const ref pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint)  { return exp(pda) ; }
+
+    @arkouda.registerCommand(name="expm1")
+    proc expom (const ref pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint)  { return expm1(pda) ; }
+
+    @arkouda.registerCommand(name="log")
+    proc log_e (const ref pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint)  { return log(pda) ; }
+
+    @arkouda.registerCommand(name="log1p")
+    proc log_1p (const ref pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint)  { return log1p(pda) ; }
+
+//  chapel log2 returns ints when given ints, so the input has been cast to real.
+
+    @arkouda.registerCommand(name="log2")
+    proc log_2 (const ref pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint)  { return log2(pda:real) ; }
+
+    @arkouda.registerCommand(name="log10")
+    proc log_10 (const ref pda : [?d] ?t) : [d] real throws
+        where (t==int || t==real || t==uint)  { return log10(pda) ; }
+
+    @arkouda.registerCommand(name="isinf")
+    proc isinf_ (pda : [?d] real) : [d] bool { return (isInf(pda)) ; }
+
+    @arkouda.registerCommand(name="isnan")
+    proc isnan_ (pda : [?d] real) : [d] bool { return (isNan(pda)) ; }
+
+    @arkouda.registerCommand(name="isfinite")
+    proc isfinite_ (pda : [?d] real) : [d] bool { return (isFinite(pda)) ; }
+
+    @arkouda.registerCommand (name="floor")
+    proc floor_ (pda : [?d] ?t) : [d] real throws
+        where (t==real) { return floor(pda); }
+
+    @arkouda.registerCommand (name="ceil")
+    proc ceil_ (pda : [?d] ?t) : [d] real throws
+        where (t==real) { return ceil(pda); }
+
+    @arkouda.registerCommand (name="round")
+    proc round_ (pda : [?d] ?t) : [d] real throws
+        where (t==real) { return round(pda); }
+
+    @arkouda.registerCommand (name="trunc")
+    proc trunc_ (pda : [?d] ?t) : [d] real throws
+        where (t==real) { return trunc(pda); }
+
+    // Hashes are more of a challenge to unhook from the old interface, but they
+    // have been pulled out into their own functions.
+
+    @arkouda.instantiateAndRegister
+    proc hash64 (cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int) : MsgTuple throws 
+        where ((array_dtype==real || array_dtype==int || array_dtype==uint) && array_nd==1) {
+        const efunc = msgArgs.getValueOf("x"),
+            e = st[msgArgs["x"]]: SymEntry(array_dtype,array_nd);
+        const rname = st.nextName();
+        overMemLimit(numBytes(array_dtype)*e.size);
+        var a = st.addEntry(rname, e.tupShape, uint);
+        forall (ai, x) in zip (a.a, e.a) {
+            ai = sipHash64(x) : uint ;
+        }
+        var repMsg = "created " + st.attrib(rname);
+        eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
+    @arkouda.instantiateAndRegister
+    proc hash128 (cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int) : MsgTuple throws 
+        where ((array_dtype==real || array_dtype==int || array_dtype==uint) && array_nd==1) {
+        const efunc = msgArgs.getValueOf("x"),
+            e = st[msgArgs["x"]]: SymEntry(array_dtype,array_nd);
+        const rname = st.nextName();
+        var rname2 = st.nextName();
+        overMemLimit(numBytes(array_dtype) * e.size * 2);
+        var a1 = st.addEntry(rname2, e.tupShape, uint);
+        var a2 = st.addEntry(rname, e.tupShape, uint);
+        forall (a1i, a2i, x) in zip(a1.a, a2.a, e.a) {
+            (a1i, a2i) = sipHash128(x): (uint, uint);
+        }
+        var repMsg = "created " + st.attrib(rname2) + "+";
+        repMsg += "created " + st.attrib(rname);
+        eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
 
 //  End of rewrite section -- delete this comment after all of EfuncMsg is rewritten.
 
@@ -152,23 +215,8 @@ module EfuncMsg
                 ref ea = e.a;
                 select efunc
                 {
-                    when "abs" {
-                        st.addEntry(rname, new shared SymEntry(abs(ea)));
-                    }
-                    when "log" {
-                        st.addEntry(rname, new shared SymEntry(log(ea)));
-                    }
-                    when "round" {
-                        st.addEntry(rname, new shared SymEntry(ea));
-                    }
                     when "sgn" {
                         st.addEntry(rname, new shared SymEntry(sgn(ea)));
-                    }
-                    when "exp" {
-                        st.addEntry(rname, new shared SymEntry(exp(ea)));
-                    }
-                    when "square" {
-                        st.addEntry(rname, new shared SymEntry(square(ea)));
                     }
                     when "cumsum" {
                         if nd == 1 {
@@ -191,25 +239,6 @@ module EfuncMsg
                             eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                             return new MsgTuple(errorMsg, MsgType.ERROR);
                         }
-                    }
-                    when "hash64" {
-                        overMemLimit(numBytes(int) * e.size);
-                        var a = st.addEntry(rname, e.tupShape, uint);
-                        forall (ai, x) in zip(a.a, e.a) {
-                            ai = sipHash64(x): uint;
-                        }
-                    }
-                    when "hash128" {
-                        overMemLimit(numBytes(int) * e.size * 2);
-                        var rname2 = st.nextName();
-                        var a1 = st.addEntry(rname2, e.tupShape, uint);
-                        var a2 = st.addEntry(rname, e.tupShape, uint);
-                        forall (a1i, a2i, x) in zip(a1.a, a2.a, e.a) {
-                            (a1i, a2i) = sipHash128(x): (uint, uint);
-                        }
-                        // Put first array's attrib in repMsg and let common
-                        // code append second array's attrib
-                        repMsg += "created " + st.attrib(rname2) + "+";
                     }
                     when "popcount" {
                         st.addEntry(rname, new shared SymEntry(popCount(ea)));
@@ -238,53 +267,8 @@ module EfuncMsg
                 ref ea = e.a;
                 select efunc
                 {
-                    when "abs" {
-                        st.addEntry(rname, new shared SymEntry(abs(ea)));
-                    }
-                    when "ceil" {
-                        st.addEntry(rname, new shared SymEntry(ceil(ea)));
-                    }
-                    when "floor" {
-                        st.addEntry(rname, new shared SymEntry(floor(ea)));
-                    }
-                    when "round" {
-                        st.addEntry(rname, new shared SymEntry(round(ea)));
-                    }
-                    when "trunc" {
-                        st.addEntry(rname, new shared SymEntry(trunc(ea)));
-                    }
                     when "sgn" {
                         st.addEntry(rname, new shared SymEntry(sgn(ea)));
-                    }
-                    when "isfinite" {
-                        st.addEntry(rname, new shared SymEntry(isFinite(ea)));
-                    }
-                    when "isinf" {
-                        st.addEntry(rname, new shared SymEntry(isInf(ea)));
-                    }
-                    when "isnan" {
-                        st.addEntry(rname, new shared SymEntry(isNan(ea)));
-                    }
-                    when "log" {
-                        st.addEntry(rname, new shared SymEntry(log(ea)));
-                    }
-                    when "log1p" {
-                        st.addEntry(rname, new shared SymEntry(log1p(ea)));
-                    }
-                    when "log2" {
-                        st.addEntry(rname, new shared SymEntry(log2(ea)));
-                    }
-                    when "log10" {
-                        st.addEntry(rname, new shared SymEntry(log10(ea)));
-                    }
-                    when "exp" {
-                        st.addEntry(rname, new shared SymEntry(exp(ea)));
-                    }
-                    when "expm1" {
-                        st.addEntry(rname, new shared SymEntry(expm1(ea)));
-                    }
-                    when "square" {
-                        st.addEntry(rname, new shared SymEntry(square(ea)));
                     }
                     when "cumsum" {
                         if nd == 1 {
@@ -307,25 +291,6 @@ module EfuncMsg
                             eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                             return new MsgTuple(errorMsg, MsgType.ERROR);
                         }
-                    }
-                    when "hash64" {
-                        overMemLimit(numBytes(real) * e.size);
-                        var a = st.addEntry(rname, e.tupShape, uint);
-                        forall (ai, x) in zip(a.a, e.a) {
-                            ai = sipHash64(x): uint;
-                        }
-                    }
-                    when "hash128" {
-                        overMemLimit(numBytes(real) * e.size * 2);
-                        var rname2 = st.nextName();
-                        var a1 = st.addEntry(rname2, e.tupShape, uint);
-                        var a2 = st.addEntry(rname, e.tupShape, uint);
-                        forall (a1i, a2i, x) in zip(a1.a, a2.a, e.a) {
-                            (a1i, a2i) = sipHash128(x): (uint, uint);
-                        }
-                        // Put first array's attrib in repMsg and let common
-                        // code append second array's attrib
-                        repMsg += "created " + st.attrib(rname2) + "+";
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,gEnt.dtype);
@@ -388,9 +353,6 @@ module EfuncMsg
                     when "ctz" {
                         st.addEntry(rname, new shared SymEntry(ctz(ea)));
                     }
-                    when "round" {
-                        st.addEntry(rname, new shared SymEntry(ea));
-                    }
                     when "sgn" {
                         st.addEntry(rname, new shared SymEntry(sgn(ea)));
                     }
@@ -418,34 +380,6 @@ module EfuncMsg
                     }
                     when "parity" {
                         st.addEntry(rname, new shared SymEntry(parity(ea)));
-                    }
-                    when "hash64" {
-                        overMemLimit(numBytes(uint) * e.size);
-                        var a = st.addEntry(rname, e.tupShape, uint);
-                        forall (ai, x) in zip(a.a, e.a) {
-                            ai = sipHash64(x): uint;
-                        }
-                    }
-                    when "hash128" {
-                        overMemLimit(numBytes(uint) * e.size * 2);
-                        var rname2 = st.nextName();
-                        var a1 = st.addEntry(rname2, e.tupShape, uint);
-                        var a2 = st.addEntry(rname, e.tupShape, uint);
-                        forall (a1i, a2i, x) in zip(a1.a, a2.a, e.a) {
-                            (a1i, a2i) = sipHash128(x): (uint, uint);
-                        }
-                        // Put first array's attrib in repMsg and let common
-                        // code append second array's attrib
-                        repMsg += "created " + st.attrib(rname2) + "+";
-                    }
-                    when "log" {
-                        st.addEntry(rname, new shared SymEntry(log(ea)));
-                    }
-                    when "exp" {
-                        st.addEntry(rname, new shared SymEntry(exp(ea)));
-                    }
-                    when "square" {
-                        st.addEntry(rname, new shared SymEntry(square(ea)));
                     }
                     when "not" {
                         st.addEntry(rname, new shared SymEntry(!e.a));

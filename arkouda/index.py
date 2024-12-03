@@ -4,6 +4,7 @@ import builtins
 import json
 from typing import TYPE_CHECKING, List, Optional, Tuple, Union
 
+import numpy as np
 import pandas as pd
 from numpy import array as ndarray
 from numpy import dtype as npdtype
@@ -13,6 +14,7 @@ from arkouda import Categorical, Strings
 from arkouda.groupbyclass import GroupBy, unique
 from arkouda.numpy import cast as akcast
 from arkouda.numpy.dtypes import bool_ as akbool
+from arkouda.numpy.dtypes import bool_scalars
 from arkouda.numpy.dtypes import float64 as akfloat64
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.pdarrayclass import RegistrationError, pdarray
@@ -290,7 +292,7 @@ class Index:
 
         return cls.factory(idx) if len(idx) > 1 else cls.factory(idx[0])
 
-    def equals(self, other: Index) -> bool:
+    def equals(self, other: Index) -> bool_scalars:
         """
         Whether Indexes are the same size, and all entries are equal.
 
@@ -351,7 +353,10 @@ class Index:
 
             return True
         else:
-            return akall(self == other)
+            result = akall(self == other)
+            if isinstance(result, (bool, np.bool_)):
+                return result
+        return False
 
     def memory_usage(self, unit="B"):
         """

@@ -5,12 +5,11 @@ from typing import Literal, Optional, Tuple, cast
 import arkouda as ak
 from arkouda.client import generic_msg
 from arkouda.numpy import cast as akcast
-from arkouda.pdarrayclass import create_pdarray, create_pdarrays, parse_single_value
-from arkouda.pdarraycreation import scalar_array
+from arkouda.pdarrayclass import create_pdarray, create_pdarrays
 
 from ._dtypes import _real_floating_dtypes, _real_numeric_dtypes
 from .array_object import Array
-from .manipulation_functions import broadcast_arrays, reshape, squeeze
+from .manipulation_functions import broadcast_arrays
 
 
 def argmax(x: Array, /, *, axis: Optional[int] = None, keepdims: bool = False) -> Array:
@@ -31,31 +30,7 @@ def argmax(x: Array, /, *, axis: Optional[int] = None, keepdims: bool = False) -
     if x.dtype not in _real_numeric_dtypes:
         raise TypeError("Only real numeric dtypes are allowed in argmax")
 
-    if x.ndim > 1 and axis is None:
-        # must flatten ND arrays to 1D without an axis argument
-        x_op = reshape(x, shape=(-1,))
-    else:
-        x_op = x
-
-    resp = generic_msg(
-        cmd=f"reduce->idx{x_op.ndim}D",
-        args={
-            "x": x_op._array,
-            "op": "argmax",
-            "hasAxis": axis is not None,
-            "axis": axis if axis is not None else 0,
-        },
-    )
-
-    if axis is None:
-        return Array._new(scalar_array(parse_single_value(resp)))
-    else:
-        arr = Array._new(create_pdarray(resp))
-
-        if keepdims:
-            return arr
-        else:
-            return squeeze(arr, axis)
+    return Array._new(ak.argmax(x._array, axis=axis, keepdims=keepdims))
 
 
 def argmin(x: Array, /, *, axis: Optional[int] = None, keepdims: bool = False) -> Array:
@@ -74,32 +49,7 @@ def argmin(x: Array, /, *, axis: Optional[int] = None, keepdims: bool = False) -
     """
     if x.dtype not in _real_numeric_dtypes:
         raise TypeError("Only real numeric dtypes are allowed in argmax")
-
-    if x.ndim > 1 and axis is None:
-        # must flatten ND arrays to 1D without an axis argument
-        x_op = reshape(x, shape=(-1,))
-    else:
-        x_op = x
-
-    resp = generic_msg(
-        cmd=f"reduce->idx{x_op.ndim}D",
-        args={
-            "x": x_op._array,
-            "op": "argmin",
-            "hasAxis": axis is not None,
-            "axis": axis if axis is not None else 0,
-        },
-    )
-
-    if axis is None:
-        return Array._new(scalar_array(parse_single_value(resp)))
-    else:
-        arr = Array._new(create_pdarray(resp))
-
-        if keepdims:
-            return arr
-        else:
-            return squeeze(arr, axis)
+    return Array._new(ak.argmin(x._array, axis=axis, keepdims=keepdims))
 
 
 def nonzero(x: Array, /) -> Tuple[Array, ...]:

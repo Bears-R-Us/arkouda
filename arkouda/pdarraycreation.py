@@ -444,7 +444,7 @@ def zeros(
 
     Parameters
     ----------
-    size : int_scalars
+    size : int_scalars or tuple of int_scalars
         Size of the array (only rank-1 arrays supported)
     dtype : all_scalars
         Type of resulting array, default float64
@@ -489,6 +489,9 @@ def zeros(
     if ndim > get_max_array_rank():
         raise ValueError(f"array rank {ndim} exceeds maximum of {get_max_array_rank()}")
 
+    if isinstance(shape, tuple) and len(shape) == 0:
+        raise ValueError("size () not currently supported in ak.zeros.")
+
     repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape})
 
     return create_pdarray(repMsg, max_bits=max_bits)
@@ -505,7 +508,7 @@ def ones(
 
     Parameters
     ----------
-    size : int_scalars
+    size : int_scalars or tuple of int_scalars
         Size of the array (only rank-1 arrays supported)
     dtype : Union[float64, int64, bool]
         Resulting array type, default float64
@@ -550,6 +553,9 @@ def ones(
     if ndim > get_max_array_rank():
         raise ValueError(f"array rank {ndim} exceeds maximum of {get_max_array_rank()}")
 
+    if isinstance(shape, tuple) and len(shape) == 0:
+        raise ValueError("size () not currently supported in ak.ones.")
+
     repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape})
     a = create_pdarray(repMsg)
     a.fill(1)
@@ -570,7 +576,7 @@ def full(
 
     Parameters
     ----------
-    size: int_scalars
+    size: int_scalars or tuple of int_scalars
         Size of the array (only rank-1 arrays supported)
     fill_value: int_scalars
         Value with which the array will be filled
@@ -619,6 +625,9 @@ def full(
 
     if ndim > get_max_array_rank():
         raise ValueError(f"array rank {ndim} exceeds maximum of {get_max_array_rank()}")
+
+    if isinstance(shape, tuple) and len(shape) == 0:
+        raise ValueError("size () not currently supported in ak.full.")
 
     repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape})
 
