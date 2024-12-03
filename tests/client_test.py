@@ -156,3 +156,11 @@ class TestClient:
         cmds = ak.client.get_server_commands()
         for cmd in ["connect", "info", "str"]:
             assert cmd in cmds
+
+    def test_get_array_ranks(self):
+        availableRanks = ak.client.get_array_ranks()
+        assert isinstance(availableRanks, list)
+        assert len(availableRanks) >= 1
+        assert 1 in availableRanks
+        assert ak.client.get_max_array_rank() in availableRanks
+        assert ak.client.get_max_array_rank() + 1 not in availableRanks
