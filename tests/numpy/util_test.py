@@ -1,8 +1,10 @@
 import numpy as np
+import pytest
 
 import arkouda as ak
 from arkouda.numpy import util
 from arkouda.numpy.util import is_float, is_int, is_numeric, map
+from arkouda.util import is_float, is_int, is_numeric, map
 
 
 class TestUtil:
@@ -133,3 +135,13 @@ class TestUtil:
 
         result = map(d, {"1": 7.0})
         assert np.allclose(result.to_list(), [7.0, 7.0, np.nan, np.nan, np.nan], equal_nan=True)
+
+    @pytest.mark.parametrize("dtype", [ak.int64, ak.float64, ak.bool_, ak.bigint, ak.str_])
+    def test_copy(self, dtype):
+        a = ak.arange(10, dtype=dtype)
+        b = ak.util.copy(a)
+
+        from arkouda import assert_equal as ak_assert_equal
+
+        assert not a is b
+        ak_assert_equal(a, b)
