@@ -1097,6 +1097,18 @@ class TestDataFrame:
         with pytest.raises(AssertionError):
             assert_arkouda_array_equivalent(convert_left(a), convert_right(a2))
 
+    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.parametrize("left_as_arkouda", [True, False])
+    @pytest.mark.parametrize("right_as_arkouda", [True, False])
+    def test_assert_arkouda_array_equal_shape(self, left_as_arkouda, right_as_arkouda):
+        convert_left = self.get_converter(left_as_arkouda)
+        convert_right = self.get_converter(right_as_arkouda)
+
+        a = ak.arange(4).reshape((2, 2))
+        b = ak.arange(4).reshape((1, 4))
+        with pytest.raises(AssertionError):
+            assert_arkouda_array_equivalent(convert_left(a), convert_right(b))
+
     def test_assert_arkouda_segarray_equal(self):
 
         seg = ak.SegArray(ak.array([0, 3, 9]), ak.arange(10))
