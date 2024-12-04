@@ -385,6 +385,7 @@
 <span class="n">username</span> <span class="o">=</span> <span class="n">security</span><span class="o">.</span><span class="n">get_username</span><span class="p">()</span>
 <span class="n">connected</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="n">serverConfig</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">registrationConfig</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="c1"># verbose flag for arkouda module</span>
 <span class="n">verboseDefVal</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="n">verbose</span> <span class="o">=</span> <span class="n">verboseDefVal</span>
@@ -1061,7 +1062,7 @@
 <span class="sd">    On success, prints the connected address, as seen by the server. If called</span>
 <span class="sd">    with an existing connection, the socket will be re-initialized.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">global</span> <span class="n">connected</span><span class="p">,</span> <span class="n">serverConfig</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">regexMaxCaptures</span><span class="p">,</span> <span class="n">channel</span>
+    <span class="k">global</span> <span class="n">connected</span><span class="p">,</span> <span class="n">serverConfig</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">regexMaxCaptures</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">registrationConfig</span>
 
     <span class="c1"># send the connect message</span>
     <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;connect&quot;</span>
@@ -1096,6 +1097,7 @@
             <span class="ne">RuntimeWarning</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="n">regexMaxCaptures</span> <span class="o">=</span> <span class="n">serverConfig</span><span class="p">[</span><span class="s2">&quot;regexMaxCaptures&quot;</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+    <span class="n">registrationConfig</span> <span class="o">=</span> <span class="n">_get_registration_config_msg</span><span class="p">()</span>
     <span class="n">clientLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">return_message</span><span class="p">)</span></div>
 
 
@@ -1431,6 +1433,29 @@
 
 
 
+<span class="k">def</span> <span class="nf">get_array_ranks</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the list of pdarray ranks the server was compiled to support</span>
+
+<span class="sd">    This value corresponds to</span>
+<span class="sd">    parameter_classes -&gt; array -&gt; nd in the `registration-config.json`</span>
+<span class="sd">    file when the server was compiled.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list of int</span>
+<span class="sd">        The pdarray ranks supported by the server</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">registrationConfig</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="s2">&quot;There was a problem loading registrationConfig.&quot;</span>
+            <span class="s2">&quot;Make sure the client is connected to a server.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">registrationConfig</span><span class="p">[</span><span class="s2">&quot;parameter_classes&quot;</span><span class="p">][</span><span class="s2">&quot;array&quot;</span><span class="p">][</span><span class="s2">&quot;nd&quot;</span><span class="p">]</span>
+
+
 <span class="k">def</span> <span class="nf">_get_config_msg</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get runtime information about the server.</span>
@@ -1444,6 +1469,26 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">raw_message</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getconfig&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">raw_message</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">decoder</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Returned config is not valid JSON: </span><span class="si">{</span><span class="n">raw_message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2"> in retrieving Arkouda server config&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_get_registration_config_msg</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get runtime information about the command registration configuration.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        Raised if there is a server-side error in getting memory used</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Raised if there&#39;s an error in parsing the JSON-formatted server config</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">raw_message</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getRegistrationConfig&quot;</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">raw_message</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">decoder</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Returned config is not valid JSON: </span><span class="si">{</span><span class="n">raw_message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
