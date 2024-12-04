@@ -31191,7 +31191,7 @@ Package Contents
    .. seealso:: :obj:`assert_arkouda_array_equal`
 
 
-.. py:function:: assert_arkouda_pdarray_equal(left, right, check_dtype: bool = True, err_msg=None, check_same=None, obj: str = 'pdarray', index_values=None) -> None
+.. py:function:: assert_arkouda_pdarray_equal(left: arkouda.pdarray, right: arkouda.pdarray, check_dtype: bool = True, err_msg=None, check_same=None, obj: str = 'pdarray', index_values=None) -> None
 
    Check that the two 'ak.pdarray's are equivalent.
 
