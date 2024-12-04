@@ -504,8 +504,8 @@ def raise_assert_detail(
 
 
 def assert_arkouda_pdarray_equal(
-    left,
-    right,
+    left: pdarray,
+    right: pdarray,
     check_dtype: bool = True,
     err_msg=None,
     check_same=None,
@@ -538,6 +538,22 @@ def assert_arkouda_pdarray_equal(
     assert_class_equal(left, right, obj=obj)
     # both classes must be an ak.pdarray
     _check_isinstance(left, right, pdarray)
+
+    assert (
+        left.ndim == right.ndim
+    ), f"left dimension {left.ndim} does not match right dimension {right.ndim}."
+    assert left.size == right.size, f"left size {left.size} does not match right size {right.size}."
+    if left.shape:
+        assert (
+            left.shape == right.shape
+        ), f"left shape {left.shape} does not match right shape {right.shape}."
+    else:
+        assert (
+            isinstance(left.shape, tuple)
+            and isinstance(right.shape, tuple)
+            and len(left.shape) == 0
+            and len(right.shape) == 0
+        ), f"left shape {left.shape} does not match right shape {right.shape}."
 
     assert len(left) == len(
         right
@@ -771,7 +787,7 @@ def assert_arkouda_array_equal(
             check_same=check_same,
             obj=obj,
         )
-    else:
+    elif isinstance(left, pdarray) and isinstance(right, pdarray):
         assert_arkouda_pdarray_equal(
             left,
             right,
@@ -780,6 +796,11 @@ def assert_arkouda_array_equal(
             check_same=check_same,
             obj=obj,
             index_values=index_values,
+        )
+    else:
+        raise TypeError(
+            "assert_arkouda_array_equal can only compare arrays of matching type: "
+            "pdarray | Strings | Categorical | SegArray"
         )
 
 
