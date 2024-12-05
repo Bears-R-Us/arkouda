@@ -126,12 +126,13 @@ class TestPdarrayClass:
         assert not is_sorted(a)
 
     @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_nl_greater_than(2)
     @pytest.mark.parametrize("dtype", DTYPES)
     @pytest.mark.parametrize("axis", [None, 0, 1, (0, 2), (0, 1, 2)])
     def test_is_locally_sorted_multidim(self, dtype, axis):
         from arkouda.pdarrayclass import is_locally_sorted
 
-        a = ak.array(ak.randint(0, 100, (5, 7, 4), dtype=ak.int64, seed=SEED))
+        a = ak.array(ak.randint(0, 100, (20, 20, 20), dtype=dtype, seed=SEED))
         sorted = is_locally_sorted(a, axis=axis)
         if isinstance(sorted, np.bool_):
             assert not sorted
