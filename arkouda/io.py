@@ -1543,7 +1543,7 @@ def to_zarr(store_path: str, arr: pdarray, chunk_shape):
         raise ValueError("Only pdarrays of 64 and 32 bit numeric types are supported")
 
     generic_msg(
-        cmd=f"writeAllZarr{ndim}D",
+        cmd=f"writeAllZarr<{arr.dtype},{ndim}>",
         args={"store_path": store_path, "arr": arr, "chunk_shape": chunk_shape},
     )
 
@@ -1570,7 +1570,7 @@ def read_zarr(store_path: str, ndim: int, dtype):
         The pdarray read from the Zarr store.
     """
 
-    rep_msg = generic_msg(cmd=f"readAllZarr{ndim}D", args={"store_path": store_path, "dtype": dtype})
+    rep_msg = generic_msg(cmd=f"readAllZarr<{dtype},{ndim}>", args={"store_path": store_path})
     return create_pdarray(rep_msg)
 
 
