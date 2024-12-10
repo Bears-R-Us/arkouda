@@ -1086,16 +1086,18 @@ def arctan2(
             else :
                 argdict = {"a": num[where], "b": denom[where], }
         elif not isinstance(denom, pdarray) :
-            if resolve_scalar_dtype(denom) in ['float64', 'int64', 'uint64', 'bool'] :
-                cmdstring = "arctan2vs_"+resolve_scalar_dtype(denom)+f"<{num.dtype},{ndim}>"  # type: ignore[union-attr]
+            ts = resolve_scalar_dtype(denom)
+            if ts in ['float64', 'int64', 'uint64', 'bool'] :
+                cmdstring = "arctan2vs_"+ts+f"<{num.dtype},{ndim}>"  # type: ignore[union-attr]
             else :
-                raise TypeError(f"{resolve_scalar_dtype(denom)} is not an allowed denom type for arctan2")
+                raise TypeError(f"{ts} is not an allowed denom type for arctan2")
             argdict = {"a": num if where is True else num[where], "b": denom}  # type: ignore
         elif not isinstance(num, pdarray) :
-            if resolve_scalar_dtype(num) in ['float64', 'int64', 'uint64', 'bool'] :
-                cmdstring = "arctan2sv_"+resolve_scalar_dtype(num)+f"<{denom.dtype},{ndim}>"
+            ts = resolve_scalar_dtype(num)
+            if ts in ['float64', 'int64', 'uint64', 'bool'] :
+                cmdstring = "arctan2sv_"+ts+f"<{denom.dtype},{ndim}>"
             else :
-                raise TypeError(f"{resolve_scalar_dtype(num)} is not an allowed num type for arctan2")
+                raise TypeError(f"{ts} is not an allowed num type for arctan2")
             argdict = {"a": num, "b": denom if where is True else denom[where]}  # type: ignore
 
         repMsg = type_cast(
@@ -2307,7 +2309,7 @@ def putmask(
     If A is ak.uint64, Values can be ak.uint64, or ak.bool_.
     If A is ak.bool_, Values must be ak.bool_.
 
-    Only one conditional clause is supported e.g., n < 5, n > 1. 
+    Only one conditional clause is supported e.g., n < 5, n > 1.
 
     multi-dim pdarrays are now implemented.
     """
