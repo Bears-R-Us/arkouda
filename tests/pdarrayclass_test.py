@@ -119,7 +119,7 @@ class TestPdarrayClass:
     def test_is_locally_sorted_multidim(self, dtype, axis):
         from arkouda.pdarrayclass import is_locally_sorted
 
-        a = ak.array(ak.randint(0, 100, (5, 7, 4), dtype=ak.int64, seed=SEED))
+        a = ak.array(ak.randint(0, 100, (20, 20, 20), dtype=dtype, seed=SEED))
         sorted = is_locally_sorted(a, axis=axis)
         if isinstance(sorted, np.bool_):
             assert not sorted
@@ -170,7 +170,7 @@ class TestPdarrayClass:
     @pytest.mark.parametrize("dtype", DTYPES)
     @pytest.mark.parametrize("arry_gen", [ak.zeros, ak.ones, ak.arange])
     @pytest.mark.parametrize("axis", [0, 1, None])
-    def test_index_reduction_mulit_dim(self, op, dtype, arry_gen, size, axis):
+    def test_index_reduction_multi_dim(self, op, dtype, arry_gen, size, axis):
         size = 10
         pda = arry_gen(size * size * size, dtype=dtype).reshape((size, size, size))
         ak_op = getattr(arkouda.pdarrayclass, op)
