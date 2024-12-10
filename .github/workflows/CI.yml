@@ -98,7 +98,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chpl-version: ['2.0.0']
+        chpl-version: ['2.0.0','2.1.0','2.2.0']
     container:
       image: chapel/chapel:${{matrix.chpl-version}}
     steps:
