@@ -146,7 +146,7 @@ install-hdf5:
 	rm -rf $(HDF5_BUILD_DIR) $(HDF5_INSTALL_DIR)
 	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
 	cd $(DEP_BUILD_DIR) && curl -sL $(HDF5_LINK) | tar xz
-	cd $(HDF5_BUILD_DIR) && ./configure --prefix=$(HDF5_INSTALL_DIR) --enable-optimization=high --enable-hl && make && make install
+	cd $(HDF5_BUILD_DIR)* && ./configure --prefix=$(HDF5_INSTALL_DIR) --enable-optimization=high --enable-hl && make && make install
 	rm -rf $(HDF5_BUILD_DIR)
 	echo '$$(eval $$(call add-path,$(HDF5_INSTALL_DIR)))' >> Makefile.paths
 
