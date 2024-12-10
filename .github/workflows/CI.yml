@@ -107,6 +107,7 @@ jobs:
       run: |
         apt-get update && apt-get install -y -V ca-certificates lsb-release wget
         pip install pyarrow==18.1.*
+        apt-get install -y -V libarrow-dev, libparquet-dev 
         apt-get update && apt-get install -y libhdf5-dev hdf5-tools libzmq3-dev python3-pip libarrow-dev libparquet-dev libcurl4-openssl-dev libidn2-dev
         make install-iconv
         echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" >> Makefile.paths
