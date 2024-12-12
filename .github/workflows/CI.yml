@@ -133,7 +133,9 @@ jobs:
     - name: Make install-idn2
       run: |
         make install-idn2        
-     
+    - name: Make install-blosc
+      run: |
+        make install-blosc      
 
   arkouda_chpl_portability:
     runs-on: ubuntu-latest
