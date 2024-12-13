@@ -120,12 +120,25 @@ ZMQ_INSTALL_DIR := $(DEP_INSTALL_DIR)/zeromq-install
 ZMQ_LINK := https://github.com/zeromq/libzmq/releases/download/v$(ZMQ_VER)/$(ZMQ_NAME_VER).tar.gz
 install-zmq:
 	@echo "Installing ZeroMQ"
-	rm -rf $(ZMQ_BUILD_DIR) $(ZMQ_INSTALL_DIR)
+	rm -rf $(ZMQ_INSTALL_DIR)
 	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
-	cd $(DEP_BUILD_DIR) && curl -sL $(ZMQ_LINK) | tar xz
+
+    #If the build directory does not exist,  create it
+    ifeq (,$(wildcard ${ZMQ_BUILD_DIR}*/.*))
+        #   If the tar.gz not found, download it
+        ifeq (,$(wildcard ${DEP_BUILD_DIR}/${ZMQ_NAME_VER}*.tar.gz))
+			cd $(DEP_BUILD_DIR) && curl -sL $(ZMQ_LINK) | tar xz		
+		#   Otherwise just unzip it
+        else
+			cd $(DEP_BUILD_DIR) && tar -xzf $(ZMQ_NAME_VER)*.tar.gz
+        endif
+    endif
+
 	cd $(ZMQ_BUILD_DIR) && ./configure --prefix=$(ZMQ_INSTALL_DIR) CFLAGS=-O3 CXXFLAGS=-O3 && make && make install
-	rm -r $(ZMQ_BUILD_DIR)
 	echo '$$(eval $$(call add-path,$(ZMQ_INSTALL_DIR)))' >> Makefile.paths
+
+zmq-clean:
+	rm -r $(ZMQ_BUILD_DIR)
 
 HDF5_MAJ_MIN_VER := 1.14
 HDF5_VER := 1.14.4
@@ -143,12 +156,25 @@ HDF5_LINK := https://support.hdfgroup.org/releases/hdf5/$(UNDERSCORED_LINK_HDF5_
 
 install-hdf5:
 	@echo "Installing HDF5"
-	rm -rf $(HDF5_BUILD_DIR) $(HDF5_INSTALL_DIR)
+	rm -rf $(HDF5_INSTALL_DIR)
 	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
-	cd $(DEP_BUILD_DIR) && curl -sL $(HDF5_LINK) | tar xz
+	
+    #If the build directory does not exist,  create it
+    ifeq (,$(wildcard ${HDF5_BUILD_DIR}*/.*))
+        #   If the tar.gz not found, download it
+        ifeq (,$(wildcard ${DEP_BUILD_DIR}/$(HDF5_NAME_VER)*tar.gz))
+			cd $(DEP_BUILD_DIR) && curl -sL $(HDF5_LINK) | tar xz		
+		#   Otherwise just unzip it
+        else
+			cd $(DEP_BUILD_DIR) && tar -xzf $(HDF5_NAME_VER)*.tar.gz
+        endif
+    endif
+	
 	cd $(HDF5_BUILD_DIR)* && ./configure --prefix=$(HDF5_INSTALL_DIR) --enable-optimization=high --enable-hl && make && make install
-	rm -rf $(HDF5_BUILD_DIR)
 	echo '$$(eval $$(call add-path,$(HDF5_INSTALL_DIR)))' >> Makefile.paths
+
+hdf5-clean:
+	rm -rf $(HDF5_BUILD_DIR)
 
 ARROW_VER := 11.0.0
 ARROW_NAME_VER := apache-arrow-$(ARROW_VER)
@@ -172,12 +198,25 @@ ICONV_INSTALL_DIR := $(DEP_INSTALL_DIR)/libiconv-install
 ICONV_LINK := https://ftp.gnu.org/pub/gnu/libiconv/libiconv-$(ICONV_VER).tar.gz
 install-iconv:
 	@echo "Installing iconv"
-	rm -rf $(ICONV_BUILD_DIR) $(ICONV_INSTALL_DIR)
+	rm -rf $(ICONV_INSTALL_DIR)
 	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
-	cd $(DEP_BUILD_DIR) && curl -sL $(ICONV_LINK) | tar xz
+
+    #If the build directory does not exist,  create it
+    ifeq (,$(wildcard ${ICONV_BUILD_DIR}*/.*))
+        #   If the tar.gz not found, download it
+        ifeq (,$(wildcard ${DEP_BUILD_DIR}/libiconv-${ICONV_VER}.tar.gz))
+			cd $(DEP_BUILD_DIR) && curl -sL $(ICONV_LINK) | tar xz		
+		#   Otherwise just unzip it
+        else
+			cd $(DEP_BUILD_DIR) && tar -xzf libiconv-$(ICONV_VER).tar.gz
+        endif
+    endif	
+	
 	cd $(ICONV_BUILD_DIR) && ./configure --prefix=$(ICONV_INSTALL_DIR) && make && make install
-	rm -rf $(ICONV_BUILD_DIR)
 	echo '$$(eval $$(call add-path,$(ICONV_INSTALL_DIR)))' >> Makefile.paths
+
+iconv-clean:
+	rm -rf $(ICONV_BUILD_DIR)
 
 LIBIDN_VER := 2.3.4
 LIBIDN_NAME_VER := libidn2-$(LIBIDN_VER)
@@ -186,25 +225,44 @@ LIBIDN_INSTALL_DIR := $(DEP_INSTALL_DIR)/libidn2-install
 LIBIDN_LINK := https://ftp.gnu.org/gnu/libidn/libidn2-$(LIBIDN_VER).tar.gz
 install-idn2:
 	@echo "Installing libidn2"
-	rm -rf $(LIBIDN_BUILD_DIR) $(LIBIDN_INSTALL_DIR)
+	rm -rf $(LIBIDN_INSTALL_DIR)
 	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
-	cd $(DEP_BUILD_DIR) && curl -sL $(LIBIDN_LINK) | tar xz
+
+    #If the build directory does not exist,  create it
+    ifeq (,$(wildcard $(LIBIDN_BUILD_DIR)*/.*))
+		# If the tar.gz is not found, download it
+        ifeq (,$(wildcard ${DEP_BUILD_DIR}/libidn2-$(LIBIDN_VER)*.tar.gz))
+			cd $(DEP_BUILD_DIR) && curl -sL $(LIBIDN_LINK) | tar xz		
+		# Otherwise just unzip it
+        else
+			cd $(DEP_BUILD_DIR) && tar -xzf libidn2-$(LIBIDN_VER)*.tar.gz
+        endif
+    endif	
+	
 	cd $(LIBIDN_BUILD_DIR) && ./configure --prefix=$(LIBIDN_INSTALL_DIR) && make && make install
-	rm -rf $(LIBIDN_BUILD_DIR)
 	echo '$$(eval $$(call add-path,$(LIBIDN_INSTALL_DIR)))' >> Makefile.paths
 
+idn2-clean:
+	rm -rf $(LIBIDN_BUILD_DIR)
 
 BLOSC_BUILD_DIR := $(DEP_BUILD_DIR)/c-blosc
 BLOSC_INSTALL_DIR := $(DEP_INSTALL_DIR)/c-blosc-install
 
 install-blosc:
 	@echo "Installing blosc"
-	rm -rf $(BLOSC_INSTALL_DIR) $(BLOSC_BUILD_DIR)
+	rm -rf $(BLOSC_INSTALL_DIR)
 	mkdir -p $(BLOSC_INSTALL_DIR)
-	cd $(DEP_BUILD_DIR) && git clone https://github.com/Blosc/c-blosc.git
+
+    #If the build directory does not exist,  create it
+    ifeq (,$(wildcard $(BLOSC_BUILD_DIR)/.*))
+		cd $(DEP_BUILD_DIR) && git clone https://github.com/Blosc/c-blosc.git
+    endif
+
 	cd $(BLOSC_BUILD_DIR) && cmake -DCMAKE_INSTALL_PREFIX=$(BLOSC_INSTALL_DIR) && make && make install
-	rm -rf $(BLOSC_BUILD_DIR)
 	echo '$$(eval $$(call add-path,$(BLOSC_INSTALL_DIR)))' >> Makefile.paths
+
+blosc-clean:
+	rm -rf $(BLOSC_BUILD_DIR)
 
 # System Environment
 ifdef LD_RUN_PATH
