@@ -190,13 +190,6 @@ OS_CODENAME :=$(shell lsb_release --codename --short)
 #   System release, for example, 22 extracted from 22.04
 OS_RELEASE :=$(shell lsb_release -rs | cut -d'.' -f1)
 
-ARROW_VER := 18.1.0
-ARROW_NAME_VER := apache-arrow-$(ARROW_VER)
-ARROW_FULL_NAME_VER := arrow-apache-arrow-$(ARROW_VER)
-ARROW_BUILD_DIR := $(DEP_BUILD_DIR)/$(ARROW_FULL_NAME_VER)
-ARROW_INSTALL_DIR := $(DEP_INSTALL_DIR)/arrow-install
-
-NUM_CORES := $(shell nproc --all)
 
 ifeq ($(OS_FINAL),$(filter $(OS_FINAL), almalinux almalinux-rc))
     ARROW_LINK := "https://apache.jfrog.io/ui/native/arrow/${OS_FINAL}/${OS_RELEASE}/apache-arrow-release-latest.rpm"
@@ -210,11 +203,10 @@ else ifeq ($(OS_FINAL), centos-rc)
     ARROW_LINK := "https://apache.jfrog.io/ui/native/arrow/centos-rc/9-stream/apache-arrow-release-latest.rpm"
 else ifeq ($(OS_FINAL),$(filter $(OS_FINAL), ubuntu ubuntu-rc debian debian-rc))
     ARROW_LINK := "https://apache.jfrog.io/artifactory/arrow/${OS_FINAL}/apache-arrow-apt-source-latest-${OS_CODENAME}.deb"
-else
-    ARROW_LINK := https://github.com/apache/arrow/archive/refs/tags/$(ARROW_NAME_VER).tar.gz
 endif
 
-install-arrow:
+
+install-arrow-quick:
 	@echo "Installing Apache Arrow/Parquet"
 	@echo "from build directory: ${DEP_BUILD_DIR}"
 	mkdir -p ${DEP_BUILD_DIR}
@@ -239,20 +231,58 @@ install-arrow:
 			cd $(DEP_BUILD_DIR) && apt install -y -V ./apache-arrow*
         endif
     else
+		@echo "make install-arrow-quick does not support ${OS}.  Please use make install-arrow instead."
+    endif
+
+
+ARROW_VER := 18.1.0
+ARROW_NAME_VER := apache-arrow-$(ARROW_VER)
+ARROW_FULL_NAME_VER := arrow-apache-arrow-$(ARROW_VER)
+ARROW_BUILD_DIR := $(DEP_BUILD_DIR)/$(ARROW_FULL_NAME_VER)
+ARROW_INSTALL_DIR := $(DEP_INSTALL_DIR)/arrow-install
+ARROW_SOURCE_LINK := https://github.com/apache/arrow/archive/refs/tags/$(ARROW_NAME_VER).tar.gz
+
+NUM_CORES := $(shell nproc --all)
+
+install-arrow:
+	@echo "Installing Apache Arrow/Parquet"
+	@echo "from build directory: ${DEP_BUILD_DIR}"
+    ifneq ($(shell id -u), 0)
+		sudo rm -rf $(ARROW_INSTALL_DIR)
+    else
+		rm -rf $(ARROW_INSTALL_DIR)
+    endif
+	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
+
+    #   If the BUILD_DIR does not contain the apache-arrow file, use wget to fetch it
+    ifeq (,$(wildcard ${DEP_BUILD_DIR}/arrow-apache-arrow*))
+		cd $(DEP_BUILD_DIR) && wget $(ARROW_SOURCE_LINK) && tar -xvf $(ARROW_NAME_VER).tar.gz
+		#mkdir -p $(ARROW_BUILD_DIR)/cpp/build-release
+		#cd $(DEP_BUILD_DIR) && tar -xvf $(ARROW_NAME_VER).tar.gz
+    #   If the tar.gz file exists, unzip it
+    else ifneq (,$(wildcard ${DEP_BUILD_DIR}/$(ARROW_NAME_VER).tar.gz))
 		cd $(DEP_BUILD_DIR) && tar -xvf $(ARROW_NAME_VER).tar.gz
-		mkdir -p $(ARROW_BUILD_DIR)/cpp/build-release
-		cd $(ARROW_BUILD_DIR)/cpp/build-release && cmake .. -DCMAKE_INSTALL_PREFIX=$(ARROW_INSTALL_DIR) -DARROW_DEPENDENCY_SOURCE=AUTO -DCMAKE_BUILD_TYPE=Release -DARROW_PARQUET=ON -DARROW_WITH_SNAPPY=ON -DARROW_WITH_BROTLI=ON -DARROW_WITH_BZ2=ON -DARROW_WITH_LZ4=ON -DARROW_WITH_ZLIB=ON -DARROW_WITH_ZSTD=ON $(ARROW_OPTIONS) && make -j$(NUM_CORES)
-        #   If not root, use sudo
-        ifneq ($(shell id -u), 0)
-			cd $(ARROW_BUILD_DIR)/cpp/build-release && sudo make install
-        else
-			cd $(ARROW_BUILD_DIR)/cpp/build-release && make install
-        endif
+    endif
+    
+	mkdir -p $(ARROW_BUILD_DIR)/cpp/build-release
+	cd $(ARROW_BUILD_DIR)/cpp/build-release && cmake -S $(ARROW_BUILD_DIR)/cpp .. -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_INSTALL_PREFIX=$(ARROW_INSTALL_DIR) -DARROW_DEPENDENCY_SOURCE=AUTO -DCMAKE_BUILD_TYPE=Release -DARROW_PARQUET=ON -DARROW_WITH_SNAPPY=ON -DARROW_WITH_BROTLI=ON -DARROW_WITH_BZ2=ON -DARROW_WITH_LZ4=ON -DARROW_WITH_ZLIB=ON -DARROW_WITH_ZSTD=ON $(ARROW_OPTIONS) && make -j$(NUM_CORES)
+    #   If not root, use sudo
+    ifneq ($(shell id -u), 0)
+		cd $(ARROW_BUILD_DIR)/cpp/build-release && sudo make install
+    else
+		cd $(ARROW_BUILD_DIR)/cpp/build-release && make install
     endif
 
 arrow-clean:
-	rm -rf $(DEP_BUILD_DIR)/apache-arrow*
-	rm -rf $(DEP_BUILD_DIR)/arrow-apache-arrow*	
+    #   If not root, use sudo
+    ifneq ($(shell id -u), 0)
+		sudo rm -rf $(DEP_BUILD_DIR)/apache-arrow*
+		sudo rm -rf $(DEP_BUILD_DIR)/arrow-apache-arrow*	
+    else
+		rm -rf $(DEP_BUILD_DIR)/apache-arrow*
+		rm -rf $(DEP_BUILD_DIR)/arrow-apache-arrow*	
+    endif
+
 
 ICONV_VER := 1.17
 ICONV_NAME_VER := libiconv-$(ICONV_VER)
