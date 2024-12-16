@@ -1,0 +1,10 @@
+export CHPL_HOME=/chapel-2.3.0 
+export CHPL_RE2=bundled 
+export CHPL_GMP=bundled 
+export CHPL_COMM=none 
+export CHPL_TARGET_COMPILER=gnu 
+export export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/chapel-2.3.0:/chapel-2.3.0/bin/linux64-x86_64 
+export CHPL_TARGET_CPU=native 
+export CHPL_HOST_MEM=jemalloc 
+export ARKOUDA_QUICK_COMPILE=true 
+export ARKOUDA_SKIP_CHECK_DEPS=True
