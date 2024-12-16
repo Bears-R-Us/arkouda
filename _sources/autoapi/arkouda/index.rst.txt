@@ -288,12 +288,6 @@ Functions
    arkouda.akcast
    arkouda.akcast
    arkouda.align
-   arkouda.arange
-   arkouda.arange
-   arkouda.arange
-   arkouda.arange
-   arkouda.arange
-   arkouda.arange
    arkouda.arccos
    arkouda.arccosh
    arkouda.arcsin
@@ -306,10 +300,6 @@ Functions
    arkouda.argsort
    arkouda.argsort
    arkouda.argsort
-   arkouda.array
-   arkouda.array
-   arkouda.array
-   arkouda.array
    arkouda.array_equal
    arkouda.assert_almost_equal
    arkouda.assert_almost_equivalent
@@ -337,7 +327,6 @@ Functions
    arkouda.attach_all
    arkouda.attach_pdarray
    arkouda.base_repr
-   arkouda.bigint_from_uint_arrays
    arkouda.binary_repr
    arkouda.broadcast
    arkouda.broadcast
@@ -368,9 +357,8 @@ Functions
    arkouda.create_pdarray
    arkouda.create_pdarray
    arkouda.create_pdarray
-   arkouda.create_pdarray
-   arkouda.create_pdarray
    arkouda.create_sparray
+   arkouda.create_sparse_matrix
    arkouda.ctz
    arkouda.cumprod
    arkouda.cumsum
@@ -399,11 +387,6 @@ Functions
    arkouda.fmod
    arkouda.format_float_positional
    arkouda.format_float_scientific
-   arkouda.from_series
-   arkouda.from_series
-   arkouda.full
-   arkouda.full
-   arkouda.full_like
    arkouda.gen_ranges
    arkouda.gen_ranges
    arkouda.generic_concat
@@ -456,7 +439,6 @@ Functions
    arkouda.issubdtype
    arkouda.join_on_eq_with_dt
    arkouda.left_align
-   arkouda.linspace
    arkouda.list_registry
    arkouda.list_symbol_table
    arkouda.load
@@ -476,23 +458,15 @@ Functions
    arkouda.merge
    arkouda.mink
    arkouda.mod
-   arkouda.ones
-   arkouda.ones
-   arkouda.ones
-   arkouda.ones
-   arkouda.ones_like
    arkouda.parity
    arkouda.plot_dist
    arkouda.popcount
    arkouda.power
    arkouda.power_divergence
    arkouda.pretty_print_information
-   arkouda.promote_to_common_dtype
    arkouda.putmask
    arkouda.rad2deg
-   arkouda.randint
-   arkouda.random_strings_lognormal
-   arkouda.random_strings_uniform
+   arkouda.random_sparse_matrix
    arkouda.read
    arkouda.read_csv
    arkouda.read_hdf
@@ -509,7 +483,6 @@ Functions
    arkouda.rotr
    arkouda.round
    arkouda.save_all
-   arkouda.scalar_array
    arkouda.search_intervals
    arkouda.segarray
    arkouda.setdiff1d
@@ -521,10 +494,10 @@ Functions
    arkouda.skew
    arkouda.snapshot
    arkouda.sort
+   arkouda.sparse_matrix_matrix_mult
    arkouda.sqrt
    arkouda.square
    arkouda.squeeze
-   arkouda.standard_normal
    arkouda.std
    arkouda.string_operators
    arkouda.tan
@@ -540,7 +513,6 @@ Functions
    arkouda.triu
    arkouda.trunc
    arkouda.typename
-   arkouda.uniform
    arkouda.union1d
    arkouda.unique
    arkouda.unique
@@ -560,11 +532,6 @@ Functions
    arkouda.write_log
    arkouda.xlogy
    arkouda.zero_up
-   arkouda.zeros
-   arkouda.zeros
-   arkouda.zeros
-   arkouda.zeros
-   arkouda.zeros_like
 
 
 Package Contents
@@ -30243,318 +30210,6 @@ Package Contents
    this is used by e.g. typing.List and typing.Dict.
 
 
-.. py:function:: arange(*args, **kwargs) -> arkouda.pdarrayclass.pdarray
-
-   arange([start,] stop[, stride,] dtype=int64)
-
-   Create a pdarray of consecutive integers within the interval [start, stop).
-   If only one arg is given then arg is the stop parameter. If two args are
-   given, then the first arg is start and second is stop. If three args are
-   given, then the first arg is start, second is stop, third is stride.
-
-   The return value is cast to type dtype
-
-   :param start: Starting value (inclusive)
-   :type start: int_scalars, optional
-   :param stop: Stopping value (exclusive)
-   :type stop: int_scalars
-   :param stride: The difference between consecutive elements, the default stride is 1,
-                  if stride is specified then start must also be specified.
-   :type stride: int_scalars, optional
-   :param dtype: The target dtype to cast values to
-   :type dtype: np.dtype, type, or str
-   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
-   :type max_bits: int
-
-   :returns: Integers from start (inclusive) to stop (exclusive) by stride
-   :rtype: pdarray, dtype
-
-   :raises TypeError: Raised if start, stop, or stride is not an int object
-   :raises ZeroDivisionError: Raised if stride == 0
-
-   .. seealso:: :obj:`linspace`, :obj:`zeros`, :obj:`ones`, :obj:`randint`
-
-   .. rubric:: Notes
-
-   Negative strides result in decreasing values. Currently, only int64
-   pdarrays can be created with this method. For float64 arrays, use
-   the linspace method.
-
-   .. rubric:: Examples
-
-   >>> ak.arange(0, 5, 1)
-   array([0, 1, 2, 3, 4])
-
-   >>> ak.arange(5, 0, -1)
-   array([5, 4, 3, 2, 1])
-
-   >>> ak.arange(0, 10, 2)
-   array([0, 2, 4, 6, 8])
-
-   >>> ak.arange(-5, -10, -1)
-   array([-5, -6, -7, -8, -9])
-
-
-.. py:function:: arange(*args, **kwargs) -> arkouda.pdarrayclass.pdarray
-
-   arange([start,] stop[, stride,] dtype=int64)
-
-   Create a pdarray of consecutive integers within the interval [start, stop).
-   If only one arg is given then arg is the stop parameter. If two args are
-   given, then the first arg is start and second is stop. If three args are
-   given, then the first arg is start, second is stop, third is stride.
-
-   The return value is cast to type dtype
-
-   :param start: Starting value (inclusive)
-   :type start: int_scalars, optional
-   :param stop: Stopping value (exclusive)
-   :type stop: int_scalars
-   :param stride: The difference between consecutive elements, the default stride is 1,
-                  if stride is specified then start must also be specified.
-   :type stride: int_scalars, optional
-   :param dtype: The target dtype to cast values to
-   :type dtype: np.dtype, type, or str
-   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
-   :type max_bits: int
-
-   :returns: Integers from start (inclusive) to stop (exclusive) by stride
-   :rtype: pdarray, dtype
-
-   :raises TypeError: Raised if start, stop, or stride is not an int object
-   :raises ZeroDivisionError: Raised if stride == 0
-
-   .. seealso:: :obj:`linspace`, :obj:`zeros`, :obj:`ones`, :obj:`randint`
-
-   .. rubric:: Notes
-
-   Negative strides result in decreasing values. Currently, only int64
-   pdarrays can be created with this method. For float64 arrays, use
-   the linspace method.
-
-   .. rubric:: Examples
-
-   >>> ak.arange(0, 5, 1)
-   array([0, 1, 2, 3, 4])
-
-   >>> ak.arange(5, 0, -1)
-   array([5, 4, 3, 2, 1])
-
-   >>> ak.arange(0, 10, 2)
-   array([0, 2, 4, 6, 8])
-
-   >>> ak.arange(-5, -10, -1)
-   array([-5, -6, -7, -8, -9])
-
-
-.. py:function:: arange(*args, **kwargs) -> arkouda.pdarrayclass.pdarray
-
-   arange([start,] stop[, stride,] dtype=int64)
-
-   Create a pdarray of consecutive integers within the interval [start, stop).
-   If only one arg is given then arg is the stop parameter. If two args are
-   given, then the first arg is start and second is stop. If three args are
-   given, then the first arg is start, second is stop, third is stride.
-
-   The return value is cast to type dtype
-
-   :param start: Starting value (inclusive)
-   :type start: int_scalars, optional
-   :param stop: Stopping value (exclusive)
-   :type stop: int_scalars
-   :param stride: The difference between consecutive elements, the default stride is 1,
-                  if stride is specified then start must also be specified.
-   :type stride: int_scalars, optional
-   :param dtype: The target dtype to cast values to
-   :type dtype: np.dtype, type, or str
-   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
-   :type max_bits: int
-
-   :returns: Integers from start (inclusive) to stop (exclusive) by stride
-   :rtype: pdarray, dtype
-
-   :raises TypeError: Raised if start, stop, or stride is not an int object
-   :raises ZeroDivisionError: Raised if stride == 0
-
-   .. seealso:: :obj:`linspace`, :obj:`zeros`, :obj:`ones`, :obj:`randint`
-
-   .. rubric:: Notes
-
-   Negative strides result in decreasing values. Currently, only int64
-   pdarrays can be created with this method. For float64 arrays, use
-   the linspace method.
-
-   .. rubric:: Examples
-
-   >>> ak.arange(0, 5, 1)
-   array([0, 1, 2, 3, 4])
-
-   >>> ak.arange(5, 0, -1)
-   array([5, 4, 3, 2, 1])
-
-   >>> ak.arange(0, 10, 2)
-   array([0, 2, 4, 6, 8])
-
-   >>> ak.arange(-5, -10, -1)
-   array([-5, -6, -7, -8, -9])
-
-
-.. py:function:: arange(*args, **kwargs) -> arkouda.pdarrayclass.pdarray
-
-   arange([start,] stop[, stride,] dtype=int64)
-
-   Create a pdarray of consecutive integers within the interval [start, stop).
-   If only one arg is given then arg is the stop parameter. If two args are
-   given, then the first arg is start and second is stop. If three args are
-   given, then the first arg is start, second is stop, third is stride.
-
-   The return value is cast to type dtype
-
-   :param start: Starting value (inclusive)
-   :type start: int_scalars, optional
-   :param stop: Stopping value (exclusive)
-   :type stop: int_scalars
-   :param stride: The difference between consecutive elements, the default stride is 1,
-                  if stride is specified then start must also be specified.
-   :type stride: int_scalars, optional
-   :param dtype: The target dtype to cast values to
-   :type dtype: np.dtype, type, or str
-   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
-   :type max_bits: int
-
-   :returns: Integers from start (inclusive) to stop (exclusive) by stride
-   :rtype: pdarray, dtype
-
-   :raises TypeError: Raised if start, stop, or stride is not an int object
-   :raises ZeroDivisionError: Raised if stride == 0
-
-   .. seealso:: :obj:`linspace`, :obj:`zeros`, :obj:`ones`, :obj:`randint`
-
-   .. rubric:: Notes
-
-   Negative strides result in decreasing values. Currently, only int64
-   pdarrays can be created with this method. For float64 arrays, use
-   the linspace method.
-
-   .. rubric:: Examples
-
-   >>> ak.arange(0, 5, 1)
-   array([0, 1, 2, 3, 4])
-
-   >>> ak.arange(5, 0, -1)
-   array([5, 4, 3, 2, 1])
-
-   >>> ak.arange(0, 10, 2)
-   array([0, 2, 4, 6, 8])
-
-   >>> ak.arange(-5, -10, -1)
-   array([-5, -6, -7, -8, -9])
-
-
-.. py:function:: arange(*args, **kwargs) -> arkouda.pdarrayclass.pdarray
-
-   arange([start,] stop[, stride,] dtype=int64)
-
-   Create a pdarray of consecutive integers within the interval [start, stop).
-   If only one arg is given then arg is the stop parameter. If two args are
-   given, then the first arg is start and second is stop. If three args are
-   given, then the first arg is start, second is stop, third is stride.
-
-   The return value is cast to type dtype
-
-   :param start: Starting value (inclusive)
-   :type start: int_scalars, optional
-   :param stop: Stopping value (exclusive)
-   :type stop: int_scalars
-   :param stride: The difference between consecutive elements, the default stride is 1,
-                  if stride is specified then start must also be specified.
-   :type stride: int_scalars, optional
-   :param dtype: The target dtype to cast values to
-   :type dtype: np.dtype, type, or str
-   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
-   :type max_bits: int
-
-   :returns: Integers from start (inclusive) to stop (exclusive) by stride
-   :rtype: pdarray, dtype
-
-   :raises TypeError: Raised if start, stop, or stride is not an int object
-   :raises ZeroDivisionError: Raised if stride == 0
-
-   .. seealso:: :obj:`linspace`, :obj:`zeros`, :obj:`ones`, :obj:`randint`
-
-   .. rubric:: Notes
-
-   Negative strides result in decreasing values. Currently, only int64
-   pdarrays can be created with this method. For float64 arrays, use
-   the linspace method.
-
-   .. rubric:: Examples
-
-   >>> ak.arange(0, 5, 1)
-   array([0, 1, 2, 3, 4])
-
-   >>> ak.arange(5, 0, -1)
-   array([5, 4, 3, 2, 1])
-
-   >>> ak.arange(0, 10, 2)
-   array([0, 2, 4, 6, 8])
-
-   >>> ak.arange(-5, -10, -1)
-   array([-5, -6, -7, -8, -9])
-
-
-.. py:function:: arange(*args, **kwargs) -> arkouda.pdarrayclass.pdarray
-
-   arange([start,] stop[, stride,] dtype=int64)
-
-   Create a pdarray of consecutive integers within the interval [start, stop).
-   If only one arg is given then arg is the stop parameter. If two args are
-   given, then the first arg is start and second is stop. If three args are
-   given, then the first arg is start, second is stop, third is stride.
-
-   The return value is cast to type dtype
-
-   :param start: Starting value (inclusive)
-   :type start: int_scalars, optional
-   :param stop: Stopping value (exclusive)
-   :type stop: int_scalars
-   :param stride: The difference between consecutive elements, the default stride is 1,
-                  if stride is specified then start must also be specified.
-   :type stride: int_scalars, optional
-   :param dtype: The target dtype to cast values to
-   :type dtype: np.dtype, type, or str
-   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
-   :type max_bits: int
-
-   :returns: Integers from start (inclusive) to stop (exclusive) by stride
-   :rtype: pdarray, dtype
-
-   :raises TypeError: Raised if start, stop, or stride is not an int object
-   :raises ZeroDivisionError: Raised if stride == 0
-
-   .. seealso:: :obj:`linspace`, :obj:`zeros`, :obj:`ones`, :obj:`randint`
-
-   .. rubric:: Notes
-
-   Negative strides result in decreasing values. Currently, only int64
-   pdarrays can be created with this method. For float64 arrays, use
-   the linspace method.
-
-   .. rubric:: Examples
-
-   >>> ak.arange(0, 5, 1)
-   array([0, 1, 2, 3, 4])
-
-   >>> ak.arange(5, 0, -1)
-   array([5, 4, 3, 2, 1])
-
-   >>> ak.arange(0, 10, 2)
-   array([0, 2, 4, 6, 8])
-
-   >>> ak.arange(-5, -10, -1)
-   array([-5, -6, -7, -8, -9])
-
-
 .. py:function:: arccos(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
 
    Return the element-wise inverse cosine of the array. The result is between 0 and pi.
@@ -30840,214 +30495,6 @@ Package Contents
    >>> perm = ak.argsort(a)
    >>> a[perm]
    array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
-
-
-.. py:function:: array(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str, None] = None, max_bits: int = -1) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
-
-   Convert a Python or Numpy Iterable to a pdarray or Strings object, sending
-   the corresponding data to the arkouda server.
-
-   :param a: Rank-1 array of a supported dtype
-   :type a: Union[pdarray, np.ndarray]
-   :param dtype: The target dtype to cast values to
-   :type dtype: np.dtype, type, or str
-   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
-   :type max_bits: int
-
-   :returns: A pdarray instance stored on arkouda server or Strings instance, which
-             is composed of two pdarrays stored on arkouda server
-   :rtype: pdarray or Strings
-
-   :raises TypeError: Raised if a is not a pdarray, np.ndarray, or Python Iterable such as a
-       list, array, tuple, or deque
-   :raises RuntimeError: Raised if a is not one-dimensional, nbytes > maxTransferBytes, a.dtype is
-       not supported (not in DTypes), or if the product of a size and
-       a.itemsize > maxTransferBytes
-   :raises ValueError: Raised if the returned message is malformed or does not contain the fields
-       required to generate the array.
-
-   .. seealso:: :obj:`pdarray.to_ndarray`
-
-   .. rubric:: Notes
-
-   The number of bytes in the input array cannot exceed `ak.client.maxTransferBytes`,
-   otherwise a RuntimeError will be raised. This is to protect the user
-   from overwhelming the connection between the Python client and the arkouda
-   server, under the assumption that it is a low-bandwidth connection. The user
-   may override this limit by setting ak.client.maxTransferBytes to a larger value,
-   but should proceed with caution.
-
-   If the pdrray or ndarray is of type U, this method is called twice recursively
-   to create the Strings object and the two corresponding pdarrays for string
-   bytes and offsets, respectively.
-
-   .. rubric:: Examples
-
-   >>> ak.array(np.arange(1,10))
-   array([1, 2, 3, 4, 5, 6, 7, 8, 9])
-
-   >>> ak.array(range(1,10))
-   array([1, 2, 3, 4, 5, 6, 7, 8, 9])
-
-   >>> strings = ak.array([f'string {i}' for i in range(0,5)])
-   >>> type(strings)
-   <class 'arkouda.strings.Strings'>
-
-
-.. py:function:: array(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str, None] = None, max_bits: int = -1) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
-
-   Convert a Python or Numpy Iterable to a pdarray or Strings object, sending
-   the corresponding data to the arkouda server.
-
-   :param a: Rank-1 array of a supported dtype
-   :type a: Union[pdarray, np.ndarray]
-   :param dtype: The target dtype to cast values to
-   :type dtype: np.dtype, type, or str
-   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
-   :type max_bits: int
-
-   :returns: A pdarray instance stored on arkouda server or Strings instance, which
-             is composed of two pdarrays stored on arkouda server
-   :rtype: pdarray or Strings
-
-   :raises TypeError: Raised if a is not a pdarray, np.ndarray, or Python Iterable such as a
-       list, array, tuple, or deque
-   :raises RuntimeError: Raised if a is not one-dimensional, nbytes > maxTransferBytes, a.dtype is
-       not supported (not in DTypes), or if the product of a size and
-       a.itemsize > maxTransferBytes
-   :raises ValueError: Raised if the returned message is malformed or does not contain the fields
-       required to generate the array.
-
-   .. seealso:: :obj:`pdarray.to_ndarray`
-
-   .. rubric:: Notes
-
-   The number of bytes in the input array cannot exceed `ak.client.maxTransferBytes`,
-   otherwise a RuntimeError will be raised. This is to protect the user
-   from overwhelming the connection between the Python client and the arkouda
-   server, under the assumption that it is a low-bandwidth connection. The user
-   may override this limit by setting ak.client.maxTransferBytes to a larger value,
-   but should proceed with caution.
-
-   If the pdrray or ndarray is of type U, this method is called twice recursively
-   to create the Strings object and the two corresponding pdarrays for string
-   bytes and offsets, respectively.
-
-   .. rubric:: Examples
-
-   >>> ak.array(np.arange(1,10))
-   array([1, 2, 3, 4, 5, 6, 7, 8, 9])
-
-   >>> ak.array(range(1,10))
-   array([1, 2, 3, 4, 5, 6, 7, 8, 9])
-
-   >>> strings = ak.array([f'string {i}' for i in range(0,5)])
-   >>> type(strings)
-   <class 'arkouda.strings.Strings'>
-
-
-.. py:function:: array(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str, None] = None, max_bits: int = -1) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
-
-   Convert a Python or Numpy Iterable to a pdarray or Strings object, sending
-   the corresponding data to the arkouda server.
-
-   :param a: Rank-1 array of a supported dtype
-   :type a: Union[pdarray, np.ndarray]
-   :param dtype: The target dtype to cast values to
-   :type dtype: np.dtype, type, or str
-   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
-   :type max_bits: int
-
-   :returns: A pdarray instance stored on arkouda server or Strings instance, which
-             is composed of two pdarrays stored on arkouda server
-   :rtype: pdarray or Strings
-
-   :raises TypeError: Raised if a is not a pdarray, np.ndarray, or Python Iterable such as a
-       list, array, tuple, or deque
-   :raises RuntimeError: Raised if a is not one-dimensional, nbytes > maxTransferBytes, a.dtype is
-       not supported (not in DTypes), or if the product of a size and
-       a.itemsize > maxTransferBytes
-   :raises ValueError: Raised if the returned message is malformed or does not contain the fields
-       required to generate the array.
-
-   .. seealso:: :obj:`pdarray.to_ndarray`
-
-   .. rubric:: Notes
-
-   The number of bytes in the input array cannot exceed `ak.client.maxTransferBytes`,
-   otherwise a RuntimeError will be raised. This is to protect the user
-   from overwhelming the connection between the Python client and the arkouda
-   server, under the assumption that it is a low-bandwidth connection. The user
-   may override this limit by setting ak.client.maxTransferBytes to a larger value,
-   but should proceed with caution.
-
-   If the pdrray or ndarray is of type U, this method is called twice recursively
-   to create the Strings object and the two corresponding pdarrays for string
-   bytes and offsets, respectively.
-
-   .. rubric:: Examples
-
-   >>> ak.array(np.arange(1,10))
-   array([1, 2, 3, 4, 5, 6, 7, 8, 9])
-
-   >>> ak.array(range(1,10))
-   array([1, 2, 3, 4, 5, 6, 7, 8, 9])
-
-   >>> strings = ak.array([f'string {i}' for i in range(0,5)])
-   >>> type(strings)
-   <class 'arkouda.strings.Strings'>
-
-
-.. py:function:: array(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str, None] = None, max_bits: int = -1) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
-
-   Convert a Python or Numpy Iterable to a pdarray or Strings object, sending
-   the corresponding data to the arkouda server.
-
-   :param a: Rank-1 array of a supported dtype
-   :type a: Union[pdarray, np.ndarray]
-   :param dtype: The target dtype to cast values to
-   :type dtype: np.dtype, type, or str
-   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
-   :type max_bits: int
-
-   :returns: A pdarray instance stored on arkouda server or Strings instance, which
-             is composed of two pdarrays stored on arkouda server
-   :rtype: pdarray or Strings
-
-   :raises TypeError: Raised if a is not a pdarray, np.ndarray, or Python Iterable such as a
-       list, array, tuple, or deque
-   :raises RuntimeError: Raised if a is not one-dimensional, nbytes > maxTransferBytes, a.dtype is
-       not supported (not in DTypes), or if the product of a size and
-       a.itemsize > maxTransferBytes
-   :raises ValueError: Raised if the returned message is malformed or does not contain the fields
-       required to generate the array.
-
-   .. seealso:: :obj:`pdarray.to_ndarray`
-
-   .. rubric:: Notes
-
-   The number of bytes in the input array cannot exceed `ak.client.maxTransferBytes`,
-   otherwise a RuntimeError will be raised. This is to protect the user
-   from overwhelming the connection between the Python client and the arkouda
-   server, under the assumption that it is a low-bandwidth connection. The user
-   may override this limit by setting ak.client.maxTransferBytes to a larger value,
-   but should proceed with caution.
-
-   If the pdrray or ndarray is of type U, this method is called twice recursively
-   to create the Strings object and the two corresponding pdarrays for string
-   bytes and offsets, respectively.
-
-   .. rubric:: Examples
-
-   >>> ak.array(np.arange(1,10))
-   array([1, 2, 3, 4, 5, 6, 7, 8, 9])
-
-   >>> ak.array(range(1,10))
-   array([1, 2, 3, 4, 5, 6, 7, 8, 9])
-
-   >>> strings = ak.array([f'string {i}' for i in range(0,5)])
-   >>> type(strings)
-   <class 'arkouda.strings.Strings'>
 
 
 .. py:function:: array_equal(pda_a: arkouda.pdarrayclass.pdarray, pda_b: arkouda.pdarrayclass.pdarray, equal_nan: bool = False)
@@ -31890,42 +31337,6 @@ Package Contents
 
 
    .. py:method:: type(x)
-
-
-.. py:function:: bigint_from_uint_arrays(arrays, max_bits=-1)
-
-   Create a bigint pdarray from an iterable of uint pdarrays.
-   The first item in arrays will be the highest 64 bits and
-   the last item will be the lowest 64 bits.
-
-   :param arrays: An iterable of uint pdarrays used to construct the bigint pdarray.
-                  The first item in arrays will be the highest 64 bits and
-                  the last item will be the lowest 64 bits.
-   :type arrays: Sequence[pdarray]
-   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
-   :type max_bits: int
-
-   :returns: bigint pdarray constructed from uint arrays
-   :rtype: pdarray
-
-   :raises TypeError: Raised if any pdarray in arrays has a dtype other than uint or
-       if the pdarrays are not the same size.
-   :raises RuntimeError: Raised if there is a server-side error thrown
-
-   .. seealso:: :obj:`pdarray.bigint_to_uint_arrays`
-
-   .. rubric:: Examples
-
-   >>> a = ak.bigint_from_uint_arrays([ak.ones(5, dtype=ak.uint64), ak.arange(5, dtype=ak.uint64)])
-   >>> a
-   array(["18446744073709551616" "18446744073709551617" "18446744073709551618"
-   "18446744073709551619" "18446744073709551620"])
-
-   >>> a.dtype
-   dtype(bigint)
-
-   >>> all(a[i] == 2**64 + i for i in range(5))
-   True
 
 
 .. py:function:: binary_repr(num, width=None)
@@ -33639,42 +33050,6 @@ Package Contents
        the pdarray instance
 
 
-.. py:function:: create_pdarray(repMsg: str, max_bits=None) -> pdarray
-
-   Return a pdarray instance pointing to an array created by the arkouda server.
-   The user should not call this function directly.
-
-   :param repMsg: space-delimited string containing the pdarray name, datatype, size
-                  dimension, shape,and itemsize
-   :type repMsg: str
-
-   :returns: A pdarray with the same attributes and data as the pdarray; on GPU
-   :rtype: pdarray
-
-   :raises ValueError: If there's an error in parsing the repMsg parameter into the six
-       values needed to create the pdarray instance
-   :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
-       the pdarray instance
-
-
-.. py:function:: create_pdarray(repMsg: str, max_bits=None) -> pdarray
-
-   Return a pdarray instance pointing to an array created by the arkouda server.
-   The user should not call this function directly.
-
-   :param repMsg: space-delimited string containing the pdarray name, datatype, size
-                  dimension, shape,and itemsize
-   :type repMsg: str
-
-   :returns: A pdarray with the same attributes and data as the pdarray; on GPU
-   :rtype: pdarray
-
-   :raises ValueError: If there's an error in parsing the repMsg parameter into the six
-       values needed to create the pdarray instance
-   :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
-       the pdarray instance
-
-
 .. py:function:: create_sparray(repMsg: str, max_bits=None) -> sparray
 
    Return a sparray instance pointing to an array created by the arkouda server.
@@ -33691,6 +33066,22 @@ Package Contents
        values needed to create the pdarray instance
    :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
        the pdarray instance
+
+
+.. py:function:: create_sparse_matrix(size: int, rows: arkouda.pdarrayclass.pdarray, cols: arkouda.pdarrayclass.pdarray, vals: arkouda.pdarrayclass.pdarray, layout: str) -> arkouda.sparrayclass.sparray
+
+   Create a sparse matrix from three pdarrays representing the row indices,
+   column indices, and values of the non-zero elements of the matrix.
+
+   :param rows: The row indices of the non-zero elements
+   :type rows: pdarray
+   :param cols: The column indices of the non-zero elements
+   :type cols: pdarray
+   :param vals: The values of the non-zero elements
+   :type vals: pdarray
+
+   :returns: A sparse matrix with the specified row and column indices and values
+   :rtype: sparray
 
 
 .. py:class:: csingle(value)
@@ -35140,227 +34531,6 @@ Package Contents
    dtype([('col1', '<f8'), ('col2', '<i4'), ('col3', '<S5')])
    >>> np.format_parser(['<f8', '<i4', '<a5'], [], []).dtype
    dtype([('f0', '<f8'), ('f1', '<i4'), ('f2', 'S5')])
-
-
-.. py:function:: from_series(series: pandas.Series, dtype: Optional[Union[type, str]] = None) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
-
-   Converts a Pandas Series to an Arkouda pdarray or Strings object. If
-   dtype is None, the dtype is inferred from the Pandas Series. Otherwise,
-   the dtype parameter is set if the dtype of the Pandas Series is to be
-   overridden or is  unknown (for example, in situations where the Series
-   dtype is object).
-
-   :param series: The Pandas Series with a dtype of bool, float64, int64, or string
-   :type series: Pandas Series
-   :param dtype: The valid dtype types are np.bool, np.float64, np.int64, and np.str
-   :type dtype: Optional[type]
-
-   :rtype: Union[pdarray,Strings]
-
-   :raises TypeError: Raised if series is not a Pandas Series object
-   :raises ValueError: Raised if the Series dtype is not bool, float64, int64, string, datetime, or timedelta
-
-   .. rubric:: Examples
-
-   >>> ak.from_series(pd.Series(np.random.randint(0,10,5)))
-   array([9, 0, 4, 7, 9])
-
-   >>> ak.from_series(pd.Series(['1', '2', '3', '4', '5']),dtype=np.int64)
-   array([1, 2, 3, 4, 5])
-
-   >>> ak.from_series(pd.Series(np.random.uniform(low=0.0,high=1.0,size=3)))
-   array([0.57600036956445599, 0.41619265571741659, 0.6615356693784662])
-
-   >>> ak.from_series(pd.Series(['0.57600036956445599', '0.41619265571741659',
-                      '0.6615356693784662']), dtype=np.float64)
-   array([0.57600036956445599, 0.41619265571741659, 0.6615356693784662])
-
-   >>> ak.from_series(pd.Series(np.random.choice([True, False],size=5)))
-   array([True, False, True, True, True])
-
-   >>> ak.from_series(pd.Series(['True', 'False', 'False', 'True', 'True']), dtype=np.bool)
-   array([True, True, True, True, True])
-
-   >>> ak.from_series(pd.Series(['a', 'b', 'c', 'd', 'e'], dtype="string"))
-   array(['a', 'b', 'c', 'd', 'e'])
-
-   >>> ak.from_series(pd.Series(['a', 'b', 'c', 'd', 'e']),dtype=np.str)
-   array(['a', 'b', 'c', 'd', 'e'])
-
-   >>> ak.from_series(pd.Series(pd.to_datetime(['1/1/2018', np.datetime64('2018-01-01')])))
-   array([1514764800000000000, 1514764800000000000])
-
-   .. rubric:: Notes
-
-   The supported datatypes are bool, float64, int64, string, and datetime64[ns]. The
-   data type is either inferred from the the Series or is set via the dtype parameter.
-
-   Series of datetime or timedelta are converted to Arkouda arrays of dtype int64 (nanoseconds)
-
-   A Pandas Series containing strings has a dtype of object. Arkouda assumes the Series
-   contains strings and sets the dtype to str
-
-
-.. py:function:: from_series(series: pandas.Series, dtype: Optional[Union[type, str]] = None) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
-
-   Converts a Pandas Series to an Arkouda pdarray or Strings object. If
-   dtype is None, the dtype is inferred from the Pandas Series. Otherwise,
-   the dtype parameter is set if the dtype of the Pandas Series is to be
-   overridden or is  unknown (for example, in situations where the Series
-   dtype is object).
-
-   :param series: The Pandas Series with a dtype of bool, float64, int64, or string
-   :type series: Pandas Series
-   :param dtype: The valid dtype types are np.bool, np.float64, np.int64, and np.str
-   :type dtype: Optional[type]
-
-   :rtype: Union[pdarray,Strings]
-
-   :raises TypeError: Raised if series is not a Pandas Series object
-   :raises ValueError: Raised if the Series dtype is not bool, float64, int64, string, datetime, or timedelta
-
-   .. rubric:: Examples
-
-   >>> ak.from_series(pd.Series(np.random.randint(0,10,5)))
-   array([9, 0, 4, 7, 9])
-
-   >>> ak.from_series(pd.Series(['1', '2', '3', '4', '5']),dtype=np.int64)
-   array([1, 2, 3, 4, 5])
-
-   >>> ak.from_series(pd.Series(np.random.uniform(low=0.0,high=1.0,size=3)))
-   array([0.57600036956445599, 0.41619265571741659, 0.6615356693784662])
-
-   >>> ak.from_series(pd.Series(['0.57600036956445599', '0.41619265571741659',
-                      '0.6615356693784662']), dtype=np.float64)
-   array([0.57600036956445599, 0.41619265571741659, 0.6615356693784662])
-
-   >>> ak.from_series(pd.Series(np.random.choice([True, False],size=5)))
-   array([True, False, True, True, True])
-
-   >>> ak.from_series(pd.Series(['True', 'False', 'False', 'True', 'True']), dtype=np.bool)
-   array([True, True, True, True, True])
-
-   >>> ak.from_series(pd.Series(['a', 'b', 'c', 'd', 'e'], dtype="string"))
-   array(['a', 'b', 'c', 'd', 'e'])
-
-   >>> ak.from_series(pd.Series(['a', 'b', 'c', 'd', 'e']),dtype=np.str)
-   array(['a', 'b', 'c', 'd', 'e'])
-
-   >>> ak.from_series(pd.Series(pd.to_datetime(['1/1/2018', np.datetime64('2018-01-01')])))
-   array([1514764800000000000, 1514764800000000000])
-
-   .. rubric:: Notes
-
-   The supported datatypes are bool, float64, int64, string, and datetime64[ns]. The
-   data type is either inferred from the the Series or is set via the dtype parameter.
-
-   Series of datetime or timedelta are converted to Arkouda arrays of dtype int64 (nanoseconds)
-
-   A Pandas Series containing strings has a dtype of object. Arkouda assumes the Series
-   contains strings and sets the dtype to str
-
-
-.. py:function:: full(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], fill_value: Union[arkouda.numpy.dtypes.numeric_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
-
-   Create a pdarray filled with fill_value.
-
-   :param size: Size of the array (only rank-1 arrays supported)
-   :type size: int_scalars or tuple of int_scalars
-   :param fill_value: Value with which the array will be filled
-   :type fill_value: int_scalars
-   :param dtype: Resulting array type, default float64
-   :type dtype: all_scalars
-   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
-   :type max_bits: int
-
-   :returns: array of the requested size and dtype filled with fill_value
-   :rtype: pdarray or Strings
-
-   :raises TypeError: Raised if the supplied dtype is not supported or if the size
-       parameter is neither an int nor a str that is parseable to an int.
-
-   .. seealso:: :obj:`zeros`, :obj:`ones`
-
-   .. rubric:: Examples
-
-   >>> ak.full(5, 7, dtype=ak.int64)
-   array([7, 7, 7, 7, 7])
-
-   >>> ak.full(5, 9, dtype=ak.float64)
-   array([9, 9, 9, 9, 9])
-
-   >>> ak.full(5, 5, dtype=ak.bool_)
-   array([True, True, True, True, True])
-
-
-.. py:function:: full(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], fill_value: Union[arkouda.numpy.dtypes.numeric_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
-
-   Create a pdarray filled with fill_value.
-
-   :param size: Size of the array (only rank-1 arrays supported)
-   :type size: int_scalars or tuple of int_scalars
-   :param fill_value: Value with which the array will be filled
-   :type fill_value: int_scalars
-   :param dtype: Resulting array type, default float64
-   :type dtype: all_scalars
-   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
-   :type max_bits: int
-
-   :returns: array of the requested size and dtype filled with fill_value
-   :rtype: pdarray or Strings
-
-   :raises TypeError: Raised if the supplied dtype is not supported or if the size
-       parameter is neither an int nor a str that is parseable to an int.
-
-   .. seealso:: :obj:`zeros`, :obj:`ones`
-
-   .. rubric:: Examples
-
-   >>> ak.full(5, 7, dtype=ak.int64)
-   array([7, 7, 7, 7, 7])
-
-   >>> ak.full(5, 9, dtype=ak.float64)
-   array([9, 9, 9, 9, 9])
-
-   >>> ak.full(5, 5, dtype=ak.bool_)
-   array([True, True, True, True, True])
-
-
-.. py:function:: full_like(pda: arkouda.pdarrayclass.pdarray, fill_value: arkouda.numpy.dtypes.numeric_scalars) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
-
-   Create a pdarray filled with fill_value of the same size and dtype as an existing
-   pdarray.
-
-   :param pda: Array to use for size and dtype
-   :type pda: pdarray
-   :param fill_value: Value with which the array will be filled
-   :type fill_value: int_scalars
-
-   :returns: Equivalent to ak.full(pda.size, fill_value, pda.dtype)
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the pda parameter is not a pdarray.
-
-   .. seealso:: :obj:`ones_like`, :obj:`zeros_like`
-
-   .. rubric:: Notes
-
-   Logic for generating the pdarray is delegated to the ak.full method.
-   Accordingly, the supported dtypes match are defined by the ak.full method.
-
-   .. rubric:: Examples
-
-   >>> full = ak.full(5, 7, dtype=ak.int64)
-   >>> ak.full_like(full)
-   array([7, 7, 7, 7, 7])
-
-   >>> full = ak.full(5, 9, dtype=ak.float64)
-   >>> ak.full_like(full)
-   array([9, 9, 9, 9, 9])
-
-   >>> full = ak.full(5, 5, dtype=ak.bool_)
-   >>> ak.full_like(full)
-   array([True, True, True, True, True])
 
 
 .. py:function:: gen_ranges(starts, ends, stride=1, return_lengths=False)
@@ -37248,41 +36418,6 @@ Package Contents
    discarding values from right that do not appear in left.
 
 
-.. py:function:: linspace(start: arkouda.numpy.dtypes.numeric_scalars, stop: arkouda.numpy.dtypes.numeric_scalars, length: arkouda.numpy.dtypes.int_scalars) -> arkouda.pdarrayclass.pdarray
-
-   Create a pdarray of linearly-spaced floats in a closed interval.
-
-   :param start: Start of interval (inclusive)
-   :type start: numeric_scalars
-   :param stop: End of interval (inclusive)
-   :type stop: numeric_scalars
-   :param length: Number of points
-   :type length: int_scalars
-
-   :returns: Array of evenly spaced float values along the interval
-   :rtype: pdarray, float64
-
-   :raises TypeError: Raised if start or stop is not a float or int or if length is not an int
-
-   .. seealso:: :obj:`arange`
-
-   .. rubric:: Notes
-
-   If that start is greater than stop, the pdarray values are generated
-   in descending order.
-
-   .. rubric:: Examples
-
-   >>> ak.linspace(0, 1, 5)
-   array([0, 0.25, 0.5, 0.75, 1])
-
-   >>> ak.linspace(start=1, stop=0, length=5)
-   array([1, 0.75, 0.5, 0.25, 0])
-
-   >>> ak.linspace(start=-5, stop=0, length=5)
-   array([-5, -3.75, -2.5, -1.25, 0])
-
-
 .. py:function:: list_registry(detailed: bool = False)
 
    Return a list containing the names of all registered objects
@@ -38065,165 +37200,6 @@ Package Contents
 
        :Character code: ``'O'``
 
-
-
-.. py:function:: ones(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], dtype: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
-
-   Create a pdarray filled with ones.
-
-   :param size: Size of the array (only rank-1 arrays supported)
-   :type size: int_scalars or tuple of int_scalars
-   :param dtype: Resulting array type, default float64
-   :type dtype: Union[float64, int64, bool]
-   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
-   :type max_bits: int
-
-   :returns: Ones of the requested size and dtype
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the supplied dtype is not supported or if the size
-       parameter is neither an int nor a str that is parseable to an int.
-
-   .. seealso:: :obj:`zeros`, :obj:`ones_like`
-
-   .. rubric:: Examples
-
-   >>> ak.ones(5, dtype=ak.int64)
-   array([1, 1, 1, 1, 1])
-
-   >>> ak.ones(5, dtype=ak.float64)
-   array([1, 1, 1, 1, 1])
-
-   >>> ak.ones(5, dtype=ak.bool_)
-   array([True, True, True, True, True])
-
-
-.. py:function:: ones(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], dtype: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
-
-   Create a pdarray filled with ones.
-
-   :param size: Size of the array (only rank-1 arrays supported)
-   :type size: int_scalars or tuple of int_scalars
-   :param dtype: Resulting array type, default float64
-   :type dtype: Union[float64, int64, bool]
-   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
-   :type max_bits: int
-
-   :returns: Ones of the requested size and dtype
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the supplied dtype is not supported or if the size
-       parameter is neither an int nor a str that is parseable to an int.
-
-   .. seealso:: :obj:`zeros`, :obj:`ones_like`
-
-   .. rubric:: Examples
-
-   >>> ak.ones(5, dtype=ak.int64)
-   array([1, 1, 1, 1, 1])
-
-   >>> ak.ones(5, dtype=ak.float64)
-   array([1, 1, 1, 1, 1])
-
-   >>> ak.ones(5, dtype=ak.bool_)
-   array([True, True, True, True, True])
-
-
-.. py:function:: ones(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], dtype: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
-
-   Create a pdarray filled with ones.
-
-   :param size: Size of the array (only rank-1 arrays supported)
-   :type size: int_scalars or tuple of int_scalars
-   :param dtype: Resulting array type, default float64
-   :type dtype: Union[float64, int64, bool]
-   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
-   :type max_bits: int
-
-   :returns: Ones of the requested size and dtype
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the supplied dtype is not supported or if the size
-       parameter is neither an int nor a str that is parseable to an int.
-
-   .. seealso:: :obj:`zeros`, :obj:`ones_like`
-
-   .. rubric:: Examples
-
-   >>> ak.ones(5, dtype=ak.int64)
-   array([1, 1, 1, 1, 1])
-
-   >>> ak.ones(5, dtype=ak.float64)
-   array([1, 1, 1, 1, 1])
-
-   >>> ak.ones(5, dtype=ak.bool_)
-   array([True, True, True, True, True])
-
-
-.. py:function:: ones(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], dtype: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
-
-   Create a pdarray filled with ones.
-
-   :param size: Size of the array (only rank-1 arrays supported)
-   :type size: int_scalars or tuple of int_scalars
-   :param dtype: Resulting array type, default float64
-   :type dtype: Union[float64, int64, bool]
-   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
-   :type max_bits: int
-
-   :returns: Ones of the requested size and dtype
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the supplied dtype is not supported or if the size
-       parameter is neither an int nor a str that is parseable to an int.
-
-   .. seealso:: :obj:`zeros`, :obj:`ones_like`
-
-   .. rubric:: Examples
-
-   >>> ak.ones(5, dtype=ak.int64)
-   array([1, 1, 1, 1, 1])
-
-   >>> ak.ones(5, dtype=ak.float64)
-   array([1, 1, 1, 1, 1])
-
-   >>> ak.ones(5, dtype=ak.bool_)
-   array([True, True, True, True, True])
-
-
-.. py:function:: ones_like(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
-
-   Create a one-filled pdarray of the same size and dtype as an existing
-   pdarray.
-
-   :param pda: Array to use for size and dtype
-   :type pda: pdarray
-
-   :returns: Equivalent to ak.ones(pda.size, pda.dtype)
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the pda parameter is not a pdarray.
-
-   .. seealso:: :obj:`ones`, :obj:`zeros_like`
-
-   .. rubric:: Notes
-
-   Logic for generating the pdarray is delegated to the ak.ones method.
-   Accordingly, the supported dtypes match are defined by the ak.ones method.
-
-   .. rubric:: Examples
-
-   >>> ones = ak.ones(5, dtype=ak.int64)
-    >>> ak.ones_like(ones)
-   array([1, 1, 1, 1, 1])
-
-   >>> ones = ak.ones(5, dtype=ak.float64)
-   >>> ak.ones_like(ones)
-   array([1, 1, 1, 1, 1])
-
-   >>> ones = ak.ones(5, dtype=ak.bool_)
-   >>> ak.ones_like(ones)
-   array([True, True, True, True, True])
 
 
 .. py:function:: parity(pda: pdarray) -> pdarray
@@ -44453,31 +43429,6 @@ Package Contents
        retrieving information about the objects in names
 
 
-.. py:function:: promote_to_common_dtype(arrays: List[arkouda.pdarrayclass.pdarray]) -> Tuple[Any, List[arkouda.pdarrayclass.pdarray]]
-
-   Promote a list of pdarrays to a common dtype.
-
-   :param arrays: List of pdarrays to promote
-   :type arrays: List[pdarray]
-
-   :returns: The common dtype of the pdarrays and the list of pdarrays promoted to that dtype
-   :rtype: dtype, List[pdarray]
-
-   :raises TypeError: Raised if the pdarrays are not all of the same dtype
-
-   .. seealso:: :obj:`pdarray.promote_dtype`
-
-   .. rubric:: Examples
-
-   >>> a = ak.arange(5)
-   >>> b = ak.ones(5, dtype=ak.float64)
-   >>> dtype, promoted = promote_to_common_dtype([a, b])
-   >>> dtype
-   dtype(float64)
-   >>> all(isinstance(p, pdarray) and p.dtype == dtype for p in promoted)
-   True
-
-
 .. py:function:: putmask(A: arkouda.pdarrayclass.pdarray, mask: arkouda.pdarrayclass.pdarray, Values: arkouda.pdarrayclass.pdarray)
 
    Overwrites elements of A with elements from B based upon a mask array.
@@ -44548,130 +43499,25 @@ Package Contents
    :raises TypeError: Raised if the parameter is not a pdarray
 
 
-.. py:function:: randint(low: arkouda.numpy.dtypes.numeric_scalars, high: arkouda.numpy.dtypes.numeric_scalars, size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]] = 1, dtype=akint64, seed: Optional[arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.pdarrayclass.pdarray
+.. py:function:: random_sparse_matrix(size: int, density: float, layout: str, dtype: Union[type, str] = int64) -> arkouda.sparrayclass.sparray
 
-   Generate a pdarray of randomized int, float, or bool values in a
-   specified range bounded by the low and high parameters.
+   Create a random sparse matrix with the specified number of rows and columns
+   and the specified density. The density is the fraction of non-zero elements
+   in the matrix. The non-zero elements are uniformly distributed random
+   numbers in the range [0,1).
 
-   :param low: The low value (inclusive) of the range
-   :type low: numeric_scalars
-   :param high: The high value (exclusive for int, inclusive for float) of the range
-   :type high: numeric_scalars
-   :param size: The length of the returned array
-   :type size: int_scalars
-   :param dtype: The dtype of the array
-   :type dtype: Union[int64, float64, bool]
-   :param seed: Index for where to pull the first returned value
-   :type seed: int_scalars, optional
+   :param size: The number of rows in the matrix, columns are equal to rows right now
+   :type size: int
+   :param density: The fraction of non-zero elements in the matrix
+   :type density: float
+   :param dtype: The dtype of the elements in the matrix (default is int64)
+   :type dtype: Union[DTypes, str]
 
-   :returns: Values drawn uniformly from the specified range having the desired dtype
-   :rtype: pdarray
+   :returns: A sparse matrix with the specified number of rows and columns
+             and the specified density
+   :rtype: sparray
 
-   :raises TypeError: Raised if dtype.name not in DTypes, size is not an int, low or high is
-       not an int or float, or seed is not an int
-   :raises ValueError: Raised if size < 0 or if high < low
-
-   .. rubric:: Notes
-
-   Calling randint with dtype=float64 will result in uniform non-integral
-   floating point values.
-
-   Ranges >= 2**64 in size is undefined behavior because
-   it exceeds the maximum value that can be stored on the server (uint64)
-
-   .. rubric:: Examples
-
-   >>> ak.randint(0, 10, 5)
-   array([5, 7, 4, 8, 3])
-
-   >>> ak.randint(0, 1, 3, dtype=ak.float64)
-   array([0.92176432277231968, 0.083130710959903542, 0.68894208386667544])
-
-   >>> ak.randint(0, 1, 5, dtype=ak.bool_)
-   array([True, False, True, True, True])
-
-   >>> ak.randint(1, 5, 10, seed=2)
-   array([4, 3, 1, 3, 4, 4, 2, 4, 3, 2])
-
-   >>> ak.randint(1, 5, 3, dtype=ak.float64, seed=2)
-   array([2.9160772326374946, 4.353429832157099, 4.5392023718621486])
-
-   >>> ak.randint(1, 5, 10, dtype=ak.bool, seed=2)
-   array([False, True, True, True, True, False, True, True, True, True])
-
-
-.. py:function:: random_strings_lognormal(logmean: arkouda.numpy.dtypes.numeric_scalars, logstd: arkouda.numpy.dtypes.numeric_scalars, size: arkouda.numpy.dtypes.int_scalars, characters: str = 'uppercase', seed: Optional[arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.strings.Strings
-
-   Generate random strings with log-normally distributed lengths and
-   with characters drawn from a specified set.
-
-   :param logmean: The log-mean of the length distribution
-   :type logmean: numeric_scalars
-   :param logstd: The log-standard-deviation of the length distribution
-   :type logstd: numeric_scalars
-   :param size: The number of strings to generate
-   :type size: int_scalars
-   :param characters: The set of characters to draw from
-   :type characters: (uppercase, lowercase, numeric, printable, binary)
-   :param seed: Value used to initialize the random number generator
-   :type seed: int_scalars, optional
-
-   :returns: The Strings object encapsulating a pdarray of random strings
-   :rtype: Strings
-
-   :raises TypeError: Raised if logmean is neither a float nor a int, logstd is not a float,
-       size is not an int, or if characters is not a str
-   :raises ValueError: Raised if logstd <= 0 or size < 0
-
-   .. seealso:: :obj:`random_strings_lognormal`, :obj:`randint`
-
-   .. rubric:: Notes
-
-   The lengths of the generated strings are distributed $Lognormal(\mu, \sigma^2)$,
-   with :math:`\mu = logmean` and :math:`\sigma = logstd`. Thus, the strings will
-   have an average length of :math:`exp(\mu + 0.5*\sigma^2)`, a minimum length of
-   zero, and a heavy tail towards longer strings.
-
-   .. rubric:: Examples
-
-   >>> ak.random_strings_lognormal(2, 0.25, 5, seed=1)
-   array(['TVKJTE', 'ABOCORHFM', 'LUDMMGTB', 'KWOQNPHZ', 'VSXRRL'])
-
-   >>> ak.random_strings_lognormal(2, 0.25, 5, seed=1, characters='printable')
-   array(['+5"fp-', ']3Q4kC~HF', '=F=`,IE!', 'DjkBa'9(', '5oZ1)='])
-
-
-.. py:function:: random_strings_uniform(minlen: arkouda.numpy.dtypes.int_scalars, maxlen: arkouda.numpy.dtypes.int_scalars, size: arkouda.numpy.dtypes.int_scalars, characters: str = 'uppercase', seed: Union[None, arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.strings.Strings
-
-   Generate random strings with lengths uniformly distributed between
-   minlen and maxlen, and with characters drawn from a specified set.
-
-   :param minlen: The minimum allowed length of string
-   :type minlen: int_scalars
-   :param maxlen: The maximum allowed length of string
-   :type maxlen: int_scalars
-   :param size: The number of strings to generate
-   :type size: int_scalars
-   :param characters: The set of characters to draw from
-   :type characters: (uppercase, lowercase, numeric, printable, binary)
-   :param seed: Value used to initialize the random number generator
-   :type seed: Union[None, int_scalars], optional
-
-   :returns: The array of random strings
-   :rtype: Strings
-
-   :raises ValueError: Raised if minlen < 0, maxlen < minlen, or size < 0
-
-   .. seealso:: :obj:`random_strings_lognormal`, :obj:`randint`
-
-   .. rubric:: Examples
-
-   >>> ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=5)
-   array(['TVKJ', 'EWAB', 'CO', 'HFMD', 'U'])
-
-   >>> ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=5,
-   ... characters='printable')
-   array(['+5"f', '-P]3', '4k', '~HFF', 'F'])
+   :raises ValueError: Raised if density is not in the range [0,1]
 
 
 .. py:function:: read(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False, column_delim: str = ',', read_nested: bool = True, has_non_float_nulls: bool = False, fixed_len: int = -1) -> Union[Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.timeclass.Datetime, arkouda.timeclass.Timedelta, arkouda.index.Index]]]
@@ -45202,17 +44048,6 @@ Package Contents
    >>> ak.save_all({'a': a, 'b': b}, 'path/name_prefix', file_format='Parquet')
    >>> # Save using names instead of mapping
    >>> ak.save_all([a, b], 'path/name_prefix', names=['a', 'b'], file_format='Parquet')
-
-
-.. py:function:: scalar_array(value: arkouda.numpy.dtypes.numeric_scalars, dtype: Optional[Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint]] = None) -> arkouda.pdarrayclass.pdarray
-
-   Create a pdarray from a single scalar value.
-
-   :param value: Value to create pdarray from
-   :type value: numeric_scalars
-
-   :returns: pdarray with a single element
-   :rtype: pdarray
 
 
 .. py:class:: sctypeDict
@@ -45887,6 +44722,19 @@ Package Contents
    .. py:method:: to_pdarray() -> List[arkouda.pdarrayclass.pdarray]
 
 
+.. py:function:: sparse_matrix_matrix_mult(A, B: arkouda.sparrayclass.sparray) -> arkouda.sparrayclass.sparray
+
+   Multiply two sparse matrices.
+
+   :param A: The left-hand sparse matrix
+   :type A: sparray
+   :param B: The right-hand sparse matrix
+   :type B: sparray
+
+   :returns: The product of the two sparse matrices
+   :rtype: sparray
+
+
 .. py:function:: sqrt(pda: pdarray, where: Union[arkouda.numpy.dtypes.bool_scalars, pdarray] = True) -> pdarray
 
    Takes the square root of array. If where is given, the operation will only take place in
@@ -45963,35 +44811,6 @@ Package Contents
    array([0 1 2 3 4 5 6 7 8 9])
    >>> ak.squeeze(x,axis=(0,2)).shape
    (10,)
-
-
-.. py:function:: standard_normal(size: arkouda.numpy.dtypes.int_scalars, seed: Union[None, arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.pdarrayclass.pdarray
-
-   Draw real numbers from the standard normal distribution.
-
-   :param size: The number of samples to draw (size of the returned array)
-   :type size: int_scalars
-   :param seed: Value used to initialize the random number generator
-   :type seed: int_scalars
-
-   :returns: The array of random numbers
-   :rtype: pdarray, float64
-
-   :raises TypeError: Raised if size is not an int
-   :raises ValueError: Raised if size < 0
-
-   .. seealso:: :obj:`randint`
-
-   .. rubric:: Notes
-
-   For random samples from :math:`N(\mu, \sigma^2)`, use:
-
-   ``(sigma * standard_normal(size)) + mu``
-
-   .. rubric:: Examples
-
-   >>> ak.standard_normal(3,1)
-   array([-0.68586185091150265, 1.1723810583573375, 0.567584107142031])
 
 
 .. py:function:: std(pda: pdarray, ddof: arkouda.numpy.dtypes.int_scalars = 0) -> numpy.float64
@@ -47952,41 +46771,6 @@ Package Contents
    .. py:method:: bit_count(*args, **kwargs)
 
 
-.. py:function:: uniform(size: arkouda.numpy.dtypes.int_scalars, low: arkouda.numpy.dtypes.numeric_scalars = float(0.0), high: arkouda.numpy.dtypes.numeric_scalars = 1.0, seed: Union[None, arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.pdarrayclass.pdarray
-
-   Generate a pdarray with uniformly distributed random float values
-   in a specified range.
-
-   :param low: The low value (inclusive) of the range, defaults to 0.0
-   :type low: float_scalars
-   :param high: The high value (inclusive) of the range, defaults to 1.0
-   :type high: float_scalars
-   :param size: The length of the returned array
-   :type size: int_scalars
-   :param seed: Value used to initialize the random number generator
-   :type seed: int_scalars, optional
-
-   :returns: Values drawn uniformly from the specified range
-   :rtype: pdarray, float64
-
-   :raises TypeError: Raised if dtype.name not in DTypes, size is not an int, or if
-       either low or high is not an int or float
-   :raises ValueError: Raised if size < 0 or if high < low
-
-   .. rubric:: Notes
-
-   The logic for uniform is delegated to the ak.randint method which
-   is invoked with a dtype of float64
-
-   .. rubric:: Examples
-
-   >>> ak.uniform(3)
-   array([0.92176432277231968, 0.083130710959903542, 0.68894208386667544])
-
-   >>> ak.uniform(size=3,low=0,high=5,seed=0)
-   array([0.30013431967121934, 0.47383036230759112, 1.0441791878997098])
-
-
 .. py:function:: union1d(pda1: arkouda.groupbyclass.groupable, pda2: arkouda.groupbyclass.groupable) -> arkouda.groupbyclass.groupable
 
    Find the union of two arrays/List of Arrays.
@@ -48652,159 +47436,5 @@ Package Contents
 
    :returns: **aligned** -- Array with values replaced by 0-up indices
    :rtype: pdarray
-
-
-.. py:function:: zeros(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], dtype: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
-
-   Create a pdarray filled with zeros.
-
-   :param size: Size of the array (only rank-1 arrays supported)
-   :type size: int_scalars or tuple of int_scalars
-   :param dtype: Type of resulting array, default float64
-   :type dtype: all_scalars
-   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
-   :type max_bits: int
-
-   :returns: Zeros of the requested size and dtype
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the supplied dtype is not supported or if the size
-       parameter is neither an int nor a str that is parseable to an int.
-
-   .. seealso:: :obj:`ones`, :obj:`zeros_like`
-
-   .. rubric:: Examples
-
-   >>> ak.zeros(5, dtype=ak.int64)
-   array([0, 0, 0, 0, 0])
-
-   >>> ak.zeros(5, dtype=ak.float64)
-   array([0, 0, 0, 0, 0])
-
-   >>> ak.zeros(5, dtype=ak.bool_)
-   array([False, False, False, False, False])
-
-
-.. py:function:: zeros(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], dtype: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
-
-   Create a pdarray filled with zeros.
-
-   :param size: Size of the array (only rank-1 arrays supported)
-   :type size: int_scalars or tuple of int_scalars
-   :param dtype: Type of resulting array, default float64
-   :type dtype: all_scalars
-   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
-   :type max_bits: int
-
-   :returns: Zeros of the requested size and dtype
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the supplied dtype is not supported or if the size
-       parameter is neither an int nor a str that is parseable to an int.
-
-   .. seealso:: :obj:`ones`, :obj:`zeros_like`
-
-   .. rubric:: Examples
-
-   >>> ak.zeros(5, dtype=ak.int64)
-   array([0, 0, 0, 0, 0])
-
-   >>> ak.zeros(5, dtype=ak.float64)
-   array([0, 0, 0, 0, 0])
-
-   >>> ak.zeros(5, dtype=ak.bool_)
-   array([False, False, False, False, False])
-
-
-.. py:function:: zeros(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], dtype: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
-
-   Create a pdarray filled with zeros.
-
-   :param size: Size of the array (only rank-1 arrays supported)
-   :type size: int_scalars or tuple of int_scalars
-   :param dtype: Type of resulting array, default float64
-   :type dtype: all_scalars
-   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
-   :type max_bits: int
-
-   :returns: Zeros of the requested size and dtype
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the supplied dtype is not supported or if the size
-       parameter is neither an int nor a str that is parseable to an int.
-
-   .. seealso:: :obj:`ones`, :obj:`zeros_like`
-
-   .. rubric:: Examples
-
-   >>> ak.zeros(5, dtype=ak.int64)
-   array([0, 0, 0, 0, 0])
-
-   >>> ak.zeros(5, dtype=ak.float64)
-   array([0, 0, 0, 0, 0])
-
-   >>> ak.zeros(5, dtype=ak.bool_)
-   array([False, False, False, False, False])
-
-
-.. py:function:: zeros(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], dtype: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
-
-   Create a pdarray filled with zeros.
-
-   :param size: Size of the array (only rank-1 arrays supported)
-   :type size: int_scalars or tuple of int_scalars
-   :param dtype: Type of resulting array, default float64
-   :type dtype: all_scalars
-   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
-   :type max_bits: int
-
-   :returns: Zeros of the requested size and dtype
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the supplied dtype is not supported or if the size
-       parameter is neither an int nor a str that is parseable to an int.
-
-   .. seealso:: :obj:`ones`, :obj:`zeros_like`
-
-   .. rubric:: Examples
-
-   >>> ak.zeros(5, dtype=ak.int64)
-   array([0, 0, 0, 0, 0])
-
-   >>> ak.zeros(5, dtype=ak.float64)
-   array([0, 0, 0, 0, 0])
-
-   >>> ak.zeros(5, dtype=ak.bool_)
-   array([False, False, False, False, False])
-
-
-.. py:function:: zeros_like(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
-
-   Create a zero-filled pdarray of the same size and dtype as an existing
-   pdarray.
-
-   :param pda: Array to use for size and dtype
-   :type pda: pdarray
-
-   :returns: Equivalent to ak.zeros(pda.size, pda.dtype)
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the pda parameter is not a pdarray.
-
-   .. seealso:: :obj:`zeros`, :obj:`ones_like`
-
-   .. rubric:: Examples
-
-   >>> zeros = ak.zeros(5, dtype=ak.int64)
-   >>> ak.zeros_like(zeros)
-   array([0, 0, 0, 0, 0])
-
-   >>> zeros = ak.zeros(5, dtype=ak.float64)
-   >>> ak.zeros_like(zeros)
-   array([0, 0, 0, 0, 0])
-
-   >>> zeros = ak.zeros(5, dtype=ak.bool_)
-   >>> ak.zeros_like(zeros)
-   array([False, False, False, False, False])
 
 

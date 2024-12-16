@@ -819,7 +819,7 @@ computed (returning a scalar).</p></li>
 <dd class="field-even"><p>This argmin of the array.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../autoapi/arkouda/index.html#id884" title="arkouda.int64">int64</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.uint64" title="arkouda.uint64">uint64</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../autoapi/arkouda/index.html#id872" title="arkouda.int64">int64</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.uint64" title="arkouda.uint64">uint64</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -849,7 +849,7 @@ computed (returning a scalar).</p></li>
 <dd class="field-even"><p>This argmax of the array.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../autoapi/arkouda/index.html#id884" title="arkouda.int64">int64</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.uint64" title="arkouda.uint64">uint64</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../autoapi/arkouda/index.html#id872" title="arkouda.int64">int64</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.uint64" title="arkouda.uint64">uint64</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -892,7 +892,7 @@ computed (returning a scalar).</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Values for which to calculate the variance</p></li>
-<li><p><strong>ddof</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id905" title="arkouda.int_scalars"><em>int_scalars</em></a>) – “Delta Degrees of Freedom” used in calculating var</p></li>
+<li><p><strong>ddof</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id893" title="arkouda.int_scalars"><em>int_scalars</em></a>) – “Delta Degrees of Freedom” used in calculating var</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -933,7 +933,7 @@ deviation is implemented as the square root of the variance.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – values for which to calculate the standard deviation</p></li>
-<li><p><strong>ddof</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id905" title="arkouda.int_scalars"><em>int_scalars</em></a>) – “Delta Degrees of Freedom” used in calculating std</p></li>
+<li><p><strong>ddof</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id893" title="arkouda.int_scalars"><em>int_scalars</em></a>) – “Delta Degrees of Freedom” used in calculating std</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -977,7 +977,7 @@ unbiased estimate of the standard deviation per se.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Input array.</p></li>
-<li><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id905" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of minimum values to be returned by the output.</p></li>
+<li><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id893" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of minimum values to be returned by the output.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1021,7 +1021,7 @@ about a <cite>k</cite> of 5 million is where performance degredation has been ob
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Input array.</p></li>
-<li><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id905" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of maximum values to be returned by the output.</p></li>
+<li><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id893" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of maximum values to be returned by the output.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1064,7 +1064,7 @@ about a <cite>k</cite> of 5 million is where performance degredation has been ob
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Input array.</p></li>
-<li><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id905" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of indices corresponding to minimum array values</p></li>
+<li><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id893" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of indices corresponding to minimum array values</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1108,7 +1108,7 @@ about a <cite>k</cite> of 5 million is where performance degradation has been ob
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Input array.</p></li>
-<li><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id905" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of indices corresponding to maxmum array values</p></li>
+<li><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id893" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of indices corresponding to maxmum array values</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
