@@ -32,6 +32,7 @@ __all__ = [
 username = security.get_username()
 connected = False
 serverConfig = None
+registrationConfig = None
 # verbose flag for arkouda module
 verboseDefVal = False
 verbose = verboseDefVal
@@ -706,7 +707,7 @@ def connect(
     On success, prints the connected address, as seen by the server. If called
     with an existing connection, the socket will be re-initialized.
     """
-    global connected, serverConfig, verbose, regexMaxCaptures, channel
+    global connected, serverConfig, verbose, regexMaxCaptures, channel, registrationConfig
 
     # send the connect message
     cmd = "connect"
@@ -741,6 +742,7 @@ def connect(
             RuntimeWarning,
         )
     regexMaxCaptures = serverConfig["regexMaxCaptures"]  # type: ignore
+    registrationConfig = _get_registration_config_msg()
     clientLogger.info(return_message)
 
 
@@ -1063,6 +1065,29 @@ def get_max_array_rank() -> int:
     return int(serverConfig["maxArrayDims"])
 
 
+def get_array_ranks() -> list[int]:
+    """
+    Get the list of pdarray ranks the server was compiled to support
+
+    This value corresponds to
+    parameter_classes -> array -> nd in the `registration-config.json`
+    file when the server was compiled.
+
+    Returns
+    -------
+    list of int
+        The pdarray ranks supported by the server
+    """
+
+    if registrationConfig is None:
+        raise RuntimeError(
+            "There was a problem loading registrationConfig."
+            "Make sure the client is connected to a server."
+        )
+
+    return registrationConfig["parameter_classes"]["array"]["nd"]
+
+
 def _get_config_msg() -> Mapping[str, Union[str, int, float]]:
     """
     Get runtime information about the server.
@@ -1076,6 +1101,26 @@ def _get_config_msg() -> Mapping[str, Union[str, int, float]]:
     """
     try:
         raw_message = cast(str, generic_msg(cmd="getconfig"))
+        return json.loads(raw_message)
+    except json.decoder.JSONDecodeError:
+        raise ValueError(f"Returned config is not valid JSON: {raw_message}")
+    except Exception as e:
+        raise RuntimeError(f"{e} in retrieving Arkouda server config")
+
+
+def _get_registration_config_msg() -> dict:
+    """
+    Get runtime information about the command registration configuration.
+
+    Raises
+    ------
+    RuntimeError
+        Raised if there is a server-side error in getting memory used
+    ValueError
+        Raised if there's an error in parsing the JSON-formatted server config
+    """
+    try:
+        raw_message = cast(str, generic_msg(cmd="getRegistrationConfig"))
         return json.loads(raw_message)
     except json.decoder.JSONDecodeError:
         raise ValueError(f"Returned config is not valid JSON: {raw_message}")

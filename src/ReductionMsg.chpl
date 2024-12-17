@@ -92,7 +92,7 @@ module ReductionMsg
     }
 
     @arkouda.registerCommand
-    proc maxAll(const ref x:[?d] ?t, skipNan: bool): reductionReturnType(t) throws
+    proc maxAll(const ref x:[?d] ?t, skipNan: bool): t throws
       where t==int || t==real || t==uint(64) || t==bool
     {
       use SliceReductionOps;
@@ -100,10 +100,10 @@ module ReductionMsg
     }
 
     @arkouda.registerCommand
-    proc max(const ref x:[?d] ?t, axis: list(int), skipNan: bool): [] reductionReturnType(t) throws
+    proc max(const ref x:[?d] ?t, axis: list(int), skipNan: bool): [] t throws
       where t==int || t==real || t==uint(64) || t==bool {
       use SliceReductionOps;
-      type opType = reductionReturnType(t);
+      type opType = t;
       const (valid, axes) = validateNegativeAxes(axis, x.rank);
       if !valid {
         throw new Error("Invalid axis value(s) '%?' in slicing reduction".format(axis));
@@ -117,7 +117,7 @@ module ReductionMsg
     }
 
     @arkouda.registerCommand
-    proc minAll(const ref x:[?d] ?t, skipNan: bool): reductionReturnType(t) throws
+    proc minAll(const ref x:[?d] ?t, skipNan: bool): t throws
       where t==int || t==real || t==uint(64) || t==bool
     {
       use SliceReductionOps;
@@ -125,10 +125,10 @@ module ReductionMsg
     }
 
     @arkouda.registerCommand
-    proc min(const ref x:[?d] ?t, axis: list(int), skipNan: bool): [] reductionReturnType(t) throws
+    proc min(const ref x:[?d] ?t, axis: list(int), skipNan: bool): [] t throws
       where t==int || t==real || t==uint(64) || t==bool {
       use SliceReductionOps;
-      type opType = reductionReturnType(t);
+      type opType = t;
       const (valid, axes) = validateNegativeAxes(axis, x.rank);
       if !valid {
         throw new Error("Invalid axis value(s) '%?' in slicing reduction".format(axis));

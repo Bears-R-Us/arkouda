@@ -111,7 +111,7 @@ install-deps: install-zmq install-hdf5 install-arrow install-iconv install-idn2
 
 DEP_DIR := dep
 DEP_INSTALL_DIR := $(ARKOUDA_PROJECT_DIR)/$(DEP_DIR)
-DEP_BUILD_DIR := $(ARKOUDA_PROJECT_DIR)/$(DEP_DIR)/build
+DEP_BUILD_DIR := $(ARKOUDA_PROJECT_DIR)$(DEP_DIR)/build
 
 ZMQ_VER := 4.3.5
 ZMQ_NAME_VER := zeromq-$(ZMQ_VER)
@@ -120,12 +120,25 @@ ZMQ_INSTALL_DIR := $(DEP_INSTALL_DIR)/zeromq-install
 ZMQ_LINK := https://github.com/zeromq/libzmq/releases/download/v$(ZMQ_VER)/$(ZMQ_NAME_VER).tar.gz
 install-zmq:
 	@echo "Installing ZeroMQ"
-	rm -rf $(ZMQ_BUILD_DIR) $(ZMQ_INSTALL_DIR)
+	rm -rf $(ZMQ_INSTALL_DIR)
 	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
-	cd $(DEP_BUILD_DIR) && curl -sL $(ZMQ_LINK) | tar xz
+
+    #If the build directory does not exist,  create it
+    ifeq (,$(wildcard ${ZMQ_BUILD_DIR}*/.*))
+        #   If the tar.gz not found, download it
+        ifeq (,$(wildcard ${DEP_BUILD_DIR}/${ZMQ_NAME_VER}*.tar.gz))
+			cd $(DEP_BUILD_DIR) && curl -sL $(ZMQ_LINK) | tar xz		
+		#   Otherwise just unzip it
+        else
+			cd $(DEP_BUILD_DIR) && tar -xzf $(ZMQ_NAME_VER)*.tar.gz
+        endif
+    endif
+
 	cd $(ZMQ_BUILD_DIR) && ./configure --prefix=$(ZMQ_INSTALL_DIR) CFLAGS=-O3 CXXFLAGS=-O3 && make && make install
-	rm -r $(ZMQ_BUILD_DIR)
 	echo '$$(eval $$(call add-path,$(ZMQ_INSTALL_DIR)))' >> Makefile.paths
+
+zmq-clean:
+	rm -r $(ZMQ_BUILD_DIR)
 
 HDF5_MAJ_MIN_VER := 1.14
 HDF5_VER := 1.14.4
@@ -143,27 +156,103 @@ HDF5_LINK := https://support.hdfgroup.org/releases/hdf5/$(UNDERSCORED_LINK_HDF5_
 
 install-hdf5:
 	@echo "Installing HDF5"
-	rm -rf $(HDF5_BUILD_DIR) $(HDF5_INSTALL_DIR)
+	rm -rf $(HDF5_INSTALL_DIR)
 	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
-	cd $(DEP_BUILD_DIR) && curl -sL $(HDF5_LINK) | tar xz
-	cd $(HDF5_BUILD_DIR) && ./configure --prefix=$(HDF5_INSTALL_DIR) --enable-optimization=high --enable-hl && make && make install
-	rm -rf $(HDF5_BUILD_DIR)
+	
+    #If the build directory does not exist,  create it
+    ifeq (,$(wildcard ${HDF5_BUILD_DIR}*/.*))
+        #   If the tar.gz not found, download it
+        ifeq (,$(wildcard ${DEP_BUILD_DIR}/$(HDF5_NAME_VER)*tar.gz))
+			cd $(DEP_BUILD_DIR) && curl -sL $(HDF5_LINK) | tar xz		
+		#   Otherwise just unzip it
+        else
+			cd $(DEP_BUILD_DIR) && tar -xzf $(HDF5_NAME_VER)*.tar.gz
+        endif
+    endif
+	
+	cd $(HDF5_BUILD_DIR)* && ./configure --prefix=$(HDF5_INSTALL_DIR) --enable-optimization=high --enable-hl && make && make install
 	echo '$$(eval $$(call add-path,$(HDF5_INSTALL_DIR)))' >> Makefile.paths
 
-ARROW_VER := 11.0.0
+
+hdf5-clean:
+	rm -rf $(HDF5_BUILD_DIR)
+
+
+#   get the OS, ubuntu, etc...
+OS := $(shell lsb_release --id --short | tr 'A-Z' 'a-z')
+
+#   If pop, replace with ubuntu
+OS_FINAL := $(shell echo ${OS} | awk '{gsub(/pop/,"ubuntu")}1')
+
+#   System release, such as "jammy" for "ubuntu jammy"
+OS_CODENAME :=$(shell lsb_release --codename --short)
+
+#   System release, for example, 22 extracted from 22.04
+OS_RELEASE :=$(shell lsb_release -rs | cut -d'.' -f1)
+
+ARROW_VER := 18.1.0
 ARROW_NAME_VER := apache-arrow-$(ARROW_VER)
 ARROW_FULL_NAME_VER := arrow-apache-arrow-$(ARROW_VER)
 ARROW_BUILD_DIR := $(DEP_BUILD_DIR)/$(ARROW_FULL_NAME_VER)
 ARROW_INSTALL_DIR := $(DEP_INSTALL_DIR)/arrow-install
-ARROW_LINK := https://github.com/apache/arrow/archive/refs/tags/$(ARROW_NAME_VER).tar.gz
+
+NUM_CORES := $(shell nproc --all)
+
+ifeq ($(OS_FINAL),$(filter $(OS_FINAL), almalinux almalinux-rc))
+    ARROW_LINK := "https://apache.jfrog.io/ui/native/arrow/${OS_FINAL}/${OS_RELEASE}/apache-arrow-release-latest.rpm"
+else ifeq ($(OS_FINAL), amazon-linux)
+    ARROW_LINK := "https://apache.jfrog.io/ui/native/arrow/amazon-linux/2/apache-arrow-release-latest.rpm"
+else ifeq ($(OS_FINAL), amazon-linux-rc)
+    ARROW_LINK := "https://apache.jfrog.io/ui/native/arrow/amazon-linux-rc/2023/apache-arrow-release-latest.rpm"
+else ifeq ($(OS_FINAL), centos)
+    ARROW_LINK := "https://apache.jfrog.io/ui/native/arrow/centos/8/apache-arrow-release-latest.rpm"
+else ifeq ($(OS_FINAL), centos-rc)
+    ARROW_LINK := "https://apache.jfrog.io/ui/native/arrow/centos-rc/9-stream/apache-arrow-release-latest.rpm"
+else ifeq ($(OS_FINAL),$(filter $(OS_FINAL), ubuntu ubuntu-rc debian debian-rc))
+    ARROW_LINK := "https://apache.jfrog.io/artifactory/arrow/${OS_FINAL}/apache-arrow-apt-source-latest-${OS_CODENAME}.deb"
+else
+    ARROW_LINK := https://github.com/apache/arrow/archive/refs/tags/$(ARROW_NAME_VER).tar.gz
+endif
+
 install-arrow:
 	@echo "Installing Apache Arrow/Parquet"
-	rm -rf $(ARROW_BUILD_DIR) $(ARROW_INSTALL_DIR)
-	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
-	cd $(DEP_BUILD_DIR) && curl -sL $(ARROW_LINK) | tar xz
-	cd $(ARROW_BUILD_DIR)/cpp && cmake -DARROW_DEPENDENCY_SOURCE=AUTO -DCMAKE_INSTALL_PREFIX=$(ARROW_INSTALL_DIR) -DCMAKE_BUILD_TYPE=Release -DARROW_PARQUET=ON -DARROW_WITH_SNAPPY=ON -DARROW_WITH_BROTLI=ON -DARROW_WITH_BZ2=ON -DARROW_WITH_LZ4=ON -DARROW_WITH_ZLIB=ON -DARROW_WITH_ZSTD=ON $(ARROW_OPTIONS) . && make && make install
-	rm -rf $(ARROW_BUILD_DIR)
-	echo '$$(eval $$(call add-path,$(ARROW_INSTALL_DIR)))' >> Makefile.paths
+	@echo "from build directory: ${DEP_BUILD_DIR}"
+	mkdir -p ${DEP_BUILD_DIR}
+
+    #   If the BUILD_DIR does not contain the apache-arrow file, use wget to fetch it
+    ifeq (,$(wildcard ${DEP_BUILD_DIR}/apache-arrow*))
+		cd $(DEP_BUILD_DIR) && wget $(ARROW_LINK)
+    endif
+
+    ifeq ($(OS_FINAL),$(filter $(OS_FINAL), almalinux almalinux-rc amazon-linux amazon-linux-rc)) 
+        #   If not root, use sudo
+        ifneq ($(shell id -u), 0)
+			cd $(DEP_BUILD_DIR) && sudo dnf install -y ./apache-arrow*
+        else
+			cd $(DEP_BUILD_DIR) && dnf install -y ./apache-arrow*
+        endif
+    else ifeq ($(OS_FINAL),$(filter $(OS_FINAL), ubuntu ubuntu-rc debian debian-rc))
+        #   If not root, use sudo
+        ifneq ($(shell id -u), 0)
+			cd $(DEP_BUILD_DIR) && sudo apt install -y -V ./apache-arrow*
+        else
+			cd $(DEP_BUILD_DIR) && apt install -y -V ./apache-arrow*
+        endif
+    else
+		cd $(DEP_BUILD_DIR) && tar -xvf $(ARROW_NAME_VER).tar.gz
+		mkdir -p $(ARROW_BUILD_DIR)/cpp/build-release
+		cd $(ARROW_BUILD_DIR)/cpp/build-release && cmake .. -DCMAKE_INSTALL_PREFIX=$(ARROW_INSTALL_DIR) -DARROW_DEPENDENCY_SOURCE=AUTO -DCMAKE_BUILD_TYPE=Release -DARROW_PARQUET=ON -DARROW_WITH_SNAPPY=ON -DARROW_WITH_BROTLI=ON -DARROW_WITH_BZ2=ON -DARROW_WITH_LZ4=ON -DARROW_WITH_ZLIB=ON -DARROW_WITH_ZSTD=ON $(ARROW_OPTIONS) && make -j$(NUM_CORES)
+        #   If not root, use sudo
+        ifneq ($(shell id -u), 0)
+			cd $(ARROW_BUILD_DIR)/cpp/build-release && sudo make install
+        else
+			cd $(ARROW_BUILD_DIR)/cpp/build-release && make install
+        endif
+    endif
+
+arrow-clean:
+	rm -rf $(DEP_BUILD_DIR)/apache-arrow*
+	rm -rf $(DEP_BUILD_DIR)/arrow-apache-arrow*	
 
 ICONV_VER := 1.17
 ICONV_NAME_VER := libiconv-$(ICONV_VER)
@@ -172,12 +261,25 @@ ICONV_INSTALL_DIR := $(DEP_INSTALL_DIR)/libiconv-install
 ICONV_LINK := https://ftp.gnu.org/pub/gnu/libiconv/libiconv-$(ICONV_VER).tar.gz
 install-iconv:
 	@echo "Installing iconv"
-	rm -rf $(ICONV_BUILD_DIR) $(ICONV_INSTALL_DIR)
+	rm -rf $(ICONV_INSTALL_DIR)
 	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
-	cd $(DEP_BUILD_DIR) && curl -sL $(ICONV_LINK) | tar xz
+
+    #If the build directory does not exist,  create it
+    ifeq (,$(wildcard ${ICONV_BUILD_DIR}*/.*))
+        #   If the tar.gz not found, download it
+        ifeq (,$(wildcard ${DEP_BUILD_DIR}/libiconv-${ICONV_VER}.tar.gz))
+			cd $(DEP_BUILD_DIR) && curl -sL $(ICONV_LINK) | tar xz		
+		#   Otherwise just unzip it
+        else
+			cd $(DEP_BUILD_DIR) && tar -xzf libiconv-$(ICONV_VER).tar.gz
+        endif
+    endif	
+	
 	cd $(ICONV_BUILD_DIR) && ./configure --prefix=$(ICONV_INSTALL_DIR) && make && make install
-	rm -rf $(ICONV_BUILD_DIR)
 	echo '$$(eval $$(call add-path,$(ICONV_INSTALL_DIR)))' >> Makefile.paths
+
+iconv-clean:
+	rm -rf $(ICONV_BUILD_DIR)
 
 LIBIDN_VER := 2.3.4
 LIBIDN_NAME_VER := libidn2-$(LIBIDN_VER)
@@ -186,25 +288,44 @@ LIBIDN_INSTALL_DIR := $(DEP_INSTALL_DIR)/libidn2-install
 LIBIDN_LINK := https://ftp.gnu.org/gnu/libidn/libidn2-$(LIBIDN_VER).tar.gz
 install-idn2:
 	@echo "Installing libidn2"
-	rm -rf $(LIBIDN_BUILD_DIR) $(LIBIDN_INSTALL_DIR)
+	rm -rf $(LIBIDN_INSTALL_DIR)
 	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
-	cd $(DEP_BUILD_DIR) && curl -sL $(LIBIDN_LINK) | tar xz
+
+    #If the build directory does not exist,  create it
+    ifeq (,$(wildcard $(LIBIDN_BUILD_DIR)*/.*))
+		# If the tar.gz is not found, download it
+        ifeq (,$(wildcard ${DEP_BUILD_DIR}/libidn2-$(LIBIDN_VER)*.tar.gz))
+			cd $(DEP_BUILD_DIR) && curl -sL $(LIBIDN_LINK) | tar xz		
+		# Otherwise just unzip it
+        else
+			cd $(DEP_BUILD_DIR) && tar -xzf libidn2-$(LIBIDN_VER)*.tar.gz
+        endif
+    endif	
+	
 	cd $(LIBIDN_BUILD_DIR) && ./configure --prefix=$(LIBIDN_INSTALL_DIR) && make && make install
-	rm -rf $(LIBIDN_BUILD_DIR)
 	echo '$$(eval $$(call add-path,$(LIBIDN_INSTALL_DIR)))' >> Makefile.paths
 
+idn2-clean:
+	rm -rf $(LIBIDN_BUILD_DIR)
 
 BLOSC_BUILD_DIR := $(DEP_BUILD_DIR)/c-blosc
 BLOSC_INSTALL_DIR := $(DEP_INSTALL_DIR)/c-blosc-install
 
 install-blosc:
 	@echo "Installing blosc"
-	rm -rf $(BLOSC_INSTALL_DIR) $(BLOSC_BUILD_DIR)
+	rm -rf $(BLOSC_INSTALL_DIR)
 	mkdir -p $(BLOSC_INSTALL_DIR)
-	cd $(DEP_BUILD_DIR) && git clone https://github.com/Blosc/c-blosc.git
+
+    #If the build directory does not exist,  create it
+    ifeq (,$(wildcard $(BLOSC_BUILD_DIR)/.*))
+		cd $(DEP_BUILD_DIR) && git clone https://github.com/Blosc/c-blosc.git
+    endif
+
 	cd $(BLOSC_BUILD_DIR) && cmake -DCMAKE_INSTALL_PREFIX=$(BLOSC_INSTALL_DIR) && make && make install
-	rm -rf $(BLOSC_BUILD_DIR)
 	echo '$$(eval $$(call add-path,$(BLOSC_INSTALL_DIR)))' >> Makefile.paths
+
+blosc-clean:
+	rm -rf $(BLOSC_BUILD_DIR)
 
 # System Environment
 ifdef LD_RUN_PATH
@@ -581,9 +702,15 @@ test-clean:
 	$(RM) $(TEST_TARGETS) $(addsuffix _real,$(TEST_TARGETS))
 
 size_bm = 10**8
+DATE := $(shell date '+%Y_%m_%d_%H_%M_%S')
+out=benchmark_v2/data/benchmark_stats_$(DATE).json
 .PHONY: benchmark
 benchmark:
-	python3 -m pytest -c benchmark.ini --benchmark-autosave --benchmark-storage=file://benchmark_v2/.benchmarks --size=$(size_bm)
+	mkdir -p benchmark_v2/data
+	python3 -m pytest -c benchmark.ini --benchmark-autosave --benchmark-storage=file://benchmark_v2/.benchmarks --size=$(size_bm) --benchmark-json=$(out)
+	python3 benchmark_v2/reformat_benchmark_results.py --benchmark-data $(out)
+
+	
 
 version:
 	@echo $(VERSION);

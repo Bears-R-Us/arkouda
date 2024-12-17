@@ -5,7 +5,7 @@ import arkouda as ak
 
 TYPES = ("int64", "uint64", "float64", "str")
 
-
+@pytest.mark.benchmark(group="arkouda_argsort")
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_argsort(benchmark, dtype):
@@ -40,7 +40,7 @@ def bench_argsort(benchmark, dtype):
             (nbytes / benchmark.stats["mean"]) / 2**30
         )
 
-
+@pytest.mark.benchmark(group="numpy_argsort")
 @pytest.mark.skip_numpy(False)
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.parametrize("dtype", TYPES)

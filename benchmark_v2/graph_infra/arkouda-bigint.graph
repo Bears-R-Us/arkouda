@@ -1,0 +1,29 @@
+perfkeys: bigint_from_uint_arrays Average rate =, bigint_to_uint_arrays Average rate =
+graphkeys: bigint_from_uint_arrays GiB/s, bigint_to_uint_arrays GiB/s
+files: bigint_conversion.dat, bigint_conversion.dat
+graphtitle: Bigint Conversion Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: Average bigint stream rate =
+graphkeys: bigint stream GiB/s
+files: bigint_stream.dat
+graphtitle: Bigint Stream Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: Average bigint AND rate =, Average bigint OR rate =, Average bigint SHIFT rate =
+graphkeys: bigint AND GiB/s, bigint OR GiB/s, bigint SHIFT GiB/s
+files: bigint_bitwise_binops.dat, bigint_bitwise_binops.dat, bigint_bitwise_binops.dat
+graphtitle: Bigint Bitwise Binops Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: 1-array Average rate =, 2-array Average rate =, 8-array Average rate =, 16-array Average rate =
+graphkeys: 1 array Groupby GiB/s, 2 array Groupby GiB/s, 8 array Groupby GiB/s, 16 array Groupby GiB/s
+files: bigint_groupby.dat, bigint_groupby.dat, bigint_groupby.dat, bigint_groupby.dat
+graphtitle: Bigint Groupby Performance
+ylabel: Performance (GiB/S)
+
+perfkeys: to_ndarray Average rate =, ak.array Average rate =
+graphkeys: to_ndarray GiB/s, ak.array GiB/s
+files: bigint_array_transfer.dat, bigint_array_transfer.dat
+graphtitle: Bigint Array Transfer Performance
+ylabel: Performance (GiB/S)

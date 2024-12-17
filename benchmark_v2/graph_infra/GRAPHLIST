@@ -1,0 +1,10 @@
+# suite: Benchmarks
+arkouda.graph
+# suite: String Benchmarks
+arkouda-string.graph
+# suite: Build Stats
+arkouda-comp.graph
+# suite: Sort Cases
+arkouda-sort-cases.graph
+# suite: Bigint Benchmarks
+arkouda-bigint.graph
