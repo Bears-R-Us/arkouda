@@ -1819,7 +1819,7 @@ class pdarray:
         if len(shape) == 1:
             shape = shape[0]
             lenshape = 1
-        if (not isinstance(shape,int)) and (not isinstance(shape, pdarray)):
+        if (not isinstance(shape, int)) and (not isinstance(shape, pdarray)):
             shape = [i for i in shape]
             lenshape = len(shape)
         return create_pdarray(
