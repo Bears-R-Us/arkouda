@@ -4,6 +4,7 @@ import builtins
 import json
 from functools import reduce
 from math import ceil
+from sys import modules
 from typing import TYPE_CHECKING, List, Optional, Sequence, Tuple, Union, cast
 
 import numpy as np
@@ -33,6 +34,8 @@ from arkouda.numpy.dtypes import (
 )
 from arkouda.numpy.dtypes import str_ as akstr_
 from arkouda.numpy.dtypes import uint64 as akuint64
+
+module = modules[__name__]
 
 if TYPE_CHECKING:
     #   These are dummy functions that are used only for type checking.
@@ -2847,7 +2850,6 @@ def _common_reduction(
     ValueError
         Raised op is not a supported reduction operation.
     """
-    from arkouda.numpy import squeeze
 
     if kind not in SUPPORTED_REDUCTION_OPS:
         raise ValueError(f"Unsupported reduction type: {kind}")
@@ -2884,6 +2886,8 @@ def _common_reduction(
         if keepdims or axis is None or pda.ndim == 1:
             return result
         else:
+            from arkouda.numpy import squeeze
+
             return squeeze(result, axis)
 
 
@@ -2945,80 +2949,119 @@ def _common_index_reduction(
         raise TypeError("axis must by of type int.")
 
 
-globals()["any"] = _make_reduction_func(
+setattr(
+    module,
     "any",
-    function_descriptor="Return True iff any element of the array evaluates to True.",
-    return_descriptor="Indicates if any pdarray element evaluates to True.",
-    return_dtype="bool",
+    _make_reduction_func(
+        "any",
+        function_descriptor="Return True iff any element of the array evaluates to True.",
+        return_descriptor="Indicates if any pdarray element evaluates to True.",
+        return_dtype="bool",
+    ),
 )
 
-globals()["all"] = _make_reduction_func(
+setattr(
+    module,
     "all",
-    function_descriptor="Return True iff all elements of the array evaluate to True.",
-    return_descriptor="Indicates if all pdarray elements evaluate to True.",
-    return_dtype="bool",
+    _make_reduction_func(
+        "all",
+        function_descriptor="Return True iff all elements of the array evaluate to True.",
+        return_descriptor="Indicates if all pdarray elements evaluate to True.",
+        return_dtype="bool",
+    ),
 )
 
-globals()["is_sorted"] = _make_reduction_func(
-    "isSorted",
-    function_descriptor="Return True iff the array is monotonically non-decreasing.",
-    return_descriptor="Indicates if the array is monotonically non-decreasing.",
-    return_dtype="bool",
+setattr(
+    module,
+    "is_sorted",
+    _make_reduction_func(
+        "isSorted",
+        function_descriptor="Return True iff the array is monotonically non-decreasing.",
+        return_descriptor="Indicates if the array is monotonically non-decreasing.",
+        return_dtype="bool",
+    ),
 )
 
-
-globals()["is_locally_sorted"] = _make_reduction_func(
-    "isSortedLocally",
-    function_descriptor="Return True iff the array is monotonically non-decreasing "
-    "on each locale where the data is stored.",
-    return_descriptor="Indicates if the array is monotonically non-decreasing on each locale.",
-    return_dtype="bool",
+setattr(
+    module,
+    "is_locally_sorted",
+    _make_reduction_func(
+        "isSortedLocally",
+        function_descriptor="Return True iff the array is monotonically non-decreasing "
+        "on each locale where the data is stored.",
+        return_descriptor="Indicates if the array is monotonically non-decreasing on each locale.",
+        return_dtype="bool",
+    ),
 )
 
-globals()["sum"] = _make_reduction_func(
+setattr(
+    module,
     "sum",
-    function_descriptor="Return the sum of all elements in the array.",
-    return_descriptor="The sum of all elements in the array.",
-    return_dtype="float64",
+    _make_reduction_func(
+        "sum",
+        function_descriptor="Return the sum of all elements in the array.",
+        return_descriptor="The sum of all elements in the array.",
+        return_dtype="float64",
+    ),
 )
 
-globals()["prod"] = _make_reduction_func(
+setattr(
+    module,
     "prod",
-    function_descriptor="Return the product of all elements in the array. "
-    "Return value is always a np.float64 or np.int64",
-    return_descriptor="The product calculated from the pda.",
-    return_dtype="numpy_scalars",
+    _make_reduction_func(
+        "prod",
+        function_descriptor="Return the product of all elements in the array. "
+        "Return value is always a np.float64 or np.int64",
+        return_descriptor="The product calculated from the pda.",
+        return_dtype="numpy_scalars",
+    ),
 )
 
-globals()["min"] = _make_reduction_func(
+setattr(
+    module,
     "min",
-    function_descriptor="Return the minimum value of the array.",
-    return_descriptor="The min calculated from the pda.",
-    return_dtype="numpy_scalars",
+    _make_reduction_func(
+        "min",
+        function_descriptor="Return the minimum value of the array.",
+        return_descriptor="The min calculated from the pda.",
+        return_dtype="numpy_scalars",
+    ),
 )
 
 
-globals()["max"] = _make_reduction_func(
+setattr(
+    module,
     "max",
-    function_descriptor="Return the maximum value of the array.",
-    return_descriptor="The max calculated from the pda.",
-    return_dtype="numpy_scalars",
+    _make_reduction_func(
+        "max",
+        function_descriptor="Return the maximum value of the array.",
+        return_descriptor="The max calculated from the pda.",
+        return_dtype="numpy_scalars",
+    ),
 )
 
-globals()["argmin"] = _make_index_reduction_func(
+setattr(
+    module,
     "argmin",
-    function_descriptor="Return the argmin of the array along the specified axis.  "
-    "This is returned as the ordered index.",
-    return_descriptor="This argmin of the array.",
-    return_dtype="int64, uint64",
+    _make_index_reduction_func(
+        "argmin",
+        function_descriptor="Return the argmin of the array along the specified axis.  "
+        "This is returned as the ordered index.",
+        return_descriptor="This argmin of the array.",
+        return_dtype="int64, uint64",
+    ),
 )
 
-globals()["argmax"] = _make_index_reduction_func(
+setattr(
+    module,
     "argmax",
-    function_descriptor="Return the argmax of the array along the specified axis.  "
-    "This is returned as the ordered index.",
-    return_descriptor="This argmax of the array.",
-    return_dtype="int64, uint64",
+    _make_index_reduction_func(
+        "argmax",
+        function_descriptor="Return the argmax of the array along the specified axis.  "
+        "This is returned as the ordered index.",
+        return_descriptor="This argmax of the array.",
+        return_dtype="int64, uint64",
+    ),
 )
 
 
