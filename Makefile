@@ -239,10 +239,13 @@ ARROW_VER := 18.1.0
 ARROW_NAME_VER := apache-arrow-$(ARROW_VER)
 ARROW_FULL_NAME_VER := arrow-apache-arrow-$(ARROW_VER)
 ARROW_BUILD_DIR := $(DEP_BUILD_DIR)/$(ARROW_FULL_NAME_VER)
+ARROW_DEP_DIR :=  $(DEP_BUILD_DIR)/arrow_dependencies
 ARROW_INSTALL_DIR := $(DEP_INSTALL_DIR)/arrow-install
 ARROW_SOURCE_LINK := https://github.com/apache/arrow/archive/refs/tags/$(ARROW_NAME_VER).tar.gz
 
 NUM_CORES := $(shell nproc --all)
+
+DOWNLOAD_ARROW_DEPS := false
 
 install-arrow:
 	@echo "Installing Apache Arrow/Parquet"
@@ -253,34 +256,46 @@ install-arrow:
 		rm -rf $(ARROW_INSTALL_DIR)
     endif
 	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
+	touch $(DEP_BUILD_DIR)/arrow_exports.sh
 
     #   If the BUILD_DIR does not contain the apache-arrow file, use wget to fetch it
     ifeq (,$(wildcard ${DEP_BUILD_DIR}/arrow-apache-arrow*))
 		cd $(DEP_BUILD_DIR) && wget $(ARROW_SOURCE_LINK) && tar -xvf $(ARROW_NAME_VER).tar.gz
-		#mkdir -p $(ARROW_BUILD_DIR)/cpp/build-release
-		#cd $(DEP_BUILD_DIR) && tar -xvf $(ARROW_NAME_VER).tar.gz
     #   If the tar.gz file exists, unzip it
     else ifneq (,$(wildcard ${DEP_BUILD_DIR}/$(ARROW_NAME_VER).tar.gz))
 		cd $(DEP_BUILD_DIR) && tar -xvf $(ARROW_NAME_VER).tar.gz
     endif
     
 	mkdir -p $(ARROW_BUILD_DIR)/cpp/build-release
-	cd $(ARROW_BUILD_DIR)/cpp/build-release && cmake -S $(ARROW_BUILD_DIR)/cpp .. -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_INSTALL_PREFIX=$(ARROW_INSTALL_DIR) -DARROW_DEPENDENCY_SOURCE=AUTO -DCMAKE_BUILD_TYPE=Release -DARROW_PARQUET=ON -DARROW_WITH_SNAPPY=ON -DARROW_WITH_BROTLI=ON -DARROW_WITH_BZ2=ON -DARROW_WITH_LZ4=ON -DARROW_WITH_ZLIB=ON -DARROW_WITH_ZSTD=ON $(ARROW_OPTIONS) && make -j$(NUM_CORES)
+
+    # if DOWNLOAD_ARROW_DEPS=true
+    ifeq ($(DOWNLOAD_ARROW_DEPS),$(filter $(DOWNLOAD_ARROW_DEPS), true))
+		rm -fr $(DEP_BUILD_DIR)/arrow_exports.sh 
+		mkdir -p $(ARROW_DEP_DIR)
+		cd $(ARROW_BUILD_DIR)/cpp/thirdparty/ && ./download_dependencies.sh $(ARROW_DEP_DIR) > $(DEP_BUILD_DIR)/arrow_exports.sh
+    endif
+
+	cd $(DEP_BUILD_DIR) && . ./arrow_exports.sh && cd $(ARROW_BUILD_DIR)/cpp/build-release && cmake -S $(ARROW_BUILD_DIR)/cpp .. -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_INSTALL_PREFIX=$(ARROW_INSTALL_DIR) -DARROW_DEPENDENCY_SOURCE=AUTO -DCMAKE_BUILD_TYPE=Release -DARROW_PARQUET=ON -DARROW_WITH_SNAPPY=ON -DARROW_WITH_BROTLI=ON -DARROW_WITH_BZ2=ON -DARROW_WITH_LZ4=ON -DARROW_WITH_ZLIB=ON -DARROW_WITH_ZSTD=ON $(ARROW_OPTIONS) && make -j$(NUM_CORES)
     #   If not root, use sudo
     ifneq ($(shell id -u), 0)
 		cd $(ARROW_BUILD_DIR)/cpp/build-release && sudo make install
     else
 		cd $(ARROW_BUILD_DIR)/cpp/build-release && make install
     endif
+    
 
 arrow-clean:
     #   If not root, use sudo
     ifneq ($(shell id -u), 0)
 		sudo rm -rf $(DEP_BUILD_DIR)/apache-arrow*
 		sudo rm -rf $(DEP_BUILD_DIR)/arrow-apache-arrow*	
+		sudo rm -rf $(ARROW_DEP_DIR)
+		sudo rm -fr $(DEP_BUILD_DIR)/arrow_exports.sh
     else
 		rm -rf $(DEP_BUILD_DIR)/apache-arrow*
 		rm -rf $(DEP_BUILD_DIR)/arrow-apache-arrow*	
+		rm -rf $(ARROW_DEP_DIR)
+		rm -fr $(DEP_BUILD_DIR)/arrow_exports.sh
     endif
 
 
