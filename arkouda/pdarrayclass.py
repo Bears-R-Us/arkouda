@@ -1817,13 +1817,17 @@ class pdarray:
         """
         # allows the elements of the shape parameter to be passed in as separate arguments
         # For example, a.reshape(10, 11) is equivalent to a.reshape((10, 11))
+        # the lenshape variable addresses an error that occurred when a single integer was
+        # passed
         if len(shape) == 1:
             shape = shape[0]
-        elif not isinstance(shape, pdarray):
+            lenshape = 1
+        if (not isinstance(shape, int)) and (not isinstance(shape, pdarray)):
             shape = [i for i in shape]
+            lenshape = len(shape)
         return create_pdarray(
             generic_msg(
-                cmd=f"reshape<{self.dtype},{self.ndim},{len(shape)}>",
+                cmd=f"reshape<{self.dtype},{self.ndim},{lenshape}>",
                 args={
                     "name": self.name,
                     "shape": shape,

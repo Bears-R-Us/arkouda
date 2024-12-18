@@ -29,6 +29,8 @@ class TestPdarrayClass:
         r = a.reshape((2, 2))
         assert r.shape == (2, 2)
         assert isinstance(r, ak.pdarray)
+        b = r.reshape(4)
+        assert ak.all(a==b)
 
     @pytest.mark.skip_if_max_rank_less_than(3)
     def test_reshape_and_flatten_bug_reproducer(self):
