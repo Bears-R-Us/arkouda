@@ -82,16 +82,15 @@ def where(condition: Array, x1: Array, x2: Array, /) -> Array:
     """
     broadcasted = broadcast_arrays(condition, x1, x2)
 
+    a = broadcasted[1]._array
+    b = broadcasted[2]._array
+    c = akcast(broadcasted[0]._array, ak.dtypes.bool_)
+
     return Array._new(
         create_pdarray(
             generic_msg(
-                cmd=f"efunc3vv{broadcasted[0].ndim}D",
-                args={
-                    "func": "where",
-                    "condition": akcast(broadcasted[0]._array, ak.dtypes.bool_),
-                    "a": broadcasted[1]._array,
-                    "b": broadcasted[2]._array,
-                },
+                cmd=f"wherevv<{c.ndim},{a.dtype},{b.dtype}>",
+                args={"condition" : c, "a" : a, "b" : b, },
             )
         )
     )
