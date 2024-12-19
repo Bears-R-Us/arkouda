@@ -4087,9 +4087,7 @@ def mod(dividend, divisor) -> pdarray:
     """
     return dividend % divisor
 
-
-# at typechecked -- typechecked causes erroneous error messages, and we do our own below
-
+@typechecked
 def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, numeric_scalars]) -> pdarray:
     """
     Returns the element-wise remainder of division.
@@ -4111,7 +4109,8 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
     Raises
     ------
     TypeError
-        Raised if either dividend or divisor fails typechecking
+        Raised if neither dividend nor divisor is a pdarray (at least one must be)
+        or if any scalar or pdarray element is not one of int, uint, float, bigint
     """
     if not builtins.all(
         isSupportedNumber(arg) or isinstance(arg, pdarray) for arg in [dividend, divisor]
