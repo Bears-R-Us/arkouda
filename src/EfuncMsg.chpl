@@ -690,29 +690,6 @@ module EfuncMsg
 
         //    Further comments are embedded in the code.
 
-        // Note: orderer, copied from AryUtil.chpl, provides indexToOrder
-
-        record orderer {
-          param rank: int;
-          const accumRankSizes: [0..<rank] int;
-
-          proc init(shape: ?N*int) {
-            this.rank = N;
-            const sizesRev = [i in 0..<N] shape[N - i - 1];
-            this.accumRankSizes = * scan sizesRev / sizesRev;
-          }
-
-          inline proc indexToOrder(idx: rank*int): int {
-            var order = 0;
-            for param i in 0..<rank do order += idx[i] * accumRankSizes[rank - i - 1];
-            return order;
-          }
-
-          inline proc indexToOrder(idx: int): int { // this was added to handle the 1D case
-            return idx;
-          }
-       }
-
        if mask.shape != a.shape {
            throw new Error ("mask and a pdarrays must be of same shape in putmask.") ;
        }
