@@ -253,18 +253,40 @@ class TestRandom:
     def test_standard_gamma_hypothesis_testing(self):
         # I tested this many times without a set seed, but with no seed
         # it's expected to fail one out of every ~20 runs given a pval limit of 0.05.
-        rng = ak.random.default_rng(12345)
-        num_samples = 10 ** 3
+        rng = ak.random.default_rng()
+        num_samples = 10**3
 
         k = rng.uniform(0, 10)
         sample = rng.standard_gamma(k, size=num_samples)
         sample_list = sample.to_list()
 
         # second goodness of fit test against the distribution with proper mean and std
-        good_fit_res = sp_stats.goodness_of_fit(
-            sp_stats.gamma, sample_list, known_params={"a": k}
-        )
+        good_fit_res = sp_stats.goodness_of_fit(sp_stats.gamma, sample_list, known_params={"a": k})
         assert good_fit_res.pvalue > 0.05
+
+    # This is not the correct way to do the chisquare test, it's just a first draft.
+    def test_standard_gamma_chisq_testing(self):
+        from scipy.stats import chisquare
+        from scipy import ndimage
+
+        # I tested this many times without a set seed, but with no seed
+        # it's expected to fail one out of every ~20 runs given a pval limit of 0.05.
+        rng = ak.random.default_rng()
+        num_samples = 10**3
+
+        k = rng.uniform(0, 10)
+        sample = rng.standard_gamma(k, size=num_samples).to_ndarray()
+        max = min(sample.max() + 1, 100)
+        hist = ndimage.histogram(sample, 0, max, 10) + 0.001
+        hist = hist / sum(hist)
+
+        np_rng = np.random.default_rng()
+        np_sample = np_rng.standard_gamma(k, size=num_samples)
+        np_hist = ndimage.histogram(np_sample, 0, max, 10) + 0.001
+        np_hist = np_hist / sum(np_hist)
+
+        chisq = chisquare(f_obs=hist, f_exp=np_hist)
+        assert chisq.pvalue > 0.05
 
     def test_poisson(self):
         rng = ak.random.default_rng(17)
