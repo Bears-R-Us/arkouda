@@ -736,7 +736,7 @@ module EfuncMsg
               } else {
                  var lv : [aLD] tv ;  // the local part of v
                  forall element in aLD with (var agg = newSrcAggregator(tv)) {
-                    var vdx = aR.indexToOrder(element)%v.size ;
+                    const vdx = aR.indexToOrder(element)%v.size ;
                     agg.copy (lv(element),v(d2.orderToIndex(vdx))) ;
                  }
                  forall element in aLD { if mask(element) then a(element) = lv(element):ta ; }
