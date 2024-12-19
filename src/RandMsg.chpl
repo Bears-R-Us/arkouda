@@ -450,14 +450,13 @@ module RandMsg
         }
         else if kArg < 1.0 {  // TODO ask the chpl team about the linter being weird
             var count = 0;
-            while count < 10000000 {
+            while count < 10000000 do {
                 var U = rs.next(0, 1);
                 var V = standardExponentialInvCDF(1, rs)[0];
                 if U <= (1.0 - kArg) {
                     //can these be more effiection 
                     var X = U ** (1.0 / kArg);
                     if X <= V {
-                        writeln("XXX   count is ", count);
                         return X;
                     }
                 }
@@ -466,43 +465,35 @@ module RandMsg
                     //can these be more effiection 
                     var X = (1.0 - kArg + kArg * Y) ** (1.0 / kArg);
                     if X <= (V + Y) {
-                        writeln("XXX   count is ", count);
                         return X;
                     }
                 }
                 count+= 1;
             }
-            writeln("\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-            writeln("OMG FIRST LOOP IS BROKE!!");
-
             return -1.0;  // we failed 10000 times in a row which should practically never happen
-
-        } 
+        }
         else {
-            var b = kArg - 1/3;
-            var c = 1/sqrt(9 * b);
-            var X = 0.0;
-            var V = -1.0;
-            var count = 0;
-            while count < 10000000 {
-                while V <= 0 {
+            var b = kArg - 1/3.0;
+            var c = 1/sqrt(9.0 * b);
+
+            for count in 0..10000000{
+            // var count = 0;
+            // while count < 10000000 do {
+                var V = -1.0;
+                var X = 0.0;
+                while V <= 0 do {
                     X = standardNormBoxMuller(1, rs)[0];
                     V = 1.0 + c * X;
                 }
                 V = V * V * V;
                 var U = rs.next(0, 1);
                 if U < 1.0 - 0.0331 * (X * X) * (X * X) {
-                    writeln("XXX   count is ", count);
                     return b * V;
                 }
                 if log(U) < 0.5 * X * X + b * (1.0 - V + log(V)) {
-                    writeln("XXX   count is ", count);
                     return b * V;
                 }
-                count+= 1;
             }
-            writeln("\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-            writeln("OMG SECOND LOOP IS BROKE!!");
             return -1.0;  // we failed 10000 times in a row which should practically never happen
         }
     }
