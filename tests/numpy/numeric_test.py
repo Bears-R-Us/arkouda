@@ -846,9 +846,7 @@ class TestNumeric:
 
         for d1, d2 in ALLOWED_PUTMASK_PAIRS:
 
-            #  one-dimensional case
-
-            #  three things to test: values same size as data
+            #  several things to test: values same size as data
 
             nda = np.random.randint(0, 10, prob_size).astype(d1)
             pda = ak.array(nda)
@@ -889,69 +887,6 @@ class TestNumeric:
             ak.putmask(pda, pda > 5, akvalues)
             assert np.allclose(nda, pda.to_ndarray())
 
-            # multi-dimensional case
-
-            top = get_max_array_rank()
-            if top >= 2 :
-
-                # create two non-identical shapes with same size
-
-                the_shape = np.arange(top) + 2  # e.g. [2,3,4] or [2,3,4,5] ...
-                the_shape[-1] = prob_size       # now  [2,3,100] or [2,3,4,100] e.g.
-                the_shape = tuple(the_shape)    # converts to tuple
-                rev_shape = the_shape[::-1]     # [100,3,2] or [100,4,3,2] or ...
-                the_size = prod(the_shape)      # total # elements in either shape
-
-                nda = np.ones(the_size).reshape(the_shape).astype(d1)
-                hold_that_thought = nda.copy()
-                pda = ak.array(nda)
-                nmask = alternate(True, False, the_size).reshape(the_shape)
-                pmask = ak.array(nmask)
-
-                # test with values the same size as a, but not same shape
-
-                npvalues = np.arange(the_size).reshape(rev_shape).astype(d2)
-                akvalues = ak.array(npvalues)
-                np.putmask(nda, nmask, npvalues)
-                ak.putmask(pda, pmask, akvalues)
-                assert np.allclose(nda, pda.to_ndarray())
-
-                # test with values longer than a; note that after each use of putmask
-                # nda and pda have to be restored to their original values, since putmask
-                # overwrites them.
-
-                nda = hold_that_thought[:]
-                pda = ak.array(nda)
-                npvalues = np.arange(2*the_size).reshape(2, the_size).astype(d2)
-                akvalues = ak.array(npvalues)
-                np.putmask(nda, nmask, npvalues)
-                ak.putmask(pda, pmask, akvalues)
-                assert np.allclose(nda, pda.to_ndarray())
-
-                # test with values smaller than a
-                # I would prefer to just drop one entry from the_shape, but we're not
-                # guaranteed that rank = max_array_rank - 1 is supported.
-                # So instead, a shorter and flattened values array is created.
-
-                nda = hold_that_thought[:]
-                pda = ak.array(nda)
-                npvalues = np.arange(the_size-3).astype(d2)
-                akvalues = ak.array(npvalues)
-                np.putmask(nda, nmask, npvalues)
-                ak.putmask(pda, pmask, akvalues)
-                assert np.allclose(nda, pda.to_ndarray())
-
-                # test with values size that will require aggregator in multi-distribution
-                # The choice of the_size//2 + 5 is arbitrary.
-
-                nda = hold_that_thought[:]
-                pda = ak.array(nda)
-                npvalues = np.arange(the_size//2 + 5).astype(d2)
-                akvalues = ak.array(npvalues)
-                np.putmask(nda, nmask, npvalues)
-                ak.putmask(pda, pmask, akvalues)
-                assert np.allclose(nda, pda.to_ndarray())
-
         # finally try to raise errors
 
         pda = ak.random.randint(0, 10, 10).astype(ak.float64)
@@ -966,6 +901,71 @@ class TestNumeric:
                 pda2 = (10 - pda).astype(d2)
                 with pytest.raises(RuntimeError):
                     ak.putmask(pda, pda > 5, pda2)
+
+    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_putmask_putmask(self, prob_size):
+
+        top = get_max_array_rank()
+        for d1, d2 in ALLOWED_PUTMASK_PAIRS:
+
+                # create two non-identical shapes with same size
+
+            the_shape = np.arange(top) + 2  # e.g. [2,3,4] or [2,3,4,5] ...
+            the_shape[-1] = prob_size       # now  [2,3,100] or [2,3,4,100] e.g.
+            the_shape = tuple(the_shape)    # converts to tuple
+            rev_shape = the_shape[::-1]     # [100,3,2] or [100,4,3,2] or ...
+            the_size = prod(the_shape)      # total # elements in either shape
+
+            nda = np.ones(the_size).reshape(the_shape).astype(d1)
+            hold_that_thought = nda.copy()
+            pda = ak.array(nda)
+            nmask = alternate(True, False, the_size).reshape(the_shape)
+            pmask = ak.array(nmask)
+
+                # test with values the same size as a, but not same shape
+
+            npvalues = np.arange(the_size).reshape(rev_shape).astype(d2)
+            akvalues = ak.array(npvalues)
+            np.putmask(nda, nmask, npvalues)
+            ak.putmask(pda, pmask, akvalues)
+            assert np.allclose(nda, pda.to_ndarray())
+
+                # test with values longer than a; note that after each use of putmask
+                # nda and pda have to be restored to their original values, since putmask
+                # overwrites them.
+
+            nda = hold_that_thought[:]
+            pda = ak.array(nda)
+            npvalues = np.arange(2*the_size).reshape(2, the_size).astype(d2)
+            akvalues = ak.array(npvalues)
+            np.putmask(nda, nmask, npvalues)
+            ak.putmask(pda, pmask, akvalues)
+            assert np.allclose(nda, pda.to_ndarray())
+
+                # test with values smaller than a
+                #TODO: now that all allowed dims are available, extend the test below to
+                # all allowed dims, rather than just max
+
+            nda = hold_that_thought[:]
+            pda = ak.array(nda)
+            npvalues = np.arange(the_size-3).astype(d2)
+            akvalues = ak.array(npvalues)
+            np.putmask(nda, nmask, npvalues)
+            ak.putmask(pda, pmask, akvalues)
+            assert np.allclose(nda, pda.to_ndarray())
+
+                # test with values size that will require aggregator in multi-distribution
+                # The choice of the_size//2 + 5 is arbitrary.
+
+            nda = hold_that_thought[:]
+            pda = ak.array(nda)
+            npvalues = np.arange(the_size//2 + 5).astype(d2)
+            akvalues = ak.array(npvalues)
+            np.putmask(nda, nmask, npvalues)
+            ak.putmask(pda, pmask, akvalues)
+            assert np.allclose(nda, pda.to_ndarray())
+
 
     # In the tests below, the rationale for using size = math.sqrt(prob_size) is that
     # the resulting matrices are on the order of size*size.
