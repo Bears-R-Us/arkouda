@@ -4087,6 +4087,7 @@ def mod(dividend, divisor) -> pdarray:
     """
     return dividend % divisor
 
+
 @typechecked
 def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, numeric_scalars]) -> pdarray:
     """
