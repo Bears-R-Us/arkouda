@@ -51,10 +51,26 @@ module RandUtil {
                                                                 const mu: scalarOrArray(?) = new scalarOrArray(),
                                                                 const scale: scalarOrArray(?) = new scalarOrArray(),
                                                                 const kArg: scalarOrArray(?) = new scalarOrArray()) throws {
-        if hasSeed {
+        // if hasSeed {
             // use a fixed number of elements per stream instead of relying on number of locales or numTasksPerLoc because these
             // can vary from run to run / machine to mahchine. And it's important for the same seed to give the same results
-            const generatorSeed = (rng.next() * 2**62):int,
+
+            use Time;
+
+            proc timeDelta.totalMicroseconds(): int{
+                return ((days*(24*60*60) + seconds)*1_000_000 + microseconds): int;
+            }
+
+            var next: rng.eltType;
+            if hasSeed {
+                next = rng.next();
+            }else{
+                const seed =  timeSinceEpoch().totalMicroseconds();
+                var randStream0 = new randomStream(rng.eltType, seed);
+                next = randStream0.next();
+            }
+
+            const generatorSeed = (next * 2**62):int,
                 elemsPerStream = max(minPerStream, 2**(2 * ceil(log10(D.size)):int));
 
             // using nested coforalls over locales and tasks so we know how to generate taskSeed
@@ -86,6 +102,11 @@ module RandUtil {
                                         agg.copy(randArr[i], standardExponentialZig(realRS, uintRS));
                                     }
                                     when GenerationFunction.GammaGenerator {
+                                        const x = gammaGenerator(kArg[i], realRS);
+                                        if(x > 10000){
+                                            writeln("gammaGenerator(kArg[i], realRS)");
+                                            writeln(x);
+                                        }
                                         agg.copy(randArr[i], gammaGenerator(kArg[i], realRS));
                                     }
                                     when GenerationFunction.LogisticGenerator {
@@ -114,6 +135,11 @@ module RandUtil {
                                         randArr[i] = standardExponentialZig(realRS, uintRS);
                                     }
                                     when GenerationFunction.GammaGenerator {
+                                        const x = gammaGenerator(kArg[i], realRS);
+                                        if(x > 10000){
+                                            writeln("gammaGenerator(kArg[i], realRS)");
+                                            writeln(x);
+                                        }
                                         randArr[i] = gammaGenerator(kArg[i], realRS);
                                     }
                                     when GenerationFunction.LogisticGenerator {
@@ -134,31 +160,31 @@ module RandUtil {
                     }  // coforall over randomStreams created
                 }
             }  // coforall over locales
-        }
-        else {  // non-seeded case, we can just use task private variables for our random streams
-            forall (rv, i) in zip(randArr, randArr.domain) with (var realRS = new randomStream(real),
-                                                                 var uintRS = new randomStream(uint)) {
-                select function {
-                    when GenerationFunction.ExponentialGenerator {
-                        rv = standardExponentialZig(realRS, uintRS);
-                    }
-                    when GenerationFunction.GammaGenerator {
-                        rv = gammaGenerator(kArg[i], realRS);
-                    }
-                    when GenerationFunction.LogisticGenerator {
-                        rv = logisticGenerator(mu[i], scale[i], realRS);
-                    }
-                    when GenerationFunction.NormalGenerator {
-                        rv = standardNormZig(realRS, uintRS);
-                    }
-                    when GenerationFunction.PoissonGenerator {
-                        rv = poissonGenerator(lam[i], realRS);
-                    }
-                    otherwise {
-                        compilerError("Unrecognized generation function");
-                    }
-                }
-            }
-        }
+    //     }
+    //     else {  // non-seeded case, we can just use task private variables for our random streams
+    //         forall (rv, i) in zip(randArr, randArr.domain) with (var realRS = new randomStream(real),
+    //                                                              var uintRS = new randomStream(uint)) {
+    //             select function {
+    //                 when GenerationFunction.ExponentialGenerator {
+    //                     rv = standardExponentialZig(realRS, uintRS);
+    //                 }
+    //                 when GenerationFunction.GammaGenerator {
+    //                     rv = gammaGenerator(kArg[i], realRS);
+    //                 }
+    //                 when GenerationFunction.LogisticGenerator {
+    //                     rv = logisticGenerator(mu[i], scale[i], realRS);
+    //                 }
+    //                 when GenerationFunction.NormalGenerator {
+    //                     rv = standardNormZig(realRS, uintRS);
+    //                 }
+    //                 when GenerationFunction.PoissonGenerator {
+    //                     rv = poissonGenerator(lam[i], realRS);
+    //                 }
+    //                 otherwise {
+    //                     compilerError("Unrecognized generation function");
+    //                 }
+    //             }
+    //         }
+    //     }
     }
 }
