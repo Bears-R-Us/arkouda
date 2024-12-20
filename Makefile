@@ -246,6 +246,7 @@ ARROW_SOURCE_LINK := https://github.com/apache/arrow/archive/refs/tags/$(ARROW_N
 NUM_CORES := $(shell nproc --all)
 
 DOWNLOAD_ARROW_DEPS := false
+ARROW_DEPENDENCY_SOURCE := BUNDLED
 
 install-arrow:
 	@echo "Installing Apache Arrow/Parquet"
@@ -258,14 +259,12 @@ install-arrow:
 	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
 	touch $(DEP_BUILD_DIR)/arrow_exports.sh
 
-    #   If the BUILD_DIR does not contain the apache-arrow file, use wget to fetch it
-    ifeq (,$(wildcard ${DEP_BUILD_DIR}/arrow-apache-arrow*))
-		cd $(DEP_BUILD_DIR) && wget $(ARROW_SOURCE_LINK) && tar -xvf $(ARROW_NAME_VER).tar.gz
-    #   If the tar.gz file exists, unzip it
-    else ifneq (,$(wildcard ${DEP_BUILD_DIR}/$(ARROW_NAME_VER).tar.gz))
-		cd $(DEP_BUILD_DIR) && tar -xvf $(ARROW_NAME_VER).tar.gz
+    #   If the tar.gz file does not exist, fetch it
+    ifeq (,$(wildcard ${DEP_BUILD_DIR}/$(ARROW_NAME_VER).tar.gz))
+		cd $(DEP_BUILD_DIR) && wget $(ARROW_SOURCE_LINK)
     endif
-    
+
+	cd $(DEP_BUILD_DIR) && tar -xvf $(ARROW_NAME_VER).tar.gz
 	mkdir -p $(ARROW_BUILD_DIR)/cpp/build-release
 
     # if DOWNLOAD_ARROW_DEPS=true
@@ -275,7 +274,7 @@ install-arrow:
 		cd $(ARROW_BUILD_DIR)/cpp/thirdparty/ && ./download_dependencies.sh $(ARROW_DEP_DIR) > $(DEP_BUILD_DIR)/arrow_exports.sh
     endif
 
-	cd $(DEP_BUILD_DIR) && . ./arrow_exports.sh && cd $(ARROW_BUILD_DIR)/cpp/build-release && cmake -S $(ARROW_BUILD_DIR)/cpp .. -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_INSTALL_PREFIX=$(ARROW_INSTALL_DIR) -DARROW_DEPENDENCY_SOURCE=AUTO -DCMAKE_BUILD_TYPE=Release -DARROW_PARQUET=ON -DARROW_WITH_SNAPPY=ON -DARROW_WITH_BROTLI=ON -DARROW_WITH_BZ2=ON -DARROW_WITH_LZ4=ON -DARROW_WITH_ZLIB=ON -DARROW_WITH_ZSTD=ON $(ARROW_OPTIONS) && make -j$(NUM_CORES)
+	cd $(DEP_BUILD_DIR) && . ./arrow_exports.sh && cd $(ARROW_BUILD_DIR)/cpp/build-release && cmake -S $(ARROW_BUILD_DIR)/cpp .. -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_INSTALL_PREFIX=$(ARROW_INSTALL_DIR) -DARROW_DEPENDENCY_SOURCE=AUTO -DCMAKE_BUILD_TYPE=Release -DARROW_PARQUET=ON -DARROW_WITH_SNAPPY=ON -DARROW_WITH_BROTLI=ON -DARROW_WITH_BZ2=ON -DARROW_WITH_LZ4=ON -DARROW_WITH_ZLIB=ON -DARROW_WITH_ZSTD=ON -DARROW_DEPENDENCY_SOURCE=$(ARROW_DEPENDENCY_SOURCE) $(ARROW_OPTIONS) && make -j$(NUM_CORES)
     #   If not root, use sudo
     ifneq ($(shell id -u), 0)
 		cd $(ARROW_BUILD_DIR)/cpp/build-release && sudo make install
