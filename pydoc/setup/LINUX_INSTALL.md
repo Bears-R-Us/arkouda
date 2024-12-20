@@ -22,7 +22,9 @@ Further instructions assume that the current directory is the top-level director
 ## Python Environment - Anaconda (Linux)
 
 As is the case with the MacOS install, it is highly recommended to [install Anaconda](https://docs.anaconda.com/anaconda/install/linux/)
-to provide a Python environment and manage Python dependencies:
+to provide a Python environment and manage Python dependencies.
+
+If you do not already have Anaconda installed, please do so:
 
 ```bash
 # Go to https://repo.anaconda.com/archive/ to find the link for the latest version that's correct for your machine.
@@ -30,7 +32,11 @@ to provide a Python environment and manage Python dependencies:
  wget https://repo.anaconda.com/archive/Anaconda3-2023.09-0-Linux-x86_64.sh
  sh Anaconda3-2023.09-0-Linux-x86_64.sh
  source ~/.bashrc
- 
+```
+
+Once Anaconda is installed, the Arkouda environment can be created as follows:
+
+```bash
 # User conda env
 conda env create -f arkouda-env.yml
 conda activate arkouda
