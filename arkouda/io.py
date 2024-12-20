@@ -2004,12 +2004,14 @@ def save_checkpoint(name="", path=".akdata"):
                                                               "path": path}))
 
 def load_checkpoint(name, path=".akdata"):
-    rep_msg = generic_msg(cmd="load_checkpoint", args={"name": name,
-                                                       "path": path})
-    rep = json.loads(rep_msg)
-    return _build_objects(rep)
-        
-    
+    # Right now, we don't need to build objects on the client side.
+    # Checkpointing is only for the server state. But if we do, we'll need to
+    # return objects from the server and build them:
+    #
+    # rep = json.loads(rep_msg)
+    # ret = _build_objects(rep)
+    return generic_msg(cmd="load_checkpoint", args={"name": name,
+                                                    "path": path})
 def read_tagged_data(
     filenames: Union[str, List[str]],
     datasets: Optional[Union[str, List[str]]] = None,

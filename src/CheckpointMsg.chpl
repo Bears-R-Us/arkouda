@@ -16,7 +16,7 @@ module CheckpointMsg {
   config param serverMetadataName = "server."+metadataExt;
 
 
-  proc checkpointSaveMsg(cmd: string, msgArgs: borrowed MessageArgs,
+  proc saveCheckpointMsg(cmd: string, msgArgs: borrowed MessageArgs,
                          st: borrowed SymTab): MsgTuple throws {
     var basePath = msgArgs.getValueOf("path");
     const nameArg = msgArgs.getValueOf("name");
@@ -43,7 +43,7 @@ module CheckpointMsg {
     return Msg.send(cpName);
   }
 
-  proc checkpointLoadMsg(cmd: string, msgArgs: borrowed MessageArgs,
+  proc loadCheckpointMsg(cmd: string, msgArgs: borrowed MessageArgs,
                          st: borrowed SymTab): MsgTuple throws {
     var basePath = msgArgs.getValueOf("path");
     const nameArg = msgArgs.getValueOf("name");
@@ -78,11 +78,8 @@ module CheckpointMsg {
 
       st.addEntry(name, entry);
 
-      rnames.pushBack((name, ObjType.PDARRAY, name));
     }
-    var l = new list(string);
-    use GenSymIO;
-    return Msg.send(buildReadAllMsgJson(rnames, false, 0, l, st));
+    return Msg.send(nameArg);
   }
 
   private proc saveServerMetadata(path, st: borrowed SymTab) throws {
@@ -172,8 +169,8 @@ module CheckpointMsg {
   }
 
   use CommandMap;
-  registerFunction("save_checkpoint", checkpointSaveMsg, getModuleName());
-  registerFunction("load_checkpoint", checkpointLoadMsg, getModuleName());
+  registerFunction("save_checkpoint", saveCheckpointMsg, getModuleName());
+  registerFunction("load_checkpoint", loadCheckpointMsg, getModuleName());
 
   module Msg {
     use Message;
