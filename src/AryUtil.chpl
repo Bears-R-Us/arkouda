@@ -1085,5 +1085,9 @@ module AryUtil
           for param i in 0..<rank do order += idx[i] * accumRankSizes[rank - i - 1];
           return order;
         }
+      inline proc indexToOrder(idx : ?t) :t  // added to handle the 1D case
+        where (t==int) || (t==uint(64)) {
+          return idx;
+        }
     }
 }
