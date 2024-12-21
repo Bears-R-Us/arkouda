@@ -38,7 +38,7 @@ module CheckpointMsg {
 
     for (name, entry) in zip(st.tab.keys(), st.tab.values()) {
       var e = toSymEntry(toGenSymEntry(entry), int);
-      try! saveArr(cpPath, name, e);
+      saveArr(cpPath, name, e);
     }
     return Msg.send(cpName);
   }
@@ -124,11 +124,11 @@ module CheckpointMsg {
     var mdFile = IO.open(mdName, ioMode.r);
     var mdReader = mdFile.reader();
 
-    const loadedId = try! mdReader.readThrough(separator="\n");
+    const loadedId = mdReader.readThrough(separator="\n");
     writeln("loadedId ", loadedId);
 
     var loadedNumLocales: int;
-    try! mdReader.read(loadedNumLocales);
+    mdReader.read(loadedNumLocales);
     writeln("loadedNumLocales ", loadedNumLocales);
     assert(numLocales == loadedNumLocales);
 
@@ -140,9 +140,9 @@ module CheckpointMsg {
     var mdFile = IO.open(mdName, ioMode.r);
     var mdReader = mdFile.reader();
 
-    const name = try! mdReader.readThrough("\n", stripSeparator=true);
-    const size = try! mdReader.readThrough("\n", stripSeparator=true):int;
-    const numTargetLocales = try! mdReader.readThrough("\n", stripSeparator=true):int;
+    const name = mdReader.readThrough("\n", stripSeparator=true);
+    const size = mdReader.readThrough("\n", stripSeparator=true):int;
+    const numTargetLocales = mdReader.readThrough("\n", stripSeparator=true):int;
 
     writeln("name ", name);
     writeln("size ", size);
@@ -153,8 +153,8 @@ module CheckpointMsg {
     const dataNames: [0..#numTargetLocales] string;
 
     for name in dataNames {
-      const fnSize = try! mdReader.readThrough(" "):int;
-      name = try! mdReader.readString(maxSize=fnSize);
+      const fnSize = mdReader.readThrough(" "):int;
+      name = mdReader.readString(maxSize=fnSize);
     }
 
     var entryVal = new shared SymEntry(size, int);
