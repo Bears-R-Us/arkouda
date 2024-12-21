@@ -178,57 +178,6 @@ hdf5-clean:
 	rm -rf $(HDF5_BUILD_DIR)
 
 
-#   get the OS, ubuntu, etc...
-OS := $(shell lsb_release --id --short | tr 'A-Z' 'a-z')
-
-#   If pop, replace with ubuntu
-OS_FINAL := $(shell echo ${OS} | awk '{gsub(/pop/,"ubuntu")}1')
-
-#   System release, such as "jammy" for "ubuntu jammy"
-OS_CODENAME :=$(shell lsb_release --codename --short)
-
-#   System release, for example, 22 extracted from 22.04
-OS_RELEASE :=$(shell lsb_release -rs | cut -d'.' -f1)
-
-
-ifeq ($(OS_FINAL),$(filter $(OS_FINAL), almalinux almalinux-rc))
-    ARROW_LINK := "https://apache.jfrog.io/ui/native/arrow/${OS_FINAL}/${OS_RELEASE}/apache-arrow-release-latest.rpm"
-else ifeq ($(OS_FINAL), amazon-linux)
-    ARROW_LINK := "https://apache.jfrog.io/ui/native/arrow/amazon-linux/2/apache-arrow-release-latest.rpm"
-else ifeq ($(OS_FINAL), amazon-linux-rc)
-    ARROW_LINK := "https://apache.jfrog.io/ui/native/arrow/amazon-linux-rc/2023/apache-arrow-release-latest.rpm"
-else ifeq ($(OS_FINAL), centos)
-    ARROW_LINK := "https://apache.jfrog.io/ui/native/arrow/centos/8/apache-arrow-release-latest.rpm"
-else ifeq ($(OS_FINAL), centos-rc)
-    ARROW_LINK := "https://apache.jfrog.io/ui/native/arrow/centos-rc/9-stream/apache-arrow-release-latest.rpm"
-else ifeq ($(OS_FINAL),$(filter $(OS_FINAL), ubuntu ubuntu-rc debian debian-rc))
-    ARROW_LINK := "https://apache.jfrog.io/artifactory/arrow/${OS_FINAL}/apache-arrow-apt-source-latest-${OS_CODENAME}.deb"
-endif
-
-SUDO := ""
-
-install-arrow-quick:
-    ifneq ($(shell id -u), 0)
-		$(eval SUDO := sudo)
-    endif
-    
-	@echo "Installing Apache Arrow/Parquet"
-	@echo "from build directory: ${DEP_BUILD_DIR}"
-	mkdir -p ${DEP_BUILD_DIR}
-
-    #   If the BUILD_DIR does not contain the apache-arrow file, use wget to fetch it
-    ifeq (,$(wildcard ${DEP_BUILD_DIR}/apache-arrow*))
-		cd $(DEP_BUILD_DIR) && wget $(ARROW_LINK)
-    endif
-
-    ifeq ($(OS_FINAL),$(filter $(OS_FINAL), almalinux almalinux-rc amazon-linux amazon-linux-rc)) 
-		cd $(DEP_BUILD_DIR) && $(SUDO) dnf install -y ./apache-arrow*
-    else ifeq ($(OS_FINAL),$(filter $(OS_FINAL), ubuntu ubuntu-rc debian debian-rc))
-		cd $(DEP_BUILD_DIR) && $(SUDO) apt install -y -V ./apache-arrow*
-    else
-		@echo "make install-arrow-quick does not support ${OS}.  Please use make install-arrow instead."
-    endif
-
 
 ARROW_VER := 18.1.0
 ARROW_NAME_VER := apache-arrow-$(ARROW_VER)
