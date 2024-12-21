@@ -205,8 +205,13 @@ else ifeq ($(OS_FINAL),$(filter $(OS_FINAL), ubuntu ubuntu-rc debian debian-rc))
     ARROW_LINK := "https://apache.jfrog.io/artifactory/arrow/${OS_FINAL}/apache-arrow-apt-source-latest-${OS_CODENAME}.deb"
 endif
 
+SUDO := ""
 
 install-arrow-quick:
+    ifneq ($(shell id -u), 0)
+		$(eval SUDO := sudo)
+    endif
+    
 	@echo "Installing Apache Arrow/Parquet"
 	@echo "from build directory: ${DEP_BUILD_DIR}"
 	mkdir -p ${DEP_BUILD_DIR}
@@ -217,19 +222,9 @@ install-arrow-quick:
     endif
 
     ifeq ($(OS_FINAL),$(filter $(OS_FINAL), almalinux almalinux-rc amazon-linux amazon-linux-rc)) 
-        #   If not root, use sudo
-        ifneq ($(shell id -u), 0)
-			cd $(DEP_BUILD_DIR) && sudo dnf install -y ./apache-arrow*
-        else
-			cd $(DEP_BUILD_DIR) && dnf install -y ./apache-arrow*
-        endif
+		cd $(DEP_BUILD_DIR) && $(SUDO) dnf install -y ./apache-arrow*
     else ifeq ($(OS_FINAL),$(filter $(OS_FINAL), ubuntu ubuntu-rc debian debian-rc))
-        #   If not root, use sudo
-        ifneq ($(shell id -u), 0)
-			cd $(DEP_BUILD_DIR) && sudo apt install -y -V ./apache-arrow*
-        else
-			cd $(DEP_BUILD_DIR) && apt install -y -V ./apache-arrow*
-        endif
+		cd $(DEP_BUILD_DIR) && $(SUDO) apt install -y -V ./apache-arrow*
     else
 		@echo "make install-arrow-quick does not support ${OS}.  Please use make install-arrow instead."
     endif
@@ -246,7 +241,7 @@ ARROW_SOURCE_LINK := https://github.com/apache/arrow/archive/refs/tags/$(ARROW_N
 NUM_CORES := $(shell nproc --all)
 
 ARROW_DEPENDENCY_SOURCE := BUNDLED
-SUDO := ""
+
 
 install-arrow:
 	@echo "Installing Apache Arrow/Parquet"
@@ -284,16 +279,14 @@ install-arrow:
 arrow-clean:
     #   If not root, use sudo
     ifneq ($(shell id -u), 0)
-		sudo rm -rf $(DEP_BUILD_DIR)/apache-arrow*
-		sudo rm -rf $(DEP_BUILD_DIR)/arrow-apache-arrow*	
-		sudo rm -rf $(ARROW_DEP_DIR)
-		sudo rm -fr $(DEP_BUILD_DIR)/arrow_exports.sh
-    else
-		rm -rf $(DEP_BUILD_DIR)/apache-arrow*
-		rm -rf $(DEP_BUILD_DIR)/arrow-apache-arrow*	
-		rm -rf $(ARROW_DEP_DIR)
-		rm -fr $(DEP_BUILD_DIR)/arrow_exports.sh
-    endif
+		$(eval SUDO := sudo)
+    endif 
+
+	$(SUDO) rm -rf $(DEP_BUILD_DIR)/apache-arrow*
+	$(SUDO) rm -rf $(DEP_BUILD_DIR)/arrow-apache-arrow*	
+	$(SUDO) rm -rf $(ARROW_DEP_DIR)
+	$(SUDO) rm -fr $(DEP_BUILD_DIR)/arrow_exports.sh
+
 
 
 ICONV_VER := 1.17
