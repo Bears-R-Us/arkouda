@@ -2000,10 +2000,75 @@ def read(
 
 
 def save_checkpoint(name="", path=".akdata"):
+    """
+    Save the server's state. Records some metadata about the server, and saves
+    all pdarrays into parquet files.
+
+    Parameters
+    ----------
+    name: str
+        Name of the checkpoint. The default will be the server session ID, which
+        is typically in format ``id_<hash>_``. A directory will be created in
+        ``path`` with this name.
+    path: str
+        The directory to save the checkpoint. If the directory doesn't exist, it
+        will be created. If it exists, contents will not change except for the
+        new directory for the checkpoint instance.
+    
+    Notes
+    -----
+    Only ``pdarray``s are saved. Other data structures will not be recorded. We
+    expect to expand the coverage in the future.
+
+    Returns
+    -------
+    str
+        The checkpoint name, which will be the same as the ``name`` argument if
+        it was passed.
+
+    Examples
+    --------
+    >>> arr = ak.zeros(10, int)
+    >>> arr[2] = 2
+    >>> arr[2]
+    2
+    >>> cp_name = ak.save_checkpoint()
+    >>> arr[2] = 3
+    >>> arr[2]
+    3
+    >>> ak.load_checkpoint(cp_name)
+    >>> arr[2]
+    2
+
+    See Also
+    ---------
+    load_checkpoint
+    """
     return cast(str, generic_msg(cmd="save_checkpoint", args={"name": name,
                                                               "path": path}))
 
 def load_checkpoint(name, path=".akdata"):
+    """
+    Load server's state. The server metadata must match the current
+    configuration (e.g. same number of locales must be used).
+
+    Parameters
+    ----------
+    name: str
+        Name of the checkpoint. ``<path>/<name>`` must be a directory.
+    path: str
+        The directory to save the checkpoint.
+    
+    Returns
+    -------
+    str
+        The checkpoint name, which will be the same as the ``name`` argument.
+
+    See Also
+    ---------
+    save_checkpoint
+
+    """
     # Right now, we don't need to build objects on the client side.
     # Checkpointing is only for the server state. But if we do, we'll need to
     # return objects from the server and build them:
