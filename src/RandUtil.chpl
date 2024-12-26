@@ -50,7 +50,8 @@ module RandUtil {
                                                                 const lam: scalarOrArray(?) = new scalarOrArray(),
                                                                 const mu: scalarOrArray(?) = new scalarOrArray(),
                                                                 const scale: scalarOrArray(?) = new scalarOrArray(),
-                                                                const kArg: scalarOrArray(?) = new scalarOrArray()) throws {
+                                                                const kArg: scalarOrArray(?) = new scalarOrArray()) throws 
+        where D.rank == 1 {
         // if hasSeed {
             // use a fixed number of elements per stream instead of relying on number of locales or numTasksPerLoc because these
             // can vary from run to run / machine to mahchine. And it's important for the same seed to give the same results
@@ -103,10 +104,6 @@ module RandUtil {
                                     }
                                     when GenerationFunction.GammaGenerator {
                                         const x = gammaGenerator(kArg[i], realRS);
-                                        if(x > 10000){
-                                            writeln("gammaGenerator(kArg[i], realRS)");
-                                            writeln(x);
-                                        }
                                         agg.copy(randArr[i], gammaGenerator(kArg[i], realRS));
                                     }
                                     when GenerationFunction.LogisticGenerator {
@@ -136,10 +133,6 @@ module RandUtil {
                                     }
                                     when GenerationFunction.GammaGenerator {
                                         const x = gammaGenerator(kArg[i], realRS);
-                                        if(x > 10000){
-                                            writeln("gammaGenerator(kArg[i], realRS)");
-                                            writeln(x);
-                                        }
                                         randArr[i] = gammaGenerator(kArg[i], realRS);
                                     }
                                     when GenerationFunction.LogisticGenerator {
@@ -187,4 +180,14 @@ module RandUtil {
     //         }
     //     }
     }
+
+    proc uniformStreamPerElem(ref randArr: [?D] ?t, ref rng, param function: GenerationFunction, hasSeed: bool,
+                                                                const lam: scalarOrArray(?) = new scalarOrArray(),
+                                                                const mu: scalarOrArray(?) = new scalarOrArray(),
+                                                                const scale: scalarOrArray(?) = new scalarOrArray(),
+                                                                const kArg: scalarOrArray(?) = new scalarOrArray()) throws 
+        where D.rank > 1 {
+            throw new Error ("uniformStreamPerElem does not support multidimensional arrays.");
+        }
+
 }
