@@ -31,7 +31,7 @@ class TestWhere:
         akCond = ak.array(npCond)
         dtypes = set(npA.keys())
 
-        for (dtype1,dtype2) in zip(dtypes,dtypes):
+        for (dtype1, dtype2) in zip(dtypes, dtypes):
             akres = ak.where(akCond, akA[dtype1], akB[dtype2]).to_ndarray()
             npres = np.where(npCond, npA[dtype1], npB[dtype2])
             assert np.allclose(akres, npres, equal_nan=True)
