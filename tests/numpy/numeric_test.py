@@ -904,7 +904,7 @@ class TestNumeric:
 
     @pytest.mark.skip_if_max_rank_less_than(2)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
-    def test_putmask_putmask(self, prob_size):
+    def test_putmask_multidim(self, prob_size):
 
         top = get_max_array_rank()
         for d1, d2 in ALLOWED_PUTMASK_PAIRS:
