@@ -704,7 +704,7 @@ module EfuncMsg
        if numLocales == 1 {
            forall element in d1 {
                if mask(element) {
-                   var idx = aR.indexToOrder(element)%v.size ;
+                   const idx = aR.indexToOrder(element)%v.size ;
                    a(element) = v(d2.orderToIndex(idx)):ta ;
                }
            }
