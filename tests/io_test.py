@@ -1746,7 +1746,6 @@ class TestHDF5:
             ak.to_hdf(my_arrays, f"{tmp_dirname}/bad_dataset_names")
             ak.read_hdf(f"{tmp_dirname}/bad_dataset_names*")
 
-
     def test_hdf_groupby(self, hdf_test_base_tmp):
         # test for categorical and multiple keys
         string = ak.array(["a", "b", "a", "b", "c"])
@@ -2403,6 +2402,33 @@ class TestImportExport:
                     write_file=f"{tmp_dirname}/pd_from_ak.parquet",
                     index=True,
                 )
+
+    def test_parquet_multiindex_dataframes(self, import_export_base_tmp):
+        with tempfile.TemporaryDirectory(dir=import_export_base_tmp) as tmp_dirname:
+            file_name = f"{tmp_dirname}/multi_index.parquet"
+
+            size = 10**8
+
+            arrays = [
+                (np.arange(size) // 2).tolist(),
+                np.arange(size).tolist(),
+            ]
+            tuples = list(zip(*arrays))
+
+            index = pd.MultiIndex.from_tuples(tuples, names=["first", "second"])
+            s = pd.Series(np.random.randn(size), index=index)
+
+            df = s.to_frame()
+            df.to_parquet(file_name)
+
+            ak_df = ak.DataFrame(ak.read_parquet(file_name))
+            from arkouda.testing import assert_equivalent
+
+            # assert_equivalent(df, ak_df)
+
+            df.loc[:, 0].values
+            round_trip_df = ak_df.to_pandas()
+            round_trip_df.loc[:, "0"].values
 
 
 class TestZarr:
