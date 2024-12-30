@@ -312,7 +312,7 @@ class TestNumeric:
     #   log and exp tests were identical, and so have been combined.
 
     @pytest.mark.skipif(pytest.host == "horizon", reason="Fails on horizon")
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled([2, 3])
     @pytest.mark.parametrize("num_type1", NO_BOOL)
     @pytest.mark.parametrize("num_type2", NO_BOOL)
     def test_histogram_multidim(self, num_type1, num_type2):
@@ -591,7 +591,8 @@ class TestNumeric:
         """
         Test isinf and isfinite.  These return pdarrays of T/F values as appropriate.
         """
-        def isinf_isfin_check(nda, pda) :
+
+        def isinf_isfin_check(nda, pda):
             warnings.filterwarnings("ignore")
             nda_blowup = np.exp(nda)
             warnings.filterwarnings("default")
@@ -599,12 +600,12 @@ class TestNumeric:
             assert (np.isinf(nda_blowup) == ak.isinf(pda_blowup).to_ndarray()).all()
             assert (np.isfinite(nda_blowup) == ak.isfinite(pda_blowup).to_ndarray()).all()
 
-        def derive_multi_shape(r) :
+        def derive_multi_shape(r):
             i = 1
-            while i**r < prob_size :
+            while i**r < prob_size:
                 i += 1
-            i = i if i**r <= prob_size else i-1
-            return i**r, r*[i]
+            i = i if i**r <= prob_size else i - 1
+            return i**r, r * [i]
 
         # first the 1D case, then the max rank case
 
@@ -619,7 +620,7 @@ class TestNumeric:
         # only the max rank case is done, because only rank 1 and max_array_rank are
         # guaranteed to be covered by the arkouda interface.  In-between ranks may not be.
 
-        newsize, newshape = derive_multi_shape (get_max_array_rank())
+        newsize, newshape = derive_multi_shape(get_max_array_rank())
         nda = nda[0:newsize].reshape(newshape)
         pda = ak.array(nda)
         isinf_isfin_check(nda, pda)
@@ -931,7 +932,7 @@ class TestNumeric:
     # the resulting matrices are on the order of size*size.
 
     # tril works on ints, floats, or bool
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled(2)
     @pytest.mark.parametrize("data_type", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_tril(self, data_type, prob_size):
@@ -959,7 +960,7 @@ class TestNumeric:
 
     @pytest.mark.parametrize("data_type", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled([2])
     def test_triu(self, data_type, prob_size):
         size = int(sqrt(prob_size))
 
@@ -982,7 +983,7 @@ class TestNumeric:
 
     # transpose works on ints, floats, or bool
 
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("data_type", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_transpose(self, data_type, prob_size):
@@ -1005,7 +1006,7 @@ class TestNumeric:
             assert check(npa, ppa, data_type)
 
     # eye works on ints, floats, or bool
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("data_type", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_eye(self, data_type, prob_size):
@@ -1028,7 +1029,7 @@ class TestNumeric:
                 assert check(nda, pda, data_type)
 
     # matmul works on ints, floats, or bool
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("data_type1", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("data_type2", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
@@ -1056,7 +1057,7 @@ class TestNumeric:
     # vecdot works on ints, floats, or bool, with the limitation that both inputs can't
     # be bool
 
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("data_type1", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("data_type2", INT_FLOAT)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)

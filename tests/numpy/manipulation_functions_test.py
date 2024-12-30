@@ -19,7 +19,7 @@ class TestNumpyManipulationFunctions:
         f = ak.flip(a)
         assert_equal(f, a[::-1])
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([3])
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [ak.int64, ak.uint64, ak.float64])
     def test_flip_multi_dim(self, size, dtype):
@@ -27,7 +27,7 @@ class TestNumpyManipulationFunctions:
         f = ak.flip(a)
         assert_equal(f, (size * 4 - 1) - a)
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_flip_multi_dim_bool(self, size):
         shape = (size, 2)
@@ -69,7 +69,7 @@ class TestNumpyManipulationFunctions:
         z = ak.array([1])
         assert_equal(ak.squeeze(z), ak.array([1]))
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([2, 3])
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", DTYPES)
     def test_squeeze(self, size, dtype):

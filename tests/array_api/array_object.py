@@ -13,7 +13,7 @@ class TestArrayCreation:
         assert chunks == [[0]]
 
     @pytest.mark.skipif(pytest.nl > 1, reason="Multi-local will produce different chunk_info")
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled([2])
     def test_chunk_info_2dim(self):
 
         a = xp.zeros((2, 2))
