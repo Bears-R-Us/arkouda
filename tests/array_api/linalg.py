@@ -8,7 +8,7 @@ import numpy as np
 
 class TestLinalg:
 
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("data_type1", [ak.int64, ak.float64, ak.bool_])
     @pytest.mark.parametrize("data_type2", [ak.int64, ak.float64, ak.bool_])
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
@@ -27,7 +27,7 @@ class TestLinalg:
             npProduct = np.matmul(ndaLeft, ndaRight)
             assert_almost_equivalent(akProduct._array, npProduct)
 
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("data_type", [ak.int64, ak.float64, ak.bool_])
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_transpose(self, data_type, prob_size):
@@ -43,7 +43,7 @@ class TestLinalg:
             ppa = xp.matrix_transpose(array)._array
             assert np.allclose(ppa.to_ndarray(), npa)
 
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("data_type1", [ak.int64, ak.float64, ak.bool_])
     @pytest.mark.parametrize("data_type2", [ak.int64, ak.float64])
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
