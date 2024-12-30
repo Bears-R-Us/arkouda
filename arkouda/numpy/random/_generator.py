@@ -523,7 +523,7 @@ class Generator:
 
         .. math::
             p(x) = x^{k-1} \frac{e^{\frac{-x}{\theta}}}{\theta^k\Gamma(k)}
-        """
+        """  # noqa: W605
         from arkouda.util import _infer_shape_from_size
 
         if size is None:
