@@ -10,7 +10,7 @@ SEED = 314159
 
 
 class TestSearchingFunctions:
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([2, 3])
     def test_argmax(self):
         a = xp.asarray(ak.randint(0, 100, (4, 5, 6), dtype=ak.int64, seed=SEED))
         a[3, 2, 1] = 101
@@ -27,7 +27,7 @@ class TestSearchingFunctions:
         assert aArgmax1Keepdims.shape == (4, 1, 6)
         assert aArgmax1Keepdims[3, 0, 1] == 2
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([2, 3])
     def test_argmin(self):
         a = xp.asarray(ak.randint(0, 100, (4, 5, 6), dtype=ak.int64, seed=SEED))
         a[3, 2, 1] = -1
@@ -42,7 +42,7 @@ class TestSearchingFunctions:
         assert aArgmin1Keepdims.shape == (4, 1, 6)
         assert aArgmin1Keepdims[3, 0, 1] == 2
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([3])
     def test_nonzero(self):
         a = xp.zeros((40, 15, 16), dtype=ak.int64)
         a[0, 1, 0] = 1
@@ -75,7 +75,7 @@ class TestSearchingFunctions:
 
         assert nz[0].tolist() == [0, 12, 100, 205, 490]
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([3])
     def test_where(self):
         a = xp.zeros((4, 5, 6), dtype=ak.int64)
         a[1, 2, 3] = 1
@@ -94,7 +94,7 @@ class TestSearchingFunctions:
         assert d[0, 0, 0] == c[0, 0, 0]
         assert d[3, 3, 3] == c[3, 3, 3]
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([2])
     def test_search_sorted(self):
         a = xp.asarray(ak.randint(0, 100, 1000, dtype=ak.float64))
         b = xp.asarray(ak.randint(0, 100, (10, 10), dtype=ak.float64))

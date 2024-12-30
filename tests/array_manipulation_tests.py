@@ -8,7 +8,7 @@ import arkouda as ak
 
 class TestManipulationFunctions:
 
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled([2])
     def test_vstack(self):
         a = [ak.random.randint(0, 10, 25) for _ in range(4)]
         n = [x.to_ndarray() for x in a]
@@ -18,7 +18,7 @@ class TestManipulationFunctions:
 
         assert n_vstack.tolist() == a_vstack.to_list()
 
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled([2])
     def test_delete(self):
         a = ak.randint(0, 100, (10, 10))
         n = a.to_ndarray()

@@ -170,7 +170,7 @@ class TestDataFrame:
         with pytest.raises(AssertionError):
             assert_almost_equivalent(convert_left(df), convert_right(df3), atol=atol, rtol=rtol)
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([3])
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("left_as_arkouda", [True, False])
     @pytest.mark.parametrize("right_as_arkouda", [True, False])
@@ -957,7 +957,7 @@ class TestDataFrame:
         with pytest.raises(AssertionError):
             assert_equivalent(convert_left(df), convert_right(df2))
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([3])
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("left_as_arkouda", [True, False])
     @pytest.mark.parametrize("right_as_arkouda", [True, False])
@@ -1076,7 +1076,7 @@ class TestDataFrame:
         with pytest.raises(AssertionError):
             assert_arkouda_array_equivalent(convert_left(s), convert_right(c))
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([3])
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("left_as_arkouda", [True, False])
     @pytest.mark.parametrize("right_as_arkouda", [True, False])
@@ -1097,7 +1097,7 @@ class TestDataFrame:
         with pytest.raises(AssertionError):
             assert_arkouda_array_equivalent(convert_left(a), convert_right(a2))
 
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("left_as_arkouda", [True, False])
     @pytest.mark.parametrize("right_as_arkouda", [True, False])
     def test_assert_arkouda_array_equal_shape(self, left_as_arkouda, right_as_arkouda):
