@@ -1,12 +1,14 @@
 #include "ReadParquet.h"
 #include "UtilParquet.h"
 
+// Returns the number of elements read
 template <typename ReaderType, typename ChplType>
 int64_t readColumn(void* chpl_arr, int64_t startIdx, std::shared_ptr<parquet::ColumnReader> column_reader,
                 bool hasNonFloatNulls, int64_t i, int64_t numElems, int64_t batchSize,
                 int64_t values_read, bool* where_null_chpl) {
   int16_t definition_level; // nullable type and only reading single records in batch
   auto chpl_ptr = (ChplType*)chpl_arr;
+  int64_t num_read = 0;
   ReaderType* reader =
     static_cast<ReaderType*>(column_reader.get());
   startIdx -= reader->Skip(startIdx);
@@ -17,6 +19,7 @@ int64_t readColumn(void* chpl_arr, int64_t startIdx, std::shared_ptr<parquet::Co
         batchSize = numElems - i;
       (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
       i+=values_read;
+      num_read += values_read;
     }
   }
   else {
@@ -27,9 +30,10 @@ int64_t readColumn(void* chpl_arr, int64_t startIdx, std::shared_ptr<parquet::Co
         where_null_chpl[i] = true;
       }
       i++;
+      num_read++;
     }
   }
-  return i;
+  return num_read;
 }
 
 template <typename ReaderType, typename ChplType, typename PqType>
@@ -182,7 +186,7 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_
     int num_row_groups = file_metadata->num_row_groups();
 
     int64_t i = 0;
-    for (int r = 0; r < num_row_groups; r++) {
+    for (int r = 0; (r < num_row_groups) && (i < numElems); r++) {
       std::shared_ptr<parquet::RowGroupReader> row_group_reader =
         parquet_reader->RowGroup(r);
 
@@ -191,7 +195,6 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_
       std::shared_ptr<parquet::ColumnReader> column_reader;
 
       auto idx = file_metadata -> schema() -> ColumnIndex(colname);
-      auto max_def = file_metadata -> schema() -> Column(idx) -> max_definition_level(); // needed to determine if nulls are allowed
 
       if(idx < 0) {
         std::string dname(colname);
@@ -200,6 +203,7 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_
         *errMsg = strdup(msg.c_str());
         return ARROWERROR;
       }
+      auto max_def = file_metadata -> schema() -> Column(idx) -> max_definition_level(); // needed to determine if nulls are allowed
       
       column_reader = row_group_reader->Column(idx);
 
