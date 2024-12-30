@@ -2430,7 +2430,6 @@ class TestImportExport:
             round_trip_df = ak_df.to_pandas()
             round_trip_df.loc[:, "0"].values
 
-
 class TestZarr:
 
     @pytest.mark.skip
