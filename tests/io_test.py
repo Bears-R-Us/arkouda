@@ -323,24 +323,24 @@ class TestParquet:
         with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
             filename = f"{tmp_dirname}/pq_test_large_parquet"
             size = 2**21 + 8  # A problem had been detected with parquet files of > 2**21 entries
-            bool_array = np.array((size//2)*[True,False]).tolist()
-            flt_array  = np.arange(size).astype(np.float64).tolist()
-            int_array  = np.arange(size).astype(np.int64).tolist()
-            str_array  = np.array(["a"+str(i) for i in np.arange(size)]).tolist()
+            bool_array = np.array((size//2)*[True, False]).tolist()
+            flt_array = np.arange(size).astype(np.float64).tolist()
+            int_array = np.arange(size).astype(np.int64).tolist()
+            str_array = np.array(["a"+str(i) for i in np.arange(size)]).tolist()
             arrays = [bool_array, int_array, flt_array, str_array]
             tuples = list(zip(*arrays))
-            names = ['first','second','third','fourth']
-            index = pd.MultiIndex.from_tuples(tuples,names=names)
-            s = pd.Series(np.random.randn(size),index=index)
+            names = ['first', 'second', 'third', 'fourth']
+            index = pd.MultiIndex.from_tuples(tuples, names=names)
+            s = pd.Series(np.random.randn(size), index=index)
             df = s.to_frame()
             df.to_parquet(filename)
-            ak_df = ak.DataFrame(ak.read_parquet(filename)) 
+            ak_df = ak.DataFrame(ak.read_parquet(filename))
             #  This check is on all of the random numbers generated in s
-            assert np.all(ak_df.to_pandas().values[:,0] == s.values)
+            assert np.all(ak_df.to_pandas().values[:, 0] == s.values)
             #  This check is on all of the elements of the MultiIndex
             for i in range(len(names)) :
-                assert np.all( df.index.get_level_values(names[i]).to_numpy() == ak_df[names[i]].to_ndarray() )
-                
+                assert np.all(df.index.get_level_values(names[i]).to_numpy() == ak_df[names[i]].to_ndarray())
+
 
     @pytest.mark.parametrize("dtype", NUMERIC_AND_STR_TYPES)
     def test_get_datasets(self, par_test_base_tmp, dtype):
