@@ -657,16 +657,65 @@ class Generator:
         self._state += full_size * 2
         return create_pdarray(rep_msg)
 
-    def shuffle(self, x):
+    def shuffle(self, x, method="FisherYates"):
         """
-        Randomly shuffle a pdarray in place.
+        Randomly shuffle the elements of a `pdarray` in place.
+
+        This method performs a reproducible in-place shuffle of the array `x`
+        using the specified strategy. Two methods are currently available:
 
         Parameters
         ----------
-        x: pdarray
-            shuffle the elements of x randomly in place
+        x : pdarray
+            The array to be shuffled in place. Must be a one-dimensional Arkouda array.
+
+        method : str, optional
+            The shuffling method to use. Supported options:
+
+            - "FisherYates": Applies a **serial, global** Fisher-Yates shuffle implemented
+              in Chapel. This is a simple and fast algorithm for small to medium arrays,
+              but **not distributed** — the entire array must fit in the memory of one locale.
+
+            - "MergeShuffle": A **fully distributed shuffle** that combines local randomization
+              and cross-locale probabilistic merging. This scales to large datasets and
+              ensures good statistical uniformity across locales.
+
+            Default is "FisherYates".
+
+        Raises
+        ------
+        TypeError
+            If `x` is not a `pdarray`.
+
+        ValueError
+            If an unsupported shuffle method is specified.
+
+        Notes
+        -----
+        - The shuffle modifies `x` in place.
+        - The result is deterministic given the client RNG state.
+        - For `"MergeShuffle"`, reproducibility is guaranteed
+            **only if the number of locales remains fixed**
+            between runs. Changing locale count will result in different permutations.
+        - Use `"FisherYates"` only for small arrays or testing.
+        - Use `"MergeShuffle"` for production-scale distributed shuffling.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> rng = ak.random.default_rng(18)
+        >>> pda = ak.arange(10)
+        >>> pda
+        array([0 1 2 3 4 5 6 7 8 9])
+        >>> rng.shuffle(pda, method="FisherYates")
+        >>> pda
+        array([0 8 2 7 9 4 6 3 5 1])
+        >>> rng.shuffle(pda, method="MergeShuffle")
+        >>> pda
+        array([5 9 7 3 0 2 1 6 4 8])
 
         """
+
         from arkouda.client import generic_msg
 
         if not isinstance(x, pdarray):
@@ -681,9 +730,10 @@ class Generator:
                 "x": x,
                 "shape": x.shape,
                 "state": self._state,
+                "method": method.lower(),
             },
         )
-        self._state += x.size
+        self._state += 1
 
     def permutation(self, x, method="Argsort"):
         """

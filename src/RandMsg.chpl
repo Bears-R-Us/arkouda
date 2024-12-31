@@ -10,9 +10,10 @@ module RandMsg
     use ServerConfig;
     use Logging;
     use Message;
+    use PrivateDist;
     use RandArray;
     use RandUtil;
-    use Random;
+    use ArkoudaSortCompat;
     use CommAggregation;
     use ZigguratConstants;
 
@@ -76,6 +77,7 @@ module RandMsg
     }
 
     @arkouda.instantiateAndRegister
+    @chplcheck.ignore("UnusedFormal")
     proc randomNormal(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd: int): MsgTuple throws {
         const shape = msgArgs["shape"].toScalarTuple(int, array_nd),
               seed = msgArgs["seed"].toScalar(string);
@@ -90,6 +92,7 @@ module RandMsg
      * retrieve the generator from the SymTab.
      */
     @arkouda.instantiateAndRegister
+    @chplcheck.ignore("UnusedFormal")
     proc createGenerator(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype): MsgTuple throws
         where array_dtype != BigInteger.bigint
     {
@@ -112,6 +115,7 @@ module RandMsg
     }
 
     @arkouda.instantiateAndRegister
+    @chplcheck.ignore("UnusedFormal")
     proc uniformGenerator(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
         where array_dtype != BigInteger.bigint
     {
@@ -176,10 +180,10 @@ module RandMsg
             // ziggurat only works on monotonically decreasing, which normal isn't but since stardard normal 
             // is symmetric about x=0, we can do it on one half and then choose positive or negative
             var sign = ri & 0x1;
-            if (sign & 0x1) {
+            if sign & 0x1 {
                 x = -x;
             }
-            if (rabs < ki_double[idx]) {
+            if rabs < ki_double[idx] {
                 // the point fell in the core of one of our rectangular slices, so we're guaranteed
                 // it falls under the pdf curve. We can return it as a sample from our distribution.
                 // We will return here 99.3% of the time on the 1st try
@@ -192,7 +196,7 @@ module RandMsg
 
             // candidate point did not fall in the core of any rectangular slices. Either it lies in the
             // first slice (which doesn't have a core), in the tail of the distribution, or in the tip of one of slices.
-            if (idx == 0) {
+            if idx == 0 {
                 // first rectangular slice
 
                 // this was written as an infinite inner loop in numpy, but we want to avoid that possibility
@@ -201,13 +205,13 @@ module RandMsg
                 while innerCount <= 10**6 {
                     const xx = -ziggurat_nor_inv_r * log1p(-realRng.next());
                     const yy = -log1p(-realRng.next());
-                    if (yy + yy > xx * xx) {
-                        return if ((rabs >> 8) & 0x1) then -(ziggurat_nor_r + xx) else ziggurat_nor_r + xx;
+                    if yy + yy > xx * xx {
+                        return if (rabs >> 8) & 0x1 then -(ziggurat_nor_r + xx) else ziggurat_nor_r + xx;
                     }
                     innerCount += 1;
                 }
             } else {
-                if (((fi_double[idx - 1] - fi_double[idx]) * realRng.next() + fi_double[idx]) < exp(-0.5 * x * x)) {
+                if ((fi_double[idx - 1] - fi_double[idx]) * realRng.next() + fi_double[idx]) < exp(-0.5 * x * x) {
                     // tip calculation
                     return x;
                 }
@@ -236,6 +240,7 @@ module RandMsg
     proc standardNormalGenerator(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd): MsgTuple throws
         do return standardNormalGeneratorHelp(cmd, msgArgs, st, array_nd);
 
+    @chplcheck.ignore("UnusedFormal")
     proc standardNormalGeneratorHelp(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd): MsgTuple throws
         where array_nd == 1
     {
@@ -272,6 +277,7 @@ module RandMsg
     }
 
 
+    @chplcheck.ignore("UnusedFormal")
     proc standardNormalGeneratorHelp(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd): MsgTuple throws
         where array_nd > 1
     {
@@ -374,6 +380,7 @@ module RandMsg
     proc standardExponential(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd): MsgTuple throws
         do return standardExponentialHelp(cmd, msgArgs, st, array_nd);
 
+    @chplcheck.ignore("UnusedFormal")
     proc standardExponentialHelp(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd): MsgTuple throws
         where array_nd == 1
     {
@@ -409,6 +416,7 @@ module RandMsg
         }
     }
 
+    @chplcheck.ignore("UnusedFormal")
     proc standardExponentialHelp(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd): MsgTuple throws
         where array_nd > 1
     {
@@ -447,7 +455,7 @@ module RandMsg
         }
         else if kArg < 1.0 {
             var count = 0;
-            while count < 10000 do {
+            while count < 10000 {
                 var U = rs.next(0, 1);
                 var V = standardExponentialInvCDF(1, rs)[0];
                 if U <= (1.0 - kArg) {
@@ -474,7 +482,7 @@ module RandMsg
             while count < 10000 do{
                 var V = -1.0;
                 var X = 0.0;
-                while V <= 0 do {
+                while V <= 0 {
                     X = standardNormBoxMuller(1, rs)[0];
                     V = 1.0 + c * X;
                 }
@@ -492,6 +500,7 @@ module RandMsg
     }
 
     @arkouda.instantiateAndRegister
+    @chplcheck.ignore("UnusedFormal")
     proc standardGamma(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd): MsgTuple throws {
         const name = msgArgs["name"],
               shape = msgArgs["size"].toScalarTuple(int, array_nd),
@@ -513,6 +522,7 @@ module RandMsg
         return st.insert(createSymEntry(gammaArr));
     }
 
+    @chplcheck.ignore("UnusedFormal")
     proc segmentedSampleMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         const genName = msgArgs["genName"],                                 // generator name
               permName = msgArgs["perm"],                                   // values array name
@@ -563,6 +573,7 @@ module RandMsg
     }
 
     @arkouda.instantiateAndRegister
+    @chplcheck.ignore("UnusedFormal")
     proc choice(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype): MsgTuple throws
         where array_dtype != BigInteger.bigint
     {
@@ -640,6 +651,7 @@ module RandMsg
         return mu + scale * log(U / (1.0 - U));
     }
 
+    @chplcheck.ignore("UnusedFormal")
     proc logisticGeneratorMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         const name = msgArgs["name"],
               isSingleMu = msgArgs["is_single_mu"].toScalar(bool),
@@ -663,6 +675,7 @@ module RandMsg
     }
 
     @arkouda.instantiateAndRegister
+    @chplcheck.ignore("UnusedFormal")
     proc permutation(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws {
         const name = msgArgs["name"],
               xName = msgArgs["x"],
@@ -726,6 +739,7 @@ module RandMsg
         return k - 1;
     }
 
+    @chplcheck.ignore("UnusedFormal")
     proc poissonGeneratorMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         const name = msgArgs["name"],                                       // generator name
               isSingleLam = msgArgs["is_single_lambda"].toScalar(bool),     // boolean indicating if lambda is a single value or array
@@ -750,10 +764,34 @@ module RandMsg
     }
 
     @arkouda.instantiateAndRegister
-    proc shuffle(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
-        do return shuffleHelp(cmd, msgArgs, st, array_dtype, array_nd);
+    proc shuffle(
+        cmd: string, 
+        msgArgs: borrowed MessageArgs, 
+        st: borrowed SymTab, 
+        type array_dtype, 
+        param array_nd: int
+        ): MsgTuple throws{
+        const method = msgArgs["method"].toScalar(string);
+        if method == "mergeshuffle"{
+            return mergeShuffleHelp(cmd, msgArgs, st, array_dtype, array_nd);
+        } else if method == "fisheryates"{
+            return shuffleHelp(cmd, msgArgs, st, array_dtype, array_nd);
+        }else{
+            const errorMsg = "Error: Invalid method for shuffle.  " +
+            "Allowed values: fisheryates, mergeshuffle";
+            return MsgTuple.error(errorMsg);
+        }
 
-    proc shuffleHelp(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws 
+    }
+
+    @chplcheck.ignore("UnusedFormal")
+    proc shuffleHelp(
+        cmd: string, 
+        msgArgs: borrowed MessageArgs, 
+        st: borrowed SymTab, 
+        type array_dtype, 
+        param array_nd: int
+        ): MsgTuple throws 
         where array_nd == 1
     {
         const name = msgArgs["name"],
@@ -762,7 +800,8 @@ module RandMsg
               state = msgArgs["state"].toScalar(int);
 
         randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                "name: %? shape %? dtype: %? state %i".format(name, shape, type2str(array_dtype), state));
+                                "name: %? shape %? dtype: %? state %i".format(
+                                    name, shape, type2str(array_dtype), state));
 
         var generatorEntry = st[name]: borrowed GeneratorSymEntry(int);
         ref rng = generatorEntry.generator;
@@ -775,7 +814,14 @@ module RandMsg
         return MsgTuple.success();
     }
 
-    proc shuffleHelp(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws 
+    @chplcheck.ignore("UnusedFormal")
+    proc shuffleHelp(
+        cmd: string, 
+        msgArgs: borrowed MessageArgs, 
+        st: borrowed SymTab, 
+        type array_dtype, 
+        param array_nd: int
+        ): MsgTuple throws 
         where array_nd != 1
     {
         const name = msgArgs["name"],
@@ -784,7 +830,8 @@ module RandMsg
               state = msgArgs["state"].toScalar(int);
 
         randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                "name: %? shape %? dtype: %? state %i".format(name, shape, type2str(array_dtype), state));
+                                "name: %? shape %? dtype: %? state %i".format(
+                                    name, shape, type2str(array_dtype), state));
 
         var generatorEntry = st[name]: borrowed GeneratorSymEntry(int);
         ref rng = generatorEntry.generator;
@@ -806,6 +853,753 @@ module RandMsg
         }
 
         return MsgTuple.success();
+    }
+
+    @chplcheck.ignore("UnusedFormal")
+    proc mergeShuffleHelp(
+        cmd: string, 
+        msgArgs: borrowed MessageArgs, 
+        st: borrowed SymTab, 
+        type array_dtype, 
+        param array_nd: int
+        ): MsgTuple throws 
+        where array_nd == 1
+    {
+        const name = msgArgs["name"],
+              xName = msgArgs["x"].toScalar(string),
+              shape = msgArgs["shape"].toScalarTuple(int, array_nd),
+              state = msgArgs["state"].toScalar(int);
+
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "name: %? shape %? dtype: %? state %i".format(
+                                    name, shape, type2str(array_dtype), state));
+
+        var generatorEntry = st[name]: borrowed GeneratorSymEntry(int);
+        ref rng = generatorEntry.generator;
+
+        if state != 1 then rng.skipTo(state-1);
+        const generatorSeed = (rng.next() * 2**62):int;
+
+        const arrEntry = st[xName]: SymEntry(array_dtype, array_nd);
+        ref myArr = arrEntry.a;
+        mergeShuffle(myArr, generatorSeed);
+        return MsgTuple.success();
+    }
+
+    proc mergeShuffleHelp(
+        cmd: string, 
+        msgArgs: borrowed MessageArgs, 
+        st: borrowed SymTab, 
+        type array_dtype, 
+        param array_nd: int
+        ): MsgTuple throws 
+        where array_nd != 1
+    {
+        return new MsgTuple("mergeShuffle does not support " +
+        "arrays of dimension > 1.",MsgType.ERROR);
+    }
+
+    /*
+        Perform an in-place distributed merge shuffle on the array `x`.
+
+        This procedure produces a globally shuffled permutation of `x` across all locales.
+        It uses a two-phase hierarchical strategy:
+        
+        1. Each locale independently shuffles its local data using a recursive
+        Fisher-Yates-based algorithm (`shuffleLocales`).
+        
+        2. Then, across multiple rounds, pairs of shuffled locale blocks are merged
+        probabilistically using a randomized merge process (`merge`), simulating
+        the structure of a parallel merge sort. Each merge pass doubles the size
+        of shuffled blocks until the entire dataset is randomized.
+
+        All randomness is seeded and deterministic to ensure reproducibility across runs.
+
+        Parameters
+        ----------
+        x : [] ?t, `ref`
+            The distributed array to shuffle in place. The element type may be any type
+            that supports swapping (`<=>`) and indexing.
+        
+        generatorSeed : int
+            A global seed used to generate deterministic random streams for the shuffle.
+            Random streams for real-valued and integer-valued randomness are derived
+            deterministically from this seed.
+
+        Raises
+        ------
+        May raise errors internally from subroutines such as `shuffleLocales` or `merge`
+        if domain bounds or RNG behavior are invalid.
+
+        Notes
+        -----
+        - This shuffle is communication-efficient: locale-local shuffling is done first,
+        and only necessary data is exchanged via coordinated merges.
+        - The shuffle is reproducible: running it multiple times with the same input
+        and `generatorSeed` will yield the same result.
+        - The array `x` is modified in place; no copy is created.
+
+        See Also
+        --------
+        shuffleLocales : Locally shuffles array data without cross-locale communication.
+        merge : Merges two chunks probabilistically using a fixed threshold ratio.
+    */
+    proc mergeShuffle(ref x: [], generatorSeed: int) throws {
+        const numRounds = log2(numLocales) + 1;
+        const domainLows = getDomainLows(x);
+        const domainHighs = getDomainHighs(x);
+        var rngs = getRandomStreams(generatorSeed, real);
+        var intRngs = getRandomStreams(generatorSeed + numLocales, int);
+
+        shuffleLocales(x, intRngs);
+
+        for m in 0..#numRounds {
+            const maxLocalesPerPrevChunk = 2**m;
+            const numNewChunks = (numLocales - 1) / 
+                            (2 * maxLocalesPerPrevChunk) + 1;
+
+            forall i in 0..#numNewChunks with (ref x){
+                const (startLocale, endLocale, startLocale2, endLocale2) = 
+                    getMergePair(i, maxLocalesPerPrevChunk, numLocales);
+                if  endLocale < startLocale2 {
+                        const start = domainLows[startLocale];
+                        const size1 = domainHighs[endLocale] - 
+                                    domainLows[startLocale] + 1;
+                        const size2 = domainHighs[endLocale2] - 
+                                    domainLows[startLocale2] + 1;
+                        if size1 <= 0 || size2 <= 0 then continue;
+
+                        merge(x, start, size1, size2, rngs, intRngs);
+                }
+            }
+        }
+    }
+
+    /*
+        Compute a pair of adjacent locale ranges to merge during a shuffle round.
+
+        Given an index `i` into the set of merge chunks, this function calculates two
+        contiguous ranges of locale IDs to be merged in the current round of
+        `mergeShuffle`. Each range contains at most `width` locales. The calculation
+        ensures that locale indices do not exceed `numLocales - 1`.
+
+        Parameters
+        ----------
+        i : int
+            The merge chunk index within the current round.
+
+        width : int
+            The maximum number of locales in each range being merged.
+
+        numLocales : int
+            The total number of locales available in the system.
+
+        Returns
+        -------
+        (int, int, int, int)
+            A tuple representing:
+            - start index of the first locale range (a1),
+            - end index of the first locale range (a2),
+            - start index of the second locale range (b1),
+            - end index of the second locale range (b2).
+
+        Notes
+        -----
+        This function is used to coordinate merging of adjacent locale segments in
+        `mergeShuffle`. The ranges are always calculated safely to stay within bounds,
+        even near the upper edge of the locale index space.
+    */
+    proc getMergePair(i, width, numLocales): (int, int, int, int) {
+        const a1 = 2 * i * width;
+        const a2 = min(a1 + width - 1, numLocales - 1);
+        const b1 = min(a2 + 1, numLocales - 1);
+        const b2 = min(b1 + width - 1, numLocales - 1);
+        return (a1, a2, b1, b2);
+    }
+
+
+    /*  
+        Shuffles each locale of the array independently.
+        There should be no communication between locales for this step.
+    */
+    @chplcheck.ignore("UnusedFormal")
+    proc shuffleLocales(
+            ref x: [], 
+            ref rngs: [] randomStream(int),
+            const maxFisherYatesPower = 6,
+            const minSize = 10
+        ) throws {
+        coforall loc in Locales with (ref x) do on loc{
+            var randStreamInt = rngs[here.id];
+            var seed = randStreamInt.next();
+
+            const localLower = x.localSubdomain().low;
+            const localUpper = x.localSubdomain().high;
+            const size = localUpper - localLower + 1;
+
+            const smallestChunkSize = max(size/(2**maxFisherYatesPower), 
+                            min(minSize, size)); //  Hardcoded minimum size
+            const numChunks = (size - 1)/smallestChunkSize + 1;
+
+            assert(localUpper + 1 >= localLower + numChunks * smallestChunkSize - 1);
+
+            forall i in 0..#numChunks with (ref x, const seed){
+                const taskSeed = seed + i;
+                const low = localLower + i * smallestChunkSize;
+                const high = min(localUpper, low + smallestChunkSize - 1);
+                var rng = new randomStream(int, seed=taskSeed);
+                fisherYatesOnChunk(x, low..high, high, rng);
+
+            }
+
+            seed += numChunks;
+
+            const numRounds = log2(numChunks) + 1;
+
+            for m in 0..#(numRounds) {
+                const prevChunkSize = smallestChunkSize * 2**m;
+                const newChunkSize = 2 * prevChunkSize;
+                const numNewChunks = (size - 1)/newChunkSize + 1;
+
+                forall i in 0..#(numNewChunks) with (
+                                ref x, 
+                                const localLower, 
+                                const localUpper, 
+                                const newChunkSize, 
+                                const prevChunkSize, 
+                                const seed){
+
+                    const start = localLower + i * newChunkSize;
+                    const size1 = min(localUpper - start + 1, prevChunkSize);
+                    const size2 = min(localUpper - start - size1 + 1, 
+                                prevChunkSize);   
+
+                    const taskSeed = seed + i;
+
+                    var rng = new randomStream(real, seed=taskSeed);
+                    var rngInt = new randomStream(int, seed=taskSeed + 1);  
+
+                    // figure out which slice of [start..endIdx] 
+                    // lives on this locale
+                    const sub = x.localSubdomain();
+                    const localLo = max(start, sub.low);
+                    const localHi = min(start + size1 + size2 - 1, sub.high);
+
+                    mergeLocalChunk(x, 
+                                localLo..localHi, 
+                                start, 
+                                size1, 
+                                size2, 
+                                rng, 
+                                rngInt);
+
+                }
+                seed += numNewChunks;
+            }
+        }
+    } 
+
+    /*
+        Shuffle each locale's portion of the array independently using a hierarchical strategy.
+
+        This procedure performs a reproducible, in-place shuffle of the portion of `x`
+        local to each Chapel locale. It avoids any inter-locale communication. The shuffle
+        is accomplished in two phases:
+
+        1. **Chunk-wise Fisher-Yates shuffle**: The local array is divided into small chunks,
+        each of which is independently shuffled using a seeded Fisher-Yates algorithm.
+        
+        2. **Hierarchical merge shuffle**: Pairs of adjacent shuffled chunks are merged
+        using a probabilistic in-place merge process. This merge phase is applied
+        recursively, doubling the chunk size in each round until the full local segment
+        is shuffled.
+
+        Parameters
+        ----------
+        x : [] ?t, `ref`
+            The distributed array to shuffle. Each locale will only access and modify
+            its own local portion.
+
+        rngs : [] randomStream(int), `ref`
+            A distributed array of integer-based random streams, one per locale.
+            These streams are used to seed local substreams for chunk shuffling and merging.
+
+        maxFisherYatesPower : int, `param`, optional
+            Controls the maximum number of subdivisions used in the initial chunking phase.
+            The number of chunks is roughly `2 ** maxFisherYatesPower`. Default is 6.
+
+        minSize : int, `param`, optional
+            The minimum allowable chunk size during initial subdivision.
+            Prevents excessive fragmentation. Default is 10.
+
+        Raises
+        ------
+        May throw errors from `fisherYatesOnChunk` or `mergeLocalChunk` if local bounds
+        are invalid or array access is out of bounds.
+
+        Notes
+        -----
+        - This function ensures reproducible shuffling by deriving all seeds from
+        the input RNG streams.
+        - No communication occurs between locales; this is suitable for large
+        distributed arrays when global shuffle is not immediately required.
+        - The array `x` is modified in place.
+
+        See Also
+        --------
+        fisherYatesOnChunk : Shuffles a single range using Fisher-Yates.
+        mergeLocalChunk : Probabilistically merges two adjacent local chunks.
+        mergeShuffle : Performs a global distributed shuffle using this routine.
+    */
+    proc shuffleRange(
+            ref x: [], 
+            swapChunk: range(int),
+            const bound: int, 
+            ref rngs: [] randomStream(int)
+        ) throws {
+
+        var localesByLow = [loc in Locales] (loc, x.localSubdomain(loc).low);
+        sort(localesByLow, new byLowKey());
+
+        for (loc, _) in localesByLow {  
+            on loc {
+                //  Find the intersection of swapChunk with local subdomain
+                const myDom = x.localSubdomain();
+                const localLower = max(myDom.low, swapChunk.first);
+                const localUpper = min(myDom.high, swapChunk.last);
+
+                if localLower <= localUpper {
+                    fisherYatesOnChunk(x, localLower..localUpper, bound, rngs[here.id]);
+                }
+            }
+        }
+    }
+
+    /*
+        Perform a constrained partial Fisher-Yates shuffle on a slice of the array.
+
+        This procedure shuffles the elements of `x` over the index range `swapChunk`
+        using a variant of the Fisher-Yates algorithm. Each element `i` in `swapChunk`
+        may be swapped with another randomly selected index `idx` such that
+        `idx ∈ [i, bound]` if `bound ≥ i`, or `idx ∈ [bound, i]` if `bound < i`.
+
+        The `bound` must lie outside the interior of `swapChunk` to avoid biased shuffling
+        or out-of-bounds behavior.
+
+        Parameters
+        ----------
+        x : [] ?t, `ref`
+            The array to shuffle, where each element must be indexable and swappable
+            with `<=>`. Only the indices in `swapChunk` may be modified.
+
+        swapChunk : range(int)
+            The contiguous range of indices within `x` to shuffle.
+
+        bound : int
+            The index that sets the upper or lower limit of the swap target range
+            for each `i` in `swapChunk`. It must lie outside the interior of `swapChunk`.
+
+        rng : randomStream(int), `ref`
+            The integer-based random stream used to choose swap targets.
+            Must be locale-safe and reproducibly seeded.
+
+        Returns
+        -------
+        MsgTuple
+            A success or error message depending on whether the shuffle completes
+            successfully. Errors include invalid bounds or out-of-range access.
+
+        Raises
+        ------
+        May throw from `rng.next()` or array indexing if internal bounds checks fail.
+
+        Notes
+        -----
+        - This function is used during distributed or hierarchical shuffling to partially
+        shuffle a block of data while preserving certain order boundaries.
+        - It performs all swaps in-place and operates only within a single locale.
+        - A `bound` that falls inside `swapChunk` (excluding its endpoints) is disallowed
+        and results in an error.
+
+        See Also
+        --------
+        mergeLocalChunk : Combines shuffling with probabilistic merging.
+        shuffleLocales : Uses this function to shuffle initial chunks.
+    */
+    proc fisherYatesOnChunk(
+            ref x: [],
+            swapChunk: range(int),
+            const bound: int,
+            ref rng: randomStream(int)
+        ): MsgTuple throws {
+
+        if (bound > swapChunk.first) && (bound < swapChunk.last){
+            const errorMsg = "Invalid bound=" + bound:string +
+                    ", must not be inside swapChunk=[" +
+                    swapChunk.first:string + "," + swapChunk.last:string + "]";
+            randLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return MsgTuple.error(errorMsg);
+        }
+
+        for i in swapChunk {
+            const lo = min(i, bound), hi = max(i, bound);
+            const idx = rng.next(lo, hi);
+            if i != idx {
+                x[i] <=> x[idx];
+            }
+        }
+        return MsgTuple.success("finished fisherYates on range.");
+    }
+
+    /*
+        Randomly merge two sorted runs in-place over a local chunk of data.
+
+        This procedure merges two adjacent sorted subarrays of `x`, starting at `start`
+        with lengths `len1` and `len2`, using a probabilistic selection mechanism.
+        The merge is performed only over the specified `localChunk`, which should
+        correspond to the portion of the data owned by a specific locale.
+
+        At each index `i` in `localChunk`, the merge selects an element from the first run
+        with probability `len1 / (len1 + len2)`, and from the second run otherwise.
+        If an element from the second run is selected, it is swapped into position `i`
+        from index `j`, which tracks the next available element in the second run.
+
+        After the merge completes (or the second run is exhausted), the remaining unmerged
+        elements in `[j..endIdx]` are partially shuffled using a constrained
+        Fisher-Yates shuffle (`fisherYatesOnChunk`) to ensure uniformity.
+
+        Parameters
+        ----------
+        x : [] ?t, `ref`
+            The array to merge and shuffle in-place.
+
+        localChunk : range(int)
+            The local slice of indices on which this locale should perform the merge.
+
+        start : int
+            The starting index of the first run.
+
+        len1 : int
+            The number of elements in the first run, starting at `start`.
+
+        len2 : int
+            The number of elements in the second run, which immediately follows the first.
+
+        rng : randomStream(real), `ref`
+            A real-valued random stream used to probabilistically select which run to take
+            an element from during the merge phase.
+
+        rngInt : randomStream(int), `ref`
+            An integer-valued random stream used for the constrained shuffle of the
+            remaining tail elements.
+
+        Raises
+        ------
+        May throw from random stream calls or from subroutine `fisherYatesOnChunk`.
+
+        Notes
+        -----
+        - This is a core subroutine in the distributed merge shuffle process.
+        - Only the indices in `localChunk` are modified, and the function assumes
+        the runs lie fully within this locale's portion of the array.
+        - The final constrained shuffle ensures statistical fairness for any unmerged
+        tail elements that were not deterministically assigned.
+
+        See Also
+        --------
+        fisherYatesOnChunk : Performs constrained in-place shuffle of remaining tail.
+        shuffleLocales : Coordinates multiple mergeLocalChunk calls per locale.
+        mergeShuffle : Full distributed merge-based shuffle using this function.
+    */
+    proc mergeLocalChunk(
+        ref x:    [],
+        localChunk: range(int),
+        start:    int,
+        len1:     int,
+        len2:     int,
+        ref rng: randomStream(real),       
+        ref rngInt: randomStream(int)  
+        ) throws {
+        const endIdx    = start + len1 + len2 - 1;
+        const threshold = len1: real / (len1 + len2);
+
+        // merge: run i from localLo..localHi, 
+        // swapping in elements from the second run
+        var j = start + len1;
+        for i in localChunk {
+            if i == j || j > endIdx then break;
+
+            if rng.next() < threshold {
+                // pick from first run → leave x[i] alone
+            } else {
+                // pick from second run → swap it into position i
+                x[i] <=> x[j];
+                j += 1;
+            }
+        }
+        fisherYatesOnChunk(x, j..endIdx, start, rngInt);
+    }
+
+
+    // use AtomicObjects;    // for atomic(bool)
+
+
+    /*
+        Comparator for sorting locale-index pairs by their integer key.
+
+        This comparator is used to sort tuples of the form `(locale, int)` based
+        on the integer component (typically the low index of a locale's local
+        subdomain). It is used to enforce a deterministic ordering of locales
+        in distributed algorithms, such as merge-based shuffling.
+
+        The `key` function extracts the integer part of the tuple to use
+        as the sort key.
+
+        Returns
+        -------
+        int
+            The integer component of the `(locale, int)` tuple, used for comparison.
+
+        See Also
+        --------
+        mergeShuffle : Uses this comparator to sort locales by subdomain low index.
+    */
+    record byLowKey: keyComparator {
+        proc key(p:(locale,int)): int { return p[1]; }
+    }
+
+    /*
+        Generate a distributed array of random streams, one per locale.
+
+        This function returns a distributed array of `randomStream` objects,
+        one for each locale in `PrivateSpace`. Each stream is seeded deterministically
+        from the base `seed0`, using the locale’s `here.id` to ensure uniqueness.
+
+        The stream type can be specified using the optional type parameter `t`
+        (e.g., `real`, `int`, `bool`), which controls the type of values the stream
+        will produce.
+
+        Parameters
+        ----------
+        seed0 : int
+            The base seed from which all per-locale seeds are derived.
+
+        t : type, optional
+            The element type of the random stream. Defaults to `real`.
+
+        Returns
+        -------
+        [] randomStream(t)
+            A distributed array of random streams of type `t`, indexed over `PrivateSpace`,
+            with one stream per locale.
+
+        Notes
+        -----
+        - This function ensures reproducibility and parallel safety by using
+        per-locale seed offsets (`seed0 + here.id`).
+        - The returned array can be used in parallel computations (e.g. shuffle or merge)
+        to guarantee deterministic results across locales.
+
+        See Also
+        --------
+        shuffleLocales : Uses streams of type `int` for chunk-level shuffling.
+        mergeShuffle : Uses both `real` and `int` random streams for probabilistic merging.
+    */
+    proc getRandomStreams(seed0: int, type t = real){
+        return forall PrivateSpace do new randomStream(t, seed=seed0 + here.id);
+    }
+
+    /*
+        Perform a distributed, probabilistic in-place merge of two adjacent runs.
+
+        This function merges two sorted runs within the global array `x` using a
+        randomized selection process. The merge is performed across multiple locales,
+        but each locale only processes its local chunk of data.
+
+        For each index `i` in the merge range, an element is selected from the first run
+        with probability `len1 / (len1 + len2)`, and from the second run otherwise.
+        If the element comes from the second run, it is swapped into place from index `j`.
+        Once the second run is exhausted or the merge completes, the remaining unmerged
+        elements are partially shuffled using `shuffleRange` to ensure uniformity.
+
+        Parameters
+        ----------
+        x : [] ?t, `ref`
+            The distributed array containing the two runs to merge in-place.
+
+        start : int
+            The starting index of the first run.
+
+        len1 : int
+            The length of the first run, starting at `start`.
+
+        len2 : int
+            The length of the second run, which immediately follows the first.
+
+        realRNGs : [] randomStream(real), `ref`
+            Distributed array of real-valued random streams, one per locale, used to
+            probabilistically choose between the two runs during merging.
+
+        intRNGs : [] randomStream(int), `ref`
+            Distributed array of integer-valued random streams used by `shuffleRange`
+            to shuffle any remaining tail elements after the main merge.
+
+        Raises
+        ------
+        May throw from random stream usage or from internal bounds checks during access
+        or swapping.
+
+        Notes
+        -----
+        - The merge is coordinated in sorted order of locale subdomains to ensure
+        deterministic results.
+        - Only the portion of the array owned by each locale is touched by that locale.
+        - The `shuffleRange` call at the end ensures that remaining unmerged elements
+        are randomized in a statistically fair way.
+
+        See Also
+        --------
+        shuffleRange : Shuffles the tail of the merge range after second run is exhausted.
+        mergeShuffle : Top-level distributed shuffle algorithm that uses this function.
+        mergeLocalChunk : A localized, single-locale version of this merge logic.
+    */
+    proc merge(
+        ref x:       [],
+        start:       int,
+        len1:        int,
+        len2:        int,
+        ref realRNGs:[] randomStream(real),
+        ref intRNGs :[] randomStream(int)
+        ) throws {
+        const endIdx    = start + len1 + len2 - 1;
+        const threshold = len1:real / (len1 + len2);
+
+        var i = start, j = start + len1;
+        var finished = false;
+
+        // sort by each locale’s low index
+        var byLow = [loc in Locales] (loc, x.localSubdomain(loc).low);
+        sort(byLow, new byLowKey());
+
+        for (loc, lowIdx) in byLow {
+            if finished then break;
+
+            const sub = x.localSubdomain(loc);
+            const localLo = max(start, lowIdx);
+            const localHi = min(endIdx, sub.high);
+            if localLo > localHi then continue;
+
+            on loc {
+                var rng = realRNGs[here.id];
+                var localI = i;
+                var localJ = j;
+                const localEndIdx = endIdx;
+                var localDone = false;
+
+                for k in localLo..localHi {
+                    localI = k;    
+                    if rng.next() < threshold {
+                        if localI == localJ {
+                            localDone = true;
+                            break;
+                        }
+                    } else {
+                        if localJ > localEndIdx {
+                            localDone = true;
+                            break;
+                        }
+                        x[localI] <=> x[localJ];
+                        localJ += 1;
+                    }
+                }
+
+                // Write back updates explicitly
+                i = localI;
+                j = localJ;
+                if localDone {
+                    finished = true;
+                }
+            }
+        }
+
+        // tail‐shuffle
+        shuffleRange(x, i..endIdx, start, intRNGs);
+    }
+
+    /*
+        Retrieve the lowest index of each locale's local subdomain.
+
+        This function computes a distributed array containing the lowest (starting)
+        index of the portion of the global array `x` that resides on each locale.
+        The result is indexed by locale ID.
+
+        Parameters
+        ----------
+        x : [] ?t, `ref`
+            The distributed array whose local subdomain bounds are being queried.
+
+        Returns
+        -------
+        [] int
+            A one-dimensional array of length `numLocales`, where each element
+            contains the `.low` bound of the local subdomain for that locale.
+
+        Notes
+        -----
+        - This function is used to construct merge ranges or shuffle boundaries
+        based on data ownership.
+        - It assumes that the distribution of `x` is aligned with `Locales`.
+        - The operation is parallelized using `coforall` to ensure efficiency.
+
+        See Also
+        --------
+        getDomainHighs : Returns the highest index of each locale’s subdomain.
+        mergeShuffle : Uses this function to coordinate merge boundaries across locales.
+    */
+    proc getDomainLows(ref x: []): [] int {
+        var domainLows: [0..#numLocales] int;
+        coforall loc in Locales with (ref x) do on loc {
+            domainLows[here.id] = x.localSubdomain(loc=here).low;
+        }
+        return domainLows;
+    }
+
+    /*
+        Retrieve the highest index of each locale's local subdomain.
+
+        This function computes a distributed array containing the highest (ending)
+        index of the portion of the global array `x` that resides on each locale.
+        The result is indexed by locale ID.
+
+        Parameters
+        ----------
+        x : [] ?t, `ref`
+            The distributed array whose local subdomain upper bounds are being queried.
+
+        Returns
+        -------
+        [] int
+            A one-dimensional array of length `numLocales`, where each element
+            contains the `.high` bound of the local subdomain for the corresponding locale.
+
+        Notes
+        -----
+        - This function is useful for constructing distributed merge ranges,
+        especially in operations like `mergeShuffle`.
+        - The bounds are retrieved in parallel using `coforall` over all locales.
+        - Assumes the array `x` is distributed over the default `Locales` space.
+
+        See Also
+        --------
+        getDomainLows : Returns the lowest index of each locale’s subdomain.
+        mergeShuffle : Uses both low and high bounds to define merge block sizes.
+    */
+    proc getDomainHighs(ref x: []): [] int {
+        var domainHighs: [0..#numLocales] int;
+        coforall loc in Locales with (ref x) do on loc {
+            domainHighs[here.id] = x.localSubdomain(loc=here).high;
+        } 
+        return domainHighs;
     }
 
     use CommandMap;
