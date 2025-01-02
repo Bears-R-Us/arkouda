@@ -267,7 +267,7 @@ class TestRandom:
     def test_standard_gamma_kolmogorov_smirnov_testing(self):
         from scipy.stats import kstest, gamma
 
-        rng = ak.random.default_rng()
+        rng = ak.random.default_rng(17)
         num_samples = 10**3
 
         k = rng.uniform(0, 10)
