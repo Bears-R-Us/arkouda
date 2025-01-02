@@ -3,7 +3,7 @@
 
 // Returns the number of elements read
 template <typename ReaderType, typename ChplType>
-int64_t readColumn(void* chpl_arr, int64_t startIdx, std::shared_ptr<parquet::ColumnReader> column_reader,
+int64_t readColumn(void* chpl_arr, int64_t *startIdx, std::shared_ptr<parquet::ColumnReader> column_reader,
                 bool hasNonFloatNulls, int64_t i, int64_t numElems, int64_t batchSize,
                 int64_t values_read, bool* where_null_chpl) {
   int16_t definition_level; // nullable type and only reading single records in batch
@@ -11,7 +11,7 @@ int64_t readColumn(void* chpl_arr, int64_t startIdx, std::shared_ptr<parquet::Co
   int64_t num_read = 0;
   ReaderType* reader =
     static_cast<ReaderType*>(column_reader.get());
-  startIdx -= reader->Skip(startIdx);
+  *startIdx -= reader->Skip(*startIdx);
 
   if (not hasNonFloatNulls) {
     while (reader->HasNext() && i < numElems) {
@@ -37,15 +37,16 @@ int64_t readColumn(void* chpl_arr, int64_t startIdx, std::shared_ptr<parquet::Co
 }
 
 template <typename ReaderType, typename ChplType, typename PqType>
-int64_t readColumnDbFl(void* chpl_arr, int64_t startIdx, std::shared_ptr<parquet::ColumnReader> column_reader,
+int64_t readColumnDbFl(void* chpl_arr, int64_t *startIdx, std::shared_ptr<parquet::ColumnReader> column_reader,
                     bool hasNonFloatNulls, int64_t i, int64_t numElems, int64_t batchSize,
                     int64_t values_read, bool* where_null_chpl) {
   int16_t definition_level; // nullable type and only reading single records in batch
   auto chpl_ptr = (ChplType*)chpl_arr;
   ReaderType* reader =
     static_cast<ReaderType*>(column_reader.get());
-  startIdx -= reader->Skip(startIdx);
+  *startIdx -= reader->Skip(*startIdx);
 
+  int64_t num_read = 0;
   while (reader->HasNext() && i < numElems) {
     PqType value;
     (void)reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
@@ -57,20 +58,22 @@ int64_t readColumnDbFl(void* chpl_arr, int64_t startIdx, std::shared_ptr<parquet
       chpl_ptr[i] = NAN;
     }
     i++;
+    num_read++;
   }
-  return i;
+  return num_read;
 }
 
 template <typename ReaderType, typename ChplType, typename PqType>
-int64_t readColumnIrregularBitWidth(void* chpl_arr, int64_t startIdx, std::shared_ptr<parquet::ColumnReader> column_reader,
+int64_t readColumnIrregularBitWidth(void* chpl_arr, int64_t *startIdx, std::shared_ptr<parquet::ColumnReader> column_reader,
                                  bool hasNonFloatNulls, int64_t i, int64_t numElems, int64_t batchSize,
                                  int64_t values_read, bool* where_null_chpl) {
   int16_t definition_level; // nullable type and only reading single records in batch
   auto chpl_ptr = (ChplType*)chpl_arr;
   ReaderType* reader =
     static_cast<ReaderType*>(column_reader.get());
-  startIdx -= reader->Skip(startIdx);
+  *startIdx -= reader->Skip(*startIdx);
 
+  int64_t num_read = 0;
   if (not hasNonFloatNulls) {
     PqType* tmpArr = (PqType*)malloc(batchSize * sizeof(int32_t));
     while (reader->HasNext() && i < numElems) {
@@ -82,6 +85,7 @@ int64_t readColumnIrregularBitWidth(void* chpl_arr, int64_t startIdx, std::share
       for (int64_t j = 0; j < values_read; j++)
         chpl_ptr[i+j] = (ChplType)tmpArr[j];
       i+=values_read;
+      num_read+=values_read;
     }
     free(tmpArr);
   }
@@ -97,9 +101,10 @@ int64_t readColumnIrregularBitWidth(void* chpl_arr, int64_t startIdx, std::share
         chpl_ptr[i] = (int64_t)tmp;
       }
       i++;
+      num_read++;
     }
   }
-  return i;
+  return num_read;
 }
 
 int cpp_readStrColumnByName(const char* filename, void* chpl_arr, const char* colname, int64_t numElems, int64_t batchSize, char** errMsg) {
@@ -210,13 +215,13 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_
       // Since int64 and uint64 Arrow dtypes share a physical type and only differ
       // in logical type, they must be read from the file in the same way
       if(ty == ARROWINT64 || ty == ARROWUINT64) {
-        i += readColumn<parquet::Int64Reader, int64_t>(chpl_arr, startIdx, column_reader, hasNonFloatNulls, i,
+        i += readColumn<parquet::Int64Reader, int64_t>(chpl_arr, &startIdx, column_reader, hasNonFloatNulls, i,
                    numElems, batchSize, values_read, where_null_chpl);
       } else if(ty == ARROWINT32 || ty == ARROWUINT32) {
-        i += readColumnIrregularBitWidth<parquet::Int32Reader, int64_t, int32_t>(chpl_arr, startIdx, column_reader, hasNonFloatNulls, i,
+        i += readColumnIrregularBitWidth<parquet::Int32Reader, int64_t, int32_t>(chpl_arr, &startIdx, column_reader, hasNonFloatNulls, i,
                                               numElems, batchSize, values_read, where_null_chpl);
       } else if(ty == ARROWBOOLEAN) {
-        i += readColumn<parquet::BoolReader, bool>(chpl_arr, startIdx, column_reader, hasNonFloatNulls, i,
+        i += readColumn<parquet::BoolReader, bool>(chpl_arr, &startIdx, column_reader, hasNonFloatNulls, i,
                                               numElems, batchSize, values_read, where_null_chpl);
       } else if(ty == ARROWSTRING) {
         int16_t definition_level; // nullable type and only reading single records in batch
@@ -237,10 +242,10 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_
           i++; // skip one space so the strings are null terminated with a 0
         }        
       } else if(ty == ARROWFLOAT) {
-        i += readColumnDbFl<parquet::FloatReader, double, float>(chpl_arr, startIdx, column_reader, hasNonFloatNulls, i,
+        i += readColumnDbFl<parquet::FloatReader, double, float>(chpl_arr, &startIdx, column_reader, hasNonFloatNulls, i,
                                                             numElems, batchSize, values_read, where_null_chpl);
       } else if(ty == ARROWDOUBLE) {
-        i += readColumnDbFl<parquet::DoubleReader, double, double>(chpl_arr, startIdx, column_reader, hasNonFloatNulls, i,
+        i += readColumnDbFl<parquet::DoubleReader, double, double>(chpl_arr, &startIdx, column_reader, hasNonFloatNulls, i,
                                                             numElems, batchSize, values_read, where_null_chpl);
       } else if(ty == ARROWDECIMAL) {
         auto chpl_ptr = (double*)chpl_arr;
