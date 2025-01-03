@@ -109,6 +109,9 @@ ARROW_UTIL_O += $(ARKOUDA_SOURCE_DIR)/UtilParquet.o
 .PHONY: install-deps
 install-deps: install-zmq install-hdf5 install-arrow install-iconv install-idn2
 
+.PHONY: deps-download-source
+deps-download-source: zmq-download-source hdf5-download-source arrow-download-source iconv-download-source idn2-download-source
+
 DEP_DIR := dep
 DEP_INSTALL_DIR := $(ARKOUDA_PROJECT_DIR)/$(DEP_DIR)
 DEP_BUILD_DIR := $(ARKOUDA_PROJECT_DIR)$(DEP_DIR)/build
@@ -118,11 +121,8 @@ ZMQ_NAME_VER := zeromq-$(ZMQ_VER)
 ZMQ_BUILD_DIR := $(DEP_BUILD_DIR)/$(ZMQ_NAME_VER)
 ZMQ_INSTALL_DIR := $(DEP_INSTALL_DIR)/zeromq-install
 ZMQ_LINK := https://github.com/zeromq/libzmq/releases/download/v$(ZMQ_VER)/$(ZMQ_NAME_VER).tar.gz
-install-zmq:
-	@echo "Installing ZeroMQ"
-	rm -rf $(ZMQ_INSTALL_DIR)
-	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
 
+zmq-download-source:
     #If the build directory does not exist,  create it
     ifeq (,$(wildcard ${ZMQ_BUILD_DIR}*/.*))
         #   If the tar.gz not found, download it
@@ -133,6 +133,13 @@ install-zmq:
 			cd $(DEP_BUILD_DIR) && tar -xzf $(ZMQ_NAME_VER)*.tar.gz
         endif
     endif
+
+install-zmq:
+	@echo "Installing ZeroMQ"
+	rm -rf $(ZMQ_INSTALL_DIR)
+	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
+
+	$(MAKE) hdf5-download-source
 
 	cd $(ZMQ_BUILD_DIR) && ./configure --prefix=$(ZMQ_INSTALL_DIR) CFLAGS=-O3 CXXFLAGS=-O3 && make && make install
 	echo '$$(eval $$(call add-path,$(ZMQ_INSTALL_DIR)))' >> Makefile.paths
@@ -154,11 +161,7 @@ HDF5_INSTALL_DIR := $(DEP_INSTALL_DIR)/hdf5-install
 # I think this seems good, but I don't love the hardcoded "-3" I'd like some input on that
 HDF5_LINK := https://support.hdfgroup.org/releases/hdf5/$(UNDERSCORED_LINK_HDF5_MAJ_MIN_VER)/$(UNDERSCORED_LINK_HDF5_VER)/downloads/$(HDF5_NAME_VER)-3.tar.gz
 
-install-hdf5:
-	@echo "Installing HDF5"
-	rm -rf $(HDF5_INSTALL_DIR)
-	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
-	
+hdf5-download-source:
     #If the build directory does not exist,  create it
     ifeq (,$(wildcard ${HDF5_BUILD_DIR}*/.*))
         #   If the tar.gz not found, download it
@@ -168,7 +171,14 @@ install-hdf5:
         else
 			cd $(DEP_BUILD_DIR) && tar -xzf $(HDF5_NAME_VER)*.tar.gz
         endif
-    endif
+    endif    
+
+install-hdf5:
+	@echo "Installing HDF5"
+	rm -rf $(HDF5_INSTALL_DIR)
+	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
+	
+	$(MAKE) hdf5-download-source
 	
 	cd $(HDF5_BUILD_DIR)* && ./configure --prefix=$(HDF5_INSTALL_DIR) --enable-optimization=high --enable-hl && make && make install
 	echo '$$(eval $$(call add-path,$(HDF5_INSTALL_DIR)))' >> Makefile.paths
@@ -194,17 +204,7 @@ NUM_CORES := $(shell nproc --all)
 
 ARROW_DEPENDENCY_SOURCE := BUNDLED
 
-
-install-arrow:
-	@echo "Installing Apache Arrow/Parquet"
-	@echo "from build directory: ${DEP_BUILD_DIR}"
-	#   if not root, use sudo
-    ifneq ($(shell id -u), 0)
-		$(eval SUDO := sudo)
-    endif
-	$(SUDO) rm -rf $(ARROW_INSTALL_DIR)
-	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
-	touch $(DEP_BUILD_DIR)/arrow_exports.sh
+arrow-download-source: 
 
     #   If the tar.gz file does not exist, fetch it
     ifeq (,$(wildcard ${DEP_BUILD_DIR}/$(ARROW_NAME_VER).tar.gz))
@@ -212,7 +212,6 @@ install-arrow:
     endif
 
 	cd $(DEP_BUILD_DIR) && tar -xvf $(ARROW_NAME_VER).tar.gz
-	mkdir -p $(ARROW_BUILD_DIR)/cpp/build-release
 
     # if the arrow dependency directory is empty of tar.gz, download the dependencies
     ifeq (,$(wildcard $(ARROW_DEP_DIR)/*.tar.gz))
@@ -220,24 +219,33 @@ install-arrow:
 		mkdir -p $(ARROW_DEP_DIR)
 		cd $(ARROW_BUILD_DIR)/cpp/thirdparty/ && ./download_dependencies.sh $(ARROW_DEP_DIR) > $(DEP_BUILD_DIR)/arrow_exports.sh
     endif
+    
+	rm -fr $(ARROW_BUILD_DIR)
+    
 
-	cd $(DEP_BUILD_DIR) && . ./arrow_exports.sh && cd $(ARROW_BUILD_DIR)/cpp/build-release && $(SUDO) cmake -S $(ARROW_BUILD_DIR)/cpp .. -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_INSTALL_PREFIX=$(ARROW_INSTALL_DIR) -DCMAKE_BUILD_TYPE=Release -DARROW_PARQUET=ON -DARROW_WITH_SNAPPY=ON -DARROW_WITH_BROTLI=ON -DARROW_WITH_BZ2=ON -DARROW_WITH_LZ4=ON -DARROW_WITH_ZLIB=ON -DARROW_WITH_ZSTD=ON -DARROW_DEPENDENCY_SOURCE=$(ARROW_DEPENDENCY_SOURCE) $(ARROW_OPTIONS) && $(SUDO) make -j$(NUM_CORES)
+install-arrow:
+	@echo "Installing Apache Arrow/Parquet"
+	@echo "from build directory: ${DEP_BUILD_DIR}"
+	rm -rf $(ARROW_INSTALL_DIR)
+	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
 
-	cd $(ARROW_BUILD_DIR)/cpp/build-release && $(SUDO) make install
+	$(MAKE) arrow-download-source
+
+	cd $(DEP_BUILD_DIR) && tar -xvf $(ARROW_NAME_VER).tar.gz
+	mkdir -p $(ARROW_BUILD_DIR)/cpp/build-release
+	
+	cd $(DEP_BUILD_DIR) && . ./arrow_exports.sh && cd $(ARROW_BUILD_DIR)/cpp/build-release && cmake -S $(ARROW_BUILD_DIR)/cpp .. -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_INSTALL_PREFIX=$(ARROW_INSTALL_DIR) -DCMAKE_BUILD_TYPE=Release -DARROW_PARQUET=ON -DARROW_WITH_SNAPPY=ON -DARROW_WITH_BROTLI=ON -DARROW_WITH_BZ2=ON -DARROW_WITH_LZ4=ON -DARROW_WITH_ZLIB=ON -DARROW_WITH_ZSTD=ON -DARROW_DEPENDENCY_SOURCE=$(ARROW_DEPENDENCY_SOURCE) $(ARROW_OPTIONS) && make -j$(NUM_CORES)
+
+	cd $(ARROW_BUILD_DIR)/cpp/build-release && make install
     
 	echo '$$(eval $$(call add-path,$(ARROW_INSTALL_DIR)))' >> Makefile.paths   
  
 
 arrow-clean:
-    #   If not root, use sudo
-    ifneq ($(shell id -u), 0)
-		$(eval SUDO := sudo)
-    endif 
-
-	$(SUDO) rm -rf $(DEP_BUILD_DIR)/apache-arrow*
-	$(SUDO) rm -rf $(DEP_BUILD_DIR)/arrow-apache-arrow*	
-	$(SUDO) rm -rf $(ARROW_DEP_DIR)
-	$(SUDO) rm -fr $(DEP_BUILD_DIR)/arrow_exports.sh
+	rm -rf $(DEP_BUILD_DIR)/apache-arrow*
+	rm -rf $(DEP_BUILD_DIR)/arrow-apache-arrow*	
+	rm -rf $(ARROW_DEP_DIR)
+	rm -fr $(DEP_BUILD_DIR)/arrow_exports.sh
 
 
 
@@ -246,11 +254,8 @@ ICONV_NAME_VER := libiconv-$(ICONV_VER)
 ICONV_BUILD_DIR := $(DEP_BUILD_DIR)/$(ICONV_NAME_VER)
 ICONV_INSTALL_DIR := $(DEP_INSTALL_DIR)/libiconv-install
 ICONV_LINK := https://ftp.gnu.org/pub/gnu/libiconv/libiconv-$(ICONV_VER).tar.gz
-install-iconv:
-	@echo "Installing iconv"
-	rm -rf $(ICONV_INSTALL_DIR)
-	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
 
+iconv-download-source:
     #If the build directory does not exist,  create it
     ifeq (,$(wildcard ${ICONV_BUILD_DIR}*/.*))
         #   If the tar.gz not found, download it
@@ -261,6 +266,13 @@ install-iconv:
 			cd $(DEP_BUILD_DIR) && tar -xzf libiconv-$(ICONV_VER).tar.gz
         endif
     endif	
+    
+install-iconv:
+	@echo "Installing iconv"
+	rm -rf $(ICONV_INSTALL_DIR)
+	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
+
+	$(MAKE) iconv-download-source	
 	
 	cd $(ICONV_BUILD_DIR) && ./configure --prefix=$(ICONV_INSTALL_DIR) && make && make install
 	echo '$$(eval $$(call add-path,$(ICONV_INSTALL_DIR)))' >> Makefile.paths
@@ -273,11 +285,8 @@ LIBIDN_NAME_VER := libidn2-$(LIBIDN_VER)
 LIBIDN_BUILD_DIR := $(DEP_BUILD_DIR)/$(LIBIDN_NAME_VER)
 LIBIDN_INSTALL_DIR := $(DEP_INSTALL_DIR)/libidn2-install
 LIBIDN_LINK := https://ftp.gnu.org/gnu/libidn/libidn2-$(LIBIDN_VER).tar.gz
-install-idn2:
-	@echo "Installing libidn2"
-	rm -rf $(LIBIDN_INSTALL_DIR)
-	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
 
+idn2-download-source:
     #If the build directory does not exist,  create it
     ifeq (,$(wildcard $(LIBIDN_BUILD_DIR)*/.*))
 		# If the tar.gz is not found, download it
@@ -288,6 +297,13 @@ install-idn2:
 			cd $(DEP_BUILD_DIR) && tar -xzf libidn2-$(LIBIDN_VER)*.tar.gz
         endif
     endif	
+
+install-idn2:
+	@echo "Installing libidn2"
+	rm -rf $(LIBIDN_INSTALL_DIR)
+	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
+
+	$(MAKE) idn2-download-source		
 	
 	cd $(LIBIDN_BUILD_DIR) && ./configure --prefix=$(LIBIDN_INSTALL_DIR) && make && make install
 	echo '$$(eval $$(call add-path,$(LIBIDN_INSTALL_DIR)))' >> Makefile.paths
@@ -298,15 +314,18 @@ idn2-clean:
 BLOSC_BUILD_DIR := $(DEP_BUILD_DIR)/c-blosc
 BLOSC_INSTALL_DIR := $(DEP_INSTALL_DIR)/c-blosc-install
 
+blosc-download-source:
+    #If the build directory does not exist,  create it
+    ifeq (,$(wildcard $(BLOSC_BUILD_DIR)/.*))
+		cd $(DEP_BUILD_DIR) && git clone https://github.com/Blosc/c-blosc.git
+    endif
+
 install-blosc:
 	@echo "Installing blosc"
 	rm -rf $(BLOSC_INSTALL_DIR)
 	mkdir -p $(BLOSC_INSTALL_DIR)
 
-    #If the build directory does not exist,  create it
-    ifeq (,$(wildcard $(BLOSC_BUILD_DIR)/.*))
-		cd $(DEP_BUILD_DIR) && git clone https://github.com/Blosc/c-blosc.git
-    endif
+	$(MAKE) blosc-download-source
 
 	cd $(BLOSC_BUILD_DIR) && cmake -DCMAKE_INSTALL_PREFIX=$(BLOSC_INSTALL_DIR) && make && make install
 	echo '$$(eval $$(call add-path,$(BLOSC_INSTALL_DIR)))' >> Makefile.paths
