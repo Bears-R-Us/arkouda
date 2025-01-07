@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>arkouda.timeclass - arkouda documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
@@ -351,24 +351,24 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.timeclass</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">datetime</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">Series</span> <span class="k">as</span> <span class="n">pdSeries</span>
-<span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">Timedelta</span> <span class="k">as</span> <span class="n">pdTimedelta</span>
-<span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">Timestamp</span> <span class="k">as</span> <span class="n">pdTimestamp</span>
-<span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">date_range</span> <span class="k">as</span> <span class="n">pd_date_range</span>
-<span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">timedelta_range</span> <span class="k">as</span> <span class="n">pd_timedelta_range</span>
-<span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">to_datetime</span><span class="p">,</span> <span class="n">to_timedelta</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">Series</span> <span class="k">as</span> <span class="n">pdSeries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">Timedelta</span> <span class="k">as</span> <span class="n">pdTimedelta</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">Timestamp</span> <span class="k">as</span> <span class="n">pdTimestamp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">date_range</span> <span class="k">as</span> <span class="n">pd_date_range</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">timedelta_range</span> <span class="k">as</span> <span class="n">pd_timedelta_range</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_datetime</span><span class="p">,</span> <span class="n">to_timedelta</span>
 
-<span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
-<span class="kn">from</span> <span class="nn">arkouda.numpy</span> <span class="kn">import</span> <span class="nb">abs</span> <span class="k">as</span> <span class="n">akabs</span>
-<span class="kn">from</span> <span class="nn">arkouda.numpy</span> <span class="kn">import</span> <span class="n">cast</span>
-<span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">int64</span><span class="p">,</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">intTypes</span><span class="p">,</span> <span class="n">isSupportedInt</span>
-<span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">RegistrationError</span><span class="p">,</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span>
-<span class="kn">from</span> <span class="nn">arkouda.pdarraycreation</span> <span class="kn">import</span> <span class="n">from_series</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="nb">abs</span> <span class="k">as</span> <span class="n">akabs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">int64</span><span class="p">,</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">intTypes</span><span class="p">,</span> <span class="n">isSupportedInt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">RegistrationError</span><span class="p">,</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_series</span>
 
 <span class="n">_BASE_UNIT</span> <span class="o">=</span> <span class="s2">&quot;ns&quot;</span>
 
@@ -399,7 +399,7 @@
 <span class="p">}</span>
 
 
-<span class="k">def</span> <span class="nf">_get_factor</span><span class="p">(</span><span class="n">unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_factor</span><span class="p">(</span><span class="n">unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
     <span class="n">unit</span> <span class="o">=</span> <span class="n">unit</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">unit</span> <span class="ow">in</span> <span class="n">_unit2factor</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">_unit2factor</span><span class="p">[</span><span class="n">unit</span><span class="p">]</span>
@@ -412,12 +412,12 @@
         <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_identity</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_identity</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">x</span>
 
 
-<span class="k">class</span> <span class="nc">_Timescalar</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scalar</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_Timescalar</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scalar</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalar</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">datetime64</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalar</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">):</span>
             <span class="n">scalar</span> <span class="o">=</span> <span class="n">to_datetime</span><span class="p">(</span><span class="n">scalar</span><span class="p">)</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalar</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">timedelta64</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalar</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">):</span>
@@ -428,7 +428,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_factor</span> <span class="o">*</span> <span class="n">scalar</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;int64&quot;</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">_AbstractBaseTime</span><span class="p">(</span><span class="n">pdarray</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_AbstractBaseTime</span><span class="p">(</span><span class="n">pdarray</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for Datetime and Timedelta; not user-facing. Arkouda handles</span>
 <span class="sd">    time similar to Pandas (albeit with less functionality), in that all absolute</span>
 <span class="sd">    and relative times are represented in nanoseconds as int64 behind the scenes.</span>
@@ -439,7 +439,7 @@
 
     <span class="n">special_objType</span> <span class="o">=</span> <span class="s2">&quot;Time&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pda</span><span class="p">,</span> <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_BASE_UNIT</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pda</span><span class="p">,</span> <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_BASE_UNIT</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">Datetime</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">Timedelta</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">pda</span><span class="o">.</span><span class="n">unit</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_factor</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">pda</span><span class="o">.</span><span class="n">_factor</span>
@@ -495,11 +495,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_populated</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_get_callback</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_callback</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
         <span class="c1"># Will be overridden by all children</span>
         <span class="k">return</span> <span class="n">_identity</span>
 
-    <span class="k">def</span> <span class="nf">floor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">floor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Round times down to the nearest integer of a given frequency.</span>
 
 <span class="sd">        Parameters</span>
@@ -515,7 +515,7 @@
         <span class="n">f</span> <span class="o">=</span> <span class="n">_get_factor</span><span class="p">(</span><span class="n">freq</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">//</span> <span class="n">f</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">freq</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">ceil</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ceil</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Round times up to the nearest integer of a given frequency.</span>
 
 <span class="sd">        Parameters</span>
@@ -531,7 +531,7 @@
         <span class="n">f</span> <span class="o">=</span> <span class="n">_get_factor</span><span class="p">(</span><span class="n">freq</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">+</span> <span class="p">(</span><span class="n">f</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">//</span> <span class="n">f</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">freq</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">round</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Round times to the nearest integer of a given frequency. Midpoint</span>
 <span class="sd">        values will be rounded to nearest even integer.</span>
 
@@ -554,18 +554,18 @@
         <span class="n">rounded</span><span class="p">[</span><span class="n">decrement</span><span class="p">]</span> <span class="o">=</span> <span class="n">rounded</span><span class="p">[</span><span class="n">decrement</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">rounded</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">freq</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">to_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="vm">__doc__</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">to_ndarray</span><span class="o">.</span><span class="vm">__doc__</span>  <span class="c1"># noqa</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">(),</span>
             <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">64[ns]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">()),</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">to_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="vm">__doc__</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span><span class="o">.</span><span class="vm">__doc__</span>  <span class="c1"># noqa</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">to_hdf</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_hdf</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span>
@@ -575,9 +575,9 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Override of the pdarray to_hdf to store the special dtype</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">typecast</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">typecast</span>
 
-        <span class="kn">from</span> <span class="nn">arkouda.io</span> <span class="kn">import</span> <span class="n">_file_type_to_int</span><span class="p">,</span> <span class="n">_mode_str_to_int</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">_file_type_to_int</span><span class="p">,</span> <span class="n">_mode_str_to_int</span>
 
         <span class="k">return</span> <span class="n">typecast</span><span class="p">(</span>
             <span class="nb">str</span><span class="p">,</span>
@@ -595,11 +595,11 @@
             <span class="p">),</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">update_hdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="n">repack</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_hdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="n">repack</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Override the pdarray implementation so that the special object type will be used.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda.io</span> <span class="kn">import</span> <span class="p">(</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.io</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
             <span class="n">_file_type_to_int</span><span class="p">,</span>
             <span class="n">_get_hdf_filetype</span><span class="p">,</span>
             <span class="n">_mode_str_to_int</span><span class="p">,</span>
@@ -626,8 +626,8 @@
         <span class="k">if</span> <span class="n">repack</span><span class="p">:</span>
             <span class="n">_repack_hdf</span><span class="p">(</span><span class="n">prefix_path</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">pdarrayIterThresh</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarrayIterThresh</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;=</span> <span class="n">pdarrayIterThresh</span><span class="p">:</span>
             <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)]</span>
@@ -643,10 +643,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_binop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_binop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
         <span class="c1"># Need to do 2 things:</span>
         <span class="c1">#  1) Determine return type, based on other&#39;s class</span>
         <span class="c1">#  2) Get other&#39;s int64 data to combine with self&#39;s data</span>
@@ -678,7 +678,7 @@
         <span class="c1"># Actual operation evaluates on the underlying int64 data</span>
         <span class="k">return</span> <span class="n">callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="n">otherdata</span><span class="p">,</span> <span class="n">op</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">_r_binop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_r_binop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
         <span class="c1"># Need to do 2 things:</span>
         <span class="c1">#  1) Determine return type, based on other&#39;s class</span>
         <span class="c1">#  2) Get other&#39;s int64 data to combine with self&#39;s data</span>
@@ -716,7 +716,7 @@
         <span class="n">callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_callback</span><span class="p">(</span><span class="n">otherclass</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">_r_binop</span><span class="p">(</span><span class="n">otherdata</span><span class="p">,</span> <span class="n">op</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">opeq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">opeq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Timedelta</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_timedelta_scalar</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">op</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">supported_opeq</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> Timedelta not supported&quot;</span><span class="p">)</span>
@@ -731,7 +731,7 @@
             <span class="k">return</span> <span class="bp">NotImplemented</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_is_datetime_scalar</span><span class="p">(</span><span class="n">scalar</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_datetime_scalar</span><span class="p">(</span><span class="n">scalar</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalar</span><span class="p">,</span> <span class="n">pdTimestamp</span><span class="p">)</span>
             <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">scalar</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">datetime64</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">scalar</span><span class="p">))</span>
@@ -739,18 +739,18 @@
         <span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_is_timedelta_scalar</span><span class="p">(</span><span class="n">scalar</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_timedelta_scalar</span><span class="p">(</span><span class="n">scalar</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalar</span><span class="p">,</span> <span class="n">pdTimedelta</span><span class="p">)</span>
             <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">scalar</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">timedelta64</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">scalar</span><span class="p">))</span>
             <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalar</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">)</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_scalar_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_scalar_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="c1"># Will be overridden in all children</span>
         <span class="k">return</span> <span class="n">key</span>
 
-    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
             <span class="c1"># Single integer index will return a pandas scalar</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scalar_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
@@ -758,7 +758,7 @@
             <span class="c1"># Slice or array index should return same class</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
 
-    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="c1"># RHS can only be vector or scalar of same class</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">):</span>
             <span class="c1"># Value.values is already in nanoseconds, so self.values</span>
@@ -771,22 +771,22 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">NotImplemented</span>
 
-    <span class="k">def</span> <span class="nf">min</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">min</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="vm">__doc__</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">min</span><span class="o">.</span><span class="vm">__doc__</span>  <span class="c1"># noqa</span>
         <span class="c1"># Return type is pandas scalar</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scalar_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
 
-    <span class="k">def</span> <span class="nf">max</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">max</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="vm">__doc__</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">max</span><span class="o">.</span><span class="vm">__doc__</span>  <span class="c1"># noqa</span>
         <span class="c1"># Return type is pandas scalar</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scalar_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
 
-    <span class="k">def</span> <span class="nf">mink</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mink</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
         <span class="vm">__doc__</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">mink</span><span class="o">.</span><span class="vm">__doc__</span>  <span class="c1"># noqa</span>
         <span class="c1"># Return type is same class</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">mink</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">maxk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">maxk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
         <span class="vm">__doc__</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">maxk</span><span class="o">.</span><span class="vm">__doc__</span>  <span class="c1"># noqa</span>
         <span class="c1"># Return type is same class</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">maxk</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
@@ -794,7 +794,7 @@
 
 <div class="viewcode-block" id="Datetime">
 <a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.Datetime">[docs]</a>
-<span class="k">class</span> <span class="nc">Datetime</span><span class="p">(</span><span class="n">_AbstractBaseTime</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Datetime</span><span class="p">(</span><span class="n">_AbstractBaseTime</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a date and/or time.</span>
 
 <span class="sd">    Datetime is the Arkouda analog to pandas DatetimeIndex and</span>
@@ -836,7 +836,7 @@
 
     <span class="n">special_objType</span> <span class="o">=</span> <span class="s2">&quot;Datetime&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_ensure_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ensure_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_populated</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="c1"># lazy initialize all attributes in one server call</span>
@@ -859,83 +859,83 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_populated</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">nanosecond</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">nanosecond</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ns</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">microsecond</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">microsecond</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_us</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">millisecond</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">millisecond</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ms</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">second</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">second</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">minute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">minute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_min</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">hour</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hour</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hour</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">day</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">day</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_day</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">month</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">month</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_month</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">year</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">year</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_year</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">day_of_year</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">day_of_year</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_day_of_year</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">dayofyear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dayofyear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">day_of_year</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">day_of_week</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">day_of_week</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_day_of_week</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">dayofweek</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dayofweek</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">day_of_week</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">weekday</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">weekday</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">day_of_week</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">week</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">week</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_week_of_year</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">weekofyear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">weekofyear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">week</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">date</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">date</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># no need to call _ensure_components for the date</span>
         <span class="c1"># if _date has been set, return it. Otherwise set it first</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_date&quot;</span><span class="p">):</span>
@@ -943,14 +943,14 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_date</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_leap_year</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_leap_year</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_leap_year</span>
 
 <div class="viewcode-block" id="Datetime.isocalendar">
 <a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.Datetime.isocalendar">[docs]</a>
-    <span class="k">def</span> <span class="nf">isocalendar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">arkouda</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">isocalendar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrame</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">DataFrame</span><span class="p">(</span>
@@ -963,7 +963,7 @@
 
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_get_callback</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">otherclass</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_callback</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">otherclass</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
         <span class="n">callbacks</span> <span class="o">=</span> <span class="p">{</span>
             <span class="p">(</span><span class="s2">&quot;Datetime&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">):</span> <span class="n">Timedelta</span><span class="p">,</span>  <span class="c1"># Datetime - Datetime -&gt; Timedelta</span>
             <span class="p">(</span><span class="s2">&quot;Timedelta&quot;</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">):</span> <span class="bp">cls</span><span class="p">,</span>  <span class="c1"># Datetime + Timedelta -&gt; Datetime</span>
@@ -973,18 +973,18 @@
         <span class="c1"># Every other supported op returns an int64 pdarray, so callback is identity</span>
         <span class="k">return</span> <span class="n">callbacks</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">otherclass</span><span class="p">,</span> <span class="n">op</span><span class="p">),</span> <span class="n">_identity</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_scalar_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scalar</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_scalar_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scalar</span><span class="p">):</span>
         <span class="c1"># Formats a scalar return value as pandas Timestamp</span>
         <span class="k">return</span> <span class="n">pdTimestamp</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">scalar</span><span class="p">),</span> <span class="n">unit</span><span class="o">=</span><span class="n">_BASE_UNIT</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_is_supported_scalar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scalar</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_supported_scalar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scalar</span><span class="p">):</span>
         <span class="c1"># Tests whether scalar has compatible type with self&#39;s elements</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_datetime_scalar</span><span class="p">(</span><span class="n">scalar</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Datetime.to_pandas">
 <a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.Datetime.to_pandas">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_pandas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_pandas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert array to a pandas DatetimeIndex. Note: if the array size</span>
 <span class="sd">        exceeds client.maxTransferBytes, a RuntimeError is raised.</span>
 
@@ -997,13 +997,13 @@
 
 <div class="viewcode-block" id="Datetime.sum">
 <a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.Datetime.sum">[docs]</a>
-    <span class="k">def</span> <span class="nf">sum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Cannot sum datetime64 values&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Datetime.register">
 <a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.Datetime.register">[docs]</a>
-    <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_defined_name</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_defined_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Register this Datetime object and underlying components with the Arkouda server</span>
 
@@ -1037,7 +1037,7 @@
 <span class="sd">        Objects registered with the server are immune to deletion until</span>
 <span class="sd">        they are unregistered.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_registered</span><span class="p">():</span>
             <span class="k">raise</span> <span class="n">RegistrationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This object is already registered as </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1055,7 +1055,7 @@
 
 <div class="viewcode-block" id="Datetime.unregister">
 <a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.Datetime.unregister">[docs]</a>
-    <span class="k">def</span> <span class="nf">unregister</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unregister</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Unregister this Datetime object in the arkouda server which was previously</span>
 <span class="sd">        registered using register() and/or attached to using attach()</span>
@@ -1075,7 +1075,7 @@
 <span class="sd">        Objects registered with the server are immune to deletion until</span>
 <span class="sd">        they are unregistered.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">unregister</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">unregister</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">RegistrationError</span><span class="p">(</span><span class="s2">&quot;This object is not registered&quot;</span><span class="p">)</span>
@@ -1085,7 +1085,7 @@
 
 <div class="viewcode-block" id="Datetime.is_registered">
 <a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.Datetime.is_registered">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">         Return True iff the object is contained in the registry or is a component of a</span>
 <span class="sd">         registered object.</span>
@@ -1109,7 +1109,7 @@
 <span class="sd">        Objects registered with the server are immune to deletion until</span>
 <span class="sd">        they are unregistered.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">is_registered</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_registered</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">(</span><span class="n">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">as_component</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
@@ -1121,7 +1121,7 @@
 
 <div class="viewcode-block" id="Timedelta">
 <a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.Timedelta">[docs]</a>
-<span class="k">class</span> <span class="nc">Timedelta</span><span class="p">(</span><span class="n">_AbstractBaseTime</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Timedelta</span><span class="p">(</span><span class="n">_AbstractBaseTime</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a duration, the difference between two dates or times.</span>
 
 <span class="sd">    Timedelta is the Arkouda equivalent of pandas.TimedeltaIndex.</span>
@@ -1162,7 +1162,7 @@
 
     <span class="n">special_objType</span> <span class="o">=</span> <span class="s2">&quot;Timedelta&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_ensure_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ensure_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_populated</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="c1"># lazy initialize all attributes in one server call</span>
@@ -1182,35 +1182,35 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_populated</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">nanoseconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">nanoseconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nanoseconds</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">microseconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">microseconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_microseconds</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">seconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">seconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seconds</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">days</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">days</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_days</span>
 
 <div class="viewcode-block" id="Timedelta.total_seconds">
 <a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.Timedelta.total_seconds">[docs]</a>
-    <span class="k">def</span> <span class="nf">total_seconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">total_seconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_total_seconds</span></div>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">arkouda</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrame</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">DataFrame</span><span class="p">(</span>
@@ -1226,7 +1226,7 @@
         <span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_get_callback</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">otherclass</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_callback</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">otherclass</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
         <span class="n">callbacks</span> <span class="o">=</span> <span class="p">{</span>
             <span class="p">(</span><span class="s2">&quot;Timedelta&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">):</span> <span class="bp">cls</span><span class="p">,</span>  <span class="c1"># Timedelta - Timedelta -&gt; Timedelta</span>
             <span class="p">(</span><span class="s2">&quot;Timedelta&quot;</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">):</span> <span class="bp">cls</span><span class="p">,</span>  <span class="c1"># Timedelta + Timedelta -&gt; Timedelta</span>
@@ -1239,17 +1239,17 @@
         <span class="c1"># Every other supported op returns an int64 pdarray, so callback is identity</span>
         <span class="k">return</span> <span class="n">callbacks</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">otherclass</span><span class="p">,</span> <span class="n">op</span><span class="p">),</span> <span class="n">_identity</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_scalar_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scalar</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_scalar_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scalar</span><span class="p">):</span>
         <span class="c1"># Formats a returned scalar as a pandas.Timedelta</span>
         <span class="k">return</span> <span class="n">pdTimedelta</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">scalar</span><span class="p">),</span> <span class="n">unit</span><span class="o">=</span><span class="n">_BASE_UNIT</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_is_supported_scalar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scalar</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_supported_scalar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scalar</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_timedelta_scalar</span><span class="p">(</span><span class="n">scalar</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Timedelta.to_pandas">
 <a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.Timedelta.to_pandas">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_pandas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_pandas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert array to a pandas TimedeltaIndex. Note: if the array size</span>
 <span class="sd">        exceeds client.maxTransferBytes, a RuntimeError is raised.</span>
 
@@ -1262,7 +1262,7 @@
 
 <div class="viewcode-block" id="Timedelta.std">
 <a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.Timedelta.std">[docs]</a>
-    <span class="k">def</span> <span class="nf">std</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ddof</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">std</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ddof</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the standard deviation as a pd.Timedelta object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1271,21 +1271,21 @@
 
 <div class="viewcode-block" id="Timedelta.sum">
 <a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.Timedelta.sum">[docs]</a>
-    <span class="k">def</span> <span class="nf">sum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Sum as a pd.Timedelta</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scalar_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span></div>
 
 
 <div class="viewcode-block" id="Timedelta.abs">
 <a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.Timedelta.abs">[docs]</a>
-    <span class="k">def</span> <span class="nf">abs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">abs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Absolute value of time interval.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">akabs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">),</span> <span class="s2">&quot;int64&quot;</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="Timedelta.register">
 <a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.Timedelta.register">[docs]</a>
-    <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_defined_name</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_defined_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Register this Timedelta object and underlying components with the Arkouda server</span>
 
@@ -1319,7 +1319,7 @@
 <span class="sd">        Objects registered with the server are immune to deletion until</span>
 <span class="sd">        they are unregistered.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_registered</span><span class="p">():</span>
             <span class="k">raise</span> <span class="n">RegistrationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This object is already registered as </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1337,7 +1337,7 @@
 
 <div class="viewcode-block" id="Timedelta.unregister">
 <a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.Timedelta.unregister">[docs]</a>
-    <span class="k">def</span> <span class="nf">unregister</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unregister</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Unregister this timedelta object in the arkouda server which was previously</span>
 <span class="sd">        registered using register() and/or attached to using attach()</span>
@@ -1357,7 +1357,7 @@
 <span class="sd">        Objects registered with the server are immune to deletion until</span>
 <span class="sd">        they are unregistered.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">unregister</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">unregister</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">RegistrationError</span><span class="p">(</span><span class="s2">&quot;This object is not registered&quot;</span><span class="p">)</span>
@@ -1367,7 +1367,7 @@
 
 <div class="viewcode-block" id="Timedelta.is_registered">
 <a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.Timedelta.is_registered">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">         Return True iff the object is contained in the registry or is a component of a</span>
 <span class="sd">         registered object.</span>
@@ -1391,7 +1391,7 @@
 <span class="sd">        Objects registered with the server are immune to deletion until</span>
 <span class="sd">        they are unregistered.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">is_registered</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_registered</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">(</span><span class="n">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">as_component</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
@@ -1403,7 +1403,7 @@
 
 <div class="viewcode-block" id="date_range">
 <a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.date_range">[docs]</a>
-<span class="k">def</span> <span class="nf">date_range</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">date_range</span><span class="p">(</span>
     <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">periods</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1488,7 +1488,7 @@
 
 <div class="viewcode-block" id="timedelta_range">
 <a class="viewcode-back" href="../../autoapi/arkouda/timeclass/index.html#arkouda.timedelta_range">[docs]</a>
-<span class="k">def</span> <span class="nf">timedelta_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">closed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">timedelta_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">closed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a fixed frequency TimedeltaIndex, with day as the default</span>
 <span class="sd">    frequency. Alias for ``ak.Timedelta(pd.timedelta_range(args))``.</span>
 <span class="sd">    Subject to size limit imposed by client.maxTransferBytes.</span>

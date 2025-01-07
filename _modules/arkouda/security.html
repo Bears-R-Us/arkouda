@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>arkouda.security - arkouda documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
@@ -351,17 +351,17 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.security</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">platform</span>
-<span class="kn">import</span> <span class="nn">secrets</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">expanduser</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">platform</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">secrets</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">os.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">expanduser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
-<span class="kn">from</span> <span class="nn">typeguard</span> <span class="kn">import</span> <span class="n">typechecked</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typeguard</span><span class="w"> </span><span class="kn">import</span> <span class="n">typechecked</span>
 
-<span class="kn">from</span> <span class="nn">arkouda</span> <span class="kn">import</span> <span class="n">io_util</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">io_util</span>
 
 <span class="n">username_tokenizer</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">))</span>  <span class="c1"># type:ignore</span>
 <span class="n">username_tokenizer</span><span class="p">[</span><span class="s2">&quot;Windows&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -372,7 +372,7 @@
 <div class="viewcode-block" id="generate_token">
 <a class="viewcode-back" href="../../autoapi/arkouda/security/index.html#arkouda.security.generate_token">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">generate_token</span><span class="p">(</span><span class="n">length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_token</span><span class="p">(</span><span class="n">length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Uses the secrets.token_hex() method to generate a</span>
 <span class="sd">    a hexidecimal token</span>
@@ -397,7 +397,7 @@
 
 <div class="viewcode-block" id="get_home_directory">
 <a class="viewcode-back" href="../../autoapi/arkouda/security/index.html#arkouda.security.get_home_directory">[docs]</a>
-<span class="k">def</span> <span class="nf">get_home_directory</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_home_directory</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A platform-independent means of finding path to</span>
 <span class="sd">    the current user&#39;s home directory</span>
@@ -418,7 +418,7 @@
 
 <div class="viewcode-block" id="get_arkouda_client_directory">
 <a class="viewcode-back" href="../../autoapi/arkouda/security/index.html#arkouda.security.get_arkouda_client_directory">[docs]</a>
-<span class="k">def</span> <span class="nf">get_arkouda_client_directory</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_arkouda_client_directory</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A platform-independent means of finding path to</span>
 <span class="sd">    the current user&#39;s .arkouda directory where artifacts</span>
@@ -446,7 +446,7 @@
 
 <div class="viewcode-block" id="get_username">
 <a class="viewcode-back" href="../../autoapi/arkouda/security/index.html#arkouda.security.get_username">[docs]</a>
-<span class="k">def</span> <span class="nf">get_username</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_username</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A platform-independent means of retrieving the current</span>
 <span class="sd">    user&#39;s username for the host system.</span>
@@ -477,7 +477,7 @@
 <div class="viewcode-block" id="generate_username_token_json">
 <a class="viewcode-back" href="../../autoapi/arkouda/security/index.html#arkouda.security.generate_username_token_json">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">generate_username_token_json</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_username_token_json</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates a JSON object encapsulating the user&#39;s username</span>
 <span class="sd">    and token for connecting to an arkouda server with basic</span>

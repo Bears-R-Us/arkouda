@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>arkouda.dataframe - arkouda documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
@@ -351,48 +351,48 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.dataframe</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">UserDict</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">reduce</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
-<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">reduce</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>  <span class="c1"># type: ignore</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>  <span class="c1"># type: ignore</span>
-<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">ndarray</span>
-<span class="kn">from</span> <span class="nn">numpy._typing</span> <span class="kn">import</span> <span class="n">_8Bit</span><span class="p">,</span> <span class="n">_16Bit</span><span class="p">,</span> <span class="n">_32Bit</span><span class="p">,</span> <span class="n">_64Bit</span>
-<span class="kn">from</span> <span class="nn">typeguard</span> <span class="kn">import</span> <span class="n">typechecked</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>  <span class="c1"># type: ignore</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>  <span class="c1"># type: ignore</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">ndarray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy._typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">_8Bit</span><span class="p">,</span> <span class="n">_16Bit</span><span class="p">,</span> <span class="n">_32Bit</span><span class="p">,</span> <span class="n">_64Bit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typeguard</span><span class="w"> </span><span class="kn">import</span> <span class="n">typechecked</span>
 
-<span class="kn">from</span> <span class="nn">arkouda</span> <span class="kn">import</span> <span class="n">sort</span> <span class="k">as</span> <span class="n">aksort</span>
-<span class="kn">from</span> <span class="nn">arkouda.categorical</span> <span class="kn">import</span> <span class="n">Categorical</span>
-<span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span><span class="p">,</span> <span class="n">maxTransferBytes</span>
-<span class="kn">from</span> <span class="nn">arkouda.client_dtypes</span> <span class="kn">import</span> <span class="n">BitVector</span><span class="p">,</span> <span class="n">Fields</span><span class="p">,</span> <span class="n">IPv4</span>
-<span class="kn">from</span> <span class="nn">arkouda.groupbyclass</span> <span class="kn">import</span> <span class="n">GROUPBY_REDUCTION_TYPES</span>
-<span class="kn">from</span> <span class="nn">arkouda.groupbyclass</span> <span class="kn">import</span> <span class="n">GroupBy</span> <span class="k">as</span> <span class="n">akGroupBy</span>
-<span class="kn">from</span> <span class="nn">arkouda.groupbyclass</span> <span class="kn">import</span> <span class="n">unique</span>
-<span class="kn">from</span> <span class="nn">arkouda.index</span> <span class="kn">import</span> <span class="n">Index</span><span class="p">,</span> <span class="n">MultiIndex</span>
-<span class="kn">from</span> <span class="nn">arkouda.join</span> <span class="kn">import</span> <span class="n">inner_join</span>
-<span class="kn">from</span> <span class="nn">arkouda.numpy</span> <span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
-<span class="kn">from</span> <span class="nn">arkouda.numpy</span> <span class="kn">import</span> <span class="n">cumsum</span><span class="p">,</span> <span class="n">where</span>
-<span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">_is_dtype_in_union</span><span class="p">,</span> <span class="n">bigint</span>
-<span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">bool_</span> <span class="k">as</span> <span class="n">akbool</span>
-<span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">float64</span> <span class="k">as</span> <span class="n">akfloat64</span>
-<span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">int64</span> <span class="k">as</span> <span class="n">akint64</span>
-<span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">numeric_scalars</span>
-<span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">uint64</span> <span class="k">as</span> <span class="n">akuint64</span>
-<span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">RegistrationError</span><span class="p">,</span> <span class="n">pdarray</span>
-<span class="kn">from</span> <span class="nn">arkouda.pdarraycreation</span> <span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">full</span><span class="p">,</span> <span class="n">zeros</span>
-<span class="kn">from</span> <span class="nn">arkouda.pdarraysetops</span> <span class="kn">import</span> <span class="n">concatenate</span><span class="p">,</span> <span class="n">in1d</span><span class="p">,</span> <span class="n">intersect1d</span>
-<span class="kn">from</span> <span class="nn">arkouda.row</span> <span class="kn">import</span> <span class="n">Row</span>
-<span class="kn">from</span> <span class="nn">arkouda.segarray</span> <span class="kn">import</span> <span class="n">SegArray</span>
-<span class="kn">from</span> <span class="nn">arkouda.series</span> <span class="kn">import</span> <span class="n">Series</span>
-<span class="kn">from</span> <span class="nn">arkouda.sorting</span> <span class="kn">import</span> <span class="n">argsort</span><span class="p">,</span> <span class="n">coargsort</span>
-<span class="kn">from</span> <span class="nn">arkouda.strings</span> <span class="kn">import</span> <span class="n">Strings</span>
-<span class="kn">from</span> <span class="nn">arkouda.timeclass</span> <span class="kn">import</span> <span class="n">Datetime</span><span class="p">,</span> <span class="n">Timedelta</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">sort</span> <span class="k">as</span> <span class="n">aksort</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span><span class="p">,</span> <span class="n">maxTransferBytes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client_dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">BitVector</span><span class="p">,</span> <span class="n">Fields</span><span class="p">,</span> <span class="n">IPv4</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.groupbyclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">GROUPBY_REDUCTION_TYPES</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.groupbyclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">GroupBy</span> <span class="k">as</span> <span class="n">akGroupBy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.groupbyclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">unique</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.index</span><span class="w"> </span><span class="kn">import</span> <span class="n">Index</span><span class="p">,</span> <span class="n">MultiIndex</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.join</span><span class="w"> </span><span class="kn">import</span> <span class="n">inner_join</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">cumsum</span><span class="p">,</span> <span class="n">where</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">_is_dtype_in_union</span><span class="p">,</span> <span class="n">bigint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">bool_</span> <span class="k">as</span> <span class="n">akbool</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">float64</span> <span class="k">as</span> <span class="n">akfloat64</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">int64</span> <span class="k">as</span> <span class="n">akint64</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">numeric_scalars</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">uint64</span> <span class="k">as</span> <span class="n">akuint64</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">RegistrationError</span><span class="p">,</span> <span class="n">pdarray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">full</span><span class="p">,</span> <span class="n">zeros</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pdarraysetops</span><span class="w"> </span><span class="kn">import</span> <span class="n">concatenate</span><span class="p">,</span> <span class="n">in1d</span><span class="p">,</span> <span class="n">intersect1d</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.row</span><span class="w"> </span><span class="kn">import</span> <span class="n">Row</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.segarray</span><span class="w"> </span><span class="kn">import</span> <span class="n">SegArray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.series</span><span class="w"> </span><span class="kn">import</span> <span class="n">Series</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.sorting</span><span class="w"> </span><span class="kn">import</span> <span class="n">argsort</span><span class="p">,</span> <span class="n">coargsort</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.timeclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">Datetime</span><span class="p">,</span> <span class="n">Timedelta</span>
 
 <span class="c1"># This is necessary for displaying DataFrames with BitVector columns,</span>
 <span class="c1"># because pandas _html_repr automatically truncates the number of displayed bits</span>
@@ -409,7 +409,7 @@
 <span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">apply_if_callable</span><span class="p">(</span><span class="n">maybe_callable</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">apply_if_callable</span><span class="p">(</span><span class="n">maybe_callable</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Evaluate possibly callable input using obj and kwargs if it is callable,</span>
 <span class="sd">    otherwise return as it is.</span>
@@ -426,7 +426,7 @@
     <span class="k">return</span> <span class="n">maybe_callable</span>
 
 
-<span class="k">def</span> <span class="nf">groupby_operators</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">groupby_operators</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">GROUPBY_REDUCTION_TYPES</span><span class="p">:</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_make_aggop</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
     <span class="k">return</span> <span class="bp">cls</span>
@@ -435,7 +435,7 @@
 <div class="viewcode-block" id="DataFrameGroupBy">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrameGroupBy">[docs]</a>
 <span class="nd">@groupby_operators</span>
-<span class="k">class</span> <span class="nc">DataFrameGroupBy</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataFrameGroupBy</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A DataFrame that has been grouped by a subset of columns.</span>
 
@@ -461,7 +461,7 @@
 <span class="sd">        If True the grouped values of the aggregation keys will be treated as an index.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gb</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">gb_key_names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gb</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">gb_key_names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">gb</span> <span class="o">=</span> <span class="n">gb</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span>
@@ -475,8 +475,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">all_non_nan</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropna</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">arkouda</span> <span class="kn">import</span> <span class="nb">all</span> <span class="k">as</span> <span class="n">ak_all</span>
-            <span class="kn">from</span> <span class="nn">arkouda</span> <span class="kn">import</span> <span class="n">isnan</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="nb">all</span> <span class="k">as</span> <span class="n">ak_all</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">isnan</span>
 
             <span class="c1"># calculate ~isnan on each key then &amp; them all together</span>
             <span class="c1"># keep up with if they&#39;re all_non_nan, so we can skip indexing later</span>
@@ -496,7 +496,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">where_not_nan</span> <span class="o">=</span> <span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">x</span> <span class="o">&amp;</span> <span class="n">y</span><span class="p">,</span> <span class="n">where_key_not_nan</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">all_non_nan</span> <span class="o">=</span> <span class="n">ak_all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">where_not_nan</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_get_df_col</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_df_col</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
         <span class="c1"># helper function to mask out the values where the keys are nan when dropna is True</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropna</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_non_nan</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
@@ -504,10 +504,10 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">where_not_nan</span><span class="p">]</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_make_aggop</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">opname</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_make_aggop</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">opname</span><span class="p">):</span>
         <span class="n">numerical_dtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">akfloat64</span><span class="p">,</span> <span class="n">akint64</span><span class="p">,</span> <span class="n">akuint64</span><span class="p">]</span>
 
-        <span class="k">def</span> <span class="nf">aggop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">aggop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Aggregate the operation, with the grouped column(s) values as keys.</span>
 
@@ -559,7 +559,7 @@
 
 <div class="viewcode-block" id="DataFrameGroupBy.size">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrameGroupBy.size">[docs]</a>
-    <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">as_series</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_index</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">as_series</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_index</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the size of each value as the total number of rows, including NaN values.</span>
 
@@ -617,7 +617,7 @@
 
 <div class="viewcode-block" id="DataFrameGroupBy.head">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrameGroupBy.head">[docs]</a>
-    <span class="k">def</span> <span class="nf">head</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">head</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
         <span class="n">sort_index</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -696,7 +696,7 @@
 
 <div class="viewcode-block" id="DataFrameGroupBy.tail">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrameGroupBy.tail">[docs]</a>
-    <span class="k">def</span> <span class="nf">tail</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tail</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
         <span class="n">sort_index</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -774,7 +774,7 @@
 
 <div class="viewcode-block" id="DataFrameGroupBy.sample">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrameGroupBy.sample">[docs]</a>
-    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">frac</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">frac</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a random sample from each group. You can either specify the number of elements</span>
 <span class="sd">        or the fraction of elements to be sampled. random_state can be used for reproducibility</span>
@@ -893,7 +893,7 @@
         <span class="p">]</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_return_agg_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">sort_index</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_return_agg_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">sort_index</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_index</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb_key_names</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
                 <span class="c1"># handle when values is a tuple/list containing data and index</span>
@@ -910,7 +910,7 @@
 
                 <span class="n">series</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">Index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gb_key_names</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb_key_names</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb_key_names</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">arkouda.index</span> <span class="kn">import</span> <span class="n">MultiIndex</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.index</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiIndex</span>
 
                 <span class="c1"># handle when values is a tuple/list containing data and index</span>
                 <span class="c1"># since we are also sending the index keyword</span>
@@ -929,7 +929,7 @@
 
         <span class="k">return</span> <span class="n">series</span>
 
-    <span class="k">def</span> <span class="nf">_return_agg_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">sort_index</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_return_agg_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">sort_index</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb_key_names</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_index</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
                 <span class="n">df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span>
@@ -964,7 +964,7 @@
 
 <div class="viewcode-block" id="DataFrameGroupBy.diff">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrameGroupBy.diff">[docs]</a>
-    <span class="k">def</span> <span class="nf">diff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colname</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">diff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colname</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a difference aggregate for the given column.</span>
 
@@ -1016,7 +1016,7 @@
 
 <div class="viewcode-block" id="DataFrameGroupBy.broadcast">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrameGroupBy.broadcast">[docs]</a>
-    <span class="k">def</span> <span class="nf">broadcast</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">permute</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">broadcast</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">permute</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fill each group’s segment with a constant value.</span>
 
@@ -1086,7 +1086,7 @@
 <div class="viewcode-block" id="DiffAggregate">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DiffAggregate">[docs]</a>
 <span class="nd">@groupby_operators</span>
-<span class="k">class</span> <span class="nc">DiffAggregate</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DiffAggregate</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A column in a GroupBy that has been differenced.</span>
 <span class="sd">    Aggregation operations can be done on the result.</span>
@@ -1099,7 +1099,7 @@
 <span class="sd">        A column to compute the difference on.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gb</span><span class="p">,</span> <span class="n">series</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gb</span><span class="p">,</span> <span class="n">series</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gb</span> <span class="o">=</span> <span class="n">gb</span>
 
         <span class="n">values</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">series</span><span class="p">),</span> <span class="s2">&quot;float64&quot;</span><span class="p">)</span>
@@ -1109,8 +1109,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">values</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_make_aggop</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">opname</span><span class="p">):</span>
-        <span class="k">def</span> <span class="nf">aggop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_make_aggop</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">opname</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">aggop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">opname</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">aggop</span></div>
@@ -1124,7 +1124,7 @@
 
 <div class="viewcode-block" id="DataFrame">
 <a class="viewcode-back" href="../../usage/dataframe.html#arkouda.dataframe.DataFrame">[docs]</a>
-<span class="k">class</span> <span class="nc">DataFrame</span><span class="p">(</span><span class="n">UserDict</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataFrame</span><span class="p">(</span><span class="n">UserDict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A DataFrame structure based on arkouda arrays.</span>
 
@@ -1278,7 +1278,7 @@
 
     <span class="n">objType</span> <span class="o">=</span> <span class="s2">&quot;DataFrame&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initialdata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initialdata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -1394,17 +1394,17 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_set_index</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update_nrows</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Attribute </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> not found&quot;</span><span class="p">)</span>
         <span class="c1"># Should this be cached?</span>
         <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__dir__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__dir__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">dir</span><span class="p">(</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;columns&quot;</span><span class="p">]</span>
 
     <span class="c1"># delete a column</span>
-    <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="c1"># This function is a backdoor to messing up the indices and columns.</span>
         <span class="c1"># I needed to reimplement it to prevent bad behavior</span>
         <span class="n">UserDict</span><span class="o">.</span><span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
@@ -1416,7 +1416,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_empty</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_nrows</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="c1"># convert series to underlying values</span>
         <span class="c1"># Should check for index alignment</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">Series</span><span class="p">):</span>
@@ -1476,7 +1476,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;Invalid selector: unknown error.&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_nrows</span><span class="p">()</span>
 
         <span class="c1"># If this is the first column added, we must create an index column.</span>
@@ -1531,13 +1531,13 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">update_nrows</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_set_index</span><span class="p">(</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nrows</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the number of rows.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nrows</span>
 
-    <span class="k">def</span> <span class="nf">_ncols</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ncols</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Number of columns.</span>
 <span class="sd">        If index appears, we now want to utilize this</span>
@@ -1545,7 +1545,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a summary string of this dataframe.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1576,7 +1576,7 @@
             <span class="n">rows</span> <span class="o">=</span> <span class="s2">&quot; row&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;DataFrame([&quot;</span> <span class="o">+</span> <span class="n">keystr</span> <span class="o">+</span> <span class="s2">&quot;], </span><span class="si">{:,}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nrows</span><span class="p">)</span> <span class="o">+</span> <span class="n">rows</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">mem</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_get_head_tail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_head_tail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_empty</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_nrows</span><span class="p">()</span>
@@ -1603,7 +1603,7 @@
         <span class="n">newdf</span><span class="o">.</span><span class="n">_set_index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">newdf</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">(</span><span class="n">retain_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_get_head_tail_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_head_tail_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_empty</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_nrows</span><span class="p">()</span>
@@ -1693,7 +1693,7 @@
 
 <div class="viewcode-block" id="DataFrame.transfer">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.transfer">[docs]</a>
-    <span class="k">def</span> <span class="nf">transfer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">transfer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sends a DataFrame to a different Arkouda server.</span>
 
@@ -1768,10 +1768,10 @@
         <span class="k">return</span> <span class="n">repMsg</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_shape_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_shape_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_nrows</span><span class="si">}</span><span class="s2"> rows x </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ncols</span><span class="p">()</span><span class="si">}</span><span class="s2"> columns&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return ascii-formatted version of the dataframe.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1782,7 +1782,7 @@
         <span class="n">retval</span> <span class="o">+=</span> <span class="s2">&quot; (&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shape_str</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
         <span class="k">return</span> <span class="n">retval</span>
 
-    <span class="k">def</span> <span class="nf">_repr_html_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_html_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return html-formatted version of the dataframe.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1793,13 +1793,13 @@
         <span class="n">retval</span> <span class="o">+=</span> <span class="s2">&quot;&lt;p&gt;&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shape_str</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;&lt;/p&gt;&quot;</span>
         <span class="k">return</span> <span class="n">retval</span>
 
-    <span class="k">def</span> <span class="nf">_ipython_key_completions_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ipython_key_completions_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_columns</span>
 
 <div class="viewcode-block" id="DataFrame.from_pandas">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.from_pandas">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_pandas</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">pd_df</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_pandas</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">pd_df</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Copy the data from a pandas DataFrame into a new arkouda.dataframe.DataFrame.</span>
 
@@ -1848,7 +1848,7 @@
         <span class="k">return</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">initialdata</span><span class="o">=</span><span class="n">pd_df</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_drop_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_drop_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Drop a column or columns from the dataframe, in-place.</span>
 
@@ -1860,7 +1860,7 @@
             <span class="c1"># Use self.pop(key, None) if we do not want to error</span>
             <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">_drop_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_drop_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Drop a row or rows from the dataframe, in-place.</span>
 
@@ -1890,7 +1890,7 @@
 <div class="viewcode-block" id="DataFrame.drop">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.drop">[docs]</a>
     <span class="nd">@typechecked</span>
-    <span class="k">def</span> <span class="nf">drop</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">drop</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">keys</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]],</span>
         <span class="n">axis</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
@@ -1983,7 +1983,7 @@
 
 <div class="viewcode-block" id="DataFrame.drop_duplicates">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.drop_duplicates">[docs]</a>
-    <span class="k">def</span> <span class="nf">drop_duplicates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="s2">&quot;first&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">drop_duplicates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="s2">&quot;first&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Drops duplcated rows and returns resulting DataFrame.</span>
 
@@ -2059,7 +2059,7 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the number of bytes on the arkouda server.</span>
 
@@ -2096,7 +2096,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">dtypes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dtypes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The dtypes of the dataframe.</span>
 
@@ -2150,7 +2150,7 @@
         <span class="k">return</span> <span class="n">res</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">empty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">empty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Whether the dataframe is empty.</span>
 
@@ -2173,7 +2173,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_empty</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The shape of the dataframe.</span>
 
@@ -2209,7 +2209,7 @@
         <span class="k">return</span> <span class="p">(</span><span class="n">nrows</span><span class="p">,</span> <span class="n">num_cols</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">columns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">columns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        An Index where the values are the column names of the dataframe.</span>
 
@@ -2245,7 +2245,7 @@
         <span class="k">return</span> <span class="n">Index</span><span class="p">(</span><span class="n">column_names</span><span class="p">,</span> <span class="n">allow_list</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The index of the dataframe.</span>
 
@@ -2275,7 +2275,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span>
 
-    <span class="k">def</span> <span class="nf">_set_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Index</span><span class="p">)</span> <span class="ow">or</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">)):</span>
@@ -2291,7 +2291,7 @@
 <div class="viewcode-block" id="DataFrame.reset_index">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.reset_index">[docs]</a>
     <span class="nd">@typechecked</span>
-    <span class="k">def</span> <span class="nf">reset_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the index to an integer range.</span>
 
@@ -2376,7 +2376,7 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a summary string of this dataframe.</span>
 
@@ -2434,7 +2434,7 @@
 
 <div class="viewcode-block" id="DataFrame.update_nrows">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.update_nrows">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_nrows</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_nrows</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes the number of rows on the arkouda server and updates the size parameter.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2451,7 +2451,7 @@
 
 
     <span class="nd">@typechecked</span>
-    <span class="k">def</span> <span class="nf">_rename_column</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_rename_column</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">mapper</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span> <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataFrame</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2505,7 +2505,7 @@
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="nd">@typechecked</span>
-    <span class="k">def</span> <span class="nf">_rename_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapper</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span> <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataFrame</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_rename_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapper</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span> <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataFrame</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Rename indexes within the dataframe</span>
 
@@ -2553,7 +2553,7 @@
 <div class="viewcode-block" id="DataFrame.rename">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.rename">[docs]</a>
     <span class="nd">@typechecked</span>
-    <span class="k">def</span> <span class="nf">rename</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rename</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">mapper</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">index</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2679,7 +2679,7 @@
 
 <div class="viewcode-block" id="DataFrame.append">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.append">[docs]</a>
-    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Concatenate data from &#39;other&#39; onto the end of this DataFrame, in place.</span>
 
@@ -2740,7 +2740,7 @@
 <span class="sd">        +----+--------+--------+</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">generic_concat</span> <span class="k">as</span> <span class="n">util_concatenate</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_concat</span> <span class="k">as</span> <span class="n">util_concatenate</span>
 
         <span class="c1"># Do nothing if the other dataframe is empty</span>
         <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
@@ -2767,7 +2767,7 @@
                 <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">&quot;Incompatible types for column </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">])</span><span class="si">}</span><span class="s2"> vs </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">[</span><span class="n">key</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span>
-                    <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+                    <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">tmp_data</span>
 
         <span class="c1"># Clean up</span>
@@ -2781,12 +2781,12 @@
 <div class="viewcode-block" id="DataFrame.concat">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.concat">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">concat</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">items</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">concat</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">items</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Essentially an append, but different formatting.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">generic_concat</span> <span class="k">as</span> <span class="n">util_concatenate</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_concat</span> <span class="k">as</span> <span class="n">util_concatenate</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="p">()</span>
@@ -2816,7 +2816,7 @@
 
 <div class="viewcode-block" id="DataFrame.head">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.head">[docs]</a>
-    <span class="k">def</span> <span class="nf">head</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">head</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the first `n` rows.</span>
 
@@ -2903,7 +2903,7 @@
 
 <div class="viewcode-block" id="DataFrame.tail">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.tail">[docs]</a>
-    <span class="k">def</span> <span class="nf">tail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the last `n` rows.</span>
 
@@ -2992,7 +2992,7 @@
 
 <div class="viewcode-block" id="DataFrame.sample">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.sample">[docs]</a>
-    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a random sample of `n` rows.</span>
 
@@ -3049,7 +3049,7 @@
 
 <div class="viewcode-block" id="DataFrame.GroupBy">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.GroupBy">[docs]</a>
-    <span class="k">def</span> <span class="nf">GroupBy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">use_series</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dropna</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">GroupBy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">use_series</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dropna</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Group the dataframe by a column or a list of columns.</span>
 
@@ -3137,7 +3137,7 @@
 
 <div class="viewcode-block" id="DataFrame.memory_usage">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.memory_usage">[docs]</a>
-    <span class="k">def</span> <span class="nf">memory_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">memory_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the memory usage of each column in bytes.</span>
 
@@ -3234,7 +3234,7 @@
 <span class="sd">        &gt;&gt;&gt;  df.memory_usage(index=True).sum()</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">convert_bytes</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert_bytes</span>
 
         <span class="k">if</span> <span class="n">index</span><span class="p">:</span>
             <span class="n">sizes</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">memory_usage</span><span class="p">(</span><span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)]</span>
@@ -3252,7 +3252,7 @@
 
 <div class="viewcode-block" id="DataFrame.memory_usage_info">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.memory_usage_info">[docs]</a>
-    <span class="k">def</span> <span class="nf">memory_usage_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;GB&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">memory_usage_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;GB&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A formatted string representation of the size of this DataFrame.</span>
 
@@ -3279,7 +3279,7 @@
 <span class="sd">        &#39;15 KB&#39;</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">convert_bytes</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert_bytes</span>
 
         <span class="n">data_size</span> <span class="o">=</span> <span class="n">convert_bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">memory_usage</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span>
 
@@ -3288,7 +3288,7 @@
 
 <div class="viewcode-block" id="DataFrame.to_pandas">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.to_pandas">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_pandas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datalimit</span><span class="o">=</span><span class="n">maxTransferBytes</span><span class="p">,</span> <span class="n">retain_index</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_pandas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datalimit</span><span class="o">=</span><span class="n">maxTransferBytes</span><span class="p">,</span> <span class="n">retain_index</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send this DataFrame to a pandas DataFrame.</span>
 
@@ -3404,7 +3404,7 @@
 
 <div class="viewcode-block" id="DataFrame.to_markdown">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.to_markdown">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_markdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wt&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s2">&quot;grid&quot;</span><span class="p">,</span> <span class="n">storage_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_markdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wt&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s2">&quot;grid&quot;</span><span class="p">,</span> <span class="n">storage_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print DataFrame in Markdown-friendly format.</span>
 
@@ -3465,7 +3465,7 @@
         <span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_prep_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prep_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># if no columns are stored, we will save all columns</span>
         <span class="k">if</span> <span class="n">columns</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
@@ -3478,7 +3478,7 @@
 
 <div class="viewcode-block" id="DataFrame.to_hdf">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.to_hdf">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_hdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">file_type</span><span class="o">=</span><span class="s2">&quot;distribute&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_hdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">file_type</span><span class="o">=</span><span class="s2">&quot;distribute&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save DataFrame to disk as hdf5, preserving column names.</span>
 
@@ -3535,13 +3535,13 @@
 <span class="sd">        +----+-----+-----+</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda.io</span> <span class="kn">import</span> <span class="n">to_hdf</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_hdf</span>
 
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prep_data</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
         <span class="n">to_hdf</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">prefix_path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">file_type</span><span class="o">=</span><span class="n">file_type</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_to_hdf_snapshot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="s2">&quot;DataFrame&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;truncate&quot;</span><span class="p">,</span> <span class="n">file_type</span><span class="o">=</span><span class="s2">&quot;distribute&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_to_hdf_snapshot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="s2">&quot;DataFrame&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;truncate&quot;</span><span class="p">,</span> <span class="n">file_type</span><span class="o">=</span><span class="s2">&quot;distribute&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save a dataframe as a group with columns within the group. This allows saving other</span>
 <span class="sd">        datasets in the HDF5 file without impacting the integrity of the dataframe</span>
@@ -3570,8 +3570,8 @@
 <span class="sd">        RuntimeError</span>
 <span class="sd">            Raised if a server-side error is thrown saving the pdarray</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda.categorical</span> <span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
-        <span class="kn">from</span> <span class="nn">arkouda.io</span> <span class="kn">import</span> <span class="n">_file_type_to_int</span><span class="p">,</span> <span class="n">_mode_str_to_int</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">_file_type_to_int</span><span class="p">,</span> <span class="n">_mode_str_to_int</span>
 
         <span class="n">column_data</span> <span class="o">=</span> <span class="p">[</span>
             <span class="p">(</span>
@@ -3627,7 +3627,7 @@
 
 <div class="viewcode-block" id="DataFrame.update_hdf">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.update_hdf">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_hdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">repack</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_hdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">repack</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Overwrite the dataset with the name provided with this dataframe. If</span>
 <span class="sd">        the dataset does not exist it is added.</span>
@@ -3697,7 +3697,7 @@
 <span class="sd">        +----+-----+-----+</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda.io</span> <span class="kn">import</span> <span class="n">update_hdf</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">update_hdf</span>
 
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prep_data</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
         <span class="n">update_hdf</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">prefix_path</span><span class="o">=</span><span class="n">prefix_path</span><span class="p">,</span> <span class="n">repack</span><span class="o">=</span><span class="n">repack</span><span class="p">)</span></div>
@@ -3705,7 +3705,7 @@
 
 <div class="viewcode-block" id="DataFrame.to_parquet">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.to_parquet">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_parquet</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_parquet</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">path</span><span class="p">,</span>
         <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -3774,7 +3774,7 @@
 <span class="sd">        +----+-----+-----+</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda.io</span> <span class="kn">import</span> <span class="n">to_parquet</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_parquet</span>
 
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prep_data</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">convert_categoricals</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
@@ -3794,7 +3794,7 @@
 <div class="viewcode-block" id="DataFrame.to_csv">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.to_csv">[docs]</a>
     <span class="nd">@typechecked</span>
-    <span class="k">def</span> <span class="nf">to_csv</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_csv</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">index</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -3872,7 +3872,7 @@
 <span class="sd">        +----+-----+-----+</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda.io</span> <span class="kn">import</span> <span class="n">to_csv</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_csv</span>
 
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prep_data</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
         <span class="n">to_csv</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">columns</span><span class="p">,</span> <span class="n">col_delim</span><span class="o">=</span><span class="n">col_delim</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span></div>
@@ -3881,7 +3881,7 @@
 <div class="viewcode-block" id="DataFrame.read_csv">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.read_csv">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">read_csv</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">col_delim</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_csv</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">col_delim</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Read the columns of a CSV file into an Arkouda DataFrame.</span>
 <span class="sd">        If the file contains the appropriately formatted header, typed data will be returned.</span>
@@ -3948,7 +3948,7 @@
 <span class="sd">        +----+-----+-----+</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda.io</span> <span class="kn">import</span> <span class="n">read_csv</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_csv</span>
 
         <span class="n">data</span> <span class="o">=</span> <span class="n">read_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">column_delim</span><span class="o">=</span><span class="n">col_delim</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
@@ -3956,7 +3956,7 @@
 
 <div class="viewcode-block" id="DataFrame.save">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.save">[docs]</a>
-    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">path</span><span class="p">,</span>
         <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -4042,7 +4042,7 @@
 <div class="viewcode-block" id="DataFrame.load">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.load">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">prefix_path</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="s2">&quot;INFER&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">prefix_path</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="s2">&quot;INFER&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load dataframe from file.</span>
 <span class="sd">        file_format needed for consistency with other load functions.</span>
@@ -4090,7 +4090,7 @@
 <span class="sd">        +----+-----+-----+</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda.io</span> <span class="kn">import</span> <span class="p">(</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.io</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
             <span class="n">_dict_recombine_segarrays_categoricals</span><span class="p">,</span>
             <span class="n">get_filetype</span><span class="p">,</span>
             <span class="n">load_all</span><span class="p">,</span>
@@ -4108,7 +4108,7 @@
 
 <div class="viewcode-block" id="DataFrame.argsort">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.argsort">[docs]</a>
-    <span class="k">def</span> <span class="nf">argsort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">argsort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the permutation that sorts the dataframe by `key`.</span>
 
@@ -4195,7 +4195,7 @@
 
 <div class="viewcode-block" id="DataFrame.coargsort">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.coargsort">[docs]</a>
-    <span class="k">def</span> <span class="nf">coargsort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">coargsort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the permutation that sorts the dataframe by `keys`.</span>
 
@@ -4245,7 +4245,7 @@
         <span class="k">return</span> <span class="n">i</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_reindex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_reindex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">MultiIndex</span><span class="p">):</span>
             <span class="n">new_index</span> <span class="o">=</span> <span class="n">MultiIndex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">Index</span><span class="p">):</span>
@@ -4257,7 +4257,7 @@
 
 <div class="viewcode-block" id="DataFrame.sort_index">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.sort_index">[docs]</a>
-    <span class="k">def</span> <span class="nf">sort_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sort_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sort the DataFrame by indexed columns.</span>
 
@@ -4307,7 +4307,7 @@
 
 <div class="viewcode-block" id="DataFrame.sort_values">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.sort_values">[docs]</a>
-    <span class="k">def</span> <span class="nf">sort_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sort_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sort the DataFrame by one or more columns.</span>
 
@@ -4388,7 +4388,7 @@
 
 <div class="viewcode-block" id="DataFrame.apply_permutation">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.apply_permutation">[docs]</a>
-    <span class="k">def</span> <span class="nf">apply_permutation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">perm</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_permutation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">perm</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Apply a permutation to an entire DataFrame.  The operation is done in</span>
 <span class="sd">        place and the original DataFrame will be modified.</span>
@@ -4457,7 +4457,7 @@
 
 <div class="viewcode-block" id="DataFrame.filter_by_range">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.filter_by_range">[docs]</a>
-    <span class="k">def</span> <span class="nf">filter_by_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter_by_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find all rows where the value count of the items in a given set of</span>
 <span class="sd">        columns (keys) is within the range [low, high].</span>
@@ -4531,7 +4531,7 @@
         <span class="k">return</span> <span class="n">broadcast</span><span class="p">[</span><span class="n">invert_permutation</span><span class="p">(</span><span class="n">gb</span><span class="o">.</span><span class="n">permutation</span><span class="p">)]</span></div>
 
 
-    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Make a copy of this object&#39;s data.</span>
 
@@ -4615,7 +4615,7 @@
 
 <div class="viewcode-block" id="DataFrame.groupby">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.groupby">[docs]</a>
-    <span class="k">def</span> <span class="nf">groupby</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">use_series</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dropna</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">groupby</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">use_series</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dropna</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Group the dataframe by a column or a list of columns.  Alias for GroupBy.</span>
 
@@ -4690,7 +4690,7 @@
 <div class="viewcode-block" id="DataFrame.isin">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.isin">[docs]</a>
     <span class="nd">@typechecked</span>
-    <span class="k">def</span> <span class="nf">isin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Series</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">isin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Series</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determine whether each element in the DataFrame is contained in values.</span>
 
@@ -4837,7 +4837,7 @@
 
 <div class="viewcode-block" id="DataFrame.count">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.count">[docs]</a>
-    <span class="k">def</span> <span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">numeric_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">numeric_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Count non-NA cells for each column or row.</span>
 
@@ -4917,8 +4917,8 @@
 <span class="sd">        dtype: int64</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda</span> <span class="kn">import</span> <span class="n">full</span><span class="p">,</span> <span class="n">isnan</span>
-        <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">is_numeric</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">full</span><span class="p">,</span> <span class="n">isnan</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_numeric</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">axis</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">axis</span> <span class="o">==</span> <span class="s2">&quot;index&quot;</span><span class="p">):</span>
             <span class="n">index_values_list</span> <span class="o">=</span> <span class="p">[]</span>
@@ -4961,7 +4961,7 @@
 
 <div class="viewcode-block" id="DataFrame.corr">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.corr">[docs]</a>
-    <span class="k">def</span> <span class="nf">corr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">corr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return new DataFrame with pairwise correlation of columns.</span>
 
@@ -5011,7 +5011,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="nf">numeric_help</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">numeric_help</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">Strings</span><span class="p">):</span>
                 <span class="n">d</span> <span class="o">=</span> <span class="n">Categorical</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">d</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">d</span><span class="o">.</span><span class="n">codes</span>
@@ -5031,7 +5031,7 @@
 <div class="viewcode-block" id="DataFrame.merge">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.merge">[docs]</a>
     <span class="nd">@typechecked</span>
-    <span class="k">def</span> <span class="nf">merge</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">merge</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">right</span><span class="p">:</span> <span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">on</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -5194,7 +5194,7 @@
 <div class="viewcode-block" id="DataFrame.isna">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.isna">[docs]</a>
     <span class="nd">@typechecked</span>
-    <span class="k">def</span> <span class="nf">isna</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">isna</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Detect missing values.</span>
 
@@ -5237,10 +5237,10 @@
 <span class="sd">        3  False  False   True  False (4 rows x 4 columns)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda</span> <span class="kn">import</span> <span class="n">full</span><span class="p">,</span> <span class="n">isnan</span>
-        <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">is_numeric</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">full</span><span class="p">,</span> <span class="n">isnan</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_numeric</span>
 
-        <span class="k">def</span> <span class="nf">is_nan_col</span><span class="p">(</span><span class="n">col</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">is_nan_col</span><span class="p">(</span><span class="n">col</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">is_numeric</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">col</span><span class="p">]):</span>
                 <span class="k">return</span> <span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">col</span><span class="p">])</span>
             <span class="k">else</span><span class="p">:</span>
@@ -5253,7 +5253,7 @@
 <div class="viewcode-block" id="DataFrame.notna">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.notna">[docs]</a>
     <span class="nd">@typechecked</span>
-    <span class="k">def</span> <span class="nf">notna</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">notna</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Detect existing (non-missing) values.</span>
 
@@ -5295,10 +5295,10 @@
 <span class="sd">        3   True   True  False  True (4 rows x 4 columns)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda</span> <span class="kn">import</span> <span class="n">full</span><span class="p">,</span> <span class="n">isnan</span>
-        <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">is_numeric</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">full</span><span class="p">,</span> <span class="n">isnan</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_numeric</span>
 
-        <span class="k">def</span> <span class="nf">not_nan_col</span><span class="p">(</span><span class="n">col</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">not_nan_col</span><span class="p">(</span><span class="n">col</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">is_numeric</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">col</span><span class="p">]):</span>
                 <span class="k">return</span> <span class="o">~</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">col</span><span class="p">])</span>
             <span class="k">else</span><span class="p">:</span>
@@ -5311,7 +5311,7 @@
 <div class="viewcode-block" id="DataFrame.any">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.any">[docs]</a>
     <span class="nd">@typechecked</span>
-    <span class="k">def</span> <span class="nf">any</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Series</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">any</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Series</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether any element is True, potentially over an axis.</span>
 
@@ -5376,8 +5376,8 @@
 <span class="sd">        True</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda</span> <span class="kn">import</span> <span class="nb">any</span> <span class="k">as</span> <span class="n">akany</span>
-        <span class="kn">from</span> <span class="nn">arkouda</span> <span class="kn">import</span> <span class="n">array</span><span class="p">,</span> <span class="n">full</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="nb">any</span> <span class="k">as</span> <span class="n">akany</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span><span class="p">,</span> <span class="n">full</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -5412,7 +5412,7 @@
 <div class="viewcode-block" id="DataFrame.all">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.all">[docs]</a>
     <span class="nd">@typechecked</span>
-    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Series</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Series</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether all elements are True, potentially over an axis.</span>
 
@@ -5476,8 +5476,8 @@
 <span class="sd">        &gt;&gt;&gt; df.all(axis=None)</span>
 <span class="sd">        False</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda</span> <span class="kn">import</span> <span class="nb">all</span> <span class="k">as</span> <span class="n">akall</span>
-        <span class="kn">from</span> <span class="nn">arkouda</span> <span class="kn">import</span> <span class="n">array</span><span class="p">,</span> <span class="n">full</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="nb">all</span> <span class="k">as</span> <span class="n">akall</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span><span class="p">,</span> <span class="n">full</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -5513,7 +5513,7 @@
 <div class="viewcode-block" id="DataFrame.dropna">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.dropna">[docs]</a>
     <span class="nd">@typechecked</span>
-    <span class="k">def</span> <span class="nf">dropna</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dropna</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">axis</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">how</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -5633,7 +5633,7 @@
 <span class="sd">        +----+------+-----+-----+-------+-----+-----+-----+</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda</span> <span class="kn">import</span> <span class="nb">all</span> <span class="k">as</span> <span class="n">akall</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="nb">all</span> <span class="k">as</span> <span class="n">akall</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="n">how</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">thresh</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;You cannot set both the how and thresh arguments at the same time.&quot;</span><span class="p">)</span>
@@ -5683,7 +5683,7 @@
 <div class="viewcode-block" id="DataFrame.register">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.register">[docs]</a>
     <span class="nd">@typechecked</span>
-    <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_defined_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_defined_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Register this DataFrame object and underlying components with the Arkouda server.</span>
 
@@ -5737,7 +5737,7 @@
 
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda.categorical</span> <span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_registered</span><span class="p">():</span>
             <span class="k">raise</span> <span class="n">RegistrationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This object is already registered as </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -5799,7 +5799,7 @@
 
 <div class="viewcode-block" id="DataFrame.unregister">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.unregister">[docs]</a>
-    <span class="k">def</span> <span class="nf">unregister</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unregister</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Unregister this DataFrame object in the arkouda server which was previously</span>
 <span class="sd">        registered using register() and/or attached to using attach().</span>
@@ -5835,7 +5835,7 @@
 <span class="sd">        False</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">unregister</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">unregister</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">RegistrationError</span><span class="p">(</span><span class="s2">&quot;This object is not registered&quot;</span><span class="p">)</span>
@@ -5845,7 +5845,7 @@
 
 <div class="viewcode-block" id="DataFrame.is_registered">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.is_registered">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return True if the object is contained in the registry.</span>
 
@@ -5885,7 +5885,7 @@
 
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">is_registered</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_registered</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># Dataframe cannot be registered as a component</span>
@@ -5895,7 +5895,7 @@
 <div class="viewcode-block" id="DataFrame.attach">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.attach">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">attach</span><span class="p">(</span><span class="n">user_defined_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">attach</span><span class="p">(</span><span class="n">user_defined_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Function to return a DataFrame object attached to the registered name in the</span>
 <span class="sd">        arkouda server which was registered using register().</span>
@@ -5932,9 +5932,9 @@
 <span class="sd">        False</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">import</span> <span class="nn">warnings</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
-        <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">attach</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">attach</span>
 
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
             <span class="s2">&quot;ak.DataFrame.attach() is deprecated. Please use ak.attach() instead.&quot;</span><span class="p">,</span>
@@ -5947,7 +5947,7 @@
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.unregister_dataframe_by_name">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="nd">@typechecked</span>
-    <span class="k">def</span> <span class="nf">unregister_dataframe_by_name</span><span class="p">(</span><span class="n">user_defined_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unregister_dataframe_by_name</span><span class="p">(</span><span class="n">user_defined_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Function to unregister DataFrame object by name which was registered</span>
 <span class="sd">        with the arkouda server via register().</span>
@@ -5984,9 +5984,9 @@
 <span class="sd">        False</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">import</span> <span class="nn">warnings</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
-        <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">unregister</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">unregister</span>
 
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
             <span class="s2">&quot;ak.DataFrame.unregister_dataframe_by_name() is deprecated. &quot;</span>
@@ -5997,7 +5997,7 @@
 
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_parse_col_name</span><span class="p">(</span><span class="n">entryName</span><span class="p">,</span> <span class="n">dfName</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_col_name</span><span class="p">(</span><span class="n">entryName</span><span class="p">,</span> <span class="n">dfName</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method used by from_return_msg to parse the registered name of the data component</span>
 <span class="sd">        and pull out the column type and column name</span>
@@ -6031,7 +6031,7 @@
 <div class="viewcode-block" id="DataFrame.from_return_msg">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.from_return_msg">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_return_msg</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_return_msg</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a DataFrame object from an arkouda server response message.</span>
 
@@ -6045,7 +6045,7 @@
 <span class="sd">        arkouda.dataframe.DataFrame</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda.categorical</span> <span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
 
         <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
         <span class="n">idx</span> <span class="o">=</span> <span class="kc">None</span>
@@ -6080,7 +6080,7 @@
 
 <div class="viewcode-block" id="DataFrame.assign">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.DataFrame.assign">[docs]</a>
-    <span class="k">def</span> <span class="nf">assign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">assign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Assign new columns to a DataFrame.</span>
 
@@ -6153,7 +6153,7 @@
 
 <div class="viewcode-block" id="intx">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.intx">[docs]</a>
-<span class="k">def</span> <span class="nf">intx</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">intx</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find all the rows that are in both dataframes.</span>
 <span class="sd">    Columns should be in identical order.</span>
@@ -6234,7 +6234,7 @@
 
 <div class="viewcode-block" id="intersect">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.intersect">[docs]</a>
-<span class="k">def</span> <span class="nf">intersect</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">positions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">intersect</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">positions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the intersection of two arkouda arrays.</span>
 
@@ -6379,7 +6379,7 @@
 
 <div class="viewcode-block" id="invert_permutation">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.invert_permutation">[docs]</a>
-<span class="k">def</span> <span class="nf">invert_permutation</span><span class="p">(</span><span class="n">perm</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">invert_permutation</span><span class="p">(</span><span class="n">perm</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the inverse of a permutation array.</span>
 
@@ -6417,7 +6417,7 @@
 
 
 <span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">_inner_join_merge</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_inner_join_merge</span><span class="p">(</span>
     <span class="n">left</span><span class="p">:</span> <span class="n">DataFrame</span><span class="p">,</span>
     <span class="n">right</span><span class="p">:</span> <span class="n">DataFrame</span><span class="p">,</span>
     <span class="n">on</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
@@ -6480,7 +6480,7 @@
     <span class="k">return</span> <span class="n">ret_df</span>
 
 
-<span class="k">def</span> <span class="nf">_right_join_merge</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_right_join_merge</span><span class="p">(</span>
     <span class="n">left</span><span class="p">:</span> <span class="n">DataFrame</span><span class="p">,</span>
     <span class="n">right</span><span class="p">:</span> <span class="n">DataFrame</span><span class="p">,</span>
     <span class="n">on</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
@@ -6557,7 +6557,7 @@
     <span class="k">return</span> <span class="n">ret_df</span>
 
 
-<span class="k">def</span> <span class="nf">_outer_join_merge</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_outer_join_merge</span><span class="p">(</span>
     <span class="n">left</span><span class="p">:</span> <span class="n">DataFrame</span><span class="p">,</span>
     <span class="n">right</span><span class="p">:</span> <span class="n">DataFrame</span><span class="p">,</span>
     <span class="n">on</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
@@ -6663,7 +6663,7 @@
     <span class="k">return</span> <span class="n">ret_df</span>
 
 
-<span class="k">def</span> <span class="nf">__nulls_like</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">__nulls_like</span><span class="p">(</span>
     <span class="n">arry</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">],</span>
     <span class="n">size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
         <span class="n">Union</span><span class="p">[</span>
@@ -6691,7 +6691,7 @@
 <div class="viewcode-block" id="merge">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.dataframe.merge">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">merge</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">merge</span><span class="p">(</span>
     <span class="n">left</span><span class="p">:</span> <span class="n">DataFrame</span><span class="p">,</span>
     <span class="n">right</span><span class="p">:</span> <span class="n">DataFrame</span><span class="p">,</span>
     <span class="n">on</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>

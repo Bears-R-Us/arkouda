@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>numpy.lib.utils - arkouda documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
@@ -351,19 +351,19 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for numpy.lib.utils</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">textwrap</span>
-<span class="kn">import</span> <span class="nn">types</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">import</span> <span class="nn">functools</span>
-<span class="kn">import</span> <span class="nn">platform</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">textwrap</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">types</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">platform</span>
 
-<span class="kn">from</span> <span class="nn">.._utils</span> <span class="kn">import</span> <span class="n">set_module</span>
-<span class="kn">from</span> <span class="nn">numpy.core.numerictypes</span> <span class="kn">import</span> <span class="n">issubclass_</span><span class="p">,</span> <span class="n">issubsctype</span><span class="p">,</span> <span class="n">issubdtype</span>
-<span class="kn">from</span> <span class="nn">numpy.core</span> <span class="kn">import</span> <span class="n">ndarray</span><span class="p">,</span> <span class="n">ufunc</span><span class="p">,</span> <span class="n">asarray</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_module</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.core.numerictypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">issubclass_</span><span class="p">,</span> <span class="n">issubsctype</span><span class="p">,</span> <span class="n">issubdtype</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">ndarray</span><span class="p">,</span> <span class="n">ufunc</span><span class="p">,</span> <span class="n">asarray</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s1">&#39;issubclass_&#39;</span><span class="p">,</span> <span class="s1">&#39;issubsctype&#39;</span><span class="p">,</span> <span class="s1">&#39;issubdtype&#39;</span><span class="p">,</span> <span class="s1">&#39;deprecate&#39;</span><span class="p">,</span>
@@ -372,7 +372,7 @@
     <span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">show_runtime</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">show_runtime</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Print information about various resources in the system</span>
 <span class="sd">    including available intrinsic support and BLAS/LAPACK library</span>
@@ -392,10 +392,10 @@
 <span class="sd">       ``__cpu_baseline__`` and ``__cpu_dispatch__``</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">numpy.core._multiarray_umath</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">numpy.core._multiarray_umath</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
         <span class="n">__cpu_features__</span><span class="p">,</span> <span class="n">__cpu_baseline__</span><span class="p">,</span> <span class="n">__cpu_dispatch__</span>
     <span class="p">)</span>
-    <span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span>
     <span class="n">config_found</span> <span class="o">=</span> <span class="p">[{</span>
         <span class="s2">&quot;numpy_version&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">__version__</span><span class="p">,</span>
         <span class="s2">&quot;python&quot;</span><span class="p">:</span> <span class="n">sys</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
@@ -415,7 +415,7 @@
         <span class="p">}</span>
     <span class="p">})</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">threadpoolctl</span> <span class="kn">import</span> <span class="n">threadpool_info</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">threadpoolctl</span><span class="w"> </span><span class="kn">import</span> <span class="n">threadpool_info</span>
         <span class="n">config_found</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">threadpool_info</span><span class="p">())</span>
     <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: `threadpoolctl` not found in system!&quot;</span>
@@ -425,7 +425,7 @@
     <span class="n">pprint</span><span class="p">(</span><span class="n">config_found</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">get_include</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_include</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the directory that contains the NumPy \\*.h header files.</span>
 
@@ -443,18 +443,18 @@
 <span class="sd">        ...</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">import</span> <span class="nn">numpy</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
     <span class="k">if</span> <span class="n">numpy</span><span class="o">.</span><span class="n">show_config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># running from numpy source directory</span>
         <span class="n">d</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;core&#39;</span><span class="p">,</span> <span class="s1">&#39;include&#39;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># using installed numpy core headers</span>
-        <span class="kn">import</span> <span class="nn">numpy.core</span> <span class="k">as</span> <span class="nn">core</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">numpy.core</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">core</span>
         <span class="n">d</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">core</span><span class="o">.</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;include&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">d</span>
 
 
-<span class="k">class</span> <span class="nc">_Deprecate</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_Deprecate</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Decorator class to deprecate old functions.</span>
 
@@ -466,12 +466,12 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">new_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">new_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">old_name</span> <span class="o">=</span> <span class="n">old_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">new_name</span> <span class="o">=</span> <span class="n">new_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
 
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Decorator call.  Refer to ``decorate``.</span>
 
@@ -492,7 +492,7 @@
             <span class="n">depdoc</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">message</span>
 
         <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
-        <span class="k">def</span> <span class="nf">newfunc</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">newfunc</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">depdoc</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
 
@@ -522,7 +522,7 @@
         <span class="k">return</span> <span class="n">newfunc</span>
 
 
-<span class="k">def</span> <span class="nf">_get_indent</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_indent</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determines the leading whitespace that could be removed from all the lines.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -538,7 +538,7 @@
 
 <div class="viewcode-block" id="deprecate">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.deprecate">[docs]</a>
-<span class="k">def</span> <span class="nf">deprecate</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">deprecate</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Issues a DeprecationWarning, adds warning to `old_name`&#39;s</span>
 <span class="sd">    docstring, rebinds ``old_name.__name__`` and returns the new</span>
@@ -594,7 +594,7 @@
 
 <div class="viewcode-block" id="deprecate_with_doc">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.deprecate_with_doc">[docs]</a>
-<span class="k">def</span> <span class="nf">deprecate_with_doc</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">deprecate_with_doc</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Deprecates a function and includes the deprecation in its docstring.</span>
 
@@ -626,7 +626,7 @@
 <span class="c1"># Determine if two arrays can share memory</span>
 <span class="c1">#--------------------------------------------</span>
 
-<span class="k">def</span> <span class="nf">byte_bounds</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">byte_bounds</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns pointers to the end-points of an array.</span>
 
@@ -683,7 +683,7 @@
 <span class="c1">#-----------------------------------------------------------------------------</span>
 
 
-<span class="k">def</span> <span class="nf">who</span><span class="p">(</span><span class="n">vardict</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">who</span><span class="p">(</span><span class="n">vardict</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Print the NumPy arrays in the given dictionary.</span>
 
@@ -786,7 +786,7 @@
 <span class="c1"># combine name and arguments and split to multiple lines of width</span>
 <span class="c1"># characters.  End lines on a comma and begin argument list indented with</span>
 <span class="c1"># the rest of the arguments.</span>
-<span class="k">def</span> <span class="nf">_split_line</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">arguments</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_split_line</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">arguments</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
     <span class="n">firstwidth</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
     <span class="n">k</span> <span class="o">=</span> <span class="n">firstwidth</span>
     <span class="n">newstr</span> <span class="o">=</span> <span class="n">name</span>
@@ -810,7 +810,7 @@
 
 <span class="c1"># Traverse all module directories underneath globals</span>
 <span class="c1"># to see if something is defined</span>
-<span class="k">def</span> <span class="nf">_makenamedict</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="s1">&#39;numpy&#39;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_makenamedict</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="s1">&#39;numpy&#39;</span><span class="p">):</span>
     <span class="n">module</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="nb">globals</span><span class="p">(),</span> <span class="nb">locals</span><span class="p">(),</span> <span class="p">[])</span>
     <span class="n">thedict</span> <span class="o">=</span> <span class="p">{</span><span class="n">module</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span><span class="n">module</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">}</span>
     <span class="n">dictlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">module</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]</span>
@@ -830,7 +830,7 @@
     <span class="k">return</span> <span class="n">thedict</span><span class="p">,</span> <span class="n">dictlist</span>
 
 
-<span class="k">def</span> <span class="nf">_info</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_info</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Provide information about ndarray obj.</span>
 
 <span class="sd">    Parameters</span>
@@ -885,7 +885,7 @@
 
 
 <span class="nd">@set_module</span><span class="p">(</span><span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="nb">object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">maxwidth</span><span class="o">=</span><span class="mi">76</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">toplevel</span><span class="o">=</span><span class="s1">&#39;numpy&#39;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span><span class="nb">object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">maxwidth</span><span class="o">=</span><span class="mi">76</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">toplevel</span><span class="o">=</span><span class="s1">&#39;numpy&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get help information for an array, function, class, or module.</span>
 
@@ -954,8 +954,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">_namedict</span><span class="p">,</span> <span class="n">_dictlist</span>
     <span class="c1"># Local import to speed up numpy&#39;s import time.</span>
-    <span class="kn">import</span> <span class="nn">pydoc</span>
-    <span class="kn">import</span> <span class="nn">inspect</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pydoc</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
 
     <span class="k">if</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="s1">&#39;_ppimport_importer&#39;</span><span class="p">)</span> <span class="ow">or</span>
            <span class="nb">hasattr</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="s1">&#39;_ppimport_module&#39;</span><span class="p">)):</span>
@@ -1052,7 +1052,7 @@
 
 
 <span class="nd">@set_module</span><span class="p">(</span><span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">source</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">source</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Print or write to a file the source code for a NumPy object.</span>
 
@@ -1092,7 +1092,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Local import to speed up numpy&#39;s import time.</span>
-    <span class="kn">import</span> <span class="nn">inspect</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;In file: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getsourcefile</span><span class="p">(</span><span class="nb">object</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getsource</span><span class="p">(</span><span class="nb">object</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
@@ -1111,7 +1111,7 @@
 
 
 <span class="nd">@set_module</span><span class="p">(</span><span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">lookfor</span><span class="p">(</span><span class="n">what</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">import_modules</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">regenerate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">lookfor</span><span class="p">(</span><span class="n">what</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">import_modules</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">regenerate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="n">output</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Do a keyword search on docstrings.</span>
@@ -1157,7 +1157,7 @@
 <span class="sd">    ...</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">import</span> <span class="nn">pydoc</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pydoc</span>
 
     <span class="c1"># Cache</span>
     <span class="n">cache</span> <span class="o">=</span> <span class="n">_lookfor_generate_cache</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">import_modules</span><span class="p">,</span> <span class="n">regenerate</span><span class="p">)</span>
@@ -1184,7 +1184,7 @@
     <span class="n">kind_relevance</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;func&#39;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span> <span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
                       <span class="s1">&#39;module&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1000</span><span class="p">,</span> <span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1000</span><span class="p">}</span>
 
-    <span class="k">def</span> <span class="nf">relevance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">docstr</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">relevance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">docstr</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
         <span class="n">r</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="c1"># do the keywords occur within the start of the docstring?</span>
         <span class="n">first_doc</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">docstr</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[:</span><span class="mi">3</span><span class="p">])</span>
@@ -1200,7 +1200,7 @@
         <span class="n">r</span> <span class="o">+=</span> <span class="nb">max</span><span class="p">(</span><span class="o">-</span><span class="n">index</span> <span class="o">/</span> <span class="mi">100</span><span class="p">,</span> <span class="o">-</span><span class="mi">100</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">r</span>
 
-    <span class="k">def</span> <span class="nf">relevance_value</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">relevance_value</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">relevance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">*</span><span class="n">cache</span><span class="p">[</span><span class="n">a</span><span class="p">])</span>
     <span class="n">found</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">relevance_value</span><span class="p">)</span>
 
@@ -1234,7 +1234,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">help_text</span><span class="p">))</span>
 
-<span class="k">def</span> <span class="nf">_lookfor_generate_cache</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">import_modules</span><span class="p">,</span> <span class="n">regenerate</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_lookfor_generate_cache</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">import_modules</span><span class="p">,</span> <span class="n">regenerate</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate docstring cache for given module.</span>
 
@@ -1255,9 +1255,9 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Local import to speed up numpy&#39;s import time.</span>
-    <span class="kn">import</span> <span class="nn">inspect</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
 
-    <span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">StringIO</span>
 
     <span class="k">if</span> <span class="n">module</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">module</span> <span class="o">=</span> <span class="s2">&quot;numpy&quot;</span>
@@ -1373,8 +1373,8 @@
 
     <span class="k">return</span> <span class="n">cache</span>
 
-<span class="k">def</span> <span class="nf">_getmembers</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
-    <span class="kn">import</span> <span class="nn">inspect</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_getmembers</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">members</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmembers</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
@@ -1383,7 +1383,7 @@
     <span class="k">return</span> <span class="n">members</span>
 
 
-<span class="k">def</span> <span class="nf">safe_eval</span><span class="p">(</span><span class="n">source</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">safe_eval</span><span class="p">(</span><span class="n">source</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Protected string evaluation.</span>
 
@@ -1433,11 +1433,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Local import to speed up numpy&#39;s import time.</span>
-    <span class="kn">import</span> <span class="nn">ast</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">ast</span>
     <span class="k">return</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_median_nancheck</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_median_nancheck</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Utility function to check median result from data for NaN values at the end</span>
 <span class="sd">    and return NaN in that case. Input result can also be a MaskedArray.</span>
@@ -1479,7 +1479,7 @@
     <span class="n">np</span><span class="o">.</span><span class="n">copyto</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">potential_nans</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">result</span>
 
-<span class="k">def</span> <span class="nf">_opt_info</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_opt_info</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a string contains the supported CPU features by the current build.</span>
 
@@ -1490,7 +1490,7 @@
 <span class="sd">          end with `?`.</span>
 <span class="sd">        - remained features are representing the baseline.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">numpy.core._multiarray_umath</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">numpy.core._multiarray_umath</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
         <span class="n">__cpu_features__</span><span class="p">,</span> <span class="n">__cpu_baseline__</span><span class="p">,</span> <span class="n">__cpu_dispatch__</span>
     <span class="p">)</span>
 
@@ -1507,7 +1507,7 @@
     <span class="k">return</span> <span class="n">enabled_features</span>
 
 
-<span class="k">def</span> <span class="nf">drop_metadata</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">drop_metadata</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the dtype unchanged if it contained no metadata or a copy of the</span>
 <span class="sd">    dtype if it (or any of its structure dtypes) contained metadata.</span>

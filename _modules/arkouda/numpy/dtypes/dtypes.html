@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>arkouda.numpy.dtypes.dtypes - arkouda documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/plot_directive.css" />
@@ -351,15 +351,15 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.numpy.dtypes.dtypes</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span> <span class="nn">builtins</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">builtins</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">bool_</span><span class="p">,</span>
     <span class="n">complex64</span><span class="p">,</span>
     <span class="n">complex128</span><span class="p">,</span>
@@ -441,14 +441,14 @@
 <span class="p">}</span>
 
 
-<span class="k">def</span> <span class="nf">_datatype_check</span><span class="p">(</span><span class="n">the_dtype</span><span class="p">,</span> <span class="n">allowed_list</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_datatype_check</span><span class="p">(</span><span class="n">the_dtype</span><span class="p">,</span> <span class="n">allowed_list</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">the_dtype</span> <span class="ow">in</span> <span class="n">allowed_list</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> only implements types </span><span class="si">{</span><span class="n">allowed_list</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="dtype">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/index.html#arkouda.dtypes.dtype">[docs]</a>
-<span class="k">def</span> <span class="nf">dtype</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">dtype</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="c1"># we had to create our own bigint type since numpy</span>
     <span class="c1"># gives them dtype=object there&#39;s no np equivalent</span>
     <span class="k">if</span> <span class="p">(</span>
@@ -464,7 +464,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_is_dtype_in_union</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">union_type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">builtins</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_dtype_in_union</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">union_type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">builtins</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if a given type is in a typing.Union.</span>
 
@@ -480,7 +480,7 @@
     <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">union_type</span><span class="p">,</span> <span class="s2">&quot;__args__&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">union_type</span><span class="o">.</span><span class="n">__args__</span>
 
 
-<span class="k">def</span> <span class="nf">_val_isinstance_of_union</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">union_type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">builtins</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_val_isinstance_of_union</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">union_type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">builtins</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if a given val is an instance of one of the types in the typing.Union</span>
 
@@ -499,36 +499,36 @@
 
 <div class="viewcode-block" id="bigint">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/index.html#arkouda.dtypes.bigint">[docs]</a>
-<span class="k">class</span> <span class="nc">bigint</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">bigint</span><span class="p">:</span>
     <span class="c1"># an estimate of the itemsize of bigint (128 bytes)</span>
     <span class="n">itemsize</span> <span class="o">=</span> <span class="mi">128</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;bigint&quot;</span>
     <span class="n">ndim</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">shape</span> <span class="o">=</span> <span class="p">()</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;ui&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;dtype(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">)&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">(</span><span class="n">other</span><span class="p">),</span> <span class="n">bigint</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">__neq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__neq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span> <span class="o">==</span> <span class="n">other</span><span class="p">)</span>
 
 <div class="viewcode-block" id="bigint.type">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/index.html#arkouda.dtypes.bigint.type">[docs]</a>
-    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
 </div>
 
@@ -577,7 +577,7 @@
 
 <div class="viewcode-block" id="DType">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/index.html#arkouda.dtypes.DType">[docs]</a>
-<span class="k">class</span> <span class="nc">DType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">FLOAT</span> <span class="o">=</span> <span class="s2">&quot;float&quot;</span>
     <span class="n">FLOAT64</span> <span class="o">=</span> <span class="s2">&quot;float64&quot;</span>
     <span class="n">FLOAT32</span> <span class="o">=</span> <span class="s2">&quot;float32&quot;</span>
@@ -597,14 +597,14 @@
     <span class="n">BIGINT</span> <span class="o">=</span> <span class="s2">&quot;bigint&quot;</span>
     <span class="n">STR</span> <span class="o">=</span> <span class="s2">&quot;str&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Overridden method returns value, which is useful in outputting</span>
 <span class="sd">        a DType as a request parameter</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Overridden method returns value, which is useful in outputting</span>
 <span class="sd">        a DType as a request parameter</span>
@@ -673,42 +673,42 @@
 
 <div class="viewcode-block" id="isSupportedInt">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/index.html#arkouda.dtypes.isSupportedInt">[docs]</a>
-<span class="k">def</span> <span class="nf">isSupportedInt</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">isSupportedInt</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">ARKOUDA_SUPPORTED_INTS</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="isSupportedFloat">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/index.html#arkouda.dtypes.isSupportedFloat">[docs]</a>
-<span class="k">def</span> <span class="nf">isSupportedFloat</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">isSupportedFloat</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">ARKOUDA_SUPPORTED_FLOATS</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="isSupportedNumber">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/index.html#arkouda.dtypes.isSupportedNumber">[docs]</a>
-<span class="k">def</span> <span class="nf">isSupportedNumber</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">isSupportedNumber</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">ARKOUDA_SUPPORTED_NUMBERS</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="isSupportedBool">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/index.html#arkouda.dtypes.isSupportedBool">[docs]</a>
-<span class="k">def</span> <span class="nf">isSupportedBool</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">isSupportedBool</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">ARKOUDA_SUPPORTED_BOOLS</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="isSupportedDType">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/index.html#arkouda.dtypes.isSupportedDType">[docs]</a>
-<span class="k">def</span> <span class="nf">isSupportedDType</span><span class="p">(</span><span class="n">scalar</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">isSupportedDType</span><span class="p">(</span><span class="n">scalar</span><span class="p">):</span>
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalar</span><span class="p">,</span> <span class="n">ARKOUDA_SUPPORTED_DTYPES</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="resolve_scalar_dtype">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/index.html#arkouda.dtypes.resolve_scalar_dtype">[docs]</a>
-<span class="k">def</span> <span class="nf">resolve_scalar_dtype</span><span class="p">(</span><span class="n">val</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">resolve_scalar_dtype</span><span class="p">(</span><span class="n">val</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Try to infer what dtype arkouda_server should treat val as.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -746,7 +746,7 @@
 
 <div class="viewcode-block" id="get_byteorder">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/index.html#arkouda.dtypes.get_byteorder">[docs]</a>
-<span class="k">def</span> <span class="nf">get_byteorder</span><span class="p">(</span><span class="n">dt</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_byteorder</span><span class="p">(</span><span class="n">dt</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a concrete byteorder (turns &#39;=&#39; into &#39;&lt;&#39; or &#39;&gt;&#39;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -764,11 +764,11 @@
 
 <div class="viewcode-block" id="get_server_byteorder">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/index.html#arkouda.dtypes.get_server_byteorder">[docs]</a>
-<span class="k">def</span> <span class="nf">get_server_byteorder</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_server_byteorder</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the server&#39;s byteorder</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">get_config</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_config</span>
 
     <span class="n">order</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">()[</span><span class="s2">&quot;byteorder&quot;</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;little&quot;</span><span class="p">,</span> <span class="s2">&quot;big&quot;</span><span class="p">):</span>

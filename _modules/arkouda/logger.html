@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>arkouda.logger - arkouda documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
@@ -351,9 +351,9 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.logger</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
-<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="p">(</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">CRITICAL</span><span class="p">,</span>
     <span class="n">DEBUG</span><span class="p">,</span>
     <span class="n">ERROR</span><span class="p">,</span>
@@ -364,9 +364,9 @@
     <span class="n">Logger</span><span class="p">,</span>
     <span class="n">StreamHandler</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">cast</span>
 
-<span class="kn">from</span> <span class="nn">typeguard</span> <span class="kn">import</span> <span class="n">typechecked</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typeguard</span><span class="w"> </span><span class="kn">import</span> <span class="n">typechecked</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;LogLevel&quot;</span><span class="p">,</span> <span class="s2">&quot;enableVerbose&quot;</span><span class="p">,</span> <span class="s2">&quot;disableVerbose&quot;</span><span class="p">,</span> <span class="s2">&quot;write_log&quot;</span><span class="p">]</span>
 
@@ -381,7 +381,7 @@
 
 <div class="viewcode-block" id="LogLevel">
 <a class="viewcode-back" href="../../autoapi/arkouda/logger/index.html#arkouda.LogLevel">[docs]</a>
-<span class="k">class</span> <span class="nc">LogLevel</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LogLevel</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">DEBUG</span> <span class="o">=</span> <span class="s2">&quot;DEBUG&quot;</span>
     <span class="n">CRITICAL</span> <span class="o">=</span> <span class="s2">&quot;CRITICAL&quot;</span>
     <span class="n">INFO</span> <span class="o">=</span> <span class="s2">&quot;INFO&quot;</span>
@@ -407,7 +407,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
-<span class="k">class</span> <span class="nc">ArkoudaLogger</span><span class="p">(</span><span class="n">Logger</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ArkoudaLogger</span><span class="p">(</span><span class="n">Logger</span><span class="p">):</span>
     <span class="n">DEFAULT_LOG_FORMAT</span> <span class="o">=</span> <span class="s2">&quot;[</span><span class="si">%(name)s</span><span class="s2">] Line </span><span class="si">%(lineno)d</span><span class="s2"> </span><span class="si">%(levelname)s</span><span class="s2">: </span><span class="si">%(message)s</span><span class="s2">&quot;</span>
 
     <span class="n">CLIENT_LOG_FORMAT</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -421,7 +421,7 @@
     <span class="p">}</span>
 
     <span class="nd">@typechecked</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">logLevel</span><span class="p">:</span> <span class="n">LogLevel</span> <span class="o">=</span> <span class="n">LogLevel</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span>
@@ -488,7 +488,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
 
     <span class="nd">@typechecked</span>
-    <span class="k">def</span> <span class="nf">changeLogLevel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="n">LogLevel</span><span class="p">,</span> <span class="n">handlerNames</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">changeLogLevel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="n">LogLevel</span><span class="p">,</span> <span class="n">handlerNames</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Dynamically changes the logging level for ArkoudaLogger and 1..n</span>
 <span class="sd">        of configured Handlers</span>
@@ -528,7 +528,7 @@
                 <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="n">handler</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
                     <span class="n">handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">newLevel</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">enableVerbose</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">enableVerbose</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Enables verbose output by setting the log level for all handlers</span>
 <span class="sd">        to DEBUG</span>
@@ -540,7 +540,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">changeLogLevel</span><span class="p">(</span><span class="n">LogLevel</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
 
     <span class="nd">@typechecked</span>
-    <span class="k">def</span> <span class="nf">disableVerbose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logLevel</span><span class="p">:</span> <span class="n">LogLevel</span> <span class="o">=</span> <span class="n">LogLevel</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">disableVerbose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logLevel</span><span class="p">:</span> <span class="n">LogLevel</span> <span class="o">=</span> <span class="n">LogLevel</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Disables verbose output by setting the log level for all handlers</span>
 <span class="sd">        to a level other than DEBUG, with a default of INFO</span>
@@ -563,7 +563,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">changeLogLevel</span><span class="p">(</span><span class="n">logLevel</span><span class="p">)</span>
 
     <span class="nd">@typechecked</span>
-    <span class="k">def</span> <span class="nf">getHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Handler</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Handler</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the Handler object corresponding to the name.</span>
 
@@ -593,7 +593,7 @@
 <div class="viewcode-block" id="getArkoudaLogger">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.getArkoudaLogger">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">getArkoudaLogger</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">getArkoudaLogger</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">handlers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Handler</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">logFormat</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">ArkoudaLogger</span><span class="o">.</span><span class="n">DEFAULT_LOG_FORMAT</span><span class="p">,</span>
@@ -641,7 +641,7 @@
 
 
 <span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">getArkoudaClientLogger</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ArkoudaLogger</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">getArkoudaClientLogger</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ArkoudaLogger</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A convenience method for instantiating an ArkoudaLogger that retrieves the</span>
 <span class="sd">    logging level from the ARKOUDA_LOG_LEVEL env variable and outputs log</span>
@@ -672,7 +672,7 @@
 
 <div class="viewcode-block" id="enableVerbose">
 <a class="viewcode-back" href="../../autoapi/arkouda/logger/index.html#arkouda.enableVerbose">[docs]</a>
-<span class="k">def</span> <span class="nf">enableVerbose</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">enableVerbose</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Enables verbose logging (DEBUG log level) for all ArkoudaLoggers</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -684,7 +684,7 @@
 <div class="viewcode-block" id="disableVerbose">
 <a class="viewcode-back" href="../../autoapi/arkouda/logger/index.html#arkouda.disableVerbose">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">disableVerbose</span><span class="p">(</span><span class="n">logLevel</span><span class="p">:</span> <span class="n">LogLevel</span> <span class="o">=</span> <span class="n">LogLevel</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">disableVerbose</span><span class="p">(</span><span class="n">logLevel</span><span class="p">:</span> <span class="n">LogLevel</span> <span class="o">=</span> <span class="n">LogLevel</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Disables verbose logging (DEBUG log level) for all ArkoudaLoggers, setting</span>
 <span class="sd">    the log level for each to the logLevel parameter</span>
@@ -707,7 +707,7 @@
 <div class="viewcode-block" id="write_log">
 <a class="viewcode-back" href="../../autoapi/arkouda/logger/index.html#arkouda.write_log">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">write_log</span><span class="p">(</span><span class="n">log_msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ClientGeneratedLog&quot;</span><span class="p">,</span> <span class="n">log_lvl</span><span class="p">:</span> <span class="n">LogLevel</span> <span class="o">=</span> <span class="n">LogLevel</span><span class="o">.</span><span class="n">INFO</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">write_log</span><span class="p">(</span><span class="n">log_msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ClientGeneratedLog&quot;</span><span class="p">,</span> <span class="n">log_lvl</span><span class="p">:</span> <span class="n">LogLevel</span> <span class="o">=</span> <span class="n">LogLevel</span><span class="o">.</span><span class="n">INFO</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Allows the user to write custom logs.</span>
 
@@ -727,7 +727,7 @@
 <span class="sd">    ---------</span>
 <span class="sd">    LogLevel</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;clientlog&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;log_msg&quot;</span><span class="p">:</span> <span class="n">log_msg</span><span class="p">,</span> <span class="s2">&quot;log_lvl&quot;</span><span class="p">:</span> <span class="n">log_lvl</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;tag&quot;</span><span class="p">:</span> <span class="n">tag</span><span class="p">})</span></div>
 

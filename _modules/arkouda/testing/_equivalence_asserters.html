@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>arkouda.testing._equivalence_asserters - arkouda documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
@@ -351,13 +351,13 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.testing._equivalence_asserters</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">bool_</span><span class="p">,</span> <span class="n">floating</span><span class="p">,</span> <span class="n">integer</span><span class="p">,</span> <span class="n">str_</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">bool_</span><span class="p">,</span> <span class="n">floating</span><span class="p">,</span> <span class="n">integer</span><span class="p">,</span> <span class="n">str_</span>
 
-<span class="kn">from</span> <span class="nn">arkouda</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Categorical</span><span class="p">,</span>
     <span class="n">DataFrame</span><span class="p">,</span>
     <span class="n">Index</span><span class="p">,</span>
@@ -368,7 +368,7 @@
     <span class="n">array</span><span class="p">,</span>
     <span class="n">pdarray</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">arkouda.testing</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.testing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">assert_almost_equal</span><span class="p">,</span>
     <span class="n">assert_arkouda_array_equal</span><span class="p">,</span>
     <span class="n">assert_frame_equal</span><span class="p">,</span>
@@ -388,7 +388,7 @@
 <span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">_convert_to_arkouda</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_convert_to_arkouda</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a numpy or pandas object to an arkouda object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -436,7 +436,7 @@
 
 <div class="viewcode-block" id="assert_almost_equivalent">
 <a class="viewcode-back" href="../../../autoapi/arkouda/testing/index.html#arkouda.assert_almost_equivalent">[docs]</a>
-<span class="k">def</span> <span class="nf">assert_almost_equivalent</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">assert_almost_equivalent</span><span class="p">(</span>
     <span class="n">left</span><span class="p">,</span>
     <span class="n">right</span><span class="p">,</span>
     <span class="n">rtol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0e-5</span><span class="p">,</span>
@@ -482,7 +482,7 @@
 
 <div class="viewcode-block" id="assert_index_equivalent">
 <a class="viewcode-back" href="../../../autoapi/arkouda/testing/index.html#arkouda.assert_index_equivalent">[docs]</a>
-<span class="k">def</span> <span class="nf">assert_index_equivalent</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">assert_index_equivalent</span><span class="p">(</span>
     <span class="n">left</span><span class="p">:</span> <span class="n">Index</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span>
     <span class="n">right</span><span class="p">:</span> <span class="n">Index</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span>
     <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -562,7 +562,7 @@
 
 <div class="viewcode-block" id="assert_arkouda_array_equivalent">
 <a class="viewcode-back" href="../../../autoapi/arkouda/testing/index.html#arkouda.assert_arkouda_array_equivalent">[docs]</a>
-<span class="k">def</span> <span class="nf">assert_arkouda_array_equivalent</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">assert_arkouda_array_equivalent</span><span class="p">(</span>
     <span class="n">left</span><span class="p">:</span> <span class="n">pdarray</span> <span class="o">|</span> <span class="n">Strings</span> <span class="o">|</span> <span class="n">Categorical</span> <span class="o">|</span> <span class="n">SegArray</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">Categorical</span><span class="p">,</span>
     <span class="n">right</span><span class="p">:</span> <span class="n">pdarray</span> <span class="o">|</span> <span class="n">Strings</span> <span class="o">|</span> <span class="n">Categorical</span> <span class="o">|</span> <span class="n">SegArray</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">Categorical</span><span class="p">,</span>
     <span class="n">check_dtype</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -623,7 +623,7 @@
 
 <div class="viewcode-block" id="assert_series_equivalent">
 <a class="viewcode-back" href="../../../autoapi/arkouda/testing/index.html#arkouda.assert_series_equivalent">[docs]</a>
-<span class="k">def</span> <span class="nf">assert_series_equivalent</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">assert_series_equivalent</span><span class="p">(</span>
     <span class="n">left</span><span class="p">:</span> <span class="n">Series</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="n">right</span><span class="p">:</span> <span class="n">Series</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="n">check_dtype</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -719,7 +719,7 @@
 
 <div class="viewcode-block" id="assert_frame_equivalent">
 <a class="viewcode-back" href="../../../autoapi/arkouda/testing/index.html#arkouda.assert_frame_equivalent">[docs]</a>
-<span class="k">def</span> <span class="nf">assert_frame_equivalent</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">assert_frame_equivalent</span><span class="p">(</span>
     <span class="n">left</span><span class="p">:</span> <span class="n">DataFrame</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
     <span class="n">right</span><span class="p">:</span> <span class="n">DataFrame</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
     <span class="n">check_dtype</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -827,7 +827,7 @@
 
 <div class="viewcode-block" id="assert_equivalent">
 <a class="viewcode-back" href="../../../autoapi/arkouda/testing/index.html#arkouda.assert_equivalent">[docs]</a>
-<span class="k">def</span> <span class="nf">assert_equivalent</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">assert_equivalent</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrapper for tm.assert_*_equivalent to dispatch to the appropriate test function.</span>
 

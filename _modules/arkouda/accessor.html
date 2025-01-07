@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>arkouda.accessor - arkouda documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
@@ -351,14 +351,14 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.accessor</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">arkouda.categorical</span> <span class="kn">import</span> <span class="n">Categorical</span>
-<span class="kn">from</span> <span class="nn">arkouda.strings</span> <span class="kn">import</span> <span class="n">Strings</span>
-<span class="kn">from</span> <span class="nn">arkouda.timeclass</span> <span class="kn">import</span> <span class="n">Datetime</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.timeclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">Datetime</span>
 
 
 <div class="viewcode-block" id="CachedAccessor">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.accessor.CachedAccessor">[docs]</a>
-<span class="k">class</span> <span class="nc">CachedAccessor</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CachedAccessor</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Custom property-like object.</span>
 <span class="sd">    A descriptor for caching accessors.</span>
@@ -375,11 +375,11 @@
 <span class="sd">    single argument ``data``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">accessor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">accessor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_accessor</span> <span class="o">=</span> <span class="n">accessor</span>
 
-    <span class="k">def</span> <span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># we&#39;re accessing the attribute of the class, i.e., Dataset.geo</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_accessor</span>
@@ -395,7 +395,7 @@
 
 <div class="viewcode-block" id="string_operators">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.accessor.string_operators">[docs]</a>
-<span class="k">def</span> <span class="nf">string_operators</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">string_operators</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;contains&quot;</span><span class="p">,</span> <span class="s2">&quot;startswith&quot;</span><span class="p">,</span> <span class="s2">&quot;endswith&quot;</span><span class="p">]:</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_make_op</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
     <span class="k">return</span> <span class="bp">cls</span></div>
@@ -404,7 +404,7 @@
 
 <div class="viewcode-block" id="date_operators">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.accessor.date_operators">[docs]</a>
-<span class="k">def</span> <span class="nf">date_operators</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">date_operators</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;floor&quot;</span><span class="p">,</span> <span class="s2">&quot;ceil&quot;</span><span class="p">,</span> <span class="s2">&quot;round&quot;</span><span class="p">]:</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_make_op</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
     <span class="k">return</span> <span class="bp">cls</span></div>
@@ -413,11 +413,11 @@
 
 <div class="viewcode-block" id="Properties">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.accessor.Properties">[docs]</a>
-<span class="k">class</span> <span class="nc">Properties</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Properties</span><span class="p">:</span>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_make_op</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="k">def</span> <span class="nf">accessop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-            <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">Series</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_make_op</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">accessop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">Series</span>
 
             <span class="n">results</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">name</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
@@ -429,8 +429,8 @@
 <div class="viewcode-block" id="DatetimeAccessor">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.accessor.DatetimeAccessor">[docs]</a>
 <span class="nd">@date_operators</span>
-<span class="k">class</span> <span class="nc">DatetimeAccessor</span><span class="p">(</span><span class="n">Properties</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">series</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DatetimeAccessor</span><span class="p">(</span><span class="n">Properties</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">series</span><span class="p">):</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">values</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Datetime</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Can only use .dt accessor with datetimelike values&quot;</span><span class="p">)</span>
@@ -442,8 +442,8 @@
 <div class="viewcode-block" id="StringAccessor">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.accessor.StringAccessor">[docs]</a>
 <span class="nd">@string_operators</span>
-<span class="k">class</span> <span class="nc">StringAccessor</span><span class="p">(</span><span class="n">Properties</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">series</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">StringAccessor</span><span class="p">(</span><span class="n">Properties</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">series</span><span class="p">):</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">values</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Strings</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Can only use .str accessor with string like values&quot;</span><span class="p">)</span>

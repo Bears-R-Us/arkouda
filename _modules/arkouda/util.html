@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>arkouda.util - arkouda documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
@@ -351,50 +351,50 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.util</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span> <span class="nn">builtins</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
-<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">builtins</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
 
-<span class="kn">from</span> <span class="nn">typeguard</span> <span class="kn">import</span> <span class="n">typechecked</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typeguard</span><span class="w"> </span><span class="kn">import</span> <span class="n">typechecked</span>
 
-<span class="kn">from</span> <span class="nn">arkouda.categorical</span> <span class="kn">import</span> <span class="n">Categorical</span>
-<span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span><span class="p">,</span> <span class="n">get_config</span><span class="p">,</span> <span class="n">get_mem_used</span>
-<span class="kn">from</span> <span class="nn">arkouda.client_dtypes</span> <span class="kn">import</span> <span class="n">BitVector</span><span class="p">,</span> <span class="n">BitVectorizer</span><span class="p">,</span> <span class="n">IPv4</span>
-<span class="kn">from</span> <span class="nn">arkouda.groupbyclass</span> <span class="kn">import</span> <span class="n">GroupBy</span><span class="p">,</span> <span class="n">broadcast</span>
-<span class="kn">from</span> <span class="nn">arkouda.infoclass</span> <span class="kn">import</span> <span class="n">list_registry</span>
-<span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span><span class="p">,</span> <span class="n">get_config</span><span class="p">,</span> <span class="n">get_mem_used</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client_dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">BitVector</span><span class="p">,</span> <span class="n">BitVectorizer</span><span class="p">,</span> <span class="n">IPv4</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.groupbyclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">GroupBy</span><span class="p">,</span> <span class="n">broadcast</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.infoclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">list_registry</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_is_dtype_in_union</span><span class="p">,</span>
     <span class="n">dtype</span><span class="p">,</span>
     <span class="n">float_scalars</span><span class="p">,</span>
     <span class="n">int_scalars</span><span class="p">,</span>
     <span class="n">numeric_scalars</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span>
-<span class="kn">from</span> <span class="nn">arkouda.pdarraycreation</span> <span class="kn">import</span> <span class="n">arange</span>
-<span class="kn">from</span> <span class="nn">arkouda.pdarraysetops</span> <span class="kn">import</span> <span class="n">unique</span>
-<span class="kn">from</span> <span class="nn">arkouda.segarray</span> <span class="kn">import</span> <span class="n">SegArray</span>
-<span class="kn">from</span> <span class="nn">arkouda.sorting</span> <span class="kn">import</span> <span class="n">coargsort</span>
-<span class="kn">from</span> <span class="nn">arkouda.strings</span> <span class="kn">import</span> <span class="n">Strings</span>
-<span class="kn">from</span> <span class="nn">arkouda.timeclass</span> <span class="kn">import</span> <span class="n">Datetime</span><span class="p">,</span> <span class="n">Timedelta</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pdarraysetops</span><span class="w"> </span><span class="kn">import</span> <span class="n">unique</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.segarray</span><span class="w"> </span><span class="kn">import</span> <span class="n">SegArray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.sorting</span><span class="w"> </span><span class="kn">import</span> <span class="n">coargsort</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.timeclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">Datetime</span><span class="p">,</span> <span class="n">Timedelta</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">arkouda.index</span> <span class="kn">import</span> <span class="n">Index</span>
-    <span class="kn">from</span> <span class="nn">arkouda.series</span> <span class="kn">import</span> <span class="n">Series</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.index</span><span class="w"> </span><span class="kn">import</span> <span class="n">Index</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.series</span><span class="w"> </span><span class="kn">import</span> <span class="n">Series</span>
 
 
 <div class="viewcode-block" id="identity">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.identity">[docs]</a>
-<span class="k">def</span> <span class="nf">identity</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">identity</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">x</span></div>
 
 
 
 <div class="viewcode-block" id="get_callback">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.get_callback">[docs]</a>
-<span class="k">def</span> <span class="nf">get_callback</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_callback</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">in</span> <span class="p">{</span><span class="n">Datetime</span><span class="p">,</span> <span class="n">Timedelta</span><span class="p">,</span> <span class="n">IPv4</span><span class="p">}:</span>
         <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;_cast&quot;</span><span class="p">):</span>
@@ -408,7 +408,7 @@
 
 <div class="viewcode-block" id="concatenate">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.concatenate">[docs]</a>
-<span class="k">def</span> <span class="nf">concatenate</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">concatenate</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="n">warn</span><span class="p">(</span>
         <span class="s2">&quot;This function is deprecated and will be removed in a later version of Arkouda.&quot;</span>
         <span class="s2">&quot; Use arkouda.util.generic_concat(items, ordered) instead.&quot;</span><span class="p">,</span>
@@ -421,9 +421,9 @@
 
 <div class="viewcode-block" id="generic_concat">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.generic_concat">[docs]</a>
-<span class="k">def</span> <span class="nf">generic_concat</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">generic_concat</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="c1"># this version can be called with Dataframe and Series (which have Class.concat methods)</span>
-    <span class="kn">from</span> <span class="nn">arkouda.pdarraysetops</span> <span class="kn">import</span> <span class="n">concatenate</span> <span class="k">as</span> <span class="n">pdarrayconcatenate</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pdarraysetops</span><span class="w"> </span><span class="kn">import</span> <span class="n">concatenate</span> <span class="k">as</span> <span class="n">pdarrayconcatenate</span>
 
     <span class="n">types</span> <span class="o">=</span> <span class="p">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">items</span><span class="p">}</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">types</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
@@ -443,7 +443,7 @@
 
 <div class="viewcode-block" id="report_mem">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.report_mem">[docs]</a>
-<span class="k">def</span> <span class="nf">report_mem</span><span class="p">(</span><span class="n">pre</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">report_mem</span><span class="p">(</span><span class="n">pre</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
     <span class="n">cfg</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">()</span>
     <span class="n">used</span> <span class="o">=</span> <span class="n">get_mem_used</span><span class="p">()</span> <span class="o">/</span> <span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;numLocales&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;physicalMemory&quot;</span><span class="p">])</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pre</span><span class="si">}</span><span class="s2"> mem use: </span><span class="si">{</span><span class="n">get_mem_used</span><span class="p">()</span><span class="o">/</span><span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">4</span><span class="p">)</span><span class="si">:</span><span class="s2"> .2f</span><span class="si">}</span><span class="s2"> TB (</span><span class="si">{</span><span class="n">used</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span></div>
@@ -452,7 +452,7 @@
 
 <div class="viewcode-block" id="enrich_inplace">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.enrich_inplace">[docs]</a>
-<span class="k">def</span> <span class="nf">enrich_inplace</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">keynames</span><span class="p">,</span> <span class="n">aggregations</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">enrich_inplace</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">keynames</span><span class="p">,</span> <span class="n">aggregations</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">warn</span><span class="p">(</span>
         <span class="s2">&quot;This function is deprecated and will be removed in a later version of Arkouda.&quot;</span><span class="p">,</span>
         <span class="ne">DeprecationWarning</span><span class="p">,</span>
@@ -479,7 +479,7 @@
 
 <div class="viewcode-block" id="expand">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.expand">[docs]</a>
-<span class="k">def</span> <span class="nf">expand</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">segs</span><span class="p">,</span> <span class="n">vals</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">expand</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">segs</span><span class="p">,</span> <span class="n">vals</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Expand an array with values placed into the indicated segments.</span>
 
@@ -514,7 +514,7 @@
 
 <div class="viewcode-block" id="invert_permutation">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.invert_permutation">[docs]</a>
-<span class="k">def</span> <span class="nf">invert_permutation</span><span class="p">(</span><span class="n">perm</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">invert_permutation</span><span class="p">(</span><span class="n">perm</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the inverse of a permutation array.</span>
 
@@ -537,7 +537,7 @@
 
 <div class="viewcode-block" id="most_common">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.most_common">[docs]</a>
-<span class="k">def</span> <span class="nf">most_common</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">most_common</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
     <span class="n">warn</span><span class="p">(</span>
         <span class="s2">&quot;This function is deprecated and will be removed in a later version of Arkouda.&quot;</span>
         <span class="s2">&quot; Use arkouda.GroupBy.most_common(values) instead.&quot;</span><span class="p">,</span>
@@ -550,7 +550,7 @@
 
 <div class="viewcode-block" id="convert_if_categorical">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.convert_if_categorical">[docs]</a>
-<span class="k">def</span> <span class="nf">convert_if_categorical</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">convert_if_categorical</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a Categorical array to Strings for display</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -563,7 +563,7 @@
 
 <div class="viewcode-block" id="register">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.register">[docs]</a>
-<span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Register an arkouda object with a user-specified name. Backwards compatible</span>
 <span class="sd">    with earlier arkouda versions.</span>
@@ -575,11 +575,11 @@
 <div class="viewcode-block" id="attach">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.attach">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">attach</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="kn">from</span> <span class="nn">arkouda.dataframe</span> <span class="kn">import</span> <span class="n">DataFrame</span>
-    <span class="kn">from</span> <span class="nn">arkouda.index</span> <span class="kn">import</span> <span class="n">Index</span><span class="p">,</span> <span class="n">MultiIndex</span>
-    <span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">pdarray</span>
-    <span class="kn">from</span> <span class="nn">arkouda.series</span> <span class="kn">import</span> <span class="n">Series</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">attach</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.dataframe</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrame</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.index</span><span class="w"> </span><span class="kn">import</span> <span class="n">Index</span><span class="p">,</span> <span class="n">MultiIndex</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.series</span><span class="w"> </span><span class="kn">import</span> <span class="n">Series</span>
 
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;attach&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">})))</span>
     <span class="n">rtn_obj</span> <span class="o">=</span> <span class="kc">None</span>
@@ -620,7 +620,7 @@
 <div class="viewcode-block" id="unregister">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.unregister">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">unregister</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">unregister</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;unregister&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">}))</span>
 
     <span class="k">return</span> <span class="n">rep_msg</span></div>
@@ -630,7 +630,7 @@
 <div class="viewcode-block" id="is_registered">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.is_registered">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">is_registered</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">as_component</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_registered</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">as_component</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determine if the name provided is associated with a registered Object</span>
 
@@ -653,7 +653,7 @@
 
 <div class="viewcode-block" id="register_all">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.register_all">[docs]</a>
-<span class="k">def</span> <span class="nf">register_all</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">register_all</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Register all objects in the provided dictionary</span>
 
@@ -673,7 +673,7 @@
 
 <div class="viewcode-block" id="unregister_all">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.unregister_all">[docs]</a>
-<span class="k">def</span> <span class="nf">unregister_all</span><span class="p">(</span><span class="n">names</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">unregister_all</span><span class="p">(</span><span class="n">names</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Unregister all names provided</span>
 
@@ -693,7 +693,7 @@
 
 <div class="viewcode-block" id="attach_all">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.attach_all">[docs]</a>
-<span class="k">def</span> <span class="nf">attach_all</span><span class="p">(</span><span class="n">names</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">attach_all</span><span class="p">(</span><span class="n">names</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Attach to all objects registered with the names provide</span>
 
@@ -712,7 +712,7 @@
 
 <div class="viewcode-block" id="sparse_sum_help">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.sparse_sum_help">[docs]</a>
-<span class="k">def</span> <span class="nf">sparse_sum_help</span><span class="p">(</span><span class="n">idx1</span><span class="p">,</span> <span class="n">idx2</span><span class="p">,</span> <span class="n">val1</span><span class="p">,</span> <span class="n">val2</span><span class="p">,</span> <span class="n">merge</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">percent_transfer_limit</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sparse_sum_help</span><span class="p">(</span><span class="n">idx1</span><span class="p">,</span> <span class="n">idx2</span><span class="p">,</span> <span class="n">val1</span><span class="p">,</span> <span class="n">val2</span><span class="p">,</span> <span class="n">merge</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">percent_transfer_limit</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper for summing two sparse matrices together</span>
 
@@ -772,7 +772,7 @@
 
 <div class="viewcode-block" id="broadcast_dims">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.broadcast_dims">[docs]</a>
-<span class="k">def</span> <span class="nf">broadcast_dims</span><span class="p">(</span><span class="n">sa</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">sb</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">broadcast_dims</span><span class="p">(</span><span class="n">sa</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">sb</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Algorithm to determine shape of broadcasted PD array given two array shapes</span>
 
@@ -809,7 +809,7 @@
 
 <div class="viewcode-block" id="convert_bytes">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.convert_bytes">[docs]</a>
-<span class="k">def</span> <span class="nf">convert_bytes</span><span class="p">(</span><span class="n">nbytes</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">convert_bytes</span><span class="p">(</span><span class="n">nbytes</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert the number of bytes to KB, MB, or GB.</span>
 
@@ -839,7 +839,7 @@
 
 <div class="viewcode-block" id="is_numeric">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.is_numeric">[docs]</a>
-<span class="k">def</span> <span class="nf">is_numeric</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_numeric</span><span class="p">(</span>
     <span class="n">arry</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">,</span> <span class="s2">&quot;Series&quot;</span><span class="p">,</span> <span class="s2">&quot;Index&quot;</span><span class="p">]</span>  <span class="c1"># noqa: F821</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">builtins</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -866,8 +866,8 @@
 <span class="sd">        False</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">arkouda.index</span> <span class="kn">import</span> <span class="n">Index</span>
-    <span class="kn">from</span> <span class="nn">arkouda.series</span> <span class="kn">import</span> <span class="n">Series</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.index</span><span class="w"> </span><span class="kn">import</span> <span class="n">Index</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.series</span><span class="w"> </span><span class="kn">import</span> <span class="n">Series</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arry</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Series</span><span class="p">,</span> <span class="n">Index</span><span class="p">)):</span>
         <span class="k">return</span> <span class="n">_is_dtype_in_union</span><span class="p">(</span><span class="n">dtype</span><span class="p">(</span><span class="n">arry</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span> <span class="n">numeric_scalars</span><span class="p">)</span>
@@ -878,7 +878,7 @@
 
 <div class="viewcode-block" id="is_float">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.is_float">[docs]</a>
-<span class="k">def</span> <span class="nf">is_float</span><span class="p">(</span><span class="n">arry</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">,</span> <span class="s2">&quot;Series&quot;</span><span class="p">,</span> <span class="s2">&quot;Index&quot;</span><span class="p">]):</span>  <span class="c1"># noqa: F821</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_float</span><span class="p">(</span><span class="n">arry</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">,</span> <span class="s2">&quot;Series&quot;</span><span class="p">,</span> <span class="s2">&quot;Index&quot;</span><span class="p">]):</span>  <span class="c1"># noqa: F821</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if the dtype of the given array is float.</span>
 
@@ -903,8 +903,8 @@
 <span class="sd">        False</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">arkouda.index</span> <span class="kn">import</span> <span class="n">Index</span>
-    <span class="kn">from</span> <span class="nn">arkouda.series</span> <span class="kn">import</span> <span class="n">Series</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.index</span><span class="w"> </span><span class="kn">import</span> <span class="n">Index</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.series</span><span class="w"> </span><span class="kn">import</span> <span class="n">Series</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arry</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Series</span><span class="p">,</span> <span class="n">Index</span><span class="p">)):</span>
         <span class="k">return</span> <span class="n">_is_dtype_in_union</span><span class="p">(</span><span class="n">dtype</span><span class="p">(</span><span class="n">arry</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span> <span class="n">float_scalars</span><span class="p">)</span>
@@ -915,7 +915,7 @@
 
 <div class="viewcode-block" id="is_int">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.is_int">[docs]</a>
-<span class="k">def</span> <span class="nf">is_int</span><span class="p">(</span><span class="n">arry</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">,</span> <span class="s2">&quot;Series&quot;</span><span class="p">,</span> <span class="s2">&quot;Index&quot;</span><span class="p">]):</span>  <span class="c1"># noqa: F821</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_int</span><span class="p">(</span><span class="n">arry</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">,</span> <span class="s2">&quot;Series&quot;</span><span class="p">,</span> <span class="s2">&quot;Index&quot;</span><span class="p">]):</span>  <span class="c1"># noqa: F821</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if the dtype of the given array is int.</span>
 
@@ -941,8 +941,8 @@
 <span class="sd">    True</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">arkouda.index</span> <span class="kn">import</span> <span class="n">Index</span>
-    <span class="kn">from</span> <span class="nn">arkouda.series</span> <span class="kn">import</span> <span class="n">Series</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.index</span><span class="w"> </span><span class="kn">import</span> <span class="n">Index</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.series</span><span class="w"> </span><span class="kn">import</span> <span class="n">Series</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arry</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Series</span><span class="p">,</span> <span class="n">Index</span><span class="p">)):</span>
         <span class="k">return</span> <span class="n">_is_dtype_in_union</span><span class="p">(</span><span class="n">dtype</span><span class="p">(</span><span class="n">arry</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span> <span class="n">int_scalars</span><span class="p">)</span>
@@ -953,7 +953,7 @@
 
 <div class="viewcode-block" id="map">
 <a class="viewcode-back" href="../../autoapi/arkouda/util/index.html#arkouda.map">[docs]</a>
-<span class="k">def</span> <span class="nf">map</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">map</span><span class="p">(</span>
     <span class="n">values</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">],</span> <span class="n">mapping</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="s2">&quot;Series&quot;</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -994,10 +994,10 @@
 <span class="sd">    array([&#39;b&#39;, &#39;b&#39;, &#39;d&#39;, &#39;d&#39;, &#39;a&#39;])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-    <span class="kn">from</span> <span class="nn">arkouda</span> <span class="kn">import</span> <span class="n">Series</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">broadcast</span><span class="p">,</span> <span class="n">full</span>
-    <span class="kn">from</span> <span class="nn">arkouda.pdarraysetops</span> <span class="kn">import</span> <span class="n">in1d</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">Series</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">broadcast</span><span class="p">,</span> <span class="n">full</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pdarraysetops</span><span class="w"> </span><span class="kn">import</span> <span class="n">in1d</span>
 
     <span class="n">keys</span> <span class="o">=</span> <span class="n">values</span>
     <span class="n">gb</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">dropna</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -1035,7 +1035,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_infer_shape_from_size</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_infer_shape_from_size</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
     <span class="n">shape</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
         <span class="n">shape</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Tuple</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>

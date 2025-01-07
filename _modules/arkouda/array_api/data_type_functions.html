@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>arkouda.array_api.data_type_functions - arkouda documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
@@ -351,10 +351,10 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.array_api.data_type_functions</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span> <span class="nn">.array_object</span> <span class="kn">import</span> <span class="n">Array</span><span class="p">,</span> <span class="n">implements_numpy</span>
-<span class="kn">from</span> <span class="nn">._dtypes</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.array_object</span><span class="w"> </span><span class="kn">import</span> <span class="n">Array</span><span class="p">,</span> <span class="n">implements_numpy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_all_dtypes</span><span class="p">,</span>
     <span class="n">_boolean_dtypes</span><span class="p">,</span>
     <span class="n">_signed_integer_dtypes</span><span class="p">,</span>
@@ -366,18 +366,18 @@
     <span class="n">_result_type</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">._typing</span> <span class="kn">import</span> <span class="n">Dtype</span>
-<span class="kn">import</span> <span class="nn">arkouda</span> <span class="k">as</span> <span class="nn">ak</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">._typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dtype</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 
 <div class="viewcode-block" id="astype">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/data_type_functions/index.html#arkouda.array_api.data_type_functions.astype">[docs]</a>
-<span class="k">def</span> <span class="nf">astype</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">Dtype</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">astype</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">Dtype</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cast an array to a specified data type.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -389,7 +389,7 @@
 
 <div class="viewcode-block" id="can_cast">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/data_type_functions/index.html#arkouda.array_api.data_type_functions.can_cast">[docs]</a>
-<span class="k">def</span> <span class="nf">can_cast</span><span class="p">(</span><span class="n">from_</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dtype</span><span class="p">,</span> <span class="n">Array</span><span class="p">],</span> <span class="n">to</span><span class="p">:</span> <span class="n">Dtype</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">can_cast</span><span class="p">(</span><span class="n">from_</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dtype</span><span class="p">,</span> <span class="n">Array</span><span class="p">],</span> <span class="n">to</span><span class="p">:</span> <span class="n">Dtype</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determine whether an array or dtype can be cast to another dtype.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -413,7 +413,7 @@
 <div class="viewcode-block" id="finfo_object">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/data_type_functions/index.html#arkouda.array_api.data_type_functions.finfo_object">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">finfo_object</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">finfo_object</span><span class="p">:</span>
     <span class="n">bits</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">eps</span><span class="p">:</span> <span class="nb">float</span>
     <span class="nb">max</span><span class="p">:</span> <span class="nb">float</span>
@@ -426,7 +426,7 @@
 <div class="viewcode-block" id="iinfo_object">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/data_type_functions/index.html#arkouda.array_api.data_type_functions.iinfo_object">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">iinfo_object</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">iinfo_object</span><span class="p">:</span>
     <span class="n">bits</span><span class="p">:</span> <span class="nb">int</span>
     <span class="nb">max</span><span class="p">:</span> <span class="nb">int</span>
     <span class="nb">min</span><span class="p">:</span> <span class="nb">int</span>
@@ -436,7 +436,7 @@
 
 <div class="viewcode-block" id="finfo">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/data_type_functions/index.html#arkouda.array_api.data_type_functions.finfo">[docs]</a>
-<span class="k">def</span> <span class="nf">finfo</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">finfo_object</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">finfo</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">finfo_object</span><span class="p">:</span>
     <span class="n">fi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">finfo_object</span><span class="p">(</span>
         <span class="n">fi</span><span class="o">.</span><span class="n">bits</span><span class="p">,</span>
@@ -451,7 +451,7 @@
 
 <div class="viewcode-block" id="iinfo">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/data_type_functions/index.html#arkouda.array_api.data_type_functions.iinfo">[docs]</a>
-<span class="k">def</span> <span class="nf">iinfo</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">iinfo_object</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">iinfo</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">iinfo_object</span><span class="p">:</span>
     <span class="n">ii</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">iinfo_object</span><span class="p">(</span><span class="n">ii</span><span class="o">.</span><span class="n">bits</span><span class="p">,</span> <span class="n">ii</span><span class="o">.</span><span class="n">max</span><span class="p">,</span> <span class="n">ii</span><span class="o">.</span><span class="n">min</span><span class="p">,</span> <span class="n">ii</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span></div>
 
@@ -459,7 +459,7 @@
 
 <div class="viewcode-block" id="isdtype">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/data_type_functions/index.html#arkouda.array_api.data_type_functions.isdtype">[docs]</a>
-<span class="k">def</span> <span class="nf">isdtype</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">isdtype</span><span class="p">(</span>
     <span class="n">dtype</span><span class="p">:</span> <span class="n">Dtype</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dtype</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Dtype</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="o">...</span><span class="p">]]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -500,7 +500,7 @@
 <div class="viewcode-block" id="result_type">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/data_type_functions/index.html#arkouda.array_api.data_type_functions.result_type">[docs]</a>
 <span class="nd">@implements_numpy</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">result_type</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">arrays_and_dtypes</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="n">Dtype</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dtype</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">arrays_and_dtypes</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="n">Dtype</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dtype</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the result dtype for a group of arrays and/or dtypes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>

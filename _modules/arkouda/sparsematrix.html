@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>arkouda.sparsematrix - arkouda documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
@@ -351,20 +351,20 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.sparsematrix</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">typeguard</span> <span class="kn">import</span> <span class="n">typechecked</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typeguard</span><span class="w"> </span><span class="kn">import</span> <span class="n">typechecked</span>
 
-<span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
-<span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">akdtype</span>
-<span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">int64</span>
-<span class="kn">from</span> <span class="nn">arkouda.logger</span> <span class="kn">import</span> <span class="n">getArkoudaLogger</span>
-<span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes.dtypes</span> <span class="kn">import</span> <span class="n">NumericDTypes</span>
-<span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">pdarray</span>
-<span class="kn">from</span> <span class="nn">arkouda.sparrayclass</span> <span class="kn">import</span> <span class="n">create_sparray</span><span class="p">,</span> <span class="n">sparray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">akdtype</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">int64</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">getArkoudaLogger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">NumericDTypes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.sparrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_sparray</span><span class="p">,</span> <span class="n">sparray</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;random_sparse_matrix&quot;</span><span class="p">,</span> <span class="s2">&quot;sparse_matrix_matrix_mult&quot;</span><span class="p">,</span> <span class="s2">&quot;create_sparse_matrix&quot;</span><span class="p">]</span>
 
@@ -374,7 +374,7 @@
 <div class="viewcode-block" id="random_sparse_matrix">
 <a class="viewcode-back" href="../../autoapi/arkouda/sparsematrix/index.html#arkouda.random_sparse_matrix">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">random_sparse_matrix</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">random_sparse_matrix</span><span class="p">(</span>
     <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">density</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">layout</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">int64</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">sparray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -424,7 +424,7 @@
 <div class="viewcode-block" id="sparse_matrix_matrix_mult">
 <a class="viewcode-back" href="../../autoapi/arkouda/sparsematrix/index.html#arkouda.sparse_matrix_matrix_mult">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">sparse_matrix_matrix_mult</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">:</span> <span class="n">sparray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">sparray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sparse_matrix_matrix_mult</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">:</span> <span class="n">sparray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">sparray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Multiply two sparse matrices.</span>
 
@@ -455,7 +455,7 @@
 
 <div class="viewcode-block" id="create_sparse_matrix">
 <a class="viewcode-back" href="../../autoapi/arkouda/sparsematrix/index.html#arkouda.create_sparse_matrix">[docs]</a>
-<span class="k">def</span> <span class="nf">create_sparse_matrix</span><span class="p">(</span><span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">rows</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">cols</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">vals</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">layout</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">sparray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_sparse_matrix</span><span class="p">(</span><span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">rows</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">cols</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">vals</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">layout</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">sparray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a sparse matrix from three pdarrays representing the row indices,</span>
 <span class="sd">    column indices, and values of the non-zero elements of the matrix.</span>

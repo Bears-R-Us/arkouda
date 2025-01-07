@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>numpy.lib.function_base - arkouda documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
@@ -351,41 +351,41 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for numpy.lib.function_base</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">collections.abc</span>
-<span class="kn">import</span> <span class="nn">functools</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">collections.abc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
-<span class="kn">from</span> <span class="nn">.._utils</span> <span class="kn">import</span> <span class="n">set_module</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">numpy.core.numeric</span> <span class="k">as</span> <span class="nn">_nx</span>
-<span class="kn">from</span> <span class="nn">numpy.core</span> <span class="kn">import</span> <span class="n">transpose</span>
-<span class="kn">from</span> <span class="nn">numpy.core.numeric</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_module</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.core.numeric</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">_nx</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">transpose</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.core.numeric</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ones</span><span class="p">,</span> <span class="n">zeros_like</span><span class="p">,</span> <span class="n">arange</span><span class="p">,</span> <span class="n">concatenate</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">asarray</span><span class="p">,</span> <span class="n">asanyarray</span><span class="p">,</span> <span class="n">empty</span><span class="p">,</span>
     <span class="n">ndarray</span><span class="p">,</span> <span class="n">take</span><span class="p">,</span> <span class="n">dot</span><span class="p">,</span> <span class="n">where</span><span class="p">,</span> <span class="n">intp</span><span class="p">,</span> <span class="n">integer</span><span class="p">,</span> <span class="n">isscalar</span><span class="p">,</span> <span class="n">absolute</span>
     <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">numpy.core.umath</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.core.umath</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">pi</span><span class="p">,</span> <span class="n">add</span><span class="p">,</span> <span class="n">arctan2</span><span class="p">,</span> <span class="n">frompyfunc</span><span class="p">,</span> <span class="n">cos</span><span class="p">,</span> <span class="n">less_equal</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">,</span> <span class="n">sin</span><span class="p">,</span>
     <span class="n">mod</span><span class="p">,</span> <span class="n">exp</span><span class="p">,</span> <span class="n">not_equal</span><span class="p">,</span> <span class="n">subtract</span>
     <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">numpy.core.fromnumeric</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.core.fromnumeric</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ravel</span><span class="p">,</span> <span class="n">nonzero</span><span class="p">,</span> <span class="n">partition</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="nb">any</span><span class="p">,</span> <span class="nb">sum</span>
     <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">numpy.core.numerictypes</span> <span class="kn">import</span> <span class="n">typecodes</span>
-<span class="kn">from</span> <span class="nn">numpy.core</span> <span class="kn">import</span> <span class="n">overrides</span>
-<span class="kn">from</span> <span class="nn">numpy.core.function_base</span> <span class="kn">import</span> <span class="n">add_newdoc</span>
-<span class="kn">from</span> <span class="nn">numpy.lib.twodim_base</span> <span class="kn">import</span> <span class="n">diag</span>
-<span class="kn">from</span> <span class="nn">numpy.core.multiarray</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.core.numerictypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">typecodes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">overrides</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.core.function_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">add_newdoc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.lib.twodim_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">diag</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.core.multiarray</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_place</span><span class="p">,</span> <span class="n">add_docstring</span><span class="p">,</span> <span class="n">bincount</span><span class="p">,</span> <span class="n">normalize_axis_index</span><span class="p">,</span> <span class="n">_monotonicity</span><span class="p">,</span>
     <span class="n">interp</span> <span class="k">as</span> <span class="n">compiled_interp</span><span class="p">,</span> <span class="n">interp_complex</span> <span class="k">as</span> <span class="n">compiled_interp_complex</span>
     <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">numpy.core.umath</span> <span class="kn">import</span> <span class="n">_add_newdoc_ufunc</span> <span class="k">as</span> <span class="n">add_newdoc_ufunc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.core.umath</span><span class="w"> </span><span class="kn">import</span> <span class="n">_add_newdoc_ufunc</span> <span class="k">as</span> <span class="n">add_newdoc_ufunc</span>
 
-<span class="kn">import</span> <span class="nn">builtins</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">builtins</span>
 
 <span class="c1"># needed in this module for compatibility</span>
-<span class="kn">from</span> <span class="nn">numpy.lib.histograms</span> <span class="kn">import</span> <span class="n">histogram</span><span class="p">,</span> <span class="n">histogramdd</span>  <span class="c1"># noqa: F401</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.lib.histograms</span><span class="w"> </span><span class="kn">import</span> <span class="n">histogram</span><span class="p">,</span> <span class="n">histogramdd</span>  <span class="c1"># noqa: F401</span>
 
 
 <span class="n">array_function_dispatch</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span>
@@ -504,12 +504,12 @@
     <span class="p">))</span>
 
 
-<span class="k">def</span> <span class="nf">_rot90_dispatcher</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_rot90_dispatcher</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">m</span><span class="p">,)</span>
 
 
 <span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_rot90_dispatcher</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">rot90</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">rot90</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Rotate an array by 90 degrees in the plane specified by axes.</span>
 
@@ -600,12 +600,12 @@
         <span class="k">return</span> <span class="n">flip</span><span class="p">(</span><span class="n">transpose</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">axes_list</span><span class="p">),</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
 
-<span class="k">def</span> <span class="nf">_flip_dispatcher</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_flip_dispatcher</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">m</span><span class="p">,)</span>
 
 
 <span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_flip_dispatcher</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">flip</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">flip</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reverse the order of elements in an array along the given axis.</span>
 
@@ -699,7 +699,7 @@
 
 
 <span class="nd">@set_module</span><span class="p">(</span><span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">iterable</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">iterable</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check whether or not an object can be iterated over.</span>
 
@@ -743,13 +743,13 @@
     <span class="k">return</span> <span class="kc">True</span>
 
 
-<span class="k">def</span> <span class="nf">_average_dispatcher</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">returned</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_average_dispatcher</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">returned</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
                         <span class="n">keepdims</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
 
 
 <span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_average_dispatcher</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">average</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">returned</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">average</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">returned</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
             <span class="n">keepdims</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">_NoValue</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the weighted average along the specified axis.</span>
@@ -915,7 +915,7 @@
 
 
 <span class="nd">@set_module</span><span class="p">(</span><span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">asarray_chkfinite</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">asarray_chkfinite</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert the input to an array, checking for NaNs or Infs.</span>
 
 <span class="sd">    Parameters</span>
@@ -985,7 +985,7 @@
     <span class="k">return</span> <span class="n">a</span>
 
 
-<span class="k">def</span> <span class="nf">_piecewise_dispatcher</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">condlist</span><span class="p">,</span> <span class="n">funclist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_piecewise_dispatcher</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">condlist</span><span class="p">,</span> <span class="n">funclist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
     <span class="k">yield</span> <span class="n">x</span>
     <span class="c1"># support the undocumented behavior of allowing scalars</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">iterable</span><span class="p">(</span><span class="n">condlist</span><span class="p">):</span>
@@ -993,7 +993,7 @@
 
 
 <span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_piecewise_dispatcher</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">piecewise</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">condlist</span><span class="p">,</span> <span class="n">funclist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">piecewise</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">condlist</span><span class="p">,</span> <span class="n">funclist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Evaluate a piecewise-defined function.</span>
 
@@ -1113,13 +1113,13 @@
     <span class="k">return</span> <span class="n">y</span>
 
 
-<span class="k">def</span> <span class="nf">_select_dispatcher</span><span class="p">(</span><span class="n">condlist</span><span class="p">,</span> <span class="n">choicelist</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_select_dispatcher</span><span class="p">(</span><span class="n">condlist</span><span class="p">,</span> <span class="n">choicelist</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">yield from</span> <span class="n">condlist</span>
     <span class="k">yield from</span> <span class="n">choicelist</span>
 
 
 <span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_select_dispatcher</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="n">condlist</span><span class="p">,</span> <span class="n">choicelist</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">select</span><span class="p">(</span><span class="n">condlist</span><span class="p">,</span> <span class="n">choicelist</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return an array drawn from elements in choicelist, depending on conditions.</span>
 
@@ -1176,7 +1176,7 @@
         <span class="n">intermediate_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">choicelist</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Choicelist elements do not have a common dtype: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
     <span class="n">default_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">default</span><span class="p">)</span>
     <span class="n">choicelist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">default_array</span><span class="p">)</span>
 
@@ -1186,7 +1186,7 @@
         <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="n">intermediate_dtype</span><span class="p">,</span> <span class="n">default_array</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Choicelists and default value do not have a common dtype: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
 
     <span class="c1"># Convert conditions to arrays and broadcast conditions and choices</span>
     <span class="c1"># as the shape is needed for the result. Doing it separately optimizes</span>
@@ -1219,12 +1219,12 @@
     <span class="k">return</span> <span class="n">result</span>
 
 
-<span class="k">def</span> <span class="nf">_copy_dispatcher</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_copy_dispatcher</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">a</span><span class="p">,)</span>
 
 
 <span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_copy_dispatcher</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;K&#39;</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;K&#39;</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return an array copy of the given object.</span>
 
@@ -1317,13 +1317,13 @@
 <span class="c1"># Basic operations</span>
 
 
-<span class="k">def</span> <span class="nf">_gradient_dispatcher</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="o">*</span><span class="n">varargs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">edge_order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_gradient_dispatcher</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="o">*</span><span class="n">varargs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">edge_order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">yield</span> <span class="n">f</span>
     <span class="k">yield from</span> <span class="n">varargs</span>
 
 
 <span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_gradient_dispatcher</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">gradient</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="o">*</span><span class="n">varargs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">edge_order</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">gradient</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="o">*</span><span class="n">varargs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">edge_order</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the gradient of an N-dimensional array.</span>
 
@@ -1670,12 +1670,12 @@
         <span class="k">return</span> <span class="n">outvals</span>
 
 
-<span class="k">def</span> <span class="nf">_diff_dispatcher</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prepend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_diff_dispatcher</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prepend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">prepend</span><span class="p">,</span> <span class="n">append</span><span class="p">)</span>
 
 
 <span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_diff_dispatcher</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">diff</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">prepend</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">_NoValue</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">_NoValue</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">diff</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">prepend</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">_NoValue</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">_NoValue</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the n-th discrete difference along the given axis.</span>
 
@@ -1807,12 +1807,12 @@
     <span class="k">return</span> <span class="n">a</span>
 
 
-<span class="k">def</span> <span class="nf">_interp_dispatcher</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">xp</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_interp_dispatcher</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">xp</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">xp</span><span class="p">,</span> <span class="n">fp</span><span class="p">)</span>
 
 
 <span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_interp_dispatcher</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">interp</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">xp</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">interp</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">xp</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    One-dimensional linear interpolation for monotonically increasing sample points.</span>
 
@@ -1952,12 +1952,12 @@
     <span class="k">return</span> <span class="n">interp_func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">xp</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_angle_dispatcher</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">deg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_angle_dispatcher</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">deg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">z</span><span class="p">,)</span>
 
 
 <span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_angle_dispatcher</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">angle</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">deg</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">angle</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">deg</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the angle of the complex argument.</span>
 
@@ -2009,12 +2009,12 @@
     <span class="k">return</span> <span class="n">a</span>
 
 
-<span class="k">def</span> <span class="nf">_unwrap_dispatcher</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">discont</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_unwrap_dispatcher</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">discont</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">p</span><span class="p">,)</span>
 
 
 <span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_unwrap_dispatcher</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">unwrap</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">discont</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">unwrap</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">discont</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Unwrap by taking the complement of large deltas with respect to the period.</span>
 
@@ -2109,12 +2109,12 @@
     <span class="k">return</span> <span class="n">up</span>
 
 
-<span class="k">def</span> <span class="nf">_sort_complex</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_sort_complex</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">a</span><span class="p">,)</span>
 
 
 <span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_sort_complex</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">sort_complex</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sort_complex</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Sort a complex array using the real part first, then the imaginary part.</span>
 
@@ -2150,12 +2150,12 @@
         <span class="k">return</span> <span class="n">b</span>
 
 
-<span class="k">def</span> <span class="nf">_trim_zeros</span><span class="p">(</span><span class="n">filt</span><span class="p">,</span> <span class="n">trim</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_trim_zeros</span><span class="p">(</span><span class="n">filt</span><span class="p">,</span> <span class="n">trim</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">filt</span><span class="p">,)</span>
 
 
 <span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_trim_zeros</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">trim_zeros</span><span class="p">(</span><span class="n">filt</span><span class="p">,</span> <span class="n">trim</span><span class="o">=</span><span class="s1">&#39;fb&#39;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">trim_zeros</span><span class="p">(</span><span class="n">filt</span><span class="p">,</span> <span class="n">trim</span><span class="o">=</span><span class="s1">&#39;fb&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Trim the leading and/or trailing zeros from a 1-D array or sequence.</span>
 
@@ -2207,12 +2207,12 @@
     <span class="k">return</span> <span class="n">filt</span><span class="p">[</span><span class="n">first</span><span class="p">:</span><span class="n">last</span><span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">_extract_dispatcher</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">arr</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_extract_dispatcher</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">arr</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">arr</span><span class="p">)</span>
 
 
 <span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_extract_dispatcher</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">arr</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">extract</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">arr</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the elements of an array that satisfy some condition.</span>
 
@@ -2263,12 +2263,12 @@
     <span class="k">return</span> <span class="n">_nx</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">ravel</span><span class="p">(</span><span class="n">arr</span><span class="p">),</span> <span class="n">nonzero</span><span class="p">(</span><span class="n">ravel</span><span class="p">(</span><span class="n">condition</span><span class="p">))[</span><span class="mi">0</span><span class="p">])</span>
 
 
-<span class="k">def</span> <span class="nf">_place_dispatcher</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">vals</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_place_dispatcher</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">vals</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">vals</span><span class="p">)</span>
 
 
 <span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_place_dispatcher</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">place</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">vals</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">place</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">vals</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Change elements of an array based on conditional and input values.</span>
 
@@ -2309,7 +2309,7 @@
 
 <div class="viewcode-block" id="disp">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.disp">[docs]</a>
-<span class="k">def</span> <span class="nf">disp</span><span class="p">(</span><span class="n">mesg</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">linefeed</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">disp</span><span class="p">(</span><span class="n">mesg</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">linefeed</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Display a message on a device.</span>
 
@@ -2360,7 +2360,7 @@
 <span class="n">_SIGNATURE</span> <span class="o">=</span> <span class="s1">&#39;^</span><span class="si">{0:}</span><span class="s1">-&gt;</span><span class="si">{0:}</span><span class="s1">$&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_ARGUMENT_LIST</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_parse_gufunc_signature</span><span class="p">(</span><span class="n">signature</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_gufunc_signature</span><span class="p">(</span><span class="n">signature</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse string signatures for a generalized universal function.</span>
 
@@ -2385,7 +2385,7 @@
                  <span class="k">for</span> <span class="n">arg_list</span> <span class="ow">in</span> <span class="n">signature</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&gt;&#39;</span><span class="p">))</span>
 
 
-<span class="k">def</span> <span class="nf">_update_dim_sizes</span><span class="p">(</span><span class="n">dim_sizes</span><span class="p">,</span> <span class="n">arg</span><span class="p">,</span> <span class="n">core_dims</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_update_dim_sizes</span><span class="p">(</span><span class="n">dim_sizes</span><span class="p">,</span> <span class="n">arg</span><span class="p">,</span> <span class="n">core_dims</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Incrementally check and update core dimension sizes for a single argument.</span>
 
@@ -2419,7 +2419,7 @@
             <span class="n">dim_sizes</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span> <span class="o">=</span> <span class="n">size</span>
 
 
-<span class="k">def</span> <span class="nf">_parse_input_dimensions</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">input_core_dims</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_input_dimensions</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">input_core_dims</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse broadcast and core dimensions for vectorize with a signature.</span>
 
@@ -2448,13 +2448,13 @@
     <span class="k">return</span> <span class="n">broadcast_shape</span><span class="p">,</span> <span class="n">dim_sizes</span>
 
 
-<span class="k">def</span> <span class="nf">_calculate_shapes</span><span class="p">(</span><span class="n">broadcast_shape</span><span class="p">,</span> <span class="n">dim_sizes</span><span class="p">,</span> <span class="n">list_of_core_dims</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_calculate_shapes</span><span class="p">(</span><span class="n">broadcast_shape</span><span class="p">,</span> <span class="n">dim_sizes</span><span class="p">,</span> <span class="n">list_of_core_dims</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper for calculating broadcast shapes with core dimensions.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">broadcast_shape</span> <span class="o">+</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">dim_sizes</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span> <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="n">core_dims</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">core_dims</span> <span class="ow">in</span> <span class="n">list_of_core_dims</span><span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">_create_arrays</span><span class="p">(</span><span class="n">broadcast_shape</span><span class="p">,</span> <span class="n">dim_sizes</span><span class="p">,</span> <span class="n">list_of_core_dims</span><span class="p">,</span> <span class="n">dtypes</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_create_arrays</span><span class="p">(</span><span class="n">broadcast_shape</span><span class="p">,</span> <span class="n">dim_sizes</span><span class="p">,</span> <span class="n">list_of_core_dims</span><span class="p">,</span> <span class="n">dtypes</span><span class="p">,</span>
                    <span class="n">results</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper for creating output arrays in vectorize.&quot;&quot;&quot;</span>
     <span class="n">shapes</span> <span class="o">=</span> <span class="n">_calculate_shapes</span><span class="p">(</span><span class="n">broadcast_shape</span><span class="p">,</span> <span class="n">dim_sizes</span><span class="p">,</span> <span class="n">list_of_core_dims</span><span class="p">)</span>
@@ -2471,7 +2471,7 @@
 
 
 <span class="nd">@set_module</span><span class="p">(</span><span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">vectorize</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">vectorize</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    vectorize(pyfunc=np._NoValue, otypes=None, doc=None, excluded=None,</span>
 <span class="sd">    cache=False, signature=None)</span>
@@ -2638,7 +2638,7 @@
 <span class="sd">    &gt;&gt;&gt;as_float([0, 1, 2])</span>
 <span class="sd">    array([0., 1., 2.])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pyfunc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">_NoValue</span><span class="p">,</span> <span class="n">otypes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pyfunc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">_NoValue</span><span class="p">,</span> <span class="n">otypes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">excluded</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">signature</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="n">pyfunc</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">_NoValue</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">pyfunc</span><span class="p">)):</span>
@@ -2682,7 +2682,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_in_and_out_core_dims</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">_init_stage_2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pyfunc</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init_stage_2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pyfunc</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">pyfunc</span><span class="o">.</span><span class="vm">__name__</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pyfunc</span> <span class="o">=</span> <span class="n">pyfunc</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_doc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -2690,7 +2690,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_doc</span>
 
-    <span class="k">def</span> <span class="nf">_call_as_normal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_call_as_normal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return arrays with the results of `pyfunc` broadcast (vectorized) over</span>
 <span class="sd">        `args` and `kwargs` not in `excluded`.</span>
@@ -2709,7 +2709,7 @@
             <span class="n">inds</span> <span class="o">=</span> <span class="p">[</span><span class="n">_i</span> <span class="k">for</span> <span class="n">_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nargs</span><span class="p">)</span> <span class="k">if</span> <span class="n">_i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">excluded</span><span class="p">]</span>
             <span class="n">the_args</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
 
-            <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="o">*</span><span class="n">vargs</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="o">*</span><span class="n">vargs</span><span class="p">):</span>
                 <span class="k">for</span> <span class="n">_n</span><span class="p">,</span> <span class="n">_i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">inds</span><span class="p">):</span>
                     <span class="n">the_args</span><span class="p">[</span><span class="n">_i</span><span class="p">]</span> <span class="o">=</span> <span class="n">vargs</span><span class="p">[</span><span class="n">_n</span><span class="p">]</span>
                 <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">vargs</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">inds</span><span class="p">):]))</span>
@@ -2720,14 +2720,14 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vectorize_call</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">vargs</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pyfunc</span> <span class="ow">is</span> <span class="n">np</span><span class="o">.</span><span class="n">_NoValue</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_init_stage_2</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_as_normal</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_get_ufunc_and_otypes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_ufunc_and_otypes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return (ufunc, otypes).&quot;&quot;&quot;</span>
         <span class="c1"># frompyfunc will fail if args is empty</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>
@@ -2772,7 +2772,7 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>
                 <span class="n">_cache</span> <span class="o">=</span> <span class="p">[</span><span class="n">outputs</span><span class="p">]</span>
 
-                <span class="k">def</span> <span class="nf">_func</span><span class="p">(</span><span class="o">*</span><span class="n">vargs</span><span class="p">):</span>
+                <span class="k">def</span><span class="w"> </span><span class="nf">_func</span><span class="p">(</span><span class="o">*</span><span class="n">vargs</span><span class="p">):</span>
                     <span class="k">if</span> <span class="n">_cache</span><span class="p">:</span>
                         <span class="k">return</span> <span class="n">_cache</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
                     <span class="k">else</span><span class="p">:</span>
@@ -2796,7 +2796,7 @@
 
         <span class="k">return</span> <span class="n">ufunc</span><span class="p">,</span> <span class="n">otypes</span>
 
-    <span class="k">def</span> <span class="nf">_vectorize_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_vectorize_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Vectorized call to `func` over positional `args`.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">signature</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vectorize_call_with_signature</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
@@ -2817,7 +2817,7 @@
                              <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">otypes</span><span class="p">)])</span>
         <span class="k">return</span> <span class="n">res</span>
 
-    <span class="k">def</span> <span class="nf">_vectorize_call_with_signature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_vectorize_call_with_signature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Vectorized call over positional arguments with a signature.&quot;&quot;&quot;</span>
         <span class="n">input_core_dims</span><span class="p">,</span> <span class="n">output_core_dims</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_in_and_out_core_dims</span>
 
@@ -2878,13 +2878,13 @@
         <span class="k">return</span> <span class="n">outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">nout</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">outputs</span>
 
 
-<span class="k">def</span> <span class="nf">_cov_dispatcher</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rowvar</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_cov_dispatcher</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rowvar</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                     <span class="n">fweights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">aweights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">fweights</span><span class="p">,</span> <span class="n">aweights</span><span class="p">)</span>
 
 
 <span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_cov_dispatcher</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">cov</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rowvar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fweights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cov</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rowvar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fweights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">aweights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Estimate a covariance matrix, given data and weights.</span>
@@ -3105,13 +3105,13 @@
     <span class="k">return</span> <span class="n">c</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
 
 
-<span class="k">def</span> <span class="nf">_corrcoef_dispatcher</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rowvar</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_corrcoef_dispatcher</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rowvar</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
                          <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
 
 <span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_corrcoef_dispatcher</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">corrcoef</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rowvar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">_NoValue</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">_NoValue</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">corrcoef</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rowvar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">_NoValue</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">_NoValue</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
              <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return Pearson product-moment correlation coefficients.</span>
@@ -3264,7 +3264,7 @@
 
 
 <span class="nd">@set_module</span><span class="p">(</span><span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">blackman</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">blackman</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the Blackman window.</span>
 
@@ -3369,7 +3369,7 @@
 
 
 <span class="nd">@set_module</span><span class="p">(</span><span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">bartlett</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">bartlett</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the Bartlett window.</span>
 
@@ -3482,7 +3482,7 @@
 
 
 <span class="nd">@set_module</span><span class="p">(</span><span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">hanning</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hanning</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the Hanning window.</span>
 
@@ -3591,7 +3591,7 @@
 
 
 <span class="nd">@set_module</span><span class="p">(</span><span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">hamming</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hamming</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the Hamming window.</span>
 
@@ -3759,7 +3759,7 @@
     <span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">_chbevl</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">vals</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_chbevl</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">vals</span><span class="p">):</span>
     <span class="n">b0</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">b1</span> <span class="o">=</span> <span class="mf">0.0</span>
 
@@ -3771,20 +3771,20 @@
     <span class="k">return</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">b0</span> <span class="o">-</span> <span class="n">b2</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_i0_1</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_i0_1</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">_chbevl</span><span class="p">(</span><span class="n">x</span><span class="o">/</span><span class="mf">2.0</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="n">_i0A</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_i0_2</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_i0_2</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">_chbevl</span><span class="p">(</span><span class="mf">32.0</span><span class="o">/</span><span class="n">x</span> <span class="o">-</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">_i0B</span><span class="p">)</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_i0_dispatcher</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_i0_dispatcher</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,)</span>
 
 
 <span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_i0_dispatcher</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">i0</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">i0</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Modified Bessel function of the first kind, order 0.</span>
 
@@ -3846,7 +3846,7 @@
 
 
 <span class="nd">@set_module</span><span class="p">(</span><span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">kaiser</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">kaiser</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the Kaiser window.</span>
 
@@ -3981,12 +3981,12 @@
     <span class="k">return</span> <span class="n">i0</span><span class="p">(</span><span class="n">beta</span> <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="p">((</span><span class="n">n</span><span class="o">-</span><span class="n">alpha</span><span class="p">)</span><span class="o">/</span><span class="n">alpha</span><span class="p">)</span><span class="o">**</span><span class="mf">2.0</span><span class="p">))</span><span class="o">/</span><span class="n">i0</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_sinc_dispatcher</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_sinc_dispatcher</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,)</span>
 
 
 <span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_sinc_dispatcher</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">sinc</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sinc</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the normalized sinc function.</span>
 
@@ -4066,12 +4066,12 @@
     <span class="k">return</span> <span class="n">sin</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">/</span><span class="n">y</span>
 
 
-<span class="k">def</span> <span class="nf">_msort_dispatcher</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_msort_dispatcher</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">a</span><span class="p">,)</span>
 
 
 <span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_msort_dispatcher</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">msort</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">msort</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a copy of an array sorted along the first axis.</span>
 
@@ -4116,7 +4116,7 @@
     <span class="k">return</span> <span class="n">b</span>
 
 
-<span class="k">def</span> <span class="nf">_ureduce</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_ureduce</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Internal Function.</span>
 <span class="sd">    Call `func` with `a` as first argument swapping the axes to use extended</span>
@@ -4193,13 +4193,13 @@
     <span class="k">return</span> <span class="n">r</span>
 
 
-<span class="k">def</span> <span class="nf">_median_dispatcher</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_median_dispatcher</span><span class="p">(</span>
         <span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
 
 
 <span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_median_dispatcher</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">median</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite_input</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">median</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite_input</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the median along the specified axis.</span>
 
@@ -4284,7 +4284,7 @@
                     <span class="n">overwrite_input</span><span class="o">=</span><span class="n">overwrite_input</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_median</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite_input</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_median</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite_input</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="c1"># can&#39;t be reasonably be implemented in terms of percentile as we have to</span>
     <span class="c1"># call mean to not break astropy</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
@@ -4340,13 +4340,13 @@
     <span class="k">return</span> <span class="n">rout</span>
 
 
-<span class="k">def</span> <span class="nf">_percentile_dispatcher</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_percentile_dispatcher</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                            <span class="n">method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
 
 
 <span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_percentile_dispatcher</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">percentile</span><span class="p">(</span><span class="n">a</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">percentile</span><span class="p">(</span><span class="n">a</span><span class="p">,</span>
                <span class="n">q</span><span class="p">,</span>
                <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -4640,13 +4640,13 @@
         <span class="n">a</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">overwrite_input</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_quantile_dispatcher</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_quantile_dispatcher</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                          <span class="n">method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
 
 
 <span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_quantile_dispatcher</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">quantile</span><span class="p">(</span><span class="n">a</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">quantile</span><span class="p">(</span><span class="n">a</span><span class="p">,</span>
              <span class="n">q</span><span class="p">,</span>
              <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
              <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -4900,7 +4900,7 @@
         <span class="n">a</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">overwrite_input</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_quantile_unchecked</span><span class="p">(</span><span class="n">a</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_quantile_unchecked</span><span class="p">(</span><span class="n">a</span><span class="p">,</span>
                         <span class="n">q</span><span class="p">,</span>
                         <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                         <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -4918,7 +4918,7 @@
                     <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_quantile_is_valid</span><span class="p">(</span><span class="n">q</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_quantile_is_valid</span><span class="p">(</span><span class="n">q</span><span class="p">):</span>
     <span class="c1"># avoid expensive reductions, relevant for arrays with &lt; O(1000) elements</span>
     <span class="k">if</span> <span class="n">q</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">q</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">q</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
@@ -4930,7 +4930,7 @@
     <span class="k">return</span> <span class="kc">True</span>
 
 
-<span class="k">def</span> <span class="nf">_check_interpolation_as_method</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">interpolation</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_interpolation_as_method</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">interpolation</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
     <span class="c1"># Deprecated NumPy 1.22, 2021-11-08</span>
     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;the `interpolation=` argument to </span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2"> was renamed to &quot;</span>
@@ -4947,7 +4947,7 @@
     <span class="k">return</span> <span class="n">interpolation</span>
 
 
-<span class="k">def</span> <span class="nf">_compute_virtual_index</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">quantiles</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">beta</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_compute_virtual_index</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">quantiles</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">beta</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the floating point indexes of an array for the linear</span>
 <span class="sd">    interpolation of quantiles.</span>
@@ -4972,7 +4972,7 @@
     <span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
 
 
-<span class="k">def</span> <span class="nf">_get_gamma</span><span class="p">(</span><span class="n">virtual_indexes</span><span class="p">,</span> <span class="n">previous_indexes</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_gamma</span><span class="p">(</span><span class="n">virtual_indexes</span><span class="p">,</span> <span class="n">previous_indexes</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute gamma (a.k.a &#39;m&#39; or &#39;weight&#39;) for the linear interpolation</span>
 <span class="sd">    of quantiles.</span>
@@ -4994,7 +4994,7 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">gamma</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_lerp</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_lerp</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the linear interpolation weighted by gamma on each point of</span>
 <span class="sd">    two same shape array.</span>
@@ -5018,13 +5018,13 @@
     <span class="k">return</span> <span class="n">lerp_interpolation</span>
 
 
-<span class="k">def</span> <span class="nf">_get_gamma_mask</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">default_value</span><span class="p">,</span> <span class="n">conditioned_value</span><span class="p">,</span> <span class="n">where</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_gamma_mask</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">default_value</span><span class="p">,</span> <span class="n">conditioned_value</span><span class="p">,</span> <span class="n">where</span><span class="p">):</span>
     <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">default_value</span><span class="p">)</span>
     <span class="n">np</span><span class="o">.</span><span class="n">copyto</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">conditioned_value</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;unsafe&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">out</span>
 
 
-<span class="k">def</span> <span class="nf">_discret_interpolation_to_boundaries</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">gamma_condition_fun</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_discret_interpolation_to_boundaries</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">gamma_condition_fun</span><span class="p">):</span>
     <span class="n">previous</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
     <span class="nb">next</span> <span class="o">=</span> <span class="n">previous</span> <span class="o">+</span> <span class="mi">1</span>
     <span class="n">gamma</span> <span class="o">=</span> <span class="n">index</span> <span class="o">-</span> <span class="n">previous</span>
@@ -5038,19 +5038,19 @@
     <span class="k">return</span> <span class="n">res</span>
 
 
-<span class="k">def</span> <span class="nf">_closest_observation</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">quantiles</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_closest_observation</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">quantiles</span><span class="p">):</span>
     <span class="n">gamma_fun</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">gamma</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="p">(</span><span class="n">gamma</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">_discret_interpolation_to_boundaries</span><span class="p">((</span><span class="n">n</span> <span class="o">*</span> <span class="n">quantiles</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">,</span>
                                                 <span class="n">gamma_fun</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_inverted_cdf</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">quantiles</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_inverted_cdf</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">quantiles</span><span class="p">):</span>
     <span class="n">gamma_fun</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">gamma</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="p">(</span><span class="n">gamma</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">_discret_interpolation_to_boundaries</span><span class="p">((</span><span class="n">n</span> <span class="o">*</span> <span class="n">quantiles</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
                                                 <span class="n">gamma_fun</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_quantile_ureduce_func</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_quantile_ureduce_func</span><span class="p">(</span>
         <span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
         <span class="n">q</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
         <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -5083,7 +5083,7 @@
     <span class="k">return</span> <span class="n">result</span>
 
 
-<span class="k">def</span> <span class="nf">_get_indexes</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">virtual_indexes</span><span class="p">,</span> <span class="n">valid_values_count</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_indexes</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">virtual_indexes</span><span class="p">,</span> <span class="n">valid_values_count</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the valid indexes of arr neighbouring virtual_indexes.</span>
 <span class="sd">    Note</span>
@@ -5118,7 +5118,7 @@
     <span class="k">return</span> <span class="n">previous_indexes</span><span class="p">,</span> <span class="n">next_indexes</span>
 
 
-<span class="k">def</span> <span class="nf">_quantile</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_quantile</span><span class="p">(</span>
         <span class="n">arr</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
         <span class="n">quantiles</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
         <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
@@ -5154,7 +5154,7 @@
     <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">method</span><span class="si">!r}</span><span class="s2"> is not a valid method. Use one of: &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_QuantileMethods</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_QuantileMethods</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
     <span class="n">virtual_indexes</span> <span class="o">=</span> <span class="n">method</span><span class="p">[</span><span class="s2">&quot;get_virtual_index&quot;</span><span class="p">](</span><span class="n">values_count</span><span class="p">,</span> <span class="n">quantiles</span><span class="p">)</span>
     <span class="n">virtual_indexes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">virtual_indexes</span><span class="p">)</span>
 
@@ -5207,12 +5207,12 @@
     <span class="k">return</span> <span class="n">result</span>
 
 
-<span class="k">def</span> <span class="nf">_trapz_dispatcher</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_trapz_dispatcher</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
 
 
 <span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_trapz_dispatcher</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">trapz</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">trapz</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Integrate along the given axis using the composite trapezoidal rule.</span>
 
@@ -5348,7 +5348,7 @@
 <span class="c1"># SciPy &lt;= 1.10 to work: https://github.com/scipy/scipy/issues/17811</span>
 <span class="k">assert</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">trapz</span><span class="p">,</span> <span class="s2">&quot;__code__&quot;</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">_fake_trapz</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_fake_trapz</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">trapz</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="n">dx</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
 
 
@@ -5359,13 +5359,13 @@
 <span class="n">trapz</span><span class="o">.</span><span class="vm">__kwdefaults__</span> <span class="o">=</span> <span class="n">_fake_trapz</span><span class="o">.</span><span class="vm">__kwdefaults__</span>
 
 
-<span class="k">def</span> <span class="nf">_meshgrid_dispatcher</span><span class="p">(</span><span class="o">*</span><span class="n">xi</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">indexing</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_meshgrid_dispatcher</span><span class="p">(</span><span class="o">*</span><span class="n">xi</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">indexing</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">xi</span>
 
 
 <span class="c1"># Based on scitools meshgrid</span>
 <span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_meshgrid_dispatcher</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">meshgrid</span><span class="p">(</span><span class="o">*</span><span class="n">xi</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">indexing</span><span class="o">=</span><span class="s1">&#39;xy&#39;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">meshgrid</span><span class="p">(</span><span class="o">*</span><span class="n">xi</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">indexing</span><span class="o">=</span><span class="s1">&#39;xy&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a list of coordinate matrices from coordinate vectors.</span>
 
@@ -5522,12 +5522,12 @@
     <span class="k">return</span> <span class="n">output</span>
 
 
-<span class="k">def</span> <span class="nf">_delete_dispatcher</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_delete_dispatcher</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
 
 
 <span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_delete_dispatcher</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a new array with sub-arrays along an axis deleted. For a one</span>
 <span class="sd">    dimensional array, this returns those entries not returned by</span>
@@ -5718,12 +5718,12 @@
         <span class="k">return</span> <span class="n">new</span>
 
 
-<span class="k">def</span> <span class="nf">_insert_dispatcher</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_insert_dispatcher</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
 
 
 <span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_insert_dispatcher</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">insert</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Insert values along the given axis before the given indices.</span>
 
@@ -5912,12 +5912,12 @@
     <span class="k">return</span> <span class="n">new</span>
 
 
-<span class="k">def</span> <span class="nf">_append_dispatcher</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_append_dispatcher</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
 
 
 <span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_append_dispatcher</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">append</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Append values to the end of an array.</span>
 
@@ -5974,12 +5974,12 @@
     <span class="k">return</span> <span class="n">concatenate</span><span class="p">((</span><span class="n">arr</span><span class="p">,</span> <span class="n">values</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_digitize_dispatcher</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_digitize_dispatcher</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bins</span><span class="p">)</span>
 
 
 <span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_digitize_dispatcher</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">digitize</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">digitize</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the indices of the bins to which each value in input array belongs.</span>
 

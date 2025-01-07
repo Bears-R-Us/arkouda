@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>arkouda.numpy.random._generator - arkouda documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/plot_directive.css" />
@@ -351,23 +351,23 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.numpy.random._generator</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">numpy.random</span> <span class="k">as</span> <span class="nn">np_random</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.random</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np_random</span>
 
-<span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
-<span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">_val_isinstance_of_union</span>
-<span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">akdtype</span>
-<span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">to_numpy_dtype</span>
-<span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">float64</span> <span class="k">as</span> <span class="n">akfloat64</span>
-<span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">float_scalars</span>
-<span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">int64</span> <span class="k">as</span> <span class="n">akint64</span>
-<span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">numeric_scalars</span>
-<span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">_val_isinstance_of_union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">akdtype</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">to_numpy_dtype</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">float64</span> <span class="k">as</span> <span class="n">akfloat64</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">float_scalars</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">int64</span> <span class="k">as</span> <span class="n">akint64</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">numeric_scalars</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span>
 
 
 <div class="viewcode-block" id="Generator">
 <a class="viewcode-back" href="../../../../usage/random.html#arkouda.numpy.random.Generator">[docs]</a>
-<span class="k">class</span> <span class="nc">Generator</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Generator</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    ``Generator`` exposes a number of methods for generating random</span>
 <span class="sd">    numbers drawn from a variety of probability distributions. In addition to</span>
@@ -396,16 +396,16 @@
 <span class="sd">    default_rng : Recommended constructor for `Generator`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_seed</span> <span class="o">=</span> <span class="n">seed</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_np_generator</span> <span class="o">=</span> <span class="n">np_random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_name_dict</span> <span class="o">=</span> <span class="n">name_dict</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">=</span> <span class="n">state</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
         <span class="c1"># be sure to update if we add support for non-pcg generators</span>
         <span class="n">_str</span> <span class="o">+=</span> <span class="s2">&quot;(PCG64)&quot;</span>
@@ -413,7 +413,7 @@
 
 <div class="viewcode-block" id="Generator.choice">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/random/index.html#arkouda.numpy.random.Generator.choice">[docs]</a>
-    <span class="k">def</span> <span class="nf">choice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">choice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates a randomly sample from a.</span>
 
@@ -444,7 +444,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">ret_scalar</span> <span class="o">=</span> <span class="kc">False</span>
 
-        <span class="kn">from</span> <span class="nn">arkouda.numpy</span> <span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
 
         <span class="k">if</span> <span class="n">_val_isinstance_of_union</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">int_scalars</span><span class="p">):</span>
             <span class="n">is_domain</span> <span class="o">=</span> <span class="kc">True</span>
@@ -497,7 +497,7 @@
 
 <div class="viewcode-block" id="Generator.exponential">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/random/index.html#arkouda.numpy.random.Generator.exponential">[docs]</a>
-    <span class="k">def</span> <span class="nf">exponential</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;zig&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">exponential</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;zig&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draw samples from an exponential distribution.</span>
 
@@ -535,7 +535,7 @@
 
 <div class="viewcode-block" id="Generator.standard_exponential">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/random/index.html#arkouda.numpy.random.Generator.standard_exponential">[docs]</a>
-    <span class="k">def</span> <span class="nf">standard_exponential</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;zig&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">standard_exponential</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;zig&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draw samples from the standard exponential distribution.</span>
 
@@ -555,7 +555,7 @@
 <span class="sd">        pdarray</span>
 <span class="sd">            Drawn samples from the standard exponential distribution.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">_infer_shape_from_size</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">_infer_shape_from_size</span>
 
         <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># delegate to numpy when return size is 1</span>
@@ -581,7 +581,7 @@
 
 <div class="viewcode-block" id="Generator.integers">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/random/index.html#arkouda.numpy.random.Generator.integers">[docs]</a>
-    <span class="k">def</span> <span class="nf">integers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">akint64</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">integers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">akint64</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return random integers from low (inclusive) to high (exclusive),</span>
 <span class="sd">        or if endpoint=True, low (inclusive) to high (inclusive).</span>
@@ -623,7 +623,7 @@
 <span class="sd">        &gt;&gt;&gt; rng.integers(5, size=10)</span>
 <span class="sd">        array([2, 4, 0, 0, 0, 3, 1, 5, 5, 3])  # random</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">_infer_shape_from_size</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">_infer_shape_from_size</span>
 
         <span class="c1"># normalize dtype so things like &quot;int&quot; will work</span>
         <span class="n">dtype</span> <span class="o">=</span> <span class="n">to_numpy_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
@@ -661,7 +661,7 @@
 
 <div class="viewcode-block" id="Generator.logistic">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/random/index.html#arkouda.numpy.random.Generator.logistic">[docs]</a>
-    <span class="k">def</span> <span class="nf">logistic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">logistic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draw samples from a logistic distribution.</span>
 
@@ -736,7 +736,7 @@
 
 <div class="viewcode-block" id="Generator.lognormal">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/random/index.html#arkouda.numpy.random.Generator.lognormal">[docs]</a>
-    <span class="k">def</span> <span class="nf">lognormal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;zig&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">lognormal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;zig&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draw samples from a log-normal distribution with specified mean,</span>
 <span class="sd">        standard deviation, and array shape.</span>
@@ -788,7 +788,7 @@
 <span class="sd">        &gt;&gt;&gt; ak.random.default_rng(17).lognormal(3, 2.5, 3)</span>
 <span class="sd">        array([7.3866978126031091 106.20159494048757 4.5424399190667666])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda.numpy</span> <span class="kn">import</span> <span class="n">exp</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">exp</span>
 
         <span class="n">norm_arr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="n">mean</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">sigma</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">exp</span><span class="p">(</span><span class="n">norm_arr</span><span class="p">)</span> <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">norm_arr</span><span class="p">)</span></div>
@@ -796,7 +796,7 @@
 
 <div class="viewcode-block" id="Generator.normal">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/random/index.html#arkouda.numpy.random.Generator.normal">[docs]</a>
-    <span class="k">def</span> <span class="nf">normal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;zig&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">normal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;zig&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draw samples from a normal (Gaussian) distribution</span>
 
@@ -852,7 +852,7 @@
 
 <div class="viewcode-block" id="Generator.random">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/random/index.html#arkouda.numpy.random.Generator.random">[docs]</a>
-    <span class="k">def</span> <span class="nf">random</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">random</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return random floats in the half-open interval [0.0, 1.0).</span>
 
@@ -894,7 +894,7 @@
 
 <div class="viewcode-block" id="Generator.standard_normal">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/random/index.html#arkouda.numpy.random.Generator.standard_normal">[docs]</a>
-    <span class="k">def</span> <span class="nf">standard_normal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;zig&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">standard_normal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;zig&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draw samples from a standard Normal distribution (mean=0, stdev=1).</span>
 
@@ -931,7 +931,7 @@
 <span class="sd">        &gt;&gt;&gt; rng.standard_normal(3)</span>
 <span class="sd">        array([0.8797352989638163, -0.7085325853376141, 0.021728052940979934])  # random</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">_infer_shape_from_size</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">_infer_shape_from_size</span>
 
         <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># delegate to numpy when return size is 1</span>
@@ -958,7 +958,7 @@
 
 <div class="viewcode-block" id="Generator.shuffle">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/random/index.html#arkouda.numpy.random.Generator.shuffle">[docs]</a>
-    <span class="k">def</span> <span class="nf">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Randomly shuffle a pdarray in place.</span>
 
@@ -990,7 +990,7 @@
 
 <div class="viewcode-block" id="Generator.permutation">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/random/index.html#arkouda.numpy.random.Generator.permutation">[docs]</a>
-    <span class="k">def</span> <span class="nf">permutation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">permutation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Randomly permute a sequence, or return a permuted range.</span>
 
@@ -1039,7 +1039,7 @@
 
 <div class="viewcode-block" id="Generator.poisson">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/random/index.html#arkouda.numpy.random.Generator.poisson">[docs]</a>
-    <span class="k">def</span> <span class="nf">poisson</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lam</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">poisson</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lam</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draw samples from a Poisson distribution.</span>
 
@@ -1101,7 +1101,7 @@
 
 <div class="viewcode-block" id="Generator.uniform">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/random/index.html#arkouda.numpy.random.Generator.uniform">[docs]</a>
-    <span class="k">def</span> <span class="nf">uniform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">uniform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draw samples from a uniform distribution.</span>
 
@@ -1137,7 +1137,7 @@
 <span class="sd">        &gt;&gt;&gt; rng.uniform(-1, 1, 3)</span>
 <span class="sd">        array([0.030785499755523249, 0.08505865366367038, -0.38552048588998722])  # random</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">arkouda.util</span> <span class="kn">import</span> <span class="n">_infer_shape_from_size</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">_infer_shape_from_size</span>
 
         <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># delegate to numpy when return size is 1</span>
@@ -1166,7 +1166,7 @@
 
 <div class="viewcode-block" id="default_rng">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/random/index.html#arkouda.numpy.random.default_rng">[docs]</a>
-<span class="k">def</span> <span class="nf">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Construct a new Generator.</span>
 
@@ -1210,7 +1210,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">float_array_or_scalar_helper</span><span class="p">(</span><span class="n">func_name</span><span class="p">,</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">float_array_or_scalar_helper</span><span class="p">(</span><span class="n">func_name</span><span class="p">,</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">_val_isinstance_of_union</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">):</span>
         <span class="n">is_scalar</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_val_isinstance_of_union</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">float_scalars</span><span class="p">):</span>
@@ -1220,7 +1220,7 @@
         <span class="k">if</span> <span class="n">size</span> <span class="o">!=</span> <span class="n">var</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;array of </span><span class="si">{</span><span class="n">var_name</span><span class="si">}</span><span class="s2"> must have same size as return size&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">akfloat64</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">arkouda.numpy</span> <span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
 
             <span class="n">var</span> <span class="o">=</span> <span class="n">akcast</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">akfloat64</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>

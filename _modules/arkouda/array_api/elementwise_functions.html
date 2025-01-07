@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>arkouda.array_api.elementwise_functions - arkouda documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
@@ -351,9 +351,9 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.array_api.elementwise_functions</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span> <span class="nn">._dtypes</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_boolean_dtypes</span><span class="p">,</span>
     <span class="n">_floating_dtypes</span><span class="p">,</span>
     <span class="n">_real_floating_dtypes</span><span class="p">,</span>
@@ -364,13 +364,13 @@
     <span class="n">_numeric_dtypes</span><span class="p">,</span>
     <span class="n">_result_type</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.array_object</span> <span class="kn">import</span> <span class="n">Array</span>
-<span class="kn">import</span> <span class="nn">arkouda</span> <span class="k">as</span> <span class="nn">ak</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.array_object</span><span class="w"> </span><span class="kn">import</span> <span class="n">Array</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 
 
 <div class="viewcode-block" id="abs">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.abs">[docs]</a>
-<span class="k">def</span> <span class="nf">abs</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">abs</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise absolute value of an array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -383,7 +383,7 @@
 <span class="c1"># Note: the function name is different here</span>
 <div class="viewcode-block" id="acos">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.acos">[docs]</a>
-<span class="k">def</span> <span class="nf">acos</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">acos</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise arccosine of an array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -396,7 +396,7 @@
 <span class="c1"># Note: the function name is different here</span>
 <div class="viewcode-block" id="acosh">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.acosh">[docs]</a>
-<span class="k">def</span> <span class="nf">acosh</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">acosh</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise hyperbolic arccosine of an array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -408,7 +408,7 @@
 
 <div class="viewcode-block" id="add">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.add">[docs]</a>
-<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise sum of two arrays.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -422,7 +422,7 @@
 
 <div class="viewcode-block" id="asin">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.asin">[docs]</a>
-<span class="k">def</span> <span class="nf">asin</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">asin</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise arcsine of an array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -434,7 +434,7 @@
 
 <div class="viewcode-block" id="asinh">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.asinh">[docs]</a>
-<span class="k">def</span> <span class="nf">asinh</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">asinh</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise hyperbolic arcsine of an array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -446,7 +446,7 @@
 
 <div class="viewcode-block" id="atan">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.atan">[docs]</a>
-<span class="k">def</span> <span class="nf">atan</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">atan</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise arctangent of an array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -458,7 +458,7 @@
 
 <div class="viewcode-block" id="atan2">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.atan2">[docs]</a>
-<span class="k">def</span> <span class="nf">atan2</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">atan2</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise arctangent of x1/x2.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -472,7 +472,7 @@
 
 <div class="viewcode-block" id="atanh">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.atanh">[docs]</a>
-<span class="k">def</span> <span class="nf">atanh</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">atanh</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise hyperbolic arctangent of an array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -484,7 +484,7 @@
 
 <div class="viewcode-block" id="bitwise_and">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.bitwise_and">[docs]</a>
-<span class="k">def</span> <span class="nf">bitwise_and</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">bitwise_and</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise bitwise AND of two arrays.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -498,7 +498,7 @@
 
 <div class="viewcode-block" id="bitwise_left_shift">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.bitwise_left_shift">[docs]</a>
-<span class="k">def</span> <span class="nf">bitwise_left_shift</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">bitwise_left_shift</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise bitwise left shift of x1 by x2.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -515,7 +515,7 @@
 
 <div class="viewcode-block" id="bitwise_invert">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.bitwise_invert">[docs]</a>
-<span class="k">def</span> <span class="nf">bitwise_invert</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">bitwise_invert</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise bitwise NOT of an array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -525,7 +525,7 @@
 
 <div class="viewcode-block" id="bitwise_or">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.bitwise_or">[docs]</a>
-<span class="k">def</span> <span class="nf">bitwise_or</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">bitwise_or</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise bitwise OR of two arrays.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -539,7 +539,7 @@
 
 <div class="viewcode-block" id="bitwise_right_shift">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.bitwise_right_shift">[docs]</a>
-<span class="k">def</span> <span class="nf">bitwise_right_shift</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">bitwise_right_shift</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise bitwise right shift of x1 by x2.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -556,7 +556,7 @@
 
 <div class="viewcode-block" id="bitwise_xor">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.bitwise_xor">[docs]</a>
-<span class="k">def</span> <span class="nf">bitwise_xor</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">bitwise_xor</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise bitwise XOR of two arrays.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -570,7 +570,7 @@
 
 <div class="viewcode-block" id="ceil">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.ceil">[docs]</a>
-<span class="k">def</span> <span class="nf">ceil</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ceil</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise ceiling of a floating point array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -582,7 +582,7 @@
 
 <div class="viewcode-block" id="conj">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.conj">[docs]</a>
-<span class="k">def</span> <span class="nf">conj</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">conj</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise complex conjugate of an array.</span>
 
@@ -594,7 +594,7 @@
 
 <div class="viewcode-block" id="cos">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.cos">[docs]</a>
-<span class="k">def</span> <span class="nf">cos</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cos</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise cosine of an array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -606,7 +606,7 @@
 
 <div class="viewcode-block" id="cosh">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.cosh">[docs]</a>
-<span class="k">def</span> <span class="nf">cosh</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cosh</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise hyperbolic cosine of an array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -618,7 +618,7 @@
 
 <div class="viewcode-block" id="divide">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.divide">[docs]</a>
-<span class="k">def</span> <span class="nf">divide</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">divide</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise division of x1 by x2.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -632,7 +632,7 @@
 
 <div class="viewcode-block" id="equal">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.equal">[docs]</a>
-<span class="k">def</span> <span class="nf">equal</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">equal</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise equality of two arrays.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -644,7 +644,7 @@
 
 <div class="viewcode-block" id="exp">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.exp">[docs]</a>
-<span class="k">def</span> <span class="nf">exp</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">exp</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise exponential of an array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -656,7 +656,7 @@
 
 <div class="viewcode-block" id="expm1">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.expm1">[docs]</a>
-<span class="k">def</span> <span class="nf">expm1</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">expm1</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise exponential of x-1.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -668,7 +668,7 @@
 
 <div class="viewcode-block" id="floor">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.floor">[docs]</a>
-<span class="k">def</span> <span class="nf">floor</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">floor</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise floor of a floating point array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -680,7 +680,7 @@
 
 <div class="viewcode-block" id="floor_divide">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.floor_divide">[docs]</a>
-<span class="k">def</span> <span class="nf">floor_divide</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">floor_divide</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise floor division of x1 by x2.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -690,7 +690,7 @@
 
 <div class="viewcode-block" id="greater">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.greater">[docs]</a>
-<span class="k">def</span> <span class="nf">greater</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">greater</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Apply `&gt;` element-wise to two arrays.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -704,7 +704,7 @@
 
 <div class="viewcode-block" id="greater_equal">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.greater_equal">[docs]</a>
-<span class="k">def</span> <span class="nf">greater_equal</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">greater_equal</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Apply `&gt;=` element-wise to two arrays.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -718,7 +718,7 @@
 
 <div class="viewcode-block" id="imag">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.imag">[docs]</a>
-<span class="k">def</span> <span class="nf">imag</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">imag</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the element-wise imaginary part of a Complex array.</span>
 
@@ -730,7 +730,7 @@
 
 <div class="viewcode-block" id="isfinite">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.isfinite">[docs]</a>
-<span class="k">def</span> <span class="nf">isfinite</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">isfinite</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determine if an array&#39;s elements are finite.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -742,7 +742,7 @@
 
 <div class="viewcode-block" id="isinf">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.isinf">[docs]</a>
-<span class="k">def</span> <span class="nf">isinf</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">isinf</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determine if an array&#39;s elements are infinite.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -754,7 +754,7 @@
 
 <div class="viewcode-block" id="isnan">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.isnan">[docs]</a>
-<span class="k">def</span> <span class="nf">isnan</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">isnan</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determine if an array&#39;s elements are NaN.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -766,7 +766,7 @@
 
 <div class="viewcode-block" id="less">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.less">[docs]</a>
-<span class="k">def</span> <span class="nf">less</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">less</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Apply `&lt;` element-wise to two arrays.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -780,7 +780,7 @@
 
 <div class="viewcode-block" id="less_equal">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.less_equal">[docs]</a>
-<span class="k">def</span> <span class="nf">less_equal</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">less_equal</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Apply `&lt;=` element-wise to two arrays.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -794,7 +794,7 @@
 
 <div class="viewcode-block" id="log">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.log">[docs]</a>
-<span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">log</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise natural logarithm of an array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -806,7 +806,7 @@
 
 <div class="viewcode-block" id="log1p">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.log1p">[docs]</a>
-<span class="k">def</span> <span class="nf">log1p</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">log1p</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise natural logarithm of x+1.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -818,7 +818,7 @@
 
 <div class="viewcode-block" id="log2">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.log2">[docs]</a>
-<span class="k">def</span> <span class="nf">log2</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">log2</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise base-2 logarithm of an array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -830,7 +830,7 @@
 
 <div class="viewcode-block" id="log10">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.log10">[docs]</a>
-<span class="k">def</span> <span class="nf">log10</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">log10</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise base-10 logarithm of an array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -842,7 +842,7 @@
 
 <div class="viewcode-block" id="logaddexp">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.logaddexp">[docs]</a>
-<span class="k">def</span> <span class="nf">logaddexp</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">logaddexp</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise logarithm of the sum of exponentials of two arrays.</span>
 <span class="sd">    (i.e., log(exp(x1) + exp(x2)))</span>
@@ -855,7 +855,7 @@
 
 <div class="viewcode-block" id="logical_and">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.logical_and">[docs]</a>
-<span class="k">def</span> <span class="nf">logical_and</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">logical_and</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise logical AND of two boolean arrays.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -869,7 +869,7 @@
 
 <div class="viewcode-block" id="logical_not">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.logical_not">[docs]</a>
-<span class="k">def</span> <span class="nf">logical_not</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">logical_not</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise logical NOT of a boolean array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -879,7 +879,7 @@
 
 <div class="viewcode-block" id="logical_or">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.logical_or">[docs]</a>
-<span class="k">def</span> <span class="nf">logical_or</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">logical_or</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise logical OR of two boolean arrays.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -893,7 +893,7 @@
 
 <div class="viewcode-block" id="logical_xor">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.logical_xor">[docs]</a>
-<span class="k">def</span> <span class="nf">logical_xor</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">logical_xor</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise logical XOR of two boolean arrays.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -907,7 +907,7 @@
 
 <div class="viewcode-block" id="multiply">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.multiply">[docs]</a>
-<span class="k">def</span> <span class="nf">multiply</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">multiply</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise product of two arrays.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -921,7 +921,7 @@
 
 <div class="viewcode-block" id="negative">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.negative">[docs]</a>
-<span class="k">def</span> <span class="nf">negative</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">negative</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise negation of an array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -933,7 +933,7 @@
 
 <div class="viewcode-block" id="not_equal">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.not_equal">[docs]</a>
-<span class="k">def</span> <span class="nf">not_equal</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">not_equal</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Array API compatible wrapper for :py:func:`np.not_equal &lt;numpy.not_equal&gt;`.</span>
 
@@ -947,7 +947,7 @@
 
 <div class="viewcode-block" id="positive">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.positive">[docs]</a>
-<span class="k">def</span> <span class="nf">positive</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">positive</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Array API compatible wrapper for :py:func:`np.positive &lt;numpy.positive&gt;`.</span>
 
@@ -962,7 +962,7 @@
 <span class="c1"># Note: the function name is different here</span>
 <div class="viewcode-block" id="pow">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.pow">[docs]</a>
-<span class="k">def</span> <span class="nf">pow</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">pow</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Array API compatible wrapper for :py:func:`np.power &lt;numpy.power&gt;`.</span>
 
@@ -978,7 +978,7 @@
 
 <div class="viewcode-block" id="real">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.real">[docs]</a>
-<span class="k">def</span> <span class="nf">real</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">real</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the element-wise real part of a Complex array.</span>
 
@@ -990,7 +990,7 @@
 
 <div class="viewcode-block" id="remainder">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.remainder">[docs]</a>
-<span class="k">def</span> <span class="nf">remainder</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">remainder</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise remainder of x1 divided by x2.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1000,7 +1000,7 @@
 
 <div class="viewcode-block" id="round">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.round">[docs]</a>
-<span class="k">def</span> <span class="nf">round</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise rounding of an array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1012,7 +1012,7 @@
 
 <div class="viewcode-block" id="sign">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.sign">[docs]</a>
-<span class="k">def</span> <span class="nf">sign</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sign</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise sign of an array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1024,7 +1024,7 @@
 
 <div class="viewcode-block" id="sin">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.sin">[docs]</a>
-<span class="k">def</span> <span class="nf">sin</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sin</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise sine of an array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1036,7 +1036,7 @@
 
 <div class="viewcode-block" id="sinh">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.sinh">[docs]</a>
-<span class="k">def</span> <span class="nf">sinh</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sinh</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise hyperbolic sine of an array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1048,7 +1048,7 @@
 
 <div class="viewcode-block" id="square">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.square">[docs]</a>
-<span class="k">def</span> <span class="nf">square</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">square</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise square of an array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1060,7 +1060,7 @@
 
 <div class="viewcode-block" id="sqrt">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.sqrt">[docs]</a>
-<span class="k">def</span> <span class="nf">sqrt</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sqrt</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise square root of an array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1072,7 +1072,7 @@
 
 <div class="viewcode-block" id="subtract">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.subtract">[docs]</a>
-<span class="k">def</span> <span class="nf">subtract</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">subtract</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise difference of two arrays.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1086,7 +1086,7 @@
 
 <div class="viewcode-block" id="tan">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.tan">[docs]</a>
-<span class="k">def</span> <span class="nf">tan</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">tan</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise tangent of an array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1098,7 +1098,7 @@
 
 <div class="viewcode-block" id="tanh">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.tanh">[docs]</a>
-<span class="k">def</span> <span class="nf">tanh</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">tanh</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise hyperbolic tangent of an array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1110,7 +1110,7 @@
 
 <div class="viewcode-block" id="trunc">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.trunc">[docs]</a>
-<span class="k">def</span> <span class="nf">trunc</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">trunc</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the element-wise truncation of a floating-point array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>

@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>arkouda.io - arkouda documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
@@ -351,27 +351,27 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.io</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">glob</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
-<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">glob</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
 
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">typeguard</span> <span class="kn">import</span> <span class="n">typechecked</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typeguard</span><span class="w"> </span><span class="kn">import</span> <span class="n">typechecked</span>
 
-<span class="kn">from</span> <span class="nn">arkouda.categorical</span> <span class="kn">import</span> <span class="n">Categorical</span>
-<span class="kn">from</span> <span class="nn">arkouda.client</span> <span class="kn">import</span> <span class="n">generic_msg</span>
-<span class="kn">from</span> <span class="nn">arkouda.client_dtypes</span> <span class="kn">import</span> <span class="n">IPv4</span>
-<span class="kn">from</span> <span class="nn">arkouda.dataframe</span> <span class="kn">import</span> <span class="n">DataFrame</span>
-<span class="kn">from</span> <span class="nn">arkouda.groupbyclass</span> <span class="kn">import</span> <span class="n">GroupBy</span>
-<span class="kn">from</span> <span class="nn">arkouda.index</span> <span class="kn">import</span> <span class="n">Index</span><span class="p">,</span> <span class="n">MultiIndex</span>
-<span class="kn">from</span> <span class="nn">arkouda.numpy.dtypes</span> <span class="kn">import</span> <span class="n">float32</span><span class="p">,</span> <span class="n">float64</span><span class="p">,</span> <span class="n">int32</span><span class="p">,</span> <span class="n">int64</span>
-<span class="kn">from</span> <span class="nn">arkouda.pdarrayclass</span> <span class="kn">import</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span>
-<span class="kn">from</span> <span class="nn">arkouda.pdarraycreation</span> <span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">array</span>
-<span class="kn">from</span> <span class="nn">arkouda.segarray</span> <span class="kn">import</span> <span class="n">SegArray</span>
-<span class="kn">from</span> <span class="nn">arkouda.strings</span> <span class="kn">import</span> <span class="n">Strings</span>
-<span class="kn">from</span> <span class="nn">arkouda.timeclass</span> <span class="kn">import</span> <span class="n">Datetime</span><span class="p">,</span> <span class="n">Timedelta</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client_dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">IPv4</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.dataframe</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrame</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.groupbyclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">GroupBy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.index</span><span class="w"> </span><span class="kn">import</span> <span class="n">Index</span><span class="p">,</span> <span class="n">MultiIndex</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">float32</span><span class="p">,</span> <span class="n">float64</span><span class="p">,</span> <span class="n">int32</span><span class="p">,</span> <span class="n">int64</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">array</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.segarray</span><span class="w"> </span><span class="kn">import</span> <span class="n">SegArray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.timeclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">Datetime</span><span class="p">,</span> <span class="n">Timedelta</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;get_filetype&quot;</span><span class="p">,</span>
@@ -407,7 +407,7 @@
 
 <div class="viewcode-block" id="get_filetype">
 <a class="viewcode-back" href="../../autoapi/arkouda/io/index.html#arkouda.get_filetype">[docs]</a>
-<span class="k">def</span> <span class="nf">get_filetype</span><span class="p">(</span><span class="n">filenames</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_filetype</span><span class="p">(</span><span class="n">filenames</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the type of a file accessible to the server. Supported</span>
 <span class="sd">    file types and possible return strings are &#39;HDF5&#39; and &#39;Parquet&#39;.</span>
@@ -449,7 +449,7 @@
 
 <div class="viewcode-block" id="ls">
 <a class="viewcode-back" href="../../autoapi/arkouda/io/index.html#arkouda.ls">[docs]</a>
-<span class="k">def</span> <span class="nf">ls</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">col_delim</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="n">read_nested</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ls</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">col_delim</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="n">read_nested</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function calls the h5ls utility on a HDF5 file visible to the</span>
 <span class="sd">    arkouda server or calls a function that imitates the result of h5ls</span>
@@ -506,7 +506,7 @@
 
 <div class="viewcode-block" id="get_null_indices">
 <a class="viewcode-back" href="../../autoapi/arkouda/io/index.html#arkouda.get_null_indices">[docs]</a>
-<span class="k">def</span> <span class="nf">get_null_indices</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_null_indices</span><span class="p">(</span>
     <span class="n">filenames</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">datasets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -557,7 +557,7 @@
 
 
 <span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">_file_type_to_int</span><span class="p">(</span><span class="n">file_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_file_type_to_int</span><span class="p">(</span><span class="n">file_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a string to integer representing the format to save the file in</span>
 
@@ -584,7 +584,7 @@
 
 
 <span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">_mode_str_to_int</span><span class="p">(</span><span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_mode_str_to_int</span><span class="p">(</span><span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert string to integer representing the mode to write</span>
 
@@ -612,7 +612,7 @@
 
 <div class="viewcode-block" id="get_datasets">
 <a class="viewcode-back" href="../../usage/IO.html#arkouda.get_datasets">[docs]</a>
-<span class="k">def</span> <span class="nf">get_datasets</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_datasets</span><span class="p">(</span>
     <span class="n">filenames</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
     <span class="n">allow_errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">column_delim</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span>
@@ -678,7 +678,7 @@
 
 <div class="viewcode-block" id="ls_csv">
 <a class="viewcode-back" href="../../autoapi/arkouda/io/index.html#arkouda.ls_csv">[docs]</a>
-<span class="k">def</span> <span class="nf">ls_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">col_delim</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ls_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">col_delim</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used for identifying the datasets within a file when a CSV does not</span>
 <span class="sd">    have a header.</span>
@@ -716,7 +716,7 @@
 
 <div class="viewcode-block" id="get_columns">
 <a class="viewcode-back" href="../../autoapi/arkouda/io/index.html#arkouda.get_columns">[docs]</a>
-<span class="k">def</span> <span class="nf">get_columns</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_columns</span><span class="p">(</span>
     <span class="n">filenames</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">col_delim</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="n">allow_errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -742,7 +742,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_prep_datasets</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_prep_datasets</span><span class="p">(</span>
     <span class="n">filenames</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
     <span class="n">datasets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">allow_errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -791,7 +791,7 @@
     <span class="k">return</span> <span class="n">datasets</span>
 
 
-<span class="k">def</span> <span class="nf">_parse_errors</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">,</span> <span class="n">allow_errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_errors</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">,</span> <span class="n">allow_errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function to parse error messages from a read operation</span>
 
@@ -813,7 +813,7 @@
         <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_parse_obj</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_obj</span><span class="p">(</span>
     <span class="n">obj</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span>
     <span class="n">Strings</span><span class="p">,</span>
@@ -871,7 +871,7 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown arkouda type:</span><span class="si">{</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;arkouda_type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_dict_recombine_segarrays_categoricals</span><span class="p">(</span><span class="n">df_dict</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_dict_recombine_segarrays_categoricals</span><span class="p">(</span><span class="n">df_dict</span><span class="p">):</span>
     <span class="c1"># this assumes segments will always have corresponding values.</span>
     <span class="c1"># This should happen due to save config</span>
     <span class="n">seg_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">col</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">col</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;_segments&quot;</span><span class="p">)]</span>
@@ -922,7 +922,7 @@
     <span class="k">return</span> <span class="n">df_dict</span>
 
 
-<span class="k">def</span> <span class="nf">_build_objects</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_build_objects</span><span class="p">(</span>
     <span class="n">rep_msg</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span>
     <span class="n">Mapping</span><span class="p">[</span>
@@ -968,7 +968,7 @@
 
 <div class="viewcode-block" id="read_hdf">
 <a class="viewcode-back" href="../../autoapi/arkouda/io/index.html#arkouda.read_hdf">[docs]</a>
-<span class="k">def</span> <span class="nf">read_hdf</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_hdf</span><span class="p">(</span>
     <span class="n">filenames</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
     <span class="n">datasets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">iterative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -1106,7 +1106,7 @@
 
 <div class="viewcode-block" id="read_parquet">
 <a class="viewcode-back" href="../../autoapi/arkouda/io/index.html#arkouda.read_parquet">[docs]</a>
-<span class="k">def</span> <span class="nf">read_parquet</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_parquet</span><span class="p">(</span>
     <span class="n">filenames</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
     <span class="n">datasets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">iterative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -1258,7 +1258,7 @@
 
 <div class="viewcode-block" id="read_csv">
 <a class="viewcode-back" href="../../autoapi/arkouda/io/index.html#arkouda.read_csv">[docs]</a>
-<span class="k">def</span> <span class="nf">read_csv</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_csv</span><span class="p">(</span>
     <span class="n">filenames</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
     <span class="n">datasets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">column_delim</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span>
@@ -1355,7 +1355,7 @@
 
 <div class="viewcode-block" id="import_data">
 <a class="viewcode-back" href="../../usage/IO.html#arkouda.import_data">[docs]</a>
-<span class="k">def</span> <span class="nf">import_data</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">import_data</span><span class="p">(</span>
     <span class="n">read_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">write_file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_obj</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1395,7 +1395,7 @@
 <span class="sd">    _____</span>
 <span class="sd">    - Import can only be performed from hdf5 or parquet files written by pandas.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">arkouda.dataframe</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.dataframe</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrame</span>
 
     <span class="c1"># verify file path</span>
     <span class="n">is_glob</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">read_path</span><span class="p">)</span>
@@ -1437,7 +1437,7 @@
 
 <div class="viewcode-block" id="export">
 <a class="viewcode-back" href="../../usage/IO.html#arkouda.export">[docs]</a>
-<span class="k">def</span> <span class="nf">export</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">export</span><span class="p">(</span>
     <span class="n">read_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">dataset_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ak_data&quot;</span><span class="p">,</span>
     <span class="n">write_file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1485,7 +1485,7 @@
 <span class="sd">    - Export can only be performed from hdf5 or parquet files written by Arkouda. The result will be</span>
 <span class="sd">      the same file type, but formatted to be read by Pandas.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">arkouda.dataframe</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.dataframe</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrame</span>
 
     <span class="c1"># get the filetype</span>
     <span class="n">prefix</span><span class="p">,</span> <span class="n">extension</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">read_path</span><span class="p">)</span>
@@ -1513,7 +1513,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_bulk_write_prep</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_bulk_write_prep</span><span class="p">(</span>
     <span class="n">columns</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
         <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">SegArray</span><span class="p">]],</span>
         <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">SegArray</span><span class="p">]],</span>
@@ -1553,7 +1553,7 @@
 
 <div class="viewcode-block" id="to_parquet">
 <a class="viewcode-back" href="../../autoapi/arkouda/io/index.html#arkouda.to_parquet">[docs]</a>
-<span class="k">def</span> <span class="nf">to_parquet</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">to_parquet</span><span class="p">(</span>
     <span class="n">columns</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
         <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">SegArray</span><span class="p">]],</span>
         <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">SegArray</span><span class="p">]],</span>
@@ -1662,7 +1662,7 @@
 
 <div class="viewcode-block" id="to_hdf">
 <a class="viewcode-back" href="../../autoapi/arkouda/io/index.html#arkouda.to_hdf">[docs]</a>
-<span class="k">def</span> <span class="nf">to_hdf</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">to_hdf</span><span class="p">(</span>
     <span class="n">columns</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
         <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">SegArray</span><span class="p">]],</span>
         <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">SegArray</span><span class="p">]],</span>
@@ -1745,7 +1745,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_get_hdf_filetype</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_hdf_filetype</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">filename</span> <span class="ow">and</span> <span class="n">filename</span><span class="o">.</span><span class="n">strip</span><span class="p">()):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;filename cannot be an empty string&quot;</span><span class="p">)</span>
 
@@ -1759,7 +1759,7 @@
     <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_repack_hdf</span><span class="p">(</span><span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_repack_hdf</span><span class="p">(</span><span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Overwrites the existing hdf5 file with a copy that removes any inaccessible datasets</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1777,7 +1777,7 @@
 
 <div class="viewcode-block" id="update_hdf">
 <a class="viewcode-back" href="../../autoapi/arkouda/io/index.html#arkouda.update_hdf">[docs]</a>
-<span class="k">def</span> <span class="nf">update_hdf</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">update_hdf</span><span class="p">(</span>
     <span class="n">columns</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
         <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">SegArray</span><span class="p">]],</span>
         <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">SegArray</span><span class="p">]],</span>
@@ -1833,7 +1833,7 @@
 
 <div class="viewcode-block" id="to_csv">
 <a class="viewcode-back" href="../../autoapi/arkouda/io/index.html#arkouda.to_csv">[docs]</a>
-<span class="k">def</span> <span class="nf">to_csv</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">to_csv</span><span class="p">(</span>
     <span class="n">columns</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">]],</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">]]],</span>
     <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1912,7 +1912,7 @@
 
 <div class="viewcode-block" id="to_zarr">
 <a class="viewcode-back" href="../../autoapi/arkouda/io/index.html#arkouda.to_zarr">[docs]</a>
-<span class="k">def</span> <span class="nf">to_zarr</span><span class="p">(</span><span class="n">store_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">arr</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">chunk_shape</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">to_zarr</span><span class="p">(</span><span class="n">store_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">arr</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">chunk_shape</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Writes a pdarray to disk as a Zarr store. Supports multi-dimensional pdarrays of numeric types.</span>
 <span class="sd">    To use this function, ensure you have installed the blosc dependency (`make install-blosc`)</span>
@@ -1951,7 +1951,7 @@
 
 <div class="viewcode-block" id="read_zarr">
 <a class="viewcode-back" href="../../autoapi/arkouda/io/index.html#arkouda.read_zarr">[docs]</a>
-<span class="k">def</span> <span class="nf">read_zarr</span><span class="p">(</span><span class="n">store_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ndim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_zarr</span><span class="p">(</span><span class="n">store_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ndim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reads a Zarr store from disk into a pdarray. Supports multi-dimensional pdarrays of numeric types.</span>
 <span class="sd">    To use this function, ensure you have installed the blosc dependency (`make install-blosc`)</span>
@@ -1980,7 +1980,7 @@
 
 <div class="viewcode-block" id="save_all">
 <a class="viewcode-back" href="../../autoapi/arkouda/io/index.html#arkouda.save_all">[docs]</a>
-<span class="k">def</span> <span class="nf">save_all</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">save_all</span><span class="p">(</span>
     <span class="n">columns</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
         <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">SegArray</span><span class="p">]],</span>
         <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">SegArray</span><span class="p">]],</span>
@@ -2063,7 +2063,7 @@
 <div class="viewcode-block" id="load">
 <a class="viewcode-back" href="../../autoapi/arkouda/io/index.html#arkouda.load">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">load</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span>
     <span class="n">path_prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">file_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;INFER&quot;</span><span class="p">,</span>
     <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span>
@@ -2177,7 +2177,7 @@
 <div class="viewcode-block" id="load_all">
 <a class="viewcode-back" href="../../autoapi/arkouda/io/index.html#arkouda.load_all">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span> <span class="nf">load_all</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_all</span><span class="p">(</span>
     <span class="n">path_prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;INFER&quot;</span><span class="p">,</span> <span class="n">column_delim</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="n">read_nested</span><span class="o">=</span><span class="kc">True</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">SegArray</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2271,7 +2271,7 @@
 
 <div class="viewcode-block" id="read">
 <a class="viewcode-back" href="../../usage/IO.html#arkouda.read">[docs]</a>
-<span class="k">def</span> <span class="nf">read</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span>
     <span class="n">filenames</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
     <span class="n">datasets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">iterative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -2415,7 +2415,7 @@
 
 <div class="viewcode-block" id="read_tagged_data">
 <a class="viewcode-back" href="../../autoapi/arkouda/io/index.html#arkouda.read_tagged_data">[docs]</a>
-<span class="k">def</span> <span class="nf">read_tagged_data</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_tagged_data</span><span class="p">(</span>
     <span class="n">filenames</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
     <span class="n">datasets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">strictTypes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -2520,7 +2520,7 @@
 
 <div class="viewcode-block" id="snapshot">
 <a class="viewcode-back" href="../../autoapi/arkouda/io/index.html#arkouda.snapshot">[docs]</a>
-<span class="k">def</span> <span class="nf">snapshot</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">snapshot</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a snapshot of the current Arkouda namespace. All currently accessible variables containing</span>
 <span class="sd">    Arkouda objects will be written to an HDF5 file.</span>
@@ -2542,10 +2542,10 @@
 <span class="sd">    ---------</span>
 <span class="sd">    ak.restore</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">import</span> <span class="nn">inspect</span>
-    <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">ModuleType</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModuleType</span>
 
-    <span class="kn">from</span> <span class="nn">arkouda.dataframe</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.dataframe</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrame</span>
 
     <span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span> <span class="o">+</span> <span class="s2">&quot;_SNAPSHOT&quot;</span>
     <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;TRUNCATE&quot;</span>
@@ -2564,7 +2564,7 @@
 
 <div class="viewcode-block" id="restore">
 <a class="viewcode-back" href="../../autoapi/arkouda/io/index.html#arkouda.restore">[docs]</a>
-<span class="k">def</span> <span class="nf">restore</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">restore</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return data saved using `ak.snapshot`</span>
 
@@ -2589,7 +2589,7 @@
 
 <div class="viewcode-block" id="receive">
 <a class="viewcode-back" href="../../autoapi/arkouda/io/index.html#arkouda.receive">[docs]</a>
-<span class="k">def</span> <span class="nf">receive</span><span class="p">(</span><span class="n">hostname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">receive</span><span class="p">(</span><span class="n">hostname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Receive a pdarray sent by `pdarray.transfer()`.</span>
 
@@ -2631,7 +2631,7 @@
 
 <div class="viewcode-block" id="receive_dataframe">
 <a class="viewcode-back" href="../../autoapi/arkouda/io/index.html#arkouda.receive_dataframe">[docs]</a>
-<span class="k">def</span> <span class="nf">receive_dataframe</span><span class="p">(</span><span class="n">hostname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">receive_dataframe</span><span class="p">(</span><span class="n">hostname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Receive a pdarray sent by `dataframe.transfer()`.</span>
 
