@@ -85,11 +85,16 @@ module ServerConfig
     Bit width of digits for the LSD radix sort and related ops
      */
     config param RSLSD_bitsPerDigit = 16;
-    
+
     /*
     Arkouda version
     */
     config param arkoudaVersion:string = "Please set during compilation";
+
+    /*
+    Python version
+    */
+    config const pythonVersion:string = "Please set during compilation";
 
     /*
     Write the server `hostname:port` to this file.
@@ -183,6 +188,7 @@ module ServerConfig
         class Config {
             const arkoudaVersion: string;
             const chplVersion: string;
+            const pythonVersion: string;
             const ZMQVersion: string;
             const HDF5Version: string;
             const serverHostname: string;
@@ -206,10 +212,11 @@ module ServerConfig
         var (Zmajor, Zminor, Zmicro) = ZMQ.version;
         var H5major: c_uint, H5minor: c_uint, H5micro: c_uint;
         H5get_libversion(H5major, H5minor, H5micro);
-        
+
         const cfg = new owned Config(
             arkoudaVersion = (ServerConfig.arkoudaVersion:string),
             chplVersion = chplVersionArkouda,
+            pythonVersion = (ServerConfig.pythonVersion:string),
             ZMQVersion = try! "%i.%i.%i".format(Zmajor, Zminor, Zmicro),
             HDF5Version = try! "%i.%i.%i".format(H5major, H5minor, H5micro),
             serverHostname = serverHostname,
