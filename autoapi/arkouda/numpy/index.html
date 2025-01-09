@@ -2489,7 +2489,10 @@ denominator to get proper placement on unit circle.</p>
 <dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
+<dd class="field-even"><p><strong>TypeError</strong> – Raised if any parameter fails the typechecking
+Raised if any element of pdarrays num and denom is not a supported type
+Raised if both num and denom are scalars
+Raised if where is neither boolean nor a pdarray of boolean</p>
 </dd>
 </dl>
 </dd></dl>
@@ -6718,15 +6721,14 @@ an allowed pair (see Notes for details).</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>A and mask must be the same size.  Values can be any size.</p>
-<p>Allowed dtypes for A and Values conform to types accepted by numpy putmask.</p>
-<p>If A is ak.float64, Values can be ak.float64, ak.int64, ak.uint64, <a href="#id26"><span class="problematic" id="id27">ak.bool_</span></a>.</p>
-<p>If A is ak.int64, Values can be ak.int64 or <a href="#id28"><span class="problematic" id="id29">ak.bool_</span></a>.</p>
-<p>If A is ak.uint64, Values can be ak.int64, ak.uint64, or <a href="#id30"><span class="problematic" id="id31">ak.bool_</span></a>.</p>
-<p>If A is <a href="#id32"><span class="problematic" id="id33">ak.bool_</span></a>, Values must be <a href="#id34"><span class="problematic" id="id35">ak.bool_</span></a>.</p>
-<p>Only one conditional clause is supported e.g., n &lt; 5, n &gt; 1, which is supported in numpy
-is not currently supported in Arkouda</p>
-<p>Only 1D pdarrays are implemented for now.</p>
+<p>A and mask must be the same size.  Values can be any size.
+Allowed dtypes for A and Values conform to types accepted by numpy putmask.
+If A is ak.float64, Values can be ak.float64, ak.int64, ak.uint64, <a href="#id26"><span class="problematic" id="id27">ak.bool_</span></a>.
+If A is ak.int64, Values can be ak.int64 or <a href="#id28"><span class="problematic" id="id29">ak.bool_</span></a>.
+If A is ak.uint64, Values can be ak.uint64, or <a href="#id30"><span class="problematic" id="id31">ak.bool_</span></a>.
+If A is <a href="#id32"><span class="problematic" id="id33">ak.bool_</span></a>, Values must be <a href="#id34"><span class="problematic" id="id35">ak.bool_</span></a>.</p>
+<p>Only one conditional clause is supported e.g., n &lt; 5, n &gt; 1.</p>
+<p>multi-dim pdarrays are now implemented.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -8618,7 +8620,7 @@ the condition is False</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if the condition object is not a pdarray, if A or B is not
-an int, np.int64, float, np.float64, pdarray, str, Strings, Categorical
+an int, np.int64, float, np.float64, bool, pdarray, str, Strings, Categorical
 if pdarray dtypes are not supported or do not match, or multiple
 condition clauses (see Notes section) are applied</p></li>
 <li><p><strong>ValueError</strong> – Raised if the shapes of the condition, A, and B pdarrays are unequal</p></li>

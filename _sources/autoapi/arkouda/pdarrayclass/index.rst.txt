@@ -345,6 +345,9 @@ Module Contents
    :returns: Returns an array that contains the element-wise remainder of division.
    :rtype: pdarray
 
+   :raises TypeError: Raised if neither dividend nor divisor is a pdarray (at least one must be)
+       or if any scalar or pdarray element is not one of int, uint, float, bigint
+
 
 .. py:function:: maxk(pda: pdarray, k: arkouda.numpy.dtypes.int_scalars) -> pdarray
 

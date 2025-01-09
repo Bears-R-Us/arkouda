@@ -4202,10 +4202,9 @@
         <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">popcount</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">pda</span><span class="o">.</span><span class="n">bigint_to_uint_arrays</span><span class="p">())</span>  <span class="c1"># type: ignore</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;efunc</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;popcount&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;func&quot;</span><span class="p">:</span> <span class="s2">&quot;popcount&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
+                <span class="s2">&quot;pda&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
@@ -4246,10 +4245,9 @@
         <span class="k">return</span> <span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">x</span> <span class="o">^</span> <span class="n">y</span><span class="p">,</span> <span class="p">[</span><span class="n">parity</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">pda</span><span class="o">.</span><span class="n">bigint_to_uint_arrays</span><span class="p">()])</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;efunc</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;parity&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;func&quot;</span><span class="p">:</span> <span class="s2">&quot;parity&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
+                <span class="s2">&quot;pda&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
@@ -4292,11 +4290,16 @@
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">zeros</span>
 
         <span class="n">uint_arrs</span> <span class="o">=</span> <span class="n">pda</span><span class="o">.</span><span class="n">bigint_to_uint_arrays</span><span class="p">()</span>
+
         <span class="c1"># we need to adjust the number of leading zeros to account for max_bits</span>
+
         <span class="n">mod_max_bits</span><span class="p">,</span> <span class="n">div_max_bits</span> <span class="o">=</span> <span class="n">pda</span><span class="o">.</span><span class="n">max_bits</span> <span class="o">%</span> <span class="mi">64</span><span class="p">,</span> <span class="n">ceil</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">max_bits</span> <span class="o">/</span> <span class="mi">64</span><span class="p">)</span>
+
         <span class="c1"># if we don&#39;t fall on a 64 bit boundary, we need to subtract off</span>
         <span class="c1"># leading zeros that aren&#39;t settable due to max_bits restrictions</span>
+
         <span class="n">sub_off</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">mod_max_bits</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">64</span> <span class="o">-</span> <span class="n">mod_max_bits</span>
+
         <span class="c1"># we can have fewer uint arrays than max_bits allows if all the high bits are zero</span>
         <span class="c1"># i.e. ak.arange(10, dtype=ak.bigint, max_bits=256) will only store one uint64 array,</span>
         <span class="c1"># so we need to add on any leading zeros from empty higher bit arrays that were excluded</span>
@@ -4305,22 +4308,28 @@
         <span class="n">lz</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">akuint64</span><span class="p">)</span>
         <span class="n">previously_non_zero</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">uint_arrs</span><span class="p">:</span>
+
             <span class="c1"># if a bit was set somewhere in the higher bits,</span>
-            <span class="c1"># we don&#39;t want to add it&#39;s clz to our leading zeros count</span>
+            <span class="c1"># we don&#39;t want to add its clz to our leading zeros count</span>
             <span class="c1"># so only update positions where we&#39;ve only seen zeros</span>
-            <span class="n">lz</span> <span class="o">+=</span> <span class="n">where</span><span class="p">(</span><span class="n">previously_non_zero</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">clz</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+
+            <span class="n">lz</span> <span class="o">+=</span> <span class="n">where</span><span class="p">(</span><span class="n">previously_non_zero</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">clz</span><span class="p">(</span><span class="n">a</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">akuint64</span><span class="p">)</span>
+            <span class="c1"># note: the above cast is required or the += will fail on mixed types</span>
+
             <span class="c1"># OR in the places where the current bits have a bit set</span>
+
             <span class="n">previously_non_zero</span> <span class="o">|=</span> <span class="n">a</span> <span class="o">!=</span> <span class="mi">0</span>
             <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">previously_non_zero</span><span class="p">):</span>
                 <span class="k">break</span>
+
         <span class="n">lz</span> <span class="o">+=</span> <span class="n">add_on</span> <span class="o">-</span> <span class="n">sub_off</span>
         <span class="k">return</span> <span class="n">lz</span>
+
     <span class="k">else</span><span class="p">:</span>
         <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;efunc</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;clz&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;func&quot;</span><span class="p">:</span> <span class="s2">&quot;clz&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
+                <span class="s2">&quot;pda&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
@@ -4361,39 +4370,52 @@
     <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">akint64</span><span class="p">,</span> <span class="n">akuint64</span><span class="p">,</span> <span class="n">bigint</span><span class="p">]:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;BitOps only supported on int64, uint64, and bigint arrays&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">bigint</span><span class="p">:</span>
+
         <span class="c1"># we don&#39;t need max_bits to be set because that only limits the high bits</span>
         <span class="c1"># which is only relevant when ctz(0) which is defined to be 0</span>
+
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">where</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">zeros</span>
 
         <span class="c1"># reverse the list, so we visit low bits first</span>
+
         <span class="n">reversed_uint_arrs</span> <span class="o">=</span> <span class="n">pda</span><span class="o">.</span><span class="n">bigint_to_uint_arrays</span><span class="p">()[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">tz</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">akuint64</span><span class="p">)</span>
         <span class="n">previously_non_zero</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+
         <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">reversed_uint_arrs</span><span class="p">:</span>
+
             <span class="c1"># if the lower bits are all zero, we want trailing zeros</span>
             <span class="c1"># to be 64 because the higher bits could still be set.</span>
             <span class="c1"># But ctz(0) is defined to be 0, so use 64 in that case</span>
+
             <span class="n">a_is_zero</span> <span class="o">=</span> <span class="n">a</span> <span class="o">==</span> <span class="mi">0</span>
             <span class="n">num_zeros</span> <span class="o">=</span> <span class="n">where</span><span class="p">(</span><span class="n">a_is_zero</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="n">ctz</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+
             <span class="c1"># if a bit was set somewhere in the lower bits,</span>
-            <span class="c1"># we don&#39;t want to add it&#39;s ctz to our trailing zeros count</span>
+            <span class="c1"># we don&#39;t want to add its ctz to our trailing zeros count</span>
             <span class="c1"># so only update positions where we&#39;ve only seen zeros</span>
-            <span class="n">tz</span> <span class="o">+=</span> <span class="n">where</span><span class="p">(</span><span class="n">previously_non_zero</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">num_zeros</span><span class="p">)</span>
+
+            <span class="n">tz</span> <span class="o">+=</span> <span class="n">where</span><span class="p">(</span><span class="n">previously_non_zero</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">num_zeros</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">akuint64</span><span class="p">)</span>
+            <span class="c1"># note: the above cast is required or the += will fail on mixed types</span>
+
             <span class="c1"># OR in the places where the current bits have a bit set</span>
+
             <span class="n">previously_non_zero</span> <span class="o">|=</span> <span class="o">~</span><span class="n">a_is_zero</span>
             <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">previously_non_zero</span><span class="p">):</span>
                 <span class="k">break</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">previously_non_zero</span><span class="p">):</span>
-            <span class="c1"># ctz(0) is defined to be 0</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">previously_non_zero</span><span class="p">):</span>  <span class="c1"># ctz(0) is defined to be 0</span>
             <span class="n">tz</span><span class="p">[</span><span class="o">~</span><span class="n">previously_non_zero</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
         <span class="k">return</span> <span class="n">tz</span>
+
     <span class="k">else</span><span class="p">:</span>
+
         <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;efunc</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;ctz&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;func&quot;</span><span class="p">:</span> <span class="s2">&quot;ctz&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
+                <span class="s2">&quot;pda&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
@@ -4662,6 +4684,12 @@
 <span class="sd">    -------</span>
 <span class="sd">    pdarray</span>
 <span class="sd">        Returns an array that contains the element-wise remainder of division.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        Raised if neither dividend nor divisor is a pdarray (at least one must be)</span>
+<span class="sd">        or if any scalar or pdarray element is not one of int, uint, float, bigint</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">builtins</span><span class="o">.</span><span class="n">all</span><span class="p">(</span>
         <span class="n">isSupportedNumber</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="p">[</span><span class="n">dividend</span><span class="p">,</span> <span class="n">divisor</span><span class="p">]</span>
@@ -4676,26 +4704,45 @@
             <span class="s2">&quot;types are numeric scalars and pdarrays. At least one argument must be a pdarray.&quot;</span>
         <span class="p">)</span>
     <span class="c1"># TODO: handle shape broadcasting for multidimensional arrays</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dividend</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">divisor</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-        <span class="n">ndim</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">dividend</span><span class="o">.</span><span class="n">ndim</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dividend</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">divisor</span><span class="o">.</span><span class="n">ndim</span>  <span class="c1"># type: ignore[union-attr]</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
-            <span class="n">cast</span><span class="p">(</span>
-                <span class="nb">str</span><span class="p">,</span>
-                <span class="n">generic_msg</span><span class="p">(</span>
-                    <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;efunc2Arg</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
-                    <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                        <span class="s2">&quot;func&quot;</span><span class="p">:</span> <span class="s2">&quot;fmod&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="n">dividend</span><span class="p">,</span>
-                        <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="n">divisor</span><span class="p">,</span>
-                    <span class="p">},</span>
-                <span class="p">),</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
+
+
+<span class="c1">#   The code below creates a command string for fmod2vv, fmod2vs or fmod2sv.</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dividend</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">divisor</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="p">:</span>
+        <span class="n">cmdstring</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;fmod2vv&lt;</span><span class="si">{</span><span class="n">dividend</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">dividend</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">divisor</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dividend</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">divisor</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">))</span> <span class="p">:</span>
+        <span class="k">if</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">divisor</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;float64&#39;</span><span class="p">,</span> <span class="s1">&#39;int64&#39;</span><span class="p">,</span> <span class="s1">&#39;uint64&#39;</span><span class="p">,</span> <span class="s1">&#39;bool&#39;</span><span class="p">]</span> <span class="p">:</span>
+            <span class="n">acmd</span> <span class="o">=</span> <span class="s1">&#39;fmod2vs_&#39;</span><span class="o">+</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">divisor</span><span class="p">)</span>
+        <span class="k">else</span> <span class="p">:</span>  <span class="c1"># this condition *should* be impossible because of the isSupportedNumber check</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Scalar divisor type </span><span class="si">{</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">divisor</span><span class="p">)</span><span class="si">}</span><span class="s2"> not allowed in fmod&quot;</span><span class="p">)</span>
+        <span class="n">cmdstring</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">acmd</span><span class="si">}</span><span class="s2">&lt;</span><span class="si">{</span><span class="n">dividend</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">dividend</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+
+    <span class="k">elif</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">dividend</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">divisor</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">))</span> <span class="p">:</span>
+        <span class="k">if</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">dividend</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;float64&#39;</span><span class="p">,</span> <span class="s1">&#39;int64&#39;</span><span class="p">,</span> <span class="s1">&#39;uint64&#39;</span><span class="p">,</span> <span class="s1">&#39;bool&#39;</span><span class="p">]</span> <span class="p">:</span>
+            <span class="n">acmd</span> <span class="o">=</span> <span class="s1">&#39;fmod2sv_&#39;</span><span class="o">+</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">dividend</span><span class="p">)</span>
+        <span class="k">else</span> <span class="p">:</span>  <span class="c1"># this condition *should* be impossible because of the isSupportedNumber check</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Scalar dividend type </span><span class="si">{</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">dividend</span><span class="p">)</span><span class="si">}</span><span class="s2"> not allowed in fmod&quot;</span><span class="p">)</span>
+        <span class="n">cmdstring</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">acmd</span><span class="si">}</span><span class="s2">&lt;</span><span class="si">{</span><span class="n">divisor</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">divisor</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span>  <span class="c1"># type: ignore[union-attr]</span>
+
     <span class="k">else</span><span class="p">:</span>
         <span class="n">m</span> <span class="o">=</span> <span class="n">mod</span><span class="p">(</span><span class="n">dividend</span><span class="p">,</span> <span class="n">divisor</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">_create_scalar_array</span><span class="p">(</span><span class="n">m</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">_create_scalar_array</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+
+<span class="c1">#   We reach here if this was any case other than scalar &amp; scalar</span>
+
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
+        <span class="n">cast</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">,</span>
+            <span class="n">generic_msg</span><span class="p">(</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="n">cmdstring</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">dividend</span><span class="p">,</span>
+                    <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">divisor</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span></div>
 
 
 

@@ -446,16 +446,15 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">broadcasted</span> <span class="o">=</span> <span class="n">broadcast_arrays</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
 
+    <span class="n">a</span> <span class="o">=</span> <span class="n">broadcasted</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">_array</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">broadcasted</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">_array</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">akcast</span><span class="p">(</span><span class="n">broadcasted</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span> <span class="n">ak</span><span class="o">.</span><span class="n">dtypes</span><span class="o">.</span><span class="n">bool_</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span>
         <span class="n">create_pdarray</span><span class="p">(</span>
             <span class="n">generic_msg</span><span class="p">(</span>
-                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;efunc3vv</span><span class="si">{</span><span class="n">broadcasted</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
-                <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                    <span class="s2">&quot;func&quot;</span><span class="p">:</span> <span class="s2">&quot;where&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="n">akcast</span><span class="p">(</span><span class="n">broadcasted</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span> <span class="n">ak</span><span class="o">.</span><span class="n">dtypes</span><span class="o">.</span><span class="n">bool_</span><span class="p">),</span>
-                    <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">broadcasted</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span>
-                    <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">broadcasted</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span>
-                <span class="p">},</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;wherevv&lt;</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;condition&quot;</span> <span class="p">:</span> <span class="n">c</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span> <span class="p">:</span> <span class="n">a</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span> <span class="p">:</span> <span class="n">b</span><span class="p">,</span> <span class="p">},</span>
             <span class="p">)</span>
         <span class="p">)</span>
     <span class="p">)</span></div>

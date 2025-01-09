@@ -1859,7 +1859,10 @@ Module Contents
              denominator to get proper placement on unit circle.
    :rtype: pdarray
 
-   :raises TypeError: Raised if the parameter is not a pdarray
+   :raises TypeError: Raised if any parameter fails the typechecking
+       Raised if any element of pdarrays num and denom is not a supported type
+       Raised if both num and denom are scalars
+       Raised if where is neither boolean nor a pdarray of boolean
 
 
 .. py:function:: arctanh(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
@@ -5429,21 +5432,15 @@ Module Contents
    .. rubric:: Notes
 
    A and mask must be the same size.  Values can be any size.
-
    Allowed dtypes for A and Values conform to types accepted by numpy putmask.
-
    If A is ak.float64, Values can be ak.float64, ak.int64, ak.uint64, ak.bool_.
-
    If A is ak.int64, Values can be ak.int64 or ak.bool_.
-
-   If A is ak.uint64, Values can be ak.int64, ak.uint64, or ak.bool_.
-
+   If A is ak.uint64, Values can be ak.uint64, or ak.bool_.
    If A is ak.bool_, Values must be ak.bool_.
 
-   Only one conditional clause is supported e.g., n < 5, n > 1, which is supported in numpy
-   is not currently supported in Arkouda
+   Only one conditional clause is supported e.g., n < 5, n > 1.
 
-   Only 1D pdarrays are implemented for now.
+   multi-dim pdarrays are now implemented.
 
 
 .. py:function:: rad2deg(pda: arkouda.pdarrayclass.pdarray, where: Union[bool, arkouda.pdarrayclass.pdarray] = True) -> arkouda.pdarrayclass.pdarray
@@ -7156,7 +7153,7 @@ Module Contents
    :rtype: pdarray
 
    :raises TypeError: Raised if the condition object is not a pdarray, if A or B is not
-       an int, np.int64, float, np.float64, pdarray, str, Strings, Categorical
+       an int, np.int64, float, np.float64, bool, pdarray, str, Strings, Categorical
        if pdarray dtypes are not supported or do not match, or multiple
        condition clauses (see Notes section) are applied
    :raises ValueError: Raised if the shapes of the condition, A, and B pdarrays are unequal

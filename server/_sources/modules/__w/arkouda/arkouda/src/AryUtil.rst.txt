@@ -318,3 +318,5 @@ or
 
    .. method:: proc indexToOrder(idx: rank*?t): t where t == int || t == uint(64)
 
+   .. method:: proc indexToOrder(idx: ?t): t where t == int || t == uint(64)
+
