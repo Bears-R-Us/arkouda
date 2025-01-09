@@ -9,7 +9,7 @@ from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.numpy.dtypes import str_ as akstr_
 from arkouda.groupbyclass import GroupBy, groupable
-from arkouda.numpy.dtypes import DTypes, bigint
+from arkouda.numpy.dtypes import bigint
 from arkouda.numpy.dtypes import bool_ as ak_bool
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import float64 as ak_float64
@@ -385,6 +385,9 @@ def trunc(pda: pdarray) -> pdarray:
     )
     return create_pdarray(type_cast(str, repMsg))
 
+#   Noted during Sept 2024 rewrite of EfuncMsg.chpl -- although it's "sign" here, inside the
+#   chapel code, it's "sgn"
+
 
 @typechecked
 def sign(pda: pdarray) -> pdarray:
@@ -410,11 +413,11 @@ def sign(pda: pdarray) -> pdarray:
     >>> ak.sign(ak.array([-10, -5, 0, 5, 10]))
     array([-1, -1, 0, 1, 1])
     """
+    _datatype_check(pda.dtype, [int, float], 'sign')
     repMsg = generic_msg(
-        cmd=f"efunc{pda.ndim}D",
+        cmd=f"sgn<{pda.dtype},{pda.ndim}>",
         args={
-            "func": "sign",
-            "array": pda,
+            "pda": pda,
         },
     )
     return create_pdarray(type_cast(str, repMsg))
@@ -797,11 +800,11 @@ def cumsum(pda: pdarray) -> pdarray:
     >>> ak.cumsum(ak.randint(0, 1, 5, dtype=ak.bool_))
     array([0, 1, 1, 2, 3])
     """
+    _datatype_check(pda.dtype, [int, float, ak_uint64, ak_bool], 'cumsum')
     repMsg = generic_msg(
-        cmd=f"efunc{pda.ndim}D",
+        cmd=f"cumsum<{pda.dtype},{pda.ndim}>",
         args={
-            "func": "cumsum",
-            "array": pda,
+            "x": pda,
         },
     )
     return create_pdarray(type_cast(str, repMsg))
@@ -839,11 +842,11 @@ def cumprod(pda: pdarray) -> pdarray:
     array([1.5728783400481925, 7.0472855509390593, 33.78523998586553,
            134.05309592737584, 450.21589865655358])
     """
+    _datatype_check(pda.dtype, [int, float, ak_uint64, ak_bool], 'cumprod')
     repMsg = generic_msg(
-        cmd=f"efunc{pda.ndim}D",
+        cmd=f"cumprod<{pda.dtype},{pda.ndim}>",
         args={
-            "func": "cumprod",
-            "array": pda,
+            "x": pda,
         },
     )
     return create_pdarray(type_cast(str, repMsg))
@@ -1044,7 +1047,10 @@ def arctan2(
     Raises
     ------
     TypeError
-        Raised if the parameter is not a pdarray
+        Raised if any parameter fails the typechecking
+        Raised if any element of pdarrays num and denom is not a supported type
+        Raised if both num and denom are scalars
+        Raised if where is neither boolean nor a pdarray of boolean
     """
     if not all(isSupportedNumber(arg) or isinstance(arg, pdarray) for arg in [num, denom]):
         raise TypeError(
@@ -1057,56 +1063,57 @@ def arctan2(
             "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
         )
     # TODO: handle shape broadcasting for multidimensional arrays
+
+    if where is True :
+        pass
+    elif where is False :
+        return num / denom  # type: ignore
+    elif where.dtype != bool :
+        raise TypeError(f"where must have dtype bool, got {where.dtype} instead")
+
     if isinstance(num, pdarray) or isinstance(denom, pdarray):
         ndim = num.ndim if isinstance(num, pdarray) else denom.ndim  # type: ignore[union-attr]
-        if where is True:
-            repMsg = type_cast(
-                str,
-                generic_msg(
-                    cmd=f"efunc2Arg{ndim}D",
-                    args={
-                        "func": "arctan2",
-                        "A": num,
-                        "B": denom,
-                    },
+
+#   The code below will create the command string for arctan2vv, arctan2vs or arctan2sv, based
+#   on a and b.
+
+        if isinstance(num, pdarray) and isinstance(denom, pdarray) :
+            cmdstring = f"arctan2vv<{num.dtype},{ndim},{denom.dtype}>"
+            if where is True :
+                argdict = {"a": num, "b": denom, }
+            elif where is False :
+                return num / denom  # type: ignore
+            else :
+                argdict = {"a": num[where], "b": denom[where], }
+        elif not isinstance(denom, pdarray) :
+            ts = resolve_scalar_dtype(denom)
+            if ts in ['float64', 'int64', 'uint64', 'bool'] :
+                cmdstring = "arctan2vs_"+ts+f"<{num.dtype},{ndim}>"  # type: ignore[union-attr]
+            else :
+                raise TypeError(f"{ts} is not an allowed denom type for arctan2")
+            argdict = {"a": num if where is True else num[where], "b": denom}  # type: ignore
+        elif not isinstance(num, pdarray) :
+            ts = resolve_scalar_dtype(num)
+            if ts in ['float64', 'int64', 'uint64', 'bool'] :
+                cmdstring = "arctan2sv_"+ts+f"<{denom.dtype},{ndim}>"
+            else :
+                raise TypeError(f"{ts} is not an allowed num type for arctan2")
+            argdict = {"a": num, "b": denom if where is True else denom[where]}  # type: ignore
+
+        repMsg = type_cast(
+            str,
+            generic_msg(
+                cmd=cmdstring,
+                args=argdict
                 ),
             )
-            return create_pdarray(repMsg)
-        elif where is False:
-            return num / denom  # type: ignore
-        else:
-            if where.dtype != bool:
-                raise TypeError(f"where must have dtype bool, got {where.dtype} instead")
-            if isinstance(num, pdarray) and isinstance(denom, pdarray):
-                # TODO: handle shape broadcasting for multidimensional arrays
-                repMsg = type_cast(
-                    str,
-                    generic_msg(
-                        cmd=f"efunc2Arg{ndim}D",
-                        args={
-                            "func": "arctan2",
-                            "A": num[where],
-                            "B": denom[where],
-                        },
-                    ),
-                )
-            if not isinstance(num, pdarray) or not isinstance(denom, pdarray):
-                repMsg = type_cast(
-                    str,
-                    generic_msg(
-                        cmd=f"efunc2Arg{ndim}D",
-                        args={
-                            "func": "arctan2",
-                            "A": num if not isinstance(num, pdarray) else num[where],
-                            "B": denom if not isinstance(denom, pdarray) else denom[where],
-                        },
-                    ),
-                )
-            new_pda = num / denom
-            ret = create_pdarray(repMsg)
-            new_pda = cast(new_pda, ret.dtype)
-            new_pda[where] = ret
-            return new_pda
+        ret = create_pdarray(repMsg)
+        if where is True :
+            return ret
+        else :
+            new_pda = num / denom  # type : ignore
+            return _merge_where(new_pda, where, ret)
+
     else:
         return scalar_array(arctan2(num, denom) if where else num / denom)
 
@@ -1635,7 +1642,7 @@ def where(
     ------
     TypeError
         Raised if the condition object is not a pdarray, if A or B is not
-        an int, np.int64, float, np.float64, pdarray, str, Strings, Categorical
+        an int, np.int64, float, np.float64, bool, pdarray, str, Strings, Categorical
         if pdarray dtypes are not supported or do not match, or multiple
         condition clauses (see Notes section) are applied
     ValueError
@@ -1679,6 +1686,7 @@ def where(
     is supported e.g., n < 5, n > 1, which is supported in numpy
     is not currently supported in Arkouda
     """
+
     if (not isSupportedNumber(A) and not isinstance(A, pdarray)) or (
         not isSupportedNumber(B) and not isinstance(B, pdarray)
     ):
@@ -1695,70 +1703,47 @@ def where(
                 " both A and B must be an str, Strings, Categorical"
             )
         return _str_cat_where(condition, A, B)
-    if isinstance(A, pdarray) and isinstance(B, pdarray):
-        # TODO: handle shape broadcasting for multidimensional arrays
-        repMsg = generic_msg(
-            cmd=f"efunc3vv{condition.ndim}D",
-            args={
-                "func": "where",
-                "condition": condition,
-                "a": A,
-                "b": B,
-            },
-        )
-    # For scalars, try to convert it to the array's dtype
-    elif isinstance(A, pdarray) and np.isscalar(B):
-        repMsg = generic_msg(
-            cmd=f"efunc3vs{condition.ndim}D",
-            args={
-                "func": "where",
-                "condition": condition,
-                "a": A,
-                "dtype": A.dtype.name,
-                "scalar": A.format_other(B),
-            },
-        )
-    elif isinstance(B, pdarray) and np.isscalar(A):
-        repMsg = generic_msg(
-            cmd=f"efunc3sv{condition.ndim}D",
-            args={
-                "func": "where",
-                "condition": condition,
-                "dtype": B.dtype.name,
-                "scalar": B.format_other(A),
-                "b": B,
-            },
-        )
-    elif np.isscalar(A) and np.isscalar(B):
-        # Scalars must share a common dtype (or be cast)
-        dtA = resolve_scalar_dtype(A)
-        dtB = resolve_scalar_dtype(B)
-        # Make sure at least one of the dtypes is supported
-        if not (dtA in DTypes or dtB in DTypes):
-            raise TypeError(f"Not implemented for scalar types {dtA} and {dtB}")
-        # If the dtypes are the same, do not cast
-        if dtA == dtB:  # type: ignore
-            dt = dtA
-        # If the dtypes are different, try casting one direction then the other
-        elif dtB in DTypes and np.can_cast(A, dtB):
-            A = np.dtype(dtB).type(A)  # type: ignore
-            dt = dtB
-        elif dtA in DTypes and np.can_cast(B, dtA):
-            B = np.dtype(dtA).type(B)  # type: ignore
-            dt = dtA
-        # Cannot safely cast
-        else:
-            raise TypeError(f"Cannot cast between scalars {str(A)} and {str(B)} to supported dtype")
-        repMsg = generic_msg(
-            cmd=f"efunc3ss{condition.ndim}D",
-            args={
-                "func": "where",
-                "condition": condition,
-                "dtype": dt,
-                "a": A,
-                "b": B,
-            },
-        )
+
+#   The code below creates a command string for wherevv, wherevs, wheresv or wheress,
+#   based on A and B.
+
+    if isinstance(A, pdarray) and isinstance(B, pdarray) :
+        cmdstring = f"wherevv<{condition.ndim},{A.dtype},{B.dtype}>"
+
+    elif isinstance(A, pdarray) and np.isscalar(B) :
+        if resolve_scalar_dtype(B) in ['float64', 'int64', 'uint64', 'bool'] :
+            ltr = resolve_scalar_dtype(B)
+            cmdstring = "wherevs_"+ltr+f"<{condition.ndim},{A.dtype}>"
+        else :  # *should* be impossible because of the IsSupportedNumber check
+            raise TypeError(f"where does not accept scalar type {resolve_scalar_dtype(B)}")
+
+    elif isinstance(B, pdarray) and np.isscalar(A) :
+        if resolve_scalar_dtype(A) in ['float64', 'int64', 'uint64', 'bool'] :
+            ltr = resolve_scalar_dtype(A)
+            cmdstring = "wheresv_"+ltr+f"<{condition.ndim},{B.dtype}>"
+        else :  # *should* be impossible because of the IsSupportedNumber check
+            raise TypeError(f"where does not accept scalar type {resolve_scalar_dtype(A)}")
+
+    else :  # both are scalars
+        if resolve_scalar_dtype(A) in ['float64', 'int64', 'uint64', 'bool'] :
+            ta = resolve_scalar_dtype(A)
+            if resolve_scalar_dtype(B) in ['float64', 'int64', 'uint64', 'bool'] :
+                tb = resolve_scalar_dtype(B)
+            else :
+                raise TypeError(f"where does not accept scalar type {resolve_scalar_dtype(B)}")
+        else :
+            raise TypeError(f"where does not accept scalar type {resolve_scalar_dtype(A)}")
+        cmdstring = "wheress_"+ta+"_"+tb+f"<{condition.ndim}>"
+
+    repMsg = generic_msg(
+        cmd=cmdstring,
+        args={
+            "condition": condition,
+            "a": A,
+            "b": B,
+        },
+    )
+
     return create_pdarray(type_cast(str, repMsg))
 
 
@@ -2318,29 +2303,38 @@ def putmask(
     Notes
     -----
     A and mask must be the same size.  Values can be any size.
-
     Allowed dtypes for A and Values conform to types accepted by numpy putmask.
-
     If A is ak.float64, Values can be ak.float64, ak.int64, ak.uint64, ak.bool_.
-
     If A is ak.int64, Values can be ak.int64 or ak.bool_.
-
-    If A is ak.uint64, Values can be ak.int64, ak.uint64, or ak.bool_.
-
+    If A is ak.uint64, Values can be ak.uint64, or ak.bool_.
     If A is ak.bool_, Values must be ak.bool_.
 
-    Only one conditional clause is supported e.g., n < 5, n > 1, which is supported in numpy
-    is not currently supported in Arkouda
+    Only one conditional clause is supported e.g., n < 5, n > 1.
 
-    Only 1D pdarrays are implemented for now.
+    multi-dim pdarrays are now implemented.
     """
+    ALLOWED_PUTMASK_PAIRS = [
+        (ak_float64, ak_float64),
+        (ak_float64, ak_int64),
+        (ak_float64, ak_uint64),
+        (ak_float64, ak_bool),
+        (ak_int64, ak_int64),
+        (ak_int64, ak_bool),
+        (ak_uint64, ak_uint64),
+        (ak_uint64, ak_bool),
+        (ak_bool, ak_bool),
+    ]
+
+    if not ((A.dtype, Values.dtype) in ALLOWED_PUTMASK_PAIRS) :
+        raise RuntimeError(f"Types {A.dtype} and {Values.dtype} are not compatible in putmask.")
+    if mask.size != A.size:
+        raise RuntimeError("mask and A must be same size in putmask")
     generic_msg(
-        cmd=f"efunc3vv{mask.ndim}D",
+        cmd=f"putmask<{mask.ndim},{A.dtype},{Values.dtype},{Values.ndim}>",
         args={
-            "func": "putmask",
-            "condition": mask,
+            "mask": mask,
             "a": A,
-            "b": Values,
+            "v": Values,
         },
     )
     return

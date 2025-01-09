@@ -179,7 +179,7 @@ class TestPdarrayClass:
     @pytest.mark.parametrize("dtype", DTYPES)
     @pytest.mark.parametrize("arry_gen", [ak.zeros, ak.ones, ak.arange])
     @pytest.mark.parametrize("axis", [0, 1, None])
-    def test_index_reduction_mulit_dim(self, op, dtype, arry_gen, size, axis):
+    def test_index_reduction_multi_dim(self, op, dtype, arry_gen, size, axis):
         size = 10
         pda = arry_gen(size * size * size, dtype=dtype).reshape((size, size, size))
         ak_op = getattr(arkouda.pdarrayclass, op)
