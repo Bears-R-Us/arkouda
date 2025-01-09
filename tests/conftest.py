@@ -1,10 +1,11 @@
-import subprocess
 import importlib
 import os
-
+import subprocess
+from typing import Iterable
 import pytest
 
-from arkouda import get_max_array_rank, get_config
+from arkouda import get_config, get_max_array_rank
+from arkouda.client import get_array_ranks
 from server_util.test.server_test_util import (
     is_multilocale_arkouda,  # TODO probably not needed
 )
@@ -130,6 +131,24 @@ def skip_by_rank(request):
     if request.node.get_closest_marker("skip_if_max_rank_greater_than"):
         if request.node.get_closest_marker("skip_if_max_rank_greater_than").args[0] < pytest.max_rank:
             pytest.skip("this test requires server with max_array_dims =< {}".format(pytest.max_rank))
+
+    if request.node.get_closest_marker("skip_if_rank_not_compiled"):
+        ranks_requested = request.node.get_closest_marker("skip_if_rank_not_compiled").args[0]
+        array_ranks = get_array_ranks()
+        if isinstance(ranks_requested, int):
+            if ranks_requested not in array_ranks:
+                pytest.skip("this test requires server compiled with rank {}".format(array_ranks))
+        elif isinstance(ranks_requested, Iterable):
+            for i in ranks_requested:
+                if isinstance(i, int):
+                    if i not in array_ranks:
+                        pytest.skip(
+                            "this test requires server compiled with rank(s) {}".format(array_ranks)
+                        )
+                else:
+                    raise TypeError("skip_if_rank_not_compiled only accepts type int or list of int.")
+        else:
+            raise TypeError("skip_if_rank_not_compiled only accepts type int or list of int.")
 
 
 @pytest.fixture(autouse=True)
