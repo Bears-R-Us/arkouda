@@ -1,19 +1,26 @@
 module CheckpointMsg {
-  use Reflection;
   use FileSystem;
   use List;
   import IO, Path;
+  import Reflection.{getModuleName as M,
+                     getRoutineName as R,
+                     getLineNumber as L};
 
   use ServerErrors, ServerConfig;
   use MultiTypeSymbolTable, MultiTypeSymEntry;
   use Message;
   use ParquetMsg;
   use IOUtils;
+  use Logging;
 
   config param metadataExt = "md";
   config param dataExt = "data";
   config param mdNameMaxLength = 256;
   config param serverMetadataName = "server."+metadataExt;
+
+  private config const logLevel = ServerConfig.logLevel;
+  private config const logChannel = ServerConfig.logChannel;
+  const cpLogger = new Logger(logLevel,logChannel);
 
 
   proc saveCheckpointMsg(cmd: string, msgArgs: borrowed MessageArgs,
@@ -106,7 +113,7 @@ module CheckpointMsg {
                                                           "int64", 0, 0,
                                                           entry.a);
 
-    writeln("Data created: ", dataName);
+    cpLogger.debug(M(), R(), L(), "Data created: %s".format(dataName));
 
     for f in filenames {
       mdWriter.writef("%i %s\n", f.numCodepoints, f);
@@ -115,7 +122,7 @@ module CheckpointMsg {
     mdWriter.close();
     mdFile.close();
 
-    writeln("Metadata created: ", mdName);
+    cpLogger.debug(M(), R(), L(), "Metadata created: %s".format(mdName));
   }
 
   private proc loadServerMetadata(path) throws {
@@ -125,18 +132,19 @@ module CheckpointMsg {
     var mdReader = mdFile.reader();
 
     const loadedId = mdReader.readThrough(separator="\n");
-    writeln("loadedId ", loadedId);
 
     var loadedNumLocales: int;
     mdReader.read(loadedNumLocales);
-    writeln("loadedNumLocales ", loadedNumLocales);
+
+    // TODO
     assert(numLocales == loadedNumLocales);
 
     return loadedId;
   }
 
   private proc loadArr(path, mdName, loadedId) throws {
-    writeln("Reading ", mdName);
+    cpLogger.debug(M(), R(), L(), "Reading %s".format(mdName));
+
     var mdFile = IO.open(mdName, ioMode.r);
     var mdReader = mdFile.reader();
 
@@ -144,11 +152,8 @@ module CheckpointMsg {
     const size = mdReader.readThrough("\n", stripSeparator=true):int;
     const numTargetLocales = mdReader.readThrough("\n", stripSeparator=true):int;
 
-    writeln("name ", name);
-    writeln("size ", size);
-    writeln("numTargetLocales ", numTargetLocales);
-
-    assert(numTargetLocales==1);
+    // TODO
+    assert(numTargetLocales == numLocales);
 
     const dataNames: [0..#numTargetLocales] string;
 
@@ -160,7 +165,7 @@ module CheckpointMsg {
     var entryVal = new shared SymEntry(size, int);
     readFilesByName(entryVal.a, dataNames, [size], "asd", 0);
 
-    writeln("Data loaded: ", dataNames);
+    cpLogger.debug(M(), R(), L(), "Data loaded %s".format(dataNames));
 
     mdReader.close();
     mdFile.close();
@@ -169,8 +174,8 @@ module CheckpointMsg {
   }
 
   use CommandMap;
-  registerFunction("save_checkpoint", saveCheckpointMsg, getModuleName());
-  registerFunction("load_checkpoint", loadCheckpointMsg, getModuleName());
+  registerFunction("save_checkpoint", saveCheckpointMsg, M());
+  registerFunction("load_checkpoint", loadCheckpointMsg, M());
 
   module Msg {
     use Message;
