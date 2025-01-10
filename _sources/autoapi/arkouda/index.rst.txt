@@ -16,6 +16,7 @@ Submodules
    /autoapi/arkouda/categorical/index
    /autoapi/arkouda/client/index
    /autoapi/arkouda/client_dtypes/index
+   /autoapi/arkouda/comm_diagnostics/index
    /autoapi/arkouda/dataframe/index
    /autoapi/arkouda/dtypes/index
    /autoapi/arkouda/groupbyclass/index

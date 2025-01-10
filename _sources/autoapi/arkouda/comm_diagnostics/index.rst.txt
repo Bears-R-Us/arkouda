@@ -1,0 +1,286 @@
+arkouda.comm_diagnostics
+========================
+
+.. py:module:: arkouda.comm_diagnostics
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   arkouda.comm_diagnostics.get_comm_diagnostics_amo
+   arkouda.comm_diagnostics.get_comm_diagnostics_cache_get_hits
+   arkouda.comm_diagnostics.get_comm_diagnostics_cache_get_misses
+   arkouda.comm_diagnostics.get_comm_diagnostics_cache_num_page_readaheads
+   arkouda.comm_diagnostics.get_comm_diagnostics_cache_num_prefetches
+   arkouda.comm_diagnostics.get_comm_diagnostics_cache_prefetch_unused
+   arkouda.comm_diagnostics.get_comm_diagnostics_cache_prefetch_waited
+   arkouda.comm_diagnostics.get_comm_diagnostics_cache_put_hits
+   arkouda.comm_diagnostics.get_comm_diagnostics_cache_put_misses
+   arkouda.comm_diagnostics.get_comm_diagnostics_cache_readahead_unused
+   arkouda.comm_diagnostics.get_comm_diagnostics_cache_readahead_waited
+   arkouda.comm_diagnostics.get_comm_diagnostics_execute_on
+   arkouda.comm_diagnostics.get_comm_diagnostics_execute_on_fast
+   arkouda.comm_diagnostics.get_comm_diagnostics_execute_on_nb
+   arkouda.comm_diagnostics.get_comm_diagnostics_get
+   arkouda.comm_diagnostics.get_comm_diagnostics_get_nb
+   arkouda.comm_diagnostics.get_comm_diagnostics_put
+   arkouda.comm_diagnostics.get_comm_diagnostics_put_nb
+   arkouda.comm_diagnostics.get_comm_diagnostics_try_nb
+   arkouda.comm_diagnostics.get_comm_diagnostics_wait_nb
+   arkouda.comm_diagnostics.print_comm_diagnostics_table
+   arkouda.comm_diagnostics.reset_comm_diagnostics
+   arkouda.comm_diagnostics.start_comm_diagnostics
+   arkouda.comm_diagnostics.start_verbose_comm
+   arkouda.comm_diagnostics.stop_comm_diagnostics
+   arkouda.comm_diagnostics.stop_verbose_comm
+
+
+Module Contents
+---------------
+
+.. py:function:: get_comm_diagnostics_amo()
+
+   atomic memory operations
+
+   :returns: A pdarray, where the size is the number of locales,
+             populated with the statistic value from each locale.
+   :rtype: pdarray
+
+
+.. py:function:: get_comm_diagnostics_cache_get_hits()
+
+   GETs that were handled by the cache.
+   GETs counted here did not require the cache to communicate in order to return the result.
+
+   :returns: A pdarray, where the size is the number of locales,
+             populated with the statistic value from each locale.
+   :rtype: pdarray
+
+
+.. py:function:: get_comm_diagnostics_cache_get_misses()
+
+   GETs that were not handled by the cache
+
+   :returns: A pdarray, where the size is the number of locales,
+             populated with the statistic value from each locale.
+   :rtype: pdarray
+
+
+.. py:function:: get_comm_diagnostics_cache_num_page_readaheads()
+
+   Number of readaheads issued to the remote cache at the granularity of cache pages.
+
+   :returns: A pdarray, where the size is the number of locales,
+             populated with the statistic value from each locale.
+   :rtype: pdarray
+
+
+.. py:function:: get_comm_diagnostics_cache_num_prefetches()
+
+   Number of prefetches issued to the remote cache at the granularity of cache pages.
+   This counter is specifically triggered via calls to chpl_comm_remote_prefetch
+
+   :returns: A pdarray, where the size is the number of locales,
+             populated with the statistic value from each locale.
+   :rtype: pdarray
+
+
+.. py:function:: get_comm_diagnostics_cache_prefetch_unused()
+
+   Number of cache pages that were prefetched but evicted from the cache before being accessed
+   (i.e., the prefetches were too early).
+
+   :returns: A pdarray, where the size is the number of locales,
+             populated with the statistic value from each locale.
+   :rtype: pdarray
+
+
+.. py:function:: get_comm_diagnostics_cache_prefetch_waited()
+
+   Number of cache pages that were prefetched but did not arrive in the cache before being accessed
+   (i.e., the prefetches were too late).
+
+   :returns: A pdarray, where the size is the number of locales,
+             populated with the statistic value from each locale.
+   :rtype: pdarray
+
+
+.. py:function:: get_comm_diagnostics_cache_put_hits()
+
+   PUTs that were stored in cache pages that already existed.
+
+   :returns: A pdarray, where the size is the number of locales,
+             populated with the statistic value from each locale.
+   :rtype: pdarray
+
+
+.. py:function:: get_comm_diagnostics_cache_put_misses()
+
+   PUTs that required the cache to create a new page to store them.
+
+   :returns: A pdarray, where the size is the number of locales,
+             populated with the statistic value from each locale.
+   :rtype: pdarray
+
+
+.. py:function:: get_comm_diagnostics_cache_readahead_unused()
+
+   Number of cache pages that were read ahead but evicted from the cache before being accessed
+   (i.e., the readaheads were too early).
+
+   :returns: A pdarray, where the size is the number of locales,
+             populated with the statistic value from each locale.
+   :rtype: pdarray
+
+
+.. py:function:: get_comm_diagnostics_cache_readahead_waited()
+
+   Number of cache pages that were read ahead but did not arrive in the cache before being accessed
+   (i.e., the readaheads were too late).
+
+   :returns: A pdarray, where the size is the number of locales,
+             populated with the statistic value from each locale.
+   :rtype: pdarray
+
+
+.. py:function:: get_comm_diagnostics_execute_on()
+
+   blocking remote executions, in which initiator waits for completion
+
+   :returns: A pdarray, where the size is the number of locales,
+             populated with the statistic value from each locale.
+   :rtype: pdarray
+
+
+.. py:function:: get_comm_diagnostics_execute_on_fast()
+
+   blocking remote executions performed by the target locale’s Active Message handler
+
+   :returns: A pdarray, where the size is the number of locales,
+             populated with the statistic value from each locale.
+   :rtype: pdarray
+
+
+.. py:function:: get_comm_diagnostics_execute_on_nb()
+
+   non-blocking remote executions
+
+   :returns: A pdarray, where the size is the number of locales,
+             populated with the statistic value from each locale.
+   :rtype: pdarray
+
+
+.. py:function:: get_comm_diagnostics_get()
+
+   blocking GETs, in which initiator waits for completion
+
+   :returns: A pdarray, where the size is the number of locales,
+             populated with the statistic value from each locale.
+   :rtype: pdarray
+
+
+.. py:function:: get_comm_diagnostics_get_nb()
+
+   non-blocking GETs
+
+   :returns: A pdarray, where the size is the number of locales,
+             populated with the statistic value from each locale.
+   :rtype: pdarray
+
+
+.. py:function:: get_comm_diagnostics_put()
+
+   blocking PUTs, in which initiator waits for completion
+
+   :returns: A pdarray, where the size is the number of locales,
+             populated with the statistic value from each locale.
+   :rtype: pdarray
+
+
+.. py:function:: get_comm_diagnostics_put_nb()
+
+   non-blocking PUTs
+
+   :returns: A pdarray, where the size is the number of locales,
+             populated with the statistic value from each locale.
+   :rtype: pdarray
+
+
+.. py:function:: get_comm_diagnostics_try_nb()
+
+   tests for non-blocking GET/PUT completions
+
+   :returns: A pdarray, where the size is the number of locales,
+             populated with the statistic value from each locale.
+   :rtype: pdarray
+
+
+.. py:function:: get_comm_diagnostics_wait_nb()
+
+   blocking waits for non-blocking GET/PUT completions
+
+   :returns: A pdarray, where the size is the number of locales,
+             populated with the statistic value from each locale.
+   :rtype: pdarray
+
+
+.. py:function:: print_comm_diagnostics_table(print_empty_columns=False)
+
+   Print the current communication counts in a markdown table
+   using a row per locale and a column per operation.
+   By default, operations for which all locales have a count of zero are not displayed in the table,
+   though an argument can be used to reverse that behavior.
+
+   :param print_empty_columns:
+   :type print_empty_columns: bool=False
+
+   .. note:: The table will only be printed to the chapel logs.
+
+   :returns: Completion message.
+   :rtype: str
+
+
+.. py:function:: reset_comm_diagnostics()
+
+   Reset aggregate communication counts across the whole program.
+
+   :returns: Completion message.
+   :rtype: str
+
+
+.. py:function:: start_comm_diagnostics()
+
+   Start counting communication operations across the whole program.
+
+   :returns: Completion message.
+   :rtype: str
+
+
+.. py:function:: start_verbose_comm()
+
+   Start on-the-fly reporting of communication initiated on any locale.
+
+   .. note:: Reporting will only be printed to the chapel logs.
+
+   :returns: Completion message.
+   :rtype: str
+
+
+.. py:function:: stop_comm_diagnostics()
+
+   Stop counting communication operations across the whole program.
+
+   :returns: Completion message.
+   :rtype: str
+
+
+.. py:function:: stop_verbose_comm()
+
+   Stop on-the-fly reporting of communication initiated on any locale.
+
+   :returns: Completion message.
+   :rtype: str
+
+
