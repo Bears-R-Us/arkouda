@@ -3,7 +3,7 @@
 
 echo "This script is intended to be run from the arkouda project directory."
 
-VERSION=1.0.0
+VERSION=1.0.1
 IMAGE_NAME=almalinux-with-arkouda-deps
 REPO_NAME=ajpotts
 
