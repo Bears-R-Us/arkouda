@@ -14,8 +14,14 @@ import arkouda as ak
 def ndim(arr: Array) -> int:
     return arr.ndim
 
+# TODO: Arkouda has a different implementation of np.diff in the server, but
+# when used with np.gradient, it gives incorrect results. This is a temporary fix.
 @implements_numpy(np.diff)
 def diff(a: Array, n=1, axis=-1, prepend=None, append=None) -> Array:
+    """
+    Implementation of numpy.diff for Arkouda arrays.
+    """
+    # Implementation note: copied and modified from numpy
     if n == 0:
         return a
     if n < 0:
