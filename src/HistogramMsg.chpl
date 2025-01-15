@@ -102,10 +102,10 @@ module HistogramMsg
         proc histogramHelper(type t1, type t2) throws {
             var x = toSymEntry(xGenEnt,t1);
             var y = toSymEntry(yGenEnt,t2);            
-            var xMin = min reduce x.a;
-            var xMax = max reduce x.a;
-            var yMin = min reduce y.a;
-            var yMax = max reduce y.a;
+            var xMin = msgArgs.get("xMin").toScalar(t1);
+            var xMax = msgArgs.get("xMax").toScalar(t1);
+            var yMin = msgArgs.get("yMin").toScalar(t2);
+            var yMax = msgArgs.get("yMax").toScalar(t2);
             var xBinWidth:real = (xMax - xMin):real / xBins:real;
             var yBinWidth:real = (yMax - yMin):real / yBins:real;
             hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),

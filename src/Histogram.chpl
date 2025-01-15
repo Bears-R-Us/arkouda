@@ -61,6 +61,15 @@ module Histogram
         return hist;
     }
 
+    /* Converts (x,y) into a bin number. Returns -1 if (x,y) is an outsider. */
+    private inline proc valsToBin(xi, yi, xMin, xMax, yMin, yMax,
+                                  numXBins, numYBins, xBinWidth, yBinWidth) {
+        if xi < xMin || xi > xMax || yi < yMin || yi > yMax then return -1;
+        const xiBin = if xi == xMax then numXBins-1 else ((xi - xMin) / xBinWidth):int;
+        const yiBin = if yi == yMax then numYBins-1 else ((yi - yMin) / yBinWidth):int;
+        return (xiBin * numYBins) + yiBin;
+    }
+
     proc histogramGlobalAtomic(x: [?aD] ?etype1, y: [aD] ?etype2, xMin: etype1, xMax: etype1, yMin: etype2, yMax: etype2, numXBins: int, numYBins: int, xBinWidth: real, yBinWidth: real) throws {
         const totNumBins = numXBins * numYBins;
         var hD = makeDistDom(totNumBins);
@@ -68,14 +77,10 @@ module Histogram
 
         // count into atomic histogram
         forall (xi, yi) in zip(x, y) {
-            var xiBin = ((xi - xMin) / xBinWidth):int;
-            var yiBin = ((yi - yMin) / yBinWidth):int;
-            if xi == xMax {xiBin = numXBins-1;}
-            if yi == yMax {yiBin = numYBins-1;}
-            if xiBin < 0 || yiBin < 0 || (xiBin > (numXBins-1)) || (yiBin > (numYBins-1)) {
-                try! hgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),"OOB");
-            }
-            atomicHist[(xiBin * numYBins) + yiBin].add(1);
+            const bin = valsToBin(xi, yi, xMin, xMax, yMin, yMax,
+                                  numXBins, numYBins, xBinWidth, yBinWidth);
+            if bin < 0 then continue;
+            atomicHist[bin].add(1);
         }
 
         var hist = makeDistArray(totNumBins,real);
@@ -139,11 +144,10 @@ module Histogram
 
         // count into per-locale private atomic histogram
         forall (xi, yi) in zip(x, y) {
-            var xiBin = ((xi - xMin) / xBinWidth):int;
-            var yiBin = ((yi - yMin) / yBinWidth):int;
-            if xi == xMax {xiBin = numXBins-1;}
-            if yi == yMax {yiBin = numYBins-1;}
-            atomicHist[here.id][(xiBin * numYBins) + yiBin].add(1);
+            const bin = valsToBin(xi, yi, xMin, xMax, yMin, yMax,
+                                  numXBins, numYBins, xBinWidth, yBinWidth);
+            if bin < 0 then continue;
+            atomicHist[here.id][bin].add(1);
         }
 
         // +reduce across per-locale histograms to get counts
@@ -201,11 +205,10 @@ module Histogram
 
         // count into per-task/per-locale histogram and then reduce as tasks complete
         forall (xi, yi) in zip(x, y) with (+ reduce gHist) {
-            var xiBin = ((xi - xMin) / xBinWidth):int;
-            var yiBin = ((yi - yMin) / yBinWidth):int;
-            if xi == xMax {xiBin = numXBins-1;}
-            if yi == yMax {yiBin = numYBins-1;}
-            gHist[(xiBin * numYBins) + yiBin] += 1;
+            const bin = valsToBin(xi, yi, xMin, xMax, yMin, yMax,
+                                  numXBins, numYBins, xBinWidth, yBinWidth);
+            if bin < 0 then continue;
+            gHist[bin] += 1;
         }
 
         var hist = makeDistArray(totNumBins,real);
