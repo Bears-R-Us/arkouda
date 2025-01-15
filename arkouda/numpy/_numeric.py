@@ -1,6 +1,6 @@
 import json
 from enum import Enum
-from typing import TYPE_CHECKING, List, Sequence, Tuple, TypeVar, Union
+from typing import TYPE_CHECKING, List, Sequence, Tuple, TypeVar, Union, Optional
 from typing import cast as type_cast
 from typing import no_type_check
 
@@ -1836,7 +1836,8 @@ def histogram(pda: pdarray, bins: int_scalars = 10) -> Tuple[pdarray, pdarray]:
 # Typechecking removed due to circular dependencies with arrayview
 # @typechecked
 def histogram2d(
-    x: pdarray, y: pdarray, bins: Union[int_scalars, Sequence[int_scalars]] = 10
+    x: pdarray, y: pdarray, bins: Union[int_scalars, Sequence[int_scalars]] = 10,
+    range: Optional[Tuple[Tuple[numeric_scalars,numeric_scalars], Tuple[numeric_scalars,numeric_scalars]]] = None,
 ) -> Tuple[pdarray, pdarray, pdarray]:
     """
     Compute the bi-dimensional histogram of two data samples with evenly spaced bins
@@ -1854,6 +1855,11 @@ def histogram2d(
         If int, the number of bins for the two dimensions (nx=ny=bins).
         If [int, int], the number of bins in each dimension (nx, ny = bins).
         Defaults to 10
+
+    range : ((xMin, xMax), (yMin, yMax)), optional
+        The ranges of the values in x and y to count.
+        Values outside of these ranges are dropped.
+        By default, all values are counted.
 
     Returns
     -------
@@ -1909,11 +1915,28 @@ def histogram2d(
         if len(bins) != 2:
             raise ValueError("Sequences of bins must contain two elements (num_x_bins, num_y_bins)")
         x_bins, y_bins = bins
+    x_bins, y_bins = int(x_bins), int(y_bins)
     if x_bins < 1 or y_bins < 1:
         raise ValueError("bins must be 1 or greater")
-    x_bin_boundaries = linspace(x.min(), x.max(), x_bins + 1)
-    y_bin_boundaries = linspace(y.min(), y.max(), y_bins + 1)
-    repMsg = generic_msg(cmd="histogram2D", args={"x": x, "y": y, "xBins": x_bins, "yBins": y_bins})
+    # For an integer array, we need to ensure min/max are integers. Allow a 0.3 margin
+    # during conversion. Ex. given xMin..xMax = 0.3..2.7 count also the values 0 and 3,
+    # for xMin..xMax = 0.4..2.6, count only 1 and 2.
+    def conv(dtp, val, margin):
+        if isinstance(val, int) or np.issubdtype(dtp, np.floating): return val
+        val += margin
+        if margin < 0: return int(val+1) if val >= 0 else int(val)   # min: round up
+        else:          return int(val)   if val >= 0 else int(val-1) # max: round down
+    if range:
+        (xMin, xMax), (yMin, yMax) = range
+        xMin, xMax = conv(x.dtype, xMin, -.3), conv(x.dtype, xMax, .3)
+        yMin, yMax = conv(y.dtype, yMin, -.3), conv(y.dtype, yMax, .3)
+    else:
+        xMin, xMax, yMin, yMax = x.min(), x.max(), y.min(), y.max()
+
+    x_bin_boundaries = linspace(xMin, xMax, x_bins + 1)
+    y_bin_boundaries = linspace(yMin, yMax, y_bins + 1)
+    repMsg = generic_msg(cmd="histogram2D", args={"x": x, "y": y, "xBins": x_bins, "yBins": y_bins,
+                                                  "xMin": xMin, "xMax": xMax, "yMin": yMin, "yMax": yMax})
     return (
         create_pdarray(type_cast(str, repMsg)).reshape(x_bins, y_bins),
         x_bin_boundaries,

@@ -1,5 +1,6 @@
 # Makefile for Arkouda
 ARKOUDA_PROJECT_DIR := $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
+ARKOUDA_PROJECT_DIR := $(patsubst %/,%,$(ARKOUDA_PROJECT_DIR))
 
 PROJECT_NAME := arkouda
 ARKOUDA_SOURCE_DIR := $(ARKOUDA_PROJECT_DIR)/src
@@ -731,8 +732,6 @@ benchmark:
 	mkdir -p benchmark_v2/data
 	python3 -m pytest -c benchmark.ini --benchmark-autosave --benchmark-storage=file://benchmark_v2/.benchmarks --size=$(size_bm) --benchmark-json=$(out)
 	python3 benchmark_v2/reformat_benchmark_results.py --benchmark-data $(out)
-
-	
 
 version:
 	@echo $(VERSION);
