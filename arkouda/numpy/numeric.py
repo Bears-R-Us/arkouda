@@ -1772,8 +1772,27 @@ def where(
     return create_pdarray(type_cast(str, repMsg))
 
 
+# histogram helper
+def _pyrange(count):
+    """Simply makes a range(count). For use in histogram* functions
+    that, like in numpy, have a 'range' parameter."""
+    return range(count)
+
+
+# histogram helper, to avoid typechecker errors
+def _conv_dim(sampleDim, rangeDim):
+    if rangeDim:
+        return (rangeDim[0], rangeDim[1])
+    else:
+        return (sampleDim.min(), sampleDim.max())
+
+
 @typechecked
-def histogram(pda: pdarray, bins: int_scalars = 10) -> Tuple[pdarray, pdarray]:
+def histogram(
+    pda: pdarray,
+    bins: int_scalars = 10,
+    range: Optional[Tuple[numeric_scalars, numeric_scalars]] = None,
+) -> Tuple[pdarray, pdarray]:
     """
     Compute a histogram of evenly spaced bins over the range of an array.
 
@@ -1784,6 +1803,11 @@ def histogram(pda: pdarray, bins: int_scalars = 10) -> Tuple[pdarray, pdarray]:
 
     bins : int_scalars, default=10
         The number of equal-size bins to use (default: 10)
+
+    range : (minVal, maxVal), optional
+        The range of the values to count.
+        Values outside of this range are dropped.
+        By default, all values are counted.
 
     Returns
     -------
@@ -1807,6 +1831,7 @@ def histogram(pda: pdarray, bins: int_scalars = 10) -> Tuple[pdarray, pdarray]:
     Notes
     -----
     The bins are evenly spaced in the interval [pda.min(), pda.max()].
+    If range parameter is provided, the interval is [range[0], range[1]].
 
     Examples
     --------
@@ -1828,15 +1853,25 @@ def histogram(pda: pdarray, bins: int_scalars = 10) -> Tuple[pdarray, pdarray]:
     """
     if bins < 1:
         raise ValueError("bins must be 1 or greater")
-    b = linspace(pda.min(), pda.max(), bins + 1)
-    repMsg = generic_msg(cmd="histogram", args={"array": pda, "bins": bins})
+
+    minVal, maxVal = _conv_dim(pda, range)
+
+    b = linspace(minVal, maxVal, bins + 1)
+    repMsg = generic_msg(
+        cmd="histogram", args={"array": pda, "bins": bins, "minVal": minVal, "maxVal": maxVal}
+    )
     return create_pdarray(type_cast(str, repMsg)), b
 
 
 # Typechecking removed due to circular dependencies with arrayview
 # @typechecked
 def histogram2d(
-    x: pdarray, y: pdarray, bins: Union[int_scalars, Sequence[int_scalars]] = 10
+    x: pdarray,
+    y: pdarray,
+    bins: Union[int_scalars, Sequence[int_scalars]] = 10,
+    range: Optional[
+        Tuple[Tuple[numeric_scalars, numeric_scalars], Tuple[numeric_scalars, numeric_scalars]]
+    ] = None,
 ) -> Tuple[pdarray, pdarray, pdarray]:
     """
     Compute the bi-dimensional histogram of two data samples with evenly spaced bins
@@ -1854,6 +1889,11 @@ def histogram2d(
         If int, the number of bins for the two dimensions (nx=ny=bins).
         If [int, int], the number of bins in each dimension (nx, ny = bins).
         Defaults to 10
+
+    range : ((xMin, xMax), (yMin, yMax)), optional
+        The ranges of the values in x and y to count.
+        Values outside of these ranges are dropped.
+        By default, all values are counted.
 
     Returns
     -------
@@ -1887,6 +1927,8 @@ def histogram2d(
     -----
     The x bins are evenly spaced in the interval [x.min(), x.max()]
     and y bins are evenly spaced in the interval [y.min(), y.max()].
+    If range parameter is provided, the intervals are given
+    by range[0] for x and range[1] for y..
 
     Examples
     --------
@@ -1909,11 +1951,28 @@ def histogram2d(
         if len(bins) != 2:
             raise ValueError("Sequences of bins must contain two elements (num_x_bins, num_y_bins)")
         x_bins, y_bins = bins
+    x_bins, y_bins = int(x_bins), int(y_bins)
     if x_bins < 1 or y_bins < 1:
         raise ValueError("bins must be 1 or greater")
-    x_bin_boundaries = linspace(x.min(), x.max(), x_bins + 1)
-    y_bin_boundaries = linspace(y.min(), y.max(), y_bins + 1)
-    repMsg = generic_msg(cmd="histogram2D", args={"x": x, "y": y, "xBins": x_bins, "yBins": y_bins})
+
+    xMin, xMax = _conv_dim(x, range[0] if range else None)
+    yMin, yMax = _conv_dim(y, range[1] if range else None)
+
+    x_bin_boundaries = linspace(xMin, xMax, x_bins + 1)
+    y_bin_boundaries = linspace(yMin, yMax, y_bins + 1)
+    repMsg = generic_msg(
+        cmd="histogram2D",
+        args={
+            "x": x,
+            "y": y,
+            "xBins": x_bins,
+            "yBins": y_bins,
+            "xMin": xMin,
+            "xMax": xMax,
+            "yMin": yMin,
+            "yMax": yMax,
+        },
+    )
     return (
         create_pdarray(type_cast(str, repMsg)).reshape(x_bins, y_bins),
         x_bin_boundaries,
@@ -1922,7 +1981,9 @@ def histogram2d(
 
 
 def histogramdd(
-    sample: Sequence[pdarray], bins: Union[int_scalars, Sequence[int_scalars]] = 10
+    sample: Sequence[pdarray],
+    bins: Union[int_scalars, Sequence[int_scalars]] = 10,
+    range: Optional[Sequence[Optional[Tuple[numeric_scalars, numeric_scalars]]]] = None,
 ) -> Tuple[pdarray, Sequence[pdarray]]:
     """
     Compute the multidimensional histogram of data in sample with evenly spaced bins.
@@ -1937,6 +1998,11 @@ def histogramdd(
         If int, the number of bins for all dimensions (nx=ny=...=bins).
         If [int, int, ...], the number of bins in each dimension (nx, ny, ... = bins).
         Defaults to 10
+
+    range : Sequence[optional (minVal, maxVal)], optional
+        The ranges of the values to count for each array in sample.
+        Values outside of these ranges are dropped.
+        By default, all values are counted.
 
     Returns
     -------
@@ -1964,6 +2030,7 @@ def histogramdd(
     Notes
     -----
     The bins for each dimension, m, are evenly spaced in the interval [m.min(), m.max()]
+    or in the inverval determined by range[dimension], if provided.
 
     Examples
     --------
@@ -1996,17 +2063,26 @@ def histogramdd(
     if any(b < 1 for b in bins):
         raise ValueError("bins must be 1 or greater")
 
+    if not range:
+        range = [None for pda in sample]
+    elif len(range) != num_dims:
+        raise ValueError("The range sequence contains a different number of elements than the sample")
+
+    range_list = [_conv_dim(sample[i], range[i]) for i in _pyrange(num_dims)]
+
     bins = list(bins) if isinstance(bins, tuple) else bins
     sample = list(sample) if isinstance(sample, tuple) else sample
-    bin_boundaries = [linspace(a.min(), a.max(), b + 1) for a, b in zip(sample, bins)]
-    bins_pda = array(bins)[::-1]
-    dim_prod = (cumprod(bins_pda) // bins_pda)[::-1]
+    bin_boundaries = [linspace(r[0], r[1], b + 1) for r, b in zip(range_list, bins)]
+    d_curr, d_next = 1, 1
+    dim_prod = [(d_curr := d_next, d_next := d_curr * int(v))[0] for v in bins[::-1]][::-1]  # noqa: F841
     repMsg = generic_msg(
         cmd="histogramdD",
         args={
             "sample": sample,
             "num_dims": num_dims,
             "bins": bins,
+            "rangeMin": [r[0] for r in range_list],
+            "rangeMax": [r[1] for r in range_list],
             "dim_prod": dim_prod,
             "num_samples": sample[0].size,
         },
