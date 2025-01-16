@@ -918,3 +918,11 @@ class TestString:
         strings = self.get_strings(size, base_words)
 
         ak_assert_equal(strings.flatten(), strings)
+
+    def test_copy(self):
+        fixed_size = 100
+        a = ak.arange(fixed_size, dtype=ak.str_)
+        a_cpy = a.copy()
+
+        assert not a_cpy is a
+        ak_assert_equal(a, a_cpy)

@@ -8,7 +8,9 @@ import pandas as pd
 import pytest
 
 import arkouda as ak
-from arkouda.testing import assert_arkouda_array_equal, assert_equivalent
+from arkouda.testing import assert_arkouda_array_equal
+from arkouda.testing import assert_equal as ak_assert_equal
+from arkouda.testing import assert_equivalent
 
 INT_SCALARS = list(ak.dtypes.int_scalars.__args__)
 NUMERIC_SCALARS = list(ak.dtypes.numeric_scalars.__args__)
@@ -42,6 +44,15 @@ class TestPdarrayCreation:
             assert isinstance(pda, ak.pdarray if ak.dtype(dtype) != "str_" else ak.Strings)
             assert len(pda) == fixed_size
             assert dtype == pda.dtype
+
+    def test_array_creation_strings(self):
+        fixed_size = 100
+        pda = ak.array(ak.arange(fixed_size, dtype=ak.str_))
+        assert isinstance(pda, ak.Strings)
+        assert len(pda) == fixed_size
+
+        with pytest.raises(TypeError):
+            ak.array(ak.arange(fixed_size, dtype=ak.str_), dtype=ak.int64),
 
     @pytest.mark.skip_if_max_rank_less_than(3)
     @pytest.mark.parametrize("size", pytest.prob_size)
@@ -104,6 +115,19 @@ class TestPdarrayCreation:
 
         with pytest.raises(TypeError):
             ak.array(list(list(0)))
+
+    @pytest.mark.parametrize("dtype", [ak.int64, ak.float64, ak.bool_, ak.bigint])
+    def test_array_copy(self, dtype):
+
+        a = ak.arange(100, dtype=dtype)
+
+        b = ak.array(a, copy=True)
+        assert not a is b
+        ak_assert_equal(a, b)
+
+        c = ak.array(a, copy=False)
+        assert a is c
+        ak_assert_equal(a, c)
 
     @pytest.mark.skip_if_max_rank_less_than(2)
     def test_array_creation_transpose_bug_reproducer(self):

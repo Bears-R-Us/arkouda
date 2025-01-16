@@ -221,3 +221,21 @@ class TestPdarrayClass:
     def test_reductions_match_numpy_3D_TF(self, op, axis):
         pda = ak.array([True, True, False, True, True, True, True, True]).reshape((2, 2, 2))
         self.assert_reduction_ops_match(op, pda, axis=axis)
+
+    @pytest.mark.parametrize("dtype", DTYPES)
+    def test_copy(self, dtype):
+        fixed_size = 100
+        a = ak.arange(fixed_size, dtype=dtype)
+        a_cpy = a.copy()
+
+        assert not a_cpy is a
+        ak_assert_equal(a, a_cpy)
+
+    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.parametrize("dtype", DTYPES)
+    def test_copy(self, dtype):
+        a = ak.arange(1000, dtype=dtype).reshape((10, 10, 10))
+        a_cpy = a.copy()
+
+        assert not a_cpy is a
+        ak_assert_equal(a, a_cpy)

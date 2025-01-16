@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import builtins
 import json
-from typing import TYPE_CHECKING, Sequence, Tuple, Union, cast
+from typing import TYPE_CHECKING, Iterable, Sequence, Tuple, TypeVar, Union, cast
 from warnings import warn
 
+import numpy as np
 from typeguard import typechecked
 
-from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, get_config, get_mem_used
 from arkouda.client_dtypes import BitVector, BitVectorizer, IPv4
 from arkouda.groupbyclass import GroupBy, broadcast
@@ -24,12 +24,18 @@ from arkouda.pdarraycreation import arange
 from arkouda.pdarraysetops import unique
 from arkouda.segarray import SegArray
 from arkouda.sorting import coargsort
-from arkouda.strings import Strings
 from arkouda.timeclass import Datetime, Timedelta
 
 if TYPE_CHECKING:
     from arkouda.index import Index
     from arkouda.series import Series
+    from arkouda.strings import Strings
+    from arkouda.categorical import Categorical
+else:
+    Strings = TypeVar("Strings")
+    Series = TypeVar("Series")
+    Categorical = TypeVar("Categorical")
+    Index = TypeVar("Index")
 
 
 def identity(x):
@@ -172,7 +178,7 @@ def convert_if_categorical(values):
     """
     Convert a Categorical array to Strings for display
     """
-
+    from arkouda.categorical import Categorical
     if isinstance(values, Categorical):
         values = values.categories[values.codes]
     return values
@@ -192,6 +198,8 @@ def attach(name: str):
     from arkouda.index import Index, MultiIndex
     from arkouda.pdarrayclass import pdarray
     from arkouda.series import Series
+    from arkouda.categorical import Categorical
+    from arkouda.strings import Strings
 
     rep_msg = json.loads(cast(str, generic_msg(cmd="attach", args={"name": name})))
     rtn_obj = None
@@ -425,7 +433,7 @@ def convert_bytes(nbytes, unit="B"):
 
 
 def is_numeric(
-    arry: Union[pdarray, Strings, Categorical, "Series", "Index"]  # noqa: F821
+    arry: Union[pdarray, Strings, "Categorical", "Series", "Index"]  # noqa: F821
 ) -> builtins.bool:
     """
     Check if the dtype of the given array is numeric.
@@ -460,7 +468,7 @@ def is_numeric(
         return False
 
 
-def is_float(arry: Union[pdarray, Strings, Categorical, "Series", "Index"]):  # noqa: F821
+def is_float(arry: Union[pdarray, Strings, "Categorical", "Series", "Index"]):  # noqa: F821
     """
     Check if the dtype of the given array is float.
 
@@ -494,7 +502,7 @@ def is_float(arry: Union[pdarray, Strings, Categorical, "Series", "Index"]):  # 
         return False
 
 
-def is_int(arry: Union[pdarray, Strings, Categorical, "Series", "Index"]):  # noqa: F821
+def is_int(arry: Union[pdarray, Strings, "Categorical", "Series", "Index"]):  # noqa: F821
     """
     Check if the dtype of the given array is int.
 
@@ -529,9 +537,10 @@ def is_int(arry: Union[pdarray, Strings, Categorical, "Series", "Index"]):  # no
         return False
 
 
+@typechecked
 def map(
-    values: Union[pdarray, Strings, Categorical], mapping: Union[dict, "Series"]
-) -> Union[pdarray, Strings]:
+    values: Union[pdarray, "Strings", "Categorical"], mapping: Union[dict, "Series"]
+) -> Union[pdarray, "Strings"]:
     """
     Map values of an array according to an input mapping.
 
@@ -573,7 +582,9 @@ def map(
     import numpy as np
 
     from arkouda import Series, array, broadcast, full
+    from arkouda.categorical import Categorical
     from arkouda.pdarraysetops import in1d
+    from arkouda.strings import Strings
 
     keys = values
     gb = GroupBy(keys, dropna=False)
@@ -623,3 +634,24 @@ def _infer_shape_from_size(size):
         shape = full_size
         ndim = 1
     return shape, ndim, full_size
+
+
+@typechecked
+def copy(a: Union[pdarray, np.ndarray, Iterable, "Strings"]) -> Union[pdarray, "Strings"]:
+    """
+    Return an array copy of the given object.
+
+    Returns
+    -------
+    pdarray
+        Array interpretation of a.
+    """
+    from arkouda.strings import Strings
+
+    if isinstance(a, Strings):
+        cpy = a[:]
+        return cpy
+
+    from arkouda.pdarraycreation import array
+
+    return array(a, copy=True)
