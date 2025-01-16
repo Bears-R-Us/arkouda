@@ -1773,29 +1773,31 @@ def where(
 
 
 # histogram helper
-def _convForInt(dtp, minVal, maxVal):
+def _convToDtp(dtp, minVal, maxVal):
     """
-    When making a histogram of an integer array, we want the bounds
-    to be integral, too. If we got floating bounds, convert them
-    to integral, while allowing a 0.3 margin.
-    Ex. given minVal..maxVal = 0.3..2.7, count also the values 0 and 3.
-    Given minVal..maxVal = 0.4..2.6, count only 1 and 2.
+    Convert minVal and maxVal to dtp because Chapel's histogram code
+    expects min/max of the same type as array elements.
+
+    Given an integer array and a floating-point bound, allow the margin of 0.3
+    when converting the bound to an integer.
+    Ex. given minVal..maxVal = 0.4..2.6, count only 1 and 2.
+    Given minVal..maxVal = 0.2..2.8, count also the values 0 and 3.
     """
     def conv(dtp, val, margin):
         if isinstance(val, int) or np.issubdtype(dtp, np.floating):
-            return val # no need for conversion
+            return dtp.type(val) # no need for margin
         val += margin
-        if margin < 0:
-            return int(val+1) if val >= 0 else int(val)   # min: round up
-        else:
-            return int(val)   if val >= 0 else int(val-1) # max: round down
+        if margin < 0:  # min: round up
+            return dtp.type(val+1) if val >= 0 else dtp.type(val) 
+        else:           # max: round down
+            return dtp.type(val)   if val >= 0 else dtp.type(val-1)
 
     return conv(dtp, minVal, -.3), conv(dtp, maxVal, .3)
 
 # histogram helper
 def _pyrange(count):
-    """ Simply makes a range(count). For use in histogram* functions
-        that have a 'range' parameter, following numpy. """
+    """Simply makes a range(count). For use in histogram* functions
+       that, like in numpy, have a 'range' parameter."""
     return range(count)
 
 
@@ -1864,7 +1866,7 @@ def histogram(pda: pdarray, bins: int_scalars = 10,
         raise ValueError("bins must be 1 or greater")
 
     if range:
-        minVal, maxVal = _convForInt(pda.dtype, range[0], range[1])
+        minVal, maxVal = _convToDtp(pda.dtype, range[0], range[1])
     else:
         minVal, maxVal = pda.min(), pda.max()
 
@@ -1962,8 +1964,8 @@ def histogram2d(
 
     if range:
         (xMin, xMax), (yMin, yMax) = range
-        xMin, xMax = _convForInt(x.dtype, xMin, xMax)
-        yMin, yMax = _convForInt(y.dtype, yMin, yMax)
+        xMin, xMax = _convToDtp(x.dtype, xMin, xMax)
+        yMin, yMax = _convToDtp(y.dtype, yMin, yMax)
     else:
         xMin, xMax, yMin, yMax = x.min(), x.max(), y.min(), y.max()
 
@@ -2064,7 +2066,7 @@ def histogramdd(
     elif len(range) != num_dims:
         raise ValueError("The range sequence contains a different number of elements than the sample")
     def convDim(sampleDim, rangeDim):
-        if rangeDim: return _convForInt(sampleDim.dtype, rangeDim[0], rangeDim[1])
+        if rangeDim: return _convToDtp(sampleDim.dtype, rangeDim[0], rangeDim[1])
         else:        return (sampleDim.min(), sampleDim.max())
     range = [convDim(sample[i], range[i]) for i in _pyrange(num_dims)]
 
