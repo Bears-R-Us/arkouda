@@ -38,8 +38,8 @@ module HistogramMsg
         // helper nested procedure
         proc histogramHelper(type t) throws {
           var e = toSymEntry(gEnt,t);
-          var aMin = min reduce e.a;
-          var aMax = max reduce e.a;
+          var aMin = msgArgs.get("minVal").toScalar(t);
+          var aMax = msgArgs.get("maxVal").toScalar(t);
           var binWidth:real = (aMax - aMin):real / bins:real;
           hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                            "binWidth %r".format(binWidth));
@@ -177,6 +177,8 @@ module HistogramMsg
         // helper nested procedure
         proc histogramHelper(type t) throws {
             var indices = makeDistArray(numSamples, int);
+            var rangeMin = msgArgs.get("rangeMin").toScalarArray(t, numDims);
+            var rangeMax = msgArgs.get("rangeMax").toScalarArray(t, numDims);
             // 3 different implementations depending on size of histogram
             // this is due to the time memory tradeoff between creating one/few atomic arrays
             // or many non-atomic arrays and reducing them
@@ -190,7 +192,7 @@ module HistogramMsg
                 // each task gets it's own copy of the histogram and they're reduced
                 hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                             "%? <= %?".format(bins,sBound));
-                for (gEnt, stride, bin) in zip(gEnts, dimProd.a, bins) {
+                for (gEnt, stride, bin, aMin, aMax) in zip(gEnts, dimProd.a, bins, rangeMin, rangeMax) {
                     var e = toSymEntry(gEnt,t);
                     var aMin = min reduce e.a;
                     var aMax = max reduce e.a;
