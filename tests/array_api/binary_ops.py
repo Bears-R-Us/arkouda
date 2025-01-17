@@ -15,7 +15,7 @@ SCALAR_TYPES.remove("bool_")
 
 
 class TestArrayCreation:
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("op", ["+", "-", "*", "/"])
     @pytest.mark.parametrize("dtype", SCALAR_TYPES)
     def test_binops(self, op, dtype):
