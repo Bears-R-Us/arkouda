@@ -162,7 +162,7 @@ module HistogramMsg
         const binsStrs = msgArgs.get("bins").getList(numDims);
         const bins = try! [b in binsStrs] b:int;
         const names = msgArgs.get("sample").getList(numDims);
-        const dimProdName = msgArgs.getValueOf("dim_prod");
+        const dimProd = msgArgs.get("dim_prod").toScalarArray(int, numDims);
         const totNumBins = * reduce bins;
         
         // get next symbol name
@@ -171,8 +171,6 @@ module HistogramMsg
                       "cmd: %s name: %? bins: %? rname: %s".format(cmd, names, bins, rname));
 
         var gEnts = try! [name in names] getGenericTypedArrayEntry(name, st);
-        var dimProdGenEnt = getGenericTypedArrayEntry(dimProdName, st);
-        var dimProd = toSymEntry(dimProdGenEnt,int);
 
         // helper nested procedure
         proc histogramHelper(type t) throws {

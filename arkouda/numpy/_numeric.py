@@ -2073,8 +2073,8 @@ def histogramdd(
     bins = list(bins) if isinstance(bins, tuple) else bins
     sample = list(sample) if isinstance(sample, tuple) else sample
     bin_boundaries = [linspace(r[0], r[1], b + 1) for r, b in zip(range, bins)]
-    bins_pda = array(bins)[::-1]
-    dim_prod = (cumprod(bins_pda) // bins_pda)[::-1]
+    d_curr, d_next = 1, 1
+    dim_prod = [(d_curr:=d_next,d_next:=d_curr*int(v))[0] for v in bins[::-1]][::-1]
     repMsg = generic_msg(
         cmd="histogramdD",
         args={
