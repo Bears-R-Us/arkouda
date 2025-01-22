@@ -6,6 +6,7 @@ import arkouda as ak
 OPS = ("cumsum", "cumprod")
 TYPES = ("int64", "float64")
 
+
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Scan")
 @pytest.mark.parametrize("op", OPS)
@@ -35,6 +36,7 @@ def bench_ak_scan(benchmark, op, dtype):
             (nbytes / benchmark.stats["mean"]) / 2**30
         )
 
+
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Numpy_Scan")
 @pytest.mark.parametrize("op", OPS)
@@ -56,9 +58,9 @@ def bench_np_scan(benchmark, op, dtype):
         benchmark.pedantic(fxn, args=[a], rounds=pytest.trials)
 
         nbytes = a.size * a.itemsize * 2
-        benchmark.extra_info[
-            "description"
-        ] = "Measures performance of numpy cumsum and cumprod for comparison."
+        benchmark.extra_info["description"] = (
+            "Measures performance of numpy cumsum and cumprod for comparison."
+        )
         benchmark.extra_info["problem_size"] = pytest.prob_size
         benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
             (nbytes / benchmark.stats["mean"]) / 2**30

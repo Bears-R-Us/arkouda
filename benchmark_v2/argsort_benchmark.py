@@ -5,6 +5,7 @@ import arkouda as ak
 
 TYPES = ("int64", "uint64", "float64", "str")
 
+
 @pytest.mark.benchmark(group="arkouda_argsort")
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.parametrize("dtype", TYPES)
@@ -39,6 +40,7 @@ def bench_argsort(benchmark, dtype):
         benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
             (nbytes / benchmark.stats["mean"]) / 2**30
         )
+
 
 @pytest.mark.benchmark(group="numpy_argsort")
 @pytest.mark.skip_numpy(False)

@@ -1,6 +1,7 @@
-import arkouda as ak
 import numpy as np
 import pytest
+
+import arkouda as ak
 from arkouda.sorting import SortingAlgorithm
 
 TYPES = ("int64", "float64")
@@ -20,6 +21,7 @@ def do_argsort(data, algo):
         return ak.argsort(data, algo)
     else:
         return ak.coargsort(data, algo)
+
 
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Sort_Cases")
@@ -68,6 +70,7 @@ def _generate_power_law_data():
 
     return ((ub ** (a + 1) - 1) * y + 1) ** (1 / (a + 1))
 
+
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Sort_Cases")
 @pytest.mark.parametrize("algo", SortingAlgorithm)
@@ -89,6 +92,7 @@ def bench_power_law(benchmark, algo, dtype):
         benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
             (nbytes / benchmark.stats["mean"]) / 2**30
         )
+
 
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Sort_Cases")
@@ -130,6 +134,7 @@ def bench_rmat(benchmark, algo):
         (nbytes / benchmark.stats["mean"]) / 2**30
     )
 
+
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Sort_Cases")
 @pytest.mark.parametrize("algo", SortingAlgorithm)
@@ -162,6 +167,7 @@ def bench_block_sorted(benchmark, algo, mode):
         (nbytes / benchmark.stats["mean"]) / 2**30
     )
 
+
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Sort_Cases")
 @pytest.mark.parametrize("algo", SortingAlgorithm)
@@ -185,6 +191,7 @@ def bench_refinement(benchmark, algo):
     benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
         (nbytes / benchmark.stats["mean"]) / 2**30
     )
+
 
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Sort_Cases")
@@ -213,6 +220,7 @@ def bench_time_like(benchmark, algo):
     benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
         (nbytes / benchmark.stats["mean"]) / 2**30
     )
+
 
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Sort_Cases")

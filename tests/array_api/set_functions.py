@@ -1,5 +1,4 @@
 import numpy as np
-import pytest
 
 import arkouda as ak
 import arkouda.array_api as xp
@@ -35,7 +34,10 @@ class TestSetFunction:
             uv = xp.unique_values(r)
 
             (nuv, nuidx, nuinv, nuc) = np.unique(
-                r.to_ndarray(), return_index=True, return_inverse=True, return_counts=True
+                r.to_ndarray(),
+                return_index=True,
+                return_inverse=True,
+                return_counts=True,
             )
 
             assert ua.values.tolist() == nuv.tolist()
