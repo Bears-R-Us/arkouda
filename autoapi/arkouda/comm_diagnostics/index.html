@@ -365,82 +365,85 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_amo" title="arkouda.comm_diagnostics.get_comm_diagnostics_amo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_amo</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics" title="arkouda.comm_diagnostics.get_comm_diagnostics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics</span></code></a>(→ arkouda.dataframe.DataFrame)</p></td>
+<td><p>Return a DataFrame with the communication diagnostics statistics.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_amo" title="arkouda.comm_diagnostics.get_comm_diagnostics_amo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_amo</span></code></a>()</p></td>
 <td><p>atomic memory operations</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_cache_get_hits" title="arkouda.comm_diagnostics.get_comm_diagnostics_cache_get_hits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_cache_get_hits</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_cache_get_hits" title="arkouda.comm_diagnostics.get_comm_diagnostics_cache_get_hits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_cache_get_hits</span></code></a>()</p></td>
 <td><p>GETs that were handled by the cache.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_cache_get_misses" title="arkouda.comm_diagnostics.get_comm_diagnostics_cache_get_misses"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_cache_get_misses</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_cache_get_misses" title="arkouda.comm_diagnostics.get_comm_diagnostics_cache_get_misses"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_cache_get_misses</span></code></a>()</p></td>
 <td><p>GETs that were not handled by the cache</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_cache_num_page_readaheads" title="arkouda.comm_diagnostics.get_comm_diagnostics_cache_num_page_readaheads"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_cache_num_page_readaheads</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_cache_num_page_readaheads" title="arkouda.comm_diagnostics.get_comm_diagnostics_cache_num_page_readaheads"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_cache_num_page_readaheads</span></code></a>()</p></td>
 <td><p>Number of readaheads issued to the remote cache at the granularity of cache pages.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_cache_num_prefetches" title="arkouda.comm_diagnostics.get_comm_diagnostics_cache_num_prefetches"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_cache_num_prefetches</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_cache_num_prefetches" title="arkouda.comm_diagnostics.get_comm_diagnostics_cache_num_prefetches"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_cache_num_prefetches</span></code></a>()</p></td>
 <td><p>Number of prefetches issued to the remote cache at the granularity of cache pages.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_cache_prefetch_unused" title="arkouda.comm_diagnostics.get_comm_diagnostics_cache_prefetch_unused"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_cache_prefetch_unused</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_cache_prefetch_unused" title="arkouda.comm_diagnostics.get_comm_diagnostics_cache_prefetch_unused"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_cache_prefetch_unused</span></code></a>()</p></td>
 <td><p>Number of cache pages that were prefetched but evicted from the cache before being accessed</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_cache_prefetch_waited" title="arkouda.comm_diagnostics.get_comm_diagnostics_cache_prefetch_waited"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_cache_prefetch_waited</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_cache_prefetch_waited" title="arkouda.comm_diagnostics.get_comm_diagnostics_cache_prefetch_waited"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_cache_prefetch_waited</span></code></a>()</p></td>
 <td><p>Number of cache pages that were prefetched but did not arrive in the cache before being accessed</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_cache_put_hits" title="arkouda.comm_diagnostics.get_comm_diagnostics_cache_put_hits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_cache_put_hits</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_cache_put_hits" title="arkouda.comm_diagnostics.get_comm_diagnostics_cache_put_hits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_cache_put_hits</span></code></a>()</p></td>
 <td><p>PUTs that were stored in cache pages that already existed.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_cache_put_misses" title="arkouda.comm_diagnostics.get_comm_diagnostics_cache_put_misses"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_cache_put_misses</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_cache_put_misses" title="arkouda.comm_diagnostics.get_comm_diagnostics_cache_put_misses"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_cache_put_misses</span></code></a>()</p></td>
 <td><p>PUTs that required the cache to create a new page to store them.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_cache_readahead_unused" title="arkouda.comm_diagnostics.get_comm_diagnostics_cache_readahead_unused"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_cache_readahead_unused</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_cache_readahead_unused" title="arkouda.comm_diagnostics.get_comm_diagnostics_cache_readahead_unused"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_cache_readahead_unused</span></code></a>()</p></td>
 <td><p>Number of cache pages that were read ahead but evicted from the cache before being accessed</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_cache_readahead_waited" title="arkouda.comm_diagnostics.get_comm_diagnostics_cache_readahead_waited"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_cache_readahead_waited</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_cache_readahead_waited" title="arkouda.comm_diagnostics.get_comm_diagnostics_cache_readahead_waited"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_cache_readahead_waited</span></code></a>()</p></td>
 <td><p>Number of cache pages that were read ahead but did not arrive in the cache before being accessed</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_execute_on" title="arkouda.comm_diagnostics.get_comm_diagnostics_execute_on"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_execute_on</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_execute_on" title="arkouda.comm_diagnostics.get_comm_diagnostics_execute_on"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_execute_on</span></code></a>()</p></td>
 <td><p>blocking remote executions, in which initiator waits for completion</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_execute_on_fast" title="arkouda.comm_diagnostics.get_comm_diagnostics_execute_on_fast"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_execute_on_fast</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_execute_on_fast" title="arkouda.comm_diagnostics.get_comm_diagnostics_execute_on_fast"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_execute_on_fast</span></code></a>()</p></td>
 <td><p>blocking remote executions performed by the target locale’s Active Message handler</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_execute_on_nb" title="arkouda.comm_diagnostics.get_comm_diagnostics_execute_on_nb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_execute_on_nb</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_execute_on_nb" title="arkouda.comm_diagnostics.get_comm_diagnostics_execute_on_nb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_execute_on_nb</span></code></a>()</p></td>
 <td><p>non-blocking remote executions</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_get" title="arkouda.comm_diagnostics.get_comm_diagnostics_get"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_get</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_get" title="arkouda.comm_diagnostics.get_comm_diagnostics_get"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_get</span></code></a>()</p></td>
 <td><p>blocking GETs, in which initiator waits for completion</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_get_nb" title="arkouda.comm_diagnostics.get_comm_diagnostics_get_nb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_get_nb</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_get_nb" title="arkouda.comm_diagnostics.get_comm_diagnostics_get_nb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_get_nb</span></code></a>()</p></td>
 <td><p>non-blocking GETs</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_put" title="arkouda.comm_diagnostics.get_comm_diagnostics_put"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_put</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_put" title="arkouda.comm_diagnostics.get_comm_diagnostics_put"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_put</span></code></a>()</p></td>
 <td><p>blocking PUTs, in which initiator waits for completion</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_put_nb" title="arkouda.comm_diagnostics.get_comm_diagnostics_put_nb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_put_nb</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_put_nb" title="arkouda.comm_diagnostics.get_comm_diagnostics_put_nb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_put_nb</span></code></a>()</p></td>
 <td><p>non-blocking PUTs</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_try_nb" title="arkouda.comm_diagnostics.get_comm_diagnostics_try_nb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_try_nb</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_try_nb" title="arkouda.comm_diagnostics.get_comm_diagnostics_try_nb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_try_nb</span></code></a>()</p></td>
 <td><p>tests for non-blocking GET/PUT completions</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_wait_nb" title="arkouda.comm_diagnostics.get_comm_diagnostics_wait_nb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_wait_nb</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_wait_nb" title="arkouda.comm_diagnostics.get_comm_diagnostics_wait_nb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_wait_nb</span></code></a>()</p></td>
 <td><p>blocking waits for non-blocking GET/PUT completions</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.print_comm_diagnostics_table" title="arkouda.comm_diagnostics.print_comm_diagnostics_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_comm_diagnostics_table</span></code></a>([print_empty_columns])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.print_comm_diagnostics_table" title="arkouda.comm_diagnostics.print_comm_diagnostics_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_comm_diagnostics_table</span></code></a>([print_empty_columns])</p></td>
 <td><p>Print the current communication counts in a markdown table</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.reset_comm_diagnostics" title="arkouda.comm_diagnostics.reset_comm_diagnostics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_comm_diagnostics</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.reset_comm_diagnostics" title="arkouda.comm_diagnostics.reset_comm_diagnostics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_comm_diagnostics</span></code></a>()</p></td>
 <td><p>Reset aggregate communication counts across the whole program.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.start_comm_diagnostics" title="arkouda.comm_diagnostics.start_comm_diagnostics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start_comm_diagnostics</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.start_comm_diagnostics" title="arkouda.comm_diagnostics.start_comm_diagnostics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start_comm_diagnostics</span></code></a>()</p></td>
 <td><p>Start counting communication operations across the whole program.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.start_verbose_comm" title="arkouda.comm_diagnostics.start_verbose_comm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start_verbose_comm</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.start_verbose_comm" title="arkouda.comm_diagnostics.start_verbose_comm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start_verbose_comm</span></code></a>()</p></td>
 <td><p>Start on-the-fly reporting of communication initiated on any locale.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.stop_comm_diagnostics" title="arkouda.comm_diagnostics.stop_comm_diagnostics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stop_comm_diagnostics</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.stop_comm_diagnostics" title="arkouda.comm_diagnostics.stop_comm_diagnostics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stop_comm_diagnostics</span></code></a>()</p></td>
 <td><p>Stop counting communication operations across the whole program.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.stop_verbose_comm" title="arkouda.comm_diagnostics.stop_verbose_comm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stop_verbose_comm</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.stop_verbose_comm" title="arkouda.comm_diagnostics.stop_verbose_comm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stop_verbose_comm</span></code></a>()</p></td>
 <td><p>Stop on-the-fly reporting of communication initiated on any locale.</p></td>
 </tr>
 </tbody>
@@ -449,6 +452,17 @@
 </section>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.comm_diagnostics.get_comm_diagnostics">
+<span class="sig-prename descclassname"><span class="pre">arkouda.comm_diagnostics.</span></span><span class="sig-name descname"><span class="pre">get_comm_diagnostics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../dataframe/index.html#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame"><span class="pre">arkouda.dataframe.DataFrame</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/comm_diagnostics.html#get_comm_diagnostics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.comm_diagnostics.get_comm_diagnostics" title="Link to this definition">¶</a></dt>
+<dd><p>Return a DataFrame with the communication diagnostics statistics.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../dataframe/index.html#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame">DataFrame</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.comm_diagnostics.get_comm_diagnostics_amo">
 <span class="sig-prename descclassname"><span class="pre">arkouda.comm_diagnostics.</span></span><span class="sig-name descname"><span class="pre">get_comm_diagnostics_amo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/comm_diagnostics.html#get_comm_diagnostics_amo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.comm_diagnostics.get_comm_diagnostics_amo" title="Link to this definition">¶</a></dt>
@@ -916,6 +930,7 @@ though an argument can be used to reverse that behavior.</p>
 <li><a class="reference internal" href="#">arkouda.comm_diagnostics</a><ul>
 <li><a class="reference internal" href="#functions">Functions</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
+<li><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics"><code class="docutils literal notranslate"><span class="pre">get_comm_diagnostics()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_amo"><code class="docutils literal notranslate"><span class="pre">get_comm_diagnostics_amo()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_cache_get_hits"><code class="docutils literal notranslate"><span class="pre">get_comm_diagnostics_cache_get_hits()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_cache_get_misses"><code class="docutils literal notranslate"><span class="pre">get_comm_diagnostics_cache_get_misses()</span></code></a></li>

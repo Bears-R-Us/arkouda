@@ -356,6 +356,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_pdarray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.dataframe</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrame</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;start_comm_diagnostics&quot;</span><span class="p">,</span>
@@ -384,6 +385,7 @@
     <span class="s2">&quot;get_comm_diagnostics_cache_readahead_unused&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_comm_diagnostics_cache_readahead_waited&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_comm_diagnostics_wait_nb&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;get_comm_diagnostics&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -466,10 +468,19 @@
 <span class="sd">    str</span>
 <span class="sd">        Completion message.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="nb">sum</span> <span class="k">as</span> <span class="n">ak_sum</span>
+
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;printCommDiagnosticsTable&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;printEmptyCols&quot;</span><span class="p">:</span> <span class="n">print_empty_columns</span><span class="p">},</span>
     <span class="p">)</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">get_comm_diagnostics</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">print_empty_columns</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">to_markdown</span><span class="p">())</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">[[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">ak_sum</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">])</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">to_markdown</span><span class="p">())</span>
+
     <span class="k">return</span> <span class="n">typecast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">)</span></div>
 
 
@@ -936,6 +947,43 @@
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">typecast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="get_comm_diagnostics">
+<a class="viewcode-back" href="../../autoapi/arkouda/comm_diagnostics/index.html#arkouda.comm_diagnostics.get_comm_diagnostics">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_comm_diagnostics</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a DataFrame with the communication diagnostics statistics.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">DataFrame</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;put&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_put</span><span class="p">(),</span>
+            <span class="s2">&quot;get&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_get</span><span class="p">(),</span>
+            <span class="s2">&quot;put_nb&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_put_nb</span><span class="p">(),</span>
+            <span class="s2">&quot;get_nb&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_get_nb</span><span class="p">(),</span>
+            <span class="s2">&quot;try_nb&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_try_nb</span><span class="p">(),</span>
+            <span class="s2">&quot;amo&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_amo</span><span class="p">(),</span>
+            <span class="s2">&quot;execute_on&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_execute_on</span><span class="p">(),</span>
+            <span class="s2">&quot;execute_on_fast&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_execute_on_fast</span><span class="p">(),</span>
+            <span class="s2">&quot;execute_on_nb&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_execute_on_nb</span><span class="p">(),</span>
+            <span class="s2">&quot;cache_get_hits&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_cache_get_hits</span><span class="p">(),</span>
+            <span class="s2">&quot;cache_get_misses&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_cache_get_misses</span><span class="p">(),</span>
+            <span class="s2">&quot;cache_put_hits&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_cache_put_hits</span><span class="p">(),</span>
+            <span class="s2">&quot;cache_put_misses&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_cache_put_misses</span><span class="p">(),</span>
+            <span class="s2">&quot;cache_num_prefetches&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_cache_num_prefetches</span><span class="p">(),</span>
+            <span class="s2">&quot;cache_num_page_readaheads&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_cache_num_page_readaheads</span><span class="p">(),</span>
+            <span class="s2">&quot;cache_prefetch_unused&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_cache_prefetch_unused</span><span class="p">(),</span>
+            <span class="s2">&quot;cache_prefetch_waited&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_cache_prefetch_waited</span><span class="p">(),</span>
+            <span class="s2">&quot;cache_readahead_unused&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_cache_readahead_unused</span><span class="p">(),</span>
+            <span class="s2">&quot;cache_readahead_waited&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_cache_readahead_waited</span><span class="p">(),</span>
+            <span class="s2">&quot;wait_nb&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_wait_nb</span><span class="p">(),</span>
+        <span class="p">}</span>
+    <span class="p">)</span></div>
 
 </pre></div>
         </article>

@@ -9,6 +9,7 @@ Functions
 
 .. autoapisummary::
 
+   arkouda.comm_diagnostics.get_comm_diagnostics
    arkouda.comm_diagnostics.get_comm_diagnostics_amo
    arkouda.comm_diagnostics.get_comm_diagnostics_cache_get_hits
    arkouda.comm_diagnostics.get_comm_diagnostics_cache_get_misses
@@ -39,6 +40,13 @@ Functions
 
 Module Contents
 ---------------
+
+.. py:function:: get_comm_diagnostics() -> arkouda.dataframe.DataFrame
+
+   Return a DataFrame with the communication diagnostics statistics.
+
+   :rtype: DataFrame
+
 
 .. py:function:: get_comm_diagnostics_amo()
 
