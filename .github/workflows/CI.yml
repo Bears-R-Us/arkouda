@@ -57,7 +57,7 @@ jobs:
           python3 -m pip install -e .[dev]
       - name: Arkouda flake8
         run: |
-          flake8 arkouda          
+          flake8   
 
   arkouda_python_portability:
     runs-on: ubuntu-20.04

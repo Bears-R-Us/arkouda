@@ -43,7 +43,9 @@ class TestCategorical:
         ]
         cls.non_unique_cat = ak.Categorical(ak.array(cls.non_unique_strs))
 
-    def create_basic_categorical(self, prefix: str = "string", size: int = 10) -> ak.Categorical:
+    def create_basic_categorical(
+        self, prefix: str = "string", size: int = 10
+    ) -> ak.Categorical:
         return ak.Categorical(ak.array([f"{prefix} {i}" for i in range(size)]))
 
     def create_randomized_categorical(self) -> ak.Categorical:
@@ -69,7 +71,9 @@ class TestCategorical:
         cat = self.create_basic_categorical(prefix, size)
 
         assert list(range(size)) == cat.codes.to_list() == cat.segments.to_list()
-        assert ([f"{prefix} {i}" for i in range(size)] + ["N/A"]) == cat.categories.to_list()
+        assert (
+            [f"{prefix} {i}" for i in range(size)] + ["N/A"]
+        ) == cat.categories.to_list()
         assert size == cat.size
         assert "Categorical" == cat.objType
 
@@ -114,7 +118,9 @@ class TestCategorical:
         assert np.array_equal(pd_cat.codes.astype("int64"), ak_cat.codes.to_ndarray())
 
         filter = ak_cat.categories != "N/A"
-        assert np.array_equal(pd_cat.categories.values, ak_cat.categories[filter].to_ndarray())
+        assert np.array_equal(
+            pd_cat.categories.values, ak_cat.categories[filter].to_ndarray()
+        )
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_creation_from_categorical(self, size):
@@ -302,7 +308,10 @@ class TestCategorical:
         # CI uses 2 locales, so try with length-1 arrays
         a = ak.Categorical(ak.array(["a"]))
         b = ak.Categorical(ak.array(["b"]))
-        assert ak.concatenate((a, b), ordered=False).to_list() == ak.array(["a", "b"]).to_list()
+        assert (
+            ak.concatenate((a, b), ordered=False).to_list()
+            == ak.array(["a", "b"]).to_list()
+        )
 
     def test_save_and_load_categorical(self, df_test_base_tmp):
         """
@@ -324,11 +333,13 @@ class TestCategorical:
 
             f = h5py.File(tmp_dirname + "/cat-save-test_LOCALE0000", mode="r")
             keys = list(f.keys())
-            if io.ARKOUDA_HDF5_FILE_METADATA_GROUP in keys:  # Ignore the metadata group if it exists
+            if (
+                io.ARKOUDA_HDF5_FILE_METADATA_GROUP in keys
+            ):  # Ignore the metadata group if it exists
                 keys.remove(io.ARKOUDA_HDF5_FILE_METADATA_GROUP)
             assert len(keys) == 1, f"Expected 1 key, {dset_name}"
             assert [dset_name] == keys
-            d = f[dset_name]
+            d = f[dset_name]  # noqa: F841
             f.close()
 
             # Now try to read them back with load_all
@@ -380,10 +391,14 @@ class TestCategorical:
             cat.to_hdf(f"{tmp_dirname}/cat-save-test", dataset=dset_name)
 
             dset_name2 = "to_replace"
-            cat.to_hdf(f"{tmp_dirname}/cat-save-test", dataset=dset_name2, mode="append")
+            cat.to_hdf(
+                f"{tmp_dirname}/cat-save-test", dataset=dset_name2, mode="append"
+            )
 
             dset_name3 = "cat_array2"
-            cat.to_hdf(f"{tmp_dirname}/cat-save-test", dataset=dset_name3, mode="append")
+            cat.to_hdf(
+                f"{tmp_dirname}/cat-save-test", dataset=dset_name3, mode="append"
+            )
 
             replace_cat = self.create_basic_categorical(size=23)
             replace_cat.update_hdf(f"{tmp_dirname}/cat-save-test", dataset=dset_name2)
@@ -452,7 +467,7 @@ class TestCategorical:
         assert len(ak.list_symbol_table()) > 0
 
         # set to none and validate no entries in symbol table
-        cat = None
+        cat = None  # noqa: F841
         assert len(ak.list_symbol_table()), 0
 
     def test_sort(self):
@@ -473,5 +488,7 @@ class TestCategorical:
         )
 
         assert np.array_equal(pd_cat.to_numpy(), expected_cat.to_numpy())
-        assert np.array_equal(pd_cat.codes.astype("int64"), expected_cat.codes.astype("int64"))
+        assert np.array_equal(
+            pd_cat.codes.astype("int64"), expected_cat.codes.astype("int64")
+        )
         assert np.array_equal(pd_cat.categories.values, expected_cat.categories.values)

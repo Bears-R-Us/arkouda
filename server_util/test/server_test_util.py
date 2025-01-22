@@ -20,6 +20,7 @@ import os
 import socket
 import subprocess
 import time
+from collections import namedtuple
 from enum import Enum
 
 
@@ -32,8 +33,6 @@ class TestRunningMode(Enum):
     CLASS_SERVER = "CLASS_SERVER"
     GLOBAL_SERVER = "GLOBAL_SERVER"
 
-
-from collections import namedtuple
 
 util_dir = os.path.dirname(os.path.realpath(__file__))
 
@@ -123,7 +122,7 @@ def read_server_and_port_from_file(server_connection_info):
                 if hostname == socket.gethostname():
                     hostname = "localhost"
                 return (hostname, port, connect_url)
-        except (ValueError, FileNotFoundError) as e:
+        except (ValueError, FileNotFoundError):
             time.sleep(1)
             continue
 
@@ -174,7 +173,7 @@ def kill_server(server_process):
         try:
             logging.info("Attempting clean server shutdown")
             stop_arkouda_server()
-        except ValueError as e:
+        except ValueError:
             pass
 
         if server_process.poll() is None:
@@ -189,9 +188,7 @@ def get_server_launch_cmd(numlocales):
     import re
 
     # get the srun command for 'arkouda_server_real'
-    p = subprocess.Popen(
-        ["./arkouda_server", f"-nl{numlocales}", "--dry-run"], stdout=subprocess.PIPE
-    )
+    p = subprocess.Popen(["./arkouda_server", f"-nl{numlocales}", "--dry-run"], stdout=subprocess.PIPE)
     srun_cmd, err = p.communicate()
     srun_cmd = srun_cmd.decode()
 
@@ -249,7 +246,9 @@ def start_arkouda_server(
         raw_server_cmd, env, _ = get_server_launch_cmd(numlocales)
         raw_server_cmd = raw_server_cmd.strip().strip().split(" ")
     else:
-        raw_server_cmd = [get_arkouda_server(),]
+        raw_server_cmd = [
+            get_arkouda_server(),
+        ]
         env = None
 
     cmd = raw_server_cmd + [
@@ -286,7 +285,7 @@ def stop_arkouda_server():
     try:
         run_client(os.path.join(util_dir, "shutdown.py"), timeout=60)
         server_process.wait(5)
-    except subprocess.TimeoutExpired as e:
+    except subprocess.TimeoutExpired:
         server_process.kill()
 
 
@@ -341,7 +340,7 @@ def run_client_live(client, client_args=None, timeout=get_client_timeout()):
     try:
         subprocess.check_call(cmd, encoding="utf-8", timeout=timeout)
         return 0
-    except subprocess.TimeoutExpired as e:
+    except subprocess.TimeoutExpired:
         return 1
     except subprocess.CalledProcessError as e:
         return e.returncode

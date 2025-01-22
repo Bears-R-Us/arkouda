@@ -681,7 +681,12 @@ class TestSetOps:
         s = ak.Series(ak.array([1, 2, 3]), index=ak.array([1, 2, np.nan]))
         assert ak.indexof1d(ak.array([np.nan]), s.index.values).to_list() == [2]
         rng = np.random.default_rng()
-        seeds = [rng.choice(2**63), rng.choice(2**63), rng.choice(2**63), rng.choice(2**63)]
+        seeds = [
+            rng.choice(2**63),
+            rng.choice(2**63),
+            rng.choice(2**63),
+            rng.choice(2**63),
+        ]
         print("seeds: \n", seeds)
 
         def are_pdarrays_equal(pda1, pda2):
@@ -706,7 +711,8 @@ class TestSetOps:
                 idx_of_first_in_second = ak.indexof1d(arr1, arr2)
 
                 # search space not guaranteed to be unique since select_from could have duplicates
-                # we will only match find with remove_missing when there's only one occurrence in the search space
+                # we will only match find with remove_missing
+                # when there's only one occurrence in the search space
                 all_unique = ak.unique(arr2).size == arr2.size
                 if all_unique:
                     # ensure we match find

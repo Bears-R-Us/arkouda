@@ -1,7 +1,17 @@
 import pytest
-import arkouda as ak
-from arkouda.comm_diagnostics import *
 
+import arkouda as ak
+from arkouda.comm_diagnostics import (
+    get_comm_diagnostics,
+    get_comm_diagnostics_get,
+    get_comm_diagnostics_put,
+    print_comm_diagnostics_table,
+    reset_comm_diagnostics,
+    start_comm_diagnostics,
+    start_verbose_comm,
+    stop_comm_diagnostics,
+    stop_verbose_comm,
+)
 
 diagnostic_stats_functions = [
     "get_comm_diagnostics_put",

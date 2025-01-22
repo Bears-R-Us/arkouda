@@ -1,8 +1,6 @@
 import numpy as np
-import pytest
 
 import arkouda as ak
-
 
 """
 Encapsulates unit tests for the pdarrayclass module that provide

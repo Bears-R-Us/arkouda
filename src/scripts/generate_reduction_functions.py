@@ -67,8 +67,10 @@ def generate_reduction_functions():
 
     return ret
 
-def clean_string(my_code:str):
+
+def clean_string(my_code: str):
     return my_code.replace("\t", "  ").replace(r"\n\s*\n", "\n\n")
+
 
 def generate_index_reduction_functions():
     ret = ""

@@ -1,5 +1,6 @@
-import arkouda as ak
 import pytest
+
+import arkouda as ak
 
 OPS = {
     "Hashing": lambda x: x.hash(),
@@ -35,6 +36,7 @@ def _generate_data(loc):
     sorted_strings = random_strings[perm]
 
     return random_strings if loc == "Good" else sorted_strings
+
 
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="String_Locality")

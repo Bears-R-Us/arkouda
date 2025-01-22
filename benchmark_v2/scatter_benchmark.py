@@ -1,12 +1,14 @@
-import arkouda as ak
-import pytest
 import numpy as np
+import pytest
+
+import arkouda as ak
 
 TYPES = ("int64", "float64", "bool")
 
 
 def _run_scatter(a, i, v):
     a[i] = v
+
 
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Scatter")
@@ -24,7 +26,7 @@ def bench_ak_scatter(benchmark, dtype):
         pytest.seed += 1
     if pytest.random or pytest.seed is not None:
         if dtype == "int64":
-            v = ak.randint(0, 2 ** 32, Ni, seed=pytest.seed)
+            v = ak.randint(0, 2**32, Ni, seed=pytest.seed)
         elif dtype == "float64":
             v = ak.randint(0, 1, Ni, dtype=ak.float64, seed=pytest.seed)
         elif dtype == "bool":
@@ -38,8 +40,8 @@ def bench_ak_scatter(benchmark, dtype):
     benchmark.extra_info["problem_size"] = pytest.prob_size
     benchmark.extra_info["index_size"] = isize
     benchmark.extra_info["value_size"] = vsize
-    benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-        (bytes_per_sec / 2 ** 30))
+    benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format((bytes_per_sec / 2**30))
+
 
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="NumPy_Scatter")
@@ -55,7 +57,7 @@ def bench_np_scatter(benchmark, dtype):
         c = np.zeros(Nv, dtype=dtype)
         if pytest.random or pytest.seed is not None:
             if dtype == "int64":
-                v = np.random.randint(0, 2 ** 32, Ni)
+                v = np.random.randint(0, 2**32, Ni)
             elif dtype == "float64":
                 v = np.random.random(Ni)
         else:
@@ -67,5 +69,4 @@ def bench_np_scatter(benchmark, dtype):
         benchmark.extra_info["problem_size"] = pytest.prob_size
         benchmark.extra_info["index_size"] = Ni
         benchmark.extra_info["value_size"] = Nv
-        benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-            (bytes_per_sec / 2 ** 30))
+        benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format((bytes_per_sec / 2**30))

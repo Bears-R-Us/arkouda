@@ -1,6 +1,7 @@
-import arkouda as ak
-import pytest
 import numpy as np
+import pytest
+
+import arkouda as ak
 
 TYPES = ("int64", "float64", "bool", "str")
 
@@ -10,6 +11,7 @@ def _run_gather(a, i):
     Helper function allowing for the gather to be benchmarked
     """
     return a[i]
+
 
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Gather")
@@ -27,7 +29,7 @@ def bench_ak_gather(benchmark, dtype):
             pytest.seed += 1
         if pytest.random or pytest.seed is not None:
             if dtype == "int64":
-                v = ak.randint(0, 2 ** 32, Nv, seed=pytest.seed)
+                v = ak.randint(0, 2**32, Nv, seed=pytest.seed)
             elif dtype == "float64":
                 v = ak.randint(0, 1, Nv, dtype=ak.float64, seed=pytest.seed)
             elif dtype == "bool":
@@ -53,8 +55,8 @@ def bench_ak_gather(benchmark, dtype):
         benchmark.extra_info["problem_size"] = pytest.prob_size
         benchmark.extra_info["index_size"] = isize
         benchmark.extra_info["value_size"] = vsize
-        benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-            (bytes_per_sec / 2 ** 30))
+        benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format((bytes_per_sec / 2**30))
+
 
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="NumPy_Gather")
@@ -85,5 +87,4 @@ def bench_np_gather(benchmark, dtype):
         benchmark.extra_info["problem_size"] = pytest.prob_size
         benchmark.extra_info["index_size"] = Ni
         benchmark.extra_info["value_size"] = Nv
-        benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-            (bytes_per_sec / 2 ** 30))
+        benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format((bytes_per_sec / 2**30))

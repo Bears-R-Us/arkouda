@@ -8,9 +8,7 @@ from arkouda.testing import assert_equal as ak_assert_equal
 from arkouda.testing import assert_equivalent as ak_assert_equivalent
 
 SEED = 314159
-import numpy
 
-import arkouda.pdarrayclass
 
 REDUCTION_OPS = list(set(ak.pdarrayclass.SUPPORTED_REDUCTION_OPS) - set(["isSorted", "isSortedLocally"]))
 INDEX_REDUCTION_OPS = ak.pdarrayclass.SUPPORTED_INDEX_REDUCTION_OPS
@@ -30,7 +28,7 @@ class TestPdarrayClass:
         assert r.shape == (2, 2)
         assert isinstance(r, ak.pdarray)
         b = r.reshape(4)
-        assert ak.all(a==b)
+        assert ak.all(a == b)
 
     @pytest.mark.skip_if_rank_not_compiled([3])
     def test_reshape_and_flatten_bug_reproducer(self):
@@ -63,7 +61,7 @@ class TestPdarrayClass:
     @pytest.mark.skip_if_rank_not_compiled([3])
     @pytest.mark.parametrize("dtype", DTYPES)
     @pytest.mark.parametrize("size", pytest.prob_size)
-    def test_flatten(self, size, dtype):
+    def test_flatten_multidim(self, size, dtype):
         size = size - (size % 4)
         a = ak.arange(size, dtype=dtype)
         b = a.reshape((2, 2, size / 4))
@@ -150,11 +148,14 @@ class TestPdarrayClass:
             assert ak.all(sorted)
 
     def assert_reduction_ops_match(
-        self, op: str, pda: ak.pdarray, axis: Optional[Union[int, Tuple[int, ...]]] = None
+        self,
+        op: str,
+        pda: ak.pdarray,
+        axis: Optional[Union[int, Tuple[int, ...]]] = None,
     ):
 
-        ak_op = getattr(arkouda.pdarrayclass, op)
-        np_op = getattr(numpy, op)
+        ak_op = getattr(ak.pdarrayclass, op)
+        np_op = getattr(np, op)
         nda = pda.to_ndarray()
 
         ak_result = ak_op(pda, axis=axis)
@@ -167,8 +168,8 @@ class TestPdarrayClass:
     @pytest.mark.parametrize("axis", [0, None])
     def test_index_reduction_1D(self, op, dtype, arry_gen, size, axis):
         pda = arry_gen(size, dtype=dtype)
-        ak_op = getattr(arkouda.pdarrayclass, op)
-        np_op = getattr(numpy, op)
+        ak_op = getattr(ak.pdarrayclass, op)
+        np_op = getattr(np, op)
         nda = pda.to_ndarray()
         ak_result = ak_op(pda, axis=axis)
         ak_assert_equivalent(ak_result, np_op(nda, axis=axis))
@@ -182,8 +183,8 @@ class TestPdarrayClass:
     def test_index_reduction_multi_dim(self, op, dtype, arry_gen, size, axis):
         size = 10
         pda = arry_gen(size * size * size, dtype=dtype).reshape((size, size, size))
-        ak_op = getattr(arkouda.pdarrayclass, op)
-        np_op = getattr(numpy, op)
+        ak_op = getattr(ak.pdarrayclass, op)
+        np_op = getattr(np, op)
         nda = pda.to_ndarray()
         ak_result = ak_op(pda, axis=axis)
         ak_assert_equivalent(ak_result, np_op(nda, axis=axis))

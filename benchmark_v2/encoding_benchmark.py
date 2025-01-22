@@ -1,5 +1,6 @@
-import arkouda as ak
 import pytest
+
+import arkouda as ak
 
 ENCODINGS = ("idna", "ascii")
 
@@ -18,7 +19,9 @@ def bench_encode(benchmark, encoding):
         benchmark.extra_info["description"] = "Measures the performance of Strings.encode"
         benchmark.extra_info["problem_size"] = pytest.prob_size
         benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-            (nbytes / benchmark.stats["mean"]) / 2 ** 30)
+            (nbytes / benchmark.stats["mean"]) / 2**30
+        )
+
 
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Strings_EncodeDecode")
@@ -34,4 +37,5 @@ def bench_decode(benchmark, encoding):
         benchmark.extra_info["description"] = "Measures the performance of Strings.decode"
         benchmark.extra_info["problem_size"] = pytest.prob_size
         benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-            (nbytes / benchmark.stats["mean"]) / 2 ** 30)
+            (nbytes / benchmark.stats["mean"]) / 2**30
+        )
