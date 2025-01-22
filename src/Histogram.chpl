@@ -2,9 +2,6 @@ module Histogram
 {
     use ServerConfig;
 
-    use Time;
-    use Math only;
-
     use PrivateDist;
     use SymArrayDmap;
     use Logging;
@@ -13,6 +10,27 @@ module Histogram
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const hgLogger = new Logger(logLevel, logChannel);
+
+    /* Helper: is this value within the requested range? */
+    inline proc histValWithinRange(val, aMin, aMax): bool {
+      return aMin <= val && val <= aMax;
+    }
+
+    /* Helper: computes the 1-d bin number for the value, assuing it is within the range. */
+    inline proc histValToBin(val, aMin, aMax, numBins, binWidth): int {
+      return if val == aMax then numBins-1 else ((val - aMin) / binWidth): int;
+    }
+
+    /* Helper: converts (x,y) into a bin number for a 2-d histogram.
+       Returns -1 if (x,y) is outside the requested range. */
+    private proc valsToBin(xi, yi, xMin, xMax, yMin, yMax,
+                           numXBins, numYBins, xBinWidth, yBinWidth): int {
+        if ! histValWithinRange(xi, xMin, xMax) then return -1;
+        if ! histValWithinRange(yi, yMin, yMax) then return -1;
+        const xiBin = histValToBin(xi, xMin, xMax, numXBins, xBinWidth);
+        const yiBin = histValToBin(yi, yMin, yMax, numYBins, yBinWidth);
+        return (xiBin * numYBins) + yiBin;
+    }
 
     /*
         Takes the data in array a, creates an atomic histogram in parallel,
@@ -23,10 +41,10 @@ module Histogram
         :arg a: array of data to be histogrammed
         :type a: [] ?etype
 
-        :arg aMin: Min value in array a
+        :arg aMin: Min value to count
         :type aMin: etype
 
-        :arg aMax: Max value in array a
+        :arg aMax: Max value to count
         :type aMax: etype
 
         :arg bins: allocate size of the histogram's distributed domain
@@ -44,12 +62,10 @@ module Histogram
 
         // count into atomic histogram
         forall v in a {
-            var vBin = ((v - aMin) / binWidth):int;
-            if v == aMax {vBin = bins-1;}
-            if (vBin < 0) || (vBin > (bins-1)) {
-                try! hgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),"OOB");
-            }
+          if histValWithinRange(v, aMin, aMax) {
+            const vBin = histValToBin(v, aMin, aMax, bins, binWidth); 
             atomicHist[vBin].add(1);
+          }
         }
 
         var hist = makeDistArray(bins,int);
@@ -59,15 +75,6 @@ module Histogram
                                                              "hist = %?".format(hist));
 
         return hist;
-    }
-
-    /* Converts (x,y) into a bin number. Returns -1 if (x,y) is an outsider. */
-    private inline proc valsToBin(xi, yi, xMin, xMax, yMin, yMax,
-                                  numXBins, numYBins, xBinWidth, yBinWidth) {
-        if xi < xMin || xi > xMax || yi < yMin || yi > yMax then return -1;
-        const xiBin = if xi == xMax then numXBins-1 else ((xi - xMin) / xBinWidth):int;
-        const yiBin = if yi == yMax then numYBins-1 else ((yi - yMin) / yBinWidth):int;
-        return (xiBin * numYBins) + yiBin;
     }
 
     proc histogramGlobalAtomic(x: [?aD] ?etype1, y: [aD] ?etype2, xMin: etype1, xMax: etype1, yMin: etype2, yMax: etype2, numXBins: int, numYBins: int, xBinWidth: real, yBinWidth: real) throws {
@@ -101,10 +108,10 @@ module Histogram
         :arg a: array of data to be histogrammed
         :type a: [] ?etype
 
-        :arg aMin: Min value in array a
+        :arg aMin: Min value to count
         :type aMin: etype
 
-        :arg aMax: Max value in array a
+        :arg aMax: Max value to count
         :type aMax: etype
 
         :arg bins: allocate size of the histogram's distributed domain
@@ -122,9 +129,10 @@ module Histogram
 
         // count into per-locale private atomic histogram
         forall v in a {
-            var vBin = ((v - aMin) / binWidth):int;
-            if v == aMax {vBin = bins-1;}
+          if histValWithinRange(v, aMin, aMax) {
+            const vBin = histValToBin(v, aMin, aMax, bins, binWidth); 
             atomicHist[here.id][vBin].add(1);
+          }
         }
 
         // +reduce across per-locale histograms to get counts
@@ -169,10 +177,10 @@ module Histogram
         :arg a: array of data to be histogrammed
         :type a: [] ?etype
 
-        :arg aMin: Min value in array a
+        :arg aMin: Min value to count
         :type aMin: etype
 
-        :arg aMax: Max value in array a
+        :arg aMax: Max value to count
         :type aMax: etype
 
         :arg bins: allocate size of the histogram's distributed domain
@@ -189,9 +197,10 @@ module Histogram
         
         // count into per-task/per-locale histogram and then reduce as tasks complete
         forall v in a with (+ reduce gHist) {
-            var vBin = ((v - aMin) / binWidth):int;
-            if v == aMax {vBin = bins-1;}
+          if histValWithinRange(v, aMin, aMax) {
+            const vBin = histValToBin(v, aMin, aMax, bins, binWidth); 
             gHist[vBin] += 1;
+          }
         }
 
         var hist = makeDistArray(bins,int);        
