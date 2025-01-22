@@ -62,3 +62,12 @@ class TestCommDiagnostics:
         print_comm_diagnostics_table(print_empty_columns=False)
 
         stop_comm_diagnostics()
+
+    def test_get_comm_diagnostics(self):
+        start_comm_diagnostics()
+
+        df = get_comm_diagnostics()
+        assert isinstance(df, ak.DataFrame)
+        assert len(df) == pytest.nl
+
+        stop_comm_diagnostics()
