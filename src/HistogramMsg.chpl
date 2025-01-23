@@ -198,6 +198,10 @@ module HistogramMsg
                 }
             }
 
+            // The result will be here.
+            var hist = makeDistArray(totNumBins,real);
+            st.addEntry(rname, createSymEntry(hist));
+
             // 3 different implementations depending on size of histogram
             // this is due to the time memory tradeoff between creating one/few atomic arrays
             // or many non-atomic arrays and reducing them
@@ -215,9 +219,7 @@ module HistogramMsg
                     gHist[idx] += 1;
                 }
 
-                var hist = makeDistArray(totNumBins,real);
                 hist = gHist;
-                st.addEntry(rname, createSymEntry(hist));
             }
             else if (totNumBins <= mBound) {
                 // "histogramLocalAtomic"
@@ -242,9 +244,7 @@ module HistogramMsg
                     lHist reduce= atomicHist[i].read();
                 }
 
-                var hist = makeDistArray(totNumBins,int);
                 hist = lHist;
-                st.addEntry(rname, createSymEntry(hist));
             }
             else {
 
@@ -262,10 +262,8 @@ module HistogramMsg
                     atomicHist[idx].add(1);
                 }
 
-                var hist = makeDistArray(totNumBins,int);
                 // copy from atomic histogram to normal histogram
                 [(e,ae) in zip(hist, atomicHist)] e = ae.read();
-                st.addEntry(rname, createSymEntry(hist));
             }
         }
 
