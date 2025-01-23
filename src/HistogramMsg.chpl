@@ -6,18 +6,18 @@ module HistogramMsg
     use ServerErrors;
     use Logging;
     use Message;
-    
+
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
 
     use Histogram;
     use Message;
- 
+
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const hgmLogger = new Logger(logLevel, logChannel);
-    
+
     private config const sBound = 2**12;
     private config const mBound = 2**25;
 
@@ -27,7 +27,7 @@ module HistogramMsg
         var repMsg: string; // response message
         const bins = msgArgs.get("bins").getIntValue();
         const name = msgArgs.getValueOf("array");
-        
+
         // get next symbol name
         var rname = st.nextName();
         hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -70,11 +70,11 @@ module HistogramMsg
             when (DType.Float64) {histogramHelper(real);}
             otherwise {
                 var errorMsg = notImplementedError(pn,gEnt.dtype);
-                hgmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
-                return new MsgTuple(errorMsg, MsgType.ERROR);             
+                hgmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
             }
         }
-        
+
         repMsg = "created " + st.attrib(rname);
         hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
@@ -101,7 +101,7 @@ module HistogramMsg
         // helper nested procedure
         proc histogramHelper(type t1, type t2) throws {
             var x = toSymEntry(xGenEnt,t1);
-            var y = toSymEntry(yGenEnt,t2);            
+            var y = toSymEntry(yGenEnt,t2);
             var xMin = msgArgs.get("xMin").toScalar(t1);
             var xMax = msgArgs.get("xMax").toScalar(t1);
             var yMin = msgArgs.get("yMin").toScalar(t2);
@@ -164,7 +164,7 @@ module HistogramMsg
         const names = msgArgs.get("sample").getList(numDims);
         const dimProd = msgArgs.get("dim_prod").toScalarArray(int, numDims);
         const totNumBins = * reduce bins;
-        
+
         // get next symbol name
         var rname = st.nextName();
         hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -192,7 +192,7 @@ module HistogramMsg
                   } else if ! histValWithinRange(v, aMin, aMax) {
                     idx = -1;
                   } else {
-                    const vBin = histValToBin(v, aMin, aMax, bin, binWidth); 
+                    const vBin = histValToBin(v, aMin, aMax, bin, binWidth);
                     idx += (vBin * stride):int;
                   }
                 }
@@ -208,14 +208,14 @@ module HistogramMsg
                 hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                             "%? <= %?".format(bins,sBound));
                 var gHist: [0..#totNumBins] int;
-                
+
                 // count into per-task/per-locale histogram and then reduce as tasks complete
                 forall idx in indices with (+ reduce gHist) {
                     if idx<0 then continue;
                     gHist[idx] += 1;
                 }
 
-                var hist = makeDistArray(totNumBins,int);        
+                var hist = makeDistArray(totNumBins,real);
                 hist = gHist;
                 st.addEntry(rname, createSymEntry(hist));
             }
@@ -242,11 +242,12 @@ module HistogramMsg
                     lHist reduce= atomicHist[i].read();
                 }
 
-                var hist = makeDistArray(totNumBins,int);        
+                var hist = makeDistArray(totNumBins,int);
                 hist = lHist;
                 st.addEntry(rname, createSymEntry(hist));
             }
             else {
+
                 // "histogramGlobalAtomic"
                 // large number of buckets:
                 // one global atomic histogram
@@ -274,11 +275,11 @@ module HistogramMsg
             when (DType.Float64) {histogramHelper(real);}
             otherwise {
                 var errorMsg = notImplementedError(pn,gEnts[0].dtype);
-                hgmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
-                return new MsgTuple(errorMsg, MsgType.ERROR);             
+                hgmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
             }
         }
-        
+
         repMsg = "created " + st.attrib(rname);
         hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
