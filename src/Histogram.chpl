@@ -63,7 +63,7 @@ module Histogram
         // count into atomic histogram
         forall v in a {
           if histValWithinRange(v, aMin, aMax) {
-            const vBin = histValToBin(v, aMin, aMax, bins, binWidth); 
+            const vBin = histValToBin(v, aMin, aMax, bins, binWidth);
             atomicHist[vBin].add(1);
           }
         }
@@ -130,7 +130,7 @@ module Histogram
         // count into per-locale private atomic histogram
         forall v in a {
           if histValWithinRange(v, aMin, aMax) {
-            const vBin = histValToBin(v, aMin, aMax, bins, binWidth); 
+            const vBin = histValToBin(v, aMin, aMax, bins, binWidth);
             atomicHist[here.id][vBin].add(1);
           }
         }
@@ -140,7 +140,7 @@ module Histogram
         forall i in PrivateSpace with (+ reduce lHist) do
           lHist reduce= atomicHist[i].read();
 
-        var hist = makeDistArray(bins,int);        
+        var hist = makeDistArray(bins,int);
         hist = lHist;
         return hist;
     }
@@ -194,16 +194,16 @@ module Histogram
     proc histogramReduceIntent(a: [?aD] ?etype, aMin: etype, aMax: etype, bins: int, binWidth: real) throws {
 
         var gHist: [0..#bins] int;
-        
+
         // count into per-task/per-locale histogram and then reduce as tasks complete
         forall v in a with (+ reduce gHist) {
           if histValWithinRange(v, aMin, aMax) {
-            const vBin = histValToBin(v, aMin, aMax, bins, binWidth); 
+            const vBin = histValToBin(v, aMin, aMax, bins, binWidth);
             gHist[vBin] += 1;
           }
         }
 
-        var hist = makeDistArray(bins,int);        
+        var hist = makeDistArray(bins,int);
         hist = gHist;
         return hist;
     }
