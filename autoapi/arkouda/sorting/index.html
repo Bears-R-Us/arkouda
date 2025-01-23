@@ -403,7 +403,11 @@
 <dd><p>Return the permutation that sorts the array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#id721" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – The array to sort (int64, uint64, or float64)</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#id721" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – The array to sort (int64, uint64, or float64)</p></li>
+<li><p><strong>algorithm</strong> (<em>SortingAlgorithm</em>) – The algorithm to be used for sorting the array.</p></li>
+<li><p><strong>axis</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int_scalars" title="arkouda.dtypes.int_scalars"><em>int_scalars</em></a>) – The axis to sort over.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The indices such that <code class="docutils literal notranslate"><span class="pre">pda[indices]</span></code> is sorted</p>
@@ -427,6 +431,14 @@ resilient to non-uniformity in data but communication intensive.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">perm</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="p">[</span><span class="n">perm</span><span class="p">]</span>
 <span class="go">array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ak</span><span class="o">.</span><span class="n">sorting</span><span class="o">.</span><span class="n">SortingAlgorithm</span><span class="p">[</span><span class="s2">&quot;RadixSortLSD&quot;</span><span class="p">])</span>
+<span class="go">array([0 2 9 6 8 1 3 5 7 4])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ak</span><span class="o">.</span><span class="n">sorting</span><span class="o">.</span><span class="n">SortingAlgorithm</span><span class="p">[</span><span class="s2">&quot;TwoArrayRadixSort&quot;</span><span class="p">])</span>
+<span class="go">array([0 2 9 6 8 1 3 5 7 4])</span>
 </pre></div>
 </div>
 </dd></dl>
