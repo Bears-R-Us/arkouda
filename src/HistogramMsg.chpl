@@ -199,8 +199,9 @@ module HistogramMsg
             }
 
             // The result will be here.
-            var hist = makeDistArray(totNumBins,real);
-            st.addEntry(rname, createSymEntry(hist));
+            const histSE = createSymEntry(totNumBins, real);
+            st.addEntry(rname, histSE);
+            ref hist = histSE.a;
 
             // 3 different implementations depending on size of histogram
             // this is due to the time memory tradeoff between creating one/few atomic arrays
