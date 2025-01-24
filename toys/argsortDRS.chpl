@@ -7,12 +7,12 @@ config param debug = false;
 config const timing = true;
 
 module SortModuleStuff {
-  use Sort only DefaultComparator, defaultComparator, chpl_compare, chpl_check_comparator;
+  use Sort only defaultComparator, chpl_compare, chpl_check_comparator;
 
 /* BEGIN STUFF THAT SHOULD BE IN SORT MODULE */
 
 pragma "no doc"
-proc shellSort(Data: [?Dom] ?eltType, comparator:?rec=defaultComparator,
+proc shellSort(Data: [?Dom] ?eltType, comparator:?rec=new defaultComparator(),
                start=Dom.low, end=Dom.high)
 {
   chpl_check_comparator(comparator, eltType);
@@ -126,7 +126,7 @@ proc binForRecord(a, criterion, startbit:int)
   } else if canResolveMethod(criterion, "key", a) {
     // Try to use the default comparator to get a keyPart.
     return binForRecordKeyPart(criterion.key(a),
-                               defaultComparator,
+                               new defaultComparator(),
                                startbit);
   } else {
     compilerError("Bad comparator for radix sort ", criterion.type:string,
@@ -160,7 +160,7 @@ proc msbRadixSortParamLastStartBit(Data:[], comparator) param {
   // Compute end_bit if it's known
   // Default comparator on integers has fixed width
   const ref element = Data[Data.domain.low];
-  if comparator.type == DefaultComparator && fixedWidth(element.type) > 0 {
+  if comparator.type == defaultComparator && fixedWidth(element.type) > 0 {
     return fixedWidth(element.type) - RADIX_BITS;
   } else if canResolveMethod(comparator, "key", element) {
     type keyType = comparator.key(element).type;
@@ -212,7 +212,7 @@ proc findDataStartBit(startbit:int, min_ubits, max_ubits):int {
 }
 
 pragma "no doc"
-proc msbRadixSort(Data:[], comparator:?rec=defaultComparator) {
+proc msbRadixSort(Data:[], comparator:?rec=new defaultComparator()) {
 
   var endbit:int;
   endbit = msbRadixSortParamLastStartBit(Data, comparator);
@@ -677,7 +677,7 @@ proc simpletestcore(input:[]) {
 
   msbRadixSortWithScratchSpace(blockDom.low, blockDom.high,
                                dst, src,
-                               defaultComparator,
+                               new defaultComparator(),
                                0, max(int));
 
   if debug {
@@ -735,7 +735,7 @@ proc randomtest(n:int) {
   timer.start();
   msbRadixSortWithScratchSpace(0, n-1,
                                dst, src,
-                               defaultComparator,
+                               new defaultComparator(),
                                0, max(int));
   timer.stop();
 

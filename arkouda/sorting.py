@@ -38,6 +38,10 @@ def argsort(
     ----------
     pda : pdarray or Strings or Categorical
         The array to sort (int64, uint64, or float64)
+    algorithm : SortingAlgorithm
+        The algorithm to be used for sorting the array.
+    axis : int_scalars
+        The axis to sort over.
 
     Returns
     -------
@@ -64,6 +68,12 @@ def argsort(
     >>> perm = ak.argsort(a)
     >>> a[perm]
     array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
+
+    >>> ak.argsort(a, ak.sorting.SortingAlgorithm["RadixSortLSD"])
+    array([0 2 9 6 8 1 3 5 7 4])
+
+    >>> ak.argsort(a, ak.sorting.SortingAlgorithm["TwoArrayRadixSort"])
+    array([0 2 9 6 8 1 3 5 7 4])
     """
     from arkouda.categorical import Categorical
 
