@@ -15,21 +15,21 @@ DIMS = [1, 1, 2, 1, 1, 2, 2]
 
 
 class TestArrayCreation:
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("shape", SHAPES)
     @pytest.mark.parametrize("dtype", ak.ScalarDTypes)
     def test_zeros(self, shape, dtype):
         a = xp.zeros(shape, dtype=dtype)
         assert_equivalent(a._array, np.zeros(shape, dtype=dtype))
 
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("shape", SHAPES)
     @pytest.mark.parametrize("dtype", ak.ScalarDTypes)
     def test_ones(self, shape, dtype):
         a = xp.ones(shape, dtype=dtype)
         assert_equivalent(a._array, np.ones(shape, dtype=dtype))
 
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled([2])
     def test_from_numpy(self):
         # TODO: support 0D (scalar) arrays
         # (need changes to the create0D command from #2967)
@@ -41,7 +41,7 @@ class TestArrayCreation:
             assert b.shape == a.shape
             assert b.tolist() == a.tolist()
 
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("data_type", [ak.int64, ak.float64, ak.bool_])
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_triu(self, data_type, prob_size):
@@ -60,7 +60,7 @@ class TestArrayCreation:
                 ak_triu = array_triu(pda, k=diag)._array
                 assert_almost_equivalent(ak_triu, np_triu)
 
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("data_type", [ak.int64, ak.float64, ak.bool_])
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_tril(self, data_type, prob_size):
@@ -79,7 +79,7 @@ class TestArrayCreation:
                 ak_tril = array_tril(pda, k=diag)._array
                 assert_almost_equivalent(np_tril, ak_tril)
 
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("data_type", [ak.int64, ak.float64, ak.bool_])
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_eye(self, data_type, prob_size):

@@ -21,7 +21,7 @@ def randArr(shape, dtype):
 
 class TestUtilFunctions:
 
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled([2])
     def test_all(self):
         a = xp.ones((10, 10), dtype=ak.bool_)
         assert xp.all(a)
@@ -29,7 +29,7 @@ class TestUtilFunctions:
         a[3, 4] = False
         assert not xp.all(a)
 
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled([2])
     def test_any(self):
         a = xp.zeros((10, 10), dtype=ak.bool_)
         assert not xp.any(a)
@@ -38,7 +38,7 @@ class TestUtilFunctions:
         assert xp.any(a)
 
     @pytest.mark.parametrize("dtype", DTYPES)
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([3])
     def test_clip(self, dtype):
         a = randArr((5, 6, 7), dtype)
 
@@ -48,7 +48,7 @@ class TestUtilFunctions:
         anp_c = np.clip(anp, 10, 90)
         assert a_c.tolist() == anp_c.tolist()
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([3])
     def test_clip_errors(self):
         # bool
         a = xp.asarray(ak.randint(0, 100, (5, 6, 7), dtype=ak.bool_, seed=s), dtype=ak.bool_)
@@ -70,7 +70,7 @@ class TestUtilFunctions:
             xp.clip(a, 10, 90)
 
     @pytest.mark.parametrize("dtype", DTYPES)
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([3])
     def test_diff(self, dtype):
         a = randArr((5, 6, 7), dtype)
         anp = a.to_ndarray()
@@ -84,7 +84,7 @@ class TestUtilFunctions:
 
         assert a_d.tolist() == anp_d.tolist()
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([3])
     def test_diff_error(self):
         # bool
         a = xp.asarray(ak.randint(0, 100, (5, 6, 7), dtype=ak.bool_, seed=s), dtype=ak.bool_)
@@ -105,7 +105,7 @@ class TestUtilFunctions:
         ):
             xp.diff(a, n=2, axis=0)
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([3])
     def test_pad(self):
         a = xp.ones((5, 6, 7))
         anp = np.ones((5, 6, 7))

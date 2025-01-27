@@ -1,4 +1,4 @@
-from math import isclose, sqrt
+from math import isclose, prod, sqrt
 
 import numpy as np
 import pytest
@@ -312,7 +312,7 @@ class TestNumeric:
     #   log and exp tests were identical, and so have been combined.
 
     @pytest.mark.skipif(pytest.host == "horizon", reason="Fails on horizon")
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled([2, 3])
     @pytest.mark.parametrize("num_type1", NO_BOOL)
     @pytest.mark.parametrize("num_type2", NO_BOOL)
     def test_histogram_multidim(self, num_type1, num_type2):
@@ -586,43 +586,18 @@ class TestNumeric:
         with pytest.raises(TypeError):
             ak.isnan(ark_s_string)
 
-    @pytest.mark.parametrize("prob_size", pytest.prob_size)
-    def test_isinf_isfinite(self, prob_size):
+    def test_isinf_isfinite(self):
         """
         Test isinf and isfinite.  These return pdarrays of T/F values as appropriate.
         """
-        def isinf_isfin_check(nda, pda) :
-            warnings.filterwarnings("ignore")
-            nda_blowup = np.exp(nda)
-            warnings.filterwarnings("default")
-            pda_blowup = ak.exp(pda)
-            assert (np.isinf(nda_blowup) == ak.isinf(pda_blowup).to_ndarray()).all()
-            assert (np.isfinite(nda_blowup) == ak.isfinite(pda_blowup).to_ndarray()).all()
-
-        def derive_multi_shape(r) :
-            i = 1
-            while i**r < prob_size :
-                i += 1
-            i = i if i**r <= prob_size else i-1
-            return i**r, r*[i]
-
-        # first the 1D case, then the max rank case
-
-        nda = alternate(0.0, 9999.9999, prob_size)
+        nda = np.array([0, 9999.9999])
         pda = ak.array(nda)
-        isinf_isfin_check(nda, pda)
-
-        # now the max rank case; find the largest i such that i**r < prob_size, prune
-        # and reshape nda so that it's of shape (i,i,...,i), and run the same test
-        # again.
-
-        # only the max rank case is done, because only rank 1 and max_array_rank are
-        # guaranteed to be covered by the arkouda interface.  In-between ranks may not be.
-
-        newsize, newshape = derive_multi_shape (get_max_array_rank())
-        nda = nda[0:newsize].reshape(newshape)
-        pda = ak.array(nda)
-        isinf_isfin_check(nda, pda)
+        warnings.filterwarnings("ignore")
+        nda_blowup = np.exp(nda)
+        warnings.filterwarnings("default")
+        pda_blowup = ak.exp(pda)
+        assert (np.isinf(nda_blowup) == ak.isinf(pda_blowup).to_ndarray()).all()
+        assert (np.isfinite(nda_blowup) == ak.isfinite(pda_blowup).to_ndarray()).all()
 
     def test_str_cat_cast(self):
         test_strs = [
@@ -871,7 +846,7 @@ class TestNumeric:
 
         for d1, d2 in ALLOWED_PUTMASK_PAIRS:
 
-            #  three things to test: values same size as data
+            #  several things to test: values same size as data
 
             nda = np.random.randint(0, 10, prob_size).astype(d1)
             pda = ak.array(nda)
@@ -912,7 +887,7 @@ class TestNumeric:
             ak.putmask(pda, pda > 5, akvalues)
             assert np.allclose(nda, pda.to_ndarray())
 
-            # finally try to raise errors
+        # finally try to raise errors
 
         pda = ak.random.randint(0, 10, 10).astype(ak.float64)
         mask = ak.array([True])  # wrong size error
@@ -927,11 +902,75 @@ class TestNumeric:
                 with pytest.raises(RuntimeError):
                     ak.putmask(pda, pda > 5, pda2)
 
+    @pytest.mark.skip_if_rank_not_compiled([2])
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_putmask_multidim(self, prob_size):
+
+        top = get_max_array_rank()
+        for d1, d2 in ALLOWED_PUTMASK_PAIRS:
+
+            # create two non-identical shapes with same size
+
+            the_shape = np.arange(top) + 2  # e.g. [2,3,4] or [2,3,4,5] ...
+            the_shape[-1] = prob_size  # now  [2,3,100] or [2,3,4,100] e.g.
+            the_shape = tuple(the_shape)  # converts to tuple
+            rev_shape = the_shape[::-1]  # [100,3,2] or [100,4,3,2] or ...
+            the_size = prod(the_shape)  # total # elements in either shape
+
+            nda = np.ones(the_size).reshape(the_shape).astype(d1)
+            hold_that_thought = nda.copy()
+            pda = ak.array(nda)
+            nmask = alternate(True, False, the_size).reshape(the_shape)
+            pmask = ak.array(nmask)
+
+            # test with values the same size as a, but not same shape
+
+            npvalues = np.arange(the_size).reshape(rev_shape).astype(d2)
+            akvalues = ak.array(npvalues)
+            np.putmask(nda, nmask, npvalues)
+            ak.putmask(pda, pmask, akvalues)
+            assert np.allclose(nda, pda.to_ndarray())
+
+            # test with values longer than a; note that after each use of putmask
+            # nda and pda have to be restored to their original values, since putmask
+            # overwrites them.
+
+            nda = hold_that_thought[:]
+            pda = ak.array(nda)
+            npvalues = np.arange(2 * the_size).reshape(2, the_size).astype(d2)
+            akvalues = ak.array(npvalues)
+            np.putmask(nda, nmask, npvalues)
+            ak.putmask(pda, pmask, akvalues)
+            assert np.allclose(nda, pda.to_ndarray())
+
+            # test with values smaller than a
+            # TODO: now that all allowed dims are available, extend the test below to
+            # all allowed dims, rather than just max
+
+            nda = hold_that_thought[:]
+            pda = ak.array(nda)
+            npvalues = np.arange(the_size - 3).astype(d2)
+            akvalues = ak.array(npvalues)
+            np.putmask(nda, nmask, npvalues)
+            ak.putmask(pda, pmask, akvalues)
+            assert np.allclose(nda, pda.to_ndarray())
+
+            # test with values size that will require aggregator in multi-distribution
+            # The choice of the_size//2 + 5 is arbitrary.
+
+            nda = hold_that_thought[:]
+            pda = ak.array(nda)
+            npvalues = np.arange(the_size // 2 + 5).astype(d2)
+            akvalues = ak.array(npvalues)
+            np.putmask(nda, nmask, npvalues)
+            ak.putmask(pda, pmask, akvalues)
+            assert np.allclose(nda, pda.to_ndarray())
+
     # In the tests below, the rationale for using size = math.sqrt(prob_size) is that
     # the resulting matrices are on the order of size*size.
 
     # tril works on ints, floats, or bool
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled(2)
     @pytest.mark.parametrize("data_type", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_tril(self, data_type, prob_size):
@@ -959,7 +998,7 @@ class TestNumeric:
 
     @pytest.mark.parametrize("data_type", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled(2)
     def test_triu(self, data_type, prob_size):
         size = int(sqrt(prob_size))
 
@@ -982,7 +1021,7 @@ class TestNumeric:
 
     # transpose works on ints, floats, or bool
 
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled(2)
     @pytest.mark.parametrize("data_type", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_transpose(self, data_type, prob_size):
@@ -1005,7 +1044,7 @@ class TestNumeric:
             assert check(npa, ppa, data_type)
 
     # eye works on ints, floats, or bool
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled(2)
     @pytest.mark.parametrize("data_type", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_eye(self, data_type, prob_size):
@@ -1028,7 +1067,7 @@ class TestNumeric:
                 assert check(nda, pda, data_type)
 
     # matmul works on ints, floats, or bool
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled(2)
     @pytest.mark.parametrize("data_type1", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("data_type2", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
@@ -1056,7 +1095,7 @@ class TestNumeric:
     # vecdot works on ints, floats, or bool, with the limitation that both inputs can't
     # be bool
 
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled(2)
     @pytest.mark.parametrize("data_type1", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("data_type2", INT_FLOAT)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)

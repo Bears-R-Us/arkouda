@@ -1817,13 +1817,17 @@ class pdarray:
         """
         # allows the elements of the shape parameter to be passed in as separate arguments
         # For example, a.reshape(10, 11) is equivalent to a.reshape((10, 11))
+        # the lenshape variable addresses an error that occurred when a single integer was
+        # passed
         if len(shape) == 1:
             shape = shape[0]
-        elif not isinstance(shape, pdarray):
+            lenshape = 1
+        if (not isinstance(shape, int)) and (not isinstance(shape, pdarray)):
             shape = [i for i in shape]
+            lenshape = len(shape)
         return create_pdarray(
             generic_msg(
-                cmd=f"reshape<{self.dtype},{self.ndim},{len(shape)}>",
+                cmd=f"reshape<{self.dtype},{self.ndim},{lenshape}>",
                 args={
                     "name": self.name,
                     "shape": shape,
@@ -3654,10 +3658,9 @@ def popcount(pda: pdarray) -> pdarray:
         return sum(popcount(a) for a in pda.bigint_to_uint_arrays())  # type: ignore
     else:
         repMsg = generic_msg(
-            cmd=f"efunc{pda.ndim}D",
+            cmd=f"popcount<{pda.dtype},{pda.ndim}>",
             args={
-                "func": "popcount",
-                "array": pda,
+                "pda": pda,
             },
         )
         return create_pdarray(repMsg)
@@ -3695,10 +3698,9 @@ def parity(pda: pdarray) -> pdarray:
         return reduce(lambda x, y: x ^ y, [parity(a) for a in pda.bigint_to_uint_arrays()])
     else:
         repMsg = generic_msg(
-            cmd=f"efunc{pda.ndim}D",
+            cmd=f"parity<{pda.dtype},{pda.ndim}>",
             args={
-                "func": "parity",
-                "array": pda,
+                "pda": pda,
             },
         )
         return create_pdarray(repMsg)
@@ -3738,11 +3740,16 @@ def clz(pda: pdarray) -> pdarray:
         from arkouda.pdarraycreation import zeros
 
         uint_arrs = pda.bigint_to_uint_arrays()
+
         # we need to adjust the number of leading zeros to account for max_bits
+
         mod_max_bits, div_max_bits = pda.max_bits % 64, ceil(pda.max_bits / 64)
+
         # if we don't fall on a 64 bit boundary, we need to subtract off
         # leading zeros that aren't settable due to max_bits restrictions
+
         sub_off = 0 if mod_max_bits == 0 else 64 - mod_max_bits
+
         # we can have fewer uint arrays than max_bits allows if all the high bits are zero
         # i.e. ak.arange(10, dtype=ak.bigint, max_bits=256) will only store one uint64 array,
         # so we need to add on any leading zeros from empty higher bit arrays that were excluded
@@ -3751,22 +3758,28 @@ def clz(pda: pdarray) -> pdarray:
         lz = zeros(pda.size, dtype=akuint64)
         previously_non_zero = zeros(pda.size, dtype=bool)
         for a in uint_arrs:
+
             # if a bit was set somewhere in the higher bits,
-            # we don't want to add it's clz to our leading zeros count
+            # we don't want to add its clz to our leading zeros count
             # so only update positions where we've only seen zeros
-            lz += where(previously_non_zero, 0, clz(a))
+
+            lz += where(previously_non_zero, 0, clz(a)).astype(akuint64)
+            # note: the above cast is required or the += will fail on mixed types
+
             # OR in the places where the current bits have a bit set
+
             previously_non_zero |= a != 0
             if all(previously_non_zero):
                 break
+
         lz += add_on - sub_off
         return lz
+
     else:
         repMsg = generic_msg(
-            cmd=f"efunc{pda.ndim}D",
+            cmd=f"clz<{pda.dtype},{pda.ndim}>",
             args={
-                "func": "clz",
-                "array": pda,
+                "pda": pda,
             },
         )
         return create_pdarray(repMsg)
@@ -3804,39 +3817,52 @@ def ctz(pda: pdarray) -> pdarray:
     if pda.dtype not in [akint64, akuint64, bigint]:
         raise TypeError("BitOps only supported on int64, uint64, and bigint arrays")
     if pda.dtype == bigint:
+
         # we don't need max_bits to be set because that only limits the high bits
         # which is only relevant when ctz(0) which is defined to be 0
+
         from arkouda.numpy import where
         from arkouda.pdarraycreation import zeros
 
         # reverse the list, so we visit low bits first
+
         reversed_uint_arrs = pda.bigint_to_uint_arrays()[::-1]
         tz = zeros(pda.size, dtype=akuint64)
         previously_non_zero = zeros(pda.size, dtype=bool)
+
         for a in reversed_uint_arrs:
+
             # if the lower bits are all zero, we want trailing zeros
             # to be 64 because the higher bits could still be set.
             # But ctz(0) is defined to be 0, so use 64 in that case
+
             a_is_zero = a == 0
             num_zeros = where(a_is_zero, 64, ctz(a))
+
             # if a bit was set somewhere in the lower bits,
-            # we don't want to add it's ctz to our trailing zeros count
+            # we don't want to add its ctz to our trailing zeros count
             # so only update positions where we've only seen zeros
-            tz += where(previously_non_zero, 0, num_zeros)
+
+            tz += where(previously_non_zero, 0, num_zeros).astype(akuint64)
+            # note: the above cast is required or the += will fail on mixed types
+
             # OR in the places where the current bits have a bit set
+
             previously_non_zero |= ~a_is_zero
             if all(previously_non_zero):
                 break
-        if not all(previously_non_zero):
-            # ctz(0) is defined to be 0
+
+        if not all(previously_non_zero):  # ctz(0) is defined to be 0
             tz[~previously_non_zero] = 0
+
         return tz
+
     else:
+
         repMsg = generic_msg(
-            cmd=f"efunc{pda.ndim}D",
+            cmd=f"ctz<{pda.dtype},{pda.ndim}>",
             args={
-                "func": "ctz",
-                "array": pda,
+                "pda": pda,
             },
         )
         return create_pdarray(repMsg)
@@ -4084,6 +4110,12 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
     -------
     pdarray
         Returns an array that contains the element-wise remainder of division.
+
+    Raises
+    ------
+    TypeError
+        Raised if neither dividend nor divisor is a pdarray (at least one must be)
+        or if any scalar or pdarray element is not one of int, uint, float, bigint
     """
     if not builtins.all(
         isSupportedNumber(arg) or isinstance(arg, pdarray) for arg in [dividend, divisor]
@@ -4098,26 +4130,45 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
             "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
         )
     # TODO: handle shape broadcasting for multidimensional arrays
-    if isinstance(dividend, pdarray) or isinstance(divisor, pdarray):
-        ndim = (
-            dividend.ndim if isinstance(dividend, pdarray) else divisor.ndim  # type: ignore[union-attr]
-        )
-        return create_pdarray(
-            cast(
-                str,
-                generic_msg(
-                    cmd=f"efunc2Arg{ndim}D",
-                    args={
-                        "func": "fmod",
-                        "A": dividend,
-                        "B": divisor,
-                    },
-                ),
-            )
-        )
+
+
+#   The code below creates a command string for fmod2vv, fmod2vs or fmod2sv.
+
+    if isinstance(dividend, pdarray) and isinstance(divisor, pdarray) :
+        cmdstring = f"fmod2vv<{dividend.dtype},{dividend.ndim},{divisor.dtype}>"
+
+    elif isinstance(dividend, pdarray) and not (isinstance(divisor, pdarray)) :
+        if resolve_scalar_dtype(divisor) in ['float64', 'int64', 'uint64', 'bool'] :
+            acmd = 'fmod2vs_'+resolve_scalar_dtype(divisor)
+        else :  # this condition *should* be impossible because of the isSupportedNumber check
+            raise TypeError(f"Scalar divisor type {resolve_scalar_dtype(divisor)} not allowed in fmod")
+        cmdstring = f"{acmd}<{dividend.dtype},{dividend.ndim}>"
+
+    elif not (isinstance(dividend, pdarray) and isinstance(divisor, pdarray)) :
+        if resolve_scalar_dtype(dividend) in ['float64', 'int64', 'uint64', 'bool'] :
+            acmd = 'fmod2sv_'+resolve_scalar_dtype(dividend)
+        else :  # this condition *should* be impossible because of the isSupportedNumber check
+            raise TypeError(f"Scalar dividend type {resolve_scalar_dtype(dividend)} not allowed in fmod")
+        cmdstring = f"{acmd}<{divisor.dtype},{divisor.ndim}>"  # type: ignore[union-attr]
+
     else:
         m = mod(dividend, divisor)
         return _create_scalar_array(m)
+
+#   We reach here if this was any case other than scalar & scalar
+
+    return create_pdarray(
+        cast(
+            str,
+            generic_msg(
+                cmd=cmdstring,
+                args={
+                    "a": dividend,
+                    "b": divisor,
+                },
+            ),
+        )
+    )
 
 
 @typechecked
