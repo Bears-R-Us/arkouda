@@ -51,10 +51,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install Dependencies
-        run: |
-          apt-get update && apt-get install -y python3-pip libhdf5-dev hdf5-tools libzmq3-dev libcurl4-openssl-dev
-          python3 -m pip install types-pkg_resources versioneer
-          python3 -m pip install -e .[dev]
+        uses: nick-fields/retry@v2
+        with:
+          timeout_seconds: 1200  # or use timeout_minutes
+          max_attempts: 2
+          retry_wait_seconds: 60
+          retry_on: error
+          command: |
+            apt-get update && apt-get install -y python3-pip libhdf5-dev hdf5-tools libzmq3-dev libcurl4-openssl-dev
+            python3 -m pip install types-pkg_resources versioneer
+            python3 -m pip install -e .[dev]
       - name: Arkouda flake8
         run: |
           flake8 arkouda          
@@ -73,12 +79,18 @@ jobs:
       with:
         python-version: ${{matrix.python-version}}
     - name: Install dependencies
-      run: |
-        apt-get update && apt-get install -y -V ca-certificates lsb-release wget
-        make install-arrow-quick
-        apt-get update && apt-get install -y libhdf5-dev hdf5-tools libzmq3-dev python3-pip libarrow-dev libparquet-dev libcurl4-openssl-dev libidn2-dev
-        make install-iconv
-        echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" >> Makefile.paths
+      uses: nick-fields/retry@v2
+      with:
+        timeout_seconds: 1200  # or use timeout_minutes
+        max_attempts: 2
+        retry_wait_seconds: 60
+        retry_on: error
+        command: |   
+          apt-get update && apt-get install -y -V ca-certificates lsb-release wget
+          make install-arrow-quick
+          apt-get update && apt-get install -y libhdf5-dev hdf5-tools libzmq3-dev python3-pip libarrow-dev libparquet-dev libcurl4-openssl-dev libidn2-dev
+          make install-iconv
+          echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" >> Makefile.paths
     - name: Check python version
       run: |
         python3 --version
@@ -114,24 +126,55 @@ jobs:
       with:
         timeout_seconds: 1200  # or use timeout_minutes
         max_attempts: 2
+        retry_wait_seconds: 60
         retry_on: error
         command: |
           make install-arrow        
     - name: Make install-hdf5
-      run: |
-        make install-hdf5
+      uses: nick-fields/retry@v2
+      with:
+        timeout_seconds: 1200  # or use timeout_minutes
+        max_attempts: 2
+        retry_wait_seconds: 60
+        retry_on: error
+        command: |  
+          make install-hdf5
     - name: Make install-zmq
-      run: |
-        make install-zmq        
+      uses: nick-fields/retry@v2
+      with:
+        timeout_seconds: 1200  # or use timeout_minutes
+        max_attempts: 2
+        retry_wait_seconds: 60
+        retry_on: error
+        command: | 
+          make install-zmq        
     - name: Make install-iconv
-      run: |
-        make install-iconv
+      uses: nick-fields/retry@v2
+      with:
+        timeout_seconds: 1200  # or use timeout_minutes
+        max_attempts: 2
+        retry_wait_seconds: 60
+        retry_on: error
+        command: | 
+          make install-iconv
     - name: Make install-idn2
-      run: |
-        make install-idn2        
+      uses: nick-fields/retry@v2
+      with:
+        timeout_seconds: 1200  # or use timeout_minutes
+        max_attempts: 2
+        retry_wait_seconds: 60
+        retry_on: error
+        command: |
+          make install-idn2        
     - name: Make install-blosc
-      run: |
-        make install-blosc     
+      uses: nick-fields/retry@v2
+      with:
+        timeout_seconds: 1200  # or use timeout_minutes
+        max_attempts: 2
+        retry_wait_seconds: 60
+        retry_on: error
+        command: |
+          make install-blosc     
 
 
   arkouda_makefile:
@@ -148,10 +191,16 @@ jobs:
       with:
         python-version: ${{matrix.python-version}}
     - name: Install dependencies
-      run: |
-        apt-get update && apt-get install -y -V ca-certificates lsb-release wget build-essential cmake
-        apt-get update && apt-get install -y -V python3-pip libcurl4-openssl-dev
-        apt-get update -y && apt-get -y -V upgrade 
+      uses: nick-fields/retry@v2
+      with:
+        timeout_seconds: 1200  # or use timeout_minutes
+        max_attempts: 2
+        retry_wait_seconds: 60
+        retry_on: error
+        command: |
+          apt-get update && apt-get install -y -V ca-certificates lsb-release wget build-essential cmake
+          apt-get update && apt-get install -y -V python3-pip libcurl4-openssl-dev
+          apt-get update -y && apt-get -y -V upgrade 
     - name: Check python version
       run: |
         python3 --version
@@ -160,35 +209,71 @@ jobs:
       run: |
         (cd $CHPL_HOME/tools/chapel-py && python3 -m pip install .)
     - name: Make install-arrow-quick
-      run: |
-        make install-arrow-quick
+      uses: nick-fields/retry@v2
+      with:
+        timeout_seconds: 1200  # or use timeout_minutes
+        max_attempts: 2
+        retry_wait_seconds: 60
+        retry_on: error
+        command: |
+          make install-arrow-quick
     - name: Make install-arrow
       uses: nick-fields/retry@v2
       with:
         timeout_seconds: 1200  # or use timeout_minutes
         max_attempts: 2
+        retry_wait_seconds: 60
         retry_on: error
         command: |
             apt-get remove -y apache-arrow-apt-source
             make arrow-clean
             make install-arrow    
     - name: Make install-hdf5
-      run: |
-        make install-hdf5
+      uses: nick-fields/retry@v2
+      with:
+        timeout_seconds: 1200  # or use timeout_minutes
+        max_attempts: 2
+        retry_wait_seconds: 60
+        retry_on: error
+        command: |
+          make install-hdf5
     - name: Make install-zmq
-      run: |
-        make install-zmq        
+      uses: nick-fields/retry@v2
+      with:
+        timeout_seconds: 1200  # or use timeout_minutes
+        max_attempts: 2
+        retry_wait_seconds: 60
+        retry_on: error
+        command: |
+          make install-zmq        
     - name: Make install-iconv
-      run: |
-        make install-iconv
+      uses: nick-fields/retry@v2
+      with:
+        timeout_seconds: 1200  # or use timeout_minutes
+        max_attempts: 2
+        retry_wait_seconds: 60
+        retry_on: error
+        command: | 
+          make install-iconv
     - name: Make install-idn2
-      run: |
-        make install-idn2        
+      uses: nick-fields/retry@v2
+      with:
+        timeout_seconds: 1200  # or use timeout_minutes
+        max_attempts: 2
+        retry_wait_seconds: 60
+        retry_on: error
+        command: |
+          make install-idn2        
     - name: Make install-blosc
-      run: |
-        make install-blosc      
+      uses: nick-fields/retry@v2
+      with:
+        timeout_seconds: 1200  # or use timeout_minutes
+        max_attempts: 2
+        retry_wait_seconds: 60
+        retry_on: error
+        command: |
+          make install-blosc      
   
-
 
   arkouda_chpl_portability:
     runs-on: ubuntu-latest
@@ -200,13 +285,19 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Install dependencies
-      run: |
-        apt-get update && apt-get install -y -V ca-certificates lsb-release wget
-        make install-arrow-quick
-        apt-get update && apt-get install -y libhdf5-dev hdf5-tools libzmq3-dev python3-pip libarrow-dev libparquet-dev libcurl4-openssl-dev libidn2-dev
-        make install-iconv
+      uses: nick-fields/retry@v2
+      with:
+        timeout_seconds: 1200  # or use timeout_minutes
+        max_attempts: 2
+        retry_wait_seconds: 60
+        retry_on: error
+        command: |
+          apt-get update && apt-get install -y -V ca-certificates lsb-release wget
+          make install-arrow-quick
+          apt-get update && apt-get install -y libhdf5-dev hdf5-tools libzmq3-dev python3-pip libarrow-dev libparquet-dev libcurl4-openssl-dev libidn2-dev
+          make install-iconv
         
-        echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" >> Makefile.paths
+          echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" >> Makefile.paths
     - name: Check chpl version
       run: |
         chpl --version
@@ -231,12 +322,18 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Install dependencies
-      run: |
-        apt-get update && apt-get install -y -V ca-certificates lsb-release wget
-        make install-arrow-quick
-        apt-get update && apt-get install -y libhdf5-dev hdf5-tools libzmq3-dev python3-pip libarrow-dev libparquet-dev libcurl4-openssl-dev libidn2-dev
-        make install-iconv
-        echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" >> Makefile.paths
+      uses: nick-fields/retry@v2
+      with:
+        timeout_seconds: 1200  # or use timeout_minutes
+        max_attempts: 2
+        retry_wait_seconds: 60
+        retry_on: error
+        command: |
+          apt-get update && apt-get install -y -V ca-certificates lsb-release wget
+          make install-arrow-quick
+          apt-get update && apt-get install -y libhdf5-dev hdf5-tools libzmq3-dev python3-pip libarrow-dev libparquet-dev libcurl4-openssl-dev libidn2-dev
+          make install-iconv
+          echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" >> Makefile.paths
     - name: Check chpl version
       run: |
         chpl --version
@@ -270,12 +367,18 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Install dependencies
-      run: |
-        apt-get update && apt-get install -y -V ca-certificates lsb-release wget
-        make install-arrow-quick
-        apt-get update && apt-get install -y libhdf5-dev hdf5-tools libzmq3-dev python3-pip libarrow-dev libparquet-dev libcurl4-openssl-dev libidn2-dev
-        make install-iconv
-        echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" >> Makefile.paths
+      uses: nick-fields/retry@v2
+      with:
+        timeout_seconds: 1200  # or use timeout_minutes
+        max_attempts: 2
+        retry_wait_seconds: 60
+        retry_on: error
+        command: |
+          apt-get update && apt-get install -y -V ca-certificates lsb-release wget
+          make install-arrow-quick
+          apt-get update && apt-get install -y libhdf5-dev hdf5-tools libzmq3-dev python3-pip libarrow-dev libparquet-dev libcurl4-openssl-dev libidn2-dev
+          make install-iconv
+          echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" >> Makefile.paths
     - name: Install Chapel frontend bindings
       run: |
         (cd $CHPL_HOME/tools/chapel-py && python3 -m pip install .)
@@ -315,14 +418,20 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Install dependencies
-      run: |
-        apt-get update && apt-get install -y -V ca-certificates lsb-release wget
-        make install-arrow-quick
-        apt-get update && apt-get install -y libhdf5-dev hdf5-tools libzmq3-dev python3-pip libarrow-dev libparquet-dev libcurl4-openssl-dev libidn2-dev 
-        pip install pytest-benchmark==4.0.0
-        make install-iconv
-        echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" >> Makefile.paths
-        mkdir -p benchmark_v2/data
+      uses: nick-fields/retry@v2
+      with:
+        timeout_seconds: 1200  # or use timeout_minutes
+        max_attempts: 2
+        retry_wait_seconds: 60
+        retry_on: error
+        command: |
+          apt-get update && apt-get install -y -V ca-certificates lsb-release wget
+          make install-arrow-quick
+          apt-get update && apt-get install -y libhdf5-dev hdf5-tools libzmq3-dev python3-pip libarrow-dev libparquet-dev libcurl4-openssl-dev libidn2-dev 
+          pip install pytest-benchmark==4.0.0
+          make install-iconv
+          echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" >> Makefile.paths
+          mkdir -p benchmark_v2/data
     - name: Install Chapel frontend bindings
       run: |
         (cd $CHPL_HOME/tools/chapel-py && python3 -m pip install .)
