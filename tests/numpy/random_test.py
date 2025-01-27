@@ -87,7 +87,8 @@ class TestRandom:
         assert check(pda, pda_prime, data_type)
 
     @pytest.mark.parametrize("data_type", INT_FLOAT)
-    def test_permutation(self, data_type):
+    @pytest.mark.parametrize("method", ["FisherYates", "Argsort"])
+    def test_permutation(self, data_type, method):
 
         # ints are checked for equality; floats are checked for closeness
 
@@ -98,7 +99,7 @@ class TestRandom:
         # verify all the same elements are in the permutation as in the original
 
         rng = ak.random.default_rng(18)
-        range_permute = rng.permutation(20)
+        range_permute = rng.permutation(20, method=method)
         assert (ak.arange(20) == ak.sort(range_permute)).all()  # range is always int
 
         # verify same seed gives reproducible arrays
@@ -106,13 +107,13 @@ class TestRandom:
         rng = ak.random.default_rng(18)
         rnfunc = rng.integers if data_type is ak.int64 else rng.uniform
         pda = rnfunc(-(2**32), 2**32, 10)
-        permuted = rng.permutation(pda)
+        permuted = rng.permutation(pda, method=method)
         assert check(ak.sort(pda), ak.sort(permuted), data_type)
 
         # verify same seed gives reproducible permutations
 
         rng = ak.random.default_rng(18)
-        same_seed_range_permute = rng.permutation(20)
+        same_seed_range_permute = rng.permutation(20, method=method)
         assert check(range_permute, same_seed_range_permute, data_type)
 
         # verify all the same elements are in permutation as in the original
@@ -120,7 +121,7 @@ class TestRandom:
         rng = ak.random.default_rng(18)
         rnfunc = rng.integers if data_type is ak.int64 else rng.uniform
         pda_p = rnfunc(-(2**32), 2**32, 10)
-        permuted_p = rng.permutation(pda_p)
+        permuted_p = rng.permutation(pda_p, method=method)
         assert check(ak.sort(pda_p), ak.sort(permuted_p), data_type)
 
     def test_uniform(self):
@@ -205,7 +206,10 @@ class TestRandom:
             log_sample = rng.logistic(loc=loc, scale=scale, size=num_samples).to_list()
 
             rng = ak.random.default_rng(17)
-            assert rng.logistic(loc=loc, scale=scale, size=num_samples).to_list() == log_sample
+            assert (
+                rng.logistic(loc=loc, scale=scale, size=num_samples).to_list()
+                == log_sample
+            )
 
     def test_lognormal(self):
         scal = 2
@@ -214,25 +218,40 @@ class TestRandom:
         for mean, sigma in product([scal, arr], [scal, arr]):
             rng = ak.random.default_rng(17)
             num_samples = 5
-            log_sample = rng.lognormal(mean=mean, sigma=sigma, size=num_samples).to_list()
+            log_sample = rng.lognormal(
+                mean=mean, sigma=sigma, size=num_samples
+            ).to_list()
 
             rng = ak.random.default_rng(17)
-            assert rng.lognormal(mean=mean, sigma=sigma, size=num_samples).to_list() == log_sample
+            assert (
+                rng.lognormal(mean=mean, sigma=sigma, size=num_samples).to_list()
+                == log_sample
+            )
 
     def test_normal(self):
         rng = ak.random.default_rng(17)
         both_scalar = rng.normal(loc=10, scale=2, size=10).to_list()
         scale_scalar = rng.normal(loc=ak.array([0, 10, 20]), scale=1, size=3).to_list()
         loc_scalar = rng.normal(loc=10, scale=ak.array([1, 2, 3]), size=3).to_list()
-        both_array = rng.normal(loc=ak.array([0, 10, 20]), scale=ak.array([1, 2, 3]), size=3).to_list()
+        both_array = rng.normal(
+            loc=ak.array([0, 10, 20]), scale=ak.array([1, 2, 3]), size=3
+        ).to_list()
 
         # redeclare rng with same seed to test reproducibility
         rng = ak.random.default_rng(17)
         assert rng.normal(loc=10, scale=2, size=10).to_list() == both_scalar
-        assert rng.normal(loc=ak.array([0, 10, 20]), scale=1, size=3).to_list() == scale_scalar
-        assert rng.normal(loc=10, scale=ak.array([1, 2, 3]), size=3).to_list() == loc_scalar
         assert (
-            rng.normal(loc=ak.array([0, 10, 20]), scale=ak.array([1, 2, 3]), size=3).to_list()
+            rng.normal(loc=ak.array([0, 10, 20]), scale=1, size=3).to_list()
+            == scale_scalar
+        )
+        assert (
+            rng.normal(loc=10, scale=ak.array([1, 2, 3]), size=3).to_list()
+            == loc_scalar
+        )
+        assert (
+            rng.normal(
+                loc=ak.array([0, 10, 20]), scale=ak.array([1, 2, 3]), size=3
+            ).to_list()
             == both_array
         )
 
@@ -279,8 +298,12 @@ class TestRandom:
 
         # reset rng with same seed and ensure we get same results
         rng = ak.random.default_rng(17)
-        assert rng.exponential(scale=scal_scale, size=num_samples).to_list() == scal_sample
-        assert rng.exponential(scale=arr_scale, size=num_samples).to_list() == arr_sample
+        assert (
+            rng.exponential(scale=scal_scale, size=num_samples).to_list() == scal_sample
+        )
+        assert (
+            rng.exponential(scale=arr_scale, size=num_samples).to_list() == arr_sample
+        )
 
     def test_choice_hypothesis_testing(self):
         # perform a weighted sample and use chisquare to test
@@ -359,7 +382,9 @@ class TestRandom:
 
         mean = rng.uniform(-10, 10)
         deviation = rng.uniform(0, 10)
-        sample = rng.lognormal(mean=mean, sigma=deviation, size=num_samples, method=method)
+        sample = rng.lognormal(
+            mean=mean, sigma=deviation, size=num_samples, method=method
+        )
 
         log_sample_list = np.log(sample.to_ndarray()).tolist()
 
@@ -371,7 +396,9 @@ class TestRandom:
 
         # second goodness of fit test against the distribution with proper mean and std
         good_fit_res = sp_stats.goodness_of_fit(
-            sp_stats.norm, log_sample_list, known_params={"loc": mean, "scale": deviation}
+            sp_stats.norm,
+            log_sample_list,
+            known_params={"loc": mean, "scale": deviation},
         )
         assert good_fit_res.pvalue > 0.05
 
@@ -521,10 +548,32 @@ class TestRandom:
         ] == values.to_list()
 
         values = ak.random.randint(1, 5, 10, dtype=ak.bool_, seed=2)
-        assert [False, True, True, True, True, False, True, True, True, True] == values.to_list()
+        assert [
+            False,
+            True,
+            True,
+            True,
+            True,
+            False,
+            True,
+            True,
+            True,
+            True,
+        ] == values.to_list()
 
         values = ak.random.randint(1, 5, 10, dtype=bool, seed=2)
-        assert [False, True, True, True, True, False, True, True, True, True] == values.to_list()
+        assert [
+            False,
+            True,
+            True,
+            True,
+            True,
+            False,
+            True,
+            True,
+            True,
+            True,
+        ] == values.to_list()
 
         # Test that int_scalars covers uint8, uint16, uint32
         ak.random.randint(np.uint8(1), np.uint32(5), np.uint16(10), seed=np.uint8(2))
@@ -542,12 +591,16 @@ class TestRandom:
 
         uArray = ak.random.uniform(size=3, low=0, high=5, seed=0)
         assert np.allclose(
-            [0.30013431967121934, 0.47383036230759112, 1.0441791878997098], uArray.to_list()
+            [0.30013431967121934, 0.47383036230759112, 1.0441791878997098],
+            uArray.to_list(),
         )
 
-        uArray = ak.random.uniform(size=np.int64(3), low=np.int64(0), high=np.int64(5), seed=np.int64(0))
+        uArray = ak.random.uniform(
+            size=np.int64(3), low=np.int64(0), high=np.int64(5), seed=np.int64(0)
+        )
         assert np.allclose(
-            [0.30013431967121934, 0.47383036230759112, 1.0441791878997098], uArray.to_list()
+            [0.30013431967121934, 0.47383036230759112, 1.0441791878997098],
+            uArray.to_list(),
         )
 
         with pytest.raises(TypeError):
