@@ -2,6 +2,7 @@ from typing import cast as typecast
 
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import create_pdarray
+from arkouda.dataframe import DataFrame
 
 __all__ = [
     "start_comm_diagnostics",
@@ -30,6 +31,7 @@ __all__ = [
     "get_comm_diagnostics_cache_readahead_unused",
     "get_comm_diagnostics_cache_readahead_waited",
     "get_comm_diagnostics_wait_nb",
+    "get_comm_diagnostics",
 ]
 
 
@@ -101,10 +103,19 @@ def print_comm_diagnostics_table(print_empty_columns=False):
     str
         Completion message.
     """
+    from arkouda import sum as ak_sum
+
     rep_msg = generic_msg(
         cmd="printCommDiagnosticsTable",
         args={"printEmptyCols": print_empty_columns},
     )
+
+    df = get_comm_diagnostics()
+    if print_empty_columns:
+        print(df.to_markdown())
+    else:
+        print(df[[col for col in df.columns if ak_sum(df[col]) != 0]].to_markdown())
+
     return typecast(str, rep_msg)
 
 
@@ -505,3 +516,37 @@ def get_comm_diagnostics_cache_readahead_waited():
         args={},
     )
     return create_pdarray(typecast(str, rep_msg))
+
+
+def get_comm_diagnostics() -> DataFrame:
+    """
+    Return a DataFrame with the communication diagnostics statistics.
+
+    Returns
+    -------
+    DataFrame
+    """
+    return DataFrame(
+        {
+            "put": get_comm_diagnostics_put(),
+            "get": get_comm_diagnostics_get(),
+            "put_nb": get_comm_diagnostics_put_nb(),
+            "get_nb": get_comm_diagnostics_get_nb(),
+            "try_nb": get_comm_diagnostics_try_nb(),
+            "amo": get_comm_diagnostics_amo(),
+            "execute_on": get_comm_diagnostics_execute_on(),
+            "execute_on_fast": get_comm_diagnostics_execute_on_fast(),
+            "execute_on_nb": get_comm_diagnostics_execute_on_nb(),
+            "cache_get_hits": get_comm_diagnostics_cache_get_hits(),
+            "cache_get_misses": get_comm_diagnostics_cache_get_misses(),
+            "cache_put_hits": get_comm_diagnostics_cache_put_hits(),
+            "cache_put_misses": get_comm_diagnostics_cache_put_misses(),
+            "cache_num_prefetches": get_comm_diagnostics_cache_num_prefetches(),
+            "cache_num_page_readaheads": get_comm_diagnostics_cache_num_page_readaheads(),
+            "cache_prefetch_unused": get_comm_diagnostics_cache_prefetch_unused(),
+            "cache_prefetch_waited": get_comm_diagnostics_cache_prefetch_waited(),
+            "cache_readahead_unused": get_comm_diagnostics_cache_readahead_unused(),
+            "cache_readahead_waited": get_comm_diagnostics_cache_readahead_waited(),
+            "wait_nb": get_comm_diagnostics_wait_nb(),
+        }
+    )

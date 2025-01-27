@@ -7,12 +7,12 @@ config param debug = false;
 config const timing = true;
 
 module SortModuleStuff {
-  use Sort only DefaultComparator, defaultComparator, chpl_compare, chpl_check_comparator;
+  use Sort only defaultComparator, chpl_compare, chpl_check_comparator;
 
 /* BEGIN STUFF THAT SHOULD BE IN SORT MODULE */
 
 pragma "no doc"
-proc shellSort(Data: [?Dom] ?eltType, comparator:?rec=defaultComparator,
+proc shellSort(Data: [?Dom] ?eltType, comparator:?rec=new defaultComparator(),
                start=Dom.low, end=Dom.high)
 {
   chpl_check_comparator(comparator, eltType);
@@ -160,7 +160,7 @@ proc msbRadixSortParamLastStartBit(Data:[], comparator) param {
   // Compute end_bit if it's known
   // Default comparator on integers has fixed width
   const ref element = Data[Data.domain.low];
-  if comparator.type == DefaultComparator && fixedWidth(element.type) > 0 {
+  if comparator.type == defaultComparator && fixedWidth(element.type) > 0 {
     return fixedWidth(element.type) - RADIX_BITS;
   } else if canResolveMethod(comparator, "key", element) {
     type keyType = comparator.key(element).type;

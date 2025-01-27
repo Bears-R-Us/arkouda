@@ -14,7 +14,7 @@ SCALAR_TYPES.remove("bool_")
 
 class TestArrayCreation:
 
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled([2])
     def test_argsort(self):
         for shape in SHAPES:
             for dtype in ak.ScalarDTypes:
@@ -46,7 +46,7 @@ class TestArrayCreation:
                                 for j in range(shape[1] - 1):
                                     assert a[i, b[i, j]] <= a[i, b[i, j + 1]]
 
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("dtype", SCALAR_TYPES)
     @pytest.mark.parametrize("shape", SHAPES)
     def test_sort(self, dtype, shape):

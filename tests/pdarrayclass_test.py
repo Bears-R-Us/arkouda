@@ -22,7 +22,7 @@ DTYPES = ["int64", "float64", "bool", "uint64"]
 
 class TestPdarrayClass:
 
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("dtype", DTYPES)
     def test_reshape(self, dtype):
         a = ak.arange(4, dtype=dtype)
@@ -32,7 +32,7 @@ class TestPdarrayClass:
         b = r.reshape(4)
         assert ak.all(a==b)
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([3])
     def test_reshape_and_flatten_bug_reproducer(self):
         dtype = "bigint"
         size = 10
@@ -46,7 +46,7 @@ class TestPdarrayClass:
         assert isinstance(a.shape, tuple)
         assert a.shape == np_a.shape
 
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("dtype", list(set(DTYPES) - set(["bool"])))
     def test_shape_multidim(self, dtype):
         a = ak.arange(4, dtype=dtype).reshape((2, 2))
@@ -60,7 +60,7 @@ class TestPdarrayClass:
         a = ak.arange(size, dtype=dtype)
         ak_assert_equal(a.flatten(), a)
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([3])
     @pytest.mark.parametrize("dtype", DTYPES)
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_flatten(self, size, dtype):
@@ -83,7 +83,7 @@ class TestPdarrayClass:
         c = ak.randint(0, size // 10, size, seed=SEED)
         assert not ak.is_sorted(c, axis=axis)
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([2, 3])
     @pytest.mark.parametrize("dtype", list(set(DTYPES) - set(["bool"])))
     @pytest.mark.parametrize("axis", [None, 0, 1, (0, 2), (0, 1, 2)])
     def test_is_sorted_multidim(self, dtype, axis):
@@ -128,7 +128,7 @@ class TestPdarrayClass:
         assert is_locally_sorted(a)
         assert not is_sorted(a)
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([2, 3])
     @pytest.mark.skip_if_nl_greater_than(2)
     @pytest.mark.parametrize("dtype", DTYPES)
     @pytest.mark.parametrize("axis", [None, 0, 1, (0, 2), (0, 1, 2)])
@@ -173,7 +173,7 @@ class TestPdarrayClass:
         ak_result = ak_op(pda, axis=axis)
         ak_assert_equivalent(ak_result, np_op(nda, axis=axis))
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([2, 3])
     @pytest.mark.parametrize("op", INDEX_REDUCTION_OPS)
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", DTYPES)
@@ -198,7 +198,7 @@ class TestPdarrayClass:
         pda = arry_gen(size, dtype=dtype)
         self.assert_reduction_ops_match(op, pda, axis=axis)
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([2, 3])
     @pytest.mark.parametrize("op", REDUCTION_OPS)
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", DTYPES)
@@ -215,7 +215,7 @@ class TestPdarrayClass:
         pda = ak.array([True, True, False, True, True, True, True, True])
         self.assert_reduction_ops_match(op, pda, axis=axis)
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([2, 3])
     @pytest.mark.parametrize("op", REDUCTION_OPS)
     @pytest.mark.parametrize("axis", [None, 0, 1, (0, 2), (0, 1, 2)])
     def test_reductions_match_numpy_3D_TF(self, op, axis):
