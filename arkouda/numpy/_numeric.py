@@ -2213,6 +2213,13 @@ def count_nonzero(pda: pdarray) -> np.int64:
     np.int64
         The nonzero count of the entire pdarray
 
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray with numeric, bool, or str datatype
+    ValueError
+        Raised if sum applied to the pdarray doesn't come back with a scalar
+
     Examples
     --------
     >>> pda = ak.array([0,4,7,8,1,3,5,2,-1])
@@ -2232,11 +2239,21 @@ def count_nonzero(pda: pdarray) -> np.int64:
     #  Handle different data types.
 
     if is_numeric(pda):
-        return sum((pda != 0).astype(np.int64))
+        value = sum((pda != 0).astype(np.int64))
+        if not isinstance(value, np.int64):
+            raise ValueError("summing the pdarray did not generate a scalar")
+        return value
     elif pda.dtype == bool:
-        return sum((pda).astype(np.int64))
+        value = sum((pda).astype(np.int64))
+        if not isinstance(value, np.int64):
+            raise ValueError("summing the pdarray did not generate a scalar")
+        return value
     elif pda.dtype == str:
-        return sum((pda != "").astype(np.int64))
+        value = sum((pda != "").astype(np.int64))
+        if not isinstance(value, np.int64):
+            raise ValueError("summing the pdarray did not generate a scalar")
+        return value
+    raise TypeError("pda must be numeric, bool, or str pdarray")
 
 
 def array_equal(pda_a: pdarray, pda_b: pdarray, equal_nan: bool = False):
