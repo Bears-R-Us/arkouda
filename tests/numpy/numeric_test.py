@@ -5,7 +5,7 @@ import pytest
 import warnings
 
 import arkouda as ak
-from arkouda.client import get_max_array_rank
+from arkouda.client import get_max_array_rank, get_array_ranks
 from arkouda.testing import assert_almost_equivalent as ak_assert_almost_equivalent
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import str_
@@ -149,21 +149,6 @@ def _infinity_edge_case_helper(np_func, ak_func):
 
 
 class TestNumeric:
-    @pytest.mark.parametrize("prob_size", pytest.prob_size)
-    def test_floor_float(self, prob_size):
-        from arkouda import all as akall
-        from arkouda.numpy import floor as ak_floor
-
-        a = 0.5 * ak.arange(prob_size, dtype="float64")
-        a_floor = ak_floor(a)
-
-        expected_size = np.floor((prob_size + 1) / 2).astype("int64")
-        expected = ak.array(np.repeat(ak.arange(expected_size, dtype="float64").to_ndarray(), 2))
-        #   To deal with prob_size as an odd number:
-        expected = expected[0:prob_size]
-
-        assert akall(a_floor == expected)
-
     @pytest.mark.parametrize("numeric_type", NUMERIC_TYPES)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_seeded_rng_typed(self, prob_size, numeric_type):
@@ -1170,3 +1155,25 @@ class TestNumeric:
                     0, 100, (prob_size if same_size else prob_size - 1), dtype=data_type
                 )
                 assert not (ak.array_equal(pda_a, pda_b))
+
+    @pytest.mark.parametrize("func", ["floor", "ceil", "trunc"])
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_rounding_functions(self, prob_size, func):
+
+        akfunc = getattr(ak, func)
+        npfunc = getattr(np, func)
+
+        seed = pytest.seed if pytest.seed is not None else 8675309
+        np.random.seed(seed)
+        for rank in get_array_ranks(): 
+            last_dim = prob_size // (2 ** (rank - 1))  # build a dimension of (2,2,...n)
+            local_shape = (rank - 1) * [2]             # such that 2*2*..*n is close to prob_size
+            local_shape.append(last_dim)               # building local_shape really does take
+            local_shape = tuple(local_shape)           # multiple steps because .append doesn't
+            local_size = prod(local_shape)             # return a value.
+
+            sample = np.random.uniform(0, 100, local_size)  # make the data
+            if rank > 1:
+                sample = sample.reshape(local_shape)   # reshape only needed if rank > 1
+            aksample = ak.array(sample)
+            assert np.all(npfunc(sample) == akfunc(aksample).to_ndarray())
