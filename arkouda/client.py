@@ -1062,7 +1062,7 @@ def get_max_array_rank() -> int:
     if serverConfig is None:
         raise RuntimeError("client is not connected to a server")
 
-    return int(serverConfig["maxArrayDims"])
+    return max(get_array_ranks())
 
 
 def get_array_ranks() -> list[int]:
