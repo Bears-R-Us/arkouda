@@ -1944,7 +1944,7 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Only pdarrays of 64 and 32 bit numeric types are supported&quot;</span><span class="p">)</span>
 
     <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;writeAllZarr</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;writeAllZarr&lt;</span><span class="si">{</span><span class="n">arr</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;store_path&quot;</span><span class="p">:</span> <span class="n">store_path</span><span class="p">,</span> <span class="s2">&quot;arr&quot;</span><span class="p">:</span> <span class="n">arr</span><span class="p">,</span> <span class="s2">&quot;chunk_shape&quot;</span><span class="p">:</span> <span class="n">chunk_shape</span><span class="p">},</span>
     <span class="p">)</span></div>
 
@@ -1974,7 +1974,7 @@
 <span class="sd">        The pdarray read from the Zarr store.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;readAllZarr</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;store_path&quot;</span><span class="p">:</span> <span class="n">store_path</span><span class="p">,</span> <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">dtype</span><span class="p">})</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;readAllZarr&lt;</span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;store_path&quot;</span><span class="p">:</span> <span class="n">store_path</span><span class="p">})</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
