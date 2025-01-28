@@ -11,7 +11,7 @@ DIMS = [0, 1, 2, 1, 1, 2, 2]
 
 
 class TestElemenwiseFunctions:
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled([2])
     def test_logical_not(self):
         a = xp.asarray(ak.array([True, False, True, False]))
         not_a = xp.asarray(ak.array([False, True, False, True]))

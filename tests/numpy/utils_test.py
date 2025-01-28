@@ -18,6 +18,6 @@ class TestFromNumericFunctions:
         a = ak.array(["a", "b", "c"])
         assert ak.shape(a) == np.shape(a.to_ndarray())
 
-    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.skip_if_rank_not_compiled([2])
     def test_shape_multidim_pdarray(self):
         assert ak.shape(ak.eye(3, 2)) == (3, 2)

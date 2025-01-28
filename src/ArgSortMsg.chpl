@@ -37,7 +37,7 @@ module ArgSortMsg
     private config const logChannel = ServerConfig.logChannel;
     const asLogger = new Logger(logLevel, logChannel);
 
-    proc dynamicTwoArrayRadixSort(ref Data:[], comparator:?rec=new DefaultComparator()) {
+    proc dynamicTwoArrayRadixSort(ref Data:[], comparator:?rec=new defaultComparator()) {
       if Data._instance.isDefaultRectangular() {
         ArkoudaSortCompat.TwoArrayRadixSort.twoArrayRadixSort(Data, comparator);
       } else {
@@ -82,12 +82,12 @@ module ArgSortMsg
         return algorithm;
     }
 
-    // proc DefaultComparator.keyPart(x: _tuple, i:int) where !isHomogeneousTuple(x) &&
+    // proc defaultComparator.keyPart(x: _tuple, i:int) where !isHomogeneousTuple(x) &&
     // (isInt(x(0)) || isUint(x(0)) || isReal(x(0))) {
     
     import Reflection.canResolveMethod;
     record ContrivedComparator: keyPartComparator {
-      const dc = new DefaultComparator();
+      const dc = new defaultComparator();
       proc keyPart(a, i: int) {
         if canResolveMethod(dc, "keyPart", a, 0) {
           return dc.keyPart(a, i);
