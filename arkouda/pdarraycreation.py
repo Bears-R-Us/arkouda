@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from typeguard import typechecked
 
-from arkouda.client import generic_msg, get_max_array_rank
+from arkouda.client import generic_msg, get_array_ranks
 from arkouda.numpy.dtypes import (
     NUMBER_FORMAT_STRINGS,
     DTypes,
@@ -237,8 +237,8 @@ def array(
     if a.ndim != 1 and a.dtype.name not in NumericDTypes:
         raise TypeError("Must be an iterable or have a numeric DType")
 
-    if a.ndim > get_max_array_rank():
-        raise ValueError(f"array rank {a.ndim} exceeds maximum of {get_max_array_rank()}")
+    if a.ndim not in get_array_ranks():
+        raise ValueError(f"array rank {a.ndim} not in compiled ranks {get_array_ranks()}")
 
     # Check if array of strings
     # if a.dtype == numpy.object_ need to check first element
@@ -486,8 +486,8 @@ def zeros(
 
     shape, ndim, full_size = _infer_shape_from_size(size)
 
-    if ndim > get_max_array_rank():
-        raise ValueError(f"array rank {ndim} exceeds maximum of {get_max_array_rank()}")
+    if ndim not in get_array_ranks():
+        raise ValueError(f"array rank {ndim} not in compiled ranks {get_array_ranks()}")
 
     if isinstance(shape, tuple) and len(shape) == 0:
         raise ValueError("size () not currently supported in ak.zeros.")
@@ -550,8 +550,8 @@ def ones(
 
     shape, ndim, full_size = _infer_shape_from_size(size)
 
-    if ndim > get_max_array_rank():
-        raise ValueError(f"array rank {ndim} exceeds maximum of {get_max_array_rank()}")
+    if ndim not in get_array_ranks():
+        raise ValueError(f"array rank {ndim} not in compiled ranks {get_array_ranks()}")
 
     if isinstance(shape, tuple) and len(shape) == 0:
         raise ValueError("size () not currently supported in ak.ones.")
@@ -623,8 +623,8 @@ def full(
 
     shape, ndim, full_size = _infer_shape_from_size(size)
 
-    if ndim > get_max_array_rank():
-        raise ValueError(f"array rank {ndim} exceeds maximum of {get_max_array_rank()}")
+    if ndim not in get_array_ranks():
+        raise ValueError(f"array rank {ndim} not in compiled ranks {get_array_ranks()}")
 
     if isinstance(shape, tuple) and len(shape) == 0:
         raise ValueError("size () not currently supported in ak.full.")
