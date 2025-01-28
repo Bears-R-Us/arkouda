@@ -278,7 +278,7 @@ def ceil(pda: pdarray) -> pdarray:
     repMsg = generic_msg(
         cmd=f"ceil<{pda.dtype},{pda.ndim}>",
         args={
-            "array": pda,
+            "pda": pda,
         },
     )
     return create_pdarray(type_cast(str, repMsg))
@@ -380,7 +380,7 @@ def trunc(pda: pdarray) -> pdarray:
     repMsg = generic_msg(
         cmd=f"trunc<{pda.dtype},{pda.ndim}>",
         args={
-            "array": pda,
+            "pda": pda,
         },
     )
     return create_pdarray(type_cast(str, repMsg))
