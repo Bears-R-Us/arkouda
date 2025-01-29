@@ -1,10 +1,11 @@
-import arkouda as ak
+import numpy as np
 import pytest
 
-import numpy as np
+import arkouda as ak
 
 TYPES = ["int64", "uint64", "float64", "str"]
 NUM_ARR = [1, 2, 8, 16]
+
 
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Arkouda_CoArgSort")
@@ -38,19 +39,17 @@ def bench_coargsort(benchmark, dtype, numArrays):
             (nbytes / benchmark.stats["mean"]) / 2**30
         )
 
+
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="NumPy_CoArgSort")
 @pytest.mark.parametrize("numArrays", NUM_ARR)
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_coargsort_numpy(benchmark, dtype, numArrays):
-    cfg = ak.get_config()
     if pytest.numpy and dtype in pytest.dtype:
         if pytest.seed is not None:
             np.random.seed(pytest.seed)
         if dtype == "int64":
-            arrs = [
-                np.random.randint(0, 2**32, pytest.prob_size // numArrays) for _ in range(numArrays)
-            ]
+            arrs = [np.random.randint(0, 2**32, pytest.prob_size // numArrays) for _ in range(numArrays)]
         elif dtype == "uint64":
             arrs = [
                 np.random.randint(0, 2**32, pytest.prob_size // numArrays, dtype=np.uint64)

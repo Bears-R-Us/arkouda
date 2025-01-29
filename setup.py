@@ -1,7 +1,8 @@
-from setuptools import setup, find_packages
 from os import path
-import versioneer
 
+from setuptools import find_packages, setup
+
+import versioneer
 
 here = path.abspath(path.dirname(__file__))
 # Get the long description from the README file
@@ -157,7 +158,7 @@ setup(
             "linkify-it-py",
             "mathjax",
             "sphinx-autopackagesummary",
-            "sphinx-design", 
+            "sphinx-design",
             "sphinx-autodoc-typehints",
             "pandas-stubs",
             "types-python-dateutil",

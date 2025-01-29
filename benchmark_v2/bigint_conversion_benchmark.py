@@ -1,5 +1,7 @@
-import arkouda as ak
 import pytest
+
+import arkouda as ak
+
 
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="BigInt_Conversion")
@@ -23,8 +25,10 @@ def bench_to_bigint(benchmark):
     benchmark.extra_info["description"] = "Measures the performance of ak.bigint_from_uint_arrays"
     benchmark.extra_info["problem_size"] = pytest.prob_size
     benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-        (tot_bytes / benchmark.stats["mean"]) / 2 ** 30)
+        (tot_bytes / benchmark.stats["mean"]) / 2**30
+    )
     benchmark.extra_info["max_bits"] = pytest.max_bits
+
 
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="BigInt_Conversion")
@@ -44,5 +48,6 @@ def bench_from_bigint(benchmark):
     benchmark.extra_info["description"] = "Measures the performance of bigint_to_uint_arrays"
     benchmark.extra_info["problem_size"] = pytest.prob_size
     benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-        (tot_bytes / benchmark.stats["mean"]) / 2 ** 30)
+        (tot_bytes / benchmark.stats["mean"]) / 2**30
+    )
     benchmark.extra_info["max_bits"] = pytest.max_bits

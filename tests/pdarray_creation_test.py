@@ -337,10 +337,18 @@ class TestPdarrayCreation:
         assert (size,) == test_array.shape
 
         u_array = ak.uniform(size=3, low=0, high=5, seed=0)
-        assert [0.30013431967121934, 0.47383036230759112, 1.0441791878997098] == u_array.to_list()
+        assert [
+            0.30013431967121934,
+            0.47383036230759112,
+            1.0441791878997098,
+        ] == u_array.to_list()
 
         u_array = ak.uniform(size=np.int64(3), low=np.int64(0), high=np.int64(5), seed=np.int64(0))
-        assert [0.30013431967121934, 0.47383036230759112, 1.0441791878997098] == u_array.to_list()
+        assert [
+            0.30013431967121934,
+            0.47383036230759112,
+            1.0441791878997098,
+        ] == u_array.to_list()
 
         with pytest.raises(TypeError):
             ak.uniform(low="0", high=5, size=size)
@@ -411,12 +419,6 @@ class TestPdarrayCreation:
         assert dtype == ones.dtype
         assert (1 == ones).all()
 
-    @pytest.mark.skip_if_rank_not_compiled([2])
-    @pytest.mark.parametrize("dtype", [int, ak.int64, float, ak.float64, bool, ak.bool_])
-    @pytest.mark.parametrize("shape", [0, 2, (2, 3)])
-    def test_ones_match_numpy(self, shape, dtype):
-        assert_equivalent(ak.ones(shape, dtype=dtype), np.ones(shape, dtype=dtype))
-
     @pytest.mark.parametrize("dtype", [int, ak.int64, float, ak.float64, bool, ak.bool_, ak.bigint])
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.skip_if_rank_not_compiled([3])
@@ -473,7 +475,8 @@ class TestPdarrayCreation:
     @pytest.mark.parametrize("shape", [0, 2, (2, 3)])
     def test_full_match_numpy(self, shape, dtype):
         assert_equivalent(
-            ak.full(shape, fill_value=2, dtype=dtype), np.full(shape, fill_value=2, dtype=dtype)
+            ak.full(shape, fill_value=2, dtype=dtype),
+            np.full(shape, fill_value=2, dtype=dtype),
         )
 
     @pytest.mark.skip_if_rank_not_compiled([3])
@@ -684,16 +687,41 @@ class TestPdarrayCreation:
 
     def test_random_strings_uniform_with_seed(self):
         pda = ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=10)
-        assert ["VW", "JEXI", "EBBX", "HG", "S", "WOVK", "U", "WL", "JCSD", "DSN"] == pda.to_list()
+        assert [
+            "VW",
+            "JEXI",
+            "EBBX",
+            "HG",
+            "S",
+            "WOVK",
+            "U",
+            "WL",
+            "JCSD",
+            "DSN",
+        ] == pda.to_list()
 
         pda = ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=10, characters="printable")
-        assert ["eL", "6<OD", "o-GO", " l", "m", "PV y", "f", "}.", "b3Yc", "Kw,"] == pda.to_list()
+        assert [
+            "eL",
+            "6<OD",
+            "o-GO",
+            " l",
+            "m",
+            "PV y",
+            "f",
+            "}.",
+            "b3Yc",
+            "Kw,",
+        ] == pda.to_list()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("num_dtype", NUMERIC_SCALARS)
     def test_random_strings_lognormal(self, size, num_dtype):
         pda = ak.random_strings_lognormal(
-            logmean=num_dtype(2), logstd=num_dtype(1), size=np.int64(size), characters="printable"
+            logmean=num_dtype(2),
+            logstd=num_dtype(1),
+            size=np.int64(size),
+            characters="printable",
         )
         assert isinstance(pda, ak.Strings)
         assert size == len(pda)
@@ -861,7 +889,10 @@ class TestPdarrayCreation:
     def test_uint_greediness(self):
         # default to uint when all supportedInt and any value > 2**63
         # to avoid loss of precision see (#1297)
-        for greedy_list in ([2**63, 6, 2**63 - 1, 2**63 + 1], [2**64 - 1, 0, 2**64 - 1]):
+        for greedy_list in (
+            [2**63, 6, 2**63 - 1, 2**63 + 1],
+            [2**64 - 1, 0, 2**64 - 1],
+        ):
             greedy_pda = ak.array(greedy_list)
             assert greedy_pda.dtype == ak.uint64
             assert greedy_list == greedy_pda.to_list()

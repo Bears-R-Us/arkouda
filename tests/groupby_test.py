@@ -15,7 +15,10 @@ UNIQUE_TYPES = [ak.categorical, ak.int64, ak.float64, ak.str_]
 VOWELS_AND_SUCH = ["a", "e", "i", "o", "u", "AB", 47, 2, 3.14159]
 PICKS = np.array([f"base {i}" for i in range(10)])
 
-isSorted = lambda x: np.all(x[:-1] <= x[1:])  # short for is x[i] <= x[i+1] for all i
+
+def isSorted(x):
+    return np.all(x[:-1] <= x[1:])  # short for is x[i] <= x[i+1] for all i
+
 
 #  This function (almost) guarantees both a sorted and unsorted version of
 #  a 1d array.  The only exception is an array of all identical values.
@@ -77,7 +80,14 @@ class TestGroupBy:
         u = np.random.randint(0, size // self.GROUPS, size, dtype=np.uint64)
         f = np.random.randn(size)  # normally dist random numbers
         b = (i % 2) == 0
-        d = {"keys": keys, "keys2": keys2, "int64": i, "uint64": u, "float64": f, "bool": b}
+        d = {
+            "keys": keys,
+            "keys2": keys2,
+            "int64": i,
+            "uint64": u,
+            "float64": f,
+            "bool": b,
+        }
 
         return d
 
@@ -281,7 +291,9 @@ class TestGroupBy:
         # verify the reproducer from issue #3001 gives correct answer
         # test with int and bool vals
         res = ak.broadcast(
-            ak.array([0, 2, 4]), ak.array([np.nan, 5.0, 25.0]), permutation=ak.array([0, 1, 2, 3, 4])
+            ak.array([0, 2, 4]),
+            ak.array([np.nan, 5.0, 25.0]),
+            permutation=ak.array([0, 1, 2, 3, 4]),
         )
         assert np.allclose(res.to_ndarray(), np.array([np.nan, np.nan, 5.0, 5.0, 25.0]), equal_nan=True)
 
@@ -629,7 +641,17 @@ class TestGroupBy:
 
         u_gb = ak.GroupBy(u)
         bi_gb = ak.GroupBy(bi)
-        aggregations = ["or", "sum", "and", "min", "max", "nunique", "first", "mode", "unique"]
+        aggregations = [
+            "or",
+            "sum",
+            "and",
+            "min",
+            "max",
+            "nunique",
+            "first",
+            "mode",
+            "unique",
+        ]
         for agg in aggregations:
             u_res = u_gb.aggregate(vals, agg)
             bi_res = bi_gb.aggregate(vals, agg)
@@ -935,7 +957,13 @@ class TestGroupBy:
                             g.sample(a, n=size, replace=replace, weights=p, random_state=rng)
                         )
                         choice_arrays.append(
-                            g.sample(a, frac=(size / 4), replace=replace, weights=p, random_state=rng)
+                            g.sample(
+                                a,
+                                frac=(size / 4),
+                                replace=replace,
+                                weights=p,
+                                random_state=rng,
+                            )
                         )
 
         # reset generator to ensure we get the same arrays
@@ -949,7 +977,11 @@ class TestGroupBy:
                         g = ak.GroupBy(grouping_keys)
                         current1 = g.sample(a, n=size, replace=replace, weights=p, random_state=rng)
                         current2 = g.sample(
-                            a, frac=(size / 4), replace=replace, weights=p, random_state=rng
+                            a,
+                            frac=(size / 4),
+                            replace=replace,
+                            weights=p,
+                            random_state=rng,
                         )
 
                         res = np.allclose(previous1.to_list(), current1.to_list()) and np.allclose(

@@ -1,5 +1,6 @@
-import arkouda as ak
 import pytest
+
+import arkouda as ak
 
 
 def _generate_test_data():
@@ -11,6 +12,7 @@ def _generate_test_data():
     nbytes = thickrange.nbytes * thickrange.entry.itemsize
 
     return thickrange, nbytes
+
 
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Flatten")
@@ -24,6 +26,7 @@ def bench_split_nonregex(benchmark):
         (nbytes / benchmark.stats["mean"]) / 2**30
     )
 
+
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Flatten")
 def bench_split_regexliteral(benchmark):
@@ -35,6 +38,7 @@ def bench_split_regexliteral(benchmark):
     benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
         (nbytes / benchmark.stats["mean"]) / 2**30
     )
+
 
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Flatten")

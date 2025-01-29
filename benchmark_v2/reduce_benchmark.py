@@ -1,9 +1,11 @@
 import numpy as np
-import arkouda as ak
 import pytest
+
+import arkouda as ak
 
 OPS = ("sum", "prod", "min", "max")
 TYPES = ("int64", "float64")
+
 
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Arkouda_Reduce")
@@ -30,8 +32,9 @@ def bench_ak_reduce(benchmark, op, dtype):
         benchmark.extra_info["description"] = "Measures performance of ak reduce functions."
         benchmark.extra_info["problem_size"] = pytest.prob_size
         benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-            (nbytes / benchmark.stats["mean"]) / 2 ** 30
+            (nbytes / benchmark.stats["mean"]) / 2**30
         )
+
 
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Numpy_Reduce")
@@ -55,8 +58,10 @@ def bench_np_reduce(benchmark, op, dtype):
         benchmark.pedantic(fxn, rounds=pytest.trials)
 
         nbytes = a.size * a.itemsize
-        benchmark.extra_info["description"] = "Measures performance of numpy reduce functions for comparison"
+        benchmark.extra_info["description"] = (
+            "Measures performance of numpy reduce functions for comparison"
+        )
         benchmark.extra_info["problem_size"] = pytest.prob_size
         benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-            (nbytes / benchmark.stats["mean"]) / 2 ** 30
+            (nbytes / benchmark.stats["mean"]) / 2**30
         )

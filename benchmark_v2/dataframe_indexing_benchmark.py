@@ -27,10 +27,9 @@ def generate_dataframe():
         elif d == ak.Strings:
             df_dict[key] = ak.random_strings_uniform(minlen=5, maxlen=6, size=N, seed=pytest.seed)
         elif d == ak.SegArray:
-            df_dict[key] = ak.segarray(
-                ak.arange(0, N), ak.array(np.random.randint(0, 2**32, N))
-            )
+            df_dict[key] = ak.segarray(ak.arange(0, N), ak.array(np.random.randint(0, 2**32, N)))
     return ak.DataFrame(df_dict)
+
 
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Dataframe_Indexing")
@@ -60,10 +59,12 @@ def bench_ak_dataframe(benchmark, op):
         elif isinstance(col_obj, ak.Strings):
             nbytes += col_obj.nbytes * col_obj.entry.itemsize
         elif isinstance(col_obj, ak.SegArray):
-            nbytes += col_obj.values.size * col_obj.values.itemsize + \
-                      (col_obj.segments.size * col_obj.segments.itemsize)
+            nbytes += col_obj.values.size * col_obj.values.itemsize + (
+                col_obj.segments.size * col_obj.segments.itemsize
+            )
 
     benchmark.extra_info["description"] = "Measures the performance of arkouda Dataframe indexing"
     benchmark.extra_info["problem_size"] = pytest.prob_size
     benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-        (nbytes / benchmark.stats["mean"]) / 2 ** 30)
+        (nbytes / benchmark.stats["mean"]) / 2**30
+    )
