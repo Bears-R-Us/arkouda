@@ -849,9 +849,10 @@
 <span class="sd">        &gt;&gt;&gt; ak.connect()</span>
 <span class="sd">        &gt;&gt;&gt; a = ak.array([&quot;a&quot;,&quot;b&quot;,&quot;c&quot;])</span>
 <span class="sd">        &gt;&gt;&gt; a</span>
+<span class="sd">        array([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; c = ak.Categorical(a)</span>
-<span class="sd">        &gt;&gt;&gt;  c.to_strings()</span>
-<span class="sd">        c.to_strings()</span>
+<span class="sd">        &gt;&gt;&gt; c.to_strings()</span>
+<span class="sd">        array([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;])</span>
 
 <span class="sd">        &gt;&gt;&gt; isinstance(c.to_strings(), ak.Strings)</span>
 <span class="sd">        True</span>
@@ -1184,11 +1185,11 @@
 <span class="sd">        &gt;&gt;&gt; strings = ak.array([f&#39;String {i}&#39; for i in range(0,5)])</span>
 <span class="sd">        &gt;&gt;&gt; cat = ak.Categorical(strings)</span>
 <span class="sd">        &gt;&gt;&gt; ak.in1d(cat,strings)</span>
-<span class="sd">        array([True, True, True, True, True])</span>
+<span class="sd">        array([True True True True True])</span>
 <span class="sd">        &gt;&gt;&gt; strings = ak.array([f&#39;String {i}&#39; for i in range(5,9)])</span>
 <span class="sd">        &gt;&gt;&gt; catTwo = ak.Categorical(strings)</span>
 <span class="sd">        &gt;&gt;&gt; ak.in1d(cat,catTwo)</span>
-<span class="sd">        array([False, False, False, False, False])</span>
+<span class="sd">        array([False False False False False])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
             <span class="c1"># Must use test._categories_used instead of test.categories to avoid</span>

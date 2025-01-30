@@ -779,11 +779,11 @@ faster and scales to arbitrarily large <code class="docutils literal notranslate
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;String </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cat</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Categorical</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span><span class="n">strings</span><span class="p">)</span>
-<span class="go">array([True, True, True, True, True])</span>
+<span class="go">array([True True True True True])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;String </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">9</span><span class="p">)])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">catTwo</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Categorical</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span><span class="n">catTwo</span><span class="p">)</span>
-<span class="go">array([False, False, False, False, False])</span>
+<span class="go">array([False False False False False])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1282,9 +1282,10 @@ this Categorical.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;b&quot;</span><span class="p">,</span><span class="s2">&quot;c&quot;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
+<span class="go">array([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Categorical</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span> <span class="n">c</span><span class="o">.</span><span class="n">to_strings</span><span class="p">()</span>
-<span class="go">c.to_strings()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">to_strings</span><span class="p">()</span>
+<span class="go">array([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">to_strings</span><span class="p">(),</span> <span class="n">ak</span><span class="o">.</span><span class="n">Strings</span><span class="p">)</span>
