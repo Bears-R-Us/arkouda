@@ -400,11 +400,12 @@
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
-<span class="go">array([5, 4, 3, 2])</span>
+<span class="go">array([5 4 3 2])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
-<span class="go">array([5, 4, 3, 2, 1])</span>
+<span class="go">array([5.00000000000000000 4.00000000000000000 3.00000000000000000</span>
+<span class="go">2.00000000000000000 1.00000000000000000])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -434,13 +435,13 @@ array elements</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">])</span>
 <span class="go"># Natural log</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
-<span class="go">array([0, 2.3025850929940459, 4.6051701859880918])</span>
+<span class="go">array([0.00000000000000000 2.3025850929940459 4.6051701859880918])</span>
 <span class="go"># Log base 10</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-<span class="go">array([0, 1, 2])</span>
+<span class="go">array([0.00000000000000000 1.00000000000000000 2.00000000000000000])</span>
 <span class="go"># Log base 2</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-<span class="go">array([0, 3.3219280948873626, 6.6438561897747253])</span>
+<span class="go">array([0.00000000000000000 3.3219280948873626 6.6438561897747253])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -466,12 +467,12 @@ array elements</p>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
-<span class="go">array([2.7182818284590451, 7.3890560989306504, 20.085536923187668, 54.598150033144236])</span>
+<span class="go">array([2.7182818284590451 7.3890560989306504 20.085536923187668 54.598150033144236])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">5.0</span><span class="p">))</span>
-<span class="go">array([11.84010843172504, 46.454368507659211, 5.5571769623557188,</span>
-<span class="go">       33.494295836924771, 13.478894913238722])</span>
+<span class="go">array([11.84010843172504 46.454368507659211 5.5571769623557188</span>
+<span class="go">       33.494295836924771 13.478894913238722])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -484,7 +485,7 @@ array elements</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
-<li><p><strong>where</strong> (<em>Boolean</em><em> or </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – This condition is broadcast over the input. At locations where the condition is True,
+<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True,
 the sine will be applied to the corresponding value. Elsewhere, it will retain
 its original value. Default set to True.</p></li>
 </ul>
@@ -510,7 +511,7 @@ of the original pdarray</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
-<li><p><strong>where</strong> (<em>Boolean</em><em> or </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – This condition is broadcast over the input. At locations where the condition is True,
+<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True,
 the cosine will be applied to the corresponding value. Elsewhere, it will retain
 its original value. Default set to True.</p></li>
 </ul>
@@ -554,17 +555,17 @@ of the original pdarray</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">]))</span>
-<span class="go">array([1, 3, 6])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="go">array([1 3 6 10])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">5.0</span><span class="p">))</span>
-<span class="go">array([3.1598310770203937, 5.4110385860243131, 9.1622479306453748,</span>
-<span class="go">       12.710615785506533, 13.945880905466208])</span>
+<span class="go">array([3.1598310770203937 5.4110385860243131 9.1622479306453748</span>
+<span class="go">       12.710615785506533 13.945880905466208])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">bool_</span><span class="p">))</span>
-<span class="go">array([0, 1, 1, 2, 3])</span>
+<span class="go">array([0 1 1 2 3])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -592,12 +593,12 @@ of the original pdarray</p>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">cumprod</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
-<span class="go">array([1, 2, 6, 24]))</span>
+<span class="go">array([1 2 6 24])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">cumprod</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">5.0</span><span class="p">))</span>
-<span class="go">array([1.5728783400481925, 7.0472855509390593, 33.78523998586553,</span>
-<span class="go">       134.05309592737584, 450.21589865655358])</span>
+<span class="go">array([1.5728783400481925 7.0472855509390593 33.78523998586553</span>
+<span class="go">       134.05309592737584 450.21589865655358])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1160,8 +1161,8 @@ array elements are False.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>condition</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Used to choose values from A or B</p></li>
-<li><p><strong>A</strong> (<a class="reference internal" href="../autoapi/arkouda/dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>str</em><em>, </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#id721" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a><em>]</em>) – Value(s) used when condition is True</p></li>
-<li><p><strong>B</strong> (<a class="reference internal" href="../autoapi/arkouda/dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>str</em><em>, </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#id721" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a><em>]</em>) – Value(s) used when condition is False</p></li>
+<li><p><strong>A</strong> (<em>str</em><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#id721" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – Value(s) used when condition is True</p></li>
+<li><p><strong>B</strong> (<em>str</em><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#id721" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – Value(s) used when condition is False</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1186,35 +1187,37 @@ the condition is False</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a2</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cond</span> <span class="o">=</span> <span class="n">a1</span> <span class="o">&lt;</span> <span class="mi">5</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cond</span><span class="p">,</span><span class="n">a1</span><span class="p">,</span><span class="n">a2</span><span class="p">)</span>
-<span class="go">array([1, 2, 3, 4, 1, 1, 1, 1, 1])</span>
+<span class="go">array([1 2 3 4 1 1 1 1 1])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a1</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a2</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cond</span> <span class="o">=</span> <span class="n">a1</span> <span class="o">==</span> <span class="mi">5</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cond</span><span class="p">,</span><span class="n">a1</span><span class="p">,</span><span class="n">a2</span><span class="p">)</span>
-<span class="go">array([1, 1, 1, 1, 5, 1, 1, 1, 1])</span>
+<span class="go">array([1 1 1 1 5 1 1 1 1])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a1</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a2</span> <span class="o">=</span> <span class="mi">10</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cond</span> <span class="o">=</span> <span class="n">a1</span> <span class="o">&lt;</span> <span class="mi">5</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cond</span><span class="p">,</span><span class="n">a1</span><span class="p">,</span><span class="n">a2</span><span class="p">)</span>
-<span class="go">array([1, 2, 3, 4, 10, 10, 10, 10, 10])</span>
+<span class="go">array([1 2 3 4 10 10 10 10 10])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;str </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s2</span> <span class="o">=</span> <span class="s1">&#39;str 21&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cond</span> <span class="o">=</span> <span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cond</span><span class="p">,</span><span class="n">s1</span><span class="p">,</span><span class="n">s2</span><span class="p">)</span>
-<span class="go">array([&#39;str 0&#39;, &#39;str 21&#39;, &#39;str 2&#39;, &#39;str 21&#39;, &#39;str 4&#39;, &#39;str 21&#39;, &#39;str 6&#39;, &#39;str 21&#39;, &#39;str 8&#39;,&#39;str 21&#39;])</span>
+<span class="go">array([&#39;str 0&#39;, &#39;str 21&#39;, &#39;str 2&#39;, &#39;str 21&#39;, &#39;str 4&#39;,</span>
+<span class="go">&#39;str 21&#39;, &#39;str 6&#39;, &#39;str 21&#39;, &#39;str 8&#39;, &#39;str 21&#39;])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">c1</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Categorical</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;str </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">c2</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Categorical</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;str </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cond</span> <span class="o">=</span> <span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cond</span><span class="p">,</span><span class="n">c1</span><span class="p">,</span><span class="n">c2</span><span class="p">)</span>
-<span class="go">array([&#39;str 0&#39;, &#39;str 8&#39;, &#39;str 2&#39;, &#39;str 6&#39;, &#39;str 4&#39;, &#39;str 4&#39;, &#39;str 6&#39;, &#39;str 2&#39;, &#39;str 8&#39;, &#39;str 0&#39;])</span>
+<span class="go">array([&#39;str 0&#39;, &#39;str 8&#39;, &#39;str 2&#39;, &#39;str 6&#39;, &#39;str 4&#39;,</span>
+<span class="go">&#39;str 4&#39;, &#39;str 6&#39;, &#39;str 2&#39;, &#39;str 8&#39;, &#39;str 0&#39;])</span>
 </pre></div>
 </div>
 <p class="rubric">Notes</p>

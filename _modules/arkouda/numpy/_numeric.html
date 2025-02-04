@@ -357,29 +357,35 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">type_cast</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">no_type_check</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typeguard</span><span class="w"> </span><span class="kn">import</span> <span class="n">typechecked</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">str_</span> <span class="k">as</span> <span class="n">akstr_</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.groupbyclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">GroupBy</span><span class="p">,</span> <span class="n">groupable</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">bigint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">_datatype_check</span><span class="p">,</span> <span class="n">bigint</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">bool_</span> <span class="k">as</span> <span class="n">ak_bool</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">akdtype</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">float64</span> <span class="k">as</span> <span class="n">ak_float64</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">int64</span> <span class="k">as</span> <span class="n">ak_int64</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">uint64</span> <span class="k">as</span> <span class="n">ak_uint64</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">int_scalars</span><span class="p">,</span>
     <span class="n">isSupportedNumber</span><span class="p">,</span>
     <span class="n">numeric_scalars</span><span class="p">,</span>
     <span class="n">resolve_scalar_dtype</span><span class="p">,</span>
-    <span class="n">str_</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">_datatype_check</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">str_</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">str_</span> <span class="k">as</span> <span class="n">akstr_</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">uint64</span> <span class="k">as</span> <span class="n">ak_uint64</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="nb">all</span> <span class="k">as</span> <span class="n">ak_all</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="nb">any</span> <span class="k">as</span> <span class="n">ak_any</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">argmax</span><span class="p">,</span> <span class="n">broadcast_if_needed</span><span class="p">,</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">,</span> <span class="nb">sum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">argmax</span><span class="p">,</span>
+    <span class="n">broadcast_if_needed</span><span class="p">,</span>
+    <span class="n">create_pdarray</span><span class="p">,</span>
+    <span class="n">pdarray</span><span class="p">,</span>
+    <span class="nb">sum</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span><span class="p">,</span> <span class="n">linspace</span><span class="p">,</span> <span class="n">scalar_array</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.sorting</span><span class="w"> </span><span class="kn">import</span> <span class="n">sort</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
@@ -483,11 +489,11 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    pda : pdarray or Strings</span>
+<span class="sd">    pda : pdarray, Strings, or Categorical</span>
 <span class="sd">        The array of values to cast</span>
-<span class="sd">    dt : np.dtype, type, or str</span>
+<span class="sd">    dt : np.dtype, type, str, or bigint</span>
 <span class="sd">        The target dtype to cast values to</span>
-<span class="sd">    errors : {strict, ignore, return_validity}</span>
+<span class="sd">    errors : {strict, ignore, return_validity}, default=ErrorMode.strict</span>
 <span class="sd">        Controls how errors are handled when casting strings to a numeric type</span>
 <span class="sd">        (ignored for casts from numeric types).</span>
 <span class="sd">            - strict: raise RuntimeError if *any* string cannot be converted</span>
@@ -497,6 +503,7 @@
 <span class="sd">            - return_validity: in addition to returning the same output as</span>
 <span class="sd">              &quot;ignore&quot;, also return a bool array indicating where the cast</span>
 <span class="sd">              was successful.</span>
+<span class="sd">        Default set to strict.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -515,16 +522,16 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; ak.cast(ak.linspace(1.0,5.0,5), dt=ak.int64)</span>
-<span class="sd">    array([1, 2, 3, 4, 5])</span>
+<span class="sd">    array([1 2 3 4 5])</span>
 
 <span class="sd">    &gt;&gt;&gt; ak.cast(ak.arange(0,5), dt=ak.float64).dtype</span>
 <span class="sd">    dtype(&#39;float64&#39;)</span>
 
 <span class="sd">    &gt;&gt;&gt; ak.cast(ak.arange(0,5), dt=ak.bool_)</span>
-<span class="sd">    array([False, True, True, True, True])</span>
+<span class="sd">    array([False True True True True])</span>
 
 <span class="sd">    &gt;&gt;&gt; ak.cast(ak.linspace(0,4,5), dt=ak.bool_)</span>
-<span class="sd">    array([False, True, True, True, True])</span>
+<span class="sd">    array([False True True True True])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>  <span class="c1"># type: ignore</span>
 
@@ -598,10 +605,11 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; ak.abs(ak.arange(-5,-1))</span>
-<span class="sd">    array([5, 4, 3, 2])</span>
+<span class="sd">    array([5 4 3 2])</span>
 
 <span class="sd">    &gt;&gt;&gt; ak.abs(ak.linspace(-5,-1,5))</span>
-<span class="sd">    array([5, 4, 3, 2, 1])</span>
+<span class="sd">    array([5.00000000000000000 4.00000000000000000 3.00000000000000000</span>
+<span class="sd">    2.00000000000000000 1.00000000000000000])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;abs&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
@@ -637,9 +645,10 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; ak.ceil(ak.linspace(1.1,5.5,5))</span>
-<span class="sd">    array([2, 3, 4, 5, 6])</span>
+<span class="sd">    array([2.00000000000000000 3.00000000000000000 4.00000000000000000</span>
+<span class="sd">    5.00000000000000000 6.00000000000000000])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_datatype_check</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="s1">&#39;ceil&#39;</span><span class="p">)</span>
+    <span class="n">_datatype_check</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="s2">&quot;ceil&quot;</span><span class="p">)</span>
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;ceil&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
@@ -674,9 +683,10 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; ak.floor(ak.linspace(1.1,5.5,5))</span>
-<span class="sd">    array([1, 2, 3, 4, 5])</span>
+<span class="sd">    array([1.00000000000000000 2.00000000000000000 3.00000000000000000</span>
+<span class="sd">    4.00000000000000000 5.00000000000000000])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_datatype_check</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="s1">&#39;floor&#39;</span><span class="p">)</span>
+    <span class="n">_datatype_check</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="s2">&quot;floor&quot;</span><span class="p">)</span>
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;floor&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
@@ -711,9 +721,9 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; ak.round(ak.array([1.1, 2.5, 3.14159]))</span>
-<span class="sd">    array([1, 3, 3])</span>
+<span class="sd">    array([1.00000000000000000 3.00000000000000000 3.00000000000000000])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_datatype_check</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="s1">&#39;round&#39;</span><span class="p">)</span>
+    <span class="n">_datatype_check</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="s2">&quot;round&quot;</span><span class="p">)</span>
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;round&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
@@ -748,9 +758,9 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; ak.trunc(ak.array([1.1, 2.5, 3.14159]))</span>
-<span class="sd">    array([1, 2, 3])</span>
+<span class="sd">    array([1.00000000000000000 2.00000000000000000 3.00000000000000000])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_datatype_check</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="s1">&#39;trunc&#39;</span><span class="p">)</span>
+    <span class="n">_datatype_check</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="s2">&quot;trunc&quot;</span><span class="p">)</span>
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;trunc&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
@@ -758,6 +768,7 @@
         <span class="p">},</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span></div>
+
 
 
 <span class="c1">#   Noted during Sept 2024 rewrite of EfuncMsg.chpl -- although it&#39;s &quot;sign&quot; here, inside the</span>
@@ -788,9 +799,9 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; ak.sign(ak.array([-10, -5, 0, 5, 10]))</span>
-<span class="sd">    array([-1, -1, 0, 1, 1])</span>
+<span class="sd">    array([-1 -1 0 1 1])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_datatype_check</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="s1">&#39;sign&#39;</span><span class="p">)</span>
+    <span class="n">_datatype_check</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="s2">&quot;sign&quot;</span><span class="p">)</span>
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;sgn&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
@@ -827,8 +838,8 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; ak.isfinite(ak.array[1.0, 2.0, ak.inf])</span>
-<span class="sd">    array([True, True, False])</span>
+<span class="sd">    &gt;&gt;&gt; ak.isfinite(ak.array([1.0, 2.0, ak.inf]))</span>
+<span class="sd">    array([True True False])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;isfinite&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
@@ -855,7 +866,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    pdarray</span>
 <span class="sd">        A pdarray containing boolean values indicating whether the</span>
-<span class="sd">        input array elements are infinite</span>
+<span class="sd">        input array elements are infinite (positive or negative)</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
@@ -866,8 +877,8 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; ak.isinf(ak.array[1.0, 2.0, ak.inf])</span>
-<span class="sd">    array([False, False, True])</span>
+<span class="sd">    &gt;&gt;&gt; ak.isinf(ak.array([1.0, 2.0, ak.inf]))</span>
+<span class="sd">    array([False False True])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;isinf&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
@@ -905,8 +916,8 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; ak.isnan(ak.array[1.0, 2.0, 1.0 / 0.0])</span>
-<span class="sd">    array([False, False, True])</span>
+<span class="sd">    &gt;&gt;&gt; ak.isnan(ak.array([1.0, 2.0, np.log(-1)]))</span>
+<span class="sd">    array([False False True])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_float</span><span class="p">,</span> <span class="n">is_numeric</span>
 
@@ -958,13 +969,13 @@
 <span class="sd">    &gt;&gt;&gt; A = ak.array([1, 10, 100])</span>
 <span class="sd">    # Natural log</span>
 <span class="sd">    &gt;&gt;&gt; ak.log(A)</span>
-<span class="sd">    array([0, 2.3025850929940459, 4.6051701859880918])</span>
+<span class="sd">    array([0.00000000000000000 2.3025850929940459 4.6051701859880918])</span>
 <span class="sd">    # Log base 10</span>
 <span class="sd">    &gt;&gt;&gt; ak.log(A) / np.log(10)</span>
-<span class="sd">    array([0, 1, 2])</span>
+<span class="sd">    array([0.00000000000000000 1.00000000000000000 2.00000000000000000])</span>
 <span class="sd">    # Log base 2</span>
 <span class="sd">    &gt;&gt;&gt; ak.log(A) / np.log(2)</span>
-<span class="sd">    array([0, 3.3219280948873626, 6.6438561897747253])</span>
+<span class="sd">    array([0.00000000000000000 3.3219280948873626 6.6438561897747253])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;log&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
@@ -984,13 +995,14 @@
 <span class="sd">    Return the element-wise base 10 log of the array.</span>
 
 <span class="sd">    Parameters</span>
-<span class="sd">    __________</span>
+<span class="sd">    ----------</span>
 <span class="sd">    pda : pdarray</span>
 <span class="sd">          array to compute on</span>
 
 <span class="sd">    Returns</span>
-<span class="sd">    _______</span>
-<span class="sd">    pdarray contain values of the base 10 log</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray</span>
+<span class="sd">         pdarray containing base 10 log values of the input array elements</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;log10&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
@@ -1010,13 +1022,14 @@
 <span class="sd">    Return the element-wise base 2 log of the array.</span>
 
 <span class="sd">    Parameters</span>
-<span class="sd">    __________</span>
+<span class="sd">    ----------</span>
 <span class="sd">    pda : pdarray</span>
 <span class="sd">          array to compute on</span>
 
 <span class="sd">    Returns</span>
-<span class="sd">    _______</span>
-<span class="sd">    pdarray contain values of the base 2 log</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray</span>
+<span class="sd">         pdarray containing base 2 log values of the input array elements</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;log2&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
@@ -1036,13 +1049,20 @@
 <span class="sd">    Return the element-wise natural log of one plus the array.</span>
 
 <span class="sd">    Parameters</span>
-<span class="sd">    __________</span>
+<span class="sd">    ----------</span>
 <span class="sd">    pda : pdarray</span>
 <span class="sd">          array to compute on</span>
 
 <span class="sd">    Returns</span>
-<span class="sd">    _______</span>
-<span class="sd">    pdarray contain values of the natural log of one plus the array</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray</span>
+<span class="sd">         pdarray containing natural log values of the input array elements,</span>
+<span class="sd">         adding one before taking the log</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ak.log1p(ak.arange(1,5))</span>
+<span class="sd">    array([0.69314718055994529 1.0986122886681098 1.3862943611198906 1.6094379124341003])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;log1p&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
@@ -1079,11 +1099,11 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; ak.exp(ak.arange(1,5))</span>
-<span class="sd">    array([2.7182818284590451, 7.3890560989306504, 20.085536923187668, 54.598150033144236])</span>
+<span class="sd">    array([2.7182818284590451 7.3890560989306504 20.085536923187668 54.598150033144236])</span>
 
 <span class="sd">    &gt;&gt;&gt; ak.exp(ak.uniform(5,1.0,5.0))</span>
-<span class="sd">    array([11.84010843172504, 46.454368507659211, 5.5571769623557188,</span>
-<span class="sd">           33.494295836924771, 13.478894913238722])</span>
+<span class="sd">    array([11.84010843172504 46.454368507659211 5.5571769623557188</span>
+<span class="sd">           33.494295836924771 13.478894913238722])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;exp&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
@@ -1109,8 +1129,8 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    pdarray</span>
-<span class="sd">        A pdarray containing exponential values of the input</span>
-<span class="sd">        array elements minus one</span>
+<span class="sd">        A pdarray containing e raised to each of the inputs,</span>
+<span class="sd">        then subtracting one.</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
@@ -1119,12 +1139,12 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; ak.exp1m(ak.arange(1,5))</span>
-<span class="sd">    array([1.7182818284590451, 6.3890560989306504, 19.085536923187668, 53.598150033144236])</span>
+<span class="sd">    &gt;&gt;&gt; ak.expm1(ak.arange(1,5))</span>
+<span class="sd">    array([1.7182818284590451 6.3890560989306504 19.085536923187668 53.598150033144236])</span>
 
-<span class="sd">    &gt;&gt;&gt; ak.exp1m(ak.uniform(5,1.0,5.0))</span>
-<span class="sd">    array([10.84010843172504, 45.454368507659211, 4.5571769623557188,</span>
-<span class="sd">           32.494295836924771, 12.478894913238722])</span>
+<span class="sd">    &gt;&gt;&gt; ak.expm1(ak.uniform(5,1.0,5.0))</span>
+<span class="sd">    array([10.84010843172504 45.454368507659211 4.5571769623557188</span>
+<span class="sd">           32.494295836924771 12.478894913238722])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;expm1&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
@@ -1161,7 +1181,7 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; ak.square(ak.arange(1,5))</span>
-<span class="sd">    array([1, 4, 9, 16])</span>
+<span class="sd">    array([1 4 9 16])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;square&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
@@ -1200,17 +1220,17 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; ak.cumsum(ak.arange([1,5]))</span>
-<span class="sd">    array([1, 3, 6])</span>
+<span class="sd">    &gt;&gt;&gt; ak.cumsum(ak.arange(1,5))</span>
+<span class="sd">    array([1 3 6 10])</span>
 
 <span class="sd">    &gt;&gt;&gt; ak.cumsum(ak.uniform(5,1.0,5.0))</span>
-<span class="sd">    array([3.1598310770203937, 5.4110385860243131, 9.1622479306453748,</span>
-<span class="sd">           12.710615785506533, 13.945880905466208])</span>
+<span class="sd">    array([3.1598310770203937 5.4110385860243131 9.1622479306453748</span>
+<span class="sd">           12.710615785506533 13.945880905466208])</span>
 
 <span class="sd">    &gt;&gt;&gt; ak.cumsum(ak.randint(0, 1, 5, dtype=ak.bool_))</span>
-<span class="sd">    array([0, 1, 1, 2, 3])</span>
+<span class="sd">    array([0 1 1 2 3])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_datatype_check</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">ak_uint64</span><span class="p">,</span> <span class="n">ak_bool</span><span class="p">],</span> <span class="s1">&#39;cumsum&#39;</span><span class="p">)</span>
+    <span class="n">_datatype_check</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">ak_uint64</span><span class="p">,</span> <span class="n">ak_bool</span><span class="p">],</span> <span class="s2">&quot;cumsum&quot;</span><span class="p">)</span>
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;cumsum&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
@@ -1249,13 +1269,13 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; ak.cumprod(ak.arange(1,5))</span>
-<span class="sd">    array([1, 2, 6, 24]))</span>
+<span class="sd">    array([1 2 6 24])</span>
 
 <span class="sd">    &gt;&gt;&gt; ak.cumprod(ak.uniform(5,1.0,5.0))</span>
-<span class="sd">    array([1.5728783400481925, 7.0472855509390593, 33.78523998586553,</span>
-<span class="sd">           134.05309592737584, 450.21589865655358])</span>
+<span class="sd">    array([1.5728783400481925 7.0472855509390593 33.78523998586553</span>
+<span class="sd">           134.05309592737584 450.21589865655358])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_datatype_check</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">ak_uint64</span><span class="p">,</span> <span class="n">ak_bool</span><span class="p">],</span> <span class="s1">&#39;cumprod&#39;</span><span class="p">)</span>
+    <span class="n">_datatype_check</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">ak_uint64</span><span class="p">,</span> <span class="n">ak_bool</span><span class="p">],</span> <span class="s2">&quot;cumprod&quot;</span><span class="p">)</span>
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;cumprod&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
@@ -1276,7 +1296,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pda : pdarray</span>
-<span class="sd">    where : Boolean or pdarray</span>
+<span class="sd">    where : bool or pdarray, default=True</span>
 <span class="sd">        This condition is broadcast over the input. At locations where the condition is True,</span>
 <span class="sd">        the sine will be applied to the corresponding value. Elsewhere, it will retain</span>
 <span class="sd">        its original value. Default set to True.</span>
@@ -1306,7 +1326,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pda : pdarray</span>
-<span class="sd">    where : Boolean or pdarray</span>
+<span class="sd">    where : bool or pdarray, default=True</span>
 <span class="sd">        This condition is broadcast over the input. At locations where the condition is True,</span>
 <span class="sd">        the cosine will be applied to the corresponding value. Elsewhere, it will retain</span>
 <span class="sd">        its original value. Default set to True.</span>
@@ -1336,7 +1356,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pda : pdarray</span>
-<span class="sd">    where : Boolean or pdarray</span>
+<span class="sd">    where : bool or pdarray, default=True</span>
 <span class="sd">        This condition is broadcast over the input. At locations where the condition is True,</span>
 <span class="sd">        the tangent will be applied to the corresponding value. Elsewhere, it will retain</span>
 <span class="sd">        its original value. Default set to True.</span>
@@ -1366,7 +1386,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pda : pdarray</span>
-<span class="sd">    where : Boolean or pdarray</span>
+<span class="sd">    where : bool or pdarray, default=True</span>
 <span class="sd">        This condition is broadcast over the input. At locations where the condition is True,</span>
 <span class="sd">        the inverse sine will be applied to the corresponding value. Elsewhere, it will retain</span>
 <span class="sd">        its original value. Default set to True.</span>
@@ -1396,7 +1416,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pda : pdarray</span>
-<span class="sd">    where : Boolean or pdarray</span>
+<span class="sd">    where : bool or pdarray, default=True</span>
 <span class="sd">        This condition is broadcast over the input. At locations where the condition is True,</span>
 <span class="sd">        the inverse cosine will be applied to the corresponding value. Elsewhere, it will retain</span>
 <span class="sd">        its original value. Default set to True.</span>
@@ -1426,7 +1446,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pda : pdarray</span>
-<span class="sd">    where : Boolean or pdarray</span>
+<span class="sd">    where : bool or pdarray, default=True</span>
 <span class="sd">        This condition is broadcast over the input. At locations where the condition is True,</span>
 <span class="sd">        the inverse tangent will be applied to the corresponding value. Elsewhere, it will retain</span>
 <span class="sd">        its original value. Default set to True.</span>
@@ -1462,11 +1482,11 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    num : Union[numeric_scalars, pdarray]</span>
+<span class="sd">    num : pdarray or numeric_scalars</span>
 <span class="sd">        Numerator of the arctan2 argument.</span>
-<span class="sd">    denom : Union[numeric_scalars, pdarray]</span>
+<span class="sd">    denom : pdarray or numeric_scalars</span>
 <span class="sd">        Denominator of the arctan2 argument.</span>
-<span class="sd">    where : Boolean or pdarray</span>
+<span class="sd">    where : bool or pdarray, default=True</span>
 <span class="sd">        This condition is broadcast over the input. At locations where the condition is True,</span>
 <span class="sd">        the inverse tangent will be applied to the corresponding values. Elsewhere, it will retain</span>
 <span class="sd">        its original value. Default set to True.</span>
@@ -1481,10 +1501,10 @@
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    TypeError</span>
-<span class="sd">        Raised if any parameter fails the typechecking</span>
-<span class="sd">        Raised if any element of pdarrays num and denom is not a supported type</span>
-<span class="sd">        Raised if both num and denom are scalars</span>
-<span class="sd">        Raised if where is neither boolean nor a pdarray of boolean</span>
+<span class="sd">        | Raised if any parameter fails the typechecking</span>
+<span class="sd">        | Raised if any element of pdarrays num and denom is not a supported type</span>
+<span class="sd">        | Raised if both num and denom are scalars</span>
+<span class="sd">        | Raised if where is neither boolean nor a pdarray of boolean</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">isSupportedNumber</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="p">[</span><span class="n">num</span><span class="p">,</span> <span class="n">denom</span><span class="p">]):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
@@ -1498,53 +1518,56 @@
         <span class="p">)</span>
     <span class="c1"># TODO: handle shape broadcasting for multidimensional arrays</span>
 
-    <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">True</span> <span class="p">:</span>
+    <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
         <span class="k">pass</span>
-    <span class="k">elif</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">False</span> <span class="p">:</span>
+    <span class="k">elif</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">num</span> <span class="o">/</span> <span class="n">denom</span>  <span class="c1"># type: ignore</span>
-    <span class="k">elif</span> <span class="n">where</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="nb">bool</span> <span class="p">:</span>
+    <span class="k">elif</span> <span class="n">where</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;where must have dtype bool, got </span><span class="si">{</span><span class="n">where</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> instead&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">denom</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
         <span class="n">ndim</span> <span class="o">=</span> <span class="n">num</span><span class="o">.</span><span class="n">ndim</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">denom</span><span class="o">.</span><span class="n">ndim</span>  <span class="c1"># type: ignore[union-attr]</span>
 
-<span class="c1">#   The code below will create the command string for arctan2vv, arctan2vs or arctan2sv, based</span>
-<span class="c1">#   on a and b.</span>
+        <span class="c1">#   The code below will create the command string for arctan2vv, arctan2vs or arctan2sv, based</span>
+        <span class="c1">#   on a and b.</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">denom</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">denom</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
             <span class="n">cmdstring</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;arctan2vv&lt;</span><span class="si">{</span><span class="n">num</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">denom</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
-            <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">True</span> <span class="p">:</span>
-                <span class="n">argdict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">denom</span><span class="p">,</span> <span class="p">}</span>
-            <span class="k">elif</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">False</span> <span class="p">:</span>
+            <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">argdict</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">,</span>
+                    <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">denom</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="k">elif</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">num</span> <span class="o">/</span> <span class="n">denom</span>  <span class="c1"># type: ignore</span>
-            <span class="k">else</span> <span class="p">:</span>
-                <span class="n">argdict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">[</span><span class="n">where</span><span class="p">],</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">denom</span><span class="p">[</span><span class="n">where</span><span class="p">],</span> <span class="p">}</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">denom</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="p">:</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">argdict</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">[</span><span class="n">where</span><span class="p">],</span>
+                    <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">denom</span><span class="p">[</span><span class="n">where</span><span class="p">],</span>
+                <span class="p">}</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">denom</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
             <span class="n">ts</span> <span class="o">=</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">denom</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">ts</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;float64&#39;</span><span class="p">,</span> <span class="s1">&#39;int64&#39;</span><span class="p">,</span> <span class="s1">&#39;uint64&#39;</span><span class="p">,</span> <span class="s1">&#39;bool&#39;</span><span class="p">]</span> <span class="p">:</span>
-                <span class="n">cmdstring</span> <span class="o">=</span> <span class="s2">&quot;arctan2vs_&quot;</span><span class="o">+</span><span class="n">ts</span><span class="o">+</span><span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">num</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span>  <span class="c1"># type: ignore[union-attr]</span>
-            <span class="k">else</span> <span class="p">:</span>
+            <span class="k">if</span> <span class="n">ts</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">,</span> <span class="s2">&quot;bool&quot;</span><span class="p">]:</span>
+                <span class="n">cmdstring</span> <span class="o">=</span> <span class="s2">&quot;arctan2vs_&quot;</span> <span class="o">+</span> <span class="n">ts</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">num</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span>  <span class="c1"># type: ignore[union-attr]</span>
+            <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ts</span><span class="si">}</span><span class="s2"> is not an allowed denom type for arctan2&quot;</span><span class="p">)</span>
             <span class="n">argdict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">num</span> <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">True</span> <span class="k">else</span> <span class="n">num</span><span class="p">[</span><span class="n">where</span><span class="p">],</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">denom</span><span class="p">}</span>  <span class="c1"># type: ignore</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="p">:</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
             <span class="n">ts</span> <span class="o">=</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">ts</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;float64&#39;</span><span class="p">,</span> <span class="s1">&#39;int64&#39;</span><span class="p">,</span> <span class="s1">&#39;uint64&#39;</span><span class="p">,</span> <span class="s1">&#39;bool&#39;</span><span class="p">]</span> <span class="p">:</span>
-                <span class="n">cmdstring</span> <span class="o">=</span> <span class="s2">&quot;arctan2sv_&quot;</span><span class="o">+</span><span class="n">ts</span><span class="o">+</span><span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">denom</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
-            <span class="k">else</span> <span class="p">:</span>
+            <span class="k">if</span> <span class="n">ts</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">,</span> <span class="s2">&quot;bool&quot;</span><span class="p">]:</span>
+                <span class="n">cmdstring</span> <span class="o">=</span> <span class="s2">&quot;arctan2sv_&quot;</span> <span class="o">+</span> <span class="n">ts</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">denom</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ts</span><span class="si">}</span><span class="s2"> is not an allowed num type for arctan2&quot;</span><span class="p">)</span>
             <span class="n">argdict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">denom</span> <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">True</span> <span class="k">else</span> <span class="n">denom</span><span class="p">[</span><span class="n">where</span><span class="p">]}</span>  <span class="c1"># type: ignore</span>
 
         <span class="n">repMsg</span> <span class="o">=</span> <span class="n">type_cast</span><span class="p">(</span>
             <span class="nb">str</span><span class="p">,</span>
-            <span class="n">generic_msg</span><span class="p">(</span>
-                <span class="n">cmd</span><span class="o">=</span><span class="n">cmdstring</span><span class="p">,</span>
-                <span class="n">args</span><span class="o">=</span><span class="n">argdict</span>
-                <span class="p">),</span>
-            <span class="p">)</span>
+            <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="n">cmdstring</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">argdict</span><span class="p">),</span>
+        <span class="p">)</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">True</span> <span class="p">:</span>
+        <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">ret</span>
-        <span class="k">else</span> <span class="p">:</span>
+        <span class="k">else</span><span class="p">:</span>
             <span class="n">new_pda</span> <span class="o">=</span> <span class="n">num</span> <span class="o">/</span> <span class="n">denom</span>  <span class="c1"># type : ignore</span>
             <span class="k">return</span> <span class="n">_merge_where</span><span class="p">(</span><span class="n">new_pda</span><span class="p">,</span> <span class="n">where</span><span class="p">,</span> <span class="n">ret</span><span class="p">)</span>
 
@@ -1563,7 +1586,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pda : pdarray</span>
-<span class="sd">    where : Boolean or pdarray</span>
+<span class="sd">    where : bool or pdarray, default=True</span>
 <span class="sd">        This condition is broadcast over the input. At locations where the condition is True,</span>
 <span class="sd">        the hyperbolic sine will be applied to the corresponding value. Elsewhere, it will retain</span>
 <span class="sd">        its original value. Default set to True.</span>
@@ -1593,7 +1616,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pda : pdarray</span>
-<span class="sd">    where : Boolean or pdarray</span>
+<span class="sd">    where : bool or pdarray, default=True</span>
 <span class="sd">        This condition is broadcast over the input. At locations where the condition is True,</span>
 <span class="sd">        the hyperbolic cosine will be applied to the corresponding value. Elsewhere, it will retain</span>
 <span class="sd">        its original value. Default set to True.</span>
@@ -1623,7 +1646,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pda : pdarray</span>
-<span class="sd">    where : Boolean or pdarray</span>
+<span class="sd">    where : bool or pdarray, default=True</span>
 <span class="sd">        This condition is broadcast over the input. At locations where the condition is True,</span>
 <span class="sd">        the hyperbolic tangent will be applied to the corresponding value. Elsewhere, it will retain</span>
 <span class="sd">        its original value. Default set to True.</span>
@@ -1653,7 +1676,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pda : pdarray</span>
-<span class="sd">    where : Boolean or pdarray</span>
+<span class="sd">    where : bool or pdarray, default=True</span>
 <span class="sd">        This condition is broadcast over the input. At locations where the condition is True,</span>
 <span class="sd">        the inverse hyperbolic sine will be applied to the corresponding value. Elsewhere, it will retain</span>
 <span class="sd">        its original value. Default set to True.</span>
@@ -1683,7 +1706,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pda : pdarray</span>
-<span class="sd">    where : Boolean or pdarray</span>
+<span class="sd">    where : bool or pdarray, default=True</span>
 <span class="sd">        This condition is broadcast over the input. At locations where the condition is True,</span>
 <span class="sd">        the inverse hyperbolic cosine will be applied to the corresponding value. Elsewhere, it will</span>
 <span class="sd">        retain its original value. Default set to True.</span>
@@ -1713,7 +1736,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pda : pdarray</span>
-<span class="sd">    where : Boolean or pdarray</span>
+<span class="sd">    where : bool or pdarray, default=True</span>
 <span class="sd">        This condition is broadcast over the input. At locations where the condition is True,</span>
 <span class="sd">        the inverse hyperbolic tangent will be applied to the corresponding value. Elsewhere,</span>
 <span class="sd">        it will retain its original value. Default set to True.</span>
@@ -1740,9 +1763,9 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pda : pdarray</span>
-<span class="sd">    func : string</span>
+<span class="sd">    func : str</span>
 <span class="sd">        The designated trig function that is passed in</span>
-<span class="sd">    where : Boolean or pdarray</span>
+<span class="sd">    where : bool or pdarray, default=True</span>
 <span class="sd">        This condition is applied over the input. At locations where the condition is True, the</span>
 <span class="sd">        corresponding value will be acted on by the respective trig function. Elsewhere,</span>
 <span class="sd">        it will retain its original value. Default set to True.</span>
@@ -1796,7 +1819,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pda : pdarray</span>
-<span class="sd">    where : Boolean or pdarray</span>
+<span class="sd">    where : bool or pdarray, default=True</span>
 <span class="sd">        This condition is broadcast over the input. At locations where the condition is True, the</span>
 <span class="sd">        corresponding value will be converted from radians to degrees. Elsewhere, it will retain its</span>
 <span class="sd">        original value. Default set to True.</span>
@@ -1817,7 +1840,7 @@
     <span class="k">elif</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">pda</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">_merge_where</span><span class="p">(</span><span class="n">pda</span><span class="p">[:],</span> <span class="n">where</span><span class="p">,</span> <span class="mi">180</span><span class="o">*</span><span class="p">(</span><span class="n">pda</span><span class="p">[</span><span class="n">where</span><span class="p">]</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="n">_merge_where</span><span class="p">(</span><span class="n">pda</span><span class="p">[:],</span> <span class="n">where</span><span class="p">,</span> <span class="mi">180</span> <span class="o">*</span> <span class="p">(</span><span class="n">pda</span><span class="p">[</span><span class="n">where</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span></div>
 
 
 
@@ -1831,7 +1854,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pda : pdarray</span>
-<span class="sd">    where : Boolean or pdarray</span>
+<span class="sd">    where : bool or pdarray, default=True</span>
 <span class="sd">        This condition is broadcast over the input. At locations where the condition is True, the</span>
 <span class="sd">        corresponding value will be converted from degrees to radians. Elsewhere, it will retain its</span>
 <span class="sd">        original value. Default set to True.</span>
@@ -1852,7 +1875,7 @@
     <span class="k">elif</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">pda</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">_merge_where</span><span class="p">(</span><span class="n">pda</span><span class="p">[:],</span> <span class="n">where</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">pda</span><span class="p">[</span><span class="n">where</span><span class="p">]</span><span class="o">/</span><span class="mi">180</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="n">_merge_where</span><span class="p">(</span><span class="n">pda</span><span class="p">[:],</span> <span class="n">where</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">pda</span><span class="p">[</span><span class="n">where</span><span class="p">]</span> <span class="o">/</span> <span class="mi">180</span><span class="p">))</span></div>
 
 
 
@@ -1891,10 +1914,10 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    pda : Union[pdarray, Strings, Segarray, Categorical],</span>
-<span class="sd">     List[Union[pdarray, Strings, Segarray, Categorical]]]</span>
+<span class="sd">    pda : pdarray, Strings, SegArray, or Categorical \</span>
+<span class="sd">    or List of pdarray, Strings, SegArray, or Categorical</span>
 
-<span class="sd">    full : bool</span>
+<span class="sd">    full : bool, default=True</span>
 <span class="sd">        This is only used when a single pdarray is passed into hash</span>
 <span class="sd">        By default, a 128-bit hash is computed and returned as</span>
 <span class="sd">        two int64 arrays. If full=False, then a 64-bit hash</span>
@@ -1983,7 +2006,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_hash_single</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">full</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">bigint</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">bigint_to_uint_arrays</span><span class="p">())</span>
-    <span class="n">_datatype_check</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">ak_uint64</span><span class="p">],</span> <span class="s1">&#39;hash&#39;</span><span class="p">)</span>
+    <span class="n">_datatype_check</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">ak_uint64</span><span class="p">],</span> <span class="s2">&quot;hash&quot;</span><span class="p">)</span>
     <span class="n">hname</span> <span class="o">=</span> <span class="s2">&quot;hash128&quot;</span> <span class="k">if</span> <span class="n">full</span> <span class="k">else</span> <span class="s2">&quot;hash64&quot;</span>
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">type_cast</span><span class="p">(</span>
         <span class="nb">str</span><span class="p">,</span>
@@ -2091,9 +2114,9 @@
 <span class="sd">    ----------</span>
 <span class="sd">    condition : pdarray</span>
 <span class="sd">        Used to choose values from A or B</span>
-<span class="sd">    A : Union[numeric_scalars, str, pdarray, Strings, Categorical]</span>
+<span class="sd">    A : str, numeric_scalars, pdarray, Strings, or Categorical</span>
 <span class="sd">        Value(s) used when condition is True</span>
-<span class="sd">    B : Union[numeric_scalars, str, pdarray, Strings, Categorical]</span>
+<span class="sd">    B : str, numeric_scalars, pdarray, Strings, or Categorical</span>
 <span class="sd">        Value(s) used when condition is False</span>
 
 <span class="sd">    Returns</span>
@@ -2118,31 +2141,33 @@
 <span class="sd">    &gt;&gt;&gt; a2 = ak.ones(9, dtype=np.int64)</span>
 <span class="sd">    &gt;&gt;&gt; cond = a1 &lt; 5</span>
 <span class="sd">    &gt;&gt;&gt; ak.where(cond,a1,a2)</span>
-<span class="sd">    array([1, 2, 3, 4, 1, 1, 1, 1, 1])</span>
+<span class="sd">    array([1 2 3 4 1 1 1 1 1])</span>
 
 <span class="sd">    &gt;&gt;&gt; a1 = ak.arange(1,10)</span>
 <span class="sd">    &gt;&gt;&gt; a2 = ak.ones(9, dtype=np.int64)</span>
 <span class="sd">    &gt;&gt;&gt; cond = a1 == 5</span>
 <span class="sd">    &gt;&gt;&gt; ak.where(cond,a1,a2)</span>
-<span class="sd">    array([1, 1, 1, 1, 5, 1, 1, 1, 1])</span>
+<span class="sd">    array([1 1 1 1 5 1 1 1 1])</span>
 
 <span class="sd">    &gt;&gt;&gt; a1 = ak.arange(1,10)</span>
 <span class="sd">    &gt;&gt;&gt; a2 = 10</span>
 <span class="sd">    &gt;&gt;&gt; cond = a1 &lt; 5</span>
 <span class="sd">    &gt;&gt;&gt; ak.where(cond,a1,a2)</span>
-<span class="sd">    array([1, 2, 3, 4, 10, 10, 10, 10, 10])</span>
+<span class="sd">    array([1 2 3 4 10 10 10 10 10])</span>
 
 <span class="sd">    &gt;&gt;&gt; s1 = ak.array([f&#39;str {i}&#39; for i in range(10)])</span>
 <span class="sd">    &gt;&gt;&gt; s2 = &#39;str 21&#39;</span>
 <span class="sd">    &gt;&gt;&gt; cond = (ak.arange(10) % 2 == 0)</span>
 <span class="sd">    &gt;&gt;&gt; ak.where(cond,s1,s2)</span>
-<span class="sd">    array([&#39;str 0&#39;, &#39;str 21&#39;, &#39;str 2&#39;, &#39;str 21&#39;, &#39;str 4&#39;, &#39;str 21&#39;, &#39;str 6&#39;, &#39;str 21&#39;, &#39;str 8&#39;,&#39;str 21&#39;])</span>
+<span class="sd">    array([&#39;str 0&#39;, &#39;str 21&#39;, &#39;str 2&#39;, &#39;str 21&#39;, &#39;str 4&#39;,</span>
+<span class="sd">    &#39;str 21&#39;, &#39;str 6&#39;, &#39;str 21&#39;, &#39;str 8&#39;, &#39;str 21&#39;])</span>
 
 <span class="sd">    &gt;&gt;&gt; c1 = ak.Categorical(ak.array([f&#39;str {i}&#39; for i in range(10)]))</span>
 <span class="sd">    &gt;&gt;&gt; c2 = ak.Categorical(ak.array([f&#39;str {i}&#39; for i in range(9, -1, -1)]))</span>
 <span class="sd">    &gt;&gt;&gt; cond = (ak.arange(10) % 2 == 0)</span>
 <span class="sd">    &gt;&gt;&gt; ak.where(cond,c1,c2)</span>
-<span class="sd">    array([&#39;str 0&#39;, &#39;str 8&#39;, &#39;str 2&#39;, &#39;str 6&#39;, &#39;str 4&#39;, &#39;str 4&#39;, &#39;str 6&#39;, &#39;str 2&#39;, &#39;str 8&#39;, &#39;str 0&#39;])</span>
+<span class="sd">    array([&#39;str 0&#39;, &#39;str 8&#39;, &#39;str 2&#39;, &#39;str 6&#39;, &#39;str 4&#39;,</span>
+<span class="sd">    &#39;str 4&#39;, &#39;str 6&#39;, &#39;str 2&#39;, &#39;str 8&#39;, &#39;str 0&#39;])</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -2168,36 +2193,36 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">_str_cat_where</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
 
-<span class="c1">#   The code below creates a command string for wherevv, wherevs, wheresv or wheress,</span>
-<span class="c1">#   based on A and B.</span>
+    <span class="c1">#   The code below creates a command string for wherevv, wherevs, wheresv or wheress,</span>
+    <span class="c1">#   based on A and B.</span>
 
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="p">:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
         <span class="n">cmdstring</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;wherevv&lt;</span><span class="si">{</span><span class="n">condition</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">A</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">B</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
 
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">B</span><span class="p">)</span> <span class="p">:</span>
-        <span class="k">if</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">B</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;float64&#39;</span><span class="p">,</span> <span class="s1">&#39;int64&#39;</span><span class="p">,</span> <span class="s1">&#39;uint64&#39;</span><span class="p">,</span> <span class="s1">&#39;bool&#39;</span><span class="p">]</span> <span class="p">:</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">B</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">B</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">,</span> <span class="s2">&quot;bool&quot;</span><span class="p">]:</span>
             <span class="n">ltr</span> <span class="o">=</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>
-            <span class="n">cmdstring</span> <span class="o">=</span> <span class="s2">&quot;wherevs_&quot;</span><span class="o">+</span><span class="n">ltr</span><span class="o">+</span><span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">condition</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">A</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
-        <span class="k">else</span> <span class="p">:</span>  <span class="c1"># *should* be impossible because of the IsSupportedNumber check</span>
+            <span class="n">cmdstring</span> <span class="o">=</span> <span class="s2">&quot;wherevs_&quot;</span> <span class="o">+</span> <span class="n">ltr</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">condition</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">A</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># *should* be impossible because of the IsSupportedNumber check</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;where does not accept scalar type </span><span class="si">{</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">B</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="p">:</span>
-        <span class="k">if</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;float64&#39;</span><span class="p">,</span> <span class="s1">&#39;int64&#39;</span><span class="p">,</span> <span class="s1">&#39;uint64&#39;</span><span class="p">,</span> <span class="s1">&#39;bool&#39;</span><span class="p">]</span> <span class="p">:</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">,</span> <span class="s2">&quot;bool&quot;</span><span class="p">]:</span>
             <span class="n">ltr</span> <span class="o">=</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
-            <span class="n">cmdstring</span> <span class="o">=</span> <span class="s2">&quot;wheresv_&quot;</span><span class="o">+</span><span class="n">ltr</span><span class="o">+</span><span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">condition</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">B</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
-        <span class="k">else</span> <span class="p">:</span>  <span class="c1"># *should* be impossible because of the IsSupportedNumber check</span>
+            <span class="n">cmdstring</span> <span class="o">=</span> <span class="s2">&quot;wheresv_&quot;</span> <span class="o">+</span> <span class="n">ltr</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">condition</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">B</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># *should* be impossible because of the IsSupportedNumber check</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;where does not accept scalar type </span><span class="si">{</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">A</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="k">else</span> <span class="p">:</span>  <span class="c1"># both are scalars</span>
-        <span class="k">if</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;float64&#39;</span><span class="p">,</span> <span class="s1">&#39;int64&#39;</span><span class="p">,</span> <span class="s1">&#39;uint64&#39;</span><span class="p">,</span> <span class="s1">&#39;bool&#39;</span><span class="p">]</span> <span class="p">:</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># both are scalars</span>
+        <span class="k">if</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">,</span> <span class="s2">&quot;bool&quot;</span><span class="p">]:</span>
             <span class="n">ta</span> <span class="o">=</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">B</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;float64&#39;</span><span class="p">,</span> <span class="s1">&#39;int64&#39;</span><span class="p">,</span> <span class="s1">&#39;uint64&#39;</span><span class="p">,</span> <span class="s1">&#39;bool&#39;</span><span class="p">]</span> <span class="p">:</span>
+            <span class="k">if</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">B</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">,</span> <span class="s2">&quot;bool&quot;</span><span class="p">]:</span>
                 <span class="n">tb</span> <span class="o">=</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>
-            <span class="k">else</span> <span class="p">:</span>
+            <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;where does not accept scalar type </span><span class="si">{</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">B</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">else</span> <span class="p">:</span>
+        <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;where does not accept scalar type </span><span class="si">{</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">A</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">cmdstring</span> <span class="o">=</span> <span class="s2">&quot;wheress_&quot;</span><span class="o">+</span><span class="n">ta</span><span class="o">+</span><span class="s2">&quot;_&quot;</span><span class="o">+</span><span class="n">tb</span><span class="o">+</span><span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">condition</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+        <span class="n">cmdstring</span> <span class="o">=</span> <span class="s2">&quot;wheress_&quot;</span> <span class="o">+</span> <span class="n">ta</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">tb</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">condition</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
 
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="n">cmdstring</span><span class="p">,</span>
@@ -2224,13 +2249,13 @@
 <span class="sd">    pda : pdarray</span>
 <span class="sd">        The values to histogram</span>
 
-<span class="sd">    bins : int_scalars</span>
+<span class="sd">    bins : int_scalars, default=10</span>
 <span class="sd">        The number of equal-size bins to use (default: 10)</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    (pdarray, Union[pdarray, int64 or float64])</span>
-<span class="sd">        Bin edges and The number of values present in each bin</span>
+<span class="sd">        The number of values present in each bin and the bin edges</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
@@ -2257,12 +2282,16 @@
 <span class="sd">    &gt;&gt;&gt; nbins = 3</span>
 <span class="sd">    &gt;&gt;&gt; h, b = ak.histogram(A, bins=nbins)</span>
 <span class="sd">    &gt;&gt;&gt; h</span>
-<span class="sd">    array([3, 3, 4])</span>
+<span class="sd">    array([3 3 4])</span>
 <span class="sd">    &gt;&gt;&gt; b</span>
-<span class="sd">    array([0., 3., 6., 9.])</span>
-
+<span class="sd">    array([0.00000000000000000 3.00000000000000000 6.00000000000000000 9.00000000000000000])</span>
 <span class="sd">    # To plot, export the left edges and the histogram to NumPy</span>
-<span class="sd">    &gt;&gt;&gt; plt.plot(b.to_ndarray()[::-1], h.to_ndarray())</span>
+<span class="sd">    &gt;&gt;&gt; b_np = b.to_ndarray()</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; b_widths = np.diff(b_np)</span>
+<span class="sd">    &gt;&gt;&gt; plt.bar(b_np[:-1], h.to_ndarray(), width=b_widths, align=&#39;edge&#39;, edgecolor=&#39;black&#39;)</span>
+<span class="sd">    &lt;BarContainer object of 3 artists&gt;</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">bins</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;bins must be 1 or greater&quot;</span><span class="p">)</span>
@@ -2290,7 +2319,7 @@
 <span class="sd">    y : pdarray</span>
 <span class="sd">        A pdarray containing the y coordinates of the points to be histogrammed.</span>
 
-<span class="sd">    bins : int_scalars or [int, int] = 10</span>
+<span class="sd">    bins : int_scalars or [int, int], default=10</span>
 <span class="sd">        The number of equal-size bins to use.</span>
 <span class="sd">        If int, the number of bins for the two dimensions (nx=ny=bins).</span>
 <span class="sd">        If [int, int], the number of bins in each dimension (nx, ny = bins).</span>
@@ -2336,13 +2365,13 @@
 <span class="sd">    &gt;&gt;&gt; nbins = 3</span>
 <span class="sd">    &gt;&gt;&gt; h, x_edges, y_edges = ak.histogram2d(x, y, bins=nbins)</span>
 <span class="sd">    &gt;&gt;&gt; h</span>
-<span class="sd">    array([[0, 0, 3],</span>
-<span class="sd">           [0, 2, 1],</span>
-<span class="sd">           [3, 1, 0]])</span>
+<span class="sd">    array([array([0.00000000000000000 0.00000000000000000 3.00000000000000000])</span>
+<span class="sd">           array([0.00000000000000000 2.00000000000000000 1.00000000000000000])</span>
+<span class="sd">           array([3.00000000000000000 1.00000000000000000 0.00000000000000000])])</span>
 <span class="sd">    &gt;&gt;&gt; x_edges</span>
-<span class="sd">    array([0.0 3.0 6.0 9.0])</span>
-<span class="sd">    &gt;&gt;&gt; x_edges</span>
-<span class="sd">    array([0.0 3.0 6.0 9.0])</span>
+<span class="sd">    array([0.00000000000000000 3.00000000000000000 6.00000000000000000 9.00000000000000000])</span>
+<span class="sd">    &gt;&gt;&gt; y_edges</span>
+<span class="sd">    array([0.00000000000000000 3.00000000000000000 6.00000000000000000 9.00000000000000000])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
         <span class="n">x_bins</span><span class="p">,</span> <span class="n">y_bins</span> <span class="o">=</span> <span class="n">bins</span><span class="p">,</span> <span class="n">bins</span>
@@ -2373,10 +2402,10 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    sample : Sequence[pdarray]</span>
+<span class="sd">    sample : Sequence of pdarray</span>
 <span class="sd">        A sequence of pdarrays containing the coordinates of the points to be histogrammed.</span>
 
-<span class="sd">    bins : int_scalars or Sequence[int_scalars] = 10</span>
+<span class="sd">    bins : int_scalars or Sequence of int_scalars, default=10</span>
 <span class="sd">        The number of equal-size bins to use.</span>
 <span class="sd">        If int, the number of bins for all dimensions (nx=ny=...=bins).</span>
 <span class="sd">        If [int, int, ...], the number of bins in each dimension (nx, ny, ... = bins).</span>
@@ -2416,15 +2445,15 @@
 <span class="sd">    &gt;&gt;&gt; z = ak.where(x % 2 == 0, x, y)</span>
 <span class="sd">    &gt;&gt;&gt; h, edges = ak.histogramdd((x, y,z), bins=(2,2,5))</span>
 <span class="sd">    &gt;&gt;&gt; h</span>
-<span class="sd">    array([[[0, 0, 0, 0, 0],</span>
-<span class="sd">            [1, 1, 1, 1, 1]],</span>
-
-<span class="sd">           [[1, 1, 1, 1, 1],</span>
-<span class="sd">            [0, 0, 0, 0, 0]]])</span>
+<span class="sd">    array([array([array([0 0 0 0 0])</span>
+<span class="sd">           array([1 1 1 1 1])])</span>
+<span class="sd">           array([array([1 1 1 1 1])</span>
+<span class="sd">           array([0 0 0 0 0])])])</span>
 <span class="sd">    &gt;&gt;&gt; edges</span>
-<span class="sd">    [array([0.0 4.5 9.0]),</span>
-<span class="sd">     array([0.0 4.5 9.0]),</span>
-<span class="sd">     array([0.0 1.6 3.2 4.8 6.4 8.0])]</span>
+<span class="sd">    [array([0.00000000000000000 4.5 9.00000000000000000]),</span>
+<span class="sd">    array([0.00000000000000000 4.5 9.00000000000000000]),</span>
+<span class="sd">    array([0.00000000000000000 1.6000000000000001 3.2000000000000002</span>
+<span class="sd">    4.8000000000000007 6.4000000000000004 8.00000000000000000])]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Sample must be a sequence of pdarrays&quot;</span><span class="p">)</span>
@@ -2470,7 +2499,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    pda : pdarray, int64</span>
+<span class="sd">    pda : pdarray</span>
 <span class="sd">        The array of values to count</span>
 
 <span class="sd">    Returns</span>
@@ -2501,7 +2530,7 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; A = ak.array([2, 0, 2, 4, 0, 0])</span>
 <span class="sd">    &gt;&gt;&gt; ak.value_counts(A)</span>
-<span class="sd">    (array([0, 2, 4]), array([3, 2, 1]))</span>
+<span class="sd">    (array([0 2 4]), array([3 2 1]))</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">pda</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span></div>
 
@@ -2529,13 +2558,13 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    pda : pdarray, int64 or float64</span>
+<span class="sd">    pda : pdarray</span>
 <span class="sd">        the array of values to clip</span>
-<span class="sd">    lo  : scalar or pdarray, int64 or float64</span>
+<span class="sd">    lo : numeric_scalars or pdarray</span>
 <span class="sd">        the lower value of the clipping range</span>
-<span class="sd">    hi  : scalar or pdarray, int64 or float64</span>
+<span class="sd">    hi : numeric_scalars or pdarray</span>
 <span class="sd">        the higher value of the clipping range</span>
-<span class="sd">    If lo or hi (or both) are pdarrays, the check is by pairwise elements.</span>
+<span class="sd">        If lo or hi (or both) are pdarrays, the check is by pairwise elements.</span>
 <span class="sd">        See examples.</span>
 
 <span class="sd">    Returns</span>
@@ -2549,21 +2578,21 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; a = ak.array([1,2,3,4,5,6,7,8,9,10])</span>
 <span class="sd">    &gt;&gt;&gt; ak.clip(a,3,8)</span>
-<span class="sd">    array([3,3,3,4,5,6,7,8,8,8])</span>
+<span class="sd">    array([3 3 3 4 5 6 7 8 8 8])</span>
 <span class="sd">    &gt;&gt;&gt; ak.clip(a,3,8.0)</span>
 <span class="sd">    array([3.00000000000000000 3.00000000000000000 3.00000000000000000 4.00000000000000000</span>
 <span class="sd">           5.00000000000000000 6.00000000000000000 7.00000000000000000 8.00000000000000000</span>
 <span class="sd">           8.00000000000000000 8.00000000000000000])</span>
 <span class="sd">    &gt;&gt;&gt; ak.clip(a,None,7)</span>
-<span class="sd">    array([1,2,3,4,5,6,7,7,7,7])</span>
+<span class="sd">    array([1 2 3 4 5 6 7 7 7 7])</span>
 <span class="sd">    &gt;&gt;&gt; ak.clip(a,5,None)</span>
-<span class="sd">    array([5,5,5,5,5,6,7,8,9,10])</span>
+<span class="sd">    array([5 5 5 5 5 6 7 8 9 10])</span>
 <span class="sd">    &gt;&gt;&gt; ak.clip(a,None,None)</span>
-<span class="sd">    ValueError : either min or max must be supplied</span>
-<span class="sd">    &gt;&gt;&gt; ak.clip(a,ak.array([2,2,3,3,8,8,5,5,6,6],8))</span>
-<span class="sd">    array([2,2,3,4,8,8,7,8,8,8])</span>
+<span class="sd">    ValueError: Either min or max must be supplied.</span>
+<span class="sd">    &gt;&gt;&gt; ak.clip(a,ak.array([2,2,3,3,8,8,5,5,6,6]),8)</span>
+<span class="sd">    array([2 2 3 4 8 8 7 8 8 8])</span>
 <span class="sd">    &gt;&gt;&gt; ak.clip(a,4,ak.array([10,9,8,7,6,5,5,5,5,5]))</span>
-<span class="sd">    array([4,4,4,4,5,5,5,5,5,5])</span>
+<span class="sd">    array([4 4 4 4 5 5 5 5 5 5])</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -2610,7 +2639,7 @@
 
 <div class="viewcode-block" id="median">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.median">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">median</span><span class="p">(</span><span class="n">pda</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">median</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the median of a given array.  1d case only, for now.</span>
 
@@ -2622,19 +2651,18 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    np.float64</span>
-<span class="sd">        The median of the entire pdarray</span>
-<span class="sd">        The array is sorted, and then if the number of elements is odd,</span>
+<span class="sd">        | The median of the entire pdarray</span>
+<span class="sd">        | The array is sorted, and then if the number of elements is odd,</span>
 <span class="sd">            the return value is the middle element.  If even, then the</span>
 <span class="sd">            mean of the two middle elements.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">    &gt;&gt;&gt; arkouda.connect()</span>
-<span class="sd">    &gt;&gt;&gt; pda = ak.array ([0,4,7,8,1,3,5,2,-1])</span>
+<span class="sd">    &gt;&gt;&gt; pda = ak.array([0,4,7,8,1,3,5,2,-1])</span>
 <span class="sd">    &gt;&gt;&gt; ak.median(pda)</span>
-<span class="sd">    3</span>
+<span class="sd">    3.0</span>
 <span class="sd">    &gt;&gt;&gt; pda = ak.array([0,1,3,3,1,2,3,4,2,3])</span>
+<span class="sd">    &gt;&gt;&gt; ak.median(pda)</span>
 <span class="sd">    2.5</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2656,7 +2684,7 @@
 
 <div class="viewcode-block" id="count_nonzero">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.count_nonzero">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">count_nonzero</span><span class="p">(</span><span class="n">pda</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">count_nonzero</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the nonzero count of a given array. 1D case only, for now.</span>
 
@@ -2670,14 +2698,21 @@
 <span class="sd">    np.int64</span>
 <span class="sd">        The nonzero count of the entire pdarray</span>
 
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        Raised if the parameter is not a pdarray with numeric, bool, or str datatype</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Raised if sum applied to the pdarray doesn&#39;t come back with a scalar</span>
+
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; pda = ak.array([0,4,7,8,1,3,5,2,-1])</span>
 <span class="sd">    &gt;&gt;&gt; ak.count_nonzero(pda)</span>
-<span class="sd">    9</span>
+<span class="sd">    8</span>
 <span class="sd">    &gt;&gt;&gt; pda = ak.array([False,True,False,True,False])</span>
 <span class="sd">    &gt;&gt;&gt; ak.count_nonzero(pda)</span>
-<span class="sd">    3</span>
+<span class="sd">    2</span>
 <span class="sd">    &gt;&gt;&gt; pda = ak.array([&quot;hello&quot;,&quot;&quot;,&quot;there&quot;])</span>
 <span class="sd">    &gt;&gt;&gt; ak.count_nonzero(pda)</span>
 <span class="sd">    2</span>
@@ -2689,17 +2724,27 @@
     <span class="c1">#  Handle different data types.</span>
 
     <span class="k">if</span> <span class="n">is_numeric</span><span class="p">(</span><span class="n">pda</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">sum</span><span class="p">((</span><span class="n">pda</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">((</span><span class="n">pda</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;summing the pdarray did not generate a scalar&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span>
     <span class="k">elif</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">sum</span><span class="p">((</span><span class="n">pda</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">((</span><span class="n">pda</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;summing the pdarray did not generate a scalar&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span>
     <span class="k">elif</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">sum</span><span class="p">((</span><span class="n">pda</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span></div>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">((</span><span class="n">pda</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;summing the pdarray did not generate a scalar&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span>
+    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;pda must be numeric, bool, or str pdarray&quot;</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="array_equal">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.array_equal">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">array_equal</span><span class="p">(</span><span class="n">pda_a</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">pda_b</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">equal_nan</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">array_equal</span><span class="p">(</span><span class="n">pda_a</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">pda_b</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">equal_nan</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compares two pdarrays for equality.</span>
 <span class="sd">    If neither array has any nan elements, then if all elements are pairwise equal,</span>
@@ -2711,7 +2756,8 @@
 <span class="sd">    ----------</span>
 <span class="sd">    pda_a : pdarray</span>
 <span class="sd">    pda_b : pdarray</span>
-<span class="sd">    equal_nan : boolean to determine how to handle nans, default False</span>
+<span class="sd">    equal_nan : bool, default=False</span>
+<span class="sd">        Determines how to handle nans</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -2744,9 +2790,9 @@
     <span class="k">if</span> <span class="p">(</span><span class="n">pda_a</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">pda_b</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="ow">or</span> <span class="p">((</span><span class="n">pda_a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akstr_</span><span class="p">)</span> <span class="o">^</span> <span class="p">(</span><span class="n">pda_b</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akstr_</span><span class="p">)):</span>
         <span class="k">return</span> <span class="kc">False</span>
     <span class="k">elif</span> <span class="n">equal_nan</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">ak_all</span><span class="p">(</span><span class="n">where</span><span class="p">(</span><span class="n">isnan</span><span class="p">(</span><span class="n">pda_a</span><span class="p">),</span> <span class="n">isnan</span><span class="p">(</span><span class="n">pda_b</span><span class="p">),</span> <span class="n">pda_a</span> <span class="o">==</span> <span class="n">pda_b</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">ak_all</span><span class="p">(</span><span class="n">where</span><span class="p">(</span><span class="n">isnan</span><span class="p">(</span><span class="n">pda_a</span><span class="p">),</span> <span class="n">isnan</span><span class="p">(</span><span class="n">pda_b</span><span class="p">),</span> <span class="n">pda_a</span> <span class="o">==</span> <span class="n">pda_b</span><span class="p">)))</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">ak_all</span><span class="p">(</span><span class="n">pda_a</span> <span class="o">==</span> <span class="n">pda_b</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">ak_all</span><span class="p">(</span><span class="n">pda_a</span> <span class="o">==</span> <span class="n">pda_b</span><span class="p">))</span></div>
 
 
 
@@ -2754,7 +2800,7 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.putmask">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">putmask</span><span class="p">(</span>
     <span class="n">A</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">mask</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">Values</span><span class="p">:</span> <span class="n">pdarray</span>
-<span class="p">):</span>  <span class="c1"># doesn&#39;t return anything, as A is overwritten in place</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># doesn&#39;t return anything, as A is overwritten in place</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Overwrites elements of A with elements from B based upon a mask array.</span>
 <span class="sd">    Similar to numpy.putmask, where mask = False, A retains its original value,</span>
@@ -2773,17 +2819,17 @@
 <span class="sd">        Value(s) used when mask is False (see Notes for allowed dtypes)</span>
 
 <span class="sd">    Examples</span>
-<span class="sd">    -------</span>
+<span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; a = ak.array(np.arange(10))</span>
 <span class="sd">    &gt;&gt;&gt; ak.putmask (a,a&gt;2,a**2)</span>
 <span class="sd">    &gt;&gt;&gt; a</span>
-<span class="sd">    array ([0,1,2,9,16,25,36,49,64,81])</span>
+<span class="sd">    array([0 1 2 9 16 25 36 49 64 81])</span>
 
 <span class="sd">    &gt;&gt;&gt; a = ak.array(np.arange(10))</span>
 <span class="sd">    &gt;&gt;&gt; values = ak.array([3,2])</span>
 <span class="sd">    &gt;&gt;&gt; ak.putmask (a,a&gt;2,values)</span>
 <span class="sd">    &gt;&gt;&gt; a</span>
-<span class="sd">    array ([0,1,2,2,3,2,3,2,3,2])</span>
+<span class="sd">    array([0 1 2 2 3 2 3 2 3 2])</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
@@ -2793,12 +2839,12 @@
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    A and mask must be the same size.  Values can be any size.</span>
-<span class="sd">    Allowed dtypes for A and Values conform to types accepted by numpy putmask.</span>
-<span class="sd">    If A is ak.float64, Values can be ak.float64, ak.int64, ak.uint64, ak.bool_.</span>
-<span class="sd">    If A is ak.int64, Values can be ak.int64 or ak.bool_.</span>
-<span class="sd">    If A is ak.uint64, Values can be ak.uint64, or ak.bool_.</span>
-<span class="sd">    If A is ak.bool_, Values must be ak.bool_.</span>
+<span class="sd">    | A and mask must be the same size.  Values can be any size.</span>
+<span class="sd">    | Allowed dtypes for A and Values conform to types accepted by numpy putmask.</span>
+<span class="sd">    | If A is ak.float64, Values can be ak.float64, ak.int64, ak.uint64, ak.bool_.</span>
+<span class="sd">    | If A is ak.int64, Values can be ak.int64 or ak.bool_.</span>
+<span class="sd">    | If A is ak.uint64, Values can be ak.uint64, or ak.bool_.</span>
+<span class="sd">    | If A is ak.bool_, Values must be ak.bool_.</span>
 
 <span class="sd">    Only one conditional clause is supported e.g., n &lt; 5, n &gt; 1.</span>
 
@@ -2816,7 +2862,7 @@
         <span class="p">(</span><span class="n">ak_bool</span><span class="p">,</span> <span class="n">ak_bool</span><span class="p">),</span>
     <span class="p">]</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="p">((</span><span class="n">A</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">Values</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span> <span class="ow">in</span> <span class="n">ALLOWED_PUTMASK_PAIRS</span><span class="p">)</span> <span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">((</span><span class="n">A</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">Values</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span> <span class="ow">in</span> <span class="n">ALLOWED_PUTMASK_PAIRS</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Types </span><span class="si">{</span><span class="n">A</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">Values</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> are not compatible in putmask.&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">mask</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">A</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;mask and A must be same size in putmask&quot;</span><span class="p">)</span>
@@ -2834,7 +2880,7 @@
 
 <div class="viewcode-block" id="eye">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.eye">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">eye</span><span class="p">(</span><span class="n">rows</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">cols</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">diag</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="n">ak_int64</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">eye</span><span class="p">(</span><span class="n">rows</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">cols</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">diag</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="n">ak_int64</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a pdarray with zeros everywhere except along a diagonal, which is all ones.</span>
 <span class="sd">    The matrix need not be square.</span>
@@ -2843,11 +2889,13 @@
 <span class="sd">    ----------</span>
 <span class="sd">    rows : int_scalars</span>
 <span class="sd">    cols : int_scalars</span>
-<span class="sd">    diag : int_scalars</span>
-<span class="sd">        if diag = 0, zeros start at element [0,0] and proceed along diagonal</span>
-<span class="sd">        if diag &gt; 0, zeros start at element [0,diag] and proceed along diagonal</span>
-<span class="sd">        if diag &lt; 0, zeros start at element [diag,0] and proceed along diagonal</span>
-<span class="sd">        etc.</span>
+<span class="sd">    diag : int_scalars, default=0</span>
+<span class="sd">        | if diag = 0, zeros start at element [0,0] and proceed along diagonal</span>
+<span class="sd">        | if diag &gt; 0, zeros start at element [0,diag] and proceed along diagonal</span>
+<span class="sd">        | if diag &lt; 0, zeros start at element [diag,0] and proceed along diagonal</span>
+<span class="sd">        | etc. Default set to 0.</span>
+<span class="sd">    dt : type, default=ak_int64</span>
+<span class="sd">        The data type of the elements in the matrix being returned. Default set to ak_int64</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -2860,11 +2908,11 @@
 <span class="sd">    array([array([1 0 0 0]) array([0 1 0 0]) array([0 0 1 0]) array([0 0 0 1])])</span>
 <span class="sd">    &gt;&gt;&gt; ak.eye(rows=3,cols=3,diag=1,dt=ak.float64)</span>
 <span class="sd">    array([array([0.00000000000000000 1.00000000000000000 0.00000000000000000])</span>
-<span class="sd">    array([0.00000000000000000  0.00000000000000000 1.00000000000000000])</span>
+<span class="sd">    array([0.00000000000000000 0.00000000000000000 1.00000000000000000])</span>
 <span class="sd">    array([0.00000000000000000 0.00000000000000000 0.00000000000000000])])</span>
 <span class="sd">    &gt;&gt;&gt; ak.eye(rows=4,cols=4,diag=-1,dt=ak.bool_)</span>
 <span class="sd">    array([array([False False False False]) array([True False False False])</span>
-<span class="sd">    array([False True False False]) array([False False True False])]</span>
+<span class="sd">    array([False True False False]) array([False False True False])])</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -2890,18 +2938,18 @@
 
 <div class="viewcode-block" id="triu">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.triu">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">triu</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">diag</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">triu</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">diag</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a copy of the pda with the lower triangle zeroed out</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pda : pdarray</span>
-<span class="sd">    diag : int_scalars</span>
-<span class="sd">        if diag = 0, zeros start just above the main diagonal</span>
-<span class="sd">        if diag = 1, zeros start at the main diagonal</span>
-<span class="sd">        if diag = 2, zeros start just below the main diagonal</span>
-<span class="sd">        etc.</span>
+<span class="sd">    diag : int_scalars, default=0</span>
+<span class="sd">        | if diag = 0, zeros start just below the main diagonal</span>
+<span class="sd">        | if diag = 1, zeros start at the main diagonal</span>
+<span class="sd">        | if diag = 2, zeros start just above the main diagonal</span>
+<span class="sd">        | etc. Default set to 0.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -2949,18 +2997,18 @@
 
 <div class="viewcode-block" id="tril">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.tril">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">tril</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">diag</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">tril</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">diag</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a copy of the pda with the upper triangle zeroed out</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pda : pdarray</span>
-<span class="sd">    diag : int_scalars</span>
-<span class="sd">        if diag = 0, zeros start just below the main diagonal</span>
-<span class="sd">        if diag = 1, zeros start at the main diagonal</span>
-<span class="sd">        if diag = 2, zeros start just above the main diagonal</span>
-<span class="sd">        etc.</span>
+<span class="sd">    diag : int_scalars, optional</span>
+<span class="sd">        | if diag = 0, zeros start just above the main diagonal</span>
+<span class="sd">        | if diag = 1, zeros start at the main diagonal</span>
+<span class="sd">        | if diag = 2, zeros start just below the main diagonal</span>
+<span class="sd">        | etc. Default set to 0.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -3007,7 +3055,7 @@
 
 <div class="viewcode-block" id="transpose">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.transpose">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">transpose</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">transpose</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the transpose of a matrix.</span>
 
@@ -3047,7 +3095,7 @@
 
 <div class="viewcode-block" id="matmul">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.matmul">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">matmul</span><span class="p">(</span><span class="n">pdaLeft</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">pdaRight</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">matmul</span><span class="p">(</span><span class="n">pdaLeft</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">pdaRight</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the product of two matrices.</span>
 
@@ -3064,9 +3112,9 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; a = ak.array([[1,2,3,4,5],[1,2,3,4,5]])</span>
-<span class="sd">    &gt;&gt;&gt; b = ak.array(([1,1],[2,2],[3,3],[4,4],[5,5]])</span>
+<span class="sd">    &gt;&gt;&gt; b = ak.array([[1,1],[2,2],[3,3],[4,4],[5,5]])</span>
 <span class="sd">    &gt;&gt;&gt; ak.matmul(a,b)</span>
-<span class="sd">    array([array([30 30]) array([45 45])])</span>
+<span class="sd">    array([array([55 55]) array([55 55])])</span>
 
 <span class="sd">    &gt;&gt;&gt; x = ak.array([[1,2,3],[1.1,2.1,3.1]])</span>
 <span class="sd">    &gt;&gt;&gt; y = ak.array([[1,1,1],[0,2,2],[0,0,3]])</span>
@@ -3098,7 +3146,7 @@
 
 <div class="viewcode-block" id="vecdot">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.vecdot">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">vecdot</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">vecdot</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the generalized dot product of two vectors along the given axis.</span>
 <span class="sd">    Assumes that both tensors have already been broadcast to the same shape.</span>
@@ -3116,11 +3164,11 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; a = ak.array([[1,2,3,4,5],[1,2,3,4,5]])</span>
-<span class="sd">    &gt;&gt;&gt; b = ak.array(([2,2,2,2,2],[2,2,2,2,2]])</span>
+<span class="sd">    &gt;&gt;&gt; b = ak.array([[2,2,2,2,2],[2,2,2,2,2]])</span>
 <span class="sd">    &gt;&gt;&gt; ak.vecdot(a,b)</span>
-<span class="sd">    array([5 10 15 20 25])</span>
+<span class="sd">    array([4 8 12 16 20])</span>
 <span class="sd">    &gt;&gt;&gt; ak.vecdot(b,a)</span>
-<span class="sd">    array([5 10 15 20 25])</span>
+<span class="sd">    array([4 8 12 16 20])</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>

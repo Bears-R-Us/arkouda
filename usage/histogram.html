@@ -641,11 +641,11 @@ always a np.float64 or np.int64.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The values to histogram</p></li>
-<li><p><strong>bins</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id900" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The number of equal-size bins to use (default: 10)</p></li>
+<li><p><strong>bins</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id900" title="arkouda.int_scalars"><em>int_scalars</em></a><em>, </em><em>default=10</em>) – The number of equal-size bins to use (default: 10)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Bin edges and The number of values present in each bin</p>
+<dd class="field-even"><p>The number of values present in each bin and the bin edges</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../autoapi/arkouda/dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union">Union</a>[<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#id879" title="arkouda.int64">int64</a> or <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.float64" title="arkouda.float64">float64</a>])</p>
@@ -671,13 +671,18 @@ always a np.float64 or np.int64.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">nbins</span> <span class="o">=</span> <span class="mi">3</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">nbins</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">h</span>
-<span class="go">array([3, 3, 4])</span>
+<span class="go">array([3 3 4])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span>
-<span class="go">array([0., 3., 6., 9.])</span>
+<span class="go">array([0.00000000000000000 3.00000000000000000 6.00000000000000000 9.00000000000000000])</span>
+<span class="go"># To plot, export the left edges and the histogram to NumPy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b_np</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b_widths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">b_np</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">b_np</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">h</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">(),</span> <span class="n">width</span><span class="o">=</span><span class="n">b_widths</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s1">&#39;edge&#39;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+<span class="go">&lt;BarContainer object of 3 artists&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p># To plot, export the left edges and the histogram to NumPy
-&gt;&gt;&gt; plt.plot(b.to_ndarray()[::-1], h.to_ndarray())</p>
 </dd></dl>
 
 </section>
@@ -690,7 +695,7 @@ always a np.float64 or np.int64.</p>
 <dd><p>Count the occurrences of the unique values of an array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#id879" title="arkouda.int64"><em>int64</em></a>) – The array of values to count</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The array of values to count</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">pdarray</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Strings</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><code class="xref py py-class docutils literal notranslate"><span class="pre">Categorical</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">pdarray</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Strings</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><code class="xref py py-class docutils literal notranslate"><span class="pre">Categorical</span></code></a>]]], <a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">pdarray</span></code></a>]</span></p>
@@ -718,7 +723,7 @@ return_counts parameter is set to True.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">value_counts</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
-<span class="go">(array([0, 2, 4]), array([3, 2, 1]))</span>
+<span class="go">(array([0 2 4]), array([3 2 1]))</span>
 </pre></div>
 </div>
 </dd></dl>
