@@ -467,9 +467,10 @@ class Categorical:
         >>> ak.connect()
         >>> a = ak.array(["a","b","c"])
         >>> a
+        array(['a', 'b', 'c'])
         >>> c = ak.Categorical(a)
-        >>>  c.to_strings()
-        c.to_strings()
+        >>> c.to_strings()
+        array(['a', 'b', 'c'])
 
         >>> isinstance(c.to_strings(), ak.Strings)
         True
@@ -784,11 +785,11 @@ class Categorical:
         >>> strings = ak.array([f'String {i}' for i in range(0,5)])
         >>> cat = ak.Categorical(strings)
         >>> ak.in1d(cat,strings)
-        array([True, True, True, True, True])
+        array([True True True True True])
         >>> strings = ak.array([f'String {i}' for i in range(5,9)])
         >>> catTwo = ak.Categorical(strings)
         >>> ak.in1d(cat,catTwo)
-        array([False, False, False, False, False])
+        array([False False False False False])
         """
         if isinstance(test, Categorical):
             # Must use test._categories_used instead of test.categories to avoid
