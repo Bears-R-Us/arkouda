@@ -3,29 +3,35 @@ from enum import Enum
 from typing import TYPE_CHECKING, List, Sequence, Tuple, TypeVar, Union
 from typing import cast as type_cast
 from typing import no_type_check
+
 import numpy as np
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
-from arkouda.numpy.dtypes import str_ as akstr_
 from arkouda.groupbyclass import GroupBy, groupable
-from arkouda.numpy.dtypes import bigint
+from arkouda.numpy.dtypes import _datatype_check, bigint
 from arkouda.numpy.dtypes import bool_ as ak_bool
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import float64 as ak_float64
 from arkouda.numpy.dtypes import int64 as ak_int64
-from arkouda.numpy.dtypes import uint64 as ak_uint64
 from arkouda.numpy.dtypes import (
     int_scalars,
     isSupportedNumber,
     numeric_scalars,
     resolve_scalar_dtype,
-    str_,
 )
-from arkouda.numpy.dtypes import _datatype_check
+from arkouda.numpy.dtypes import str_
+from arkouda.numpy.dtypes import str_ as akstr_
+from arkouda.numpy.dtypes import uint64 as ak_uint64
 from arkouda.pdarrayclass import all as ak_all
 from arkouda.pdarrayclass import any as ak_any
-from arkouda.pdarrayclass import argmax, broadcast_if_needed, create_pdarray, pdarray, sum
+from arkouda.pdarrayclass import (
+    argmax,
+    broadcast_if_needed,
+    create_pdarray,
+    pdarray,
+    sum,
+)
 from arkouda.pdarraycreation import array, linspace, scalar_array
 from arkouda.sorting import sort
 from arkouda.strings import Strings
@@ -124,11 +130,11 @@ def cast(
 
     Parameters
     ----------
-    pda : pdarray or Strings
+    pda : pdarray, Strings, or Categorical
         The array of values to cast
-    dt : np.dtype, type, or str
+    dt : np.dtype, type, str, or bigint
         The target dtype to cast values to
-    errors : {strict, ignore, return_validity}
+    errors : {strict, ignore, return_validity}, default=ErrorMode.strict
         Controls how errors are handled when casting strings to a numeric type
         (ignored for casts from numeric types).
             - strict: raise RuntimeError if *any* string cannot be converted
@@ -138,6 +144,7 @@ def cast(
             - return_validity: in addition to returning the same output as
               "ignore", also return a bool array indicating where the cast
               was successful.
+        Default set to strict.
 
     Returns
     -------
@@ -156,16 +163,16 @@ def cast(
     Examples
     --------
     >>> ak.cast(ak.linspace(1.0,5.0,5), dt=ak.int64)
-    array([1, 2, 3, 4, 5])
+    array([1 2 3 4 5])
 
     >>> ak.cast(ak.arange(0,5), dt=ak.float64).dtype
     dtype('float64')
 
     >>> ak.cast(ak.arange(0,5), dt=ak.bool_)
-    array([False, True, True, True, True])
+    array([False True True True True])
 
     >>> ak.cast(ak.linspace(0,4,5), dt=ak.bool_)
-    array([False, True, True, True, True])
+    array([False True True True True])
     """
     from arkouda.categorical import Categorical  # type: ignore
 
@@ -236,10 +243,11 @@ def abs(pda: pdarray) -> pdarray:
     Examples
     --------
     >>> ak.abs(ak.arange(-5,-1))
-    array([5, 4, 3, 2])
+    array([5 4 3 2])
 
     >>> ak.abs(ak.linspace(-5,-1,5))
-    array([5, 4, 3, 2, 1])
+    array([5.00000000000000000 4.00000000000000000 3.00000000000000000
+    2.00000000000000000 1.00000000000000000])
     """
     repMsg = generic_msg(
         cmd=f"abs<{pda.dtype},{pda.ndim}>",
@@ -272,9 +280,10 @@ def ceil(pda: pdarray) -> pdarray:
     Examples
     --------
     >>> ak.ceil(ak.linspace(1.1,5.5,5))
-    array([2, 3, 4, 5, 6])
+    array([2.00000000000000000 3.00000000000000000 4.00000000000000000
+    5.00000000000000000 6.00000000000000000])
     """
-    _datatype_check(pda.dtype, [float], 'ceil')
+    _datatype_check(pda.dtype, [float], "ceil")
     repMsg = generic_msg(
         cmd=f"ceil<{pda.dtype},{pda.ndim}>",
         args={
@@ -306,9 +315,10 @@ def floor(pda: pdarray) -> pdarray:
     Examples
     --------
     >>> ak.floor(ak.linspace(1.1,5.5,5))
-    array([1, 2, 3, 4, 5])
+    array([1.00000000000000000 2.00000000000000000 3.00000000000000000
+    4.00000000000000000 5.00000000000000000])
     """
-    _datatype_check(pda.dtype, [float], 'floor')
+    _datatype_check(pda.dtype, [float], "floor")
     repMsg = generic_msg(
         cmd=f"floor<{pda.dtype},{pda.ndim}>",
         args={
@@ -340,9 +350,9 @@ def round(pda: pdarray) -> pdarray:
     Examples
     --------
     >>> ak.round(ak.array([1.1, 2.5, 3.14159]))
-    array([1, 3, 3])
+    array([1.00000000000000000 3.00000000000000000 3.00000000000000000])
     """
-    _datatype_check(pda.dtype, [float], 'round')
+    _datatype_check(pda.dtype, [float], "round")
     repMsg = generic_msg(
         cmd=f"round<{pda.dtype},{pda.ndim}>",
         args={
@@ -374,9 +384,9 @@ def trunc(pda: pdarray) -> pdarray:
     Examples
     --------
     >>> ak.trunc(ak.array([1.1, 2.5, 3.14159]))
-    array([1, 2, 3])
+    array([1.00000000000000000 2.00000000000000000 3.00000000000000000])
     """
-    _datatype_check(pda.dtype, [float], 'trunc')
+    _datatype_check(pda.dtype, [float], "trunc")
     repMsg = generic_msg(
         cmd=f"trunc<{pda.dtype},{pda.ndim}>",
         args={
@@ -384,6 +394,7 @@ def trunc(pda: pdarray) -> pdarray:
         },
     )
     return create_pdarray(type_cast(str, repMsg))
+
 
 #   Noted during Sept 2024 rewrite of EfuncMsg.chpl -- although it's "sign" here, inside the
 #   chapel code, it's "sgn"
@@ -411,9 +422,9 @@ def sign(pda: pdarray) -> pdarray:
     Examples
     --------
     >>> ak.sign(ak.array([-10, -5, 0, 5, 10]))
-    array([-1, -1, 0, 1, 1])
+    array([-1 -1 0 1 1])
     """
-    _datatype_check(pda.dtype, [int, float], 'sign')
+    _datatype_check(pda.dtype, [int, float], "sign")
     repMsg = generic_msg(
         cmd=f"sgn<{pda.dtype},{pda.ndim}>",
         args={
@@ -447,8 +458,8 @@ def isfinite(pda: pdarray) -> pdarray:
 
     Examples
     --------
-    >>> ak.isfinite(ak.array[1.0, 2.0, ak.inf])
-    array([True, True, False])
+    >>> ak.isfinite(ak.array([1.0, 2.0, ak.inf]))
+    array([True True False])
     """
     repMsg = generic_msg(
         cmd=f"isfinite<{pda.ndim}>",
@@ -472,7 +483,7 @@ def isinf(pda: pdarray) -> pdarray:
     -------
     pdarray
         A pdarray containing boolean values indicating whether the
-        input array elements are infinite
+        input array elements are infinite (positive or negative)
 
     Raises
     ------
@@ -483,8 +494,8 @@ def isinf(pda: pdarray) -> pdarray:
 
     Examples
     --------
-    >>> ak.isinf(ak.array[1.0, 2.0, ak.inf])
-    array([False, False, True])
+    >>> ak.isinf(ak.array([1.0, 2.0, ak.inf]))
+    array([False False True])
     """
     repMsg = generic_msg(
         cmd=f"isinf<{pda.ndim}>",
@@ -519,8 +530,8 @@ def isnan(pda: pdarray) -> pdarray:
 
     Examples
     --------
-    >>> ak.isnan(ak.array[1.0, 2.0, 1.0 / 0.0])
-    array([False, False, True])
+    >>> ak.isnan(ak.array([1.0, 2.0, np.log(-1)]))
+    array([False False True])
     """
     from arkouda.util import is_float, is_numeric
 
@@ -569,13 +580,13 @@ def log(pda: pdarray) -> pdarray:
     >>> A = ak.array([1, 10, 100])
     # Natural log
     >>> ak.log(A)
-    array([0, 2.3025850929940459, 4.6051701859880918])
+    array([0.00000000000000000 2.3025850929940459 4.6051701859880918])
     # Log base 10
     >>> ak.log(A) / np.log(10)
-    array([0, 1, 2])
+    array([0.00000000000000000 1.00000000000000000 2.00000000000000000])
     # Log base 2
     >>> ak.log(A) / np.log(2)
-    array([0, 3.3219280948873626, 6.6438561897747253])
+    array([0.00000000000000000 3.3219280948873626 6.6438561897747253])
     """
     repMsg = generic_msg(
         cmd=f"log<{pda.dtype},{pda.ndim}>",
@@ -592,13 +603,14 @@ def log10(pda: pdarray) -> pdarray:
     Return the element-wise base 10 log of the array.
 
     Parameters
-    __________
+    ----------
     pda : pdarray
           array to compute on
 
     Returns
-    _______
-    pdarray contain values of the base 10 log
+    -------
+    pdarray
+         pdarray containing base 10 log values of the input array elements
     """
     repMsg = generic_msg(
         cmd=f"log10<{pda.dtype},{pda.ndim}>",
@@ -615,13 +627,14 @@ def log2(pda: pdarray) -> pdarray:
     Return the element-wise base 2 log of the array.
 
     Parameters
-    __________
+    ----------
     pda : pdarray
           array to compute on
 
     Returns
-    _______
-    pdarray contain values of the base 2 log
+    -------
+    pdarray
+         pdarray containing base 2 log values of the input array elements
     """
     repMsg = generic_msg(
         cmd=f"log2<{pda.dtype},{pda.ndim}>",
@@ -638,13 +651,20 @@ def log1p(pda: pdarray) -> pdarray:
     Return the element-wise natural log of one plus the array.
 
     Parameters
-    __________
+    ----------
     pda : pdarray
           array to compute on
 
     Returns
-    _______
-    pdarray contain values of the natural log of one plus the array
+    -------
+    pdarray
+         pdarray containing natural log values of the input array elements,
+         adding one before taking the log
+
+    Examples
+    --------
+    >>> ak.log1p(ak.arange(1,5))
+    array([0.69314718055994529 1.0986122886681098 1.3862943611198906 1.6094379124341003])
     """
     repMsg = generic_msg(
         cmd=f"log1p<{pda.dtype},{pda.ndim}>",
@@ -678,11 +698,11 @@ def exp(pda: pdarray) -> pdarray:
     Examples
     --------
     >>> ak.exp(ak.arange(1,5))
-    array([2.7182818284590451, 7.3890560989306504, 20.085536923187668, 54.598150033144236])
+    array([2.7182818284590451 7.3890560989306504 20.085536923187668 54.598150033144236])
 
     >>> ak.exp(ak.uniform(5,1.0,5.0))
-    array([11.84010843172504, 46.454368507659211, 5.5571769623557188,
-           33.494295836924771, 13.478894913238722])
+    array([11.84010843172504 46.454368507659211 5.5571769623557188
+           33.494295836924771 13.478894913238722])
     """
     repMsg = generic_msg(
         cmd=f"exp<{pda.dtype},{pda.ndim}>",
@@ -705,8 +725,8 @@ def expm1(pda: pdarray) -> pdarray:
     Returns
     -------
     pdarray
-        A pdarray containing exponential values of the input
-        array elements minus one
+        A pdarray containing e raised to each of the inputs,
+        then subtracting one.
 
     Raises
     ------
@@ -715,12 +735,12 @@ def expm1(pda: pdarray) -> pdarray:
 
     Examples
     --------
-    >>> ak.exp1m(ak.arange(1,5))
-    array([1.7182818284590451, 6.3890560989306504, 19.085536923187668, 53.598150033144236])
+    >>> ak.expm1(ak.arange(1,5))
+    array([1.7182818284590451 6.3890560989306504 19.085536923187668 53.598150033144236])
 
-    >>> ak.exp1m(ak.uniform(5,1.0,5.0))
-    array([10.84010843172504, 45.454368507659211, 4.5571769623557188,
-           32.494295836924771, 12.478894913238722])
+    >>> ak.expm1(ak.uniform(5,1.0,5.0))
+    array([10.84010843172504 45.454368507659211 4.5571769623557188
+           32.494295836924771 12.478894913238722])
     """
     repMsg = generic_msg(
         cmd=f"expm1<{pda.dtype},{pda.ndim}>",
@@ -754,7 +774,7 @@ def square(pda: pdarray) -> pdarray:
     Examples
     --------
     >>> ak.square(ak.arange(1,5))
-    array([1, 4, 9, 16])
+    array([1 4 9 16])
     """
     repMsg = generic_msg(
         cmd=f"square<{pda.dtype},{pda.ndim}>",
@@ -790,17 +810,17 @@ def cumsum(pda: pdarray) -> pdarray:
 
     Examples
     --------
-    >>> ak.cumsum(ak.arange([1,5]))
-    array([1, 3, 6])
+    >>> ak.cumsum(ak.arange(1,5))
+    array([1 3 6 10])
 
     >>> ak.cumsum(ak.uniform(5,1.0,5.0))
-    array([3.1598310770203937, 5.4110385860243131, 9.1622479306453748,
-           12.710615785506533, 13.945880905466208])
+    array([3.1598310770203937 5.4110385860243131 9.1622479306453748
+           12.710615785506533 13.945880905466208])
 
     >>> ak.cumsum(ak.randint(0, 1, 5, dtype=ak.bool_))
-    array([0, 1, 1, 2, 3])
+    array([0 1 1 2 3])
     """
-    _datatype_check(pda.dtype, [int, float, ak_uint64, ak_bool], 'cumsum')
+    _datatype_check(pda.dtype, [int, float, ak_uint64, ak_bool], "cumsum")
     repMsg = generic_msg(
         cmd=f"cumsum<{pda.dtype},{pda.ndim}>",
         args={
@@ -836,13 +856,13 @@ def cumprod(pda: pdarray) -> pdarray:
     Examples
     --------
     >>> ak.cumprod(ak.arange(1,5))
-    array([1, 2, 6, 24]))
+    array([1 2 6 24])
 
     >>> ak.cumprod(ak.uniform(5,1.0,5.0))
-    array([1.5728783400481925, 7.0472855509390593, 33.78523998586553,
-           134.05309592737584, 450.21589865655358])
+    array([1.5728783400481925 7.0472855509390593 33.78523998586553
+           134.05309592737584 450.21589865655358])
     """
-    _datatype_check(pda.dtype, [int, float, ak_uint64, ak_bool], 'cumprod')
+    _datatype_check(pda.dtype, [int, float, ak_uint64, ak_bool], "cumprod")
     repMsg = generic_msg(
         cmd=f"cumprod<{pda.dtype},{pda.ndim}>",
         args={
@@ -860,7 +880,7 @@ def sin(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     Parameters
     ----------
     pda : pdarray
-    where : Boolean or pdarray
+    where : bool or pdarray, default=True
         This condition is broadcast over the input. At locations where the condition is True,
         the sine will be applied to the corresponding value. Elsewhere, it will retain
         its original value. Default set to True.
@@ -887,7 +907,7 @@ def cos(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     Parameters
     ----------
     pda : pdarray
-    where : Boolean or pdarray
+    where : bool or pdarray, default=True
         This condition is broadcast over the input. At locations where the condition is True,
         the cosine will be applied to the corresponding value. Elsewhere, it will retain
         its original value. Default set to True.
@@ -914,7 +934,7 @@ def tan(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     Parameters
     ----------
     pda : pdarray
-    where : Boolean or pdarray
+    where : bool or pdarray, default=True
         This condition is broadcast over the input. At locations where the condition is True,
         the tangent will be applied to the corresponding value. Elsewhere, it will retain
         its original value. Default set to True.
@@ -941,7 +961,7 @@ def arcsin(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     Parameters
     ----------
     pda : pdarray
-    where : Boolean or pdarray
+    where : bool or pdarray, default=True
         This condition is broadcast over the input. At locations where the condition is True,
         the inverse sine will be applied to the corresponding value. Elsewhere, it will retain
         its original value. Default set to True.
@@ -968,7 +988,7 @@ def arccos(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     Parameters
     ----------
     pda : pdarray
-    where : Boolean or pdarray
+    where : bool or pdarray, default=True
         This condition is broadcast over the input. At locations where the condition is True,
         the inverse cosine will be applied to the corresponding value. Elsewhere, it will retain
         its original value. Default set to True.
@@ -995,7 +1015,7 @@ def arctan(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     Parameters
     ----------
     pda : pdarray
-    where : Boolean or pdarray
+    where : bool or pdarray, default=True
         This condition is broadcast over the input. At locations where the condition is True,
         the inverse tangent will be applied to the corresponding value. Elsewhere, it will retain
         its original value. Default set to True.
@@ -1028,11 +1048,11 @@ def arctan2(
 
     Parameters
     ----------
-    num : Union[numeric_scalars, pdarray]
+    num : pdarray or numeric_scalars
         Numerator of the arctan2 argument.
-    denom : Union[numeric_scalars, pdarray]
+    denom : pdarray or numeric_scalars
         Denominator of the arctan2 argument.
-    where : Boolean or pdarray
+    where : bool or pdarray, default=True
         This condition is broadcast over the input. At locations where the condition is True,
         the inverse tangent will be applied to the corresponding values. Elsewhere, it will retain
         its original value. Default set to True.
@@ -1047,10 +1067,10 @@ def arctan2(
     Raises
     ------
     TypeError
-        Raised if any parameter fails the typechecking
-        Raised if any element of pdarrays num and denom is not a supported type
-        Raised if both num and denom are scalars
-        Raised if where is neither boolean nor a pdarray of boolean
+        | Raised if any parameter fails the typechecking
+        | Raised if any element of pdarrays num and denom is not a supported type
+        | Raised if both num and denom are scalars
+        | Raised if where is neither boolean nor a pdarray of boolean
     """
     if not all(isSupportedNumber(arg) or isinstance(arg, pdarray) for arg in [num, denom]):
         raise TypeError(
@@ -1064,53 +1084,56 @@ def arctan2(
         )
     # TODO: handle shape broadcasting for multidimensional arrays
 
-    if where is True :
+    if where is True:
         pass
-    elif where is False :
+    elif where is False:
         return num / denom  # type: ignore
-    elif where.dtype != bool :
+    elif where.dtype != bool:
         raise TypeError(f"where must have dtype bool, got {where.dtype} instead")
 
     if isinstance(num, pdarray) or isinstance(denom, pdarray):
         ndim = num.ndim if isinstance(num, pdarray) else denom.ndim  # type: ignore[union-attr]
 
-#   The code below will create the command string for arctan2vv, arctan2vs or arctan2sv, based
-#   on a and b.
+        #   The code below will create the command string for arctan2vv, arctan2vs or arctan2sv, based
+        #   on a and b.
 
-        if isinstance(num, pdarray) and isinstance(denom, pdarray) :
+        if isinstance(num, pdarray) and isinstance(denom, pdarray):
             cmdstring = f"arctan2vv<{num.dtype},{ndim},{denom.dtype}>"
-            if where is True :
-                argdict = {"a": num, "b": denom, }
-            elif where is False :
+            if where is True:
+                argdict = {
+                    "a": num,
+                    "b": denom,
+                }
+            elif where is False:
                 return num / denom  # type: ignore
-            else :
-                argdict = {"a": num[where], "b": denom[where], }
-        elif not isinstance(denom, pdarray) :
+            else:
+                argdict = {
+                    "a": num[where],
+                    "b": denom[where],
+                }
+        elif not isinstance(denom, pdarray):
             ts = resolve_scalar_dtype(denom)
-            if ts in ['float64', 'int64', 'uint64', 'bool'] :
-                cmdstring = "arctan2vs_"+ts+f"<{num.dtype},{ndim}>"  # type: ignore[union-attr]
-            else :
+            if ts in ["float64", "int64", "uint64", "bool"]:
+                cmdstring = "arctan2vs_" + ts + f"<{num.dtype},{ndim}>"  # type: ignore[union-attr]
+            else:
                 raise TypeError(f"{ts} is not an allowed denom type for arctan2")
             argdict = {"a": num if where is True else num[where], "b": denom}  # type: ignore
-        elif not isinstance(num, pdarray) :
+        elif not isinstance(num, pdarray):
             ts = resolve_scalar_dtype(num)
-            if ts in ['float64', 'int64', 'uint64', 'bool'] :
-                cmdstring = "arctan2sv_"+ts+f"<{denom.dtype},{ndim}>"
-            else :
+            if ts in ["float64", "int64", "uint64", "bool"]:
+                cmdstring = "arctan2sv_" + ts + f"<{denom.dtype},{ndim}>"
+            else:
                 raise TypeError(f"{ts} is not an allowed num type for arctan2")
             argdict = {"a": num, "b": denom if where is True else denom[where]}  # type: ignore
 
         repMsg = type_cast(
             str,
-            generic_msg(
-                cmd=cmdstring,
-                args=argdict
-                ),
-            )
+            generic_msg(cmd=cmdstring, args=argdict),
+        )
         ret = create_pdarray(repMsg)
-        if where is True :
+        if where is True:
             return ret
-        else :
+        else:
             new_pda = num / denom  # type : ignore
             return _merge_where(new_pda, where, ret)
 
@@ -1126,7 +1149,7 @@ def sinh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     Parameters
     ----------
     pda : pdarray
-    where : Boolean or pdarray
+    where : bool or pdarray, default=True
         This condition is broadcast over the input. At locations where the condition is True,
         the hyperbolic sine will be applied to the corresponding value. Elsewhere, it will retain
         its original value. Default set to True.
@@ -1153,7 +1176,7 @@ def cosh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     Parameters
     ----------
     pda : pdarray
-    where : Boolean or pdarray
+    where : bool or pdarray, default=True
         This condition is broadcast over the input. At locations where the condition is True,
         the hyperbolic cosine will be applied to the corresponding value. Elsewhere, it will retain
         its original value. Default set to True.
@@ -1180,7 +1203,7 @@ def tanh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     Parameters
     ----------
     pda : pdarray
-    where : Boolean or pdarray
+    where : bool or pdarray, default=True
         This condition is broadcast over the input. At locations where the condition is True,
         the hyperbolic tangent will be applied to the corresponding value. Elsewhere, it will retain
         its original value. Default set to True.
@@ -1207,7 +1230,7 @@ def arcsinh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     Parameters
     ----------
     pda : pdarray
-    where : Boolean or pdarray
+    where : bool or pdarray, default=True
         This condition is broadcast over the input. At locations where the condition is True,
         the inverse hyperbolic sine will be applied to the corresponding value. Elsewhere, it will retain
         its original value. Default set to True.
@@ -1234,7 +1257,7 @@ def arccosh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     Parameters
     ----------
     pda : pdarray
-    where : Boolean or pdarray
+    where : bool or pdarray, default=True
         This condition is broadcast over the input. At locations where the condition is True,
         the inverse hyperbolic cosine will be applied to the corresponding value. Elsewhere, it will
         retain its original value. Default set to True.
@@ -1261,7 +1284,7 @@ def arctanh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     Parameters
     ----------
     pda : pdarray
-    where : Boolean or pdarray
+    where : bool or pdarray, default=True
         This condition is broadcast over the input. At locations where the condition is True,
         the inverse hyperbolic tangent will be applied to the corresponding value. Elsewhere,
         it will retain its original value. Default set to True.
@@ -1287,9 +1310,9 @@ def _trig_helper(pda: pdarray, func: str, where: Union[bool, pdarray] = True) ->
     Parameters
     ----------
     pda : pdarray
-    func : string
+    func : str
         The designated trig function that is passed in
-    where : Boolean or pdarray
+    where : bool or pdarray, default=True
         This condition is applied over the input. At locations where the condition is True, the
         corresponding value will be acted on by the respective trig function. Elsewhere,
         it will retain its original value. Default set to True.
@@ -1341,7 +1364,7 @@ def rad2deg(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     Parameters
     ----------
     pda : pdarray
-    where : Boolean or pdarray
+    where : bool or pdarray, default=True
         This condition is broadcast over the input. At locations where the condition is True, the
         corresponding value will be converted from radians to degrees. Elsewhere, it will retain its
         original value. Default set to True.
@@ -1362,7 +1385,7 @@ def rad2deg(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     elif where is False:
         return pda
     else:
-        return _merge_where(pda[:], where, 180*(pda[where]/np.pi))
+        return _merge_where(pda[:], where, 180 * (pda[where] / np.pi))
 
 
 @typechecked
@@ -1373,7 +1396,7 @@ def deg2rad(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     Parameters
     ----------
     pda : pdarray
-    where : Boolean or pdarray
+    where : bool or pdarray, default=True
         This condition is broadcast over the input. At locations where the condition is True, the
         corresponding value will be converted from degrees to radians. Elsewhere, it will retain its
         original value. Default set to True.
@@ -1394,7 +1417,7 @@ def deg2rad(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     elif where is False:
         return pda
     else:
-        return _merge_where(pda[:], where, (np.pi*pda[where]/180))
+        return _merge_where(pda[:], where, (np.pi * pda[where] / 180))
 
 
 def _hash_helper(a):
@@ -1430,10 +1453,10 @@ def hash(
 
     Parameters
     ----------
-    pda : Union[pdarray, Strings, Segarray, Categorical],
-     List[Union[pdarray, Strings, Segarray, Categorical]]]
+    pda : pdarray, Strings, SegArray, or Categorical \
+    or List of pdarray, Strings, SegArray, or Categorical
 
-    full : bool
+    full : bool, default=True
         This is only used when a single pdarray is passed into hash
         By default, a 128-bit hash is computed and returned as
         two int64 arrays. If full=False, then a 64-bit hash
@@ -1521,7 +1544,7 @@ def hash(
 def _hash_single(pda: pdarray, full: bool = True):
     if pda.dtype == bigint:
         return hash(pda.bigint_to_uint_arrays())
-    _datatype_check(pda.dtype, [float, int, ak_uint64], 'hash')
+    _datatype_check(pda.dtype, [float, int, ak_uint64], "hash")
     hname = "hash128" if full else "hash64"
     repMsg = type_cast(
         str,
@@ -1627,9 +1650,9 @@ def where(
     ----------
     condition : pdarray
         Used to choose values from A or B
-    A : Union[numeric_scalars, str, pdarray, Strings, Categorical]
+    A : str, numeric_scalars, pdarray, Strings, or Categorical
         Value(s) used when condition is True
-    B : Union[numeric_scalars, str, pdarray, Strings, Categorical]
+    B : str, numeric_scalars, pdarray, Strings, or Categorical
         Value(s) used when condition is False
 
     Returns
@@ -1654,31 +1677,33 @@ def where(
     >>> a2 = ak.ones(9, dtype=np.int64)
     >>> cond = a1 < 5
     >>> ak.where(cond,a1,a2)
-    array([1, 2, 3, 4, 1, 1, 1, 1, 1])
+    array([1 2 3 4 1 1 1 1 1])
 
     >>> a1 = ak.arange(1,10)
     >>> a2 = ak.ones(9, dtype=np.int64)
     >>> cond = a1 == 5
     >>> ak.where(cond,a1,a2)
-    array([1, 1, 1, 1, 5, 1, 1, 1, 1])
+    array([1 1 1 1 5 1 1 1 1])
 
     >>> a1 = ak.arange(1,10)
     >>> a2 = 10
     >>> cond = a1 < 5
     >>> ak.where(cond,a1,a2)
-    array([1, 2, 3, 4, 10, 10, 10, 10, 10])
+    array([1 2 3 4 10 10 10 10 10])
 
     >>> s1 = ak.array([f'str {i}' for i in range(10)])
     >>> s2 = 'str 21'
     >>> cond = (ak.arange(10) % 2 == 0)
     >>> ak.where(cond,s1,s2)
-    array(['str 0', 'str 21', 'str 2', 'str 21', 'str 4', 'str 21', 'str 6', 'str 21', 'str 8','str 21'])
+    array(['str 0', 'str 21', 'str 2', 'str 21', 'str 4',
+    'str 21', 'str 6', 'str 21', 'str 8', 'str 21'])
 
     >>> c1 = ak.Categorical(ak.array([f'str {i}' for i in range(10)]))
     >>> c2 = ak.Categorical(ak.array([f'str {i}' for i in range(9, -1, -1)]))
     >>> cond = (ak.arange(10) % 2 == 0)
     >>> ak.where(cond,c1,c2)
-    array(['str 0', 'str 8', 'str 2', 'str 6', 'str 4', 'str 4', 'str 6', 'str 2', 'str 8', 'str 0'])
+    array(['str 0', 'str 8', 'str 2', 'str 6', 'str 4',
+    'str 4', 'str 6', 'str 2', 'str 8', 'str 0'])
 
     Notes
     -----
@@ -1704,36 +1729,36 @@ def where(
             )
         return _str_cat_where(condition, A, B)
 
-#   The code below creates a command string for wherevv, wherevs, wheresv or wheress,
-#   based on A and B.
+    #   The code below creates a command string for wherevv, wherevs, wheresv or wheress,
+    #   based on A and B.
 
-    if isinstance(A, pdarray) and isinstance(B, pdarray) :
+    if isinstance(A, pdarray) and isinstance(B, pdarray):
         cmdstring = f"wherevv<{condition.ndim},{A.dtype},{B.dtype}>"
 
-    elif isinstance(A, pdarray) and np.isscalar(B) :
-        if resolve_scalar_dtype(B) in ['float64', 'int64', 'uint64', 'bool'] :
+    elif isinstance(A, pdarray) and np.isscalar(B):
+        if resolve_scalar_dtype(B) in ["float64", "int64", "uint64", "bool"]:
             ltr = resolve_scalar_dtype(B)
-            cmdstring = "wherevs_"+ltr+f"<{condition.ndim},{A.dtype}>"
-        else :  # *should* be impossible because of the IsSupportedNumber check
+            cmdstring = "wherevs_" + ltr + f"<{condition.ndim},{A.dtype}>"
+        else:  # *should* be impossible because of the IsSupportedNumber check
             raise TypeError(f"where does not accept scalar type {resolve_scalar_dtype(B)}")
 
-    elif isinstance(B, pdarray) and np.isscalar(A) :
-        if resolve_scalar_dtype(A) in ['float64', 'int64', 'uint64', 'bool'] :
+    elif isinstance(B, pdarray) and np.isscalar(A):
+        if resolve_scalar_dtype(A) in ["float64", "int64", "uint64", "bool"]:
             ltr = resolve_scalar_dtype(A)
-            cmdstring = "wheresv_"+ltr+f"<{condition.ndim},{B.dtype}>"
-        else :  # *should* be impossible because of the IsSupportedNumber check
+            cmdstring = "wheresv_" + ltr + f"<{condition.ndim},{B.dtype}>"
+        else:  # *should* be impossible because of the IsSupportedNumber check
             raise TypeError(f"where does not accept scalar type {resolve_scalar_dtype(A)}")
 
-    else :  # both are scalars
-        if resolve_scalar_dtype(A) in ['float64', 'int64', 'uint64', 'bool'] :
+    else:  # both are scalars
+        if resolve_scalar_dtype(A) in ["float64", "int64", "uint64", "bool"]:
             ta = resolve_scalar_dtype(A)
-            if resolve_scalar_dtype(B) in ['float64', 'int64', 'uint64', 'bool'] :
+            if resolve_scalar_dtype(B) in ["float64", "int64", "uint64", "bool"]:
                 tb = resolve_scalar_dtype(B)
-            else :
+            else:
                 raise TypeError(f"where does not accept scalar type {resolve_scalar_dtype(B)}")
-        else :
+        else:
             raise TypeError(f"where does not accept scalar type {resolve_scalar_dtype(A)}")
-        cmdstring = "wheress_"+ta+"_"+tb+f"<{condition.ndim}>"
+        cmdstring = "wheress_" + ta + "_" + tb + f"<{condition.ndim}>"
 
     repMsg = generic_msg(
         cmd=cmdstring,
@@ -1757,13 +1782,13 @@ def histogram(pda: pdarray, bins: int_scalars = 10) -> Tuple[pdarray, pdarray]:
     pda : pdarray
         The values to histogram
 
-    bins : int_scalars
+    bins : int_scalars, default=10
         The number of equal-size bins to use (default: 10)
 
     Returns
     -------
     (pdarray, Union[pdarray, int64 or float64])
-        Bin edges and The number of values present in each bin
+        The number of values present in each bin and the bin edges
 
     Raises
     ------
@@ -1790,12 +1815,16 @@ def histogram(pda: pdarray, bins: int_scalars = 10) -> Tuple[pdarray, pdarray]:
     >>> nbins = 3
     >>> h, b = ak.histogram(A, bins=nbins)
     >>> h
-    array([3, 3, 4])
+    array([3 3 4])
     >>> b
-    array([0., 3., 6., 9.])
-
+    array([0.00000000000000000 3.00000000000000000 6.00000000000000000 9.00000000000000000])
     # To plot, export the left edges and the histogram to NumPy
-    >>> plt.plot(b.to_ndarray()[::-1], h.to_ndarray())
+    >>> b_np = b.to_ndarray()
+    >>> import numpy as np
+    >>> b_widths = np.diff(b_np)
+    >>> plt.bar(b_np[:-1], h.to_ndarray(), width=b_widths, align='edge', edgecolor='black')
+    <BarContainer object of 3 artists>
+    >>> plt.show()
     """
     if bins < 1:
         raise ValueError("bins must be 1 or greater")
@@ -1820,7 +1849,7 @@ def histogram2d(
     y : pdarray
         A pdarray containing the y coordinates of the points to be histogrammed.
 
-    bins : int_scalars or [int, int] = 10
+    bins : int_scalars or [int, int], default=10
         The number of equal-size bins to use.
         If int, the number of bins for the two dimensions (nx=ny=bins).
         If [int, int], the number of bins in each dimension (nx, ny = bins).
@@ -1866,13 +1895,13 @@ def histogram2d(
     >>> nbins = 3
     >>> h, x_edges, y_edges = ak.histogram2d(x, y, bins=nbins)
     >>> h
-    array([[0, 0, 3],
-           [0, 2, 1],
-           [3, 1, 0]])
+    array([array([0.00000000000000000 0.00000000000000000 3.00000000000000000])
+           array([0.00000000000000000 2.00000000000000000 1.00000000000000000])
+           array([3.00000000000000000 1.00000000000000000 0.00000000000000000])])
     >>> x_edges
-    array([0.0 3.0 6.0 9.0])
-    >>> x_edges
-    array([0.0 3.0 6.0 9.0])
+    array([0.00000000000000000 3.00000000000000000 6.00000000000000000 9.00000000000000000])
+    >>> y_edges
+    array([0.00000000000000000 3.00000000000000000 6.00000000000000000 9.00000000000000000])
     """
     if not isinstance(bins, Sequence):
         x_bins, y_bins = bins, bins
@@ -1900,10 +1929,10 @@ def histogramdd(
 
     Parameters
     ----------
-    sample : Sequence[pdarray]
+    sample : Sequence of pdarray
         A sequence of pdarrays containing the coordinates of the points to be histogrammed.
 
-    bins : int_scalars or Sequence[int_scalars] = 10
+    bins : int_scalars or Sequence of int_scalars, default=10
         The number of equal-size bins to use.
         If int, the number of bins for all dimensions (nx=ny=...=bins).
         If [int, int, ...], the number of bins in each dimension (nx, ny, ... = bins).
@@ -1943,15 +1972,15 @@ def histogramdd(
     >>> z = ak.where(x % 2 == 0, x, y)
     >>> h, edges = ak.histogramdd((x, y,z), bins=(2,2,5))
     >>> h
-    array([[[0, 0, 0, 0, 0],
-            [1, 1, 1, 1, 1]],
-
-           [[1, 1, 1, 1, 1],
-            [0, 0, 0, 0, 0]]])
+    array([array([array([0 0 0 0 0])
+           array([1 1 1 1 1])])
+           array([array([1 1 1 1 1])
+           array([0 0 0 0 0])])])
     >>> edges
-    [array([0.0 4.5 9.0]),
-     array([0.0 4.5 9.0]),
-     array([0.0 1.6 3.2 4.8 6.4 8.0])]
+    [array([0.00000000000000000 4.5 9.00000000000000000]),
+    array([0.00000000000000000 4.5 9.00000000000000000]),
+    array([0.00000000000000000 1.6000000000000001 3.2000000000000002
+    4.8000000000000007 6.4000000000000004 8.00000000000000000])]
     """
     if not isinstance(sample, Sequence):
         raise ValueError("Sample must be a sequence of pdarrays")
@@ -1994,7 +2023,7 @@ def value_counts(
 
     Parameters
     ----------
-    pda : pdarray, int64
+    pda : pdarray
         The array of values to count
 
     Returns
@@ -2025,7 +2054,7 @@ def value_counts(
     --------
     >>> A = ak.array([2, 0, 2, 4, 0, 0])
     >>> ak.value_counts(A)
-    (array([0, 2, 4]), array([3, 2, 1]))
+    (array([0 2 4]), array([3 2 1]))
     """
     return GroupBy(pda).size()
 
@@ -2050,13 +2079,13 @@ def clip(
 
     Parameters
     ----------
-    pda : pdarray, int64 or float64
+    pda : pdarray
         the array of values to clip
-    lo  : scalar or pdarray, int64 or float64
+    lo : numeric_scalars or pdarray
         the lower value of the clipping range
-    hi  : scalar or pdarray, int64 or float64
+    hi : numeric_scalars or pdarray
         the higher value of the clipping range
-    If lo or hi (or both) are pdarrays, the check is by pairwise elements.
+        If lo or hi (or both) are pdarrays, the check is by pairwise elements.
         See examples.
 
     Returns
@@ -2070,21 +2099,21 @@ def clip(
     --------
     >>> a = ak.array([1,2,3,4,5,6,7,8,9,10])
     >>> ak.clip(a,3,8)
-    array([3,3,3,4,5,6,7,8,8,8])
+    array([3 3 3 4 5 6 7 8 8 8])
     >>> ak.clip(a,3,8.0)
     array([3.00000000000000000 3.00000000000000000 3.00000000000000000 4.00000000000000000
            5.00000000000000000 6.00000000000000000 7.00000000000000000 8.00000000000000000
            8.00000000000000000 8.00000000000000000])
     >>> ak.clip(a,None,7)
-    array([1,2,3,4,5,6,7,7,7,7])
+    array([1 2 3 4 5 6 7 7 7 7])
     >>> ak.clip(a,5,None)
-    array([5,5,5,5,5,6,7,8,9,10])
+    array([5 5 5 5 5 6 7 8 9 10])
     >>> ak.clip(a,None,None)
-    ValueError : either min or max must be supplied
-    >>> ak.clip(a,ak.array([2,2,3,3,8,8,5,5,6,6],8))
-    array([2,2,3,4,8,8,7,8,8,8])
+    ValueError: Either min or max must be supplied.
+    >>> ak.clip(a,ak.array([2,2,3,3,8,8,5,5,6,6]),8)
+    array([2 2 3 4 8 8 7 8 8 8])
     >>> ak.clip(a,4,ak.array([10,9,8,7,6,5,5,5,5,5]))
-    array([4,4,4,4,5,5,5,5,5,5])
+    array([4 4 4 4 5 5 5 5 5 5])
 
     Notes
     -----
@@ -2128,7 +2157,7 @@ def clip(
     return pda1
 
 
-def median(pda):
+def median(pda: pdarray) -> np.float64:
     """
     Compute the median of a given array.  1d case only, for now.
 
@@ -2140,19 +2169,18 @@ def median(pda):
     Returns
     -------
     np.float64
-        The median of the entire pdarray
-        The array is sorted, and then if the number of elements is odd,
+        | The median of the entire pdarray
+        | The array is sorted, and then if the number of elements is odd,
             the return value is the middle element.  If even, then the
             mean of the two middle elements.
 
     Examples
     --------
-    >>> import arkouda as ak
-    >>> arkouda.connect()
-    >>> pda = ak.array ([0,4,7,8,1,3,5,2,-1])
+    >>> pda = ak.array([0,4,7,8,1,3,5,2,-1])
     >>> ak.median(pda)
-    3
+    3.0
     >>> pda = ak.array([0,1,3,3,1,2,3,4,2,3])
+    >>> ak.median(pda)
     2.5
 
     """
@@ -2171,7 +2199,7 @@ def median(pda):
         )
 
 
-def count_nonzero(pda):
+def count_nonzero(pda: pdarray) -> np.int64:
     """
     Compute the nonzero count of a given array. 1D case only, for now.
 
@@ -2185,14 +2213,21 @@ def count_nonzero(pda):
     np.int64
         The nonzero count of the entire pdarray
 
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray with numeric, bool, or str datatype
+    ValueError
+        Raised if sum applied to the pdarray doesn't come back with a scalar
+
     Examples
     --------
     >>> pda = ak.array([0,4,7,8,1,3,5,2,-1])
     >>> ak.count_nonzero(pda)
-    9
+    8
     >>> pda = ak.array([False,True,False,True,False])
     >>> ak.count_nonzero(pda)
-    3
+    2
     >>> pda = ak.array(["hello","","there"])
     >>> ak.count_nonzero(pda)
     2
@@ -2204,14 +2239,24 @@ def count_nonzero(pda):
     #  Handle different data types.
 
     if is_numeric(pda):
-        return sum((pda != 0).astype(np.int64))
+        value = sum((pda != 0).astype(np.int64))
+        if not isinstance(value, np.int64):
+            raise ValueError("summing the pdarray did not generate a scalar")
+        return value
     elif pda.dtype == bool:
-        return sum((pda).astype(np.int64))
+        value = sum((pda).astype(np.int64))
+        if not isinstance(value, np.int64):
+            raise ValueError("summing the pdarray did not generate a scalar")
+        return value
     elif pda.dtype == str:
-        return sum((pda != "").astype(np.int64))
+        value = sum((pda != "").astype(np.int64))
+        if not isinstance(value, np.int64):
+            raise ValueError("summing the pdarray did not generate a scalar")
+        return value
+    raise TypeError("pda must be numeric, bool, or str pdarray")
 
 
-def array_equal(pda_a: pdarray, pda_b: pdarray, equal_nan: bool = False):
+def array_equal(pda_a: pdarray, pda_b: pdarray, equal_nan: bool = False) -> bool:
     """
     Compares two pdarrays for equality.
     If neither array has any nan elements, then if all elements are pairwise equal,
@@ -2223,7 +2268,8 @@ def array_equal(pda_a: pdarray, pda_b: pdarray, equal_nan: bool = False):
     ----------
     pda_a : pdarray
     pda_b : pdarray
-    equal_nan : boolean to determine how to handle nans, default False
+    equal_nan : bool, default=False
+        Determines how to handle nans
 
     Returns
     -------
@@ -2256,14 +2302,14 @@ def array_equal(pda_a: pdarray, pda_b: pdarray, equal_nan: bool = False):
     if (pda_a.shape != pda_b.shape) or ((pda_a.dtype == akstr_) ^ (pda_b.dtype == akstr_)):
         return False
     elif equal_nan:
-        return ak_all(where(isnan(pda_a), isnan(pda_b), pda_a == pda_b))
+        return bool(ak_all(where(isnan(pda_a), isnan(pda_b), pda_a == pda_b)))
     else:
-        return ak_all(pda_a == pda_b)
+        return bool(ak_all(pda_a == pda_b))
 
 
 def putmask(
     A: pdarray, mask: pdarray, Values: pdarray
-):  # doesn't return anything, as A is overwritten in place
+) -> None:  # doesn't return anything, as A is overwritten in place
     """
     Overwrites elements of A with elements from B based upon a mask array.
     Similar to numpy.putmask, where mask = False, A retains its original value,
@@ -2282,17 +2328,17 @@ def putmask(
         Value(s) used when mask is False (see Notes for allowed dtypes)
 
     Examples
-    -------
+    --------
     >>> a = ak.array(np.arange(10))
     >>> ak.putmask (a,a>2,a**2)
     >>> a
-    array ([0,1,2,9,16,25,36,49,64,81])
+    array([0 1 2 9 16 25 36 49 64 81])
 
     >>> a = ak.array(np.arange(10))
     >>> values = ak.array([3,2])
     >>> ak.putmask (a,a>2,values)
     >>> a
-    array ([0,1,2,2,3,2,3,2,3,2])
+    array([0 1 2 2 3 2 3 2 3 2])
 
     Raises
     ------
@@ -2302,12 +2348,12 @@ def putmask(
 
     Notes
     -----
-    A and mask must be the same size.  Values can be any size.
-    Allowed dtypes for A and Values conform to types accepted by numpy putmask.
-    If A is ak.float64, Values can be ak.float64, ak.int64, ak.uint64, ak.bool_.
-    If A is ak.int64, Values can be ak.int64 or ak.bool_.
-    If A is ak.uint64, Values can be ak.uint64, or ak.bool_.
-    If A is ak.bool_, Values must be ak.bool_.
+    | A and mask must be the same size.  Values can be any size.
+    | Allowed dtypes for A and Values conform to types accepted by numpy putmask.
+    | If A is ak.float64, Values can be ak.float64, ak.int64, ak.uint64, ak.bool_.
+    | If A is ak.int64, Values can be ak.int64 or ak.bool_.
+    | If A is ak.uint64, Values can be ak.uint64, or ak.bool_.
+    | If A is ak.bool_, Values must be ak.bool_.
 
     Only one conditional clause is supported e.g., n < 5, n > 1.
 
@@ -2325,7 +2371,7 @@ def putmask(
         (ak_bool, ak_bool),
     ]
 
-    if not ((A.dtype, Values.dtype) in ALLOWED_PUTMASK_PAIRS) :
+    if not ((A.dtype, Values.dtype) in ALLOWED_PUTMASK_PAIRS):
         raise RuntimeError(f"Types {A.dtype} and {Values.dtype} are not compatible in putmask.")
     if mask.size != A.size:
         raise RuntimeError("mask and A must be same size in putmask")
@@ -2340,7 +2386,7 @@ def putmask(
     return
 
 
-def eye(rows: int_scalars, cols: int_scalars, diag: int_scalars = 0, dt: type = ak_int64):
+def eye(rows: int_scalars, cols: int_scalars, diag: int_scalars = 0, dt: type = ak_int64) -> pdarray:
     """
     Return a pdarray with zeros everywhere except along a diagonal, which is all ones.
     The matrix need not be square.
@@ -2349,11 +2395,13 @@ def eye(rows: int_scalars, cols: int_scalars, diag: int_scalars = 0, dt: type = 
     ----------
     rows : int_scalars
     cols : int_scalars
-    diag : int_scalars
-        if diag = 0, zeros start at element [0,0] and proceed along diagonal
-        if diag > 0, zeros start at element [0,diag] and proceed along diagonal
-        if diag < 0, zeros start at element [diag,0] and proceed along diagonal
-        etc.
+    diag : int_scalars, default=0
+        | if diag = 0, zeros start at element [0,0] and proceed along diagonal
+        | if diag > 0, zeros start at element [0,diag] and proceed along diagonal
+        | if diag < 0, zeros start at element [diag,0] and proceed along diagonal
+        | etc. Default set to 0.
+    dt : type, default=ak_int64
+        The data type of the elements in the matrix being returned. Default set to ak_int64
 
     Returns
     -------
@@ -2366,11 +2414,11 @@ def eye(rows: int_scalars, cols: int_scalars, diag: int_scalars = 0, dt: type = 
     array([array([1 0 0 0]) array([0 1 0 0]) array([0 0 1 0]) array([0 0 0 1])])
     >>> ak.eye(rows=3,cols=3,diag=1,dt=ak.float64)
     array([array([0.00000000000000000 1.00000000000000000 0.00000000000000000])
-    array([0.00000000000000000  0.00000000000000000 1.00000000000000000])
+    array([0.00000000000000000 0.00000000000000000 1.00000000000000000])
     array([0.00000000000000000 0.00000000000000000 0.00000000000000000])])
     >>> ak.eye(rows=4,cols=4,diag=-1,dt=ak.bool_)
     array([array([False False False False]) array([True False False False])
-    array([False True False False]) array([False False True False])]
+    array([False True False False]) array([False False True False])])
 
     Notes
     -----
@@ -2393,18 +2441,18 @@ def eye(rows: int_scalars, cols: int_scalars, diag: int_scalars = 0, dt: type = 
     )
 
 
-def triu(pda: pdarray, diag: int_scalars = 0):
+def triu(pda: pdarray, diag: int_scalars = 0) -> pdarray:
     """
     Return a copy of the pda with the lower triangle zeroed out
 
     Parameters
     ----------
     pda : pdarray
-    diag : int_scalars
-        if diag = 0, zeros start just above the main diagonal
-        if diag = 1, zeros start at the main diagonal
-        if diag = 2, zeros start just below the main diagonal
-        etc.
+    diag : int_scalars, default=0
+        | if diag = 0, zeros start just below the main diagonal
+        | if diag = 1, zeros start at the main diagonal
+        | if diag = 2, zeros start just above the main diagonal
+        | etc. Default set to 0.
 
     Returns
     -------
@@ -2449,18 +2497,18 @@ def triu(pda: pdarray, diag: int_scalars = 0):
     )
 
 
-def tril(pda: pdarray, diag: int_scalars = 0):
+def tril(pda: pdarray, diag: int_scalars = 0) -> pdarray:
     """
     Return a copy of the pda with the upper triangle zeroed out
 
     Parameters
     ----------
     pda : pdarray
-    diag : int_scalars
-        if diag = 0, zeros start just below the main diagonal
-        if diag = 1, zeros start at the main diagonal
-        if diag = 2, zeros start just above the main diagonal
-        etc.
+    diag : int_scalars, optional
+        | if diag = 0, zeros start just above the main diagonal
+        | if diag = 1, zeros start at the main diagonal
+        | if diag = 2, zeros start just below the main diagonal
+        | etc. Default set to 0.
 
     Returns
     -------
@@ -2504,7 +2552,7 @@ def tril(pda: pdarray, diag: int_scalars = 0):
     )
 
 
-def transpose(pda: pdarray):
+def transpose(pda: pdarray) -> pdarray:
     """
     Compute the transpose of a matrix.
 
@@ -2541,7 +2589,7 @@ def transpose(pda: pdarray):
     )
 
 
-def matmul(pdaLeft: pdarray, pdaRight: pdarray):
+def matmul(pdaLeft: pdarray, pdaRight: pdarray) -> pdarray:
     """
     Compute the product of two matrices.
 
@@ -2558,9 +2606,9 @@ def matmul(pdaLeft: pdarray, pdaRight: pdarray):
     Examples
     --------
     >>> a = ak.array([[1,2,3,4,5],[1,2,3,4,5]])
-    >>> b = ak.array(([1,1],[2,2],[3,3],[4,4],[5,5]])
+    >>> b = ak.array([[1,1],[2,2],[3,3],[4,4],[5,5]])
     >>> ak.matmul(a,b)
-    array([array([30 30]) array([45 45])])
+    array([array([55 55]) array([55 55])])
 
     >>> x = ak.array([[1,2,3],[1.1,2.1,3.1]])
     >>> y = ak.array([[1,1,1],[0,2,2],[0,0,3]])
@@ -2589,7 +2637,7 @@ def matmul(pdaLeft: pdarray, pdaRight: pdarray):
     )
 
 
-def vecdot(x1: pdarray, x2: pdarray):
+def vecdot(x1: pdarray, x2: pdarray) -> pdarray:
     """
     Compute the generalized dot product of two vectors along the given axis.
     Assumes that both tensors have already been broadcast to the same shape.
@@ -2607,11 +2655,11 @@ def vecdot(x1: pdarray, x2: pdarray):
     Examples
     --------
     >>> a = ak.array([[1,2,3,4,5],[1,2,3,4,5]])
-    >>> b = ak.array(([2,2,2,2,2],[2,2,2,2,2]])
+    >>> b = ak.array([[2,2,2,2,2],[2,2,2,2,2]])
     >>> ak.vecdot(a,b)
-    array([5 10 15 20 25])
+    array([4 8 12 16 20])
     >>> ak.vecdot(b,a)
-    array([5 10 15 20 25])
+    array([4 8 12 16 20])
 
     Raises
     ------
