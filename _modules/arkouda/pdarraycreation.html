@@ -434,33 +434,33 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; np.random.seed(1701)</span>
 <span class="sd">    &gt;&gt;&gt; ak.from_series(pd.Series(np.random.randint(0,10,5)))</span>
-<span class="sd">    array([9, 0, 4, 7, 9])</span>
+<span class="sd">    array([4 3 3 5 0])</span>
 
 <span class="sd">    &gt;&gt;&gt; ak.from_series(pd.Series([&#39;1&#39;, &#39;2&#39;, &#39;3&#39;, &#39;4&#39;, &#39;5&#39;]),dtype=np.int64)</span>
-<span class="sd">    array([1, 2, 3, 4, 5])</span>
+<span class="sd">    array([1 2 3 4 5])</span>
 
+<span class="sd">    &gt;&gt;&gt; np.random.seed(1701)</span>
 <span class="sd">    &gt;&gt;&gt; ak.from_series(pd.Series(np.random.uniform(low=0.0,high=1.0,size=3)))</span>
-<span class="sd">    array([0.57600036956445599, 0.41619265571741659, 0.6615356693784662])</span>
+<span class="sd">    array([0.089433234324597599 0.1153776854774361 0.51874393620990389])</span>
 
 <span class="sd">    &gt;&gt;&gt; ak.from_series(pd.Series([&#39;0.57600036956445599&#39;, &#39;0.41619265571741659&#39;,</span>
 <span class="sd">                       &#39;0.6615356693784662&#39;]), dtype=np.float64)</span>
-<span class="sd">    array([0.57600036956445599, 0.41619265571741659, 0.6615356693784662])</span>
+<span class="sd">    array([0.57600036956445599 0.41619265571741659 0.6615356693784662])</span>
 
+<span class="sd">    &gt;&gt;&gt; np.random.seed(1864)</span>
 <span class="sd">    &gt;&gt;&gt; ak.from_series(pd.Series(np.random.choice([True, False],size=5)))</span>
-<span class="sd">    array([True, False, True, True, True])</span>
+<span class="sd">    array([True True True False False])</span>
 
-<span class="sd">    &gt;&gt;&gt; ak.from_series(pd.Series([&#39;True&#39;, &#39;False&#39;, &#39;False&#39;, &#39;True&#39;, &#39;True&#39;]), dtype=np.bool)</span>
-<span class="sd">    array([True, True, True, True, True])</span>
+<span class="sd">    &gt;&gt;&gt; ak.from_series(pd.Series([&#39;True&#39;, &#39;False&#39;, &#39;False&#39;, &#39;True&#39;, &#39;True&#39;]), dtype=bool)</span>
+<span class="sd">    array([True True True True True])</span>
 
 <span class="sd">    &gt;&gt;&gt; ak.from_series(pd.Series([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;], dtype=&quot;string&quot;))</span>
 <span class="sd">    array([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;])</span>
 
-<span class="sd">    &gt;&gt;&gt; ak.from_series(pd.Series([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;]),dtype=np.str)</span>
-<span class="sd">    array([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;])</span>
-
 <span class="sd">    &gt;&gt;&gt; ak.from_series(pd.Series(pd.to_datetime([&#39;1/1/2018&#39;, np.datetime64(&#39;2018-01-01&#39;)])))</span>
-<span class="sd">    array([1514764800000000000, 1514764800000000000])</span>
+<span class="sd">    array([1514764800000000000 1514764800000000000])</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -527,12 +527,11 @@
 <span class="sd">        Raised if a is not a pdarray, np.ndarray, or Python Iterable such as a</span>
 <span class="sd">        list, array, tuple, or deque</span>
 <span class="sd">    RuntimeError</span>
-<span class="sd">        Raised if a is not one-dimensional, nbytes &gt; maxTransferBytes, a.dtype is</span>
-<span class="sd">        not supported (not in DTypes), or if the product of a size and</span>
-<span class="sd">        a.itemsize &gt; maxTransferBytes</span>
+<span class="sd">        Raised if nbytes &gt; maxTransferBytes, a.dtype is not supported (not in DTypes),</span>
+<span class="sd">        or if the product of a size and a.itemsize &gt; maxTransferBytes</span>
 <span class="sd">    ValueError</span>
-<span class="sd">        Raised if the returned message is malformed or does not contain the fields</span>
-<span class="sd">        required to generate the array.</span>
+<span class="sd">        Raised if a has rank &gt; get_max_array_rank(), or if the returned message is malformed or does</span>
+<span class="sd">        not contain the fields required to generate the array.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -554,10 +553,10 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; ak.array(np.arange(1,10))</span>
-<span class="sd">    array([1, 2, 3, 4, 5, 6, 7, 8, 9])</span>
+<span class="sd">    array([1 2 3 4 5 6 7 8 9])</span>
 
 <span class="sd">    &gt;&gt;&gt; ak.array(range(1,10))</span>
-<span class="sd">    array([1, 2, 3, 4, 5, 6, 7, 8, 9])</span>
+<span class="sd">    array([1 2 3 4 5 6 7 8 9])</span>
 
 <span class="sd">    &gt;&gt;&gt; strings = ak.array([f&#39;string {i}&#39; for i in range(0,5)])</span>
 <span class="sd">    &gt;&gt;&gt; type(strings)</span>
@@ -672,6 +671,7 @@
 
 <div class="viewcode-block" id="promote_to_common_dtype">
 <a class="viewcode-back" href="../../autoapi/arkouda/pdarraycreation/index.html#arkouda.promote_to_common_dtype">[docs]</a>
+<span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">promote_to_common_dtype</span><span class="p">(</span><span class="n">arrays</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">pdarray</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">pdarray</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Promote a list of pdarrays to a common dtype.</span>
@@ -689,7 +689,7 @@
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    TypeError</span>
-<span class="sd">        Raised if the pdarrays are not all of the same dtype</span>
+<span class="sd">        Raised if any pdarray is a non-numeric type</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -699,10 +699,10 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; a = ak.arange(5)</span>
 <span class="sd">    &gt;&gt;&gt; b = ak.ones(5, dtype=ak.float64)</span>
-<span class="sd">    &gt;&gt;&gt; dtype, promoted = promote_to_common_dtype([a, b])</span>
+<span class="sd">    &gt;&gt;&gt; dtype, promoted = ak.promote_to_common_dtype([a, b])</span>
 <span class="sd">    &gt;&gt;&gt; dtype</span>
-<span class="sd">    dtype(float64)</span>
-<span class="sd">    &gt;&gt;&gt; all(isinstance(p, pdarray) and p.dtype == dtype for p in promoted)</span>
+<span class="sd">    dtype(&#39;float64&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; all(isinstance(p, ak.pdarray) and p.dtype == dtype for p in promoted)</span>
 <span class="sd">    True</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># find the common dtype of the input arrays</span>
@@ -762,8 +762,8 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; a = ak.bigint_from_uint_arrays([ak.ones(5, dtype=ak.uint64), ak.arange(5, dtype=ak.uint64)])</span>
 <span class="sd">    &gt;&gt;&gt; a</span>
-<span class="sd">    array([&quot;18446744073709551616&quot; &quot;18446744073709551617&quot; &quot;18446744073709551618&quot;</span>
-<span class="sd">    &quot;18446744073709551619&quot; &quot;18446744073709551620&quot;])</span>
+<span class="sd">    array([18446744073709551616 18446744073709551617 18446744073709551618</span>
+<span class="sd">    18446744073709551619 18446744073709551620])</span>
 
 <span class="sd">    &gt;&gt;&gt; a.dtype</span>
 <span class="sd">    dtype(bigint)</span>
@@ -813,22 +813,29 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    size : int_scalars or tuple of int_scalars</span>
-<span class="sd">        Size of the array (only rank-1 arrays supported)</span>
+<span class="sd">        Size or shape of the array</span>
 <span class="sd">    dtype : all_scalars</span>
-<span class="sd">        Type of resulting array, default float64</span>
+<span class="sd">        Type of resulting array, default ak.float64</span>
 <span class="sd">    max_bits: int</span>
 <span class="sd">        Specifies the maximum number of bits; only used for bigint pdarrays</span>
+<span class="sd">        Included for consistency, as zeros are represented as all zeros, regardless</span>
+<span class="sd">        of the value of max_bits</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    pdarray</span>
-<span class="sd">        Zeros of the requested size and dtype</span>
+<span class="sd">        Zeros of the requested size or shape and dtype</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    TypeError</span>
-<span class="sd">        Raised if the supplied dtype is not supported or if the size</span>
-<span class="sd">        parameter is neither an int nor a str that is parseable to an int.</span>
+<span class="sd">        Raised if the supplied dtype is not supported</span>
+
+<span class="sd">    RuntimeError</span>
+<span class="sd">        Raised if the size parameter is neither an int nor a str that is parseable to an int.</span>
+
+<span class="sd">    ValueError</span>
+<span class="sd">        Raised if the given shape exceeds get_max_array_rank() or is empty</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -837,32 +844,20 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; ak.zeros(5, dtype=ak.int64)</span>
-<span class="sd">    array([0, 0, 0, 0, 0])</span>
+<span class="sd">    array([0 0 0 0 0])</span>
 
 <span class="sd">    &gt;&gt;&gt; ak.zeros(5, dtype=ak.float64)</span>
-<span class="sd">    array([0, 0, 0, 0, 0])</span>
+<span class="sd">    array([0.00000000000000000 0.00000000000000000 0.00000000000000000</span>
+<span class="sd">           0.00000000000000000 0.00000000000000000])</span>
 
 <span class="sd">    &gt;&gt;&gt; ak.zeros(5, dtype=ak.bool_)</span>
-<span class="sd">    array([False, False, False, False, False])</span>
+<span class="sd">    array([False False False False False])</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Logic for generating the pdarray is delegated to the ak.full method.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">dtype</span> <span class="o">=</span> <span class="n">akdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>  <span class="c1"># normalize dtype</span>
-    <span class="n">dtype_name</span> <span class="o">=</span> <span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">bigint</span><span class="p">)</span> <span class="k">else</span> <span class="n">cast</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
-    <span class="c1"># check dtype for error</span>
-    <span class="k">if</span> <span class="n">dtype_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">NumericDTypes</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported dtype </span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">_infer_shape_from_size</span>
-
-    <span class="n">shape</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">full_size</span> <span class="o">=</span> <span class="n">_infer_shape_from_size</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">ndim</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">get_array_ranks</span><span class="p">():</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;array rank </span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> not in compiled ranks </span><span class="si">{</span><span class="n">get_array_ranks</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;size () not currently supported in ak.zeros.&quot;</span><span class="p">)</span>
-
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;create&lt;</span><span class="si">{</span><span class="n">dtype_name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">shape</span><span class="p">})</span>
-
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">,</span> <span class="n">max_bits</span><span class="o">=</span><span class="n">max_bits</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">full</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">max_bits</span><span class="o">=</span><span class="n">max_bits</span><span class="p">)</span></div>
 
 
 
@@ -880,22 +875,29 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    size : int_scalars or tuple of int_scalars</span>
-<span class="sd">        Size of the array (only rank-1 arrays supported)</span>
+<span class="sd">        Size or shape of the array</span>
 <span class="sd">    dtype : Union[float64, int64, bool]</span>
-<span class="sd">        Resulting array type, default float64</span>
+<span class="sd">        Resulting array type, default ak.float64</span>
 <span class="sd">    max_bits: int</span>
 <span class="sd">        Specifies the maximum number of bits; only used for bigint pdarrays</span>
+<span class="sd">        Included for consistency, as ones are all zeros ending on a one, regardless</span>
+<span class="sd">        of max_bits</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    pdarray</span>
-<span class="sd">        Ones of the requested size and dtype</span>
+<span class="sd">        Ones of the requested size or shape and dtype</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    TypeError</span>
-<span class="sd">        Raised if the supplied dtype is not supported or if the size</span>
-<span class="sd">        parameter is neither an int nor a str that is parseable to an int.</span>
+<span class="sd">        Raised if the supplied dtype is not supported</span>
+
+<span class="sd">    RuntimeError</span>
+<span class="sd">        Raised if the size parameter is neither an int nor a str that is parseable to an int.</span>
+
+<span class="sd">    ValueError</span>
+<span class="sd">        Raised if the given shape exceeds get_max_array_rank() or is empty</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -904,35 +906,20 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; ak.ones(5, dtype=ak.int64)</span>
-<span class="sd">    array([1, 1, 1, 1, 1])</span>
+<span class="sd">    array([1 1 1 1 1])</span>
 
 <span class="sd">    &gt;&gt;&gt; ak.ones(5, dtype=ak.float64)</span>
-<span class="sd">    array([1, 1, 1, 1, 1])</span>
+<span class="sd">    array([1.00000000000000000 1.00000000000000000 1.00000000000000000</span>
+<span class="sd">           1.00000000000000000 1.00000000000000000])</span>
 
 <span class="sd">    &gt;&gt;&gt; ak.ones(5, dtype=ak.bool_)</span>
-<span class="sd">    array([True, True, True, True, True])</span>
+<span class="sd">    array([True True True True True])</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Logic for generating the pdarray is delegated to the ak.full method.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">dtype</span> <span class="o">=</span> <span class="n">akdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>  <span class="c1"># normalize dtype</span>
-    <span class="n">dtype_name</span> <span class="o">=</span> <span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">bigint</span><span class="p">)</span> <span class="k">else</span> <span class="n">cast</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
-    <span class="c1"># check dtype for error</span>
-    <span class="k">if</span> <span class="n">dtype_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">NumericDTypes</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported dtype </span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">_infer_shape_from_size</span>
-
-    <span class="n">shape</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">full_size</span> <span class="o">=</span> <span class="n">_infer_shape_from_size</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">ndim</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">get_array_ranks</span><span class="p">():</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;array rank </span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> not in compiled ranks </span><span class="si">{</span><span class="n">get_array_ranks</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;size () not currently supported in ak.ones.&quot;</span><span class="p">)</span>
-
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;create&lt;</span><span class="si">{</span><span class="n">dtype_name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">shape</span><span class="p">})</span>
-    <span class="n">a</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
-    <span class="n">a</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">max_bits</span><span class="p">:</span>
-        <span class="n">a</span><span class="o">.</span><span class="n">max_bits</span> <span class="o">=</span> <span class="n">max_bits</span>
-    <span class="k">return</span> <span class="n">a</span></div>
+    <span class="k">return</span> <span class="n">full</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">max_bits</span><span class="o">=</span><span class="n">max_bits</span><span class="p">)</span></div>
 
 
 
@@ -951,8 +938,8 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    size: int_scalars or tuple of int_scalars</span>
-<span class="sd">        Size of the array (only rank-1 arrays supported)</span>
-<span class="sd">    fill_value: int_scalars</span>
+<span class="sd">        Size or shape of the array</span>
+<span class="sd">    fill_value: int_scalars or str</span>
 <span class="sd">        Value with which the array will be filled</span>
 <span class="sd">    dtype: all_scalars</span>
 <span class="sd">        Resulting array type, default float64</span>
@@ -967,8 +954,13 @@
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    TypeError</span>
-<span class="sd">        Raised if the supplied dtype is not supported or if the size</span>
-<span class="sd">        parameter is neither an int nor a str that is parseable to an int.</span>
+<span class="sd">        Raised if the supplied dtype is not supported</span>
+
+<span class="sd">    RuntimeError</span>
+<span class="sd">        Raised if the size parameter is neither an int nor a str that is parseable to an int.</span>
+
+<span class="sd">    ValueError</span>
+<span class="sd">        Raised if the given shape exceeds get_max_array_rank() or is empty</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -977,13 +969,14 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; ak.full(5, 7, dtype=ak.int64)</span>
-<span class="sd">    array([7, 7, 7, 7, 7])</span>
+<span class="sd">    array([7 7 7 7 7])</span>
 
 <span class="sd">    &gt;&gt;&gt; ak.full(5, 9, dtype=ak.float64)</span>
-<span class="sd">    array([9, 9, 9, 9, 9])</span>
+<span class="sd">    array([9.00000000000000000 9.00000000000000000 9.00000000000000000</span>
+<span class="sd">           9.00000000000000000 9.00000000000000000])</span>
 
 <span class="sd">    &gt;&gt;&gt; ak.full(5, 5, dtype=ak.bool_)</span>
-<span class="sd">    array([True, True, True, True, True])</span>
+<span class="sd">    array([True True True True True])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fill_value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">_full_string</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">fill_value</span><span class="p">)</span>
@@ -1032,6 +1025,19 @@
 <span class="sd">    -------</span>
 <span class="sd">    pdarray</span>
 <span class="sd">        pdarray with a single element</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ak.scalar_array(5)</span>
+<span class="sd">    array([5])</span>
+
+<span class="sd">    &gt;&gt;&gt; ak.scalar_array(7.0)</span>
+<span class="sd">    array([7.00000000000000000])</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        Raised if value cannot be cast as dtype</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1101,17 +1107,15 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; zeros = ak.zeros(5, dtype=ak.int64)</span>
-<span class="sd">    &gt;&gt;&gt; ak.zeros_like(zeros)</span>
-<span class="sd">    array([0, 0, 0, 0, 0])</span>
+<span class="sd">    &gt;&gt;&gt; ak.zeros_like(ak.ones(5,dtype=ak.int64))</span>
+<span class="sd">    array([0 0 0 0 0])</span>
 
-<span class="sd">    &gt;&gt;&gt; zeros = ak.zeros(5, dtype=ak.float64)</span>
-<span class="sd">    &gt;&gt;&gt; ak.zeros_like(zeros)</span>
-<span class="sd">    array([0, 0, 0, 0, 0])</span>
+<span class="sd">    &gt;&gt;&gt; ak.zeros_like(ak.ones(5,dtype=ak.float64))</span>
+<span class="sd">    array([0.00000000000000000 0.00000000000000000 0.00000000000000000</span>
+<span class="sd">           0.00000000000000000 0.00000000000000000])</span>
 
-<span class="sd">    &gt;&gt;&gt; zeros = ak.zeros(5, dtype=ak.bool_)</span>
-<span class="sd">    &gt;&gt;&gt; ak.zeros_like(zeros)</span>
-<span class="sd">    array([False, False, False, False, False])</span>
+<span class="sd">    &gt;&gt;&gt; ak.zeros_like(ak.ones(5,dtype=ak.bool_))</span>
+<span class="sd">    array([False False False False False])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">zeros</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">pda</span><span class="o">.</span><span class="n">max_bits</span><span class="p">)</span></div>
 
@@ -1151,17 +1155,15 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; ones = ak.ones(5, dtype=ak.int64)</span>
-<span class="sd">     &gt;&gt;&gt; ak.ones_like(ones)</span>
-<span class="sd">    array([1, 1, 1, 1, 1])</span>
+<span class="sd">    &gt;&gt;&gt; ak.ones_like(ak.zeros(5,dtype=ak.int64))</span>
+<span class="sd">    array([1 1 1 1 1])</span>
 
-<span class="sd">    &gt;&gt;&gt; ones = ak.ones(5, dtype=ak.float64)</span>
-<span class="sd">    &gt;&gt;&gt; ak.ones_like(ones)</span>
-<span class="sd">    array([1, 1, 1, 1, 1])</span>
+<span class="sd">    &gt;&gt;&gt; ak.ones_like(ak.zeros(5,dtype=ak.float64))</span>
+<span class="sd">    array([1.00000000000000000 1.00000000000000000 1.00000000000000000</span>
+<span class="sd">           1.00000000000000000 1.00000000000000000])</span>
 
-<span class="sd">    &gt;&gt;&gt; ones = ak.ones(5, dtype=ak.bool_)</span>
-<span class="sd">    &gt;&gt;&gt; ak.ones_like(ones)</span>
-<span class="sd">    array([True, True, True, True, True])</span>
+<span class="sd">    &gt;&gt;&gt; ak.ones_like(ak.zeros(5,dtype=ak.bool_))</span>
+<span class="sd">    array([True True True True True])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">ones</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">pda</span><span class="o">.</span><span class="n">max_bits</span><span class="p">)</span></div>
 
@@ -1203,17 +1205,15 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; full = ak.full(5, 7, dtype=ak.int64)</span>
-<span class="sd">    &gt;&gt;&gt; ak.full_like(full)</span>
-<span class="sd">    array([7, 7, 7, 7, 7])</span>
+<span class="sd">    &gt;&gt;&gt; ak.full_like(ak.full(5,7,dtype=ak.int64),6)</span>
+<span class="sd">    array([6 6 6 6 6])</span>
 
-<span class="sd">    &gt;&gt;&gt; full = ak.full(5, 9, dtype=ak.float64)</span>
-<span class="sd">    &gt;&gt;&gt; ak.full_like(full)</span>
-<span class="sd">    array([9, 9, 9, 9, 9])</span>
+<span class="sd">    &gt;&gt;&gt; ak.full_like(ak.full(7,9,dtype=ak.float64),10)</span>
+<span class="sd">    array([10.00000000000000000 10.00000000000000000 10.00000000000000000</span>
+<span class="sd">           10.00000000000000000 10.00000000000000000 10.00000000000000000 10.00000000000000000])</span>
 
-<span class="sd">    &gt;&gt;&gt; full = ak.full(5, 5, dtype=ak.bool_)</span>
-<span class="sd">    &gt;&gt;&gt; ak.full_like(full)</span>
-<span class="sd">    array([True, True, True, True, True])</span>
+<span class="sd">    &gt;&gt;&gt; ak.full_like(ak.full(5,True,dtype=ak.bool_),False)</span>
+<span class="sd">    array([False False False False False])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">full</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="n">fill_value</span><span class="p">,</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">pda</span><span class="o">.</span><span class="n">max_bits</span><span class="p">)</span></div>
 
@@ -1257,6 +1257,8 @@
 <span class="sd">        Raised if start, stop, or stride is not an int object</span>
 <span class="sd">    ZeroDivisionError</span>
 <span class="sd">        Raised if stride == 0</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Raised if (stop - start) and stride are not the same sign, or if stop==start</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1271,16 +1273,16 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; ak.arange(0, 5, 1)</span>
-<span class="sd">    array([0, 1, 2, 3, 4])</span>
+<span class="sd">    array([0 1 2 3 4])</span>
 
 <span class="sd">    &gt;&gt;&gt; ak.arange(5, 0, -1)</span>
-<span class="sd">    array([5, 4, 3, 2, 1])</span>
+<span class="sd">    array([5 4 3 2 1])</span>
 
 <span class="sd">    &gt;&gt;&gt; ak.arange(0, 10, 2)</span>
-<span class="sd">    array([0, 2, 4, 6, 8])</span>
+<span class="sd">    array([0 2 4 6 8])</span>
 
 <span class="sd">    &gt;&gt;&gt; ak.arange(-5, -10, -1)</span>
-<span class="sd">    array([-5, -6, -7, -8, -9])</span>
+<span class="sd">    array([-5 -6 -7 -8 -9])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># if one arg is given then arg is stop</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -1373,13 +1375,13 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; ak.linspace(0, 1, 5)</span>
-<span class="sd">    array([0, 0.25, 0.5, 0.75, 1])</span>
+<span class="sd">    array([0.00000000000000000 0.25 0.5 0.75 1.00000000000000000])</span>
 
 <span class="sd">    &gt;&gt;&gt; ak.linspace(start=1, stop=0, length=5)</span>
-<span class="sd">    array([1, 0.75, 0.5, 0.25, 0])</span>
+<span class="sd">    array([1.00000000000000000 0.75 0.5 0.25 0.00000000000000000])</span>
 
 <span class="sd">    &gt;&gt;&gt; ak.linspace(start=-5, stop=0, length=5)</span>
-<span class="sd">    array([-5, -3.75, -2.5, -1.25, 0])</span>
+<span class="sd">    array([-5.00000000000000000 -3.75 -2.5 -1.25 0.00000000000000000])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">isSupportedNumber</span><span class="p">(</span><span class="n">start</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">isSupportedNumber</span><span class="p">(</span><span class="n">stop</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;both start and stop must be an int, np.int64, float, or np.float64&quot;</span><span class="p">)</span>
@@ -1410,8 +1412,8 @@
 <span class="sd">        The low value (inclusive) of the range</span>
 <span class="sd">    high : numeric_scalars</span>
 <span class="sd">        The high value (exclusive for int, inclusive for float) of the range</span>
-<span class="sd">    size : int_scalars</span>
-<span class="sd">        The length of the returned array</span>
+<span class="sd">    size : int_scalars or tuple of int_scalars</span>
+<span class="sd">        The size or shape of the returned array</span>
 <span class="sd">    dtype : Union[int64, float64, bool]</span>
 <span class="sd">        The dtype of the array</span>
 <span class="sd">    seed : int_scalars, optional</span>
@@ -1441,23 +1443,14 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; ak.randint(0, 10, 5)</span>
-<span class="sd">    array([5, 7, 4, 8, 3])</span>
+<span class="sd">    &gt;&gt;&gt; ak.randint(0, 10, 5, seed=1701)</span>
+<span class="sd">    array([6 5 1 6 3])</span>
 
-<span class="sd">    &gt;&gt;&gt; ak.randint(0, 1, 3, dtype=ak.float64)</span>
-<span class="sd">    array([0.92176432277231968, 0.083130710959903542, 0.68894208386667544])</span>
+<span class="sd">    &gt;&gt;&gt; ak.randint(0, 1, 3, seed=1701, dtype=ak.float64)</span>
+<span class="sd">    array([0.011410423448327005 0.73618171558685619 0.12367222192448891])</span>
 
-<span class="sd">    &gt;&gt;&gt; ak.randint(0, 1, 5, dtype=ak.bool_)</span>
-<span class="sd">    array([True, False, True, True, True])</span>
-
-<span class="sd">    &gt;&gt;&gt; ak.randint(1, 5, 10, seed=2)</span>
-<span class="sd">    array([4, 3, 1, 3, 4, 4, 2, 4, 3, 2])</span>
-
-<span class="sd">    &gt;&gt;&gt; ak.randint(1, 5, 3, dtype=ak.float64, seed=2)</span>
-<span class="sd">    array([2.9160772326374946, 4.353429832157099, 4.5392023718621486])</span>
-
-<span class="sd">    &gt;&gt;&gt; ak.randint(1, 5, 10, dtype=ak.bool, seed=2)</span>
-<span class="sd">    array([False, True, True, True, True, False, True, True, True, True])</span>
+<span class="sd">    &gt;&gt;&gt; ak.randint(0, 1, 5, seed=1701, dtype=ak.bool_)</span>
+<span class="sd">    array([False True False True False])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.random</span><span class="w"> </span><span class="kn">import</span> <span class="n">randint</span>
 
@@ -1509,11 +1502,11 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; ak.uniform(3)</span>
-<span class="sd">    array([0.92176432277231968, 0.083130710959903542, 0.68894208386667544])</span>
+<span class="sd">    &gt;&gt;&gt; ak.uniform(3,seed=1701)</span>
+<span class="sd">    array([0.011410423448327005 0.73618171558685619 0.12367222192448891])</span>
 
 <span class="sd">    &gt;&gt;&gt; ak.uniform(size=3,low=0,high=5,seed=0)</span>
-<span class="sd">    array([0.30013431967121934, 0.47383036230759112, 1.0441791878997098])</span>
+<span class="sd">    array([0.30013431967121934 0.47383036230759112 1.0441791878997098])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">randint</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="n">high</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span></div>
 
@@ -1558,7 +1551,7 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; ak.standard_normal(3,1)</span>
-<span class="sd">    array([-0.68586185091150265, 1.1723810583573375, 0.567584107142031])</span>
+<span class="sd">    array([-0.68586185091150265 1.1723810583573377 0.567584107142031])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.random</span><span class="w"> </span><span class="kn">import</span> <span class="n">standard_normal</span>
 
@@ -1609,12 +1602,12 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=5)</span>
-<span class="sd">    array([&#39;TVKJ&#39;, &#39;EWAB&#39;, &#39;CO&#39;, &#39;HFMD&#39;, &#39;U&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; ak.random_strings_uniform(minlen=1, maxlen=5, seed=8675309, size=5)</span>
+<span class="sd">    array([&#39;ECWO&#39;, &#39;WSS&#39;, &#39;TZG&#39;, &#39;RW&#39;, &#39;C&#39;])</span>
 
-<span class="sd">    &gt;&gt;&gt; ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=5,</span>
+<span class="sd">    &gt;&gt;&gt; ak.random_strings_uniform(minlen=1, maxlen=5, seed=8675309, size=5,</span>
 <span class="sd">    ... characters=&#39;printable&#39;)</span>
-<span class="sd">    array([&#39;+5&quot;f&#39;, &#39;-P]3&#39;, &#39;4k&#39;, &#39;~HFF&#39;, &#39;F&#39;])</span>
+<span class="sd">    array([&#39;2 .z&#39;, &#39;aom&#39;, &#39;2d|&#39;, &#39;o(&#39;, &#39;M&#39;])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">minlen</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">maxlen</span> <span class="o">&lt;=</span> <span class="n">minlen</span> <span class="ow">or</span> <span class="n">size</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Incompatible arguments: minlen &lt; 0, maxlen &quot;</span> <span class="o">+</span> <span class="s2">&quot;&lt;= minlen, or size &lt; 0&quot;</span><span class="p">)</span>
@@ -1670,7 +1663,7 @@
 <span class="sd">    ------</span>
 <span class="sd">    TypeError</span>
 <span class="sd">        Raised if logmean is neither a float nor a int, logstd is not a float,</span>
-<span class="sd">        size is not an int, or if characters is not a str</span>
+<span class="sd">        seed is not an int, size is not an int, or if characters is not a str</span>
 <span class="sd">    ValueError</span>
 <span class="sd">        Raised if logstd &lt;= 0 or size &lt; 0</span>
 
@@ -1688,10 +1681,10 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; ak.random_strings_lognormal(2, 0.25, 5, seed=1)</span>
-<span class="sd">    array([&#39;TVKJTE&#39;, &#39;ABOCORHFM&#39;, &#39;LUDMMGTB&#39;, &#39;KWOQNPHZ&#39;, &#39;VSXRRL&#39;])</span>
+<span class="sd">    array([&#39;VWHJEX&#39;, &#39;BEBBXJHGM&#39;, &#39;RWOVKBUR&#39;, &#39;LNJCSDXD&#39;, &#39;NKEDQC&#39;])</span>
 
 <span class="sd">    &gt;&gt;&gt; ak.random_strings_lognormal(2, 0.25, 5, seed=1, characters=&#39;printable&#39;)</span>
-<span class="sd">    array([&#39;+5&quot;fp-&#39;, &#39;]3Q4kC~HF&#39;, &#39;=F=`,IE!&#39;, &#39;DjkBa&#39;9(&#39;, &#39;5oZ1)=&#39;])</span>
+<span class="sd">    array([&#39;eL96&lt;O&#39;, &#39;)o-GOe lR&#39;, &#39;)PV yHf(&#39;, &#39;._b3Yc&amp;K&#39;, &#39;,7Wjef&#39;])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">isSupportedNumber</span><span class="p">(</span><span class="n">logmean</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">isSupportedNumber</span><span class="p">(</span><span class="n">logstd</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;both logmean and logstd must be an int, np.int64, float, or np.float64&quot;</span><span class="p">)</span>

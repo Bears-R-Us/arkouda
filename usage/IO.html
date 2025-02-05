@@ -395,11 +395,10 @@ is composed of two pdarrays stored on arkouda server</p>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if a is not a pdarray, np.ndarray, or Python Iterable such as a
     list, array, tuple, or deque</p></li>
-<li><p><strong>RuntimeError</strong> – Raised if a is not one-dimensional, nbytes &gt; maxTransferBytes, a.dtype is
-    not supported (not in DTypes), or if the product of a size and
-    a.itemsize &gt; maxTransferBytes</p></li>
-<li><p><strong>ValueError</strong> – Raised if the returned message is malformed or does not contain the fields
-    required to generate the array.</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if nbytes &gt; maxTransferBytes, a.dtype is not supported (not in DTypes),
+    or if the product of a size and a.itemsize &gt; maxTransferBytes</p></li>
+<li><p><strong>ValueError</strong> – Raised if a has rank &gt; get_max_array_rank(), or if the returned message is malformed or does
+    not contain the fields required to generate the array.</p></li>
 </ul>
 </dd>
 </dl>
@@ -419,11 +418,11 @@ to create the Strings object and the two corresponding pdarrays for string
 bytes and offsets, respectively.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
-<span class="go">array([1, 2, 3, 4, 5, 6, 7, 8, 9])</span>
+<span class="go">array([1 2 3 4 5 6 7 8 9])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
-<span class="go">array([1, 2, 3, 4, 5, 6, 7, 8, 9])</span>
+<span class="go">array([1 2 3 4 5 6 7 8 9])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;string </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>

@@ -455,6 +455,7 @@ if stride is specified then start must also be specified.</p></li>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if start, stop, or stride is not an int object</p></li>
 <li><p><strong>ZeroDivisionError</strong> – Raised if stride == 0</p></li>
+<li><p><strong>ValueError</strong> – Raised if (stop - start) and stride are not the same sign, or if stop==start</p></li>
 </ul>
 </dd>
 </dl>
@@ -468,19 +469,19 @@ pdarrays can be created with this method. For float64 arrays, use
 the linspace method.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="go">array([0, 1, 2, 3, 4])</span>
+<span class="go">array([0 1 2 3 4])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-<span class="go">array([5, 4, 3, 2, 1])</span>
+<span class="go">array([5 4 3 2 1])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-<span class="go">array([0, 2, 4, 6, 8])</span>
+<span class="go">array([0 2 4 6 8])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-<span class="go">array([-5, -6, -7, -8, -9])</span>
+<span class="go">array([-5 -6 -7 -8 -9])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -509,11 +510,10 @@ is composed of two pdarrays stored on arkouda server</p>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if a is not a pdarray, np.ndarray, or Python Iterable such as a
 list, array, tuple, or deque</p></li>
-<li><p><strong>RuntimeError</strong> – Raised if a is not one-dimensional, nbytes &gt; maxTransferBytes, a.dtype is
-not supported (not in DTypes), or if the product of a size and
-a.itemsize &gt; maxTransferBytes</p></li>
-<li><p><strong>ValueError</strong> – Raised if the returned message is malformed or does not contain the fields
-required to generate the array.</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if nbytes &gt; maxTransferBytes, a.dtype is not supported (not in DTypes),
+or if the product of a size and a.itemsize &gt; maxTransferBytes</p></li>
+<li><p><strong>ValueError</strong> – Raised if a has rank &gt; get_max_array_rank(), or if the returned message is malformed or does
+not contain the fields required to generate the array.</p></li>
 </ul>
 </dd>
 </dl>
@@ -533,11 +533,11 @@ to create the Strings object and the two corresponding pdarrays for string
 bytes and offsets, respectively.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
-<span class="go">array([1, 2, 3, 4, 5, 6, 7, 8, 9])</span>
+<span class="go">array([1 2 3 4 5 6 7 8 9])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
-<span class="go">array([1, 2, 3, 4, 5, 6, 7, 8, 9])</span>
+<span class="go">array([1 2 3 4 5 6 7 8 9])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;string </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
@@ -583,8 +583,8 @@ if the pdarrays are not the same size.</p></li>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">bigint_from_uint_arrays</span><span class="p">([</span><span class="n">ak</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">uint64</span><span class="p">),</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">uint64</span><span class="p">)])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
-<span class="go">array([&quot;18446744073709551616&quot; &quot;18446744073709551617&quot; &quot;18446744073709551618&quot;</span>
-<span class="go">&quot;18446744073709551619&quot; &quot;18446744073709551620&quot;])</span>
+<span class="go">array([18446744073709551616 18446744073709551617 18446744073709551618</span>
+<span class="go">18446744073709551619 18446744073709551620])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span>
@@ -623,41 +623,40 @@ dtype is object).</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">5</span><span class="p">)))</span>
-<span class="go">array([9, 0, 4, 7, 9])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1701</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">5</span><span class="p">)))</span>
+<span class="go">array([4 3 3 5 0])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;4&#39;</span><span class="p">,</span> <span class="s1">&#39;5&#39;</span><span class="p">]),</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
-<span class="go">array([1, 2, 3, 4, 5])</span>
+<span class="go">array([1 2 3 4 5])</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span><span class="n">high</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">3</span><span class="p">)))</span>
-<span class="go">array([0.57600036956445599, 0.41619265571741659, 0.6615356693784662])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1701</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span><span class="n">high</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">3</span><span class="p">)))</span>
+<span class="go">array([0.089433234324597599 0.1153776854774361 0.51874393620990389])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s1">&#39;0.57600036956445599&#39;</span><span class="p">,</span> <span class="s1">&#39;0.41619265571741659&#39;</span><span class="p">,</span>
 <span class="go">                   &#39;0.6615356693784662&#39;]), dtype=np.float64)</span>
-<span class="go">array([0.57600036956445599, 0.41619265571741659, 0.6615356693784662])</span>
+<span class="go">array([0.57600036956445599 0.41619265571741659 0.6615356693784662])</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">],</span><span class="n">size</span><span class="o">=</span><span class="mi">5</span><span class="p">)))</span>
-<span class="go">array([True, False, True, True, True])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1864</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">],</span><span class="n">size</span><span class="o">=</span><span class="mi">5</span><span class="p">)))</span>
+<span class="go">array([True True True False False])</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s1">&#39;True&#39;</span><span class="p">,</span> <span class="s1">&#39;False&#39;</span><span class="p">,</span> <span class="s1">&#39;False&#39;</span><span class="p">,</span> <span class="s1">&#39;True&#39;</span><span class="p">,</span> <span class="s1">&#39;True&#39;</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
-<span class="go">array([True, True, True, True, True])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s1">&#39;True&#39;</span><span class="p">,</span> <span class="s1">&#39;False&#39;</span><span class="p">,</span> <span class="s1">&#39;False&#39;</span><span class="p">,</span> <span class="s1">&#39;True&#39;</span><span class="p">,</span> <span class="s1">&#39;True&#39;</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+<span class="go">array([True True True True True])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;string&quot;</span><span class="p">))</span>
 <span class="go">array([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;])</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">]),</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">str</span><span class="p">)</span>
-<span class="go">array([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;])</span>
-</pre></div>
-</div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">([</span><span class="s1">&#39;1/1/2018&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">datetime64</span><span class="p">(</span><span class="s1">&#39;2018-01-01&#39;</span><span class="p">)])))</span>
-<span class="go">array([1514764800000000000, 1514764800000000000])</span>
+<span class="go">array([1514764800000000000 1514764800000000000])</span>
 </pre></div>
 </div>
 <p class="rubric">Notes</p>
@@ -675,8 +674,8 @@ contains strings and sets the dtype to str</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>size</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int_scalars" title="arkouda.dtypes.int_scalars"><em>int_scalars</em></a><em> or </em><em>tuple</em><em> of </em><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int_scalars" title="arkouda.dtypes.int_scalars"><em>int_scalars</em></a>) – Size of the array (only rank-1 arrays supported)</p></li>
-<li><p><strong>fill_value</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int_scalars" title="arkouda.dtypes.int_scalars"><em>int_scalars</em></a>) – Value with which the array will be filled</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int_scalars" title="arkouda.dtypes.int_scalars"><em>int_scalars</em></a><em> or </em><em>tuple</em><em> of </em><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int_scalars" title="arkouda.dtypes.int_scalars"><em>int_scalars</em></a>) – Size or shape of the array</p></li>
+<li><p><strong>fill_value</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int_scalars" title="arkouda.dtypes.int_scalars"><em>int_scalars</em></a><em> or </em><em>str</em>) – Value with which the array will be filled</p></li>
 <li><p><strong>dtype</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.all_scalars" title="arkouda.dtypes.all_scalars"><em>all_scalars</em></a>) – Resulting array type, default float64</p></li>
 <li><p><strong>max_bits</strong> (<em>int</em>) – Specifies the maximum number of bits; only used for bigint pdarrays</p></li>
 </ul>
@@ -688,8 +687,11 @@ contains strings and sets the dtype to str</p>
 <dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../index.html#id721" title="arkouda.Strings">Strings</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>TypeError</strong> – Raised if the supplied dtype is not supported or if the size
-parameter is neither an int nor a str that is parseable to an int.</p>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if the supplied dtype is not supported</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if the size parameter is neither an int nor a str that is parseable to an int.</p></li>
+<li><p><strong>ValueError</strong> – Raised if the given shape exceeds get_max_array_rank() or is empty</p></li>
+</ul>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -698,15 +700,16 @@ parameter is neither an int nor a str that is parseable to an int.</p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
-<span class="go">array([7, 7, 7, 7, 7])</span>
+<span class="go">array([7 7 7 7 7])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
-<span class="go">array([9, 9, 9, 9, 9])</span>
+<span class="go">array([9.00000000000000000 9.00000000000000000 9.00000000000000000</span>
+<span class="go">       9.00000000000000000 9.00000000000000000])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">bool_</span><span class="p">)</span>
-<span class="go">array([True, True, True, True, True])</span>
+<span class="go">array([True True True True True])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -741,19 +744,17 @@ pdarray.</p>
 <p>Logic for generating the pdarray is delegated to the ak.full method.
 Accordingly, the supported dtypes match are defined by the ak.full method.</p>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">full</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">full</span><span class="p">)</span>
-<span class="go">array([7, 7, 7, 7, 7])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">int64</span><span class="p">),</span><span class="mi">6</span><span class="p">)</span>
+<span class="go">array([6 6 6 6 6])</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">full</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">full</span><span class="p">)</span>
-<span class="go">array([9, 9, 9, 9, 9])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span><span class="mi">10</span><span class="p">)</span>
+<span class="go">array([10.00000000000000000 10.00000000000000000 10.00000000000000000</span>
+<span class="go">       10.00000000000000000 10.00000000000000000 10.00000000000000000 10.00000000000000000])</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">full</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">bool_</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">full</span><span class="p">)</span>
-<span class="go">array([True, True, True, True, True])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">bool_</span><span class="p">),</span><span class="kc">False</span><span class="p">)</span>
+<span class="go">array([False False False False False])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -789,15 +790,15 @@ Accordingly, the supported dtypes match are defined by the ak.full method.</p>
 in descending order.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-<span class="go">array([0, 0.25, 0.5, 0.75, 1])</span>
+<span class="go">array([0.00000000000000000 0.25 0.5 0.75 1.00000000000000000])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-<span class="go">array([1, 0.75, 0.5, 0.25, 0])</span>
+<span class="go">array([1.00000000000000000 0.75 0.5 0.25 0.00000000000000000])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">start</span><span class="o">=-</span><span class="mi">5</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-<span class="go">array([-5, -3.75, -2.5, -1.25, 0])</span>
+<span class="go">array([-5.00000000000000000 -3.75 -2.5 -1.25 0.00000000000000000])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -809,20 +810,25 @@ in descending order.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>size</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int_scalars" title="arkouda.dtypes.int_scalars"><em>int_scalars</em></a><em> or </em><em>tuple</em><em> of </em><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int_scalars" title="arkouda.dtypes.int_scalars"><em>int_scalars</em></a>) – Size of the array (only rank-1 arrays supported)</p></li>
-<li><p><strong>dtype</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.float64" title="arkouda.dtypes.float64"><em>float64</em></a><em>, </em><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int64" title="arkouda.dtypes.int64"><em>int64</em></a><em>, </em><em>bool</em><em>]</em>) – Resulting array type, default float64</p></li>
-<li><p><strong>max_bits</strong> (<em>int</em>) – Specifies the maximum number of bits; only used for bigint pdarrays</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int_scalars" title="arkouda.dtypes.int_scalars"><em>int_scalars</em></a><em> or </em><em>tuple</em><em> of </em><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int_scalars" title="arkouda.dtypes.int_scalars"><em>int_scalars</em></a>) – Size or shape of the array</p></li>
+<li><p><strong>dtype</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.float64" title="arkouda.dtypes.float64"><em>float64</em></a><em>, </em><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int64" title="arkouda.dtypes.int64"><em>int64</em></a><em>, </em><em>bool</em><em>]</em>) – Resulting array type, default ak.float64</p></li>
+<li><p><strong>max_bits</strong> (<em>int</em>) – Specifies the maximum number of bits; only used for bigint pdarrays
+Included for consistency, as ones are all zeros ending on a one, regardless
+of max_bits</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Ones of the requested size and dtype</p>
+<dd class="field-even"><p>Ones of the requested size or shape and dtype</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>TypeError</strong> – Raised if the supplied dtype is not supported or if the size
-parameter is neither an int nor a str that is parseable to an int.</p>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if the supplied dtype is not supported</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if the size parameter is neither an int nor a str that is parseable to an int.</p></li>
+<li><p><strong>ValueError</strong> – Raised if the given shape exceeds get_max_array_rank() or is empty</p></li>
+</ul>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -831,17 +837,20 @@ parameter is neither an int nor a str that is parseable to an int.</p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
-<span class="go">array([1, 1, 1, 1, 1])</span>
+<span class="go">array([1 1 1 1 1])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
-<span class="go">array([1, 1, 1, 1, 1])</span>
+<span class="go">array([1.00000000000000000 1.00000000000000000 1.00000000000000000</span>
+<span class="go">       1.00000000000000000 1.00000000000000000])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">bool_</span><span class="p">)</span>
-<span class="go">array([True, True, True, True, True])</span>
+<span class="go">array([True True True True True])</span>
 </pre></div>
 </div>
+<p class="rubric">Notes</p>
+<p>Logic for generating the pdarray is delegated to the ak.full method.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -871,19 +880,17 @@ pdarray.</p>
 <p>Logic for generating the pdarray is delegated to the ak.ones method.
 Accordingly, the supported dtypes match are defined by the ak.ones method.</p>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ones</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
-<span class="go"> &gt;&gt;&gt; ak.ones_like(ones)</span>
-<span class="go">array([1, 1, 1, 1, 1])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
+<span class="go">array([1 1 1 1 1])</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ones</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">ones</span><span class="p">)</span>
-<span class="go">array([1, 1, 1, 1, 1])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+<span class="go">array([1.00000000000000000 1.00000000000000000 1.00000000000000000</span>
+<span class="go">       1.00000000000000000 1.00000000000000000])</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ones</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">bool_</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">ones</span><span class="p">)</span>
-<span class="go">array([True, True, True, True, True])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">bool_</span><span class="p">))</span>
+<span class="go">array([True True True True True])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -903,7 +910,7 @@ Accordingly, the supported dtypes match are defined by the ak.ones method.</p>
 <dd class="field-odd"><p>dtype, List[<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>TypeError</strong> – Raised if the pdarrays are not all of the same dtype</p>
+<dd class="field-even"><p><strong>TypeError</strong> – Raised if any pdarray is a non-numeric type</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -913,10 +920,10 @@ Accordingly, the supported dtypes match are defined by the ak.ones method.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">dtype</span><span class="p">,</span> <span class="n">promoted</span> <span class="o">=</span> <span class="n">promote_to_common_dtype</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dtype</span><span class="p">,</span> <span class="n">promoted</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">promote_to_common_dtype</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dtype</span>
-<span class="go">dtype(float64)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">dtype</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">promoted</span><span class="p">)</span>
+<span class="go">dtype(&#39;float64&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">ak</span><span class="o">.</span><span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">dtype</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">promoted</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
@@ -932,7 +939,7 @@ specified range bounded by the low and high parameters.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>low</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.numeric_scalars" title="arkouda.dtypes.numeric_scalars"><em>numeric_scalars</em></a>) – The low value (inclusive) of the range</p></li>
 <li><p><strong>high</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.numeric_scalars" title="arkouda.dtypes.numeric_scalars"><em>numeric_scalars</em></a>) – The high value (exclusive for int, inclusive for float) of the range</p></li>
-<li><p><strong>size</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int_scalars" title="arkouda.dtypes.int_scalars"><em>int_scalars</em></a>) – The length of the returned array</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int_scalars" title="arkouda.dtypes.int_scalars"><em>int_scalars</em></a><em> or </em><em>tuple</em><em> of </em><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int_scalars" title="arkouda.dtypes.int_scalars"><em>int_scalars</em></a>) – The size or shape of the returned array</p></li>
 <li><p><strong>dtype</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int64" title="arkouda.dtypes.int64"><em>int64</em></a><em>, </em><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.float64" title="arkouda.dtypes.float64"><em>float64</em></a><em>, </em><em>bool</em><em>]</em>) – The dtype of the array</p></li>
 <li><p><strong>seed</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int_scalars" title="arkouda.dtypes.int_scalars"><em>int_scalars</em></a><em>, </em><em>optional</em>) – Index for where to pull the first returned value</p></li>
 </ul>
@@ -957,28 +964,16 @@ floating point values.</p>
 <p>Ranges &gt;= 2**64 in size is undefined behavior because
 it exceeds the maximum value that can be stored on the server (uint64)</p>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-<span class="go">array([5, 7, 4, 8, 3])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1701</span><span class="p">)</span>
+<span class="go">array([6 5 1 6 3])</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
-<span class="go">array([0.92176432277231968, 0.083130710959903542, 0.68894208386667544])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1701</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="go">array([0.011410423448327005 0.73618171558685619 0.12367222192448891])</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">bool_</span><span class="p">)</span>
-<span class="go">array([True, False, True, True, True])</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="go">array([4, 3, 1, 3, 4, 4, 2, 4, 3, 2])</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="go">array([2.9160772326374946, 4.353429832157099, 4.5392023718621486])</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="go">array([False, True, True, True, True, False, True, True, True, True])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1701</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">bool_</span><span class="p">)</span>
+<span class="go">array([False True False True False])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1007,7 +1002,7 @@ with characters drawn from a specified set.</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if logmean is neither a float nor a int, logstd is not a float,
-size is not an int, or if characters is not a str</p></li>
+seed is not an int, size is not an int, or if characters is not a str</p></li>
 <li><p><strong>ValueError</strong> – Raised if logstd &lt;= 0 or size &lt; 0</p></li>
 </ul>
 </dd>
@@ -1023,11 +1018,11 @@ have an average length of <span class="math notranslate nohighlight">\(exp(\mu +
 zero, and a heavy tail towards longer strings.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">random_strings_lognormal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="go">array([&#39;TVKJTE&#39;, &#39;ABOCORHFM&#39;, &#39;LUDMMGTB&#39;, &#39;KWOQNPHZ&#39;, &#39;VSXRRL&#39;])</span>
+<span class="go">array([&#39;VWHJEX&#39;, &#39;BEBBXJHGM&#39;, &#39;RWOVKBUR&#39;, &#39;LNJCSDXD&#39;, &#39;NKEDQC&#39;])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">random_strings_lognormal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">characters</span><span class="o">=</span><span class="s1">&#39;printable&#39;</span><span class="p">)</span>
-<span class="go">array([&#39;+5&quot;fp-&#39;, &#39;]3Q4kC~HF&#39;, &#39;=F=`,IE!&#39;, &#39;DjkBa&#39;9(&#39;, &#39;5oZ1)=&#39;])</span>
+<span class="go">array([&#39;eL96&lt;O&#39;, &#39;)o-GOe lR&#39;, &#39;)PV yHf(&#39;, &#39;._b3Yc&amp;K&#39;, &#39;,7Wjef&#39;])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1062,13 +1057,13 @@ minlen and maxlen, and with characters drawn from a specified set.</p>
 <p><a class="reference internal" href="#arkouda.pdarraycreation.random_strings_lognormal" title="arkouda.pdarraycreation.random_strings_lognormal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_strings_lognormal</span></code></a>, <a class="reference internal" href="#arkouda.pdarraycreation.randint" title="arkouda.pdarraycreation.randint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">randint</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">random_strings_uniform</span><span class="p">(</span><span class="n">minlen</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-<span class="go">array([&#39;TVKJ&#39;, &#39;EWAB&#39;, &#39;CO&#39;, &#39;HFMD&#39;, &#39;U&#39;])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">random_strings_uniform</span><span class="p">(</span><span class="n">minlen</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">8675309</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">array([&#39;ECWO&#39;, &#39;WSS&#39;, &#39;TZG&#39;, &#39;RW&#39;, &#39;C&#39;])</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">random_strings_uniform</span><span class="p">(</span><span class="n">minlen</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">random_strings_uniform</span><span class="p">(</span><span class="n">minlen</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">8675309</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
 <span class="gp">... </span><span class="n">characters</span><span class="o">=</span><span class="s1">&#39;printable&#39;</span><span class="p">)</span>
-<span class="go">array([&#39;+5&quot;f&#39;, &#39;-P]3&#39;, &#39;4k&#39;, &#39;~HFF&#39;, &#39;F&#39;])</span>
+<span class="go">array([&#39;2 .z&#39;, &#39;aom&#39;, &#39;2d|&#39;, &#39;o(&#39;, &#39;M&#39;])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1086,6 +1081,20 @@ minlen and maxlen, and with characters drawn from a specified set.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">scalar_array</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">array([5])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">scalar_array</span><span class="p">(</span><span class="mf">7.0</span><span class="p">)</span>
+<span class="go">array([7.00000000000000000])</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if value cannot be cast as dtype</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1123,7 +1132,7 @@ minlen and maxlen, and with characters drawn from a specified set.</p>
 <p><code class="docutils literal notranslate"><span class="pre">(sigma</span> <span class="pre">*</span> <span class="pre">standard_normal(size))</span> <span class="pre">+</span> <span class="pre">mu</span></code></p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-<span class="go">array([-0.68586185091150265, 1.1723810583573375, 0.567584107142031])</span>
+<span class="go">array([-0.68586185091150265 1.1723810583573377 0.567584107142031])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1160,12 +1169,12 @@ either low or high is not an int or float</p></li>
 <p>The logic for uniform is delegated to the ak.randint method which
 is invoked with a dtype of float64</p>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-<span class="go">array([0.92176432277231968, 0.083130710959903542, 0.68894208386667544])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="n">seed</span><span class="o">=</span><span class="mi">1701</span><span class="p">)</span>
+<span class="go">array([0.011410423448327005 0.73618171558685619 0.12367222192448891])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span><span class="n">low</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">high</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="go">array([0.30013431967121934, 0.47383036230759112, 1.0441791878997098])</span>
+<span class="go">array([0.30013431967121934 0.47383036230759112 1.0441791878997098])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1177,20 +1186,25 @@ is invoked with a dtype of float64</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>size</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int_scalars" title="arkouda.dtypes.int_scalars"><em>int_scalars</em></a><em> or </em><em>tuple</em><em> of </em><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int_scalars" title="arkouda.dtypes.int_scalars"><em>int_scalars</em></a>) – Size of the array (only rank-1 arrays supported)</p></li>
-<li><p><strong>dtype</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.all_scalars" title="arkouda.dtypes.all_scalars"><em>all_scalars</em></a>) – Type of resulting array, default float64</p></li>
-<li><p><strong>max_bits</strong> (<em>int</em>) – Specifies the maximum number of bits; only used for bigint pdarrays</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int_scalars" title="arkouda.dtypes.int_scalars"><em>int_scalars</em></a><em> or </em><em>tuple</em><em> of </em><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int_scalars" title="arkouda.dtypes.int_scalars"><em>int_scalars</em></a>) – Size or shape of the array</p></li>
+<li><p><strong>dtype</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.all_scalars" title="arkouda.dtypes.all_scalars"><em>all_scalars</em></a>) – Type of resulting array, default ak.float64</p></li>
+<li><p><strong>max_bits</strong> (<em>int</em>) – Specifies the maximum number of bits; only used for bigint pdarrays
+Included for consistency, as zeros are represented as all zeros, regardless
+of the value of max_bits</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Zeros of the requested size and dtype</p>
+<dd class="field-even"><p>Zeros of the requested size or shape and dtype</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>TypeError</strong> – Raised if the supplied dtype is not supported or if the size
-parameter is neither an int nor a str that is parseable to an int.</p>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if the supplied dtype is not supported</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if the size parameter is neither an int nor a str that is parseable to an int.</p></li>
+<li><p><strong>ValueError</strong> – Raised if the given shape exceeds get_max_array_rank() or is empty</p></li>
+</ul>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1199,17 +1213,20 @@ parameter is neither an int nor a str that is parseable to an int.</p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
-<span class="go">array([0, 0, 0, 0, 0])</span>
+<span class="go">array([0 0 0 0 0])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
-<span class="go">array([0, 0, 0, 0, 0])</span>
+<span class="go">array([0.00000000000000000 0.00000000000000000 0.00000000000000000</span>
+<span class="go">       0.00000000000000000 0.00000000000000000])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">bool_</span><span class="p">)</span>
-<span class="go">array([False, False, False, False, False])</span>
+<span class="go">array([False False False False False])</span>
 </pre></div>
 </div>
+<p class="rubric">Notes</p>
+<p>Logic for generating the pdarray is delegated to the ak.full method.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1236,19 +1253,17 @@ pdarray.</p>
 <p><a class="reference internal" href="#arkouda.pdarraycreation.zeros" title="arkouda.pdarraycreation.zeros"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros</span></code></a>, <a class="reference internal" href="#arkouda.pdarraycreation.ones_like" title="arkouda.pdarraycreation.ones_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ones_like</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">zeros</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">zeros</span><span class="p">)</span>
-<span class="go">array([0, 0, 0, 0, 0])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
+<span class="go">array([0 0 0 0 0])</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">zeros</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">zeros</span><span class="p">)</span>
-<span class="go">array([0, 0, 0, 0, 0])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+<span class="go">array([0.00000000000000000 0.00000000000000000 0.00000000000000000</span>
+<span class="go">       0.00000000000000000 0.00000000000000000])</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">zeros</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">bool_</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">zeros</span><span class="p">)</span>
-<span class="go">array([False, False, False, False, False])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">bool_</span><span class="p">))</span>
+<span class="go">array([False False False False False])</span>
 </pre></div>
 </div>
 </dd></dl>
