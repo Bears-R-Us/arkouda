@@ -1785,14 +1785,15 @@ def _convToDtp(dtp, minVal, maxVal):
     """
     def conv(dtp, val, margin):
         if isinstance(val, int) or np.issubdtype(dtp, np.floating):
-            return dtp.type(val) # no need for margin
+            return dtp.type(val)  # no need for margin
         val += margin
         if margin < 0:  # min: round up
-            return dtp.type(val+1) if val >= 0 else dtp.type(val) 
+            return dtp.type(val+1) if val >= 0 else dtp.type(val)
         else:           # max: round down
-            return dtp.type(val)   if val >= 0 else dtp.type(val-1)
+            return dtp.type(val) if val >= 0 else dtp.type(val-1)
 
     return conv(dtp, minVal, -.3), conv(dtp, maxVal, .3)
+
 
 # histogram helper
 def _pyrange(count):
@@ -1803,8 +1804,8 @@ def _pyrange(count):
 
 @typechecked
 def histogram(pda: pdarray, bins: int_scalars = 10,
-              range: Optional[Tuple[numeric_scalars,numeric_scalars]] = None,
-) -> Tuple[pdarray, pdarray]:
+              range: Optional[Tuple[numeric_scalars, numeric_scalars]] = None,
+              ) -> Tuple[pdarray, pdarray]:
     """
     Compute a histogram of evenly spaced bins over the range of an array.
 
@@ -1880,7 +1881,8 @@ def histogram(pda: pdarray, bins: int_scalars = 10,
 # @typechecked
 def histogram2d(
     x: pdarray, y: pdarray, bins: Union[int_scalars, Sequence[int_scalars]] = 10,
-    range: Optional[Tuple[Tuple[numeric_scalars,numeric_scalars], Tuple[numeric_scalars,numeric_scalars]]] = None,
+    range: Optional[Tuple[Tuple[numeric_scalars, numeric_scalars],
+                          Tuple[numeric_scalars, numeric_scalars]]] = None,
 ) -> Tuple[pdarray, pdarray, pdarray]:
     """
     Compute the bi-dimensional histogram of two data samples with evenly spaced bins
@@ -1971,8 +1973,9 @@ def histogram2d(
 
     x_bin_boundaries = linspace(xMin, xMax, x_bins + 1)
     y_bin_boundaries = linspace(yMin, yMax, y_bins + 1)
-    repMsg = generic_msg(cmd="histogram2D", args={"x": x, "y": y, "xBins": x_bins, "yBins": y_bins,
-                                                  "xMin": xMin, "xMax": xMax, "yMin": yMin, "yMax": yMax})
+    repMsg = generic_msg(cmd="histogram2D", args={
+        "x": x, "y": y, "xBins": x_bins, "yBins": y_bins,
+        "xMin": xMin, "xMax": xMax, "yMin": yMin, "yMax": yMax})
     return (
         create_pdarray(type_cast(str, repMsg)).reshape(x_bins, y_bins),
         x_bin_boundaries,
@@ -1982,7 +1985,7 @@ def histogram2d(
 
 def histogramdd(
     sample: Sequence[pdarray], bins: Union[int_scalars, Sequence[int_scalars]] = 10,
-    range: Optional[Sequence[Optional[Tuple[numeric_scalars,numeric_scalars]]]] = None,
+    range: Optional[Sequence[Optional[Tuple[numeric_scalars, numeric_scalars]]]] = None,
 ) -> Tuple[pdarray, Sequence[pdarray]]:
     """
     Compute the multidimensional histogram of data in sample with evenly spaced bins.
@@ -2065,16 +2068,19 @@ def histogramdd(
         range = [None for pda in sample]
     elif len(range) != num_dims:
         raise ValueError("The range sequence contains a different number of elements than the sample")
+
     def convDim(sampleDim, rangeDim):
-        if rangeDim: return _convToDtp(sampleDim.dtype, rangeDim[0], rangeDim[1])
-        else:        return (sampleDim.min(), sampleDim.max())
+        if rangeDim:
+            return _convToDtp(sampleDim.dtype, rangeDim[0], rangeDim[1])
+        else:
+            return (sampleDim.min(), sampleDim.max())
     range = [convDim(sample[i], range[i]) for i in _pyrange(num_dims)]
 
     bins = list(bins) if isinstance(bins, tuple) else bins
     sample = list(sample) if isinstance(sample, tuple) else sample
     bin_boundaries = [linspace(r[0], r[1], b + 1) for r, b in zip(range, bins)]
     d_curr, d_next = 1, 1
-    dim_prod = [(d_curr:=d_next,d_next:=d_curr*int(v))[0] for v in bins[::-1]][::-1]
+    dim_prod = [(d_curr := d_next, d_next := d_curr * int(v))[0] for v in bins[::-1]][::-1]  # noqa: F841
     repMsg = generic_msg(
         cmd="histogramdD",
         args={
