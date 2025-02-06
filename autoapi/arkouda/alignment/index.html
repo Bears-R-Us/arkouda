@@ -474,46 +474,50 @@ If remove_missing is True, exclude missing values, otherwise return -1.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">select_from</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr1</span> <span class="o">=</span> <span class="n">select_from</span><span class="p">[</span><span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">select_from</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">10</span><span class="p">)]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr2</span> <span class="o">=</span> <span class="n">select_from</span><span class="p">[</span><span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">select_from</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">11</span><span class="p">)]</span>
-<span class="go"># remove some values to ensure we have some values</span>
-<span class="go"># which don&#39;t appear in the search space</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">arr2</span> <span class="o">=</span> <span class="n">arr2</span><span class="p">[</span><span class="n">arr2</span> <span class="o">!=</span> <span class="mi">9</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Remove some values to ensure we have some values
+which don’t appear in the search space</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">arr2</span> <span class="o">=</span> <span class="n">arr2</span><span class="p">[</span><span class="n">arr2</span> <span class="o">!=</span> <span class="mi">9</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr2</span> <span class="o">=</span> <span class="n">arr2</span><span class="p">[</span><span class="n">arr2</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">]</span>
 </pre></div>
 </div>
-<p># find with defaults (all_occurrences and remove_missing both False)
-&gt;&gt;&gt; ak.find(arr1, arr2)
-array([-1 -1 -1 0 1 -1 -1 -1 2 -1 5 -1 8 -1 5 -1 -1 11 5 0])</p>
-<blockquote>
-<div><p># set remove_missing to True, only difference from default
-# is missing values are excluded
-&gt;&gt;&gt; ak.find(arr1, arr2, remove_missing=True)</p>
-</div></blockquote>
-<p>array([0 1 2 5 8 5 11 5 0])</p>
-<p># set both remove_missing and all_occurrences to True, missing values
-# will be empty segments
-&gt;&gt;&gt; ak.find(arr1, arr2, remove_missing=True, all_occurrences=True).to_list()
-[[],</p>
-<blockquote>
-<div><p>[],
-[],
-[0, 4],
-[1, 3, 10],
-[],
-[],
-[],
-[2, 6, 12, 13],
-[],
-[5, 7],
-[],
-[8, 9, 14],
-[],
-[5, 7],
-[],
-[],
-[11, 15],
-[5, 7],
-[0, 4]]</p>
-</div></blockquote>
+<p>Find with defaults (all_occurrences and remove_missing both False)</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">arr1</span><span class="p">,</span> <span class="n">arr2</span><span class="p">)</span>
+<span class="go">array([-1 -1 -1 0 1 -1 -1 -1 2 -1 5 -1 8 -1 5 -1 -1 11 5 0])</span>
+</pre></div>
+</div>
+<p>Set remove_missing to True, only difference from default
+is missing values are excluded</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">arr1</span><span class="p">,</span> <span class="n">arr2</span><span class="p">,</span> <span class="n">remove_missing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">array([0 1 2 5 8 5 11 5 0])</span>
+</pre></div>
+</div>
+<p>Set both remove_missing and all_occurrences to True, missing values
+will be empty segments</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">arr1</span><span class="p">,</span> <span class="n">arr2</span><span class="p">,</span> <span class="n">remove_missing</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">all_occurrences</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+<span class="go">[[],</span>
+<span class="go"> [],</span>
+<span class="go"> [],</span>
+<span class="go"> [0, 4],</span>
+<span class="go"> [1, 3, 10],</span>
+<span class="go"> [],</span>
+<span class="go"> [],</span>
+<span class="go"> [],</span>
+<span class="go"> [2, 6, 12, 13],</span>
+<span class="go"> [],</span>
+<span class="go"> [5, 7],</span>
+<span class="go"> [],</span>
+<span class="go"> [8, 9, 14],</span>
+<span class="go"> [],</span>
+<span class="go"> [5, 7],</span>
+<span class="go"> [],</span>
+<span class="go"> [],</span>
+<span class="go"> [11, 15],</span>
+<span class="go"> [5, 7],</span>
+<span class="go"> [0, 4]]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -646,22 +650,26 @@ arrays is given, each row is treated as a tuple-valued entry).</p></li>
 result can be achieved by passing an arange as the values, then using
 the return as indices into the desired object.</p>
 <p class="rubric">Examples</p>
-<p># Lookup numbers by two-word name
-&gt;&gt;&gt; keys1 = ak.array([‘twenty’ for _ in range(5)])
-&gt;&gt;&gt; keys2 = ak.array([‘one’, ‘two’, ‘three’, ‘four’, ‘five’])
-&gt;&gt;&gt; values = ak.array([21, 22, 23, 24, 25])
-&gt;&gt;&gt; args1 = ak.array([‘twenty’, ‘thirty’, ‘twenty’])
-&gt;&gt;&gt; args2 = ak.array([‘four’, ‘two’, ‘two’])
-&gt;&gt;&gt; aku.lookup([keys1, keys2], values, [args1, args2])
-array([24, -1, 22])</p>
-<p># Other direction requires an intermediate index
-&gt;&gt;&gt; revkeys = values
-&gt;&gt;&gt; revindices = ak.arange(values.size)
-&gt;&gt;&gt; revargs = ak.array([24, 21, 22])
-&gt;&gt;&gt; idx = aku.lookup(revkeys, revindices, revargs)
-&gt;&gt;&gt; keys1[idx], keys2[idx]
-(array([‘twenty’, ‘twenty’, ‘twenty’]),
-array([‘four’, ‘one’, ‘two’]))</p>
+<p>Lookup numbers by two-word name</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">keys1</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;twenty&#39;</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">keys2</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;one&#39;</span><span class="p">,</span> <span class="s1">&#39;two&#39;</span><span class="p">,</span> <span class="s1">&#39;three&#39;</span><span class="p">,</span> <span class="s1">&#39;four&#39;</span><span class="p">,</span> <span class="s1">&#39;five&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">values</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">21</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">25</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">args1</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;twenty&#39;</span><span class="p">,</span> <span class="s1">&#39;thirty&#39;</span><span class="p">,</span> <span class="s1">&#39;twenty&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">args2</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;four&#39;</span><span class="p">,</span> <span class="s1">&#39;two&#39;</span><span class="p">,</span> <span class="s1">&#39;two&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">lookup</span><span class="p">([</span><span class="n">keys1</span><span class="p">,</span> <span class="n">keys2</span><span class="p">],</span> <span class="n">values</span><span class="p">,</span> <span class="p">[</span><span class="n">args1</span><span class="p">,</span> <span class="n">args2</span><span class="p">])</span>
+<span class="go">array([24 -1 22])</span>
+</pre></div>
+</div>
+<p>Other direction requires an intermediate index</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">revkeys</span> <span class="o">=</span> <span class="n">values</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">revindices</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">revargs</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">24</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">22</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">revkeys</span><span class="p">,</span> <span class="n">revindices</span><span class="p">,</span> <span class="n">revargs</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">keys1</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">keys2</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+<span class="go">(array([&#39;twenty&#39;, &#39;twenty&#39;, &#39;twenty&#39;]),</span>
+<span class="go">array([&#39;four&#39;, &#39;one&#39;, &#39;two&#39;]))</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -735,10 +743,10 @@ When False, sequences of pdarrays will be specifying multi-dimensional intervals
 <span class="gp">&gt;&gt;&gt; </span><span class="n">bi_ends</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">bigint_from_uint_arrays</span><span class="p">([</span><span class="n">ak</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ak</span><span class="o">.</span><span class="n">uint64</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">ends</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">bi_vals</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">bigint_from_uint_arrays</span><span class="p">([</span><span class="n">ak</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ak</span><span class="o">.</span><span class="n">uint64</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">bi_starts</span><span class="p">,</span> <span class="n">bi_ends</span><span class="p">,</span> <span class="n">bi_vals</span>
-<span class="go">(array([&quot;0&quot; &quot;92233720368547758091&quot;]),</span>
-<span class="go">array([&quot;92233720368547758090&quot; &quot;166020696663385964564&quot;]),</span>
-<span class="go">array([&quot;0&quot; &quot;20&quot; &quot;36893488147419103233&quot; &quot;92233720368547758085&quot; &quot;92233720368547758095&quot;</span>
-<span class="go">&quot;110680464442257309696&quot; &quot;110680464442257309708&quot; &quot;166020696663385964574&quot;]))</span>
+<span class="go">(array([0 92233720368547758091]),</span>
+<span class="go">array([92233720368547758090 166020696663385964564]),</span>
+<span class="go">array([0 20 36893488147419103233 92233720368547758085 92233720368547758095</span>
+<span class="go">110680464442257309696 110680464442257309708 166020696663385964574]))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">search_intervals</span><span class="p">(</span><span class="n">bi_vals</span><span class="p">,</span> <span class="p">(</span><span class="n">bi_starts</span><span class="p">,</span> <span class="n">bi_ends</span><span class="p">))</span>
 <span class="go">array([0 0 0 0 1 1 1 -1])</span>
 </pre></div>
