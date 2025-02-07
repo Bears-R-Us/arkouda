@@ -30,9 +30,9 @@ from arkouda.numpy.dtypes import float_scalars
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import int_scalars
 from arkouda.numpy.dtypes import uint64 as akuint64
+from arkouda.numpy.random import default_rng
 from arkouda.pdarrayclass import RegistrationError, create_pdarray, is_sorted, pdarray
 from arkouda.pdarraycreation import arange, full
-from arkouda.numpy.random import default_rng
 from arkouda.sorting import argsort, sort
 from arkouda.strings import Strings
 
@@ -1281,6 +1281,11 @@ class GroupBy:
         # The last GroupBy *should* result in sorted key indices, but in case it
         # doesn't, we need to permute the answer to match the original key order
         if not is_sorted(keyorder):
+            if not isinstance(keyorder, (pdarray, Strings, Categorical)):
+                raise TypeError(
+                    f"groupby failed to produce keyorder of the correct type: "
+                    f"{type(keyorder)} is not pdarray, Strings, or Categorical."
+                )
             perm = argsort(keyorder)
             nuniq = nuniq[perm]
         # Re-join unique counts with original keys (sorting guarantees same order)

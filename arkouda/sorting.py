@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Sequence, Union, cast
+from typing import TYPE_CHECKING, Sequence, TypeVar, Union, cast
 
+import numpy as np
 from typeguard import check_type, typechecked
 
 from arkouda.client import generic_msg
@@ -25,9 +26,14 @@ __all__ = ["argsort", "coargsort", "sort", "SortingAlgorithm"]
 
 SortingAlgorithm = Enum("SortingAlgorithm", ["RadixSortLSD", "TwoArrayRadixSort"])
 
+if TYPE_CHECKING:
+    from arkouda.categorical import Categorical
+else:
+    Categorical = TypeVar("Categorical")
+
 
 def argsort(
-    pda: Union[pdarray, Strings, "Categorical"],  # type: ignore # noqa
+    pda: Union[pdarray, Strings, Categorical],
     algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD,
     axis: int_scalars = 0,
 ) -> pdarray:
@@ -36,22 +42,22 @@ def argsort(
 
     Parameters
     ----------
-    pda : pdarray or Strings or Categorical
+    pda : pdarray, Strings, or Categorical
         The array to sort (int64, uint64, or float64)
-    algorithm : SortingAlgorithm
+    algorithm : SortingAlgorithm, default=SortingAlgorithm.RadixSortLSD
         The algorithm to be used for sorting the array.
-    axis : int_scalars
+    axis : int_scalars, default=0
         The axis to sort over.
 
     Returns
     -------
-    pdarray, int64
+    pdarray of int64
         The indices such that ``pda[indices]`` is sorted
 
     Raises
     ------
     TypeError
-        Raised if the parameter is other than a pdarray or Strings
+        Raised if the parameter is other than a pdarray, Strings or Categorical
 
     See Also
     --------
@@ -67,7 +73,7 @@ def argsort(
     >>> a = ak.randint(0, 10, 10)
     >>> perm = ak.argsort(a)
     >>> a[perm]
-    array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
+    array([0 1 3 3 5 5 5 6 6 6])
 
     >>> ak.argsort(a, ak.sorting.SortingAlgorithm["RadixSortLSD"])
     array([0 2 9 6 8 1 3 5 7 4])
@@ -77,12 +83,15 @@ def argsort(
     """
     from arkouda.categorical import Categorical
 
-    if axis < -1 or axis > pda.ndim:
-        raise ValueError(f"Axis must be between -1 and the PD Array's rank ({pda.ndim})")
+    ndim = cast(Union[int, np.integer], getattr(pda, "ndim"))
+
+    if axis < -1 or axis > int(ndim):
+        raise ValueError(f"Axis must be between -1 and the PD Array's rank ({int(ndim)})")
     if axis == -1:
-        axis = pda.ndim - 1
+        axis = int(ndim) - 1
 
     check_type(argname="argsort", value=pda, expected_type=Union[pdarray, Strings, Categorical])
+
     if hasattr(pda, "argsort"):
         return cast(Categorical, pda).argsort()
     if pda.size == 0 and hasattr(pda, "dtype"):
@@ -113,7 +122,7 @@ def argsort(
 
 
 def coargsort(
-    arrays: Sequence[Union[Strings, pdarray, "Categorical"]],  # type: ignore # noqa
+    arrays: Sequence[Union[Strings, pdarray, Categorical]],
     algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD,
 ) -> pdarray:
     """
@@ -123,12 +132,14 @@ def coargsort(
 
     Parameters
     ----------
-    arrays : Sequence[Union[Strings, pdarray, Categorical]]
+    arrays : Sequence of Strings, pdarray, or Categorical
         The columns (int64, uint64, float64, Strings, or Categorical) to sort by row
+    algorithm : SortingAlgorithm, default=SortingAlgorithm.RadixSortLSD
+        The algorithm to be used for sorting the arrays.
 
     Returns
     -------
-    pdarray, int64
+    pdarray of int64
         The indices that permute the rows to grouped order
 
     Raises
@@ -157,11 +168,11 @@ def coargsort(
     >>> b = ak.array([1, 1, 0, 0])
     >>> perm = ak.coargsort([a, b])
     >>> perm
-    array([2, 0, 3, 1])
+    array([2 0 3 1])
     >>> a[perm]
-    array([0, 0, 1, 1])
+    array([0 0 1 1])
     >>> b[perm]
-    array([0, 1, 0, 1])
+    array([0 1 0 1])
     """
     from arkouda.categorical import Categorical
     from arkouda.numpy import cast as akcast
@@ -215,19 +226,25 @@ def coargsort(
 
 
 @typechecked
-def sort(pda: pdarray, algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, axis=-1) -> pdarray:
+def sort(
+    pda: pdarray, algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, axis: int_scalars = -1
+) -> pdarray:
     """
     Return a sorted copy of the array. Only sorts numeric arrays;
     for Strings, use argsort.
 
     Parameters
     ----------
-    pda : pdarray or Categorical
+    pda : pdarray
         The array to sort (int64, uint64, or float64)
+    algorithm : SortingAlgorithm, default=SortingAlgorithm.RadixSortLSD
+        The algorithm to be used for sorting the arrays.
+    axis : int_scalars, default=-1
+        The axis to sort over. Setting to -1 means that it will sort over axis = ndim - 1.
 
     Returns
     -------
-    pdarray, int64, uint64, or float64
+    pdarray of int64, uint64, or float64
         The sorted copy of pda
 
     Raises
@@ -251,8 +268,8 @@ def sort(pda: pdarray, algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortL
     --------
     >>> a = ak.randint(0, 10, 10)
     >>> sorted = ak.sort(a)
-    >>> a
-    array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
+    >>> sorted
+    array([0 1 1 3 4 5 7 8 8 9])
     """
     if pda.dtype == bigint:
         return pda[coargsort(pda.bigint_to_uint_arrays(), algorithm)]
