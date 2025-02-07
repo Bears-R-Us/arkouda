@@ -20,7 +20,10 @@ os.environ["ARKOUDA_CLIENT_MODE"] = "API"
 
 def pytest_addoption(parser):
     parser.addoption(
-        "--optional-parquet", action="store_true", default=False, help="run optional parquet tests"
+        "--optional-parquet",
+        action="store_true",
+        default=False,
+        help="run optional parquet tests",
     )
     parser.addoption(
         "--nl",
@@ -37,7 +40,10 @@ def pytest_addoption(parser):
         "be multiplied by the number of locales.",
     )
     parser.addoption(
-        "--seed", action="store", default="", help="Value to initialize random number generator."
+        "--seed",
+        action="store",
+        default="",
+        help="Value to initialize random number generator.",
     )
 
 
@@ -160,3 +166,11 @@ def skip_by_num_locales(request):
     if request.node.get_closest_marker("skip_if_nl_greater_than"):
         if request.node.get_closest_marker("skip_if_nl_greater_than").args[0] < pytest.nl:
             pytest.skip("this test requires server with nl =< {}".format(pytest.nl))
+
+    if request.node.get_closest_marker("skip_if_nl_eq"):
+        if request.node.get_closest_marker("skip_if_nl_eq").args[0] == pytest.nl:
+            pytest.skip("this test requires server with nl == {}".format(pytest.nl))
+
+    if request.node.get_closest_marker("skip_if_nl_neq"):
+        if request.node.get_closest_marker("skip_if_nl_neq").args[0] != pytest.nl:
+            pytest.skip("this test requires server with nl != {}".format(pytest.nl))
