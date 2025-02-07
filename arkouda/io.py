@@ -1165,6 +1165,26 @@ def _bulk_write_prep(
     return datasetNames, data, col_objtypes
 
 
+def _delete_arkouda_files(prefix_path: str):
+    """
+    Delete files of the pattern prefix_path + LOCALE + <local number>
+
+    Parameters
+    ----------
+    prefix_path : str
+        Directory and filename prefix for files to be deleted
+    """
+    cast(
+        str,
+        generic_msg(
+            cmd="deleteMatchingFilenames",
+            args={
+                "prefix": prefix_path.replace("*", "").replace("+", ""),
+            },
+        ),
+    )
+
+
 def to_parquet(
     columns: Union[
         Mapping[str, Union[pdarray, Strings, SegArray]],
@@ -1222,7 +1242,8 @@ def to_parquet(
     Creates one file per locale containing that locale's chunk of each pdarray.
     If columns is a dictionary, the keys are used as the Parquet column names.
     Otherwise, if no names are supplied, 0-up integers are used. By default,
-    any existing files at path_prefix will be overwritten, unless the user
+    any existing files at path_prefix will be deleted
+    (regardless of whether they would be overwritten), unless the user
     specifies the 'append' mode, in which case arkouda will attempt to add
     <columns> as new datasets to existing files. If the wrong number of files
     is present or dataset names already exist, a RuntimeError is raised.
@@ -1246,6 +1267,8 @@ def to_parquet(
             "Please write all columns to the file at once.",
             DeprecationWarning,
         )
+    if mode.lower() == "truncate":
+        _delete_arkouda_files(prefix_path)
 
     datasetNames, data, col_objtypes = _bulk_write_prep(columns, names, convert_categoricals)
     # append or single column use the old logic

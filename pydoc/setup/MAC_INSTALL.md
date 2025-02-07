@@ -174,6 +174,9 @@ brew install chapel
 
 We've installed Arkouda and its dependencies and built chapel with reasonable default environment variables.
 
+There are also several external tools we recommend to install for consistancy across developers. The instructions 
+are at [EXTERNAL_TOOLS.md](EXTERNAL_TOOLS.md).
+
 Now you are ready to build the server! Follow the build instructions at [BUILD.md](BUILD.md).
 
 We've set up chapel and arkouda to run locally with no communication! If you want to simulate running on a distributed machine follow
