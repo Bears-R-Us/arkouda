@@ -80,6 +80,16 @@ or
    * being overwritten.
    
 
+.. function:: proc deleteMatchingFilenamesMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws
+
+   
+   * Delete files matching a prefix and following the pattern <prefix>_LOCALE*.
+   
+
+.. function:: proc deleteMatchingFilenames(prefix: string, extension: string) throws
+
+.. function:: proc deleteFile(filename: string) throws
+
 .. function:: proc getFileMetadata(filename: string)
 
    

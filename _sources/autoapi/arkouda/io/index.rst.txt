@@ -897,7 +897,8 @@ Module Contents
    Creates one file per locale containing that locale's chunk of each pdarray.
    If columns is a dictionary, the keys are used as the Parquet column names.
    Otherwise, if no names are supplied, 0-up integers are used. By default,
-   any existing files at path_prefix will be overwritten, unless the user
+   any existing files at path_prefix will be deleted
+   (regardless of whether they would be overwritten), unless the user
    specifies the 'append' mode, in which case arkouda will attempt to add
    <columns> as new datasets to existing files. If the wrong number of files
    is present or dataset names already exist, a RuntimeError is raised.

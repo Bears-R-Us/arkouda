@@ -1552,6 +1552,26 @@
     <span class="k">return</span> <span class="n">datasetNames</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">col_objtypes</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_delete_arkouda_files</span><span class="p">(</span><span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Delete files of the pattern prefix_path + LOCALE + &lt;local number&gt;</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    prefix_path : str</span>
+<span class="sd">        Directory and filename prefix for files to be deleted</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cast</span><span class="p">(</span>
+        <span class="nb">str</span><span class="p">,</span>
+        <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;deleteMatchingFilenames&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;prefix&quot;</span><span class="p">:</span> <span class="n">prefix_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="p">},</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+
 <div class="viewcode-block" id="to_parquet">
 <a class="viewcode-back" href="../../autoapi/arkouda/io/index.html#arkouda.to_parquet">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">to_parquet</span><span class="p">(</span>
@@ -1611,7 +1631,8 @@
 <span class="sd">    Creates one file per locale containing that locale&#39;s chunk of each pdarray.</span>
 <span class="sd">    If columns is a dictionary, the keys are used as the Parquet column names.</span>
 <span class="sd">    Otherwise, if no names are supplied, 0-up integers are used. By default,</span>
-<span class="sd">    any existing files at path_prefix will be overwritten, unless the user</span>
+<span class="sd">    any existing files at path_prefix will be deleted</span>
+<span class="sd">    (regardless of whether they would be overwritten), unless the user</span>
 <span class="sd">    specifies the &#39;append&#39; mode, in which case arkouda will attempt to add</span>
 <span class="sd">    &lt;columns&gt; as new datasets to existing files. If the wrong number of files</span>
 <span class="sd">    is present or dataset names already exist, a RuntimeError is raised.</span>
@@ -1635,6 +1656,8 @@
             <span class="s2">&quot;Please write all columns to the file at once.&quot;</span><span class="p">,</span>
             <span class="ne">DeprecationWarning</span><span class="p">,</span>
         <span class="p">)</span>
+    <span class="k">if</span> <span class="n">mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;truncate&quot;</span><span class="p">:</span>
+        <span class="n">_delete_arkouda_files</span><span class="p">(</span><span class="n">prefix_path</span><span class="p">)</span>
 
     <span class="n">datasetNames</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">col_objtypes</span> <span class="o">=</span> <span class="n">_bulk_write_prep</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">convert_categoricals</span><span class="p">)</span>
     <span class="c1"># append or single column use the old logic</span>
