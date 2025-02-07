@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Building the Server" href="BUILD.html" /><link rel="prev" title="Windows (WSL2)" href="WINDOWS_INSTALL.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>MacOS - arkouda documentation</title>
+        <title>External Tools - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
@@ -202,13 +202,13 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="REQUIREMENTS.html">Requirements</a></li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="install_menu.html">Installation</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Installation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="install_menu.html">Installation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Installation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="LINUX_INSTALL.html">Linux</a></li>
 <li class="toctree-l2"><a class="reference internal" href="WINDOWS_INSTALL.html">Windows (WSL2)</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">MacOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MAC_INSTALL.html">MacOS</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="BUILD.html">Building the Server</a></li>
@@ -338,7 +338,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/setup/MAC_INSTALL.md.txt" title="View this page">
+  <a class="muted-link" href="../_sources/setup/EXTERNAL_TOOLS.md.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -358,190 +358,113 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="macos">
-<h1>MacOS<a class="headerlink" href="#macos" title="Link to this heading">¶</a></h1>
-<p>Prerequisites for Arkouda can be installed using <code class="docutils literal notranslate"><span class="pre">Homebrew</span></code> or manually.</p>
-<section id="clone-arkouda-repository">
-<h2>Clone Arkouda Repository<a class="headerlink" href="#clone-arkouda-repository" title="Link to this heading">¶</a></h2>
-<p>Download, clone, or fork the <a class="reference external" href="https://github.com/Bears-R-Us/arkouda">arkouda repo</a>.</p>
-<p>We encourage developers to fork the repo if they expect to make any changes to arkouda.
-They can then clone their fork and add the Bears-R-Us repo as a remote:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/YOUR_FORK/arkouda.git
-<span class="nb">cd</span><span class="w"> </span>arkouda
-git<span class="w"> </span>remote<span class="w"> </span>add<span class="w"> </span>upstream<span class="w"> </span>https://github.com/Bears-R-Us/arkouda.git
-</pre></div>
-</div>
-<p>For users who aren’t intending to make any changes, cloning the arkouda repo should be enough</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/Bears-R-Us/arkouda.git
-</pre></div>
-</div>
-<p>Further instructions assume that the current directory is the top-level directory of the arkouda repo.</p>
-</section>
-<section id="python-environment-anaconda">
-<h2>Python Environment - Anaconda<a class="headerlink" href="#python-environment-anaconda" title="Link to this heading">¶</a></h2>
-<p>Arkouda provides 2 <code class="docutils literal notranslate"><span class="pre">.yml</span></code> files for configuration, one for users and one for developers.
-The <code class="docutils literal notranslate"><span class="pre">.yml</span></code> files are configured with a default name for the environment, which is used in the example interactions with conda below.
-To provide a different name for the environment, use the <code class="docutils literal notranslate"><span class="pre">-n</span></code> or <code class="docutils literal notranslate"><span class="pre">--name</span></code> parameters when calling <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">env</span> <span class="pre">create</span></code>.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># We recommend running the full Anaconda </span>
-brew<span class="w"> </span>install<span class="w"> </span>--cask<span class="w"> </span>anaconda
+          <section id="external-tools">
+<h1>External Tools<a class="headerlink" href="#external-tools" title="Link to this heading">¶</a></h1>
+<p>There are several external tools that are used in our current workflow and help us optimize development.
+Many of the checks that automatically run on the Arkouda Github repo CI can be run locally.
+Running these prior to pushing will speed up the approval process and help ensure that all code is organized and formatted in the same way.</p>
+<section id="pycharm-external-tools">
+<h2>PyCharm External Tools<a class="headerlink" href="#pycharm-external-tools" title="Link to this heading">¶</a></h2>
+<p>We encourage users to configure the following third-party command-line applications as external tools to run on their local machines in PyCharm before pushing to the Arkouda Github repo. They will also automatically be run in the runtime checks.</p>
+<p>The current applications being used are <code class="docutils literal notranslate"><span class="pre">black</span></code>, <code class="docutils literal notranslate"><span class="pre">flake8</span></code>, and <code class="docutils literal notranslate"><span class="pre">isort</span></code>.</p>
+<section id="using-pip">
+<h3>Using Pip<a class="headerlink" href="#using-pip" title="Link to this heading">¶</a></h3>
+<p>Using <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span></code>, the following applications can be downloaded to your arkouda directory.</p>
+<div class="highlight-commandline notranslate"><div class="highlight"><pre><span></span># navigate to the arkouda directory
+cd &lt;path_to_arkouda&gt;/arkouda
 
-<span class="c1"># Note - the exact path may vary based on the most current release of Anaconda and your mac&#39;s chipset</span>
-<span class="c1"># Run the script to install Anaconda.</span>
-/opt/homebrew/Caskroom/anaconda/2022.10/Anaconda3-2022.10-MacOSX-arm64.sh
-
-<span class="c1"># initialize conda</span>
-conda<span class="w"> </span>init
-
-<span class="c1"># User conda env</span>
-conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>arkouda-env.yml
-conda<span class="w"> </span>activate<span class="w"> </span>arkouda
-
-<span class="c1"># Developer conda env</span>
-conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>arkouda-env-dev.yml
-conda<span class="w"> </span>activate<span class="w"> </span>arkouda-dev
-
-<span class="c1"># Install the Arkouda Client Package and add it to your PYTHONPATH.</span>
-<span class="c1"># For this to work properly you need to change directories to where arkouda lives</span>
-pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="w"> </span>--no-deps
-<span class="nb">export</span><span class="w"> </span><span class="nv">PYTHONPATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">PYTHONPATH</span><span class="si">}</span><span class="s2">:</span><span class="si">${</span><span class="nv">PWD</span><span class="si">}</span><span class="s2">&quot;</span>
+# Download each of the following applications
+pip install black
+pip install flake8
+pip install isort
 </pre></div>
 </div>
 </section>
-<section id="updating-environment">
-<h2>Updating Environment<a class="headerlink" href="#updating-environment" title="Link to this heading">¶</a></h2>
-<p>As Arkouda progresses through its life-cycle, dependencies may change.
-As a result, it is recommended that you keep your development environment in sync with the latest dependencies.
-The instructions vary depending upon you preferred environment management tool.</p>
-<section id="anaconda">
-<h3>Anaconda<a class="headerlink" href="#anaconda" title="Link to this heading">¶</a></h3>
-<p><em>If you provided a different name when creating the environment, replace <code class="docutils literal notranslate"><span class="pre">arkouda-dev</span></code> or <code class="docutils literal notranslate"><span class="pre">arkouda</span></code> with the name of your Conda environment.</em></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># developer environment update</span>
-conda<span class="w"> </span>env<span class="w"> </span>update<span class="w"> </span>-n<span class="w"> </span>arkouda-dev<span class="w"> </span>-f<span class="w"> </span>arkouda-env-dev.yml
+<section id="add-a-local-external-tool">
+<h3>Add a local external tool<a class="headerlink" href="#add-a-local-external-tool" title="Link to this heading">¶</a></h3>
+<ol class="arabic simple">
+<li><p>In a new instance of Pycharm open the Settings.</p></li>
+<li><p>Navigate to the Tools section.</p></li>
+<li><p>Select External Tools.</p></li>
+<li><p>Select the <code class="docutils literal notranslate"><span class="pre">+</span></code> to add a new external tool.</p></li>
+<li><p>Existing tools can be right clicked or doubled clicked to be edited or changed. (Optional)</p></li>
+<li><p>Select <code class="docutils literal notranslate"><span class="pre">OK</span></code> to save changes.</p></li>
+</ol>
+</section>
+<section id="configuration-for-each-tool">
+<h3>Configuration for each tool<a class="headerlink" href="#configuration-for-each-tool" title="Link to this heading">¶</a></h3>
+<p>The following are the configurations and settings for each of the external tools.</p>
+<section id="black">
+<h4><code class="docutils literal notranslate"><span class="pre">black</span></code><a class="headerlink" href="#black" title="Link to this heading">¶</a></h4>
+<div class="highlight-commandline notranslate"><div class="highlight"><pre><span></span>Name: black     Group: External Tools
+Description: python formating
 
-<span class="c1"># user environment update</span>
-conda<span class="w"> </span>env<span class="w"> </span>update<span class="w"> </span>-n<span class="w"> </span>arkouda<span class="w"> </span>-f<span class="w"> </span>arkouda-env.yml
+Tool Settings
+    Program: $PyInterpreterDirectory$/black
+    Augments: --line-length 105 &quot;$FilePath$&quot;
+    Working Directory: $ProjectFileDir$
+
+Advanced Options
+    Synchronized Files after execution: Selected
+    Open console for tool output: Selected
+        Make console active on message in stdout: Unselected
+        Make console active on message in stderr: Unselected
+</pre></div>
+</div>
+</section>
+<section id="flake8">
+<h4><code class="docutils literal notranslate"><span class="pre">flake8</span></code><a class="headerlink" href="#flake8" title="Link to this heading">¶</a></h4>
+<div class="highlight-commandline notranslate"><div class="highlight"><pre><span></span>Name: flake8     Group: External Tools
+Description: pep8 formating validation
+
+Tool Settings
+    Program: $PyInterpreterDirectory$/flake8
+    Augments: &quot;$FilePath$&quot;
+    Working Directory: $ProjectFileDir$
+
+Advanced Options
+    Synchronized Files after execution: Selected
+    Open console for tool output: Selected
+        Make console active on message in stdout: Unselected
+        Make console active on message in stderr: Unselected
+</pre></div>
+</div>
+</section>
+<section id="isort">
+<h4><code class="docutils literal notranslate"><span class="pre">isort</span></code><a class="headerlink" href="#isort" title="Link to this heading">¶</a></h4>
+<div class="highlight-commandline notranslate"><div class="highlight"><pre><span></span>Name: isort     Group: External Tools
+Description: sort/group imports
+
+Tool Settings
+    Program: $PyInterpreterDirectory$/isort
+    Augments: &quot;$FilePath$&quot;
+    Working Directory: $ProjectFileDir$
+
+Advanced Options
+    Synchronized Files after execution: Selected
+    Open console for tool output: Selected
+        Make console active on message in stdout: Unselected
+        Make console active on message in stderr: Unselected
 </pre></div>
 </div>
 </section>
 </section>
-<section id="install-chapel">
-<h2>Install Chapel<a class="headerlink" href="#install-chapel" title="Link to this heading">¶</a></h2>
-<p>It is recommended to compile Chapel from source. Alternatively, it can be installed via <code class="docutils literal notranslate"><span class="pre">Homebrew</span></code>.</p>
-<section id="build-from-source-recommended">
-<h3>Build from Source (Recommended)<a class="headerlink" href="#build-from-source-recommended" title="Link to this heading">¶</a></h3>
-<p>For convenience, the steps to install Chapel from source are detailed here.
-If you need more information, please visit the <a class="reference external" href="https://chapel-lang.org/docs/usingchapel/QUICKSTART.html">Chapel Quickstart Guide</a>.</p>
-<p><strong>Step 1</strong></p>
-<blockquote>
-<div><p>Navigate to the directory where you want Chapel to be installed.
-You should not install Chapel in the arkouda directory</p>
-</div></blockquote>
-<p><strong>Step 2</strong></p>
-<blockquote>
-<div><p>Download the current version of Chapel from <a class="reference external" href="https://chapel-lang.org/download.html">here</a>.</p>
-</div></blockquote>
-<p><strong>Step 3</strong></p>
-<blockquote>
-<div><p>Unpack the release</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>tar<span class="w"> </span>xzf<span class="w"> </span>chapel-2.1.0.tar.gz
-</pre></div>
-</div>
-</div></blockquote>
-<p><strong>Step 4</strong></p>
-<blockquote>
-<div><p>Access the directory created when the release was unpacked</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>chapel-2.1.0
-</pre></div>
-</div>
-</div></blockquote>
-<p><strong>Step 5</strong></p>
-<blockquote>
-<div><p>Configure environment variables. <em>Please Note: This command assumes the use of <code class="docutils literal notranslate"><span class="pre">bash</span></code> or <code class="docutils literal notranslate"><span class="pre">zsh</span></code>. Please refer to the <a class="reference external" href="https://chapel-lang.org/docs/usingchapel/QUICKSTART.html#quickstart-with-other-shells">Chapel Documentation</a> if you are using another shell.</em></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>util/quickstart/setchplenv.bash
-</pre></div>
-</div>
-</div></blockquote>
-<p><strong>Step 6</strong></p>
-<blockquote>
-<div><p>Update environment variables to the recommended settings.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>llvm
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_LLVM</span><span class="o">=</span>system
-
-brew<span class="w"> </span>install<span class="w"> </span>gmp
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_GMP</span><span class="o">=</span>system
-
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_RE2</span><span class="o">=</span>bundled
-
-<span class="nb">unset</span><span class="w"> </span>CHPL_DEVELOPER
-</pre></div>
-</div>
-</div></blockquote>
-<blockquote>
-<div><p>If you choose to use the packages bundled with Chapel, use the following settings.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_GMP</span><span class="o">=</span>bundled
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_LLVM</span><span class="o">=</span>bundled
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_RE2</span><span class="o">=</span>bundled
-</pre></div>
-</div>
-</div></blockquote>
-<p><strong>Step 7</strong></p>
-<blockquote>
-<div><p>Add the following to your <code class="docutils literal notranslate"><span class="pre">rc</span></code> file.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># update paths to reflect where chapel and arkouda live on your machine</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_HOME</span><span class="o">=</span>/Users/USER/PATH_TO_CHPL/chapel-2.1.0
-<span class="c1"># your binary might differ especially if you have a different chipset</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:<span class="nv">$CHPL_HOME</span>/bin/darwin-arm64
-<span class="nb">source</span><span class="w"> </span><span class="si">${</span><span class="nv">CHPL_HOME</span><span class="si">}</span>/util/setchplenv.bash
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_LLVM</span><span class="o">=</span>system<span class="w"> </span><span class="c1"># set to the same value as in the previous step</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_GMP</span><span class="o">=</span>system<span class="w"> </span><span class="c1"># set to the same value as in the previous step</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_RE2</span><span class="o">=</span>bundled
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_COMM</span><span class="o">=</span>none
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_TARGET_CPU</span><span class="o">=</span>native
-<span class="nb">export</span><span class="w"> </span><span class="nv">ARKOUDA_QUICK_COMPILE</span><span class="o">=</span><span class="nb">true</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">PYTHONPATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">PYTHONPATH</span><span class="si">}</span><span class="s2">:/Users/USER/PATH_TO_ARK/arkouda&quot;</span>
-</pre></div>
-</div>
-</div></blockquote>
-<p><strong>Step 8</strong></p>
-<blockquote>
-<div><p>Source your <code class="docutils literal notranslate"><span class="pre">rc</span></code> file to set any environment variables, you might need to reactivate your conda environment</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>~/.zshrc<span class="w"> </span><span class="c1"># or ~/.bashrc depending on your shell</span>
-conda<span class="w"> </span>activate<span class="w"> </span>arkouda-dev<span class="w"> </span><span class="c1"># or the name of your conda environment</span>
-</pre></div>
-</div>
-</div></blockquote>
-<p><strong>Step 9</strong></p>
-<blockquote>
-<div><p>Use <code class="docutils literal notranslate"><span class="pre">make</span></code> to build Chapel</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>-j<span class="w"> </span><span class="m">8</span><span class="w">  </span><span class="c1"># you can bump this up 16 if you have enough memory</span>
-</pre></div>
-</div>
-</div></blockquote>
-<p><strong>Step 10</strong></p>
-<blockquote>
-<div><p>Ensure that Chapel was built successfully</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chpl<span class="w"> </span>examples/hello3-datapar.chpl
-./hello3-datapar
-</pre></div>
-</div>
-</div></blockquote>
+<section id="running-the-external-tools">
+<h3>Running the external tools<a class="headerlink" href="#running-the-external-tools" title="Link to this heading">¶</a></h3>
+<p>Each tool can be run from Pycharm by selecting the <code class="docutils literal notranslate"><span class="pre">Tools</span></code> drop down menu and
+then the <code class="docutils literal notranslate"><span class="pre">External</span> <span class="pre">Tools</span></code> drop down menu and selecting the desired tool.</p>
 </section>
-<section id="homebrew">
-<h3>Homebrew<a class="headerlink" href="#homebrew" title="Link to this heading">¶</a></h3>
-<p>Alternatively, you can use homebrew to install Chapel and all it’s supporting dependencies.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>chapel
-</pre></div>
-</div>
 </section>
+<section id="vscode-chapel-language-syntax-highlighter">
+<h2>VSCode Chapel Language Syntax Highlighter<a class="headerlink" href="#vscode-chapel-language-syntax-highlighter" title="Link to this heading">¶</a></h2>
+<p>There is now a more current version of the the Chapel syntax highlighter that is available to be added as an extension to VSCode.</p>
+<p>Open the Extensions tab in VS Code. Search for “Chapel Language” and install the extension titled “Chapel Language”. (Identifier: chpl-hpe.chapel-vscode)</p>
+<p>In the details section of the description is the full set of instructions for installation. The description is also available to be viewed when selecting the extension from the Extensions tab in VSCode.</p>
 </section>
 <section id="next-steps">
 <h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading">¶</a></h2>
-<p>We’ve installed Arkouda and its dependencies and built chapel with reasonable default environment variables.</p>
-<p>There are also several external tools we recommend to install for consistancy across developers. The instructions
-are at <a class="reference internal" href="EXTERNAL_TOOLS.html"><span class="std std-doc">EXTERNAL_TOOLS.md</span></a>.</p>
-<p>Now you are ready to build the server! Follow the build instructions at <a class="reference internal" href="BUILD.html"><span class="std std-doc">BUILD.md</span></a>.</p>
-<p>We’ve set up chapel and arkouda to run locally with no communication! If you want to simulate running on a distributed machine follow
-the instructions at <a class="reference external" href="https://bears-r-us.github.io/arkouda/developer/GASNET.html">GASNet Development</a>.</p>
+<p>You can now continue are ready to build the server! Follow the build instructions at <a class="reference internal" href="BUILD.html"><span class="std std-doc">BUILD.md</span></a>.</p>
+<p>Or you can return to the installation process at <a class="reference internal" href="LINUX_INSTALL.html"><span class="std std-doc">LINUX_INSTALL.md</span></a> or <a class="reference internal" href="MAC_INSTALL.html"><span class="std std-doc">MAC_INSTALL.md</span></a>.</p>
 </section>
 </section>
 
@@ -550,26 +473,8 @@ the instructions at <a class="reference external" href="https://bears-r-us.githu
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="BUILD.html">
-              <div class="page-info">
-                <div class="context">
-                  <span>Next</span>
-                </div>
-                <div class="title">Building the Server</div>
-              </div>
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-            </a>
-          <a class="prev-page" href="WINDOWS_INSTALL.html">
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-              <div class="page-info">
-                <div class="context">
-                  <span>Previous</span>
-                </div>
-                
-                <div class="title">Windows (WSL2)</div>
-                
-              </div>
-            </a>
+          
+          
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -600,18 +505,20 @@ the instructions at <a class="reference external" href="https://bears-r-us.githu
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">MacOS</a><ul>
-<li><a class="reference internal" href="#clone-arkouda-repository">Clone Arkouda Repository</a></li>
-<li><a class="reference internal" href="#python-environment-anaconda">Python Environment - Anaconda</a></li>
-<li><a class="reference internal" href="#updating-environment">Updating Environment</a><ul>
-<li><a class="reference internal" href="#anaconda">Anaconda</a></li>
+<li><a class="reference internal" href="#">External Tools</a><ul>
+<li><a class="reference internal" href="#pycharm-external-tools">PyCharm External Tools</a><ul>
+<li><a class="reference internal" href="#using-pip">Using Pip</a></li>
+<li><a class="reference internal" href="#add-a-local-external-tool">Add a local external tool</a></li>
+<li><a class="reference internal" href="#configuration-for-each-tool">Configuration for each tool</a><ul>
+<li><a class="reference internal" href="#black"><code class="docutils literal notranslate"><span class="pre">black</span></code></a></li>
+<li><a class="reference internal" href="#flake8"><code class="docutils literal notranslate"><span class="pre">flake8</span></code></a></li>
+<li><a class="reference internal" href="#isort"><code class="docutils literal notranslate"><span class="pre">isort</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#install-chapel">Install Chapel</a><ul>
-<li><a class="reference internal" href="#build-from-source-recommended">Build from Source (Recommended)</a></li>
-<li><a class="reference internal" href="#homebrew">Homebrew</a></li>
+<li><a class="reference internal" href="#running-the-external-tools">Running the external tools</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#vscode-chapel-language-syntax-highlighter">VSCode Chapel Language Syntax Highlighter</a></li>
 <li><a class="reference internal" href="#next-steps">Next Steps</a></li>
 </ul>
 </li>
