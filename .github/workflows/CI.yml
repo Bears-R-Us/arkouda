@@ -17,7 +17,7 @@ jobs:
   mypy:
     runs-on: ubuntu-latest
     container:
-      image: chapel/chapel:2.1.0
+      image: chapel/chapel:2.3.0
     steps:
     - uses: actions/checkout@v3
     - name: Install dependencies
@@ -32,7 +32,7 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     container:
-      image: chapel/chapel:2.1.0
+      image: chapel/chapel:2.3.0
     steps:
     - uses: actions/checkout@v3
     - name: Install dependencies
@@ -47,7 +47,7 @@ jobs:
   flake8:
     runs-on: ubuntu-latest
     container:
-      image: chapel/chapel:2.1.0
+      image: chapel/chapel:2.3.0
     steps:
       - uses: actions/checkout@v3
       - name: Install Dependencies
@@ -71,7 +71,7 @@ jobs:
       matrix:
         python-version: ['3.9', '3.10', '3.11']
     container:
-      image: chapel/chapel:2.1.0
+      image: chapel/chapel:2.3.0
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
@@ -183,7 +183,7 @@ jobs:
       matrix:
         python-version: ['3.9', '3.10', '3.11']
     container:
-      image: chapel/chapel:2.1.0
+      image: chapel/chapel:2.3.0
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
@@ -279,7 +279,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chpl-version: ['2.0.0','2.1.0','2.2.0']
+        chpl-version: ['2.0.0','2.1.0','2.2.0','2.3.0']
     container:
       image: chapel/chapel:${{matrix.chpl-version}}
     steps:
@@ -316,7 +316,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chpl-version: ['2.0.0']
+        chpl-version: ['2.0.0','2.1.0','2.2.0','2.3.0']
     container:
       image: chapel/chapel:${{matrix.chpl-version}}
     steps:
