@@ -245,6 +245,8 @@ def start_arkouda_server(
     with contextlib.suppress(FileNotFoundError):
         os.remove(connection_file)
 
+    launch_prefix = os.getenv("ARKOUDA_SERVER_LAUNCH_PREFIX", default="")
+
     if within_slurm_alloc:
         raw_server_cmd, env, _ = get_server_launch_cmd(numlocales)
         raw_server_cmd = raw_server_cmd.strip().strip().split(" ")
@@ -252,12 +254,14 @@ def start_arkouda_server(
         raw_server_cmd = [get_arkouda_server(),]
         env = None
 
-    cmd = raw_server_cmd + [
+    cmd = launch_prefix.split() + raw_server_cmd + [
         "--trace={}".format("true" if trace else "false"),
         "--serverConnectionInfo={}".format(connection_file),
-        "-nl {}".format(numlocales),
+        "-nl",
+        "{}".format(numlocales),
         "--ServerPort={}".format(port),
     ]
+
     if server_args:
         cmd += server_args
 
