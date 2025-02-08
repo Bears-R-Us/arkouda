@@ -105,6 +105,19 @@ def get_arkouda_server_info_file():
     return os.getenv("ARKOUDA_SERVER_CONNECTION_INFO", dflt)
 
 
+def get_arkouda_server_log_file():
+    """
+    Returns the name of a file to store the logs for the server.
+    Defaults to ARKOUDA_HOME + ak-server.log, but can be overridden with
+    ARKOUDA_SERVER_LOG
+
+    :return: server connection info file name as a string
+    :rtype: str
+    """
+    dflt = os.path.join(get_arkouda_home(), "ak-server.log")
+    return os.getenv("ARKOUDA_SERVER_LOG", dflt)
+
+
 def read_server_and_port_from_file(server_connection_info):
     """
     Reads the server hostname and port from a file, which must contain
@@ -162,7 +175,7 @@ def get_server_info():
     return _server_info
 
 
-def kill_server(server_process):
+def kill_server(server_process, log_file):
     """
     Kill a running server. Tries to shutdown cleanly with a call to
     `arkouda.shutdown()`, but if that fails calls `kill()` on the subprocess.
@@ -179,6 +192,8 @@ def kill_server(server_process):
         if server_process.poll() is None:
             logging.warn("Attempting dirty server shutdown")
             server_process.kill()
+
+    log_file.close()
 
 
 def get_server_launch_cmd(numlocales):
@@ -242,6 +257,12 @@ def start_arkouda_server(
     with contextlib.suppress(FileNotFoundError):
         os.remove(connection_file)
 
+    log_file_path = get_arkouda_server_log_file()
+    with contextlib.suppress(FileNotFoundError):
+        os.remove(log_file_path)
+
+    launch_prefix = os.getenv("ARKOUDA_SERVER_LAUNCH_PREFIX", default="")
+
     if within_slurm_alloc:
         raw_server_cmd, env, _ = get_server_launch_cmd(numlocales)
         raw_server_cmd = raw_server_cmd.strip().strip().split(" ")
@@ -251,18 +272,23 @@ def start_arkouda_server(
         ]
         env = None
 
-    cmd = raw_server_cmd + [
+    cmd = launch_prefix.split() + raw_server_cmd + [
         "--trace={}".format("true" if trace else "false"),
         "--serverConnectionInfo={}".format(connection_file),
-        "-nl {}".format(numlocales),
+        "-nl",
+        "{}".format(numlocales),
         "--ServerPort={}".format(port),
     ]
+
     if server_args:
         cmd += server_args
 
+    log_file = open(log_file_path, "w")
+
     logging.info('Starting "{}"'.format(cmd))
-    process = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, env=env)
-    atexit.register(kill_server, process)
+    process = subprocess.Popen(cmd, stdout=log_file, stderr=subprocess.STDOUT,
+                               env=env)
+    atexit.register(kill_server, process, log_file)
 
     if not host:
         """
