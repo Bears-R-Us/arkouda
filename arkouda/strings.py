@@ -3,7 +3,7 @@ from __future__ import annotations
 import codecs
 import itertools
 import re
-from typing import Dict, List, Optional, Tuple, Union, cast
+from typing import Any, Dict, List, Literal, Optional, Tuple, Union, cast
 
 import numpy as np
 from typeguard import typechecked
@@ -102,9 +102,9 @@ class Strings:
 
         Parameters
         ----------
-        offset_attrib : Union[pdarray, str]
+        offset_attrib : pdarray or str
             the array containing the offsets
-        bytes_attrib : Union[pdarray, str]
+        bytes_attrib : pdarray or str
             the array containing the string values
 
         Returns
@@ -222,7 +222,7 @@ class Strings:
 
         Parameters
         ----------
-        other : Strings, str_scalars
+        other : Strings or str_scalars
             the other object is a Strings object
         op : str
             name of the binary operation to be performed
@@ -339,13 +339,13 @@ class Strings:
         """
         return "string"
 
-    def equals(self, other) -> bool_scalars:
+    def equals(self, other: Any) -> bool_scalars:
         """
         Whether Strings are the same size and all entries are equal.
 
         Parameters
         ----------
-        other : object
+        other : Any
             object to compare.
 
         Returns
@@ -392,7 +392,7 @@ class Strings:
             generic_msg(cmd="segmentLengths", args={"objType": self.objType, "obj": self.entry})
         )
 
-    def get_bytes(self):
+    def get_bytes(self) -> pdarray:
         """
         Getter for the bytes component (uint8 pdarray) of this Strings.
 
@@ -413,10 +413,11 @@ class Strings:
                     cmd="getSegStringProperty", args={"property": "get_bytes", "obj": self.entry}
                 )
             )
-
+        if self._bytes is None:
+            raise RuntimeError("Failed to initialize the bytes property.")
         return self._bytes
 
-    def get_offsets(self):
+    def get_offsets(self) -> pdarray:
         """
         Getter for the offsets component (int64 pdarray) of this Strings.
 
@@ -437,9 +438,11 @@ class Strings:
                     cmd="getSegStringProperty", args={"property": "get_offsets", "obj": self.entry}
                 )
             )
+        if self._offsets is None:
+            raise RuntimeError("Failed to initialize the offsets property.")
         return self._offsets
 
-    def encode(self, toEncoding: str, fromEncoding: str = "UTF-8"):
+    def encode(self, toEncoding: str, fromEncoding: str = "UTF-8") -> Strings:
         """
         Return a new strings object in `toEncoding`, expecting that the
         current Strings is encoded in `fromEncoding`
@@ -448,7 +451,7 @@ class Strings:
         ----------
         toEncoding: str
             The encoding that the strings will be converted to
-        fromEncoding: str
+        fromEncoding : str, default="UTF-8"
             The current encoding of the strings object, default to
             UTF-8
 
@@ -496,7 +499,7 @@ class Strings:
         )
         return Strings.from_return_msg(cast(str, rep_msg))
 
-    def decode(self, fromEncoding, toEncoding="UTF-8"):
+    def decode(self, fromEncoding: str, toEncoding: str = "UTF-8") -> Strings:
         """
         Return a new strings object in `fromEncoding`, expecting that the
         current Strings is encoded in `toEncoding`
@@ -505,7 +508,7 @@ class Strings:
         ----------
         fromEncoding: str
             The current encoding of the strings object
-        toEncoding: str
+        toEncoding : str, default="UTF-8"
             The encoding that the strings will be converted to,
             default to UTF-8
 
@@ -651,7 +654,9 @@ class Strings:
         array(['Strings 0', 'Strings 1', 'Strings 2', '120', '121', '122'])
         >>> strings.isdecimal()
         array([False False False True True True])
+
         Special Character Examples
+
         >>> special_strings = ak.array(["3.14", "\u0030", "\u00B2", "2³₇", "2³x₇"])
         >>> special_strings
         array(['3.14', '0', '²', '2³₇', '2³x₇'])
@@ -691,11 +696,11 @@ class Strings:
         --------
         >>> strings = ak.array([f'StrINgS aRe Here {i}' for i in range(5)])
         >>> strings
-        array(['StrINgS aRe Here 0', 'StrINgS aRe Here 1', 'StrINgS aRe Here 2', 'StrINgS aRe Here 3',
-        ... 'StrINgS aRe Here 4'])
+        array(['StrINgS aRe Here 0', 'StrINgS aRe Here 1', 'StrINgS aRe Here 2', \
+'StrINgS aRe Here 3', 'StrINgS aRe Here 4'])
         >>> strings.title()
-        array(['Strings are here 0', 'Strings are here 1', 'Strings are here 2', 'Strings are here 3',
-        ... 'Strings are here 4'])
+        array(['Strings Are Here 0', 'Strings Are Here 1', 'Strings Are Here 2', \
+'Strings Are Here 3', 'Strings Are Here 4'])
         """
         rep_msg = generic_msg(
             cmd="caseChange", args={"subcmd": "capitalize", "objType": self.objType, "obj": self.entry}
@@ -879,7 +884,7 @@ class Strings:
         >>> alpha = ak.array(['StringA','StringB','StringC'])
         >>> strings = ak.concatenate([not_alpha, alpha])
         >>> strings
-        array(['%Strings 0', '%Strings 1', '%Strings 2', 'StringA','StringB','StringC'])
+        array(['%Strings 0', '%Strings 1', '%Strings 2', 'StringA', 'StringB', 'StringC'])
         >>> strings.isalpha()
         array([False False False True True True])
         """
@@ -920,7 +925,9 @@ class Strings:
         array(['Strings 0', 'Strings 1', 'Strings 2', '120', '121', '122'])
         >>> strings.isdigit()
         array([False False False True True True])
+
         Special Character Examples
+
         >>> special_strings = ak.array(["3.14", "\u0030", "\u00B2", "2³₇", "2³x₇"])
         >>> special_strings
         array(['3.14', '0', '²', '2³₇', '2³x₇'])
@@ -964,8 +971,9 @@ class Strings:
         >>> empty = ak.array(['' for i in range(3)])
         >>> strings = ak.concatenate([not_empty, empty])
         >>> strings
-        array(['%Strings 0', '%Strings 1', '%Strings 2', '', '', ''])
+        array(['Strings 0', 'Strings 1', 'Strings 2', '', '', ''])
         >>> strings.isempty()
+        array([False False False True True True])
         """
         return create_pdarray(
             generic_msg(
@@ -977,7 +985,7 @@ class Strings:
     def isspace(self) -> pdarray:
         """
         Returns a boolean pdarray where index i indicates whether string i has all
-        whitespace characters (‘ ‘, ‘\t’, ‘\n’, ‘\v’, ‘\f’, ‘\r’).
+        whitespace characters (‘ ’, ‘\\\\t’, ‘\\\\n’, ‘\\\\v’, ‘\\\\f’, ‘\\\\r’).
 
         Returns
         -------
@@ -998,11 +1006,11 @@ class Strings:
         Examples
         --------
         >>> not_space = ak.array([f'Strings {i}' for i in range(3)])
-        >>> space = ak.array([' ', '\t', '\n', '\v', '\f', '\r', ' \t\n\v\f\r'])
+        >>> space = ak.array([' ', '\\t', '\\n', '\\v', '\\f', '\\r', ' \\t\\n\\v\\f\\r'])
         >>> strings = ak.concatenate([not_space, space])
         >>> strings
-        array(['Strings 0', 'Strings 1', 'Strings 2', ' ',
-        ... 'u0009', 'n', 'u000B', 'u000C', 'u000D', ' u0009nu000Bu000Cu000D'])
+        array(['Strings 0', 'Strings 1', 'Strings 2', ' ', 'u0009', 'n', \
+'u000B', 'u000C', 'u000D', ' u0009nu000Bu000Cu000D'])
         >>> strings.isspace()
         array([False False False True True True True True True True])
         """
@@ -1022,7 +1030,7 @@ class Strings:
 
         Parameters
         ----------
-        chars
+        chars : bytes or str_scalars, optional
             the set of characters to be removed
 
         Returns
@@ -1106,7 +1114,7 @@ class Strings:
 
         Parameters
         ----------
-        pattern: str_scalars
+        pattern : bytes or str_scalars
             The regex pattern used to find matches
 
         Returns
@@ -1136,11 +1144,11 @@ class Strings:
         >>> strings = ak.array([f'{i} string {i}' for i in range(1, 6)])
         >>> num_matches, starts, lens = strings.find_locations('\\d')
         >>> num_matches
-        array([2, 2, 2, 2, 2])
+        array([2 2 2 2 2])
         >>> starts
-        array([0, 9, 0, 9, 0, 9, 0, 9, 0, 9])
+        array([0 9 0 9 0 9 0 9 0 9])
         >>> lens
-        array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1]))
+        array([1 1 1 1 1 1 1 1 1 1])
         """
         matcher = self._get_matcher(pattern)
         matcher.find_locations()
@@ -1154,7 +1162,7 @@ class Strings:
 
         Parameters
         ----------
-        pattern: str
+        pattern : bytes or str_scalars
             Regex used to find matches
 
         Returns
@@ -1180,7 +1188,7 @@ class Strings:
 
         Parameters
         ----------
-        pattern: str
+        pattern : bytes or str_scalars
             Regex used to find matches
 
         Returns
@@ -1206,7 +1214,7 @@ class Strings:
 
         Parameters
         ----------
-        pattern: str
+        pattern : bytes or str_scalars
             Regex used to find matches
 
         Returns
@@ -1234,12 +1242,12 @@ class Strings:
 
         Parameters
         ----------
-        pattern: str
+        pattern : bytes or str_scalars
             Regex used to split strings into substrings
-        maxsplit: int
+        maxsplit : int, default=0
             The max number of pattern match occurences in each element to split.
             The default maxsplit=0 splits on all occurences
-        return_segments: bool
+        return_segments : bool, default=False
             If True, return mapping of original strings to first substring
             in return array.
 
@@ -1254,7 +1262,7 @@ class Strings:
         Examples
         --------
         >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
-        >>> strings.split('_+', maxsplit=2, return_segments=True)
+        >>> strings.regex_split('_+', maxsplit=2, return_segments=True)
         (array(['1', '2', '', '', '', '3', '', '4', '5____6___7', '']), array([0 3 5 6 9]))
         """
         return self._get_matcher(pattern).split(maxsplit, return_segments)
@@ -1268,9 +1276,9 @@ class Strings:
 
         Parameters
         ----------
-        pattern: str_scalars
+        pattern : bytes or str_scalars
             Regex used to find matches
-        return_match_origins: bool
+        return_match_origins : bool, default=False
             If True, return a pdarray containing the index of the original string each
             pattern match is from
 
@@ -1313,11 +1321,11 @@ class Strings:
 
         Parameters
         ----------
-        pattern: str_scalars
+        pattern : bytes or str_scalars
             The regex to substitue
-        repl: str_scalars
+        repl : bytes or str_scalars
             The substring to replace pattern matches with
-        count: int
+        count : int, default=0
             The max number of pattern match occurences in each element to replace.
             The default count=0 replaces all occurences of pattern with repl
 
@@ -1358,11 +1366,11 @@ class Strings:
 
         Parameters
         ----------
-        pattern: str_scalars
+        pattern : bytes or str_scalars
             The regex to substitue
-        repl: str_scalars
+        repl : bytes or str_scalars
             The substring to replace pattern matches with
-        count: int
+        count : int, default=0
             The max number of pattern match occurences in each element to replace.
             The default count=0 replaces all occurences of pattern with repl
 
@@ -1403,9 +1411,9 @@ class Strings:
 
         Parameters
         ----------
-        substr: str_scalars
+        substr : bytes or str_scalars
             The substring in the form of string or byte array to search for
-        regex: bool
+        regex : bool, default=False
             Indicates whether substr is a regular expression
             Note: only handles regular expressions supported by re2
             (does not support lookaheads/lookbehinds)
@@ -1434,9 +1442,9 @@ class Strings:
         >>> strings
         array(['1 string 1', '2 string 2', '3 string 3', '4 string 4', '5 string 5'])
         >>> strings.contains('string')
-        array([True, True, True, True, True])
+        array([True True True True True])
         >>> strings.contains('string \\d', regex=True)
-        array([True, True, True, True, True])
+        array([True True True True True])
         """
         if isinstance(substr, bytes):
             substr = substr.decode()
@@ -1460,9 +1468,9 @@ class Strings:
 
         Parameters
         ----------
-        substr: Union[bytes, str_scalars]
+        substr : bytes or str_scalars
             The prefix to search for
-        regex: bool
+        regex : bool, default=False
             Indicates whether substr is a regular expression
             Note: only handles regular expressions supported by re2
             (does not support lookaheads/lookbehinds)
@@ -1491,12 +1499,12 @@ class Strings:
         >>> strings_end
         array(['string 1', 'string 2', 'string 3', 'string 4', 'string 5'])
         >>> strings_end.startswith('string')
-        array([True, True, True, True, True])
+        array([True True True True True])
         >>> strings_start = ak.array([f'{i} string' for i in range(1,6)])
         >>> strings_start
         array(['1 string', '2 string', '3 string', '4 string', '5 string'])
         >>> strings_start.startswith('\\d str', regex = True)
-        array([True, True, True, True, True])
+        array([True True True True True])
         """
         if isinstance(substr, bytes):
             substr = substr.decode()
@@ -1516,9 +1524,9 @@ class Strings:
 
         Parameters
         ----------
-        substr: Union[bytes, str_scalars]
+        substr : bytes or str_scalars
             The suffix to search for
-        regex: bool
+        regex : bool, default=False
             Indicates whether substr is a regular expression
             Note: only handles regular expressions supported by re2
             (does not support lookaheads/lookbehinds)
@@ -1547,12 +1555,12 @@ class Strings:
         >>> strings_start
         array(['1 string', '2 string', '3 string', '4 string', '5 string'])
         >>> strings_start.endswith('ing')
-        array([True, True, True, True, True])
+        array([True True True True True])
         >>> strings_end = ak.array([f'string {i}' for i in range(1, 6)])
         >>> strings_end
         array(['string 1', 'string 2', 'string 3', 'string 4', 'string 5'])
         >>> strings_end.endswith('ing \\d', regex = True)
-        array([True, True, True, True, True])
+        array([True True True True True])
         """
         if isinstance(substr, bytes):
             substr = substr.decode()
@@ -1570,10 +1578,10 @@ class Strings:
         ----------
         delimiter: str
             Characters used to split strings into substrings
-        return_segments: bool
+        return_segments : bool, default=False
             If True, also return mapping of original strings to first substring
             in return array.
-        regex: bool
+        regex : bool, default=False
             Indicates whether delimiter is a regular expression
             Note: only handles regular expressions supported by re2
             (does not support lookaheads/lookbehinds)
@@ -1593,17 +1601,17 @@ class Strings:
         Examples
         --------
         >>> orig = ak.array(['one|two', 'three|four|five', 'six'])
-        >>> orig.flatten('|')
+        >>> orig.split('|')
         array(['one', 'two', 'three', 'four', 'five', 'six'])
-        >>> flat, map = orig.flatten('|', return_segments=True)
-        >>> map
-        array([0, 2, 5])
+        >>> flat, mapping = orig.split('|', return_segments=True)
+        >>> mapping
+        array([0 2 5])
         >>> under = ak.array(['one_two', 'three_____four____five', 'six'])
-        >>> under_flat, under_map = under.flatten('_+', return_segments=True, regex=True)
-        >>> under_flat
+        >>> under_split, under_map = under.split('_+', return_segments=True, regex=True)
+        >>> under_split
         array(['one', 'two', 'three', 'four', 'five', 'six'])
         >>> under_map
-        array([0, 2, 5])
+        array([0 2 5])
         """
         if regex:
             try:
@@ -1641,7 +1649,7 @@ class Strings:
         keepPartial: bool = False,
         fromRight: bool = False,
         regex: bool = False,
-    ) -> Tuple:
+    ) -> Tuple[Strings, Strings]:
         """
         Peel off one or more delimited fields from each string (similar
         to string.partition), returning two new arrays of strings.
@@ -1649,22 +1657,22 @@ class Strings:
 
         Parameters
         ----------
-        delimiter: Union[bytes, str_scalars]
+        delimiter : bytes or str_scalars
             The separator where the split will occur
-        times: Union[int, np.int64]
+        times : int_scalars, default=1
             The number of times the delimiter is sought, i.e. skip over
             the first (times-1) delimiters
-        includeDelimiter: bool
+        includeDelimiter : bool, default=False
             If true, append the delimiter to the end of the first return
             array. By default, it is prepended to the beginning of the
             second return array.
-        keepPartial: bool
+        keepPartial : bool, default=False
             If true, a string that does not contain <times> instances of
             the delimiter will be returned in the first array. By default,
             such strings are returned in the second array.
-        fromRight: bool
+        fromRight : bool, default=False
             If true, peel from the right instead of the left (see also rpeel)
-        regex: bool
+        regex : bool, default=False
             Indicates whether delimiter is a regular expression
             Note: only handles regular expressions supported by re2
             (does not support lookaheads/lookbehinds)
@@ -1747,7 +1755,7 @@ class Strings:
         includeDelimiter: bool = False,
         keepPartial: bool = False,
         regex: bool = False,
-    ):
+    ) -> Tuple[Strings, Strings]:
         """
         Peel off one or more delimited fields from the end of each string
         (similar to string.rpartition), returning two new arrays of strings.
@@ -1755,20 +1763,20 @@ class Strings:
 
         Parameters
         ----------
-        delimiter: Union[bytes, str_scalars]
+        delimiter : bytes or str_scalars
             The separator where the split will occur
-        times: Union[int, np.int64]
+        times : int_scalars, default=1
             The number of times the delimiter is sought, i.e. skip over
             the last (times-1) delimiters
-        includeDelimiter: bool
+        includeDelimiter : bool, default=False
             If true, prepend the delimiter to the start of the first return
             array. By default, it is appended to the end of the
             second return array.
-        keepPartial: bool
+        keepPartial : bool, default=False
             If true, a string that does not contain <times> instances of
             the delimiter will be returned in the second array. By default,
             such strings are returned in the first array.
-        regex: bool
+        regex : bool, default=False
             Indicates whether delimiter is a regular expression
             Note: only handles regular expressions supported by re2
             (does not support lookaheads/lookbehinds)
@@ -1800,7 +1808,9 @@ class Strings:
         >>> s = ak.array(['a.b', 'c.d', 'e.f.g'])
         >>> s.rpeel('.')
         (array(['a', 'c', 'e.f']), array(['b', 'd', 'g']))
-        # Compared against peel
+
+        Compared against peel
+
         >>> s.peel('.')
         (array(['a', 'c', 'e']), array(['b', 'd', 'f.g']))
         """
@@ -1826,9 +1836,9 @@ class Strings:
         ----------
         other : Strings
             The strings to join onto self's strings
-        delimiter : str
+        delimiter : bytes or str_scalars, default=""
             String inserted between self and other
-        toLeft : bool
+        toLeft : bool, default=False
             If true, join other strings to the left of self. By default,
             other is joined to the right of self.
 
@@ -1887,7 +1897,7 @@ class Strings:
         ----------
         other : Strings
             The strings to join onto self's strings
-        delimiter : Union[bytes,str_scalars]
+        delimiter : bytes or str_scalars, default=""
             String inserted between self and other
 
         Returns
@@ -1928,12 +1938,12 @@ class Strings:
 
         Parameters
         ----------
-        n : int
+        n : int_scalars
             Length of prefix
-        return_origins : bool
+        return_origins : bool, default=True
             If True, return a logical index indicating which strings
             were long enough to return an n-prefix
-        proper : bool
+        proper : bool, default=True
             If True, only return proper prefixes, i.e. from strings
             that are at least n+1 long. If False, allow the entire
             string to be returned as a prefix.
@@ -1977,12 +1987,12 @@ class Strings:
 
         Parameters
         ----------
-        n : int
+        n : int_scalars
             Length of suffix
-        return_origins : bool
+        return_origins : bool, default=True
             If True, return a logical index indicating which strings
             were long enough to return an n-suffix
-        proper : bool
+        proper : bool, default=True
             If True, only return proper suffixes, i.e. from strings
             that are at least n+1 long. If False, allow the entire
             string to be returned as a suffix.
@@ -2083,7 +2093,7 @@ class Strings:
         """
         return [self]
 
-    def flatten(self):
+    def flatten(self) -> Strings:
         """
         Return a copy of the array collapsed into one dimension.
 
@@ -2130,7 +2140,7 @@ class Strings:
         >>> a.to_ndarray()
         array(['hello', 'my', 'world'], dtype='<U5')
         >>> type(a.to_ndarray())
-        numpy.ndarray
+        <class 'numpy.ndarray'>
         """
         # Get offsets and append total bytes for length calculation
         npoffsets = np.hstack((self._comp_to_ndarray("offsets"), np.array([self.nbytes])))
@@ -2177,7 +2187,7 @@ class Strings:
         >>> a.to_list()
         ['hello', 'my', 'world']
         >>> type(a.to_list())
-        list
+        <class 'list'>
         """
         return self.to_ndarray().tolist()
 
@@ -2248,17 +2258,17 @@ class Strings:
             else np.frombuffer(rep_msg, dt).copy()
         )
 
-    def astype(self, dtype) -> pdarray:
+    def astype(self, dtype: Union[np.dtype, str]) -> pdarray:
         """
         Cast values of Strings object to provided dtype
 
         Parameters
-        __________
+        ----------
         dtype: np.dtype or str
             Dtype to cast to
 
         Returns
-        _______
+        -------
         ak.pdarray
             An arkouda pdarray with values converted to the specified data type
 
@@ -2274,8 +2284,8 @@ class Strings:
         self,
         prefix_path: str,
         dataset: str = "strings_array",
-        mode: str = "truncate",
-        compression: Optional[str] = None,
+        mode: Literal["truncate", "append"] = "truncate",
+        compression: Optional[Literal["snappy", "gzip", "brotli", "zstd", "lz4"]] = None,
     ) -> str:
         """
         Save the Strings object to Parquet. The result is a collection of files,
@@ -2286,13 +2296,12 @@ class Strings:
         ----------
         prefix_path : str
             Directory and filename prefix that all output files share
-        dataset : str
+        dataset : str, default="strings_array"
             Name of the dataset to create in files (must not already exist)
-        mode : str {'truncate' | 'append'}
+        mode : {"truncate", "append"}, default = "truncate"
             By default, truncate (overwrite) output files, if they exist.
             If 'append', attempt to create new dataset in existing files.
-        compression : str (Optional)
-            (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
+        compression : {"snappy", "gzip", "brotli", "zstd", "lz4"}, optional
             Sets the compression type used with Parquet files
         Returns
         -------
@@ -2337,9 +2346,9 @@ class Strings:
         self,
         prefix_path: str,
         dataset: str = "strings_array",
-        mode: str = "truncate",
+        mode: Literal["truncate", "append"] = "truncate",
         save_offsets: bool = True,
-        file_type: str = "distribute",
+        file_type: Literal["single", "distribute"] = "distribute",
     ) -> str:
         """
         Save the Strings object to HDF5.
@@ -2349,16 +2358,16 @@ class Strings:
         ----------
         prefix_path : str
             Directory and filename prefix that all output files share
-        dataset : str
+        dataset : str, default="strings_array"
             The name of the Strings dataset to be written, defaults to strings_array
-        mode : str {'truncate' | 'append'}
+        mode : {"truncate", "append"}, default = "truncate"
             By default, truncate (overwrite) output files, if they exist.
             If 'append', create a new Strings dataset within existing files.
-        save_offsets : bool
+        save_offsets : bool, default=True
             Defaults to True which will instruct the server to save the offsets array to HDF5
             If False the offsets array will not be save and will be derived from the string values
             upon load/read.
-        file_type: str ("single" | "distribute")
+        file_type : {"single", "distribute"}, default = "distribute"
             Default: Distribute
             Distribute the dataset over a file per locale.
             Single file will save the dataset to one file
@@ -2418,22 +2427,22 @@ class Strings:
         dataset: str = "strings_array",
         save_offsets: bool = True,
         repack: bool = True,
-    ):
+    ) -> str:
         """
         Overwrite the dataset with the name provided with this Strings object. If
         the dataset does not exist it is added
 
         Parameters
-        -----------
+        ----------
         prefix_path : str
             Directory and filename prefix that all output files share
-        dataset : str
+        dataset : str, default="strings_array"
             Name of the dataset to create in files
-        save_offsets : bool
+        save_offsets : bool, default=True
             Defaults to True which will instruct the server to save the offsets array to HDF5
             If False the offsets array will not be save and will be derived from the string values
             upon load/read.
-        repack: bool
+        repack : bool, default=True
             Default: True
             HDF5 does not release memory on delete. When True, the inaccessible
             data (that was overwritten) is removed. When False, the data remains, but is
@@ -2465,7 +2474,7 @@ class Strings:
         # determine the format (single/distribute) that the file was saved in
         file_type = _get_hdf_filetype(prefix_path + "*")
 
-        generic_msg(
+        msg = generic_msg(
             cmd="tohdf",
             args={
                 "values": self,
@@ -2483,6 +2492,8 @@ class Strings:
         if repack:
             _repack_hdf(prefix_path)
 
+        return cast(str, msg)
+
     @typechecked
     def to_csv(
         self,
@@ -2490,7 +2501,7 @@ class Strings:
         dataset: str = "strings_array",
         col_delim: str = ",",
         overwrite: bool = False,
-    ):
+    ) -> str:
         """
         Write Strings to CSV file(s). File will contain a single column with the Strings data.
         All CSV Files written by Arkouda include a header denoting data types of the columns.
@@ -2498,22 +2509,23 @@ class Strings:
         bytes as uint(8).
 
         Parameters
-        -----------
+        ----------
         prefix_path: str
             The filename prefix to be used for saving files. Files will have _LOCALE#### appended
             when they are written to disk.
-        dataset: str
+        dataset : str, default="strings_array"
             Column name to save the Strings under. Defaults to "strings_array".
-        col_delim: str
+        col_delim : str, default=","
             Defaults to ",". Value to be used to separate columns within the file.
             Please be sure that the value used DOES NOT appear in your dataset.
-        overwrite: bool
+        overwrite : bool, default=False
             Defaults to False. If True, any existing files matching your provided prefix_path will
             be overwritten. If False, an error will be returned if existing files are found.
 
         Returns
         --------
-        str reponse message
+        str
+            response message
 
         Raises
         ------
@@ -2556,11 +2568,11 @@ class Strings:
         self,
         prefix_path: str,
         dataset: str = "strings_array",
-        mode: str = "truncate",
+        mode: Literal["truncate", "append"] = "truncate",
         save_offsets: bool = True,
-        compression: Optional[str] = None,
-        file_format: str = "HDF5",
-        file_type: str = "distribute",
+        compression: Optional[Literal["snappy", "gzip", "brotli", "zstd", "lz4"]] = None,
+        file_format: Literal["HDF5", "Parquet"] = "HDF5",
+        file_type: Literal["single", "distribute"] = "distribute",
     ) -> str:
         """
         DEPRECATED
@@ -2569,33 +2581,35 @@ class Strings:
         with prefix_path. HDF5 support single files, in which case the file name will
         only be that provided. Each locale saves its chunk of the array to its
         corresponding file.
+
         Parameters
         ----------
         prefix_path : str
             Directory and filename prefix that all output files share
-        dataset : str
+        dataset : str, default="strings_array"
             The name of the Strings dataset to be written, defaults to strings_array
-        mode : str {'truncate' | 'append'}
+        mode : {"truncate", "append"}, default = "truncate"
             By default, truncate (overwrite) output files, if they exist.
             If 'append', create a new Strings dataset within existing files.
-        save_offsets : bool
+        save_offsets : bool, default=True
             Defaults to True which will instruct the server to save the offsets array to HDF5
             If False the offsets array will not be save and will be derived from the string values
             upon load/read. This is not supported for Parquet files.
-        compression : str (Optional)
-            (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
+        compression : {"snappy", "gzip", "brotli", "zstd", "lz4"}, optional
             Sets the compression type used with Parquet files
-        file_format : str
+        file_format : {"HDF5", "Parquet"}, default = "HDF5"
             By default, saved files will be written to the HDF5 file format. If
             'Parquet', the files will be written to the Parquet file format. This
             is case insensitive.
-        file_type: str ("single" | "distribute")
+        file_type : {"single", "distribute"}, default = "distribute"
             Default: Distribute
             Distribute the dataset over a file per locale.
             Single file will save the dataset to one file
+
         Returns
         -------
         String message indicating result of save operation
+
         Notes
         -----
         Important implementation notes: (1) Strings state is saved as two datasets
@@ -2845,7 +2859,7 @@ class Strings:
         )
         return unregister(user_defined_name)
 
-    def transfer(self, hostname: str, port: int_scalars):
+    def transfer(self, hostname: str, port: int_scalars) -> Union[str, memoryview]:
         """
         Sends a Strings object to a different Arkouda server
 
