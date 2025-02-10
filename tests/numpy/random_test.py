@@ -255,7 +255,57 @@ class TestRandom:
             == both_array
         )
 
-    def test_poissson(self):
+    def test_standard_gamma(self):
+        rng = ak.random.default_rng(12345)
+        num_samples = 5
+        # scalar shape
+        scal_sample = rng.standard_gamma(2, size=num_samples).to_list()
+
+        # array shape
+        arr_sample = rng.standard_gamma(ak.arange(5), size=num_samples).to_list()
+
+        # reset rng with same seed and ensure we get same results
+        rng = ak.random.default_rng(12345)
+        assert rng.standard_gamma(2, size=num_samples).to_list() == scal_sample
+        assert rng.standard_gamma(ak.arange(5), size=num_samples).to_list() == arr_sample
+
+    def test_standard_gamma_hypothesis_testing(self):
+        # I tested this many times without a set seed, but with no seed
+        # it's expected to fail one out of every ~20 runs given a pval limit of 0.05.
+        rng = ak.random.default_rng(123456)
+        num_samples = 10**3
+
+        k = rng.uniform(0, 10)
+        sample = rng.standard_gamma(k, size=num_samples)
+        sample_list = sample.to_list()
+
+        # second goodness of fit test against the distribution with proper mean and std
+        good_fit_res = sp_stats.goodness_of_fit(sp_stats.gamma, sample_list, known_params={"a": k})
+        assert good_fit_res.pvalue > 0.05
+
+    def test_standard_gamma_kolmogorov_smirnov_testing(self):
+        from scipy.stats import kstest, gamma
+        num_samples = 10 ** 3
+
+        rng = ak.random.default_rng(17)
+        k = rng.uniform(0, 10)
+        sample = rng.standard_gamma(k, size=num_samples).to_ndarray()
+        ks = kstest(sample, gamma.cdf, args=(k, 0, 1))
+        assert ks.pvalue > 0.05
+
+        rng = ak.random.default_rng(17)
+        k = 0.5
+        sample = rng.standard_gamma(k, size=num_samples).to_ndarray()
+        ks = kstest(sample, gamma.cdf, args=(k, 0, 1))
+        assert ks.pvalue > 0.05
+
+        rng = ak.random.default_rng(17)
+        k = 5
+        sample = rng.standard_gamma(k, size=num_samples).to_ndarray()
+        ks = kstest(sample, gamma.cdf, args=(k, 0, 1))
+        assert ks.pvalue > 0.05
+
+    def test_poisson(self):
         rng = ak.random.default_rng(17)
         num_samples = 5
         # scalar lambda
