@@ -1,9 +1,9 @@
-import pytest
-import os
 import importlib
+import os
+
+import pytest
 
 import arkouda as ak
-
 from server_util.test.server_test_util import (
     TestRunningMode,
     get_arkouda_numlocales,
@@ -31,8 +31,9 @@ def pytest_addoption(parser):
         "--trials",
         action="store",
         default="5",
-        help="Benchmark only option. Problem size: length of array to use for benchmarks. For tests that run "
-        "as many trials as possible in a given time, will be treated as number of seconds to run for.",
+        help="Benchmark only option. Problem size: length of array to use for benchmarks. "
+        "For tests that run as many trials as possible in a given time, "
+        "will be treated as number of seconds to run for.",
     )
     parser.addoption(
         "--seed",
@@ -45,7 +46,8 @@ def pytest_addoption(parser):
         action="store",
         default="",
         help="Benchmark only option. Dtypes to run benchmarks against. Comma separated list "
-        "(NO SPACES) allowing for multiple. Accepted values: int64, uint64, bigint, float64, bool, str and mixed."
+        "(NO SPACES) allowing for multiple. "
+        "Accepted values: int64, uint64, bigint, float64, bool, str and mixed."
         "Mixed is used to generate sets of multiple types.",
     )
     parser.addoption(
@@ -59,7 +61,8 @@ def pytest_addoption(parser):
         action="store",
         default="-1",
         help="Benchmark only option. Only applies to bigint testing."
-        "Maximum number of bits, so values > 2**max_bits will wraparound. -1 is interpreted as no maximum.",
+        "Maximum number of bits, so values > 2**max_bits will wraparound. "
+        "-1 is interpreted as no maximum.",
     )
     parser.addoption(
         "--alpha", action="store", default="1.0", help="Benchmark only option. Scalar multiple"
@@ -118,8 +121,9 @@ def pytest_addoption(parser):
         "--io_compression",
         action="store",
         default="",
-        help="Benchmark only option. Compression types to run IO benchmarks against. Comma delimited list"
-        "(NO SPACES) allowing for multiple. Accepted values: none, snappy, gzip, brotli, zstd, and lz4",
+        help="Benchmark only option. Compression types to run IO benchmarks against. "
+        "Comma delimited list (NO SPACES) allowing for multiple. "
+        "Accepted values: none, snappy, gzip, brotli, zstd, and lz4",
     )
     parser.addoption(
         "--io_path",

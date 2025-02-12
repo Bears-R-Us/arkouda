@@ -1,12 +1,14 @@
-import arkouda as ak
 import pytest
+
+import arkouda as ak
 
 # stores parameters to pass to str.contains
 SEARCHES = {
     "Non_Regex": ["1 string 1", False],
     "Regex_Literal": ["1 string 1", True],
-    "Regex_Pattern": ["\\d string \\d", True]
+    "Regex_Pattern": ["\\d string \\d", True],
 }
+
 
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.parametrize("s", SEARCHES)
@@ -23,7 +25,10 @@ def bench_substring_search(benchmark, s):
 
     benchmark.pedantic(test_substring.contains, args=SEARCHES[s], rounds=pytest.trials)
 
-    benchmark.extra_info["description"] = "Measure the performance of regex and non-regex substring searches."
+    benchmark.extra_info["description"] = (
+        "Measure the performance of regex and non-regex substring searches."
+    )
     benchmark.extra_info["problem_size"] = pytest.prob_size
     benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-        (nbytes / benchmark.stats["mean"]) / 2 ** 30)
+        (nbytes / benchmark.stats["mean"]) / 2**30
+    )

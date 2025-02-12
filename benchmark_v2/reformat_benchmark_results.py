@@ -151,7 +151,8 @@ def get_header_dict(directory_path):
     return headers
 
 
-# This algorithm for reading files into a dictionary was generated with assistance from Perplexity AI (2024).
+# This algorithm for reading files into a dictionary was generated
+# with assistance from Perplexity AI (2024).
 def get_header_fields_from_directory(directory_path):
     """
     Returns a dictionary where the keys are the benchmark names and the
@@ -198,7 +199,8 @@ def get_nested_value(data: dict, keys: list):
 
 
 def get_value(field: str, benchmark_name: str, field_lookup_map: dict, benchmark_data):
-    """get the value of a field in a benchmark using the field_lookup_map and the benchmark_data in pytest json format."""
+    """get the value of a field in a benchmark using the field_lookup_map
+    and the benchmark_data in pytest json format."""
     regex_str = None
     if (
         field_lookup_map.get(benchmark_name).get(field) is not None
@@ -233,7 +235,8 @@ def get_value(field: str, benchmark_name: str, field_lookup_map: dict, benchmark
 
 
 def compute_average(benchmark_name_regex: str, keys: list, benchmark_data):
-    """Compute the average value of a statistic, using a regex on the benchmark name to determine which values to use."""
+    """Compute the average value of a statistic, using a regex on
+    the benchmark name to determine which values to use."""
     sum = 0.0
     N = 0
     for benchmark in benchmark_data["benchmarks"]:
@@ -391,8 +394,7 @@ def main():
         else:
             header = headers[benchmark_name]
             row = [
-                get_value(field, benchmark_name, field_lookup_map, benchmark_data)
-                for field in header
+                get_value(field, benchmark_name, field_lookup_map, benchmark_data) for field in header
             ]
 
             if benchmark_name in out_data.keys() and isinstance(out_data[benchmark_name], list):

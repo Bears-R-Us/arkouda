@@ -2,9 +2,10 @@ import importlib
 import os
 import subprocess
 from typing import Iterable
+
 import pytest
 
-from arkouda import get_config, get_max_array_rank
+from arkouda import get_max_array_rank
 from arkouda.client import get_array_ranks
 from server_util.test.server_test_util import (
     is_multilocale_arkouda,  # TODO probably not needed

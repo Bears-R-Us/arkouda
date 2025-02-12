@@ -1226,10 +1226,11 @@ def register_commands(config, source_files):
 
     stamps += extract_enum_imports(config)
 
-    stamps.append("""proc getRegistrationConfig(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    stamps.append(
+        """proc getRegistrationConfig(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         return new MsgTuple(getRegConfig(), MsgType.NORMAL);
-    }""")
-
+    }"""
+    )
 
     stamps.append(
         "proc getRegConfig(): string throws do return try! regConfig;"

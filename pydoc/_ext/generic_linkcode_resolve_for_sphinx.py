@@ -1,56 +1,58 @@
-# the sphinx extension 'sphinx.ext.viewcode' links documentation to an online 
-# code repository but requires to bind the code to the url through a user 
-# specific `linkcode_resolve` function. This implementation should be fairly 
+# the sphinx extension 'sphinx.ext.viewcode' links documentation to an online
+# code repository but requires to bind the code to the url through a user
+# specific `linkcode_resolve` function. This implementation should be fairly
 # generic and easily adaptable.
 #
-# License: Public Domain, CC0 1.0 Universal (CC0 1.0) 
+# License: Public Domain, CC0 1.0 Universal (CC0 1.0)
 # From: https://gist.github.com/nlgranger/55ff2e7ff10c280731348a16d569cb73
 
-import sys
+import inspect
 import os
 import subprocess
-import inspect
-
+import sys
 
 linkcode_revision = "master"
 try:
     # lock to commit number
     cmd = "git log -n1 --pretty=%H"
-    head = subprocess.check_output(cmd.split()).strip().decode('utf-8')
+    head = subprocess.check_output(cmd.split()).strip().decode("utf-8")
     linkcode_revision = head
 
     # if we are on master's HEAD, use master as reference
     cmd = "git log --first-parent master -n1 --pretty=%H"
-    master = subprocess.check_output(cmd.split()).strip().decode('utf-8')
+    master = subprocess.check_output(cmd.split()).strip().decode("utf-8")
     if head == master:
         linkcode_revision = "master"
 
     # if we have a tag, use tag as reference
     cmd = "git describe --exact-match --tags " + head
-    tag = subprocess.check_output(cmd.split(" ")).strip().decode('utf-8')
+    tag = subprocess.check_output(cmd.split(" ")).strip().decode("utf-8")
     linkcode_revision = tag
 
 except subprocess.CalledProcessError:
     pass
 
-linkcode_url = "https://github.com/nlgranger/SeqTools/blob/" \
-               + linkcode_revision + "/{filepath}#L{linestart}-L{linestop}"
+linkcode_url = (
+    "https://github.com/nlgranger/SeqTools/blob/"
+    + linkcode_revision
+    + "/{filepath}#L{linestart}-L{linestop}"
+)
 
 
 def linkcode_resolve(domain, info):
-    if domain != 'py' or not info['module']:
+    if domain != "py" or not info["module"]:
         return None
 
-    modname = info['module']
-    topmodulename = modname.split('.')[0]
-    fullname = info['fullname']
+    modname = info["module"]
+    topmodulename = modname.split(".")[0]
+    fullname = info["fullname"]
 
     submod = sys.modules.get(modname)
     if submod is None:
         return None
 
     obj = submod
-    for part in fullname.split('.'):
+    for part in fullname.split("."):
         try:
             obj = getattr(obj, part)
         except Exception:
@@ -71,5 +73,4 @@ def linkcode_resolve(domain, info):
     else:
         linestart, linestop = lineno, lineno + len(source) - 1
 
-    return linkcode_url.format(
-        filepath=filepath, linestart=linestart, linestop=linestop)
+    return linkcode_url.format(filepath=filepath, linestart=linestart, linestop=linestop)
