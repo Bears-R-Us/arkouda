@@ -1969,7 +1969,9 @@ def histogram2d(
         xMin, xMax = _convToDtp(x.dtype, xMin, xMax)
         yMin, yMax = _convToDtp(y.dtype, yMin, yMax)
     else:
-        xMin, xMax, yMin, yMax = x.min(), x.max(), y.min(), y.max()
+        # applying _convToDtp solely for typechecking
+        xMin, xMax = _convToDtp(x.dtype, x.min(), x.max())
+        yMin, yMax = _convToDtp(y.dtype, y.min(), y.max())
 
     x_bin_boundaries = linspace(xMin, xMax, x_bins + 1)
     y_bin_boundaries = linspace(yMin, yMax, y_bins + 1)
@@ -2074,11 +2076,11 @@ def histogramdd(
             return _convToDtp(sampleDim.dtype, rangeDim[0], rangeDim[1])
         else:
             return (sampleDim.min(), sampleDim.max())
-    range = [convDim(sample[i], range[i]) for i in _pyrange(num_dims)]
+    range2 = [convDim(sample[i], range[i]) for i in _pyrange(num_dims)]
 
     bins = list(bins) if isinstance(bins, tuple) else bins
     sample = list(sample) if isinstance(sample, tuple) else sample
-    bin_boundaries = [linspace(r[0], r[1], b + 1) for r, b in zip(range, bins)]
+    bin_boundaries = [linspace(r[0], r[1], b + 1) for r, b in zip(range2, bins)]
     d_curr, d_next = 1, 1
     dim_prod = [(d_curr := d_next, d_next := d_curr * int(v))[0] for v in bins[::-1]][::-1]  # noqa: F841
     repMsg = generic_msg(
@@ -2087,8 +2089,8 @@ def histogramdd(
             "sample": sample,
             "num_dims": num_dims,
             "bins": bins,
-            "rangeMin": [r[0] for r in range],
-            "rangeMax": [r[1] for r in range],
+            "rangeMin": [r[0] for r in range2],
+            "rangeMax": [r[1] for r in range2],
             "dim_prod": dim_prod,
             "num_samples": sample[0].size,
         },
