@@ -1965,13 +1965,11 @@ def histogram2d(
         raise ValueError("bins must be 1 or greater")
 
     if range:
-        (xMin, xMax), (yMin, yMax) = range
-        xMin, xMax = _convToDtp(x.dtype, xMin, xMax)
-        yMin, yMax = _convToDtp(y.dtype, yMin, yMax)
+        (xMin0, xMax0), (yMin0, yMax0) = range
+        xMin, xMax = _convToDtp(x.dtype, xMin0, xMax0)
+        yMin, yMax = _convToDtp(y.dtype, yMin0, yMax0)
     else:
-        # applying _convToDtp solely for typechecking
-        xMin, xMax = _convToDtp(x.dtype, x.min(), x.max())
-        yMin, yMax = _convToDtp(y.dtype, y.min(), y.max())
+        xMin, xMax, yMin, yMax = x.min(), x.max(), y.min(), y.max()
 
     x_bin_boundaries = linspace(xMin, xMax, x_bins + 1)
     y_bin_boundaries = linspace(yMin, yMax, y_bins + 1)
