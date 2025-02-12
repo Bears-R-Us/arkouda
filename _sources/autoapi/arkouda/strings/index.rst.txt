@@ -76,7 +76,7 @@ Module Contents
    .. py:attribute:: BinOps
 
 
-   .. py:method:: astype(dtype) -> arkouda.pdarrayclass.pdarray
+   .. py:method:: astype(dtype: Union[numpy.dtype, str]) -> arkouda.pdarrayclass.pdarray
 
       Cast values of Strings object to provided dtype
 
@@ -138,11 +138,9 @@ Module Contents
 
       >>> strings = ak.array([f'StrINgS aRe Here {i}' for i in range(5)])
       >>> strings
-      array(['StrINgS aRe Here 0', 'StrINgS aRe Here 1', 'StrINgS aRe Here 2', 'StrINgS aRe Here 3',
-      ... 'StrINgS aRe Here 4'])
+      array(['StrINgS aRe Here 0', 'StrINgS aRe Here 1', 'StrINgS aRe Here 2', 'StrINgS aRe Here 3', 'StrINgS aRe Here 4'])
       >>> strings.title()
-      array(['Strings are here 0', 'Strings are here 1', 'Strings are here 2', 'Strings are here 3',
-      ... 'Strings are here 4'])
+      array(['Strings Are Here 0', 'Strings Are Here 1', 'Strings Are Here 2', 'Strings Are Here 3', 'Strings Are Here 4'])
 
 
 
@@ -151,11 +149,11 @@ Module Contents
       Check whether each element contains the given substring.
 
       :param substr: The substring in the form of string or byte array to search for
-      :type substr: str_scalars
+      :type substr: bytes or str_scalars
       :param regex: Indicates whether substr is a regular expression
                     Note: only handles regular expressions supported by re2
                     (does not support lookaheads/lookbehinds)
-      :type regex: bool
+      :type regex: bool, default=False
 
       :returns: True for elements that contain substr, False otherwise
       :rtype: pdarray, bool
@@ -172,13 +170,13 @@ Module Contents
       >>> strings
       array(['1 string 1', '2 string 2', '3 string 3', '4 string 4', '5 string 5'])
       >>> strings.contains('string')
-      array([True, True, True, True, True])
+      array([True True True True True])
       >>> strings.contains('string \d', regex=True)
-      array([True, True, True, True, True])
+      array([True True True True True])
 
 
 
-   .. py:method:: decode(fromEncoding, toEncoding='UTF-8')
+   .. py:method:: decode(fromEncoding: str, toEncoding: str = 'UTF-8') -> Strings
 
       Return a new strings object in `fromEncoding`, expecting that the
       current Strings is encoded in `toEncoding`
@@ -187,7 +185,7 @@ Module Contents
       :type fromEncoding: str
       :param toEncoding: The encoding that the strings will be converted to,
                          default to UTF-8
-      :type toEncoding: str
+      :type toEncoding: str, default="UTF-8"
 
       :returns: A new Strings object in `toEncoding`
       :rtype: Strings
@@ -199,7 +197,7 @@ Module Contents
    .. py:attribute:: dtype
 
 
-   .. py:method:: encode(toEncoding: str, fromEncoding: str = 'UTF-8')
+   .. py:method:: encode(toEncoding: str, fromEncoding: str = 'UTF-8') -> Strings
 
       Return a new strings object in `toEncoding`, expecting that the
       current Strings is encoded in `fromEncoding`
@@ -208,7 +206,7 @@ Module Contents
       :type toEncoding: str
       :param fromEncoding: The current encoding of the strings object, default to
                            UTF-8
-      :type fromEncoding: str
+      :type fromEncoding: str, default="UTF-8"
 
       :returns: A new Strings object in `toEncoding`
       :rtype: Strings
@@ -222,11 +220,11 @@ Module Contents
       Check whether each element ends with the given substring.
 
       :param substr: The suffix to search for
-      :type substr: Union[bytes, str_scalars]
+      :type substr: bytes or str_scalars
       :param regex: Indicates whether substr is a regular expression
                     Note: only handles regular expressions supported by re2
                     (does not support lookaheads/lookbehinds)
-      :type regex: bool
+      :type regex: bool, default=False
 
       :returns: True for elements that end with substr, False otherwise
       :rtype: pdarray, bool
@@ -243,12 +241,12 @@ Module Contents
       >>> strings_start
       array(['1 string', '2 string', '3 string', '4 string', '5 string'])
       >>> strings_start.endswith('ing')
-      array([True, True, True, True, True])
+      array([True True True True True])
       >>> strings_end = ak.array([f'string {i}' for i in range(1, 6)])
       >>> strings_end
       array(['string 1', 'string 2', 'string 3', 'string 4', 'string 5'])
       >>> strings_end.endswith('ing \d', regex = True)
-      array([True, True, True, True, True])
+      array([True True True True True])
 
 
 
@@ -256,12 +254,12 @@ Module Contents
       :type:  arkouda.pdarrayclass.pdarray
 
 
-   .. py:method:: equals(other) -> arkouda.numpy.dtypes.bool_scalars
+   .. py:method:: equals(other: Any) -> arkouda.numpy.dtypes.bool_scalars
 
       Whether Strings are the same size and all entries are equal.
 
       :param other: object to compare.
-      :type other: object
+      :type other: Any
 
       :returns: True if the Strings are the same, o.w. False.
       :rtype: bool
@@ -286,7 +284,7 @@ Module Contents
       and lengths of matches
 
       :param pattern: The regex pattern used to find matches
-      :type pattern: str_scalars
+      :type pattern: bytes or str_scalars
 
       :returns: * *pdarray, int64* -- For each original string, the number of pattern matches
                 * *pdarray, int64* -- The start positons of pattern matches
@@ -303,11 +301,11 @@ Module Contents
       >>> strings = ak.array([f'{i} string {i}' for i in range(1, 6)])
       >>> num_matches, starts, lens = strings.find_locations('\d')
       >>> num_matches
-      array([2, 2, 2, 2, 2])
+      array([2 2 2 2 2])
       >>> starts
-      array([0, 9, 0, 9, 0, 9, 0, 9, 0, 9])
+      array([0 9 0 9 0 9 0 9 0 9])
       >>> lens
-      array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1]))
+      array([1 1 1 1 1 1 1 1 1 1])
 
 
 
@@ -316,10 +314,10 @@ Module Contents
       Return a new Strings containg all non-overlapping matches of pattern
 
       :param pattern: Regex used to find matches
-      :type pattern: str_scalars
+      :type pattern: bytes or str_scalars
       :param return_match_origins: If True, return a pdarray containing the index of the original string each
                                    pattern match is from
-      :type return_match_origins: bool
+      :type return_match_origins: bool, default=False
 
       :returns: * *Strings* -- Strings object containing only pattern matches
                 * *pdarray, int64 (optional)* -- The index of the original string each pattern match is from
@@ -338,7 +336,7 @@ Module Contents
 
 
 
-   .. py:method:: flatten()
+   .. py:method:: flatten() -> Strings
 
       Return a copy of the array collapsed into one dimension.
 
@@ -359,9 +357,9 @@ Module Contents
       response where the arrays are separate components.
 
       :param offset_attrib: the array containing the offsets
-      :type offset_attrib: Union[pdarray, str]
+      :type offset_attrib: pdarray or str
       :param bytes_attrib: the array containing the string values
-      :type bytes_attrib: Union[pdarray, str]
+      :type bytes_attrib: pdarray or str
 
       :returns: object representing a segmented strings array on the server
       :rtype: Strings
@@ -406,7 +404,7 @@ Module Contents
       regular expression pattern
 
       :param pattern: Regex used to find matches
-      :type pattern: str
+      :type pattern: bytes or str_scalars
 
       :returns: Match object where elements match only if the whole string matches the
                 regular expression pattern
@@ -421,7 +419,7 @@ Module Contents
 
 
 
-   .. py:method:: get_bytes()
+   .. py:method:: get_bytes() -> arkouda.pdarrayclass.pdarray
 
       Getter for the bytes component (uint8 pdarray) of this Strings.
 
@@ -447,7 +445,7 @@ Module Contents
 
 
 
-   .. py:method:: get_offsets()
+   .. py:method:: get_offsets() -> arkouda.pdarrayclass.pdarray
 
       Getter for the offsets component (int64 pdarray) of this Strings.
 
@@ -467,14 +465,14 @@ Module Contents
       Return the n-long prefix of each string, where possible
 
       :param n: Length of prefix
-      :type n: int
+      :type n: int_scalars
       :param return_origins: If True, return a logical index indicating which strings
                              were long enough to return an n-prefix
-      :type return_origins: bool
+      :type return_origins: bool, default=True
       :param proper: If True, only return proper prefixes, i.e. from strings
                      that are at least n+1 long. If False, allow the entire
                      string to be returned as a prefix.
-      :type proper: bool
+      :type proper: bool, default=True
 
       :returns: * **prefixes** (*Strings*) -- The array of n-character prefixes; the number of elements is the number of
                   True values in the returned mask.
@@ -488,14 +486,14 @@ Module Contents
       Return the n-long suffix of each string, where possible
 
       :param n: Length of suffix
-      :type n: int
+      :type n: int_scalars
       :param return_origins: If True, return a logical index indicating which strings
                              were long enough to return an n-suffix
-      :type return_origins: bool
+      :type return_origins: bool, default=True
       :param proper: If True, only return proper suffixes, i.e. from strings
                      that are at least n+1 long. If False, allow the entire
                      string to be returned as a suffix.
-      :type proper: bool
+      :type proper: bool, default=True
 
       :returns: * **suffixes** (*Strings*) -- The array of n-character suffixes; the number of elements is the number of
                   True values in the returned mask.
@@ -620,7 +618,7 @@ Module Contents
       >>> alpha = ak.array(['StringA','StringB','StringC'])
       >>> strings = ak.concatenate([not_alpha, alpha])
       >>> strings
-      array(['%Strings 0', '%Strings 1', '%Strings 2', 'StringA','StringB','StringC'])
+      array(['%Strings 0', '%Strings 1', '%Strings 2', 'StringA', 'StringB', 'StringC'])
       >>> strings.isalpha()
       array([False False False True True True])
 
@@ -647,7 +645,9 @@ Module Contents
       array(['Strings 0', 'Strings 1', 'Strings 2', '120', '121', '122'])
       >>> strings.isdecimal()
       array([False False False True True True])
+
       Special Character Examples
+
       >>> special_strings = ak.array(["3.14", "0", "²", "2³₇", "2³x₇"])
       >>> special_strings
       array(['3.14', '0', '²', '2³₇', '2³x₇'])
@@ -677,7 +677,9 @@ Module Contents
       array(['Strings 0', 'Strings 1', 'Strings 2', '120', '121', '122'])
       >>> strings.isdigit()
       array([False False False True True True])
+
       Special Character Examples
+
       >>> special_strings = ak.array(["3.14", "0", "²", "2³₇", "2³x₇"])
       >>> special_strings
       array(['3.14', '0', '²', '2³₇', '2³x₇'])
@@ -707,8 +709,9 @@ Module Contents
       >>> empty = ak.array(['' for i in range(3)])
       >>> strings = ak.concatenate([not_empty, empty])
       >>> strings
-      array(['%Strings 0', '%Strings 1', '%Strings 2', '', '', ''])
+      array(['Strings 0', 'Strings 1', 'Strings 2', '', '', ''])
       >>> strings.isempty()
+      array([False False False True True True])
 
 
 
@@ -738,48 +741,25 @@ Module Contents
 
    .. py:method:: isspace() -> arkouda.pdarrayclass.pdarray
 
-              Returns a boolean pdarray where index i indicates whether string i has all
-              whitespace characters (‘ ‘, ‘   ’, ‘
-      ’, ‘
-      ’, ‘
-      ’, ‘
-      ’).
+      Returns a boolean pdarray where index i indicates whether string i has all
+      whitespace characters (‘ ’, ‘\\t’, ‘\\n’, ‘\\v’, ‘\\f’, ‘\\r’).
 
-              Returns
-              -------
-              pdarray, bool
-                  True for elements that are whitespace, False otherwise
+      :returns: True for elements that are whitespace, False otherwise
+      :rtype: pdarray, bool
 
-              Raises
-              ------
-              RuntimeError
-                  Raised if there is a server-side error thrown
+      :raises RuntimeError: Raised if there is a server-side error thrown
 
-              See Also
-              --------
-              Strings.islower
-              Strings.isupper
-              Strings.istitle
+      .. seealso:: :obj:`Strings.islower`, :obj:`Strings.isupper`, :obj:`Strings.istitle`
 
-              Examples
-              --------
-              >>> not_space = ak.array([f'Strings {i}' for i in range(3)])
-              >>> space = ak.array([' ', '    ', '
-      ', '
-      ', '
-      ', '
-      ', '
+      .. rubric:: Examples
 
-
-
-      '])
-              >>> strings = ak.concatenate([not_space, space])
-              >>> strings
-              array(['Strings 0', 'Strings 1', 'Strings 2', ' ',
-              ... 'u0009', 'n', 'u000B', 'u000C', 'u000D', ' u0009nu000Bu000Cu000D'])
-              >>> strings.isspace()
-              array([False False False True True True True True True True])
-
+      >>> not_space = ak.array([f'Strings {i}' for i in range(3)])
+      >>> space = ak.array([' ', '\t', '\n', '\v', '\f', '\r', ' \t\n\v\f\r'])
+      >>> strings = ak.concatenate([not_space, space])
+      >>> strings
+      array(['Strings 0', 'Strings 1', 'Strings 2', ' ', 'u0009', 'n', 'u000B', 'u000C', 'u000D', ' u0009nu000Bu000Cu000D'])
+      >>> strings.isspace()
+      array([False False False True True True True True True True])
 
 
 
@@ -866,7 +846,7 @@ Module Contents
       :param other: The strings to join onto self's strings
       :type other: Strings
       :param delimiter: String inserted between self and other
-      :type delimiter: Union[bytes,str_scalars]
+      :type delimiter: bytes or str_scalars, default=""
 
       :returns: The array of joined strings, as other + self
       :rtype: Strings
@@ -892,7 +872,7 @@ Module Contents
       regular expression pattern
 
       :param pattern: Regex used to find matches
-      :type pattern: str
+      :type pattern: bytes or str_scalars
 
       :returns: Match object where elements match only if the beginning of the string matches the
                 regular expression pattern
@@ -912,31 +892,31 @@ Module Contents
 
 
 
-   .. py:method:: peel(delimiter: Union[bytes, arkouda.numpy.dtypes.str_scalars], times: arkouda.numpy.dtypes.int_scalars = 1, includeDelimiter: bool = False, keepPartial: bool = False, fromRight: bool = False, regex: bool = False) -> Tuple
+   .. py:method:: peel(delimiter: Union[bytes, arkouda.numpy.dtypes.str_scalars], times: arkouda.numpy.dtypes.int_scalars = 1, includeDelimiter: bool = False, keepPartial: bool = False, fromRight: bool = False, regex: bool = False) -> Tuple[Strings, Strings]
 
       Peel off one or more delimited fields from each string (similar
       to string.partition), returning two new arrays of strings.
       *Warning*: This function is experimental and not guaranteed to work.
 
       :param delimiter: The separator where the split will occur
-      :type delimiter: Union[bytes, str_scalars]
+      :type delimiter: bytes or str_scalars
       :param times: The number of times the delimiter is sought, i.e. skip over
                     the first (times-1) delimiters
-      :type times: Union[int, np.int64]
+      :type times: int_scalars, default=1
       :param includeDelimiter: If true, append the delimiter to the end of the first return
                                array. By default, it is prepended to the beginning of the
                                second return array.
-      :type includeDelimiter: bool
+      :type includeDelimiter: bool, default=False
       :param keepPartial: If true, a string that does not contain <times> instances of
                           the delimiter will be returned in the first array. By default,
                           such strings are returned in the second array.
-      :type keepPartial: bool
+      :type keepPartial: bool, default=False
       :param fromRight: If true, peel from the right instead of the left (see also rpeel)
-      :type fromRight: bool
+      :type fromRight: bool, default=False
       :param regex: Indicates whether delimiter is a regular expression
                     Note: only handles regular expressions supported by re2
                     (does not support lookaheads/lookbehinds)
-      :type regex: bool
+      :type regex: bool, default=False
 
       :returns:
 
@@ -992,13 +972,13 @@ Module Contents
       If maxsplit is nonzero, at most maxsplit splits occur
 
       :param pattern: Regex used to split strings into substrings
-      :type pattern: str
+      :type pattern: bytes or str_scalars
       :param maxsplit: The max number of pattern match occurences in each element to split.
                        The default maxsplit=0 splits on all occurences
-      :type maxsplit: int
+      :type maxsplit: int, default=0
       :param return_segments: If True, return mapping of original strings to first substring
                               in return array.
-      :type return_segments: bool
+      :type return_segments: bool, default=False
 
       :returns: * *Strings* -- Substrings with pattern matches removed
                 * *pdarray, int64 (optional)* -- For each original string, the index of first corresponding substring
@@ -1007,7 +987,7 @@ Module Contents
       .. rubric:: Examples
 
       >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
-      >>> strings.split('_+', maxsplit=2, return_segments=True)
+      >>> strings.regex_split('_+', maxsplit=2, return_segments=True)
       (array(['1', '2', '', '', '', '3', '', '4', '5____6___7', '']), array([0 3 5 6 9]))
 
 
@@ -1050,29 +1030,29 @@ Module Contents
 
 
 
-   .. py:method:: rpeel(delimiter: Union[bytes, arkouda.numpy.dtypes.str_scalars], times: arkouda.numpy.dtypes.int_scalars = 1, includeDelimiter: bool = False, keepPartial: bool = False, regex: bool = False)
+   .. py:method:: rpeel(delimiter: Union[bytes, arkouda.numpy.dtypes.str_scalars], times: arkouda.numpy.dtypes.int_scalars = 1, includeDelimiter: bool = False, keepPartial: bool = False, regex: bool = False) -> Tuple[Strings, Strings]
 
       Peel off one or more delimited fields from the end of each string
       (similar to string.rpartition), returning two new arrays of strings.
       *Warning*: This function is experimental and not guaranteed to work.
 
       :param delimiter: The separator where the split will occur
-      :type delimiter: Union[bytes, str_scalars]
+      :type delimiter: bytes or str_scalars
       :param times: The number of times the delimiter is sought, i.e. skip over
                     the last (times-1) delimiters
-      :type times: Union[int, np.int64]
+      :type times: int_scalars, default=1
       :param includeDelimiter: If true, prepend the delimiter to the start of the first return
                                array. By default, it is appended to the end of the
                                second return array.
-      :type includeDelimiter: bool
+      :type includeDelimiter: bool, default=False
       :param keepPartial: If true, a string that does not contain <times> instances of
                           the delimiter will be returned in the second array. By default,
                           such strings are returned in the first array.
-      :type keepPartial: bool
+      :type keepPartial: bool, default=False
       :param regex: Indicates whether delimiter is a regular expression
                     Note: only handles regular expressions supported by re2
                     (does not support lookaheads/lookbehinds)
-      :type regex: bool
+      :type regex: bool, default=False
 
       :returns:
 
@@ -1094,13 +1074,15 @@ Module Contents
       >>> s = ak.array(['a.b', 'c.d', 'e.f.g'])
       >>> s.rpeel('.')
       (array(['a', 'c', 'e.f']), array(['b', 'd', 'g']))
-      # Compared against peel
+
+      Compared against peel
+
       >>> s.peel('.')
       (array(['a', 'c', 'e']), array(['b', 'd', 'f.g']))
 
 
 
-   .. py:method:: save(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
+   .. py:method:: save(prefix_path: str, dataset: str = 'strings_array', mode: Literal['truncate', 'append'] = 'truncate', save_offsets: bool = True, compression: Optional[Literal['snappy', 'gzip', 'brotli', 'zstd', 'lz4']] = None, file_format: Literal['HDF5', 'Parquet'] = 'HDF5', file_type: Literal['single', 'distribute'] = 'distribute') -> str
 
       DEPRECATED
       Save the Strings object to HDF5 or Parquet. The result is a collection of files,
@@ -1108,28 +1090,28 @@ Module Contents
       with prefix_path. HDF5 support single files, in which case the file name will
       only be that provided. Each locale saves its chunk of the array to its
       corresponding file.
+
       :param prefix_path: Directory and filename prefix that all output files share
       :type prefix_path: str
       :param dataset: The name of the Strings dataset to be written, defaults to strings_array
-      :type dataset: str
+      :type dataset: str, default="strings_array"
       :param mode: By default, truncate (overwrite) output files, if they exist.
                    If 'append', create a new Strings dataset within existing files.
-      :type mode: str {'truncate' | 'append'}
+      :type mode: {"truncate", "append"}, default = "truncate"
       :param save_offsets: Defaults to True which will instruct the server to save the offsets array to HDF5
                            If False the offsets array will not be save and will be derived from the string values
                            upon load/read. This is not supported for Parquet files.
-      :type save_offsets: bool
-      :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
-                          Sets the compression type used with Parquet files
-      :type compression: str (Optional)
+      :type save_offsets: bool, default=True
+      :param compression: Sets the compression type used with Parquet files
+      :type compression: {"snappy", "gzip", "brotli", "zstd", "lz4"}, optional
       :param file_format: By default, saved files will be written to the HDF5 file format. If
                           'Parquet', the files will be written to the Parquet file format. This
                           is case insensitive.
-      :type file_format: str
+      :type file_format: {"HDF5", "Parquet"}, default = "HDF5"
       :param file_type: Default: Distribute
                         Distribute the dataset over a file per locale.
                         Single file will save the dataset to one file
-      :type file_type: str ("single" | "distribute")
+      :type file_type: {"single", "distribute"}, default = "distribute"
 
       :rtype: String message indicating result of save operation
 
@@ -1149,7 +1131,7 @@ Module Contents
       Elements match if any part of the string matches the regular expression pattern
 
       :param pattern: Regex used to find matches
-      :type pattern: str
+      :type pattern: bytes or str_scalars
 
       :returns: Match object where elements match if any part of the string matches the
                 regular expression pattern
@@ -1172,11 +1154,11 @@ Module Contents
       :type delimiter: str
       :param return_segments: If True, also return mapping of original strings to first substring
                               in return array.
-      :type return_segments: bool
+      :type return_segments: bool, default=False
       :param regex: Indicates whether delimiter is a regular expression
                     Note: only handles regular expressions supported by re2
                     (does not support lookaheads/lookbehinds)
-      :type regex: bool
+      :type regex: bool, default=False
 
       :returns: * *Strings* -- Flattened substrings with delimiters removed
                 * *pdarray, int64 (optional)* -- For each original string, the index of first corresponding substring
@@ -1187,17 +1169,17 @@ Module Contents
       .. rubric:: Examples
 
       >>> orig = ak.array(['one|two', 'three|four|five', 'six'])
-      >>> orig.flatten('|')
+      >>> orig.split('|')
       array(['one', 'two', 'three', 'four', 'five', 'six'])
-      >>> flat, map = orig.flatten('|', return_segments=True)
-      >>> map
-      array([0, 2, 5])
+      >>> flat, mapping = orig.split('|', return_segments=True)
+      >>> mapping
+      array([0 2 5])
       >>> under = ak.array(['one_two', 'three_____four____five', 'six'])
-      >>> under_flat, under_map = under.flatten('_+', return_segments=True, regex=True)
-      >>> under_flat
+      >>> under_split, under_map = under.split('_+', return_segments=True, regex=True)
+      >>> under_split
       array(['one', 'two', 'three', 'four', 'five', 'six'])
       >>> under_map
-      array([0, 2, 5])
+      array([0 2 5])
 
 
 
@@ -1206,11 +1188,11 @@ Module Contents
       Check whether each element starts with the given substring.
 
       :param substr: The prefix to search for
-      :type substr: Union[bytes, str_scalars]
+      :type substr: bytes or str_scalars
       :param regex: Indicates whether substr is a regular expression
                     Note: only handles regular expressions supported by re2
                     (does not support lookaheads/lookbehinds)
-      :type regex: bool
+      :type regex: bool, default=False
 
       :returns: True for elements that start with substr, False otherwise
       :rtype: pdarray, bool
@@ -1227,12 +1209,12 @@ Module Contents
       >>> strings_end
       array(['string 1', 'string 2', 'string 3', 'string 4', 'string 5'])
       >>> strings_end.startswith('string')
-      array([True, True, True, True, True])
+      array([True True True True True])
       >>> strings_start = ak.array([f'{i} string' for i in range(1,6)])
       >>> strings_start
       array(['1 string', '2 string', '3 string', '4 string', '5 string'])
       >>> strings_start.startswith('\d str', regex = True)
-      array([True, True, True, True, True])
+      array([True True True True True])
 
 
 
@@ -1245,10 +1227,10 @@ Module Contents
       :param other: The strings to join onto self's strings
       :type other: Strings
       :param delimiter: String inserted between self and other
-      :type delimiter: str
+      :type delimiter: bytes or str_scalars, default=""
       :param toLeft: If true, join other strings to the left of self. By default,
                      other is joined to the right of self.
-      :type toLeft: bool
+      :type toLeft: bool, default=False
 
       :returns: The array of joined strings
       :rtype: Strings
@@ -1277,6 +1259,7 @@ Module Contents
       prefix or suffix; rather, all combinations of its values are stripped.
 
       :param chars: the set of characters to be removed
+      :type chars: bytes or str_scalars, optional
 
       :returns: Strings object with the leading and trailing characters matching the set of characters in
                 the chars argument removed
@@ -1305,12 +1288,12 @@ Module Contents
       If count is nonzero, at most count substitutions occur
 
       :param pattern: The regex to substitue
-      :type pattern: str_scalars
+      :type pattern: bytes or str_scalars
       :param repl: The substring to replace pattern matches with
-      :type repl: str_scalars
+      :type repl: bytes or str_scalars
       :param count: The max number of pattern match occurences in each element to replace.
                     The default count=0 replaces all occurences of pattern with repl
-      :type count: int
+      :type count: int, default=0
 
       :returns: Strings with pattern matches replaced
       :rtype: Strings
@@ -1334,12 +1317,12 @@ Module Contents
       Perform the same operation as sub(), but return a tuple (new_Strings, number_of_substitions)
 
       :param pattern: The regex to substitue
-      :type pattern: str_scalars
+      :type pattern: bytes or str_scalars
       :param repl: The substring to replace pattern matches with
-      :type repl: str_scalars
+      :type repl: bytes or str_scalars
       :param count: The max number of pattern match occurences in each element to replace.
                     The default count=0 replaces all occurences of pattern with repl
-      :type count: int
+      :type count: int, default=0
 
       :returns: * *Strings* -- Strings with pattern matches replaced
                 * *pdarray, int64* -- The number of substitutions made for each element of Strings
@@ -1379,7 +1362,7 @@ Module Contents
 
 
 
-   .. py:method:: to_csv(prefix_path: str, dataset: str = 'strings_array', col_delim: str = ',', overwrite: bool = False)
+   .. py:method:: to_csv(prefix_path: str, dataset: str = 'strings_array', col_delim: str = ',', overwrite: bool = False) -> str
 
       Write Strings to CSV file(s). File will contain a single column with the Strings data.
       All CSV Files written by Arkouda include a header denoting data types of the columns.
@@ -1390,15 +1373,16 @@ Module Contents
                           when they are written to disk.
       :type prefix_path: str
       :param dataset: Column name to save the Strings under. Defaults to "strings_array".
-      :type dataset: str
+      :type dataset: str, default="strings_array"
       :param col_delim: Defaults to ",". Value to be used to separate columns within the file.
                         Please be sure that the value used DOES NOT appear in your dataset.
-      :type col_delim: str
+      :type col_delim: str, default=","
       :param overwrite: Defaults to False. If True, any existing files matching your provided prefix_path will
                         be overwritten. If False, an error will be returned if existing files are found.
-      :type overwrite: bool
+      :type overwrite: bool, default=False
 
-      :rtype: str reponse message
+      :returns: response message
+      :rtype: str
 
       :raises ValueError: Raised if all datasets are not present in all parquet files or if one or
           more of the specified files do not exist
@@ -1416,7 +1400,7 @@ Module Contents
 
 
 
-   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, file_type: str = 'distribute') -> str
+   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'strings_array', mode: Literal['truncate', 'append'] = 'truncate', save_offsets: bool = True, file_type: Literal['single', 'distribute'] = 'distribute') -> str
 
       Save the Strings object to HDF5.
       The object can be saved to a collection of files or single file.
@@ -1424,18 +1408,18 @@ Module Contents
       :param prefix_path: Directory and filename prefix that all output files share
       :type prefix_path: str
       :param dataset: The name of the Strings dataset to be written, defaults to strings_array
-      :type dataset: str
+      :type dataset: str, default="strings_array"
       :param mode: By default, truncate (overwrite) output files, if they exist.
                    If 'append', create a new Strings dataset within existing files.
-      :type mode: str {'truncate' | 'append'}
+      :type mode: {"truncate", "append"}, default = "truncate"
       :param save_offsets: Defaults to True which will instruct the server to save the offsets array to HDF5
                            If False the offsets array will not be save and will be derived from the string values
                            upon load/read.
-      :type save_offsets: bool
+      :type save_offsets: bool, default=True
       :param file_type: Default: Distribute
                         Distribute the dataset over a file per locale.
                         Single file will save the dataset to one file
-      :type file_type: str ("single" | "distribute")
+      :type file_type: {"single", "distribute"}, default = "distribute"
 
       :rtype: String message indicating result of save operation
 
@@ -1491,7 +1475,7 @@ Module Contents
       >>> a.to_list()
       ['hello', 'my', 'world']
       >>> type(a.to_list())
-      list
+      <class 'list'>
 
 
 
@@ -1522,11 +1506,11 @@ Module Contents
       >>> a.to_ndarray()
       array(['hello', 'my', 'world'], dtype='<U5')
       >>> type(a.to_ndarray())
-      numpy.ndarray
+      <class 'numpy.ndarray'>
 
 
 
-   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', compression: Optional[str] = None) -> str
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'strings_array', mode: Literal['truncate', 'append'] = 'truncate', compression: Optional[Literal['snappy', 'gzip', 'brotli', 'zstd', 'lz4']] = None) -> str
 
       Save the Strings object to Parquet. The result is a collection of files,
       one file per locale of the arkouda server, where each filename starts
@@ -1535,13 +1519,12 @@ Module Contents
       :param prefix_path: Directory and filename prefix that all output files share
       :type prefix_path: str
       :param dataset: Name of the dataset to create in files (must not already exist)
-      :type dataset: str
+      :type dataset: str, default="strings_array"
       :param mode: By default, truncate (overwrite) output files, if they exist.
                    If 'append', attempt to create new dataset in existing files.
-      :type mode: str {'truncate' | 'append'}
-      :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
-                          Sets the compression type used with Parquet files
-      :type compression: str (Optional)
+      :type mode: {"truncate", "append"}, default = "truncate"
+      :param compression: Sets the compression type used with Parquet files
+      :type compression: {"snappy", "gzip", "brotli", "zstd", "lz4"}, optional
 
       :rtype: string message indicating result of save operation
 
@@ -1563,7 +1546,7 @@ Module Contents
 
 
 
-   .. py:method:: transfer(hostname: str, port: arkouda.numpy.dtypes.int_scalars)
+   .. py:method:: transfer(hostname: str, port: arkouda.numpy.dtypes.int_scalars) -> Union[str, memoryview]
 
       Sends a Strings object to a different Arkouda server
 
@@ -1622,7 +1605,7 @@ Module Contents
 
 
 
-   .. py:method:: update_hdf(prefix_path: str, dataset: str = 'strings_array', save_offsets: bool = True, repack: bool = True)
+   .. py:method:: update_hdf(prefix_path: str, dataset: str = 'strings_array', save_offsets: bool = True, repack: bool = True) -> str
 
       Overwrite the dataset with the name provided with this Strings object. If
       the dataset does not exist it is added
@@ -1630,17 +1613,17 @@ Module Contents
       :param prefix_path: Directory and filename prefix that all output files share
       :type prefix_path: str
       :param dataset: Name of the dataset to create in files
-      :type dataset: str
+      :type dataset: str, default="strings_array"
       :param save_offsets: Defaults to True which will instruct the server to save the offsets array to HDF5
                            If False the offsets array will not be save and will be derived from the string values
                            upon load/read.
-      :type save_offsets: bool
+      :type save_offsets: bool, default=True
       :param repack: Default: True
                      HDF5 does not release memory on delete. When True, the inaccessible
                      data (that was overwritten) is removed. When False, the data remains, but is
                      inaccessible. Setting to false will yield better performance, but will cause
                      file sizes to expand.
-      :type repack: bool
+      :type repack: bool, default=True
 
       :rtype: str - success message if successful
 

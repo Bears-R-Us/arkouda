@@ -409,7 +409,7 @@ value, but proceed with caution.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span>
 <span class="go">array([&#39;hello&#39;, &#39;my&#39;, &#39;world&#39;], dtype=&#39;&lt;U5&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">())</span>
-<span class="go">numpy.ndarray</span>
+<span class="go">&lt;class &#39;numpy.ndarray&#39;&gt;</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -440,8 +440,8 @@ value, but proceed with caution.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>substr</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – The substring in the form of string or byte array to search for</p></li>
-<li><p><strong>regex</strong> (<em>bool</em>) – Indicates whether substr is a regular expression
+<li><p><strong>substr</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – The substring in the form of string or byte array to search for</p></li>
+<li><p><strong>regex</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Indicates whether substr is a regular expression
 Note: only handles regular expressions supported by re2
 (does not support lookaheads/lookbehinds)</p></li>
 </ul>
@@ -469,9 +469,9 @@ Note: only handles regular expressions supported by re2
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span>
 <span class="go">array([&#39;1 string 1&#39;, &#39;2 string 2&#39;, &#39;3 string 3&#39;, &#39;4 string 4&#39;, &#39;5 string 5&#39;])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s1">&#39;string&#39;</span><span class="p">)</span>
-<span class="go">array([True, True, True, True, True])</span>
+<span class="go">array([True True True True True])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s1">&#39;string \d&#39;</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">array([True, True, True, True, True])</span>
+<span class="go">array([True True True True True])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -483,8 +483,8 @@ Note: only handles regular expressions supported by re2
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>substr</strong> (<a class="reference internal" href="../autoapi/arkouda/dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union"><em>Union</em></a><em>[</em><em>bytes</em><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a><em>]</em>) – The prefix to search for</p></li>
-<li><p><strong>regex</strong> (<em>bool</em>) – Indicates whether substr is a regular expression
+<li><p><strong>substr</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – The prefix to search for</p></li>
+<li><p><strong>regex</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Indicates whether substr is a regular expression
 Note: only handles regular expressions supported by re2
 (does not support lookaheads/lookbehinds)</p></li>
 </ul>
@@ -512,12 +512,12 @@ Note: only handles regular expressions supported by re2
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings_end</span>
 <span class="go">array([&#39;string 1&#39;, &#39;string 2&#39;, &#39;string 3&#39;, &#39;string 4&#39;, &#39;string 5&#39;])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings_end</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;string&#39;</span><span class="p">)</span>
-<span class="go">array([True, True, True, True, True])</span>
+<span class="go">array([True True True True True])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings_start</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1"> string&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">)])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings_start</span>
 <span class="go">array([&#39;1 string&#39;, &#39;2 string&#39;, &#39;3 string&#39;, &#39;4 string&#39;, &#39;5 string&#39;])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings_start</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;\d str&#39;</span><span class="p">,</span> <span class="n">regex</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
-<span class="go">array([True, True, True, True, True])</span>
+<span class="go">array([True True True True True])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -529,8 +529,8 @@ Note: only handles regular expressions supported by re2
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>substr</strong> (<a class="reference internal" href="../autoapi/arkouda/dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union"><em>Union</em></a><em>[</em><em>bytes</em><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a><em>]</em>) – The suffix to search for</p></li>
-<li><p><strong>regex</strong> (<em>bool</em>) – Indicates whether substr is a regular expression
+<li><p><strong>substr</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – The suffix to search for</p></li>
+<li><p><strong>regex</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Indicates whether substr is a regular expression
 Note: only handles regular expressions supported by re2
 (does not support lookaheads/lookbehinds)</p></li>
 </ul>
@@ -558,12 +558,12 @@ Note: only handles regular expressions supported by re2
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings_start</span>
 <span class="go">array([&#39;1 string&#39;, &#39;2 string&#39;, &#39;3 string&#39;, &#39;4 string&#39;, &#39;5 string&#39;])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings_start</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;ing&#39;</span><span class="p">)</span>
-<span class="go">array([True, True, True, True, True])</span>
+<span class="go">array([True True True True True])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings_end</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;string </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings_end</span>
 <span class="go">array([&#39;string 1&#39;, &#39;string 2&#39;, &#39;string 3&#39;, &#39;string 4&#39;, &#39;string 5&#39;])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings_end</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;ing \d&#39;</span><span class="p">,</span> <span class="n">regex</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
-<span class="go">array([True, True, True, True, True])</span>
+<span class="go">array([True True True True True])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -582,17 +582,17 @@ to string.partition), returning two new arrays of strings.
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>delimiter</strong> (<a class="reference internal" href="../autoapi/arkouda/dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union"><em>Union</em></a><em>[</em><em>bytes</em><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a><em>]</em>) – The separator where the split will occur</p></li>
-<li><p><strong>times</strong> (<a class="reference internal" href="../autoapi/arkouda/dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union"><em>Union</em></a><em>[</em><em>int</em><em>, </em><em>np.int64</em><em>]</em>) – The number of times the delimiter is sought, i.e. skip over
+<li><p><strong>delimiter</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – The separator where the split will occur</p></li>
+<li><p><strong>times</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id905" title="arkouda.int_scalars"><em>int_scalars</em></a><em>, </em><em>default=1</em>) – The number of times the delimiter is sought, i.e. skip over
 the first (times-1) delimiters</p></li>
-<li><p><strong>includeDelimiter</strong> (<em>bool</em>) – If true, append the delimiter to the end of the first return
+<li><p><strong>includeDelimiter</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If true, append the delimiter to the end of the first return
 array. By default, it is prepended to the beginning of the
 second return array.</p></li>
-<li><p><strong>keepPartial</strong> (<em>bool</em>) – If true, a string that does not contain &lt;times&gt; instances of
+<li><p><strong>keepPartial</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If true, a string that does not contain &lt;times&gt; instances of
 the delimiter will be returned in the first array. By default,
 such strings are returned in the second array.</p></li>
-<li><p><strong>fromRight</strong> (<em>bool</em>) – If true, peel from the right instead of the left (see also rpeel)</p></li>
-<li><p><strong>regex</strong> (<em>bool</em>) – Indicates whether delimiter is a regular expression
+<li><p><strong>fromRight</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If true, peel from the right instead of the left (see also rpeel)</p></li>
+<li><p><strong>regex</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Indicates whether delimiter is a regular expression
 Note: only handles regular expressions supported by re2
 (does not support lookaheads/lookbehinds)</p></li>
 </ul>
@@ -648,16 +648,16 @@ is true)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>delimiter</strong> (<a class="reference internal" href="../autoapi/arkouda/dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union"><em>Union</em></a><em>[</em><em>bytes</em><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a><em>]</em>) – The separator where the split will occur</p></li>
-<li><p><strong>times</strong> (<a class="reference internal" href="../autoapi/arkouda/dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union"><em>Union</em></a><em>[</em><em>int</em><em>, </em><em>np.int64</em><em>]</em>) – The number of times the delimiter is sought, i.e. skip over
+<li><p><strong>delimiter</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – The separator where the split will occur</p></li>
+<li><p><strong>times</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id905" title="arkouda.int_scalars"><em>int_scalars</em></a><em>, </em><em>default=1</em>) – The number of times the delimiter is sought, i.e. skip over
 the last (times-1) delimiters</p></li>
-<li><p><strong>includeDelimiter</strong> (<em>bool</em>) – If true, prepend the delimiter to the start of the first return
+<li><p><strong>includeDelimiter</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If true, prepend the delimiter to the start of the first return
 array. By default, it is appended to the end of the
 second return array.</p></li>
-<li><p><strong>keepPartial</strong> (<em>bool</em>) – If true, a string that does not contain &lt;times&gt; instances of
+<li><p><strong>keepPartial</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If true, a string that does not contain &lt;times&gt; instances of
 the delimiter will be returned in the second array. By default,
 such strings are returned in the first array.</p></li>
-<li><p><strong>regex</strong> (<em>bool</em>) – Indicates whether delimiter is a regular expression
+<li><p><strong>regex</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Indicates whether delimiter is a regular expression
 Note: only handles regular expressions supported by re2
 (does not support lookaheads/lookbehinds)</p></li>
 </ul>
@@ -691,8 +691,10 @@ Note: only handles regular expressions supported by re2
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;a.b&#39;</span><span class="p">,</span> <span class="s1">&#39;c.d&#39;</span><span class="p">,</span> <span class="s1">&#39;e.f.g&#39;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">rpeel</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
 <span class="go">(array([&#39;a&#39;, &#39;c&#39;, &#39;e.f&#39;]), array([&#39;b&#39;, &#39;d&#39;, &#39;g&#39;]))</span>
-<span class="go"># Compared against peel</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">peel</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Compared against peel</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">peel</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
 <span class="go">(array([&#39;a&#39;, &#39;c&#39;, &#39;e&#39;]), array([&#39;b&#39;, &#39;d&#39;, &#39;f.g&#39;]))</span>
 </pre></div>
 </div>
@@ -708,8 +710,8 @@ of this array, optionally inserting a delimiter.
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>other</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id721" title="arkouda.Strings"><em>Strings</em></a>) – The strings to join onto self’s strings</p></li>
-<li><p><strong>delimiter</strong> (<em>str</em>) – String inserted between self and other</p></li>
-<li><p><strong>toLeft</strong> (<em>bool</em>) – If true, join other strings to the left of self. By default,
+<li><p><strong>delimiter</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a><em>, </em><em>default=&quot;&quot;</em>) – String inserted between self and other</p></li>
+<li><p><strong>toLeft</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If true, join other strings to the left of self. By default,
 other is joined to the right of self.</p></li>
 </ul>
 </dd>
@@ -751,7 +753,7 @@ of this array, optionally inserting a delimiter.
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>other</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id721" title="arkouda.Strings"><em>Strings</em></a>) – The strings to join onto self’s strings</p></li>
-<li><p><strong>delimiter</strong> (<a class="reference internal" href="../autoapi/arkouda/dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union"><em>Union</em></a><em>[</em><em>bytes</em><em>,</em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a><em>]</em>) – String inserted between self and other</p></li>
+<li><p><strong>delimiter</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a><em>, </em><em>default=&quot;&quot;</em>) – String inserted between self and other</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -816,7 +818,7 @@ flatten on a Strings object will always return itself.</p>
 Elements match if any part of the string matches the regular expression pattern</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pattern</strong> (<em>str</em>) – Regex used to find matches</p>
+<dd class="field-odd"><p><strong>pattern</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – Regex used to find matches</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Match object where elements match if any part of the string matches the
@@ -842,7 +844,7 @@ regular expression pattern</p>
 regular expression pattern</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pattern</strong> (<em>str</em>) – Regex used to find matches</p>
+<dd class="field-odd"><p><strong>pattern</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – Regex used to find matches</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Match object where elements match only if the beginning of the string matches the
@@ -868,7 +870,7 @@ regular expression pattern</p>
 regular expression pattern</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pattern</strong> (<em>str</em>) – Regex used to find matches</p>
+<dd class="field-odd"><p><strong>pattern</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – Regex used to find matches</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Match object where elements match only if the whole string matches the
@@ -895,9 +897,9 @@ regular expression pattern</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>delimiter</strong> (<em>str</em>) – Characters used to split strings into substrings</p></li>
-<li><p><strong>return_segments</strong> (<em>bool</em>) – If True, also return mapping of original strings to first substring
+<li><p><strong>return_segments</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If True, also return mapping of original strings to first substring
 in return array.</p></li>
-<li><p><strong>regex</strong> (<em>bool</em>) – Indicates whether delimiter is a regular expression
+<li><p><strong>regex</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Indicates whether delimiter is a regular expression
 Note: only handles regular expressions supported by re2
 (does not support lookaheads/lookbehinds)</p></li>
 </ul>
@@ -920,17 +922,17 @@ in the return array</p></li>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">orig</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;one|two&#39;</span><span class="p">,</span> <span class="s1">&#39;three|four|five&#39;</span><span class="p">,</span> <span class="s1">&#39;six&#39;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">orig</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">orig</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
 <span class="go">array([&#39;one&#39;, &#39;two&#39;, &#39;three&#39;, &#39;four&#39;, &#39;five&#39;, &#39;six&#39;])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">flat</span><span class="p">,</span> <span class="nb">map</span> <span class="o">=</span> <span class="n">orig</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">,</span> <span class="n">return_segments</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">map</span>
-<span class="go">array([0, 2, 5])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flat</span><span class="p">,</span> <span class="n">mapping</span> <span class="o">=</span> <span class="n">orig</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">,</span> <span class="n">return_segments</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mapping</span>
+<span class="go">array([0 2 5])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">under</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;one_two&#39;</span><span class="p">,</span> <span class="s1">&#39;three_____four____five&#39;</span><span class="p">,</span> <span class="s1">&#39;six&#39;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">under_flat</span><span class="p">,</span> <span class="n">under_map</span> <span class="o">=</span> <span class="n">under</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="s1">&#39;_+&#39;</span><span class="p">,</span> <span class="n">return_segments</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">under_flat</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">under_split</span><span class="p">,</span> <span class="n">under_map</span> <span class="o">=</span> <span class="n">under</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_+&#39;</span><span class="p">,</span> <span class="n">return_segments</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">under_split</span>
 <span class="go">array([&#39;one&#39;, &#39;two&#39;, &#39;three&#39;, &#39;four&#39;, &#39;five&#39;, &#39;six&#39;])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">under_map</span>
-<span class="go">array([0, 2, 5])</span>
+<span class="go">array([0 2 5])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -942,8 +944,8 @@ in the return array</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pattern</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – Regex used to find matches</p></li>
-<li><p><strong>return_match_origins</strong> (<em>bool</em>) – If True, return a pdarray containing the index of the original string each
+<li><p><strong>pattern</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – Regex used to find matches</p></li>
+<li><p><strong>return_match_origins</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If True, return a pdarray containing the index of the original string each
 pattern match is from</p></li>
 </ul>
 </dd>
@@ -986,9 +988,9 @@ If count is nonzero, at most count substitutions occur</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pattern</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – The regex to substitue</p></li>
-<li><p><strong>repl</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – The substring to replace pattern matches with</p></li>
-<li><p><strong>count</strong> (<em>int</em>) – The max number of pattern match occurences in each element to replace.
+<li><p><strong>pattern</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – The regex to substitue</p></li>
+<li><p><strong>repl</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – The substring to replace pattern matches with</p></li>
+<li><p><strong>count</strong> (<em>int</em><em>, </em><em>default=0</em>) – The max number of pattern match occurences in each element to replace.
 The default count=0 replaces all occurences of pattern with repl</p></li>
 </ul>
 </dd>
@@ -1025,9 +1027,9 @@ The default count=0 replaces all occurences of pattern with repl</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pattern</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – The regex to substitue</p></li>
-<li><p><strong>repl</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – The substring to replace pattern matches with</p></li>
-<li><p><strong>count</strong> (<em>int</em>) – The max number of pattern match occurences in each element to replace.
+<li><p><strong>pattern</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – The regex to substitue</p></li>
+<li><p><strong>repl</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – The substring to replace pattern matches with</p></li>
+<li><p><strong>count</strong> (<em>int</em><em>, </em><em>default=0</em>) – The max number of pattern match occurences in each element to replace.
 The default count=0 replaces all occurences of pattern with repl</p></li>
 </ul>
 </dd>
@@ -1068,7 +1070,7 @@ The default count=0 replaces all occurences of pattern with repl</p></li>
 and lengths of matches</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pattern</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – The regex pattern used to find matches</p>
+<dd class="field-odd"><p><strong>pattern</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – The regex pattern used to find matches</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">pdarray</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">pdarray</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">pdarray</span></code></a>]</span></p>
@@ -1097,11 +1099,11 @@ and lengths of matches</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1"> string </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">num_matches</span><span class="p">,</span> <span class="n">starts</span><span class="p">,</span> <span class="n">lens</span> <span class="o">=</span> <span class="n">strings</span><span class="o">.</span><span class="n">find_locations</span><span class="p">(</span><span class="s1">&#39;\d&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">num_matches</span>
-<span class="go">array([2, 2, 2, 2, 2])</span>
+<span class="go">array([2 2 2 2 2])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">starts</span>
-<span class="go">array([0, 9, 0, 9, 0, 9, 0, 9, 0, 9])</span>
+<span class="go">array([0 9 0 9 0 9 0 9 0 9])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">lens</span>
-<span class="go">array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1]))</span>
+<span class="go">array([1 1 1 1 1 1 1 1 1 1])</span>
 </pre></div>
 </div>
 </dd></dl>

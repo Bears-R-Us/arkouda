@@ -357,7 +357,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">codecs</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typeguard</span><span class="w"> </span><span class="kn">import</span> <span class="n">typechecked</span>
@@ -463,9 +463,9 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        offset_attrib : Union[pdarray, str]</span>
+<span class="sd">        offset_attrib : pdarray or str</span>
 <span class="sd">            the array containing the offsets</span>
-<span class="sd">        bytes_attrib : Union[pdarray, str]</span>
+<span class="sd">        bytes_attrib : pdarray or str</span>
 <span class="sd">            the array containing the string values</span>
 
 <span class="sd">        Returns</span>
@@ -584,7 +584,7 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        other : Strings, str_scalars</span>
+<span class="sd">        other : Strings or str_scalars</span>
 <span class="sd">            the other object is a Strings object</span>
 <span class="sd">        op : str</span>
 <span class="sd">            name of the binary operation to be performed</span>
@@ -703,13 +703,13 @@
 
 <div class="viewcode-block" id="Strings.equals">
 <a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.equals">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">equals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">bool_scalars</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">equals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">bool_scalars</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Whether Strings are the same size and all entries are equal.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        other : object</span>
+<span class="sd">        other : Any</span>
 <span class="sd">            object to compare.</span>
 
 <span class="sd">        Returns</span>
@@ -762,7 +762,7 @@
 
 <div class="viewcode-block" id="Strings.get_bytes">
 <a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.get_bytes">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Getter for the bytes component (uint8 pdarray) of this Strings.</span>
 
@@ -783,13 +783,14 @@
                     <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getSegStringProperty&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;property&quot;</span><span class="p">:</span> <span class="s2">&quot;get_bytes&quot;</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry</span><span class="p">}</span>
                 <span class="p">)</span>
             <span class="p">)</span>
-
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bytes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Failed to initialize the bytes property.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bytes</span></div>
 
 
 <div class="viewcode-block" id="Strings.get_offsets">
 <a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.get_offsets">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_offsets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_offsets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Getter for the offsets component (int64 pdarray) of this Strings.</span>
 
@@ -810,12 +811,14 @@
                     <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getSegStringProperty&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;property&quot;</span><span class="p">:</span> <span class="s2">&quot;get_offsets&quot;</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry</span><span class="p">}</span>
                 <span class="p">)</span>
             <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_offsets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Failed to initialize the offsets property.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_offsets</span></div>
 
 
 <div class="viewcode-block" id="Strings.encode">
 <a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.encode">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">toEncoding</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fromEncoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;UTF-8&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">toEncoding</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fromEncoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a new strings object in `toEncoding`, expecting that the</span>
 <span class="sd">        current Strings is encoded in `fromEncoding`</span>
@@ -824,7 +827,7 @@
 <span class="sd">        ----------</span>
 <span class="sd">        toEncoding: str</span>
 <span class="sd">            The encoding that the strings will be converted to</span>
-<span class="sd">        fromEncoding: str</span>
+<span class="sd">        fromEncoding : str, default=&quot;UTF-8&quot;</span>
 <span class="sd">            The current encoding of the strings object, default to</span>
 <span class="sd">            UTF-8</span>
 
@@ -875,7 +878,7 @@
 
 <div class="viewcode-block" id="Strings.decode">
 <a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.decode">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">decode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fromEncoding</span><span class="p">,</span> <span class="n">toEncoding</span><span class="o">=</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">decode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fromEncoding</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">toEncoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a new strings object in `fromEncoding`, expecting that the</span>
 <span class="sd">        current Strings is encoded in `toEncoding`</span>
@@ -884,7 +887,7 @@
 <span class="sd">        ----------</span>
 <span class="sd">        fromEncoding: str</span>
 <span class="sd">            The current encoding of the strings object</span>
-<span class="sd">        toEncoding: str</span>
+<span class="sd">        toEncoding : str, default=&quot;UTF-8&quot;</span>
 <span class="sd">            The encoding that the strings will be converted to,</span>
 <span class="sd">            default to UTF-8</span>
 
@@ -1042,7 +1045,9 @@
 <span class="sd">        array([&#39;Strings 0&#39;, &#39;Strings 1&#39;, &#39;Strings 2&#39;, &#39;120&#39;, &#39;121&#39;, &#39;122&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; strings.isdecimal()</span>
 <span class="sd">        array([False False False True True True])</span>
+
 <span class="sd">        Special Character Examples</span>
+
 <span class="sd">        &gt;&gt;&gt; special_strings = ak.array([&quot;3.14&quot;, &quot;\u0030&quot;, &quot;\u00B2&quot;, &quot;2³₇&quot;, &quot;2³x₇&quot;])</span>
 <span class="sd">        &gt;&gt;&gt; special_strings</span>
 <span class="sd">        array([&#39;3.14&#39;, &#39;0&#39;, &#39;²&#39;, &#39;2³₇&#39;, &#39;2³x₇&#39;])</span>
@@ -1085,11 +1090,11 @@
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; strings = ak.array([f&#39;StrINgS aRe Here {i}&#39; for i in range(5)])</span>
 <span class="sd">        &gt;&gt;&gt; strings</span>
-<span class="sd">        array([&#39;StrINgS aRe Here 0&#39;, &#39;StrINgS aRe Here 1&#39;, &#39;StrINgS aRe Here 2&#39;, &#39;StrINgS aRe Here 3&#39;,</span>
-<span class="sd">        ... &#39;StrINgS aRe Here 4&#39;])</span>
+<span class="sd">        array([&#39;StrINgS aRe Here 0&#39;, &#39;StrINgS aRe Here 1&#39;, &#39;StrINgS aRe Here 2&#39;, \</span>
+<span class="sd">&#39;StrINgS aRe Here 3&#39;, &#39;StrINgS aRe Here 4&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; strings.title()</span>
-<span class="sd">        array([&#39;Strings are here 0&#39;, &#39;Strings are here 1&#39;, &#39;Strings are here 2&#39;, &#39;Strings are here 3&#39;,</span>
-<span class="sd">        ... &#39;Strings are here 4&#39;])</span>
+<span class="sd">        array([&#39;Strings Are Here 0&#39;, &#39;Strings Are Here 1&#39;, &#39;Strings Are Here 2&#39;, \</span>
+<span class="sd">&#39;Strings Are Here 3&#39;, &#39;Strings Are Here 4&#39;])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;caseChange&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;subcmd&quot;</span><span class="p">:</span> <span class="s2">&quot;capitalize&quot;</span><span class="p">,</span> <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry</span><span class="p">}</span>
@@ -1288,7 +1293,7 @@
 <span class="sd">        &gt;&gt;&gt; alpha = ak.array([&#39;StringA&#39;,&#39;StringB&#39;,&#39;StringC&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; strings = ak.concatenate([not_alpha, alpha])</span>
 <span class="sd">        &gt;&gt;&gt; strings</span>
-<span class="sd">        array([&#39;%Strings 0&#39;, &#39;%Strings 1&#39;, &#39;%Strings 2&#39;, &#39;StringA&#39;,&#39;StringB&#39;,&#39;StringC&#39;])</span>
+<span class="sd">        array([&#39;%Strings 0&#39;, &#39;%Strings 1&#39;, &#39;%Strings 2&#39;, &#39;StringA&#39;, &#39;StringB&#39;, &#39;StringC&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; strings.isalpha()</span>
 <span class="sd">        array([False False False True True True])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1332,7 +1337,9 @@
 <span class="sd">        array([&#39;Strings 0&#39;, &#39;Strings 1&#39;, &#39;Strings 2&#39;, &#39;120&#39;, &#39;121&#39;, &#39;122&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; strings.isdigit()</span>
 <span class="sd">        array([False False False True True True])</span>
+
 <span class="sd">        Special Character Examples</span>
+
 <span class="sd">        &gt;&gt;&gt; special_strings = ak.array([&quot;3.14&quot;, &quot;\u0030&quot;, &quot;\u00B2&quot;, &quot;2³₇&quot;, &quot;2³x₇&quot;])</span>
 <span class="sd">        &gt;&gt;&gt; special_strings</span>
 <span class="sd">        array([&#39;3.14&#39;, &#39;0&#39;, &#39;²&#39;, &#39;2³₇&#39;, &#39;2³x₇&#39;])</span>
@@ -1379,8 +1386,9 @@
 <span class="sd">        &gt;&gt;&gt; empty = ak.array([&#39;&#39; for i in range(3)])</span>
 <span class="sd">        &gt;&gt;&gt; strings = ak.concatenate([not_empty, empty])</span>
 <span class="sd">        &gt;&gt;&gt; strings</span>
-<span class="sd">        array([&#39;%Strings 0&#39;, &#39;%Strings 1&#39;, &#39;%Strings 2&#39;, &#39;&#39;, &#39;&#39;, &#39;&#39;])</span>
+<span class="sd">        array([&#39;Strings 0&#39;, &#39;Strings 1&#39;, &#39;Strings 2&#39;, &#39;&#39;, &#39;&#39;, &#39;&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; strings.isempty()</span>
+<span class="sd">        array([False False False True True True])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
             <span class="n">generic_msg</span><span class="p">(</span>
@@ -1395,7 +1403,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">isspace</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a boolean pdarray where index i indicates whether string i has all</span>
-<span class="sd">        whitespace characters (‘ ‘, ‘\t’, ‘\n’, ‘\v’, ‘\f’, ‘\r’).</span>
+<span class="sd">        whitespace characters (‘ ’, ‘\\\\t’, ‘\\\\n’, ‘\\\\v’, ‘\\\\f’, ‘\\\\r’).</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1416,11 +1424,11 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; not_space = ak.array([f&#39;Strings {i}&#39; for i in range(3)])</span>
-<span class="sd">        &gt;&gt;&gt; space = ak.array([&#39; &#39;, &#39;\t&#39;, &#39;\n&#39;, &#39;\v&#39;, &#39;\f&#39;, &#39;\r&#39;, &#39; \t\n\v\f\r&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; space = ak.array([&#39; &#39;, &#39;\\t&#39;, &#39;\\n&#39;, &#39;\\v&#39;, &#39;\\f&#39;, &#39;\\r&#39;, &#39; \\t\\n\\v\\f\\r&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; strings = ak.concatenate([not_space, space])</span>
 <span class="sd">        &gt;&gt;&gt; strings</span>
-<span class="sd">        array([&#39;Strings 0&#39;, &#39;Strings 1&#39;, &#39;Strings 2&#39;, &#39; &#39;,</span>
-<span class="sd">        ... &#39;u0009&#39;, &#39;n&#39;, &#39;u000B&#39;, &#39;u000C&#39;, &#39;u000D&#39;, &#39; u0009nu000Bu000Cu000D&#39;])</span>
+<span class="sd">        array([&#39;Strings 0&#39;, &#39;Strings 1&#39;, &#39;Strings 2&#39;, &#39; &#39;, &#39;u0009&#39;, &#39;n&#39;, \</span>
+<span class="sd">&#39;u000B&#39;, &#39;u000C&#39;, &#39;u000D&#39;, &#39; u0009nu000Bu000Cu000D&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; strings.isspace()</span>
 <span class="sd">        array([False False False True True True True True True True])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1443,7 +1451,7 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        chars</span>
+<span class="sd">        chars : bytes or str_scalars, optional</span>
 <span class="sd">            the set of characters to be removed</span>
 
 <span class="sd">        Returns</span>
@@ -1536,7 +1544,7 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        pattern: str_scalars</span>
+<span class="sd">        pattern : bytes or str_scalars</span>
 <span class="sd">            The regex pattern used to find matches</span>
 
 <span class="sd">        Returns</span>
@@ -1566,11 +1574,11 @@
 <span class="sd">        &gt;&gt;&gt; strings = ak.array([f&#39;{i} string {i}&#39; for i in range(1, 6)])</span>
 <span class="sd">        &gt;&gt;&gt; num_matches, starts, lens = strings.find_locations(&#39;\\d&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; num_matches</span>
-<span class="sd">        array([2, 2, 2, 2, 2])</span>
+<span class="sd">        array([2 2 2 2 2])</span>
 <span class="sd">        &gt;&gt;&gt; starts</span>
-<span class="sd">        array([0, 9, 0, 9, 0, 9, 0, 9, 0, 9])</span>
+<span class="sd">        array([0 9 0 9 0 9 0 9 0 9])</span>
 <span class="sd">        &gt;&gt;&gt; lens</span>
-<span class="sd">        array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1]))</span>
+<span class="sd">        array([1 1 1 1 1 1 1 1 1 1])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">matcher</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_matcher</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
         <span class="n">matcher</span><span class="o">.</span><span class="n">find_locations</span><span class="p">()</span>
@@ -1587,7 +1595,7 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        pattern: str</span>
+<span class="sd">        pattern : bytes or str_scalars</span>
 <span class="sd">            Regex used to find matches</span>
 
 <span class="sd">        Returns</span>
@@ -1616,7 +1624,7 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        pattern: str</span>
+<span class="sd">        pattern : bytes or str_scalars</span>
 <span class="sd">            Regex used to find matches</span>
 
 <span class="sd">        Returns</span>
@@ -1645,7 +1653,7 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        pattern: str</span>
+<span class="sd">        pattern : bytes or str_scalars</span>
 <span class="sd">            Regex used to find matches</span>
 
 <span class="sd">        Returns</span>
@@ -1676,12 +1684,12 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        pattern: str</span>
+<span class="sd">        pattern : bytes or str_scalars</span>
 <span class="sd">            Regex used to split strings into substrings</span>
-<span class="sd">        maxsplit: int</span>
+<span class="sd">        maxsplit : int, default=0</span>
 <span class="sd">            The max number of pattern match occurences in each element to split.</span>
 <span class="sd">            The default maxsplit=0 splits on all occurences</span>
-<span class="sd">        return_segments: bool</span>
+<span class="sd">        return_segments : bool, default=False</span>
 <span class="sd">            If True, return mapping of original strings to first substring</span>
 <span class="sd">            in return array.</span>
 
@@ -1696,7 +1704,7 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; strings = ak.array([&#39;1_2___&#39;, &#39;____&#39;, &#39;3&#39;, &#39;__4___5____6___7&#39;, &#39;&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; strings.split(&#39;_+&#39;, maxsplit=2, return_segments=True)</span>
+<span class="sd">        &gt;&gt;&gt; strings.regex_split(&#39;_+&#39;, maxsplit=2, return_segments=True)</span>
 <span class="sd">        (array([&#39;1&#39;, &#39;2&#39;, &#39;&#39;, &#39;&#39;, &#39;&#39;, &#39;3&#39;, &#39;&#39;, &#39;4&#39;, &#39;5____6___7&#39;, &#39;&#39;]), array([0 3 5 6 9]))</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_matcher</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">maxsplit</span><span class="p">,</span> <span class="n">return_segments</span><span class="p">)</span></div>
@@ -1713,9 +1721,9 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        pattern: str_scalars</span>
+<span class="sd">        pattern : bytes or str_scalars</span>
 <span class="sd">            Regex used to find matches</span>
-<span class="sd">        return_match_origins: bool</span>
+<span class="sd">        return_match_origins : bool, default=False</span>
 <span class="sd">            If True, return a pdarray containing the index of the original string each</span>
 <span class="sd">            pattern match is from</span>
 
@@ -1761,11 +1769,11 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        pattern: str_scalars</span>
+<span class="sd">        pattern : bytes or str_scalars</span>
 <span class="sd">            The regex to substitue</span>
-<span class="sd">        repl: str_scalars</span>
+<span class="sd">        repl : bytes or str_scalars</span>
 <span class="sd">            The substring to replace pattern matches with</span>
-<span class="sd">        count: int</span>
+<span class="sd">        count : int, default=0</span>
 <span class="sd">            The max number of pattern match occurences in each element to replace.</span>
 <span class="sd">            The default count=0 replaces all occurences of pattern with repl</span>
 
@@ -1809,11 +1817,11 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        pattern: str_scalars</span>
+<span class="sd">        pattern : bytes or str_scalars</span>
 <span class="sd">            The regex to substitue</span>
-<span class="sd">        repl: str_scalars</span>
+<span class="sd">        repl : bytes or str_scalars</span>
 <span class="sd">            The substring to replace pattern matches with</span>
-<span class="sd">        count: int</span>
+<span class="sd">        count : int, default=0</span>
 <span class="sd">            The max number of pattern match occurences in each element to replace.</span>
 <span class="sd">            The default count=0 replaces all occurences of pattern with repl</span>
 
@@ -1857,9 +1865,9 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        substr: str_scalars</span>
+<span class="sd">        substr : bytes or str_scalars</span>
 <span class="sd">            The substring in the form of string or byte array to search for</span>
-<span class="sd">        regex: bool</span>
+<span class="sd">        regex : bool, default=False</span>
 <span class="sd">            Indicates whether substr is a regular expression</span>
 <span class="sd">            Note: only handles regular expressions supported by re2</span>
 <span class="sd">            (does not support lookaheads/lookbehinds)</span>
@@ -1888,9 +1896,9 @@
 <span class="sd">        &gt;&gt;&gt; strings</span>
 <span class="sd">        array([&#39;1 string 1&#39;, &#39;2 string 2&#39;, &#39;3 string 3&#39;, &#39;4 string 4&#39;, &#39;5 string 5&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; strings.contains(&#39;string&#39;)</span>
-<span class="sd">        array([True, True, True, True, True])</span>
+<span class="sd">        array([True True True True True])</span>
 <span class="sd">        &gt;&gt;&gt; strings.contains(&#39;string \\d&#39;, regex=True)</span>
-<span class="sd">        array([True, True, True, True, True])</span>
+<span class="sd">        array([True True True True True])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">substr</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
             <span class="n">substr</span> <span class="o">=</span> <span class="n">substr</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
@@ -1917,9 +1925,9 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        substr: Union[bytes, str_scalars]</span>
+<span class="sd">        substr : bytes or str_scalars</span>
 <span class="sd">            The prefix to search for</span>
-<span class="sd">        regex: bool</span>
+<span class="sd">        regex : bool, default=False</span>
 <span class="sd">            Indicates whether substr is a regular expression</span>
 <span class="sd">            Note: only handles regular expressions supported by re2</span>
 <span class="sd">            (does not support lookaheads/lookbehinds)</span>
@@ -1948,12 +1956,12 @@
 <span class="sd">        &gt;&gt;&gt; strings_end</span>
 <span class="sd">        array([&#39;string 1&#39;, &#39;string 2&#39;, &#39;string 3&#39;, &#39;string 4&#39;, &#39;string 5&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; strings_end.startswith(&#39;string&#39;)</span>
-<span class="sd">        array([True, True, True, True, True])</span>
+<span class="sd">        array([True True True True True])</span>
 <span class="sd">        &gt;&gt;&gt; strings_start = ak.array([f&#39;{i} string&#39; for i in range(1,6)])</span>
 <span class="sd">        &gt;&gt;&gt; strings_start</span>
 <span class="sd">        array([&#39;1 string&#39;, &#39;2 string&#39;, &#39;3 string&#39;, &#39;4 string&#39;, &#39;5 string&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; strings_start.startswith(&#39;\\d str&#39;, regex = True)</span>
-<span class="sd">        array([True, True, True, True, True])</span>
+<span class="sd">        array([True True True True True])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">substr</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
             <span class="n">substr</span> <span class="o">=</span> <span class="n">substr</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
@@ -1976,9 +1984,9 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        substr: Union[bytes, str_scalars]</span>
+<span class="sd">        substr : bytes or str_scalars</span>
 <span class="sd">            The suffix to search for</span>
-<span class="sd">        regex: bool</span>
+<span class="sd">        regex : bool, default=False</span>
 <span class="sd">            Indicates whether substr is a regular expression</span>
 <span class="sd">            Note: only handles regular expressions supported by re2</span>
 <span class="sd">            (does not support lookaheads/lookbehinds)</span>
@@ -2007,12 +2015,12 @@
 <span class="sd">        &gt;&gt;&gt; strings_start</span>
 <span class="sd">        array([&#39;1 string&#39;, &#39;2 string&#39;, &#39;3 string&#39;, &#39;4 string&#39;, &#39;5 string&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; strings_start.endswith(&#39;ing&#39;)</span>
-<span class="sd">        array([True, True, True, True, True])</span>
+<span class="sd">        array([True True True True True])</span>
 <span class="sd">        &gt;&gt;&gt; strings_end = ak.array([f&#39;string {i}&#39; for i in range(1, 6)])</span>
 <span class="sd">        &gt;&gt;&gt; strings_end</span>
 <span class="sd">        array([&#39;string 1&#39;, &#39;string 2&#39;, &#39;string 3&#39;, &#39;string 4&#39;, &#39;string 5&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; strings_end.endswith(&#39;ing \\d&#39;, regex = True)</span>
-<span class="sd">        array([True, True, True, True, True])</span>
+<span class="sd">        array([True True True True True])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">substr</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
             <span class="n">substr</span> <span class="o">=</span> <span class="n">substr</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
@@ -2033,10 +2041,10 @@
 <span class="sd">        ----------</span>
 <span class="sd">        delimiter: str</span>
 <span class="sd">            Characters used to split strings into substrings</span>
-<span class="sd">        return_segments: bool</span>
+<span class="sd">        return_segments : bool, default=False</span>
 <span class="sd">            If True, also return mapping of original strings to first substring</span>
 <span class="sd">            in return array.</span>
-<span class="sd">        regex: bool</span>
+<span class="sd">        regex : bool, default=False</span>
 <span class="sd">            Indicates whether delimiter is a regular expression</span>
 <span class="sd">            Note: only handles regular expressions supported by re2</span>
 <span class="sd">            (does not support lookaheads/lookbehinds)</span>
@@ -2056,17 +2064,17 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; orig = ak.array([&#39;one|two&#39;, &#39;three|four|five&#39;, &#39;six&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; orig.flatten(&#39;|&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; orig.split(&#39;|&#39;)</span>
 <span class="sd">        array([&#39;one&#39;, &#39;two&#39;, &#39;three&#39;, &#39;four&#39;, &#39;five&#39;, &#39;six&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; flat, map = orig.flatten(&#39;|&#39;, return_segments=True)</span>
-<span class="sd">        &gt;&gt;&gt; map</span>
-<span class="sd">        array([0, 2, 5])</span>
+<span class="sd">        &gt;&gt;&gt; flat, mapping = orig.split(&#39;|&#39;, return_segments=True)</span>
+<span class="sd">        &gt;&gt;&gt; mapping</span>
+<span class="sd">        array([0 2 5])</span>
 <span class="sd">        &gt;&gt;&gt; under = ak.array([&#39;one_two&#39;, &#39;three_____four____five&#39;, &#39;six&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; under_flat, under_map = under.flatten(&#39;_+&#39;, return_segments=True, regex=True)</span>
-<span class="sd">        &gt;&gt;&gt; under_flat</span>
+<span class="sd">        &gt;&gt;&gt; under_split, under_map = under.split(&#39;_+&#39;, return_segments=True, regex=True)</span>
+<span class="sd">        &gt;&gt;&gt; under_split</span>
 <span class="sd">        array([&#39;one&#39;, &#39;two&#39;, &#39;three&#39;, &#39;four&#39;, &#39;five&#39;, &#39;six&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; under_map</span>
-<span class="sd">        array([0, 2, 5])</span>
+<span class="sd">        array([0 2 5])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">regex</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
@@ -2107,7 +2115,7 @@
         <span class="n">keepPartial</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">fromRight</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">regex</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Strings</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Peel off one or more delimited fields from each string (similar</span>
 <span class="sd">        to string.partition), returning two new arrays of strings.</span>
@@ -2115,22 +2123,22 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        delimiter: Union[bytes, str_scalars]</span>
+<span class="sd">        delimiter : bytes or str_scalars</span>
 <span class="sd">            The separator where the split will occur</span>
-<span class="sd">        times: Union[int, np.int64]</span>
+<span class="sd">        times : int_scalars, default=1</span>
 <span class="sd">            The number of times the delimiter is sought, i.e. skip over</span>
 <span class="sd">            the first (times-1) delimiters</span>
-<span class="sd">        includeDelimiter: bool</span>
+<span class="sd">        includeDelimiter : bool, default=False</span>
 <span class="sd">            If true, append the delimiter to the end of the first return</span>
 <span class="sd">            array. By default, it is prepended to the beginning of the</span>
 <span class="sd">            second return array.</span>
-<span class="sd">        keepPartial: bool</span>
+<span class="sd">        keepPartial : bool, default=False</span>
 <span class="sd">            If true, a string that does not contain &lt;times&gt; instances of</span>
 <span class="sd">            the delimiter will be returned in the first array. By default,</span>
 <span class="sd">            such strings are returned in the second array.</span>
-<span class="sd">        fromRight: bool</span>
+<span class="sd">        fromRight : bool, default=False</span>
 <span class="sd">            If true, peel from the right instead of the left (see also rpeel)</span>
-<span class="sd">        regex: bool</span>
+<span class="sd">        regex : bool, default=False</span>
 <span class="sd">            Indicates whether delimiter is a regular expression</span>
 <span class="sd">            Note: only handles regular expressions supported by re2</span>
 <span class="sd">            (does not support lookaheads/lookbehinds)</span>
@@ -2216,7 +2224,7 @@
         <span class="n">includeDelimiter</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">keepPartial</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">regex</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Strings</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Peel off one or more delimited fields from the end of each string</span>
 <span class="sd">        (similar to string.rpartition), returning two new arrays of strings.</span>
@@ -2224,20 +2232,20 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        delimiter: Union[bytes, str_scalars]</span>
+<span class="sd">        delimiter : bytes or str_scalars</span>
 <span class="sd">            The separator where the split will occur</span>
-<span class="sd">        times: Union[int, np.int64]</span>
+<span class="sd">        times : int_scalars, default=1</span>
 <span class="sd">            The number of times the delimiter is sought, i.e. skip over</span>
 <span class="sd">            the last (times-1) delimiters</span>
-<span class="sd">        includeDelimiter: bool</span>
+<span class="sd">        includeDelimiter : bool, default=False</span>
 <span class="sd">            If true, prepend the delimiter to the start of the first return</span>
 <span class="sd">            array. By default, it is appended to the end of the</span>
 <span class="sd">            second return array.</span>
-<span class="sd">        keepPartial: bool</span>
+<span class="sd">        keepPartial : bool, default=False</span>
 <span class="sd">            If true, a string that does not contain &lt;times&gt; instances of</span>
 <span class="sd">            the delimiter will be returned in the second array. By default,</span>
 <span class="sd">            such strings are returned in the first array.</span>
-<span class="sd">        regex: bool</span>
+<span class="sd">        regex : bool, default=False</span>
 <span class="sd">            Indicates whether delimiter is a regular expression</span>
 <span class="sd">            Note: only handles regular expressions supported by re2</span>
 <span class="sd">            (does not support lookaheads/lookbehinds)</span>
@@ -2269,7 +2277,9 @@
 <span class="sd">        &gt;&gt;&gt; s = ak.array([&#39;a.b&#39;, &#39;c.d&#39;, &#39;e.f.g&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; s.rpeel(&#39;.&#39;)</span>
 <span class="sd">        (array([&#39;a&#39;, &#39;c&#39;, &#39;e.f&#39;]), array([&#39;b&#39;, &#39;d&#39;, &#39;g&#39;]))</span>
-<span class="sd">        # Compared against peel</span>
+
+<span class="sd">        Compared against peel</span>
+
 <span class="sd">        &gt;&gt;&gt; s.peel(&#39;.&#39;)</span>
 <span class="sd">        (array([&#39;a&#39;, &#39;c&#39;, &#39;e&#39;]), array([&#39;b&#39;, &#39;d&#39;, &#39;f.g&#39;]))</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2298,9 +2308,9 @@
 <span class="sd">        ----------</span>
 <span class="sd">        other : Strings</span>
 <span class="sd">            The strings to join onto self&#39;s strings</span>
-<span class="sd">        delimiter : str</span>
+<span class="sd">        delimiter : bytes or str_scalars, default=&quot;&quot;</span>
 <span class="sd">            String inserted between self and other</span>
-<span class="sd">        toLeft : bool</span>
+<span class="sd">        toLeft : bool, default=False</span>
 <span class="sd">            If true, join other strings to the left of self. By default,</span>
 <span class="sd">            other is joined to the right of self.</span>
 
@@ -2362,7 +2372,7 @@
 <span class="sd">        ----------</span>
 <span class="sd">        other : Strings</span>
 <span class="sd">            The strings to join onto self&#39;s strings</span>
-<span class="sd">        delimiter : Union[bytes,str_scalars]</span>
+<span class="sd">        delimiter : bytes or str_scalars, default=&quot;&quot;</span>
 <span class="sd">            String inserted between self and other</span>
 
 <span class="sd">        Returns</span>
@@ -2406,12 +2416,12 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        n : int</span>
+<span class="sd">        n : int_scalars</span>
 <span class="sd">            Length of prefix</span>
-<span class="sd">        return_origins : bool</span>
+<span class="sd">        return_origins : bool, default=True</span>
 <span class="sd">            If True, return a logical index indicating which strings</span>
 <span class="sd">            were long enough to return an n-prefix</span>
-<span class="sd">        proper : bool</span>
+<span class="sd">        proper : bool, default=True</span>
 <span class="sd">            If True, only return proper prefixes, i.e. from strings</span>
 <span class="sd">            that are at least n+1 long. If False, allow the entire</span>
 <span class="sd">            string to be returned as a prefix.</span>
@@ -2458,12 +2468,12 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        n : int</span>
+<span class="sd">        n : int_scalars</span>
 <span class="sd">            Length of suffix</span>
-<span class="sd">        return_origins : bool</span>
+<span class="sd">        return_origins : bool, default=True</span>
 <span class="sd">            If True, return a logical index indicating which strings</span>
 <span class="sd">            were long enough to return an n-suffix</span>
-<span class="sd">        proper : bool</span>
+<span class="sd">        proper : bool, default=True</span>
 <span class="sd">            If True, only return proper suffixes, i.e. from strings</span>
 <span class="sd">            that are at least n+1 long. If False, allow the entire</span>
 <span class="sd">            string to be returned as a suffix.</span>
@@ -2573,7 +2583,7 @@
 
 <div class="viewcode-block" id="Strings.flatten">
 <a class="viewcode-back" href="../../usage/strings.html#arkouda.Strings.flatten">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">flatten</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">flatten</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a copy of the array collapsed into one dimension.</span>
 
@@ -2623,7 +2633,7 @@
 <span class="sd">        &gt;&gt;&gt; a.to_ndarray()</span>
 <span class="sd">        array([&#39;hello&#39;, &#39;my&#39;, &#39;world&#39;], dtype=&#39;&lt;U5&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; type(a.to_ndarray())</span>
-<span class="sd">        numpy.ndarray</span>
+<span class="sd">        &lt;class &#39;numpy.ndarray&#39;&gt;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Get offsets and append total bytes for length calculation</span>
         <span class="n">npoffsets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_comp_to_ndarray</span><span class="p">(</span><span class="s2">&quot;offsets&quot;</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">nbytes</span><span class="p">])))</span>
@@ -2673,7 +2683,7 @@
 <span class="sd">        &gt;&gt;&gt; a.to_list()</span>
 <span class="sd">        [&#39;hello&#39;, &#39;my&#39;, &#39;world&#39;]</span>
 <span class="sd">        &gt;&gt;&gt; type(a.to_list())</span>
-<span class="sd">        list</span>
+<span class="sd">        &lt;class &#39;list&#39;&gt;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div>
 
@@ -2747,17 +2757,17 @@
 
 <div class="viewcode-block" id="Strings.astype">
 <a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.astype">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">astype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">astype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Cast values of Strings object to provided dtype</span>
 
 <span class="sd">        Parameters</span>
-<span class="sd">        __________</span>
+<span class="sd">        ----------</span>
 <span class="sd">        dtype: np.dtype or str</span>
 <span class="sd">            Dtype to cast to</span>
 
 <span class="sd">        Returns</span>
-<span class="sd">        _______</span>
+<span class="sd">        -------</span>
 <span class="sd">        ak.pdarray</span>
 <span class="sd">            An arkouda pdarray with values converted to the specified data type</span>
 
@@ -2776,8 +2786,8 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;strings_array&quot;</span><span class="p">,</span>
-        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;truncate&quot;</span><span class="p">,</span>
-        <span class="n">compression</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;truncate&quot;</span><span class="p">,</span> <span class="s2">&quot;append&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;truncate&quot;</span><span class="p">,</span>
+        <span class="n">compression</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;snappy&quot;</span><span class="p">,</span> <span class="s2">&quot;gzip&quot;</span><span class="p">,</span> <span class="s2">&quot;brotli&quot;</span><span class="p">,</span> <span class="s2">&quot;zstd&quot;</span><span class="p">,</span> <span class="s2">&quot;lz4&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save the Strings object to Parquet. The result is a collection of files,</span>
@@ -2788,13 +2798,12 @@
 <span class="sd">        ----------</span>
 <span class="sd">        prefix_path : str</span>
 <span class="sd">            Directory and filename prefix that all output files share</span>
-<span class="sd">        dataset : str</span>
+<span class="sd">        dataset : str, default=&quot;strings_array&quot;</span>
 <span class="sd">            Name of the dataset to create in files (must not already exist)</span>
-<span class="sd">        mode : str {&#39;truncate&#39; | &#39;append&#39;}</span>
+<span class="sd">        mode : {&quot;truncate&quot;, &quot;append&quot;}, default = &quot;truncate&quot;</span>
 <span class="sd">            By default, truncate (overwrite) output files, if they exist.</span>
 <span class="sd">            If &#39;append&#39;, attempt to create new dataset in existing files.</span>
-<span class="sd">        compression : str (Optional)</span>
-<span class="sd">            (None | &quot;snappy&quot; | &quot;gzip&quot; | &quot;brotli&quot; | &quot;zstd&quot; | &quot;lz4&quot;)</span>
+<span class="sd">        compression : {&quot;snappy&quot;, &quot;gzip&quot;, &quot;brotli&quot;, &quot;zstd&quot;, &quot;lz4&quot;}, optional</span>
 <span class="sd">            Sets the compression type used with Parquet files</span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -2842,9 +2851,9 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;strings_array&quot;</span><span class="p">,</span>
-        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;truncate&quot;</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;truncate&quot;</span><span class="p">,</span> <span class="s2">&quot;append&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;truncate&quot;</span><span class="p">,</span>
         <span class="n">save_offsets</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">file_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;distribute&quot;</span><span class="p">,</span>
+        <span class="n">file_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;single&quot;</span><span class="p">,</span> <span class="s2">&quot;distribute&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;distribute&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save the Strings object to HDF5.</span>
@@ -2854,16 +2863,16 @@
 <span class="sd">        ----------</span>
 <span class="sd">        prefix_path : str</span>
 <span class="sd">            Directory and filename prefix that all output files share</span>
-<span class="sd">        dataset : str</span>
+<span class="sd">        dataset : str, default=&quot;strings_array&quot;</span>
 <span class="sd">            The name of the Strings dataset to be written, defaults to strings_array</span>
-<span class="sd">        mode : str {&#39;truncate&#39; | &#39;append&#39;}</span>
+<span class="sd">        mode : {&quot;truncate&quot;, &quot;append&quot;}, default = &quot;truncate&quot;</span>
 <span class="sd">            By default, truncate (overwrite) output files, if they exist.</span>
 <span class="sd">            If &#39;append&#39;, create a new Strings dataset within existing files.</span>
-<span class="sd">        save_offsets : bool</span>
+<span class="sd">        save_offsets : bool, default=True</span>
 <span class="sd">            Defaults to True which will instruct the server to save the offsets array to HDF5</span>
 <span class="sd">            If False the offsets array will not be save and will be derived from the string values</span>
 <span class="sd">            upon load/read.</span>
-<span class="sd">        file_type: str (&quot;single&quot; | &quot;distribute&quot;)</span>
+<span class="sd">        file_type : {&quot;single&quot;, &quot;distribute&quot;}, default = &quot;distribute&quot;</span>
 <span class="sd">            Default: Distribute</span>
 <span class="sd">            Distribute the dataset over a file per locale.</span>
 <span class="sd">            Single file will save the dataset to one file</span>
@@ -2926,22 +2935,22 @@
         <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;strings_array&quot;</span><span class="p">,</span>
         <span class="n">save_offsets</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">repack</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Overwrite the dataset with the name provided with this Strings object. If</span>
 <span class="sd">        the dataset does not exist it is added</span>
 
 <span class="sd">        Parameters</span>
-<span class="sd">        -----------</span>
+<span class="sd">        ----------</span>
 <span class="sd">        prefix_path : str</span>
 <span class="sd">            Directory and filename prefix that all output files share</span>
-<span class="sd">        dataset : str</span>
+<span class="sd">        dataset : str, default=&quot;strings_array&quot;</span>
 <span class="sd">            Name of the dataset to create in files</span>
-<span class="sd">        save_offsets : bool</span>
+<span class="sd">        save_offsets : bool, default=True</span>
 <span class="sd">            Defaults to True which will instruct the server to save the offsets array to HDF5</span>
 <span class="sd">            If False the offsets array will not be save and will be derived from the string values</span>
 <span class="sd">            upon load/read.</span>
-<span class="sd">        repack: bool</span>
+<span class="sd">        repack : bool, default=True</span>
 <span class="sd">            Default: True</span>
 <span class="sd">            HDF5 does not release memory on delete. When True, the inaccessible</span>
 <span class="sd">            data (that was overwritten) is removed. When False, the data remains, but is</span>
@@ -2973,7 +2982,7 @@
         <span class="c1"># determine the format (single/distribute) that the file was saved in</span>
         <span class="n">file_type</span> <span class="o">=</span> <span class="n">_get_hdf_filetype</span><span class="p">(</span><span class="n">prefix_path</span> <span class="o">+</span> <span class="s2">&quot;*&quot;</span><span class="p">)</span>
 
-        <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;tohdf&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;values&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
@@ -2989,7 +2998,9 @@
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">repack</span><span class="p">:</span>
-            <span class="n">_repack_hdf</span><span class="p">(</span><span class="n">prefix_path</span><span class="p">)</span></div>
+            <span class="n">_repack_hdf</span><span class="p">(</span><span class="n">prefix_path</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Strings.to_csv">
@@ -3001,7 +3012,7 @@
         <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;strings_array&quot;</span><span class="p">,</span>
         <span class="n">col_delim</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span>
         <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Write Strings to CSV file(s). File will contain a single column with the Strings data.</span>
 <span class="sd">        All CSV Files written by Arkouda include a header denoting data types of the columns.</span>
@@ -3009,22 +3020,23 @@
 <span class="sd">        bytes as uint(8).</span>
 
 <span class="sd">        Parameters</span>
-<span class="sd">        -----------</span>
+<span class="sd">        ----------</span>
 <span class="sd">        prefix_path: str</span>
 <span class="sd">            The filename prefix to be used for saving files. Files will have _LOCALE#### appended</span>
 <span class="sd">            when they are written to disk.</span>
-<span class="sd">        dataset: str</span>
+<span class="sd">        dataset : str, default=&quot;strings_array&quot;</span>
 <span class="sd">            Column name to save the Strings under. Defaults to &quot;strings_array&quot;.</span>
-<span class="sd">        col_delim: str</span>
+<span class="sd">        col_delim : str, default=&quot;,&quot;</span>
 <span class="sd">            Defaults to &quot;,&quot;. Value to be used to separate columns within the file.</span>
 <span class="sd">            Please be sure that the value used DOES NOT appear in your dataset.</span>
-<span class="sd">        overwrite: bool</span>
+<span class="sd">        overwrite : bool, default=False</span>
 <span class="sd">            Defaults to False. If True, any existing files matching your provided prefix_path will</span>
 <span class="sd">            be overwritten. If False, an error will be returned if existing files are found.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        --------</span>
-<span class="sd">        str reponse message</span>
+<span class="sd">        str</span>
+<span class="sd">            response message</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
@@ -3070,11 +3082,11 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;strings_array&quot;</span><span class="p">,</span>
-        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;truncate&quot;</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;truncate&quot;</span><span class="p">,</span> <span class="s2">&quot;append&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;truncate&quot;</span><span class="p">,</span>
         <span class="n">save_offsets</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">compression</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">file_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;HDF5&quot;</span><span class="p">,</span>
-        <span class="n">file_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;distribute&quot;</span><span class="p">,</span>
+        <span class="n">compression</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;snappy&quot;</span><span class="p">,</span> <span class="s2">&quot;gzip&quot;</span><span class="p">,</span> <span class="s2">&quot;brotli&quot;</span><span class="p">,</span> <span class="s2">&quot;zstd&quot;</span><span class="p">,</span> <span class="s2">&quot;lz4&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">file_format</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;HDF5&quot;</span><span class="p">,</span> <span class="s2">&quot;Parquet&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;HDF5&quot;</span><span class="p">,</span>
+        <span class="n">file_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;single&quot;</span><span class="p">,</span> <span class="s2">&quot;distribute&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;distribute&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        DEPRECATED</span>
@@ -3083,33 +3095,35 @@
 <span class="sd">        with prefix_path. HDF5 support single files, in which case the file name will</span>
 <span class="sd">        only be that provided. Each locale saves its chunk of the array to its</span>
 <span class="sd">        corresponding file.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        prefix_path : str</span>
 <span class="sd">            Directory and filename prefix that all output files share</span>
-<span class="sd">        dataset : str</span>
+<span class="sd">        dataset : str, default=&quot;strings_array&quot;</span>
 <span class="sd">            The name of the Strings dataset to be written, defaults to strings_array</span>
-<span class="sd">        mode : str {&#39;truncate&#39; | &#39;append&#39;}</span>
+<span class="sd">        mode : {&quot;truncate&quot;, &quot;append&quot;}, default = &quot;truncate&quot;</span>
 <span class="sd">            By default, truncate (overwrite) output files, if they exist.</span>
 <span class="sd">            If &#39;append&#39;, create a new Strings dataset within existing files.</span>
-<span class="sd">        save_offsets : bool</span>
+<span class="sd">        save_offsets : bool, default=True</span>
 <span class="sd">            Defaults to True which will instruct the server to save the offsets array to HDF5</span>
 <span class="sd">            If False the offsets array will not be save and will be derived from the string values</span>
 <span class="sd">            upon load/read. This is not supported for Parquet files.</span>
-<span class="sd">        compression : str (Optional)</span>
-<span class="sd">            (None | &quot;snappy&quot; | &quot;gzip&quot; | &quot;brotli&quot; | &quot;zstd&quot; | &quot;lz4&quot;)</span>
+<span class="sd">        compression : {&quot;snappy&quot;, &quot;gzip&quot;, &quot;brotli&quot;, &quot;zstd&quot;, &quot;lz4&quot;}, optional</span>
 <span class="sd">            Sets the compression type used with Parquet files</span>
-<span class="sd">        file_format : str</span>
+<span class="sd">        file_format : {&quot;HDF5&quot;, &quot;Parquet&quot;}, default = &quot;HDF5&quot;</span>
 <span class="sd">            By default, saved files will be written to the HDF5 file format. If</span>
 <span class="sd">            &#39;Parquet&#39;, the files will be written to the Parquet file format. This</span>
 <span class="sd">            is case insensitive.</span>
-<span class="sd">        file_type: str (&quot;single&quot; | &quot;distribute&quot;)</span>
+<span class="sd">        file_type : {&quot;single&quot;, &quot;distribute&quot;}, default = &quot;distribute&quot;</span>
 <span class="sd">            Default: Distribute</span>
 <span class="sd">            Distribute the dataset over a file per locale.</span>
 <span class="sd">            Single file will save the dataset to one file</span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        String message indicating result of save operation</span>
+
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
 <span class="sd">        Important implementation notes: (1) Strings state is saved as two datasets</span>
@@ -3383,7 +3397,7 @@
 
 <div class="viewcode-block" id="Strings.transfer">
 <a class="viewcode-back" href="../../autoapi/arkouda/strings/index.html#arkouda.Strings.transfer">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">transfer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">transfer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">memoryview</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sends a Strings object to a different Arkouda server</span>
 
