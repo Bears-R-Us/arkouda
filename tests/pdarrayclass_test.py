@@ -30,7 +30,7 @@ class TestPdarrayClass:
         assert r.shape == (2, 2)
         assert isinstance(r, ak.pdarray)
         b = r.reshape(4)
-        assert ak.all(a==b)
+        assert ak.all(a == b)
 
     @pytest.mark.skip_if_rank_not_compiled([3])
     def test_reshape_and_flatten_bug_reproducer(self):
@@ -63,7 +63,7 @@ class TestPdarrayClass:
     @pytest.mark.skip_if_rank_not_compiled([3])
     @pytest.mark.parametrize("dtype", DTYPES)
     @pytest.mark.parametrize("size", pytest.prob_size)
-    def test_flatten(self, size, dtype):
+    def test_flatten_multi_dim(self, size, dtype):
         size = size - (size % 4)
         a = ak.arange(size, dtype=dtype)
         b = a.reshape((2, 2, size / 4))
