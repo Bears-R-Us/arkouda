@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import builtins
 import json
+from math import prod as maprod
 from typing import TYPE_CHECKING, Sequence, Tuple, Union, cast
 from warnings import warn
 
@@ -611,6 +612,7 @@ def map(
 
 
 def _infer_shape_from_size(size):
+    # used in pdarray creation functions that allow a size (1D) or shape (multi-dim)
     shape: Union[int_scalars, Tuple[int_scalars, ...]] = 1
     if isinstance(size, tuple):
         shape = cast(Tuple, size)
@@ -623,3 +625,13 @@ def _infer_shape_from_size(size):
         shape = full_size
         ndim = 1
     return shape, ndim, full_size
+
+
+def _generate_test_shape(rank, size) :
+    # used to generate shapes of the form (2,2,...n) for testing multi-dim creation
+    last_dim = max(2, size // (2 ** (rank - 1)))  # such that 2*2*..*n is close to size,
+    shape = (rank - 1) * [2]                      # and with the final dim at least 2.
+    shape.append(last_dim)                        # building "shape" really does take
+    shape = tuple(shape)                          # multiple steps because .append doesn't
+    local_size = maprod(shape)                    # have a return value
+    return shape, local_size

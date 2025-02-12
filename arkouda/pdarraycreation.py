@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from typeguard import typechecked
 
-from arkouda.client import generic_msg, get_array_ranks
+from arkouda.client import generic_msg, get_max_array_rank
 from arkouda.numpy.dtypes import (
     NUMBER_FORMAT_STRINGS,
     DTypes,
@@ -149,8 +149,8 @@ def array(
 
     Parameters
     ----------
-    a: Union[pdarray, np.ndarray]
-        Rank-1 array of a supported dtype
+    a: Union[pdarray, np.ndarray, Iterable]
+        array of a supported dtype
     dtype: np.dtype, type, or str
         The target dtype to cast values to
     max_bits: int
@@ -171,7 +171,7 @@ def array(
         Raised if nbytes > maxTransferBytes, a.dtype is not supported (not in DTypes),
         or if the product of a size and a.itemsize > maxTransferBytes
     ValueError
-        Raised if a has rank > get_max_array_rank(), or if the returned message is malformed or does
+        Raised if a has rank > 1, or if the returned message is malformed or does
         not contain the fields required to generate the array.
 
     See Also
@@ -236,8 +236,8 @@ def array(
     if a.ndim != 1 and a.dtype.name not in NumericDTypes:
         raise TypeError("Must be an iterable or have a numeric DType")
 
-    if a.ndim not in get_array_ranks():
-        raise ValueError(f"array rank {a.ndim} not in compiled ranks {get_array_ranks()}")
+    if a.ndim > get_max_array_rank():
+        raise ValueError(f"array rank {a.ndim} exceeds maximum of {get_max_array_rank()}")
 
     # Check if array of strings
     # if a.dtype == numpy.object_ need to check first element
@@ -397,8 +397,8 @@ def bigint_from_uint_arrays(arrays, max_bits=-1):
     --------
     >>> a = ak.bigint_from_uint_arrays([ak.ones(5, dtype=ak.uint64), ak.arange(5, dtype=ak.uint64)])
     >>> a
-    array([18446744073709551616 18446744073709551617 18446744073709551618
-    18446744073709551619 18446744073709551620])
+    array(["18446744073709551616" "18446744073709551617" "18446744073709551618"
+    "18446744073709551619" "18446744073709551620"])
 
     >>> a.dtype
     dtype(bigint)
@@ -445,29 +445,22 @@ def zeros(
     Parameters
     ----------
     size : int_scalars or tuple of int_scalars
-        Size or shape of the array
+        Size of the array (only rank-1 arrays supported)
     dtype : all_scalars
-        Type of resulting array, default ak.float64
+        Type of resulting array, default float64
     max_bits: int
         Specifies the maximum number of bits; only used for bigint pdarrays
-        Included for consistency, as zeros are represented as all zeros, regardless
-        of the value of max_bits
 
     Returns
     -------
     pdarray
-        Zeros of the requested size or shape and dtype
+        Zeros of the requested size and dtype
 
     Raises
     ------
     TypeError
-        Raised if the supplied dtype is not supported
-
-    RuntimeError
-        Raised if the size parameter is neither an int nor a str that is parseable to an int.
-
-    ValueError
-        Raised if the given shape exceeds get_max_array_rank() or is empty
+        Raised if the supplied dtype is not supported or if the size
+        parameter is neither an int nor a str that is parseable to an int.
 
     See Also
     --------
@@ -476,20 +469,32 @@ def zeros(
     Examples
     --------
     >>> ak.zeros(5, dtype=ak.int64)
-    array([0 0 0 0 0])
+    array([0, 0, 0, 0, 0])
 
     >>> ak.zeros(5, dtype=ak.float64)
-    array([0.00000000000000000 0.00000000000000000 0.00000000000000000
-           0.00000000000000000 0.00000000000000000])
+    array([0, 0, 0, 0, 0])
 
     >>> ak.zeros(5, dtype=ak.bool_)
-    array([False False False False False])
-
-    Notes
-    -----
-    Logic for generating the pdarray is delegated to the ak.full method.
+    array([False, False, False, False, False])
     """
-    return full(size=size, fill_value=0, dtype=dtype, max_bits=max_bits)
+    dtype = akdtype(dtype)  # normalize dtype
+    dtype_name = dtype.name if isinstance(dtype, bigint) else cast(np.dtype, dtype).name
+    # check dtype for error
+    if dtype_name not in NumericDTypes:
+        raise TypeError(f"unsupported dtype {dtype}")
+    from arkouda.util import _infer_shape_from_size
+
+    shape, ndim, full_size = _infer_shape_from_size(size)
+
+    if ndim > get_max_array_rank():
+        raise ValueError(f"array rank {ndim} exceeds maximum of {get_max_array_rank()}")
+
+    if isinstance(shape, tuple) and len(shape) == 0:
+        raise ValueError("size () not currently supported in ak.zeros.")
+
+    repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape})
+
+    return create_pdarray(repMsg, max_bits=max_bits)
 
 
 @typechecked
@@ -504,29 +509,22 @@ def ones(
     Parameters
     ----------
     size : int_scalars or tuple of int_scalars
-        Size or shape of the array
+        Size of the array (only rank-1 arrays supported)
     dtype : Union[float64, int64, bool]
-        Resulting array type, default ak.float64
+        Resulting array type, default float64
     max_bits: int
         Specifies the maximum number of bits; only used for bigint pdarrays
-        Included for consistency, as ones are all zeros ending on a one, regardless
-        of max_bits
 
     Returns
     -------
     pdarray
-        Ones of the requested size or shape and dtype
+        Ones of the requested size and dtype
 
     Raises
     ------
     TypeError
-        Raised if the supplied dtype is not supported
-
-    RuntimeError
-        Raised if the size parameter is neither an int nor a str that is parseable to an int.
-
-    ValueError
-        Raised if the given shape exceeds get_max_array_rank() or is empty
+        Raised if the supplied dtype is not supported or if the size
+        parameter is neither an int nor a str that is parseable to an int.
 
     See Also
     --------
@@ -535,20 +533,35 @@ def ones(
     Examples
     --------
     >>> ak.ones(5, dtype=ak.int64)
-    array([1 1 1 1 1])
+    array([1, 1, 1, 1, 1])
 
     >>> ak.ones(5, dtype=ak.float64)
-    array([1.00000000000000000 1.00000000000000000 1.00000000000000000
-           1.00000000000000000 1.00000000000000000])
+    array([1, 1, 1, 1, 1])
 
     >>> ak.ones(5, dtype=ak.bool_)
-    array([True True True True True])
-
-    Notes
-    -----
-    Logic for generating the pdarray is delegated to the ak.full method.
+    array([True, True, True, True, True])
     """
-    return full(size=size, fill_value=1, dtype=dtype, max_bits=max_bits)
+    dtype = akdtype(dtype)  # normalize dtype
+    dtype_name = dtype.name if isinstance(dtype, bigint) else cast(np.dtype, dtype).name
+    # check dtype for error
+    if dtype_name not in NumericDTypes:
+        raise TypeError(f"unsupported dtype {dtype}")
+    from arkouda.util import _infer_shape_from_size
+
+    shape, ndim, full_size = _infer_shape_from_size(size)
+
+    if ndim > get_max_array_rank():
+        raise ValueError(f"array rank {ndim} exceeds maximum of {get_max_array_rank()}")
+
+    if isinstance(shape, tuple) and len(shape) == 0:
+        raise ValueError("size () not currently supported in ak.ones.")
+
+    repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape})
+    a = create_pdarray(repMsg)
+    a.fill(1)
+    if max_bits:
+        a.max_bits = max_bits
+    return a
 
 
 @typechecked
@@ -564,8 +577,8 @@ def full(
     Parameters
     ----------
     size: int_scalars or tuple of int_scalars
-        Size or shape of the array
-    fill_value: int_scalars or str
+        Size of the array (only rank-1 arrays supported)
+    fill_value: int_scalars
         Value with which the array will be filled
     dtype: all_scalars
         Resulting array type, default float64
@@ -580,13 +593,8 @@ def full(
     Raises
     ------
     TypeError
-        Raised if the supplied dtype is not supported
-
-    RuntimeError
-        Raised if the size parameter is neither an int nor a str that is parseable to an int.
-
-    ValueError
-        Raised if the given shape exceeds get_max_array_rank() or is empty
+        Raised if the supplied dtype is not supported or if the size
+        parameter is neither an int nor a str that is parseable to an int.
 
     See Also
     --------
@@ -595,14 +603,13 @@ def full(
     Examples
     --------
     >>> ak.full(5, 7, dtype=ak.int64)
-    array([7 7 7 7 7])
+    array([7, 7, 7, 7, 7])
 
     >>> ak.full(5, 9, dtype=ak.float64)
-    array([9.00000000000000000 9.00000000000000000 9.00000000000000000
-           9.00000000000000000 9.00000000000000000])
+    array([9, 9, 9, 9, 9])
 
     >>> ak.full(5, 5, dtype=ak.bool_)
-    array([True True True True True])
+    array([True, True, True, True, True])
     """
     if isinstance(fill_value, str):
         return _full_string(size, fill_value)
@@ -616,8 +623,8 @@ def full(
 
     shape, ndim, full_size = _infer_shape_from_size(size)
 
-    if ndim not in get_array_ranks():
-        raise ValueError(f"array rank {ndim} not in compiled ranks {get_array_ranks()}")
+    if ndim > get_max_array_rank():
+        raise ValueError(f"array rank {ndim} exceeds maximum of {get_max_array_rank()}")
 
     if isinstance(shape, tuple) and len(shape) == 0:
         raise ValueError("size () not currently supported in ak.full.")
@@ -648,19 +655,6 @@ def scalar_array(
     -------
     pdarray
         pdarray with a single element
-
-    Examples
-    --------
-    >>> ak.scalar_array(5)
-    array([5])
-
-    >>> ak.scalar_array(7.0)
-    array([7.00000000000000000])
-
-    Raises
-    ------
-    RuntimeError
-        Raised if value cannot be cast as dtype
     """
 
     if dtype is not None:
@@ -727,15 +721,17 @@ def zeros_like(pda: pdarray) -> pdarray:
 
     Examples
     --------
-    >>> ak.zeros_like(ak.ones(5,dtype=ak.int64))
-    array([0 0 0 0 0])
+    >>> zeros = ak.zeros(5, dtype=ak.int64)
+    >>> ak.zeros_like(zeros)
+    array([0, 0, 0, 0, 0])
 
-    >>> ak.zeros_like(ak.ones(5,dtype=ak.float64))
-    array([0.00000000000000000 0.00000000000000000 0.00000000000000000
-           0.00000000000000000 0.00000000000000000])
+    >>> zeros = ak.zeros(5, dtype=ak.float64)
+    >>> ak.zeros_like(zeros)
+    array([0, 0, 0, 0, 0])
 
-    >>> ak.zeros_like(ak.ones(5,dtype=ak.bool_))
-    array([False False False False False])
+    >>> zeros = ak.zeros(5, dtype=ak.bool_)
+    >>> ak.zeros_like(zeros)
+    array([False, False, False, False, False])
     """
     return zeros(tuple(pda.shape), pda.dtype, pda.max_bits)
 
@@ -772,15 +768,17 @@ def ones_like(pda: pdarray) -> pdarray:
 
     Examples
     --------
-    >>> ak.ones_like(ak.zeros(5,dtype=ak.int64))
-    array([1 1 1 1 1])
+    >>> ones = ak.ones(5, dtype=ak.int64)
+     >>> ak.ones_like(ones)
+    array([1, 1, 1, 1, 1])
 
-    >>> ak.ones_like(ak.zeros(5,dtype=ak.float64))
-    array([1.00000000000000000 1.00000000000000000 1.00000000000000000
-           1.00000000000000000 1.00000000000000000])
+    >>> ones = ak.ones(5, dtype=ak.float64)
+    >>> ak.ones_like(ones)
+    array([1, 1, 1, 1, 1])
 
-    >>> ak.ones_like(ak.zeros(5,dtype=ak.bool_))
-    array([True True True True True])
+    >>> ones = ak.ones(5, dtype=ak.bool_)
+    >>> ak.ones_like(ones)
+    array([True, True, True, True, True])
     """
     return ones(tuple(pda.shape), pda.dtype, pda.max_bits)
 
@@ -819,15 +817,17 @@ def full_like(pda: pdarray, fill_value: numeric_scalars) -> Union[pdarray, Strin
 
     Examples
     --------
-    >>> ak.full_like(ak.full(5,7,dtype=ak.int64),6)
-    array([6 6 6 6 6])
+    >>> full = ak.full(5, 7, dtype=ak.int64)
+    >>> ak.full_like(full)
+    array([7, 7, 7, 7, 7])
 
-    >>> ak.full_like(ak.full(7,9,dtype=ak.float64),10)
-    array([10.00000000000000000 10.00000000000000000 10.00000000000000000
-           10.00000000000000000 10.00000000000000000 10.00000000000000000 10.00000000000000000])
+    >>> full = ak.full(5, 9, dtype=ak.float64)
+    >>> ak.full_like(full)
+    array([9, 9, 9, 9, 9])
 
-    >>> ak.full_like(ak.full(5,True,dtype=ak.bool_),False)
-    array([False False False False False])
+    >>> full = ak.full(5, 5, dtype=ak.bool_)
+    >>> ak.full_like(full)
+    array([True, True, True, True, True])
     """
     return full(tuple(pda.shape), fill_value, pda.dtype, pda.max_bits)
 
@@ -868,8 +868,6 @@ def arange(*args, **kwargs) -> pdarray:
         Raised if start, stop, or stride is not an int object
     ZeroDivisionError
         Raised if stride == 0
-    ValueError
-        Raised if (stop - start) and stride are not the same sign, or if stop==start
 
     See Also
     --------
@@ -884,16 +882,16 @@ def arange(*args, **kwargs) -> pdarray:
     Examples
     --------
     >>> ak.arange(0, 5, 1)
-    array([0 1 2 3 4])
+    array([0, 1, 2, 3, 4])
 
     >>> ak.arange(5, 0, -1)
-    array([5 4 3 2 1])
+    array([5, 4, 3, 2, 1])
 
     >>> ak.arange(0, 10, 2)
-    array([0 2 4 6 8])
+    array([0, 2, 4, 6, 8])
 
     >>> ak.arange(-5, -10, -1)
-    array([-5 -6 -7 -8 -9])
+    array([-5, -6, -7, -8, -9])
     """
     # if one arg is given then arg is stop
     if len(args) == 1:
@@ -983,13 +981,13 @@ def linspace(start: numeric_scalars, stop: numeric_scalars, length: int_scalars)
     Examples
     --------
     >>> ak.linspace(0, 1, 5)
-    array([0.00000000000000000 0.25 0.5 0.75 1.00000000000000000])
+    array([0, 0.25, 0.5, 0.75, 1])
 
     >>> ak.linspace(start=1, stop=0, length=5)
-    array([1.00000000000000000 0.75 0.5 0.25 0.00000000000000000])
+    array([1, 0.75, 0.5, 0.25, 0])
 
     >>> ak.linspace(start=-5, stop=0, length=5)
-    array([-5.00000000000000000 -3.75 -2.5 -1.25 0.00000000000000000])
+    array([-5, -3.75, -2.5, -1.25, 0])
     """
     if not isSupportedNumber(start) or not isSupportedNumber(stop):
         raise TypeError("both start and stop must be an int, np.int64, float, or np.float64")
@@ -1017,8 +1015,8 @@ def randint(
         The low value (inclusive) of the range
     high : numeric_scalars
         The high value (exclusive for int, inclusive for float) of the range
-    size : int_scalars or tuple of int_scalars
-        The size or shape of the returned array
+    size : int_scalars
+        The length of the returned array
     dtype : Union[int64, float64, bool]
         The dtype of the array
     seed : int_scalars, optional
@@ -1048,14 +1046,23 @@ def randint(
 
     Examples
     --------
-    >>> ak.randint(0, 10, 5, seed=1701)
-    array([6 5 1 6 3])
+    >>> ak.randint(0, 10, 5)
+    array([5, 7, 4, 8, 3])
 
-    >>> ak.randint(0, 1, 3, seed=1701, dtype=ak.float64)
-    array([0.011410423448327005 0.73618171558685619 0.12367222192448891])
+    >>> ak.randint(0, 1, 3, dtype=ak.float64)
+    array([0.92176432277231968, 0.083130710959903542, 0.68894208386667544])
 
-    >>> ak.randint(0, 1, 5, seed=1701, dtype=ak.bool_)
-    array([False True False True False])
+    >>> ak.randint(0, 1, 5, dtype=ak.bool_)
+    array([True, False, True, True, True])
+
+    >>> ak.randint(1, 5, 10, seed=2)
+    array([4, 3, 1, 3, 4, 4, 2, 4, 3, 2])
+
+    >>> ak.randint(1, 5, 3, dtype=ak.float64, seed=2)
+    array([2.9160772326374946, 4.353429832157099, 4.5392023718621486])
+
+    >>> ak.randint(1, 5, 10, dtype=ak.bool, seed=2)
+    array([False, True, True, True, True, False, True, True, True, True])
     """
     from arkouda.numpy.random import randint
 
@@ -1104,11 +1111,11 @@ def uniform(
 
     Examples
     --------
-    >>> ak.uniform(3,seed=1701)
-    array([0.011410423448327005 0.73618171558685619 0.12367222192448891])
+    >>> ak.uniform(3)
+    array([0.92176432277231968, 0.083130710959903542, 0.68894208386667544])
 
     >>> ak.uniform(size=3,low=0,high=5,seed=0)
-    array([0.30013431967121934 0.47383036230759112 1.0441791878997098])
+    array([0.30013431967121934, 0.47383036230759112, 1.0441791878997098])
     """
     return randint(low=low, high=high, size=size, dtype="float64", seed=seed)
 
@@ -1150,7 +1157,7 @@ def standard_normal(size: int_scalars, seed: Union[None, int_scalars] = None) ->
     Examples
     --------
     >>> ak.standard_normal(3,1)
-    array([-0.68586185091150265 1.1723810583573377 0.567584107142031])
+    array([-0.68586185091150265, 1.1723810583573375, 0.567584107142031])
     """
     from arkouda.numpy.random import standard_normal
 
@@ -1198,12 +1205,12 @@ def random_strings_uniform(
 
     Examples
     --------
-    >>> ak.random_strings_uniform(minlen=1, maxlen=5, seed=8675309, size=5)
-    array(['ECWO', 'WSS', 'TZG', 'RW', 'C'])
+    >>> ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=5)
+    array(['TVKJ', 'EWAB', 'CO', 'HFMD', 'U'])
 
-    >>> ak.random_strings_uniform(minlen=1, maxlen=5, seed=8675309, size=5,
+    >>> ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=5,
     ... characters='printable')
-    array(['2 .z', 'aom', '2d|', 'o(', 'M'])
+    array(['+5"f', '-P]3', '4k', '~HFF', 'F'])
     """
     if minlen < 0 or maxlen <= minlen or size < 0:
         raise ValueError("Incompatible arguments: minlen < 0, maxlen " + "<= minlen, or size < 0")
@@ -1256,7 +1263,7 @@ def random_strings_lognormal(
     ------
     TypeError
         Raised if logmean is neither a float nor a int, logstd is not a float,
-        seed is not an int, size is not an int, or if characters is not a str
+        size is not an int, or if characters is not a str
     ValueError
         Raised if logstd <= 0 or size < 0
 
@@ -1274,10 +1281,10 @@ def random_strings_lognormal(
     Examples
     --------
     >>> ak.random_strings_lognormal(2, 0.25, 5, seed=1)
-    array(['VWHJEX', 'BEBBXJHGM', 'RWOVKBUR', 'LNJCSDXD', 'NKEDQC'])
+    array(['TVKJTE', 'ABOCORHFM', 'LUDMMGTB', 'KWOQNPHZ', 'VSXRRL'])
 
     >>> ak.random_strings_lognormal(2, 0.25, 5, seed=1, characters='printable')
-    array(['eL96<O', ')o-GOe lR', ')PV yHf(', '._b3Yc&K', ',7Wjef'])
+    array(['+5"fp-', ']3Q4kC~HF', '=F=`,IE!', 'DjkBa'9(', '5oZ1)='])
     """
     if not isSupportedNumber(logmean) or not isSupportedNumber(logstd):
         raise TypeError("both logmean and logstd must be an int, np.int64, float, or np.float64")
