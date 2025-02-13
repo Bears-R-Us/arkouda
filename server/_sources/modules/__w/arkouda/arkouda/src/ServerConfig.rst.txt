@@ -121,6 +121,12 @@ arkouda server config param and config const
    Arkouda version
    
 
+.. data:: config const pythonVersion: string = "Please set during compilation"
+
+   
+   Python version
+   
+
 .. data:: config const serverConnectionInfo: string = try! getEnv("ARKOUDA_SERVER_CONNECTION_INFO", "")
 
    

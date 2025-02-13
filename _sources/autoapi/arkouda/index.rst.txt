@@ -12,6 +12,7 @@ Submodules
 
    /autoapi/arkouda/accessor/index
    /autoapi/arkouda/alignment/index
+   /autoapi/arkouda/apply/index
    /autoapi/arkouda/array_api/index
    /autoapi/arkouda/categorical/index
    /autoapi/arkouda/client/index
@@ -289,6 +290,7 @@ Functions
    arkouda.akcast
    arkouda.akcast
    arkouda.align
+   arkouda.apply
    arkouda.arange
    arkouda.arange
    arkouda.arange
@@ -30167,6 +30169,45 @@ Package Contents
    are wrappers around builtin collections and ABCs in collections.abc. These must
    have 'name' always set. If 'inst' is False, then the alias can't be instantiated,
    this is used by e.g. typing.List and typing.Dict.
+
+
+.. py:function:: apply(arr: arkouda.pdarrayclass.pdarray, func: Union[Callable, str], result_dtype: Optional[Union[numpy.dtype, str]] = None) -> arkouda.pdarrayclass.pdarray
+
+   Apply a python function to a pdarray. The function should take one argument
+   and return a new value. The function will then be called on each element in
+   the pdarray.
+
+   For example,
+   >>> ak.apply(ak.array([1, 2, 3]), lambda x: x+1)
+
+   Or,
+   >>> import math
+   >>> arr = ak.randint(0, 10, 10_000)
+   >>> def times_pi(x):
+           return x*math.pi
+   >>> ak.apply(arr, times_pi, "float64")
+
+   Warning: This function is experimental and may not work as expected.
+   Known limitations:
+   - Any python modules used inside of the function must be installed on the server.
+
+   :param arr: The pdarray to which the function is applied
+   :type arr: pdarray
+   :param func: The function to apply to the array. This can be a callable function or
+                a string, but either way it should take a single argument and return a
+                single value. If a string, it should be a lambda function that takes a
+                single argument, e.g. "lambda x,: x+1". Note the dangling comma after
+                the argument, this is required for string functions.
+   :type func: Union[Callable, str]
+   :param result_dtype: The dtype of the resulting pdarray. If None, the dtype of the resulting
+                        pdarray will be the same as the input pdarray. If a string, it should be
+                        a valid numpy dtype string, e.g. "float64". If a numpy dtype, it should
+                        be a valid numpy dtype object, e.g. np.float64. This is not supported
+                        for functions passed as strings.
+   :type result_dtype: Optional[Union[np.dtype, str]]
+
+   :returns: The pdarray resulting from applying the function to the input array
+   :rtype: pdarray
 
 
 .. py:function:: arange(*args, **kwargs) -> arkouda.pdarrayclass.pdarray

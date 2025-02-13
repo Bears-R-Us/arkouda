@@ -1,0 +1,31 @@
+.. default-domain:: chpl
+
+.. module:: ArkoudaPythonCompat
+
+ArkoudaPythonCompat
+===================
+**Usage**
+
+.. code-block:: chapel
+
+   use ArkoudaPythonCompat;
+
+
+or
+
+.. code-block:: chapel
+
+   import ArkoudaPythonCompat;
+
+.. function:: proc pythonModuleSupported param
+
+.. function:: proc pythonVersionString(): string
+
+.. class:: Interpreter
+
+.. class:: Value
+
+.. class:: Function : Value
+
+.. class:: Module : Value
+
