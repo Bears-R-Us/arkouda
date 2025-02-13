@@ -202,7 +202,7 @@ NUM_CORES := $(shell nproc --all)
 
 ARROW_DEPENDENCY_SOURCE := BUNDLED
 
-arrow-download-source: 
+arrow-download-source:
 	mkdir -p $(DEP_BUILD_DIR)
 
     #   If the tar.gz file does not exist, fetch it
@@ -214,7 +214,7 @@ arrow-download-source:
 
     # if the arrow dependency directory is empty of tar.gz, download the dependencies
     ifeq (,$(wildcard $(ARROW_DEP_DIR)/*.tar.gz))
-		rm -fr $(DEP_BUILD_DIR)/arrow_exports.sh 
+		rm -fr $(DEP_BUILD_DIR)/arrow_exports.sh
 		mkdir -p $(ARROW_DEP_DIR)
 		cd $(ARROW_BUILD_DIR)/cpp/thirdparty/ && ./download_dependencies.sh $(ARROW_DEP_DIR) > $(DEP_BUILD_DIR)/arrow_exports.sh
     endif
@@ -342,6 +342,22 @@ endif
 ifdef LD_LIBRARY_PATH
 CHPL_FLAGS += $(patsubst %,-L%,$(strip $(subst :, ,$(LD_LIBRARY_PATH))))
 endif
+
+#
+# Flags for Python interop: this is required for ApplyMsg to call into the Python interpreter
+#
+# Adds the include path for the Python.h header file
+CHPL_FLAGS += --ccflags -isystem$(shell python3 -c "import sysconfig; print(sysconfig.get_paths()['include'])")
+# Adds the library path for the Python shared library
+CHPL_FLAGS += -L$(shell python3 -c "import sysconfig; print(sysconfig.get_config_var('LIBDIR'))")
+CHPL_FLAGS += --ldflags -Wl,-rpath,$(shell python3 -c "import sysconfig; print(sysconfig.get_config_var('LIBDIR'))")
+# Adds the Python shared library to the list of libraries to link against
+CHPL_FLAGS += -lpython$(shell python3 -c "import sysconfig; print(sysconfig.get_config_var('LDVERSION'))")
+# Ignore warnings from the Python headers. This is irrelevant for newer Python versions
+CHPL_FLAGS += --ccflags -Wno-macro-redefined
+
+PYTHON_VERSION := $(shell python3 -c "import sys; print(*sys.version_info[:2], sep='.')")
+
 
 .PHONY: check-deps
 ifndef ARKOUDA_SKIP_CHECK_DEPS
@@ -488,7 +504,7 @@ VERSION=$(shell python3 -c "import versioneer; print(versioneer.get_versions()[\
 
 # Version needs to be escape-quoted for chpl to interpret as string
 CHPL_FLAGS_WITH_VERSION = $(CHPL_FLAGS)
-CHPL_FLAGS_WITH_VERSION += -sarkoudaVersion="\"$(VERSION)\""
+CHPL_FLAGS_WITH_VERSION += -sarkoudaVersion="\"$(VERSION)\"" -spythonVersion="\""$(PYTHON_VERSION)"\""
 
 ifdef ARKOUDA_PRINT_PASSES_FILE
 	PRINT_PASSES_FLAGS := --print-passes-file $(ARKOUDA_PRINT_PASSES_FILE)
@@ -513,8 +529,12 @@ ifeq ($(shell expr $(CHPL_MINOR) \= 2),1)
 	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/eq-22
 endif
 
-ifeq ($(shell expr $(CHPL_MINOR) \>= 3),1)
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/ge-23
+ifeq ($(shell expr $(CHPL_MINOR) \= 3),1)
+	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/eq-23
+endif
+
+ifeq ($(shell expr $(CHPL_MINOR) \>= 4),1)
+	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/ge-24
 endif
 
 ifeq ($(shell expr $(CHPL_MINOR) \>= 2),1)

@@ -108,7 +108,7 @@ setup(
     # and refuse to install the project if the version does not match. If you
     # do not support Python 2, you can simplify this to '>=3.5' or similar, see
     # https://packaging.python.org/guides/distributing-packages-using-setuptools/#python-requires
-    python_requires=">=3.9,<3.12.4",
+    python_requires=">=3.9,<=3.12.7",
     # This field lists other packages that your project depends on to run.
     # Any package you put here will be installed by pip when your project is
     # installed, so they must be valid existing projects.
@@ -130,6 +130,7 @@ setup(
         "tables>=3.8.0",
         "pyarrow",
         "scipy<=1.13.1",
+        "cloudpickle"
         # chapel-py
     ],
     # List additional groups of dependencies here (e.g. development
