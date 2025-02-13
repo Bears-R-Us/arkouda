@@ -130,6 +130,7 @@ setup(
         "tables>=3.8.0",
         "pyarrow",
         "scipy<=1.13.1",
+        "docutils==0.20.1",
         # chapel-py
     ],
     # List additional groups of dependencies here (e.g. development
