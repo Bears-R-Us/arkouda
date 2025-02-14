@@ -1010,7 +1010,6 @@ class TestNumeric:
                 assert check(npa, ppa, data_type)
 
     # transpose works on ints, floats, or bool
-
     @pytest.mark.parametrize("data_type", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_transpose(self, data_type, prob_size):
@@ -1186,7 +1185,7 @@ class TestNumeric:
             assert np.all(npfunc(sample) == akfunc(aksample).to_ndarray())
 
     def test_can_cast(self):
-        from arkouda.numpy import can_cast
+        from arkouda.numpy.dtypes import can_cast
 
         assert can_cast(np.int64(5), "uint64")
         assert can_cast(ak.int64, ak.int64)
