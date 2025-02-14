@@ -1,0 +1,19 @@
+.. default-domain:: chpl
+
+.. module:: ArkoudaJSONCompat
+
+ArkoudaJSONCompat
+=================
+**Usage**
+
+.. code-block:: chapel
+
+   use ArkoudaJSONCompat;
+
+
+or
+
+.. code-block:: chapel
+
+   import ArkoudaJSONCompat;
+

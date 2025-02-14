@@ -17,6 +17,7 @@ Functions
    arkouda.io.import_data
    arkouda.io.load
    arkouda.io.load_all
+   arkouda.io.load_checkpoint
    arkouda.io.ls
    arkouda.io.ls_csv
    arkouda.io.read
@@ -29,6 +30,7 @@ Functions
    arkouda.io.receive_dataframe
    arkouda.io.restore
    arkouda.io.save_all
+   arkouda.io.save_checkpoint
    arkouda.io.snapshot
    arkouda.io.to_csv
    arkouda.io.to_hdf
@@ -266,6 +268,36 @@ Module Contents
    This function will be deprecated when glob flags are added to read_* methods
 
    CSV files without the Arkouda Header are not supported.
+
+
+.. py:function:: load_checkpoint(name, path='.akdata')
+
+   Load server's state. The server metadata must match the current
+   configuration (e.g. same number of locales must be used).
+
+   :param name: Name of the checkpoint. ``<path>/<name>`` must be a directory.
+   :type name: str
+   :param path: The directory to save the checkpoint.
+   :type path: str
+
+   :returns: The checkpoint name, which will be the same as the ``name`` argument.
+   :rtype: str
+
+   .. rubric:: Examples
+
+   >>> arr = ak.zeros(10, int)
+   >>> arr[2] = 2
+   >>> arr[2]
+   2
+   >>> cp_name = ak.save_checkpoint()
+   >>> arr[2] = 3
+   >>> arr[2]
+   3
+   >>> ak.load_checkpoint(cp_name)
+   >>> arr[2]
+   2
+
+   .. seealso:: :obj:`save_checkpoint`
 
 
 .. py:function:: ls(filename: str, col_delim: str = ',', read_nested: bool = True) -> List[str]
@@ -750,6 +782,50 @@ Module Contents
    >>> ak.save_all({'a': a, 'b': b}, 'path/name_prefix', file_format='Parquet')
    >>> # Save using names instead of mapping
    >>> ak.save_all([a, b], 'path/name_prefix', names=['a', 'b'], file_format='Parquet')
+
+
+.. py:function:: save_checkpoint(name='', path='.akdata', mode: str = 'overwrite')
+
+   Save the server's state. Records some metadata about the server, and saves
+   all pdarrays into parquet files.
+
+   :param name: Name of the checkpoint. The default will be the server session ID, which
+                is typically in format ``id_<hash>_``. A directory will be created in
+                ``path`` with this name.
+   :type name: str
+   :param path: The directory to save the checkpoint. If the directory doesn't exist, it
+                will be created. If it exists, a new directory for the checkpoint
+                instance will be created inside this directory.
+   :type path: str
+   :param mode: By default, overwrite the checkpoint files if they exist.
+                If 'error', an error will be raised if a checkpoint with the same name
+                exists.
+   :type mode: {'overwrite' | 'error'}
+
+   .. rubric:: Notes
+
+   Only ``pdarray``s are saved. Other data structures will not be recorded. We
+   expect to expand the coverage in the future.
+
+   :returns: The checkpoint name, which will be the same as the ``name`` argument if
+             it was passed.
+   :rtype: str
+
+   .. rubric:: Examples
+
+   >>> arr = ak.zeros(10, int)
+   >>> arr[2] = 2
+   >>> arr[2]
+   2
+   >>> cp_name = ak.save_checkpoint()
+   >>> arr[2] = 3
+   >>> arr[2]
+   3
+   >>> ak.load_checkpoint(cp_name)
+   >>> arr[2]
+   2
+
+   .. seealso:: :obj:`load_checkpoint`
 
 
 .. py:function:: snapshot(filename)

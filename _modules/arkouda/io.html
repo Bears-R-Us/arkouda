@@ -402,6 +402,8 @@
     <span class="s2">&quot;restore&quot;</span><span class="p">,</span>
     <span class="s2">&quot;receive&quot;</span><span class="p">,</span>
     <span class="s2">&quot;receive_dataframe&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;save_checkpoint&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;load_checkpoint&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 <span class="n">ARKOUDA_HDF5_FILE_METADATA_GROUP</span> <span class="o">=</span> <span class="s2">&quot;_arkouda_metadata&quot;</span>
@@ -2435,6 +2437,117 @@
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid File Type detected, </span><span class="si">{</span><span class="n">ftype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="save_checkpoint">
+<a class="viewcode-back" href="../../autoapi/arkouda/io/index.html#arkouda.save_checkpoint">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">save_checkpoint</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;.akdata&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;overwrite&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Save the server&#39;s state. Records some metadata about the server, and saves</span>
+<span class="sd">    all pdarrays into parquet files.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name: str</span>
+<span class="sd">        Name of the checkpoint. The default will be the server session ID, which</span>
+<span class="sd">        is typically in format ``id_&lt;hash&gt;_``. A directory will be created in</span>
+<span class="sd">        ``path`` with this name.</span>
+<span class="sd">    path: str</span>
+<span class="sd">        The directory to save the checkpoint. If the directory doesn&#39;t exist, it</span>
+<span class="sd">        will be created. If it exists, a new directory for the checkpoint</span>
+<span class="sd">        instance will be created inside this directory.</span>
+<span class="sd">    mode : {&#39;overwrite&#39; | &#39;error&#39;}</span>
+<span class="sd">        By default, overwrite the checkpoint files if they exist.</span>
+<span class="sd">        If &#39;error&#39;, an error will be raised if a checkpoint with the same name</span>
+<span class="sd">        exists.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Only ``pdarray``s are saved. Other data structures will not be recorded. We</span>
+<span class="sd">    expect to expand the coverage in the future.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        The checkpoint name, which will be the same as the ``name`` argument if</span>
+<span class="sd">        it was passed.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; arr = ak.zeros(10, int)</span>
+<span class="sd">    &gt;&gt;&gt; arr[2] = 2</span>
+<span class="sd">    &gt;&gt;&gt; arr[2]</span>
+<span class="sd">    2</span>
+<span class="sd">    &gt;&gt;&gt; cp_name = ak.save_checkpoint()</span>
+<span class="sd">    &gt;&gt;&gt; arr[2] = 3</span>
+<span class="sd">    &gt;&gt;&gt; arr[2]</span>
+<span class="sd">    3</span>
+<span class="sd">    &gt;&gt;&gt; ak.load_checkpoint(cp_name)</span>
+<span class="sd">    &gt;&gt;&gt; arr[2]</span>
+<span class="sd">    2</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    ---------</span>
+<span class="sd">    load_checkpoint</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;overwrite&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;mode can be &#39;overwrite&#39; or &#39;error&#39; not </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                         <span class="n">mode</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;save_checkpoint&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+                                                              <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">path</span><span class="p">,</span>
+                                                              <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="n">mode</span><span class="p">}))</span></div>
+
+
+
+<div class="viewcode-block" id="load_checkpoint">
+<a class="viewcode-back" href="../../autoapi/arkouda/io/index.html#arkouda.load_checkpoint">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_checkpoint</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;.akdata&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load server&#39;s state. The server metadata must match the current</span>
+<span class="sd">    configuration (e.g. same number of locales must be used).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name: str</span>
+<span class="sd">        Name of the checkpoint. ``&lt;path&gt;/&lt;name&gt;`` must be a directory.</span>
+<span class="sd">    path: str</span>
+<span class="sd">        The directory to save the checkpoint.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        The checkpoint name, which will be the same as the ``name`` argument.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; arr = ak.zeros(10, int)</span>
+<span class="sd">    &gt;&gt;&gt; arr[2] = 2</span>
+<span class="sd">    &gt;&gt;&gt; arr[2]</span>
+<span class="sd">    2</span>
+<span class="sd">    &gt;&gt;&gt; cp_name = ak.save_checkpoint()</span>
+<span class="sd">    &gt;&gt;&gt; arr[2] = 3</span>
+<span class="sd">    &gt;&gt;&gt; arr[2]</span>
+<span class="sd">    3</span>
+<span class="sd">    &gt;&gt;&gt; ak.load_checkpoint(cp_name)</span>
+<span class="sd">    &gt;&gt;&gt; arr[2]</span>
+<span class="sd">    2</span>
+
+
+<span class="sd">    See Also</span>
+<span class="sd">    ---------</span>
+<span class="sd">    save_checkpoint</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Right now, we don&#39;t need to build objects on the client side.</span>
+    <span class="c1"># Checkpointing is only for the server state. But if we do, we&#39;ll need to</span>
+    <span class="c1"># return objects from the server and build them:</span>
+    <span class="c1">#</span>
+    <span class="c1"># rep = json.loads(rep_msg)</span>
+    <span class="c1"># ret = _build_objects(rep)</span>
+    <span class="k">return</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;load_checkpoint&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+                                                    <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">path</span><span class="p">})</span></div>
 
 
 

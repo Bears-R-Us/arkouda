@@ -390,41 +390,47 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io.load_all" title="arkouda.io.load_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_all</span></code></a>(→ Mapping[str, ...)</p></td>
 <td><p>Load multiple pdarrays, Strings, SegArrays, or Categoricals previously</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io.ls" title="arkouda.io.ls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls</span></code></a>(→ List[str])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io.load_checkpoint" title="arkouda.io.load_checkpoint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_checkpoint</span></code></a>(name[, path])</p></td>
+<td><p>Load server's state. The server metadata must match the current</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io.ls" title="arkouda.io.ls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls</span></code></a>(→ List[str])</p></td>
 <td><p>This function calls the h5ls utility on a HDF5 file visible to the</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io.ls_csv" title="arkouda.io.ls_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls_csv</span></code></a>(→ List[str])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io.ls_csv" title="arkouda.io.ls_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls_csv</span></code></a>(→ List[str])</p></td>
 <td><p>Used for identifying the datasets within a file when a CSV does not</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io.read" title="arkouda.io.read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read</span></code></a>(→ Union[Mapping[str, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io.read" title="arkouda.io.read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read</span></code></a>(→ Union[Mapping[str, ...)</p></td>
 <td><p>Read datasets from files.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io.read_csv" title="arkouda.io.read_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_csv</span></code></a>(→ Union[Mapping[str, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io.read_csv" title="arkouda.io.read_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_csv</span></code></a>(→ Union[Mapping[str, ...)</p></td>
 <td><p>Read CSV file(s) into Arkouda objects. If more than one dataset is found, the objects</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io.read_hdf" title="arkouda.io.read_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code></a>(→ Union[Mapping[str, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io.read_hdf" title="arkouda.io.read_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code></a>(→ Union[Mapping[str, ...)</p></td>
 <td><p>Read Arkouda objects from HDF5 file/s</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io.read_parquet" title="arkouda.io.read_parquet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_parquet</span></code></a>(→ Union[Mapping[str, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io.read_parquet" title="arkouda.io.read_parquet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_parquet</span></code></a>(→ Union[Mapping[str, ...)</p></td>
 <td><p>Read Arkouda objects from Parquet file/s</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io.read_tagged_data" title="arkouda.io.read_tagged_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_tagged_data</span></code></a>(filenames[, datasets, strictTypes, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io.read_tagged_data" title="arkouda.io.read_tagged_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_tagged_data</span></code></a>(filenames[, datasets, strictTypes, ...])</p></td>
 <td><p>Read datasets from files and tag each record to the file it was read from.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io.read_zarr" title="arkouda.io.read_zarr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_zarr</span></code></a>(store_path, ndim, dtype)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io.read_zarr" title="arkouda.io.read_zarr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_zarr</span></code></a>(store_path, ndim, dtype)</p></td>
 <td><p>Reads a Zarr store from disk into a pdarray. Supports multi-dimensional pdarrays of numeric types.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io.receive" title="arkouda.io.receive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">receive</span></code></a>(hostname, port)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io.receive" title="arkouda.io.receive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">receive</span></code></a>(hostname, port)</p></td>
 <td><p>Receive a pdarray sent by <cite>pdarray.transfer()</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io.receive_dataframe" title="arkouda.io.receive_dataframe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">receive_dataframe</span></code></a>(hostname, port)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io.receive_dataframe" title="arkouda.io.receive_dataframe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">receive_dataframe</span></code></a>(hostname, port)</p></td>
 <td><p>Receive a pdarray sent by <cite>dataframe.transfer()</cite>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io.restore" title="arkouda.io.restore"><code class="xref py py-obj docutils literal notranslate"><span class="pre">restore</span></code></a>(filename)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io.restore" title="arkouda.io.restore"><code class="xref py py-obj docutils literal notranslate"><span class="pre">restore</span></code></a>(filename)</p></td>
 <td><p>Return data saved using <cite>ak.snapshot</cite></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io.save_all" title="arkouda.io.save_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_all</span></code></a>(→ None)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io.save_all" title="arkouda.io.save_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_all</span></code></a>(→ None)</p></td>
 <td><p>DEPRECATED</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io.save_checkpoint" title="arkouda.io.save_checkpoint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_checkpoint</span></code></a>([name, path, mode])</p></td>
+<td><p>Save the server's state. Records some metadata about the server, and saves</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io.snapshot" title="arkouda.io.snapshot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">snapshot</span></code></a>(filename)</p></td>
 <td><p>Create a snapshot of the current Arkouda namespace. All currently accessible variables containing</p></td>
@@ -745,6 +751,45 @@ one or more of them</p></li>
 <p>This function has been updated to determine the file extension based on the file format variable</p>
 <p>This function will be deprecated when glob flags are added to read_* methods</p>
 <p>CSV files without the Arkouda Header are not supported.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.io.load_checkpoint">
+<span class="sig-prename descclassname"><span class="pre">arkouda.io.</span></span><span class="sig-name descname"><span class="pre">load_checkpoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.akdata'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/io.html#load_checkpoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.io.load_checkpoint" title="Link to this definition">¶</a></dt>
+<dd><p>Load server’s state. The server metadata must match the current
+configuration (e.g. same number of locales must be used).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the checkpoint. <code class="docutils literal notranslate"><span class="pre">&lt;path&gt;/&lt;name&gt;</span></code> must be a directory.</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – The directory to save the checkpoint.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The checkpoint name, which will be the same as the <code class="docutils literal notranslate"><span class="pre">name</span></code> argument.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="go">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cp_name</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">save_checkpoint</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="go">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">load_checkpoint</span><span class="p">(</span><span class="n">cp_name</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="go">2</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.io.save_checkpoint" title="arkouda.io.save_checkpoint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_checkpoint</span></code></a></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -1297,6 +1342,58 @@ is present or dataset names already exist, a RuntimeError is raised.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="arkouda.io.save_checkpoint">
+<span class="sig-prename descclassname"><span class="pre">arkouda.io.</span></span><span class="sig-name descname"><span class="pre">save_checkpoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.akdata'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'overwrite'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/io.html#save_checkpoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.io.save_checkpoint" title="Link to this definition">¶</a></dt>
+<dd><p>Save the server’s state. Records some metadata about the server, and saves
+all pdarrays into parquet files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the checkpoint. The default will be the server session ID, which
+is typically in format <code class="docutils literal notranslate"><span class="pre">id_&lt;hash&gt;_</span></code>. A directory will be created in
+<code class="docutils literal notranslate"><span class="pre">path</span></code> with this name.</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – The directory to save the checkpoint. If the directory doesn’t exist, it
+will be created. If it exists, a new directory for the checkpoint
+instance will be created inside this directory.</p></li>
+<li><p><strong>mode</strong> (<em>{'overwrite'</em><em> | </em><em>'error'}</em>) – By default, overwrite the checkpoint files if they exist.
+If ‘error’, an error will be raised if a checkpoint with the same name
+exists.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Only <a href="#id1"><span class="problematic" id="id2">``</span></a>pdarray``s are saved. Other data structures will not be recorded. We
+expect to expand the coverage in the future.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The checkpoint name, which will be the same as the <code class="docutils literal notranslate"><span class="pre">name</span></code> argument if
+it was passed.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="go">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cp_name</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">save_checkpoint</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="go">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">load_checkpoint</span><span class="p">(</span><span class="n">cp_name</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="go">2</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.io.load_checkpoint" title="arkouda.io.load_checkpoint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_checkpoint</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="arkouda.io.snapshot">
 <span class="sig-prename descclassname"><span class="pre">arkouda.io.</span></span><span class="sig-name descname"><span class="pre">snapshot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/io.html#snapshot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.io.snapshot" title="Link to this definition">¶</a></dt>
 <dd><p>Create a snapshot of the current Arkouda namespace. All currently accessible variables containing
@@ -1613,6 +1710,7 @@ creating a copy of the file for each dataset</p></li>
 <li><a class="reference internal" href="#arkouda.io.import_data"><code class="docutils literal notranslate"><span class="pre">import_data()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.io.load"><code class="docutils literal notranslate"><span class="pre">load()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.io.load_all"><code class="docutils literal notranslate"><span class="pre">load_all()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.io.load_checkpoint"><code class="docutils literal notranslate"><span class="pre">load_checkpoint()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.io.ls"><code class="docutils literal notranslate"><span class="pre">ls()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.io.ls_csv"><code class="docutils literal notranslate"><span class="pre">ls_csv()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.io.read"><code class="docutils literal notranslate"><span class="pre">read()</span></code></a></li>
@@ -1625,6 +1723,7 @@ creating a copy of the file for each dataset</p></li>
 <li><a class="reference internal" href="#arkouda.io.receive_dataframe"><code class="docutils literal notranslate"><span class="pre">receive_dataframe()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.io.restore"><code class="docutils literal notranslate"><span class="pre">restore()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.io.save_all"><code class="docutils literal notranslate"><span class="pre">save_all()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.io.save_checkpoint"><code class="docutils literal notranslate"><span class="pre">save_checkpoint()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.io.snapshot"><code class="docutils literal notranslate"><span class="pre">snapshot()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.io.to_csv"><code class="docutils literal notranslate"><span class="pre">to_csv()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.io.to_hdf"><code class="docutils literal notranslate"><span class="pre">to_hdf()</span></code></a></li>
