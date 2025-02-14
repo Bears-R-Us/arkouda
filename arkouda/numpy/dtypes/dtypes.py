@@ -42,6 +42,7 @@ __all__ = [
     "bitType",
     "bool_",
     "bool_scalars",
+    "can_cast",
     "complex128",
     "complex64",
     "dtype",
@@ -119,6 +120,36 @@ def dtype(dtype):
         return np.dtype(np.str_)
     else:
         return np.dtype(dtype)
+
+
+def can_cast(from_, to) -> builtins.bool:
+    """
+    Returns True if cast between data types can occur according to the casting rule.
+
+    Parameters
+    __________
+
+    from_: dtype, dtype specifier, NumPy scalar, or pdarray
+        Data type, NumPy scalar, or array to cast from.
+    to: dtype or dtype specifier
+        Data type to cast to.
+
+    Return
+    ------
+    bool
+        True if cast can occur according to the casting rule.
+
+    """
+    if isSupportedInt(from_):
+        if (from_ < 2**64) and (from_ >= 0) and (to == dtype(uint64)):
+            return True
+
+    if (
+        np.isscalar(from_) or _is_dtype_in_union(from_, numeric_scalars)
+    ) and not isinstance(from_, (int, float, complex)):
+        return np.can_cast(from_, to)
+
+    return False
 
 
 def _is_dtype_in_union(dtype, union_type) -> builtins.bool:
