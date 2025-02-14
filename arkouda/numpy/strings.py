@@ -2158,7 +2158,7 @@ class Strings:
             res[i] = np.str_(codecs.decode(b"".join(npvalues[o : o + l])))
         return res
 
-    def to_list(self) -> list:
+    def to_list(self) -> Any:
         """
         Convert the SegString to a list, transferring data from the
         arkouda server to Python. If the SegString exceeds a built-in size limit,
