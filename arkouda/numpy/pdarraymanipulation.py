@@ -143,7 +143,7 @@ def delete(
         else:
             raise ValueError("obj must be a slice, int, Sequence of int, Sequence of bool, or pdarray")
         _del = arange(start, stop, stride)
-    if _del.dtype == int and (shape[_axis] / max(_del.size, 1)) * slice_weight >= 100:
+    if _del.dtype == int and (shape[_axis] / max(int(_del.size), 1)) * slice_weight >= 100:
         alg_choice = "BulkCopy"
     else:
         alg_choice = "AggCopy"

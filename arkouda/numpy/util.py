@@ -438,11 +438,11 @@ def convert_bytes(nbytes: int_scalars, unit: Literal["B", "KB", "MB", "GB"] = "B
     if unit == "B":
         return nbytes
     elif unit == "KB":
-        return nbytes / kb
+        return float(nbytes / kb)
     elif unit == "MB":
-        return nbytes / mb
+        return float(nbytes / mb)
     elif unit == "GB":
-        return nbytes / gb
+        return float(nbytes / gb)
 
 
 def is_numeric(arry: Union[pdarray, Strings, Categorical, Series, Index]) -> builtins.bool:

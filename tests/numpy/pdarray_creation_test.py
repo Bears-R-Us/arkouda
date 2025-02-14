@@ -1026,12 +1026,12 @@ class TestPdarrayCreation:
             npa = aka.to_ndarray()
             assert np.allclose(a, npa)
 
-            a = a.newbyteorder().byteswap()
+            a = a.view(a.dtype.newbyteorder("S"))
             aka = ak.array(a)
             npa = aka.to_ndarray()
             assert np.allclose(a, npa)
 
-            a = a.newbyteorder().byteswap()
+            a = a.view(a.dtype.newbyteorder("S"))
             aka = ak.array(a)
             npa = aka.to_ndarray()
             assert np.allclose(a, npa)
