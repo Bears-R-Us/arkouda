@@ -119,6 +119,22 @@ def _merge_where(new_pda, where, ret):
     return new_pda
 
 
+def can_cast(from_, to) -> ak_bool:
+    from arkouda.util import is_int
+    from arkouda.numpy.dtypes import uint64 as ak_unit64
+    from arkouda.numpy.dtypes import _is_dtype_in_union
+    from arkouda.numpy.dtypes import isSupportedInt
+
+    if (np.isscalar(from_) or _is_dtype_in_union(from_, numeric_scalars)) and not isinstance(
+        from_, (int, float, complex)
+    ):
+        return np.can_cast(from_, to)
+    elif isSupportedInt(from_) and from_ >= 0 and to == ak_uint64:
+        return True
+
+    return False
+
+
 @typechecked
 def cast(
     pda: Union[pdarray, Strings, Categorical],  # type: ignore

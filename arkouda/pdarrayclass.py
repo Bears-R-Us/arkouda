@@ -571,11 +571,24 @@ class pdarray:
         # pdarray binop scalar
         # If scalar cannot be safely cast, server will infer the return dtype
         dt = resolve_scalar_dtype(other)
-        if self.dtype != bigint:# and np.can_cast(other, self.dtype, casting="unsafe"):
+
+        from arkouda.numpy._numeric import can_cast as ak_can_cast
+
+        print("\n**\ndt: ", dt)
+        print("other: ", other)
+        print("self.dtype: ", self.dtype)
+        print(
+            "ak_can_cast(other, self.dtype): ",
+            ak_can_cast(other, self.dtype),
+        )
+
+        if self.dtype != bigint and ak_can_cast(other, self.dtype):
             # If scalar can be losslessly cast to array dtype,
             # do the cast so that return array will have same dtype
             dt = self.dtype.name
             other = self.dtype.type(other)
+            print("new dt: ", dt)
+            print("neow other: ", other)
         if dt not in DTypes:
             raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")
         repMsg = generic_msg(
@@ -616,7 +629,9 @@ class pdarray:
         # pdarray binop scalar
         # If scalar cannot be safely cast, server will infer the return dtype
         dt = resolve_scalar_dtype(other)
-        if self.dtype != bigint :#and np.can_cast(other, self.dtype):
+        from arkouda.numpy._numeric import can_cast as ak_can_cast
+
+        if self.dtype != bigint and ak_can_cast(other, self.dtype):
             # If scalar can be losslessly cast to array dtype,
             # do the cast so that return array will have same dtype
             dt = self.dtype.name
@@ -4131,23 +4146,22 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
         )
     # TODO: handle shape broadcasting for multidimensional arrays
 
+    #   The code below creates a command string for fmod2vv, fmod2vs or fmod2sv.
 
-#   The code below creates a command string for fmod2vv, fmod2vs or fmod2sv.
-
-    if isinstance(dividend, pdarray) and isinstance(divisor, pdarray) :
+    if isinstance(dividend, pdarray) and isinstance(divisor, pdarray):
         cmdstring = f"fmod2vv<{dividend.dtype},{dividend.ndim},{divisor.dtype}>"
 
-    elif isinstance(dividend, pdarray) and not (isinstance(divisor, pdarray)) :
-        if resolve_scalar_dtype(divisor) in ['float64', 'int64', 'uint64', 'bool'] :
-            acmd = 'fmod2vs_'+resolve_scalar_dtype(divisor)
-        else :  # this condition *should* be impossible because of the isSupportedNumber check
+    elif isinstance(dividend, pdarray) and not (isinstance(divisor, pdarray)):
+        if resolve_scalar_dtype(divisor) in ["float64", "int64", "uint64", "bool"]:
+            acmd = "fmod2vs_" + resolve_scalar_dtype(divisor)
+        else:  # this condition *should* be impossible because of the isSupportedNumber check
             raise TypeError(f"Scalar divisor type {resolve_scalar_dtype(divisor)} not allowed in fmod")
         cmdstring = f"{acmd}<{dividend.dtype},{dividend.ndim}>"
 
-    elif not (isinstance(dividend, pdarray) and isinstance(divisor, pdarray)) :
-        if resolve_scalar_dtype(dividend) in ['float64', 'int64', 'uint64', 'bool'] :
-            acmd = 'fmod2sv_'+resolve_scalar_dtype(dividend)
-        else :  # this condition *should* be impossible because of the isSupportedNumber check
+    elif not (isinstance(dividend, pdarray) and isinstance(divisor, pdarray)):
+        if resolve_scalar_dtype(dividend) in ["float64", "int64", "uint64", "bool"]:
+            acmd = "fmod2sv_" + resolve_scalar_dtype(dividend)
+        else:  # this condition *should* be impossible because of the isSupportedNumber check
             raise TypeError(f"Scalar dividend type {resolve_scalar_dtype(dividend)} not allowed in fmod")
         cmdstring = f"{acmd}<{divisor.dtype},{divisor.ndim}>"  # type: ignore[union-attr]
 
@@ -4155,7 +4169,7 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
         m = mod(dividend, divisor)
         return _create_scalar_array(m)
 
-#   We reach here if this was any case other than scalar & scalar
+    #   We reach here if this was any case other than scalar & scalar
 
     return create_pdarray(
         cast(
