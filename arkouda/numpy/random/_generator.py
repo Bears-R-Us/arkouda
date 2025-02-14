@@ -580,7 +580,7 @@ class Generator:
         self._state += full_size * 2
         return create_pdarray(rep_msg)
 
-    def shuffle(self, x):
+    def shuffle(self, x, method="FisherYates"):
         """
         Randomly shuffle a pdarray in place.
 
@@ -605,6 +605,7 @@ class Generator:
                 "x": x,
                 "shape": x.shape,
                 "state": self._state,
+                "method": method.lower(),
             },
         )
         self._state += x.size
