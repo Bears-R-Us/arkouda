@@ -117,8 +117,20 @@ def dtype(dtype):
         return bigint()
     if isinstance(dtype, str) and dtype in ["Strings"]:
         return np.dtype(np.str_)
-    else:
-        return np.dtype(dtype)
+
+    if isinstance(dtype, int):
+        if 0 < dtype and dtype < 2**64:
+            return np.dtype(np.uint64)
+        elif dtype >= 2**64:
+            return bigint()
+        else:
+            return np.dtype(np.int64)
+    if isinstance(dtype, float):
+        return np.dtype(np.float64)
+    if isinstance(dtype, bool):
+        return np.dtype(np.bool)
+    return np.dtype(dtype)
+
 
 
 def _is_dtype_in_union(dtype, union_type) -> builtins.bool:
@@ -302,6 +314,7 @@ ARKOUDA_SUPPORTED_NUMBERS = (
 # TODO: bring supported data types into parity with all numpy dtypes
 # missing full support for: float32, int32, int16, int8, uint32, uint16, complex64, complex128
 # ARKOUDA_SUPPORTED_DTYPES = frozenset([member.value for _, member in DType.__members__.items()])
+<<<<<<< HEAD
 
 ARKOUDA_SUPPORTED_DTYPES = (
     bool_,
@@ -313,6 +326,21 @@ ARKOUDA_SUPPORTED_DTYPES = (
     uint8,
     bigint,
     str,
+=======
+ARKOUDA_SUPPORTED_DTYPES = frozenset(
+    [
+        "bool_",
+        "float",
+        "float64",
+        "int",
+        "int64",
+        "uint",
+        "uint64",
+        "uint8",
+        "bigint",
+        "str",
+    ]
+>>>>>>> 038ad1d6b (Closes #4098:  upgrade to numpy 2.0.0)
 )
 
 DTypes = frozenset([member.value for _, member in DType.__members__.items()])
@@ -497,6 +525,7 @@ def resolve_scalar_dtype(val: object) -> str:
         else:
             return "int64"
     # Python float or np.float*
+<<<<<<< HEAD
     elif isinstance(val, float) or (
         hasattr(val, "dtype") and cast(np.float_, val).dtype.kind == "f"
     ):
@@ -504,6 +533,11 @@ def resolve_scalar_dtype(val: object) -> str:
     elif isinstance(val, complex) or (
         hasattr(val, "dtype") and cast(np.float_, val).dtype.kind == "c"
     ):
+=======
+    elif isinstance(val, float) or (hasattr(val, "dtype") and cast(np.float64, val).dtype.kind == "f"):
+        return "float64"
+    elif isinstance(val, complex) or (hasattr(val, "dtype") and cast(np.float64, val).dtype.kind == "c"):
+>>>>>>> 038ad1d6b (Closes #4098:  upgrade to numpy 2.0.0)
         return "float64"  # TODO: actually support complex values in the backend
     elif isinstance(val, builtins.str) or isinstance(val, np.str_):
         return "str"
