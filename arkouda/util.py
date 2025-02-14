@@ -425,7 +425,7 @@ def convert_bytes(nbytes, unit="B"):
 
 
 def is_numeric(
-    arry: Union[pdarray, Strings, Categorical, "Series", "Index"]  # noqa: F821
+    arry: Union[pdarray, Strings, Categorical, "Series", "Index"],  # noqa: F821
 ) -> builtins.bool:
     """
     Check if the dtype of the given array is numeric.
