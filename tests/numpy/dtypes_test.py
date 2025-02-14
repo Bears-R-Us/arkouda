@@ -99,7 +99,15 @@ class TestDTypes:
         assert dtypes.dtype("bigint") == ak.arange(2**200, 2**200 + 10).dtype
 
     def test_isSupportedInt(self):
-        for supported in -10, 1, np.int64(1), np.int64(1.0), np.uint32(1), 2**63 + 1, 2**200:
+        for supported in (
+            -10,
+            1,
+            np.int64(1),
+            np.int64(1.0),
+            np.uint32(1),
+            2**63 + 1,
+            2**200,
+        ):
             assert dtypes.isSupportedInt(supported)
         for unsupported in 1.0, "1":
             assert not dtypes.isSupportedInt(unsupported)
