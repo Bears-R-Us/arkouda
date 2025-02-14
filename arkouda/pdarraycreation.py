@@ -275,7 +275,11 @@ def array(
             # early out if we would have more uint arrays than can fit in max_bits
             early_out = (max_bits // 64) + (max_bits % 64 != 0) if max_bits != -1 else float("inf")
             while any(a != 0) and len(uint_arrays) < early_out:
-                low, a = a % 2**64, a // 2**64
+                if isinstance(a, np.ndarray):
+                    #   numpy arrays do not support sizes > 2**64 so this is a short process.
+                    low, a = a, np.zeros_like(a)
+                else:
+                    low, a = a % 2**64, a // 2**64
                 uint_arrays.append(array(np.array(low, dtype=np.uint), dtype=akuint64))
             return bigint_from_uint_arrays(uint_arrays[::-1], max_bits=max_bits)
         except TypeError:
