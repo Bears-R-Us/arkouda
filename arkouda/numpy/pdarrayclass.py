@@ -169,6 +169,8 @@ def parse_single_value(msg: str) -> Union[numpy_scalars, int]:
 
     dtname, value = msg.split(maxsplit=1)
     mydtype = dtype(dtname)
+
+
     if mydtype == bigint:
         # we have to strip off quotes prior to 1.32
         if value[0] == '"':
@@ -196,6 +198,7 @@ def parse_single_value(msg: str) -> Union[numpy_scalars, int]:
                 uint_value = np.uint64(np.iinfo(np.uint64).max) - ak_uint64(value) + ak_uint64(1)
                 return uint_value
             return ak_uint64(value)
+
         return mydtype.type(value)
     except Exception:
         raise ValueError(f"unsupported value from server {mydtype.name} {value}")
@@ -601,7 +604,21 @@ class pdarray:
         # If scalar cannot be safely cast, server will infer the return dtype
         dt = resolve_scalar_dtype(other)
 
-        if self.dtype != bigint and np.can_cast(other, self.dtype):
+
+        from arkouda.numpy._numeric import can_cast as ak_can_cast
+
+        from arkouda.dtypes import int64 as ak_int64
+        from arkouda.dtypes import float64 as ak_float64
+
+        # if self.dtype != bigint and ak_can_cast(other, self.dtype):
+        if self.dtype == ak_uint64 and dtype(other) == ak_int64:
+            dt = "float64"
+            other = ak_float64(other)
+
+        elif self.dtype != bigint and ak_can_cast(other, self.dtype):
+            # If scalar can be losslessly cast to array dtype,
+            # do the cast so that return array will have same dtype
+
             dt = self.dtype.name
             other = self.dtype.type(other)
 
@@ -646,7 +663,10 @@ class pdarray:
         # If scalar cannot be safely cast, server will infer the return dtype
         dt = resolve_scalar_dtype(other)
 
-        if self.dtype != bigint and np.can_cast(other, self.dtype):
+        from arkouda.numpy._numeric import can_cast as ak_can_cast
+
+        if self.dtype != bigint and ak_can_cast(other, self.dtype):
+
             # If scalar can be losslessly cast to array dtype,
             # do the cast so that return array will have same dtype
             dt = self.dtype.name
@@ -929,6 +949,7 @@ class pdarray:
     # overload a[] to treat like list
     def __getitem__(self, key):
         if self.ndim == 1 and np.isscalar(key) and (resolve_scalar_dtype(key) in ["int64", "uint64"]):
+            print("\n\nCASE1\n\n")
             orig_key = key
             if key < 0:
                 # Interpret negative key as offset from end of array
@@ -4496,6 +4517,7 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
     #   The code below creates a command string for fmod2vv, fmod2vs or fmod2sv.
 
     if isinstance(dividend, pdarray) and isinstance(divisor, pdarray):
+
         if not (dividend.dtype.name == "float64" or divisor.dtype.name == "float64"):
             raise TypeError(
                 "At least one arg to fmod must be float. "
@@ -4530,6 +4552,7 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
                 + f"Got {scalar_dtype} and {divisor.dtype.name}"  # type: ignore[union-attr]
             )
         cmdstring = f"{acmd}<{divisor.dtype},{divisor.ndim}>"  # type: ignore[union-attr]
+
 
     return create_pdarray(
         cast(
