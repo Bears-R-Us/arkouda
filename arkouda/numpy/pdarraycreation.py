@@ -296,7 +296,10 @@ def array(
             # early out if we would have more uint arrays than can fit in max_bits
             early_out = (max_bits // 64) + (max_bits % 64 != 0) if max_bits != -1 else float("inf")
             while any(a != 0) and len(uint_arrays) < early_out:
-                low, a = a % 2**64, a // 2**64
+                if isinstance(a, np.ndarray):
+                    low, a = a.astype("O") % 2**64, a.astype("O") // 2**64
+                else:
+                    low, a = a % 2**64, a // 2**64
                 uint_arrays.append(array(np.array(low, dtype=np.uint), dtype=akuint64))
             return bigint_from_uint_arrays(uint_arrays[::-1], max_bits=max_bits)
         except TypeError:
@@ -321,6 +324,13 @@ def array(
         # than our numpy array we need to swap to match since the server expects
         # native endian bytes
         aview = _array_memview(a_)
+
+        server_byte_order = get_server_byteorder()
+        if (server_byte_order == "big" and a.dtype.byteorder == "<") or (
+            server_byte_order == "little" and a.dtype.byteorder == ">"
+        ):
+            a = a.view(a.dtype.newbyteorder("S")).byteswap()
+
         rep_msg = generic_msg(
             cmd=f"array<{a_.dtype.name},{ndim}>",
             args={"dtype": a_.dtype.name, "shape": tuple(a_.shape), "seg_string": False},
