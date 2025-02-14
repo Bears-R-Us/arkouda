@@ -11,6 +11,7 @@ import numpy as np
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
+from arkouda.dtypes import uint64 as ak_uint64
 from arkouda.infoclass import information, pretty_print_information
 from arkouda.logger import getArkoudaLogger
 from arkouda.numpy.dtypes import (
@@ -20,9 +21,15 @@ from arkouda.numpy.dtypes import (
     bigint,
 )
 from arkouda.numpy.dtypes import bool_ as akbool
-from arkouda.numpy.dtypes import bool_scalars, dtype
+from arkouda.numpy.dtypes import (
+    bool_scalars,
+    dtype,
+)
 from arkouda.numpy.dtypes import float64 as akfloat64
-from arkouda.numpy.dtypes import get_byteorder, get_server_byteorder
+from arkouda.numpy.dtypes import (
+    get_byteorder,
+    get_server_byteorder,
+)
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import (
     int_scalars,
@@ -149,6 +156,8 @@ def parse_single_value(msg: str) -> Union[numpy_scalars, int]:
 
     dtname, value = msg.split(maxsplit=1)
     mydtype = dtype(dtname)
+
+
     if mydtype == bigint:
         # we have to strip off quotes prior to 1.32
         if value[0] == '"':
@@ -166,6 +175,15 @@ def parse_single_value(msg: str) -> Union[numpy_scalars, int]:
         if mydtype == akstr_:
             # String value will always be surrounded with double quotes, so remove them
             return mydtype.type(unescape(value[1:-1]))
+
+        if mydtype == ak_uint64:
+            if get_server_byteorder() == "little":
+                if value.startswith("-"):
+                    value = value.strip("-")
+                    uint_value = np.iinfo(np.uint64).max - ak_uint64(value) + 1
+                    return mydtype.type(uint_value)
+                return mydtype.type(value)
+
         return mydtype.type(value)
     except Exception:
         raise ValueError(f"unsupported value from server {mydtype.name} {value}")
@@ -571,11 +589,23 @@ class pdarray:
         # pdarray binop scalar
         # If scalar cannot be safely cast, server will infer the return dtype
         dt = resolve_scalar_dtype(other)
-        if self.dtype != bigint and np.can_cast(other, self.dtype):
+
+        from arkouda.numpy._numeric import can_cast as ak_can_cast
+
+        from arkouda.dtypes import int64 as ak_int64
+        from arkouda.dtypes import float64 as ak_float64
+
+        # if self.dtype != bigint and ak_can_cast(other, self.dtype):
+        if self.dtype == ak_uint64 and dtype(other) == ak_int64:
+            dt = "float64"
+            other = ak_float64(other)
+
+        elif self.dtype != bigint and ak_can_cast(other, self.dtype):
             # If scalar can be losslessly cast to array dtype,
             # do the cast so that return array will have same dtype
             dt = self.dtype.name
             other = self.dtype.type(other)
+
         if dt not in DTypes:
             raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")
         repMsg = generic_msg(
@@ -616,7 +646,9 @@ class pdarray:
         # pdarray binop scalar
         # If scalar cannot be safely cast, server will infer the return dtype
         dt = resolve_scalar_dtype(other)
-        if self.dtype != bigint and np.can_cast(other, self.dtype):
+        from arkouda.numpy._numeric import can_cast as ak_can_cast
+
+        if self.dtype != bigint and ak_can_cast(other, self.dtype):
             # If scalar can be losslessly cast to array dtype,
             # do the cast so that return array will have same dtype
             dt = self.dtype.name
@@ -894,6 +926,7 @@ class pdarray:
     # overload a[] to treat like list
     def __getitem__(self, key):
         if self.ndim == 1 and np.isscalar(key) and (resolve_scalar_dtype(key) in ["int64", "uint64"]):
+            print("\n\nCASE1\n\n")
             orig_key = key
             if key < 0:
                 # Interpret negative key as offset from end of array
@@ -4131,23 +4164,22 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
         )
     # TODO: handle shape broadcasting for multidimensional arrays
 
+    #   The code below creates a command string for fmod2vv, fmod2vs or fmod2sv.
 
-#   The code below creates a command string for fmod2vv, fmod2vs or fmod2sv.
-
-    if isinstance(dividend, pdarray) and isinstance(divisor, pdarray) :
+    if isinstance(dividend, pdarray) and isinstance(divisor, pdarray):
         cmdstring = f"fmod2vv<{dividend.dtype},{dividend.ndim},{divisor.dtype}>"
 
-    elif isinstance(dividend, pdarray) and not (isinstance(divisor, pdarray)) :
-        if resolve_scalar_dtype(divisor) in ['float64', 'int64', 'uint64', 'bool'] :
-            acmd = 'fmod2vs_'+resolve_scalar_dtype(divisor)
-        else :  # this condition *should* be impossible because of the isSupportedNumber check
+    elif isinstance(dividend, pdarray) and not (isinstance(divisor, pdarray)):
+        if resolve_scalar_dtype(divisor) in ["float64", "int64", "uint64", "bool"]:
+            acmd = "fmod2vs_" + resolve_scalar_dtype(divisor)
+        else:  # this condition *should* be impossible because of the isSupportedNumber check
             raise TypeError(f"Scalar divisor type {resolve_scalar_dtype(divisor)} not allowed in fmod")
         cmdstring = f"{acmd}<{dividend.dtype},{dividend.ndim}>"
 
-    elif not (isinstance(dividend, pdarray) and isinstance(divisor, pdarray)) :
-        if resolve_scalar_dtype(dividend) in ['float64', 'int64', 'uint64', 'bool'] :
-            acmd = 'fmod2sv_'+resolve_scalar_dtype(dividend)
-        else :  # this condition *should* be impossible because of the isSupportedNumber check
+    elif not (isinstance(dividend, pdarray) and isinstance(divisor, pdarray)):
+        if resolve_scalar_dtype(dividend) in ["float64", "int64", "uint64", "bool"]:
+            acmd = "fmod2sv_" + resolve_scalar_dtype(dividend)
+        else:  # this condition *should* be impossible because of the isSupportedNumber check
             raise TypeError(f"Scalar dividend type {resolve_scalar_dtype(dividend)} not allowed in fmod")
         cmdstring = f"{acmd}<{divisor.dtype},{divisor.ndim}>"  # type: ignore[union-attr]
 
@@ -4155,7 +4187,7 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
         m = mod(dividend, divisor)
         return _create_scalar_array(m)
 
-#   We reach here if this was any case other than scalar & scalar
+    #   We reach here if this was any case other than scalar & scalar
 
     return create_pdarray(
         cast(
