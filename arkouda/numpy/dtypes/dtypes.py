@@ -93,19 +93,32 @@ def _datatype_check(the_dtype, allowed_list, name):
         raise TypeError(f"{name} only implements types {allowed_list}")
 
 
-def dtype(x):
+def dtype(dtype):
+    """
+    Create a data type object.
+
+    Parameters
+    ----------
+    dtype: object
+        Object to be converted to a data type object.
+
+    Returns
+    -------
+    type
+
+    """
     # we had to create our own bigint type since numpy
     # gives them dtype=object there's no np equivalent
     if (
-        (isinstance(x, str) and x == "bigint")
-        or isinstance(x, bigint)
-        or (hasattr(x, "name") and x.name == "bigint")
+        (isinstance(dtype, str) and dtype == "bigint")
+        or isinstance(dtype, bigint)
+        or (hasattr(dtype, "name") and dtype.name == "bigint")
     ):
         return bigint()
-    if isinstance(x, str) and x in ["Strings"]:
+    if isinstance(dtype, str) and dtype in ["Strings"]:
         return np.dtype(np.str_)
     else:
-        return np.dtype(x)
+        return np.dtype(dtype)
 
 
 def _is_dtype_in_union(dtype, union_type) -> builtins.bool:
@@ -142,6 +155,12 @@ def _val_isinstance_of_union(val, union_type) -> builtins.bool:
 
 
 class bigint:
+    """
+    Datatype for representing integers of variable size.
+
+    May be used for integers that exceed 64 bits.
+    """
+
     # an estimate of the itemsize of bigint (128 bytes)
     itemsize = 128
     name = "bigint"
@@ -283,13 +302,24 @@ ARKOUDA_SUPPORTED_NUMBERS = (
 # TODO: bring supported data types into parity with all numpy dtypes
 # missing full support for: float32, int32, int16, int8, uint32, uint16, complex64, complex128
 # ARKOUDA_SUPPORTED_DTYPES = frozenset([member.value for _, member in DType.__members__.items()])
-ARKOUDA_SUPPORTED_DTYPES = frozenset(
-    ["bool_", "float", "float64", "int", "int64", "uint", "uint64", "uint8", "bigint", "str"]
+
+ARKOUDA_SUPPORTED_DTYPES = (
+    bool_,
+    float,
+    float64,
+    int,
+    int64,
+    uint64,
+    uint8,
+    bigint,
+    str,
 )
 
 DTypes = frozenset([member.value for _, member in DType.__members__.items()])
 DTypeObjects = frozenset([bool_, float, float64, int, int64, str, str_, uint8, uint64])
-NumericDTypes = frozenset(["bool_", "bool", "float", "float64", "int", "int64", "uint64", "bigint"])
+NumericDTypes = frozenset(
+    ["bool_", "bool", "float", "float64", "int", "int64", "uint64", "bigint"]
+)
 SeriesDTypes = {
     "string": np.str_,
     "<class 'str'>": np.str_,
@@ -307,28 +337,146 @@ ScalarDTypes = frozenset(["bool_", "float64", "int64"])
 
 
 def isSupportedInt(num):
+    """
+    Whether a scalar is an arkouda supported integer dtype.
+
+    Parameters
+    ----------
+    scalar: object
+
+    Returns
+    -------
+    bool
+        True if scalar is an instance of an arkouda supported integer dtype, else False.
+
+    Examples
+    --------
+    >>> ak.isSupportedInt(ak.int64)
+    True
+    >>> ak.isSupportedInt(ak.float64)
+    False
+
+    """
     return isinstance(num, ARKOUDA_SUPPORTED_INTS)
 
 
 def isSupportedFloat(num):
+    """
+    Whether a scalar is an arkouda supported float dtype.
+
+    Parameters
+    ----------
+    scalar: object
+
+    Returns
+    -------
+    bool
+        True if scalar is an instance of an arkouda supported float dtype, else False.
+
+    Examples
+    --------
+    >>> ak.isSupportedFloat(ak.int64)
+    False
+    >>> ak.isSupportedFloat(ak.float64)
+    True
+
+    """
     return isinstance(num, ARKOUDA_SUPPORTED_FLOATS)
 
 
 def isSupportedNumber(num):
+    """
+    Whether a scalar is an arkouda supported numeric dtype.
+
+    Parameters
+    ----------
+    scalar: object
+
+    Returns
+    -------
+    bool
+        True if scalar is an instance of an arkouda supported numeric dtype, else False.
+
+    Examples
+    --------
+    >>> ak.isSupportedNumber(ak.int64)
+    True
+    >>> ak.isSupportedNumber(ak.str_)
+    False
+
+    """
     return isinstance(num, ARKOUDA_SUPPORTED_NUMBERS)
 
 
 def isSupportedBool(num):
+    """
+    Whether a scalar is an arkouda supported boolean dtype.
+
+    Parameters
+    ----------
+    scalar: object
+
+    Returns
+    -------
+    bool
+        True if scalar is an instance of an arkouda supported boolean dtype, else False.
+
+    Examples
+    --------
+    >>> ak.isSupportedBool(ak.int64)
+    False
+    >>> ak.isSupportedBool(bool)
+    True
+
+    """
     return isinstance(num, ARKOUDA_SUPPORTED_BOOLS)
 
 
-def isSupportedDType(scalar):
+def isSupportedDType(scalar: object) -> bool:
+    """
+    Whether a scalar is an arkouda supported dtype.
+
+    Parameters
+    ----------
+    scalar: object
+
+    Returns
+    -------
+    bool
+        True if scalar is an instance of an arkouda supported dtype, else False.
+
+    Examples
+    --------
+    >>> ak.isSupportedDType(ak.int64)
+    True
+    >>> ak.isSupportedDType(np.complex128(1+2j))
+    False
+
+    """
     return isinstance(scalar, ARKOUDA_SUPPORTED_DTYPES)
 
 
 def resolve_scalar_dtype(val: object) -> str:
     """
     Try to infer what dtype arkouda_server should treat val as.
+
+    Parameters
+    ----------
+    val: object
+        The object to determine the dtype of.
+
+    Return
+    ------
+    str
+        The dtype name, if it can be resolved, otherwise the type (as str).
+
+    Examples
+    --------
+    >>> ak.resolve_scalar_dtype(1)
+    'int64'
+    >>> ak.resolve_scalar_dtype(2.0)
+    'float64'
+
     """
 
     # Python bool or np.bool
@@ -337,7 +485,9 @@ def resolve_scalar_dtype(val: object) -> str:
     ):
         return "bool"
     # Python int or np.int* or np.uint*
-    elif isinstance(val, int) or (hasattr(val, "dtype") and cast(np.uint, val).dtype.kind in "ui"):
+    elif isinstance(val, int) or (
+        hasattr(val, "dtype") and cast(np.uint, val).dtype.kind in "ui"
+    ):
         # we've established these are int, uint, or bigint,
         # so we can do comparisons
         if isSupportedInt(val) and val >= 2**64:  # type: ignore
@@ -347,9 +497,13 @@ def resolve_scalar_dtype(val: object) -> str:
         else:
             return "int64"
     # Python float or np.float*
-    elif isinstance(val, float) or (hasattr(val, "dtype") and cast(np.float_, val).dtype.kind == "f"):
+    elif isinstance(val, float) or (
+        hasattr(val, "dtype") and cast(np.float_, val).dtype.kind == "f"
+    ):
         return "float64"
-    elif isinstance(val, complex) or (hasattr(val, "dtype") and cast(np.float_, val).dtype.kind == "c"):
+    elif isinstance(val, complex) or (
+        hasattr(val, "dtype") and cast(np.float_, val).dtype.kind == "c"
+    ):
         return "float64"  # TODO: actually support complex values in the backend
     elif isinstance(val, builtins.str) or isinstance(val, np.str_):
         return "str"
@@ -363,7 +517,28 @@ def resolve_scalar_dtype(val: object) -> str:
 
 def get_byteorder(dt: np.dtype) -> str:
     """
-    Get a concrete byteorder (turns '=' into '<' or '>')
+    Get a concrete byteorder (turns '=' into '<' or '>') on the client.
+
+    Parameters
+    ----------
+    dt: np.dtype
+        The numpy dtype to determine the byteorder of.
+
+    Return
+    ------
+    str
+        Returns "<" for little endian and ">" for big endian.
+
+    Raises
+    ------
+    ValueError
+        Returned if sys.byteorder is not "little" or "big"
+
+    Examples
+    --------
+    >>> ak.get_byteorder(ak.dtype(ak.int64))
+    '<'
+
     """
     if dt.byteorder == "=":
         if sys.byteorder == "little":
@@ -379,6 +554,22 @@ def get_byteorder(dt: np.dtype) -> str:
 def get_server_byteorder() -> str:
     """
     Get the server's byteorder
+
+    Return
+    ------
+    str
+        Returns "little" for little endian and "big" for big endian.
+
+    Raises
+    ------
+    ValueError
+        Raised if Server byteorder is not 'little' or 'big'
+
+    Examples
+    --------
+    >>> ak.get_server_byteorder()
+    'little'
+
     """
     from arkouda.client import get_config
 
