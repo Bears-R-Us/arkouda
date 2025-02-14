@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union, cast
 
 import numpy as np
 import pandas as pd
@@ -473,7 +473,7 @@ class Series:
         """
         from arkouda.util import convert_bytes
 
-        v = convert_bytes(self.values.nbytes, unit=unit)
+        v = cast(int, convert_bytes(self.values.nbytes, unit=unit))
         if index:
             v += self.index.memory_usage(unit=unit)
         return v
