@@ -36,8 +36,8 @@ class TestSetOps:
             a = np.array([-1, 0, 1, 3]).astype(dtype)
             b = np.array([-1, 2, 2, 3]).astype(dtype)
         elif dtype == ak.bigint:
-            a = np.array([-1, 0, 1, 3]).astype(ak.uint64) + 2**200
-            b = np.array([-1, 2, 2, 3]).astype(ak.uint64) + 2**200
+            a = np.array([i + 2**200 for i in [-1, 0, 1, 3]])
+            b = np.array([i + 2**200 for i in [-1, 2, 2, 3]])
         elif dtype == ak.bool_:
             a = np.array([True, False, False, True]).astype(dtype)
             b = np.array([True, True, False, False]).astype(dtype)
@@ -51,8 +51,8 @@ class TestSetOps:
             a = np.array([-1, -3, 0, 1, 2, 3]).astype(dtype1)
             c = np.array([-1, 0, 0, 7, 8, 3]).astype(dtype1)
         elif dtype1 == ak.bigint:
-            a = np.array([-1, -3, 0, 1, 2, 3]).astype(ak.uint64) + 2**200
-            c = np.array([-1, 0, 0, 7, 8, 3]).astype(ak.uint64) + 2**200
+            a = np.array([i + 2**200 for i in [-1, -3, 0, 1, 2, 3]])
+            c = np.array([i + 2**200 for i in [-1, 0, 0, 7, 8, 3]])
         elif dtype1 == ak.bool_:
             a = np.array([True, False, False, True, True])
             c = np.array([True, True, False, False, True])
@@ -63,8 +63,8 @@ class TestSetOps:
             b = np.array([-1, -11, 0, 4, 5, 3]).astype(dtype2)
             d = np.array([-1, -4, 0, 7, 8, 3]).astype(dtype2)
         elif dtype2 == ak.bigint:
-            b = np.array([-1, -11, 0, 4, 5, 3]).astype(ak.uint64) + 2**200
-            d = np.array([-1, -4, 0, 7, 8, 3]).astype(ak.uint64) + 2**200
+            b = np.array([i + 2**200 for i in [-1, -11, 0, 4, 5, 3]])
+            d = np.array([i + 2**200 for i in [-1, -4, 0, 7, 8, 3]])
         elif dtype2 == ak.bool_:
             b = np.array([True, True, False, False, True])
             d = np.array([True, True, False, False, True])
