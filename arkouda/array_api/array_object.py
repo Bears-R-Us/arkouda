@@ -982,6 +982,15 @@ class Array:
     def T(self) -> Array:
         raise ValueError("Not implemented")
 
+    def astype(self, dtype) -> Array:
+        return Array._new(self._array.astype(dtype))
+
+    def __len__(self) -> int:
+        return self.size
+
+    def reshape(self, *args) -> Array:
+        return Array._new(self._array.reshape(*args))
+
 
 def implements_numpy(numpy_function):
     """Register an __array_function__ implementation for MyArray objects."""
