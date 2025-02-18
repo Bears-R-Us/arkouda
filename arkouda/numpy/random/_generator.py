@@ -519,6 +519,68 @@ class Generator:
             return self._np_generator.random()
         return self.uniform(size=size)
 
+    def standard_gamma(self, shape, size=None):
+        r"""
+        Draw samples from a standard gamma distribution.
+
+        Samples are drawn from a Gamma distribution with specified parameters,
+        shape (sometimes designated “k”) and scale (sometimes designated “theta”),
+        where both parameters are > 0.
+
+        Parameters
+        ----------
+        shape: numeric_scalars
+            specified parameter (sometimes designated “k”)
+        size: numeric_scalars, optional
+            Output shape. Default is None, in which case a single value is returned.
+
+        Returns
+        -------
+        pdarray
+            Pdarray of floats (unless size=None, in which case a single float is returned).
+
+        Notes
+        -----
+        The probability density function for the Gamma distribution is
+        .. math::
+            p(x) = x^{k-1}\frac{e^{\frac{-x}{\theta}}}{\theta^k\Gamma(k)}
+
+        Examples
+        --------
+        >>> rng = ak.random.default_rng()
+        >>> rng.rng.standard_gamma(1)
+        0.8729704388729135 # random
+        >>> rng.standard_gamma(1, size=3)
+        array([0.4879818539586227 0.6534654349920751 0.40990997253631162]) # random
+        """  # noqa: W605
+        from arkouda.util import _infer_shape_from_size
+
+        if size is None:
+            # delegate to numpy when return size is 1
+            return self._np_generator.standard_gamma(shape=shape)
+
+        # rename shape to avoid conflict, it's also referred to as k
+        # in the numpy doc string
+        is_single_k, k_arg = float_array_or_scalar_helper("gamma", "shape", shape, size)
+
+        shape, ndim, full_size = _infer_shape_from_size(size)
+        if full_size < 0:
+            raise ValueError("The size parameter must be > 0")
+
+        rep_msg = generic_msg(
+            cmd=f"standardGamma<{ndim}>",
+            args={
+                "name": self._name_dict[akdtype("float64")],
+                "size": shape,
+                "is_single_k": is_single_k,
+                "k_arg": k_arg,
+                "has_seed": self._seed is not None,
+                "state": self._state,
+            },
+        )
+        self._state += 1
+        return create_pdarray(rep_msg)
+
     def standard_normal(self, size=None, method="zig"):
         r"""
         Draw samples from a standard Normal distribution (mean=0, stdev=1).

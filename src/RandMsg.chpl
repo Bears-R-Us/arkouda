@@ -438,6 +438,81 @@ module RandMsg
         }
     }
 
+    inline proc gammaGenerator(kArg: real, ref rs) throws {
+        if kArg == 1.0 {
+            return standardExponentialInvCDF(1, rs)[0];
+        }
+        else if kArg == 0.0 {
+            return 0.0;
+        }
+        else if kArg < 1.0 {
+            var count = 0;
+            while count < 10000 do {
+                var U = rs.next(0, 1);
+                var V = standardExponentialInvCDF(1, rs)[0];
+                if U <= (1.0 - kArg) {
+                    var X = U ** (1.0 / kArg);
+                    if X <= V {
+                        return X;
+                    }
+                }
+                else {
+                    var Y = -log((1.0 - U) / kArg);
+                    var X = (1.0 - kArg + kArg * Y) ** (1.0 / kArg);
+                    if X <= (V + Y) {
+                        return X;
+                    }
+                }
+                count+= 1;
+            }
+            return -1.0;  // we failed 10000 times in a row which should practically never happen
+        }
+        else {
+            var b = kArg - 1/3.0;
+            var c = 1/sqrt(9.0 * b);
+            var count = 0;
+            while count < 10000 do{
+                var V = -1.0;
+                var X = 0.0;
+                while V <= 0 do {
+                    X = standardNormBoxMuller(1, rs)[0];
+                    V = 1.0 + c * X;
+                }
+                V = V * V * V;
+                var U = rs.next(0, 1);
+                if U < 1.0 - 0.0331 * (X * X) * (X * X) {
+                    return b * V;
+                }
+                if log(U) < 0.5 * X * X + b * (1.0 - V + log(V)) {
+                    return b * V;
+                }
+            }
+            return -1.0;  // we failed 10000 times in a row which should practically never happen
+        }
+    }
+
+    @arkouda.instantiateAndRegister
+    proc standardGamma(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd): MsgTuple throws {
+        const name = msgArgs["name"],
+              shape = msgArgs["size"].toScalarTuple(int, array_nd),
+              isSingleK = msgArgs["is_single_k"].toScalar(bool),
+              kStr = msgArgs["k_arg"].toScalar(string),
+              hasSeed = msgArgs["has_seed"].toScalar(bool),
+              state = msgArgs["state"].toScalar(int);
+
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "name: %? shape %? k %s state %i".format(name, shape, kStr, state));
+
+        var generatorEntry = st[name]: borrowed GeneratorSymEntry(real);
+        ref rng = generatorEntry.generator;
+        if state != 1 then rng.skipTo(state-1);
+        //state used to be shape
+        var gammaArr = makeDistArray((...shape), real);
+        const kArg = new scalarOrArray(kStr, !isSingleK, st);
+        uniformStreamPerElem(gammaArr, rng, GenerationFunction.GammaGenerator, hasSeed, kArg=kArg);
+        return st.insert(createSymEntry(gammaArr));
+    }
+
     proc segmentedSampleMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         const genName = msgArgs["genName"],                                 // generator name
               permName = msgArgs["perm"],                                   // values array name
