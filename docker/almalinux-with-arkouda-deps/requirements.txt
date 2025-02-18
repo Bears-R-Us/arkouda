@@ -10,7 +10,7 @@ h5py>=3.7.0
 types-tabulate
 pyarrow
 jupyter
-scipy<=1.13.1
+scipy
 pytest>=6.0
 pytest-env
 pexpect
@@ -23,7 +23,6 @@ sphinx-autopackagesummary
 furo
 myst-parser
 linkify-it-py
-typed-ast
 flake8
 mypy>=0.931
 black

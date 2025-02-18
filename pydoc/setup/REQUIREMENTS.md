@@ -17,7 +17,7 @@ The installation instructions for the dependencies listed here may vary dependin
 
 The following python packages are required by the Arkouda client package.
 
-- `python>=3.9,<3.12.4`
+- `python>=3.9`
 - `numpy>=1.24.1,<2.0`
 - `pandas>=1.4.0,!=2.2.0`
 - `pyzmq>=20.0.0`
@@ -35,7 +35,7 @@ The following python packages are required by the Arkouda client package.
 - `libiconv`
 - `libidn2`
 - `jupyter`
-- `scipy<=1.13.1`
+- `scipy`
 - `pytest>=6.0`
 - `pytest-env`
 - `chapel-py` (to be installed manually, as it is shipped with Chapel)
@@ -54,7 +54,6 @@ The dependencies listed here are only required if you will be doing development 
 - `furo`
 - `myst-parser`
 - `linkify-it-py`
-- `typed-ast`
 - `flake8`
 - `mypy>=0.931`
 - `black`
