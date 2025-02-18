@@ -16,7 +16,7 @@ module Histogram
       return aMin <= val && val <= aMax;
     }
 
-    /* Helper: computes the 1-d bin number for the value, assuing it is within the range. */
+    /* Helper: computes the 1-d bin number for the value, assuming it is within the range. */
     inline proc histValToBin(val, aMin, aMax, numBins, binWidth): int {
       return if val == aMax then numBins-1 else ((val - aMin) / binWidth): int;
     }
