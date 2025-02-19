@@ -2,7 +2,7 @@ import pytest
 
 import arkouda as ak
 from arkouda.categorical import Categorical
-from arkouda.testing import assert_equal
+from arkouda.testing import assert_arkouda_array_equivalent, assert_equal
 
 seed = pytest.seed
 
@@ -87,3 +87,72 @@ class TestNumpyManipulationFunctions:
 
         z = ak.array([[[1]]])
         assert_equal(ak.squeeze(z), ak.array([1]))
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64])
+    def test_tile_pdarray(self, size, dtype):
+        import numpy as np
+
+        a = ak.arange(size, dtype=dtype)
+        np_a = np.arange(size, dtype=dtype)
+        f = ak.tile(a, 2)
+        np_f = np.tile(np_a, 2)
+        assert_arkouda_array_equivalent(np_f, f)
+
+    @pytest.mark.skip_if_rank_not_compiled([3])
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", [ak.int64, ak.uint64, ak.float64])
+    def test_tile_multi_dim(self, size, dtype):
+        import numpy as np
+
+        a = ak.arange(size * 4, dtype=dtype).reshape((2, 2, size))
+        np_a = np.arange(size * 4, dtype=dtype).reshape((2, 2, size))
+        f = ak.tile(a, 3)
+        np_f = np.tile(np_a, 3)
+        assert_arkouda_array_equivalent(np_f, f)
+        f = ak.tile(a, (2, 3))
+        np_f = np.tile(np_a, (2, 3))
+        assert_arkouda_array_equivalent(np_f, f)
+        f = ak.tile(a, (2, 2, 2))
+        np_f = np.tile(np_a, (2, 2, 2))
+        assert_arkouda_array_equivalent(np_f, f)
+        a = ak.arange(size, dtype=dtype)
+        np_a = np.arange(size, dtype=dtype)
+        f = ak.tile(a, (2, 2, 2))
+        np_f = np.tile(np_a, (2, 2, 2))
+        assert_arkouda_array_equivalent(np_f, f)
+        f = ak.tile(a, (2, 2, 1))
+        np_f = np.tile(np_a, (2, 2, 1))
+        assert_arkouda_array_equivalent(np_f, f)
+        f = ak.tile(a, (2, 1, 2))
+        np_f = np.tile(np_a, (2, 1, 2))
+        assert_arkouda_array_equivalent(np_f, f)
+        f = ak.tile(a, (1, 2, 2))
+        np_f = np.tile(np_a, (1, 2, 2))
+        assert_arkouda_array_equivalent(np_f, f)
+
+    @pytest.mark.skip_if_rank_not_compiled([2])
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", [ak.int64, ak.uint64, ak.float64])
+    def test_tile_multi_dim_bool(self, size, dtype):
+        import numpy as np
+
+        a = ak.arange(size * 2, dtype=dtype).reshape((2, size))
+        np_a = np.arange(size * 2, dtype=dtype).reshape((2, size))
+        f = ak.tile(a, 3)
+        np_f = np.tile(np_a, 3)
+        assert_arkouda_array_equivalent(np_f, f)
+        f = ak.tile(a, (2, 3))
+        np_f = np.tile(np_a, (2, 3))
+        assert_arkouda_array_equivalent(np_f, f)
+        a = ak.arange(size, dtype=dtype)
+        np_a = np.arange(size, dtype=dtype)
+        f = ak.tile(a, (2, 2))
+        np_f = np.tile(np_a, (2, 2))
+        assert_arkouda_array_equivalent(np_f, f)
+        f = ak.tile(a, (2, 1))
+        np_f = np.tile(np_a, (2, 1))
+        assert_arkouda_array_equivalent(np_f, f)
+        f = ak.tile(a, (2, 1))
+        np_f = np.tile(np_a, (2, 1))
+        assert_arkouda_array_equivalent(np_f, f)
