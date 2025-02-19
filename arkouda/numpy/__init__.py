@@ -98,3 +98,4 @@ from arkouda.numpy.rec import *
 from ._numeric import *
 from ._utils import *
 from ._manipulation_functions import *
+from .pdarrayclass import *
