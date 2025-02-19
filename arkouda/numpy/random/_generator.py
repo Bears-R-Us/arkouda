@@ -9,7 +9,7 @@ from arkouda.numpy.dtypes import float64 as akfloat64
 from arkouda.numpy.dtypes import float_scalars
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import int_scalars, numeric_scalars
-from arkouda.pdarrayclass import create_pdarray, pdarray
+from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 
 
 class Generator:

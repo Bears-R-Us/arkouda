@@ -31,9 +31,9 @@ from arkouda.numpy.dtypes import float64 as akfloat64
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import numeric_scalars
 from arkouda.numpy.dtypes import uint64 as akuint64
-from arkouda.pdarrayclass import RegistrationError, pdarray
-from arkouda.pdarraycreation import arange, array, create_pdarray, full, zeros
-from arkouda.pdarraysetops import concatenate, in1d, intersect1d
+from arkouda.numpy.pdarrayclass import RegistrationError, pdarray
+from arkouda.numpy.pdarraycreation import arange, array, create_pdarray, full, zeros
+from arkouda.numpy.pdarraysetops import concatenate, in1d, intersect1d
 from arkouda.row import Row
 from arkouda.segarray import SegArray
 from arkouda.series import Series

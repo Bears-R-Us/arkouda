@@ -3380,7 +3380,7 @@ def divmod(
     """
     from arkouda.numpy import cast as akcast
     from arkouda.numpy import where as akwhere
-    from arkouda.pdarraycreation import full
+    from arkouda.numpy.pdarraycreation import full
 
     if not isinstance(x, pdarray) and not isinstance(y, pdarray):
         raise TypeError("At least one entry must be a pdarray.")
@@ -3737,7 +3737,7 @@ def clz(pda: pdarray) -> pdarray:
         if pda.max_bits == -1:
             raise ValueError("max_bits must be set to count leading zeros")
         from arkouda.numpy import where
-        from arkouda.pdarraycreation import zeros
+        from arkouda.numpy.pdarraycreation import zeros
 
         uint_arrs = pda.bigint_to_uint_arrays()
 
@@ -3822,7 +3822,7 @@ def ctz(pda: pdarray) -> pdarray:
         # which is only relevant when ctz(0) which is defined to be 0
 
         from arkouda.numpy import where
-        from arkouda.pdarraycreation import zeros
+        from arkouda.numpy.pdarraycreation import zeros
 
         # reverse the list, so we visit low bits first
 

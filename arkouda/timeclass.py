@@ -14,8 +14,8 @@ from arkouda.client import generic_msg
 from arkouda.numpy import abs as akabs
 from arkouda.numpy import cast
 from arkouda.numpy.dtypes import int64, int_scalars, intTypes, isSupportedInt
-from arkouda.pdarrayclass import RegistrationError, create_pdarray, pdarray
-from arkouda.pdarraycreation import from_series
+from arkouda.numpy.pdarrayclass import RegistrationError, create_pdarray, pdarray
+from arkouda.numpy.pdarraycreation import from_series
 
 _BASE_UNIT = "ns"
 

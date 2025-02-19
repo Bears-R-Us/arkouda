@@ -13,7 +13,7 @@ import arkouda as ak
 from arkouda import io_util
 from arkouda.numpy.dtypes import dtype
 from arkouda.index import Index
-from arkouda.pdarrayclass import pdarray
+from arkouda.numpy.pdarrayclass import pdarray
 from arkouda.testing import assert_index_equal
 from arkouda.testing import assert_index_equal as ak_assert_index_equal
 

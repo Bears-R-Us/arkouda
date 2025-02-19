@@ -4,7 +4,7 @@ from .array_object import Array
 from typing import Optional
 
 from arkouda.client import generic_msg
-from arkouda.pdarrayclass import create_pdarray
+from arkouda.numpy.pdarrayclass import create_pdarray
 
 
 def take(x: Array, indices: Array, /, *, axis: Optional[int] = None) -> Array:

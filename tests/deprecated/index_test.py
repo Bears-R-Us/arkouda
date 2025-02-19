@@ -10,7 +10,7 @@ from numpy import dtype as npdtype
 from arkouda import io_util
 from arkouda.numpy.dtypes import dtype
 from arkouda.index import Index
-from arkouda.pdarrayclass import pdarray
+from arkouda.numpy.pdarrayclass import pdarray
 
 
 class IndexTest(ArkoudaTest):
