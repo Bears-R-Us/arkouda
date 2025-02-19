@@ -1,8 +1,9 @@
 import pytest
 
 import arkouda as ak
+import numpy as np
 from arkouda.categorical import Categorical
-from arkouda.testing import assert_equal
+from arkouda.testing import assert_arkouda_array_equivalent, assert_equal
 
 seed = pytest.seed
 
@@ -87,3 +88,44 @@ class TestNumpyManipulationFunctions:
 
         z = ak.array([[[1]]])
         assert_equal(ak.squeeze(z), ak.array([1]))
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64])
+    def test_tile_pdarray(self, size, dtype):
+        a = ak.arange(size, dtype=dtype)
+        np_a = np.arange(size, dtype=dtype)
+        f = ak.tile(a, 2)
+        np_f = np.tile(np_a, 2)
+        assert_arkouda_array_equivalent(np_f, f)
+
+    @pytest.mark.skip_if_rank_not_compiled([2, 3])
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", [ak.int64, ak.uint64, ak.float64])
+    @pytest.mark.parametrize("shape", [3, (2, 3), (2, 2, 2), (2, 2, 1), (2, 1, 2), (1, 2, 2)])
+    def test_tile_dim_2_and_3(self, size, dtype, shape):
+        a = ak.arange(size * 4, dtype=dtype).reshape((2, 2, size))
+        np_a = np.arange(size * 4, dtype=dtype).reshape((2, 2, size))
+        f = ak.tile(a, shape)
+        np_f = np.tile(np_a, shape)
+        assert_arkouda_array_equivalent(np_f, f)
+        a = ak.arange(size, dtype=dtype)
+        np_a = np.arange(size, dtype=dtype)
+        f = ak.tile(a, shape)
+        np_f = np.tile(np_a, shape)
+        assert_arkouda_array_equivalent(np_f, f)
+
+    @pytest.mark.skip_if_rank_not_compiled([2])
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", [ak.int64, ak.uint64, ak.float64])
+    @pytest.mark.parametrize("shape", [3, (2, 3), (2, 2), (2, 1), (1, 2)])
+    def test_tile_dim_2(self, size, dtype, shape):
+        a = ak.arange(size * 2, dtype=dtype).reshape((2, size))
+        np_a = np.arange(size * 2, dtype=dtype).reshape((2, size))
+        f = ak.tile(a, shape)
+        np_f = np.tile(np_a, shape)
+        assert_arkouda_array_equivalent(np_f, f)
+        a = ak.arange(size, dtype=dtype)
+        np_a = np.arange(size, dtype=dtype)
+        f = ak.tile(a, shape)
+        np_f = np.tile(np_a, shape)
+        assert_arkouda_array_equivalent(np_f, f)
