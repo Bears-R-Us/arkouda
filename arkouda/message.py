@@ -163,7 +163,7 @@ class ParameterObject:
         -------
         ParameterObject
         """
-        from arkouda.pdarrayclass import pdarray
+        from arkouda.numpy.pdarrayclass import pdarray
         from arkouda.segarray import SegArray
         from arkouda.strings import Strings
 
@@ -258,7 +258,7 @@ class ParameterObject:
         --------
         ParameterObject - The parameter object formatted to be parsed by the chapel server
         """
-        from arkouda.pdarrayclass import pdarray
+        from arkouda.numpy.pdarrayclass import pdarray
         from arkouda.sparrayclass import sparray
 
         dispatch = ParameterObject.generate_dispatch()

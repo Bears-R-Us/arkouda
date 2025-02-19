@@ -31,7 +31,7 @@ from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import int_scalars
 from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.random import default_rng
-from arkouda.pdarrayclass import RegistrationError, create_pdarray, is_sorted, pdarray
+from arkouda.numpy.pdarrayclass import RegistrationError, create_pdarray, is_sorted, pdarray
 from arkouda.pdarraycreation import arange, full
 from arkouda.sorting import argsort, sort
 from arkouda.strings import Strings

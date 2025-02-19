@@ -23,9 +23,9 @@ from arkouda.numpy.dtypes import (
 from arkouda.numpy.dtypes import str_
 from arkouda.numpy.dtypes import str_ as akstr_
 from arkouda.numpy.dtypes import uint64 as ak_uint64
-from arkouda.pdarrayclass import all as ak_all
-from arkouda.pdarrayclass import any as ak_any
-from arkouda.pdarrayclass import (
+from arkouda.numpy.pdarrayclass import all as ak_all
+from arkouda.numpy.pdarrayclass import any as ak_any
+from arkouda.numpy.pdarrayclass import (
     argmax,
     broadcast_if_needed,
     create_pdarray,

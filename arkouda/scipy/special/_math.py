@@ -4,7 +4,7 @@ from warnings import warn
 import numpy as np
 
 from arkouda.numpy import log
-from arkouda.pdarrayclass import pdarray
+from arkouda.numpy.pdarrayclass import pdarray
 
 
 def xlogy(x: Union[pdarray, np.float64], y: pdarray):

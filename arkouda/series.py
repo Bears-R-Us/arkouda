@@ -17,7 +17,7 @@ from arkouda.index import Index, MultiIndex
 from arkouda.numpy import cast as akcast
 from arkouda.numpy import isnan, value_counts
 from arkouda.numpy.dtypes import bool_scalars, dtype, float64, int64
-from arkouda.pdarrayclass import (
+from arkouda.numpy.pdarrayclass import (
     RegistrationError,
     any,
     argmaxk,

@@ -8,7 +8,7 @@ del get_versions
 from arkouda.numpy import *
 from arkouda.client import *
 from arkouda.client_dtypes import *
-from arkouda.pdarrayclass import *
+from arkouda.numpy.pdarrayclass import *
 from arkouda.sorting import *
 from arkouda.pdarraysetops import *
 from arkouda.pdarraycreation import *

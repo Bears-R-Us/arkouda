@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 from arkouda.dataframe import DataFrame
 from arkouda.groupbyclass import GroupBy
 from arkouda.numpy import histogram, isnan
-from arkouda.pdarrayclass import skew
+from arkouda.numpy.pdarrayclass import skew
 from arkouda.pdarraycreation import arange
 from arkouda.timeclass import Datetime, Timedelta, date_range, timedelta_range
 

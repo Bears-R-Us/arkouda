@@ -12,7 +12,7 @@ from arkouda.numpy.dtypes import bigint
 from arkouda.numpy.dtypes import float64 as akfloat64
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import uint64 as akuint64
-from arkouda.pdarrayclass import create_pdarray, pdarray
+from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import arange, full, ones, zeros
 from arkouda.pdarraysetops import concatenate, in1d
 from arkouda.sorting import argsort, coargsort

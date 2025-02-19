@@ -24,7 +24,7 @@ from arkouda.numpy.dtypes import (
     resolve_scalar_dtype,
 )
 from arkouda.numpy.dtypes import uint64 as akuint64
-from arkouda.pdarrayclass import create_pdarray, pdarray
+from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.strings import Strings
 
 __all__ = [

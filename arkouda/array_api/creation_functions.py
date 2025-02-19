@@ -6,7 +6,7 @@ import numpy as np
 
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import resolve_scalar_dtype
-from arkouda.pdarrayclass import _to_pdarray, pdarray
+from arkouda.numpy.pdarrayclass import _to_pdarray, pdarray
 
 if TYPE_CHECKING:
     from ._typing import (

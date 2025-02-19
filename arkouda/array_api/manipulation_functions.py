@@ -4,7 +4,7 @@ from .array_object import Array, implements_numpy
 
 from typing import List, Optional, Tuple, Union, cast
 from arkouda.client import generic_msg
-from arkouda.pdarrayclass import create_pdarray, create_pdarrays
+from arkouda.numpy.pdarrayclass import create_pdarray, create_pdarrays
 from arkouda.pdarraycreation import scalar_array, promote_to_common_dtype
 from arkouda.util import broadcast_dims
 

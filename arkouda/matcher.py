@@ -7,7 +7,7 @@ from arkouda.numpy.dtypes import str_scalars
 from arkouda.infoclass import list_symbol_table
 from arkouda.logger import getArkoudaLogger
 from arkouda.match import Match, MatchType
-from arkouda.pdarrayclass import create_pdarray, pdarray
+from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 
 
 class Matcher:

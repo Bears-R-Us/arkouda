@@ -7,7 +7,7 @@ from typing import Optional, Tuple, Union
 
 from arkouda.pdarraycreation import scalar_array
 from arkouda.client import generic_msg
-from arkouda.pdarrayclass import create_pdarray
+from arkouda.numpy.pdarrayclass import create_pdarray
 import arkouda as ak
 
 

@@ -7,7 +7,7 @@ from typeguard import typechecked
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg
 from arkouda.numpy.dtypes import numeric_scalars, bool_scalars
-from arkouda.pdarrayclass import create_pdarray, pdarray
+from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import array as ak_array
 from arkouda.strings import Strings
 

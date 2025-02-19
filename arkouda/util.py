@@ -19,7 +19,7 @@ from arkouda.numpy.dtypes import (
     int_scalars,
     numeric_scalars,
 )
-from arkouda.pdarrayclass import create_pdarray, pdarray
+from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import arange
 from arkouda.pdarraysetops import unique
 from arkouda.segarray import SegArray
@@ -190,7 +190,7 @@ def register(obj, name):
 def attach(name: str):
     from arkouda.dataframe import DataFrame
     from arkouda.index import Index, MultiIndex
-    from arkouda.pdarrayclass import pdarray
+    from arkouda.numpy.pdarrayclass import pdarray
     from arkouda.series import Series
 
     rep_msg = json.loads(cast(str, generic_msg(cmd="attach", args={"name": name})))
