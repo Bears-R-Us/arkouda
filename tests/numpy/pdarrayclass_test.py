@@ -153,16 +153,9 @@ class TestPdarrayClass:
         pda: ak.pdarray,
         axis: Optional[Union[int, Tuple[int, ...]]] = None,
     ):
-
-<<<<<<< HEAD
-        ak_op = getattr(ak.pdarrayclass, op)
-        np_op = getattr(np, op)
-=======
         ak_op = getattr(arkouda.numpy.pdarrayclass, op)
         np_op = getattr(numpy, op)
->>>>>>> 77b50f721 (moving pdarrayclass, and pycharm updated the imports)
         nda = pda.to_ndarray()
-
         ak_result = ak_op(pda, axis=axis)
         ak_assert_equivalent(ak_result, np_op(nda, axis=axis))
 
@@ -173,13 +166,8 @@ class TestPdarrayClass:
     @pytest.mark.parametrize("axis", [0, None])
     def test_index_reduction_1D(self, op, dtype, arry_gen, size, axis):
         pda = arry_gen(size, dtype=dtype)
-<<<<<<< HEAD
-        ak_op = getattr(ak.pdarrayclass, op)
-        np_op = getattr(np, op)
-=======
         ak_op = getattr(arkouda.numpy.pdarrayclass, op)
         np_op = getattr(numpy, op)
->>>>>>> 77b50f721 (moving pdarrayclass, and pycharm updated the imports)
         nda = pda.to_ndarray()
         ak_result = ak_op(pda, axis=axis)
         ak_assert_equivalent(ak_result, np_op(nda, axis=axis))
@@ -193,13 +181,8 @@ class TestPdarrayClass:
     def test_index_reduction_multi_dim(self, op, dtype, arry_gen, size, axis):
         size = 10
         pda = arry_gen(size * size * size, dtype=dtype).reshape((size, size, size))
-<<<<<<< HEAD
-        ak_op = getattr(ak.pdarrayclass, op)
-        np_op = getattr(np, op)
-=======
         ak_op = getattr(arkouda.numpy.pdarrayclass, op)
         np_op = getattr(numpy, op)
->>>>>>> 77b50f721 (moving pdarrayclass, and pycharm updated the imports)
         nda = pda.to_ndarray()
         ak_result = ak_op(pda, axis=axis)
         ak_assert_equivalent(ak_result, np_op(nda, axis=axis))
