@@ -21,7 +21,7 @@ from arkouda.numpy.dtypes import (
 )
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import arange
-from arkouda.pdarraysetops import unique
+from arkouda.numpy.pdarraysetops import unique
 from arkouda.segarray import SegArray
 from arkouda.sorting import coargsort
 from arkouda.strings import Strings
@@ -59,7 +59,7 @@ def concatenate(items, ordered=True):
 
 def generic_concat(items, ordered=True):
     # this version can be called with Dataframe and Series (which have Class.concat methods)
-    from arkouda.pdarraysetops import concatenate as pdarrayconcatenate
+    from arkouda.numpy.pdarraysetops import concatenate as pdarrayconcatenate
 
     types = {type(x) for x in items}
     if len(types) != 1:
@@ -573,7 +573,7 @@ def map(
     import numpy as np
 
     from arkouda import Series, array, broadcast, full
-    from arkouda.pdarraysetops import in1d
+    from arkouda.numpy.pdarraysetops import in1d
 
     keys = values
     gb = GroupBy(keys, dropna=False)

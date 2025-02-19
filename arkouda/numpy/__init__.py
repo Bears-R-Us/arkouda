@@ -100,3 +100,5 @@ from ._utils import *
 from ._manipulation_functions import *
 from .pdarrayclass import *
 from .pdarraycreation import *
+from .pdarraymanipulation import *
+from .pdarraysetops import *

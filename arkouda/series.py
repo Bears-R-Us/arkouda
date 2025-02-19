@@ -25,7 +25,7 @@ from arkouda.numpy.pdarrayclass import (
     pdarray,
 )
 from arkouda.numpy.pdarraycreation import arange, array, full, zeros
-from arkouda.pdarraysetops import argsort, concatenate, in1d, indexof1d
+from arkouda.numpy.pdarraysetops import argsort, concatenate, in1d, indexof1d
 from arkouda.segarray import SegArray
 from arkouda.strings import Strings
 from arkouda.util import get_callback, is_float

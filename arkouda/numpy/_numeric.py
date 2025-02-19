@@ -1571,7 +1571,7 @@ def _str_cat_where(
     # added @no_type_check because mypy can't handle Categorical not being declared
     # sooner, but there are circular dependencies preventing that
     from arkouda.categorical import Categorical
-    from arkouda.pdarraysetops import concatenate
+    from arkouda.numpy.pdarraysetops import concatenate
 
     if isinstance(A, str) and isinstance(B, (Categorical, Strings)):
         # This allows us to assume if a str is present it is B

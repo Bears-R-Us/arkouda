@@ -34,7 +34,7 @@ from arkouda.numpy.pdarrayclass import RegistrationError
 from arkouda.numpy.pdarrayclass import all as akall
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import arange, array, ones, zeros, zeros_like
-from arkouda.pdarraysetops import concatenate, in1d
+from arkouda.numpy.pdarraysetops import concatenate, in1d
 from arkouda.sorting import argsort
 from arkouda.sorting import sort as pda_sort
 from arkouda.strings import Strings

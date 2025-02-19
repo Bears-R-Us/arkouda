@@ -13,7 +13,7 @@ from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import resolve_scalar_dtype
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import arange, array, ones, zeros
-from arkouda.pdarraysetops import concatenate, in1d
+from arkouda.numpy.pdarraysetops import concatenate, in1d
 from arkouda.strings import Strings
 
 __all__ = ["join_on_eq_with_dt", "gen_ranges", "compute_join_size"]
