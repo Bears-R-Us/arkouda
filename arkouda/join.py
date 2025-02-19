@@ -12,7 +12,7 @@ from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import resolve_scalar_dtype
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
-from arkouda.pdarraycreation import arange, array, ones, zeros
+from arkouda.numpy.pdarraycreation import arange, array, ones, zeros
 from arkouda.pdarraysetops import concatenate, in1d
 from arkouda.strings import Strings
 

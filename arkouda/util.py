@@ -20,7 +20,7 @@ from arkouda.numpy.dtypes import (
     numeric_scalars,
 )
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
-from arkouda.pdarraycreation import arange
+from arkouda.numpy.pdarraycreation import arange
 from arkouda.pdarraysetops import unique
 from arkouda.segarray import SegArray
 from arkouda.sorting import coargsort

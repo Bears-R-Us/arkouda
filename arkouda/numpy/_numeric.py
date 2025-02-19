@@ -32,7 +32,7 @@ from arkouda.numpy.pdarrayclass import (
     pdarray,
     sum,
 )
-from arkouda.pdarraycreation import array, linspace, scalar_array
+from arkouda.numpy.pdarraycreation import array, linspace, scalar_array
 from arkouda.sorting import sort
 from arkouda.strings import Strings
 
@@ -536,7 +536,7 @@ def isnan(pda: pdarray) -> pdarray:
     from arkouda.util import is_float, is_numeric
 
     if is_numeric(pda) and not is_float(pda):
-        from arkouda.pdarraycreation import full
+        from arkouda.numpy.pdarraycreation import full
 
         return full(pda.size, False, dtype=bool)
     elif not is_numeric(pda):

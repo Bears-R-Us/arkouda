@@ -15,7 +15,7 @@ from arkouda.groupbyclass import GroupBy
 from arkouda.index import Index, MultiIndex
 from arkouda.numpy.dtypes import float32, float64, int32, int64
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
-from arkouda.pdarraycreation import arange, array
+from arkouda.numpy.pdarraycreation import arange, array
 from arkouda.segarray import SegArray
 from arkouda.strings import Strings
 from arkouda.timeclass import Datetime, Timedelta
