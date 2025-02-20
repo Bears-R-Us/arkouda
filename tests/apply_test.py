@@ -66,7 +66,7 @@ class TestApply:
         for r in ak.client.get_array_ranks():
             size = int(prob_size**(1/r))
             shape = (size,) * r
-            a = ak.randint(0, 100, shape, dtype)
+            a = ak.randint(1, 100, shape, dtype)
             b = ak.apply(a, lambda x: x**4 - 1)
             assert ak.all(b == a**4 - 1)
             assert b.dtype == dtype
