@@ -23,10 +23,88 @@ module ConcatenateMsg
     private config const logChannel = ServerConfig.logChannel;
     const cmLogger = new Logger(logLevel, logChannel);
 
+    use CommandMap;
+
+    // https://data-apis.org/array-api/latest/API_specification/generated/array_api.concat.html#array_api.concat
+    /* Concatenate a list of arrays together
+       to form one array
+    */
+    @arkouda.instantiateAndRegister(prefix='concatenate')
+    proc concatenateMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws {
+        param pn = Reflection.getRoutineName();
+
+        const nArrays = msgArgs["n"].toScalar(int),
+              names = msgArgs["names"].toScalarArray(string, nArrays),
+              axis = msgArgs["axis"].getPositiveIntValue(array_nd),
+              offsets = msgArgs["offsets"].toScalarArray(int, nArrays);
+
+        // Retrieve the arrays from the symbol table
+        const eIns = for n in names do st[n]: borrowed SymEntry(array_dtype, array_nd),
+              shapes = [i in 0..<nArrays] eIns[i].tupShape,
+              (valid, shapeOut) = concatenatedShape(shapes, axis, array_nd);
+        var eOut = createSymEntry((...shapeOut), array_dtype);
+
+        if !valid {
+            const errMsg = "All arrays must have the same shape except in the concatenation axis.";
+            cmLogger.error(getModuleName(), pn, getLineNumber(), errMsg);
+            return MsgTuple.error(errMsg);
+        } else {
+            forall (arrIdx, arr) in zip(eIns.domain, eIns) {
+                const offset = offsets[arrIdx];
+                const imap = new concatIndexMapper(array_nd, axis, offset);
+                forall idx in arr.a.domain with (
+                    var agg = newDstAggregator(array_dtype)
+                ){
+                    const srcIdx = if array_nd == 1 then (idx,) else idx;
+                    const mapped = imap(srcIdx);
+                    const targetIdx = if array_nd == 1 then mapped(0) else mapped;
+                    agg.copy(eOut.a[targetIdx], arr.a[idx]);
+                }
+            }
+            return st.insert(eOut);
+        }
+    }
+
+    // Record to map indices for concatenation
+    record concatIndexMapper {
+        param ndOut: int;
+        const axis: int;
+        const offset: int;
+
+        proc this(idx: ndOut*int): ndOut*int {
+            var ret: ndOut*int = idx;
+            ret[axis] += offset; // Adjust index by offset
+            return ret;
+        }
+    }
+
+    // Function to validate shapes and determine output shape
+    private proc concatenatedShape(shapes: [?d] ?t, axis: int, param N: int): (bool, N*int)
+        where isHomogeneousTuple(t)
+    {
+        var shapeOut: N*int,
+            firstShape = shapes[0];
+
+        // Ensure all shapes match except for the concatenation axis
+        for i in 1..d.last {
+            for param j in 0..<N {
+                if j != axis && shapes[i][j] != firstShape[j] {
+                    return (false, shapeOut);
+                }
+            }
+        }
+
+        // Compute output shape
+        shapeOut = firstShape;
+        shapeOut[axis] = + reduce [i in 0..<d.size] shapes[i][axis]; // Sum sizes along axis
+        
+        return (true, shapeOut);
+    }
+
     /* Concatenate a list of arrays together
        to form one array
      */
-    proc concatenateMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab) : MsgTuple throws {
+    proc concatenateStrMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab) : MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string;
         var objtype = msgArgs.getValueOf("objType").toUpper(): ObjType;
@@ -391,7 +469,6 @@ module ConcatenateMsg
             }
         }
     }
+    registerFunction("concatenateStr", concatenateStrMsg, getModuleName());
 
-    use CommandMap;
-    registerFunction("concatenate", concatenateMsg, getModuleName());
 }
