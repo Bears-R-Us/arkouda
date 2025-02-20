@@ -2741,7 +2741,7 @@ class DataFrame(UserDict):
 
         See Also
         --------
-        arkouda.pdarrayclass.nbytes
+        arkouda.numeric.pdarrayclass.nbytes
         arkouda.index.Index.memory_usage
         arkouda.index.MultiIndex.memory_usage
         arkouda.series.Series.memory_usage
@@ -3669,7 +3669,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.pdarrayclass.pdarray
+        arkouda.numeric.pdarrayclass.pdarray
             The permutation array that sorts the data on `key`.
 
         See Also
@@ -3752,7 +3752,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.pdarrayclass.pdarray
+        arkouda.numeric.pdarrayclass.pdarray
             The permutation array that sorts the data on `keys`.
 
         Example
@@ -4007,7 +4007,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.pdarrayclass.pdarray
+        arkouda.numeric.pdarrayclass.pdarray
             An array of boolean values for qualified rows in this DataFrame.
 
         Example
@@ -5733,7 +5733,7 @@ def intersect(a, b, positions=True, unique=False):
 
     Returns
     -------
-    (arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray) or arkouda.pdarrayclass.pdarray
+    (arkouda.numeric.pdarrayclass.pdarray, arkouda.numeric.pdarrayclass.pdarray) or arkouda.numeric.pdarrayclass.pdarray
         The indices of `a` and `b` where any element occurs at least once in both
         arrays.
 
