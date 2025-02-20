@@ -23,10 +23,86 @@ module ConcatenateMsg
     private config const logChannel = ServerConfig.logChannel;
     const cmLogger = new Logger(logLevel, logChannel);
 
+    use CommandMap;
+
+    // https://data-apis.org/array-api/latest/API_specification/generated/array_api.concat.html#array_api.concat
+    /* Concatenate a list of arrays together
+       to form one array
+    */
+    @arkouda.instantiateAndRegister(prefix='concatenate')
+    proc concatenateMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws {
+        param pn = Reflection.getRoutineName();
+
+        const nArrays = msgArgs["n"].toScalar(int),
+              names = msgArgs["names"].toScalarArray(string, nArrays),
+              axis = msgArgs["axis"].getPositiveIntValue(array_nd),
+              offsets = msgArgs["offsets"].toScalarArray(int, nArrays);
+
+        var dtype: DType;
+        dtype = getGenericTypedArrayEntry(names[0], st).dtype;
+        var same: bool = true;
+        for n in names {
+          if getGenericTypedArrayEntry(n, st).dtype != dtype {
+            same = false;
+          }
+        }
+
+        if !same {
+          const errMsg = "All arrays must have the same data type.";
+          cmLogger.error(getModuleName(), pn, getLineNumber(), errMsg);
+          return MsgTuple.error(errMsg);
+        }
+
+        // Retrieve the arrays from the symbol table
+        const eIns = for n in names do st[n]: borrowed SymEntry(array_dtype, array_nd),
+              shapes = [i in 0..<nArrays] eIns[i].tupShape,
+              (valid, shapeOut) = concatenatedShape(shapes, axis, array_nd);
+        var eOut = createSymEntry((...shapeOut), array_dtype);
+
+        if !valid {
+            const errMsg = "All arrays must have the same shape except in the concatenation axis.";
+            cmLogger.error(getModuleName(), pn, getLineNumber(), errMsg);
+            return MsgTuple.error(errMsg);
+        } else {
+            for (arrIdx, arr) in zip(eIns.domain, eIns) {
+                const offset = offsets[arrIdx];
+                const arrDomain = arr.a.domain;
+                var translation: array_nd * int;
+                translation[axis] = offset;
+                const domainTranslated = arrDomain.translate(translation);
+                eOut.a[domainTranslated] = arr.a;
+            }
+            return st.insert(eOut);
+        }
+    }
+
+    // Function to validate shapes and determine output shape
+    private proc concatenatedShape(shapes: [?d] ?t, axis: int, param N: int): (bool, N*int)
+        where isHomogeneousTuple(t)
+    {
+        var shapeOut: N*int,
+            firstShape = shapes[0];
+
+        // Ensure all shapes match except for the concatenation axis
+        for i in 1..d.last {
+            for param j in 0..<N {
+                if j != axis && shapes[i][j] != firstShape[j] {
+                    return (false, shapeOut);
+                }
+            }
+        }
+
+        // Compute output shape
+        shapeOut = firstShape;
+        shapeOut[axis] = + reduce [i in 0..<d.size] shapes[i][axis]; // Sum sizes along axis
+        
+        return (true, shapeOut);
+    }
+
     /* Concatenate a list of arrays together
        to form one array
      */
-    proc concatenateMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab) : MsgTuple throws {
+    proc concatenateStrMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab) : MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string;
         var objtype = msgArgs.getValueOf("objType").toUpper(): ObjType;
@@ -82,7 +158,7 @@ module ConcatenateMsg
                 }
             }
 
-            st.checkTable(name, "concatenateMsg");
+            st.checkTable(name, "concatenateStrMsg");
             var abstractEntry = st.lookup(name);
             var (entryDtype, entrySize, entryItemSize) = getArraySpecFromEntry(abstractEntry);
             
@@ -391,7 +467,6 @@ module ConcatenateMsg
             }
         }
     }
+    registerFunction("concatenateStr", concatenateStrMsg, getModuleName());
 
-    use CommandMap;
-    registerFunction("concatenate", concatenateMsg, getModuleName());
 }

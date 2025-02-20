@@ -5,7 +5,7 @@ import json
 from functools import reduce
 from math import ceil
 from sys import modules
-from typing import TYPE_CHECKING, Any, List, Optional, Sequence, Tuple, Union, cast
+from typing import TYPE_CHECKING, Any, List, Optional, Tuple, Union, cast
 
 import numpy as np
 from typeguard import typechecked
@@ -366,8 +366,8 @@ class pdarray:
         The number of elements in the array
     ndim : int_scalars
         The rank of the array
-    shape : Sequence[int]
-        A list or tuple containing the sizes of each dimension of the array
+    shape : Tuple[int, ...]
+        A tuple containing the sizes of each dimension of the array
     itemsize : int_scalars
         The size in bytes of each element
     """
@@ -407,7 +407,7 @@ class pdarray:
         mydtype: Union[np.dtype, str],
         size: int_scalars,
         ndim: int_scalars,
-        shape: Sequence[int],
+        shape: Tuple[int, ...],
         itemsize: int_scalars,
         max_bits: Optional[int] = None,
     ) -> None:
@@ -2921,10 +2921,10 @@ def create_pdarray(repMsg: str, max_bits=None) -> pdarray:
         ndim = int(fields[4])
 
         if fields[5] == "[]":
-            shape = []
+            shape: Tuple[int, ...] = tuple([])
         else:
             trailing_comma_offset = -2 if fields[5][len(fields[5]) - 2] == "," else -1
-            shape = [int(el) for el in fields[5][1:trailing_comma_offset].split(",")]
+            shape = tuple([int(el) for el in fields[5][1:trailing_comma_offset].split(",")])
 
         itemsize = int(fields[6])
     except Exception as e:
