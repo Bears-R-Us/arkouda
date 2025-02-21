@@ -62,22 +62,33 @@ def hstack(
     # cast the input arrays to the output dtype if necessary
     arrays = [a.astype(dtype_) if a.dtype != dtype_ else a for a in tup]
 
-    # stack the arrays along the first axis
+    if ndim == 1:
+        return create_pdarray(
+            generic_msg(
+                cmd=f"concatenate<{np.dtype(dtype_).name},{len(arrays)}>",
+                args={
+                    "names": list(arrays),
+                    "n": len(arrays),
+                    "axis": 0,
+                },
+            )
+        )
+
+    # stack the arrays along the horizontal axis
     return create_pdarray(
         generic_msg(
-            cmd=f"concatenate",
+            cmd=f"concatenate<{np.dtype(dtype_).name},{len(arrays)}>",
             args={
                 "names": list(arrays),
-                "nstr": len(arrays),
+                "n": len(arrays),
                 "axis": 1,
-                "objType": np.dtype(dtype_).name,
             },
         )
     )
 
 @typechecked
 def vstack(
-    tup: Union[Tuple[pdarray], List[pdarray]],
+    tup: Union[Tuple[pdarray, ...], List[pdarray]],
     *,
     dtype: Optional[Union[type, str]] = None,
     casting: Literal["no", "equiv", "safe", "same_kind", "unsafe"] = "same_kind",
@@ -117,17 +128,30 @@ def vstack(
 
     # establish the dtype of the output array
     if dtype is None:
-        dtype_ = np.common_type(*[np.empty(0, dtype=a.dtype) for a in tup])
+        dtype_ = np.result_type(*[np.dtype(a.dtype) for a in tup])
     else:
         dtype_ = akdtype(dtype)
 
     # cast the input arrays to the output dtype if necessary
     arrays = [a.astype(dtype_) if a.dtype != dtype_ else a for a in tup]
 
+    if ndim == 1:
+        arrays = [a.reshape((1, len(tup[0]))) for a in arrays]
+        return create_pdarray(
+            generic_msg(
+                cmd=f"concatenate<{np.dtype(dtype_).name},{len(arrays)}>",
+                args={
+                    "names": list(arrays),
+                    "n": len(arrays),
+                    "axis": 0,
+                },
+            )
+        )
+
     # stack the arrays along the first axis
     return create_pdarray(
         generic_msg(
-            cmd=f"stack{ndim}D",
+            cmd=f"concatenate<{np.dtype(dtype_).name},{len(arrays)}>",
             args={
                 "names": list(arrays),
                 "n": len(arrays),

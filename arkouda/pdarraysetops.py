@@ -409,12 +409,11 @@ def concatenate(
             return arrays[0]
 
     repMsg = generic_msg(
-        cmd="concatenate",
+        cmd=f"concatenate<{objtype},{len(arrays[0].shape)}>",
         args={
-            "nstr": len(arrays),
-            "objType": objtype,
-            "mode": mode,
+            "n": len(arrays),
             "names": names,
+            "axis": 0,
         })
     if objtype == pdarray.objType:
         return callback(create_pdarray(cast(str, repMsg)))
