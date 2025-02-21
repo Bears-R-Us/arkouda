@@ -2090,7 +2090,7 @@ def clip(
 
     Returns
     -------
-    arkouda.pdarrayclass.pdarray
+    arkouda.numeric.pdarrayclass.pdarray
         A pdarray matching pda, except that element x remains x if lo <= x <= hi,
                                                 or becomes lo if x < lo,
                                                 or becomes hi if x > hi.

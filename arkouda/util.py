@@ -544,7 +544,7 @@ def map(
 
     Returns
     -------
-    arkouda.pdarrayclass.pdarray or arkouda.strings.Strings
+    arkouda.numeric.pdarrayclass.pdarray or arkouda.strings.Strings
         A new array with the values mapped by the mapping correspondence.
         When the input Series has Categorical values,
         the return Series will have Strings values.

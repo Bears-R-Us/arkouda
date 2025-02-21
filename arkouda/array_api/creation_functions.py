@@ -43,7 +43,7 @@ def asarray(
     - a scalar value (bool, int, float)
     - a sequence of scalar values (not yet implemented)
     - a buffer (not yet implemented)
-    - an arkouda :class:`~arkouda.pdarrayclass.pdarray`
+    - an arkouda :class:`~arkouda.numeric.pdarrayclass.pdarray`
     - a numpy ndarray
 
     Parameters

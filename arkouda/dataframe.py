@@ -5861,7 +5861,7 @@ def invert_permutation(perm):
 
     Returns
     -------
-    arkouda.pdarrayclass.pdarray
+    arkouda.numeric.pdarrayclass.pdarray
         The inverse of the permutation array.
 
     Examples

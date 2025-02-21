@@ -19,7 +19,7 @@ def xlogy(x: Union[pdarray, np.float64], y: pdarray):
 
     Returns
     -------
-    arkouda.pdarrayclass.pdarray
+    arkouda.numeric.pdarrayclass.pdarray
 
     Examples
     --------
