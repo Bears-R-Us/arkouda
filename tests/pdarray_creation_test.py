@@ -26,6 +26,14 @@ DTYPES = [
     ak.bigint,
 ]
 
+#   multi_dim_ranks is used in multi_dim_testing
+
+
+def multi_dim_ranks():
+    ranks = ak.client.get_array_ranks()[:]
+    ranks.remove(1)
+    return ranks
+
 
 class TestPdarrayCreation:
     @pytest.mark.parametrize("dtype", DTYPES)
@@ -43,32 +51,38 @@ class TestPdarrayCreation:
             assert len(pda) == fixed_size
             assert dtype == pda.dtype
 
-    @pytest.mark.skip_if_rank_not_compiled([3])
+    # TODO: combine the many instances of 1D and multi-dim tests into one function each.
+    #      e.g., there will just be test_array_creation, which will handle both 1D and
+    #      multi-dim tests
+
+    @pytest.mark.skip_if_max_rank_less_than(2)
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
     def test_array_creation_multi_dim(self, size, dtype):
-        shape = (2, 2, size)
-        for pda in [
-            ak.array(ak.ones(shape, int), dtype),
-            ak.array(np.ones(shape), dtype),
-        ]:
-            assert isinstance(pda, ak.pdarray)
-            assert pda.shape == shape
-            assert dtype == pda.dtype
+        # the tests based on "range" are not repeated here, as those are 1D objects
+        from arkouda.util import _generate_test_shape
 
-    @pytest.mark.skip_if_max_rank_greater_than(3)
+        for rank in multi_dim_ranks():
+            shape, local_size = _generate_test_shape(rank, size)
+            for pda in [
+                ak.array(ak.ones(shape, int), dtype),
+                ak.array(np.ones(shape), dtype),
+            ]:
+                assert isinstance(pda, ak.pdarray)
+                assert pda.shape == shape
+                assert dtype == pda.dtype
+
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
     def test_array_creation_error(self, dtype):
-        shape = (2, 2, 2, 2)
-        with pytest.raises(ValueError):
+        from arkouda.util import _generate_test_shape
+
+        rank = ak.client.get_max_array_rank() + 1
+        shape, local_size = _generate_test_shape(rank, 2**rank)
+        with pytest.raises(ValueError):  # try to make a too-large array ; it should raise this error
             ak.array(np.ones(shape), dtype)
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_large_array_creation(self, size):
-        # Using pytest.prob_size in various other tests can be problematic; this
-        # test is here simply to verify the ability of the various functions to
-        # create large pdarrays, while the function-specific tests below are testing
-        # the core functionality of each function
         for pda in [
             ak.ones(size, int),
             ak.array(ak.ones(size, int)),
@@ -91,10 +105,31 @@ class TestPdarrayCreation:
             assert isinstance(pda, ak.pdarray if pda.dtype != str else ak.Strings)
             assert len(pda) == size
 
-    @pytest.mark.skip_if_rank_not_compiled([2])
+    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_large_array_creation_multi_dim(self, size):
+        from arkouda.util import _generate_test_shape
+
+        # similar to the test above, but functions that are specifically 1D (arange,
+        # linspace, uniform, standard_normal, random_strings_uniform, random_string.lognormal
+        # from_series and bigint_from_uint_arrays) are not included.
+        for rank in multi_dim_ranks():
+            shape, local_size = _generate_test_shape(rank, size)
+            for pda in [
+                ak.ones(shape, int),
+                ak.array(ak.ones(shape, int)),
+                ak.zeros(shape),
+                ak.ones(shape),
+                ak.full(shape, 9),  # multi-dim full works w/numbers, not strings
+                ak.zeros_like(ak.ones(shape)),
+                ak.ones_like(ak.zeros(shape)),
+                ak.full_like(ak.zeros(shape), 9),
+                ak.randint(0, local_size, shape),
+            ]:
+                assert isinstance(pda, ak.pdarray)  # if pda.dtype != str else ak.Strings)
+                assert len(pda) == local_size
+
     def test_array_creation_misc(self):
-        av = ak.array(np.array([[0, 1], [0, 1]]))
-        assert isinstance(av, ak.pdarray)
 
         with pytest.raises(TypeError):
             ak.array({range(0, 10)})
@@ -119,16 +154,30 @@ class TestPdarrayCreation:
     def test_infer_shape_from_size(self):
         from arkouda.util import _infer_shape_from_size
 
-        a = np.array([[0, 1], [0, 1]])
-        shape, ndim, full_size = _infer_shape_from_size(a.shape)
-        assert ndim == 2
-        assert full_size == 4
-        assert shape == (2, 2)
+        for rank in multi_dim_ranks():
+            proposed_shape = tuple((rank * [2]))
+            proposed_size = 2**rank
+            a = np.ones(proposed_size).reshape(proposed_shape)
+            shape, ndim, full_size = _infer_shape_from_size(a.shape)
+            assert ndim == rank
+            assert full_size == proposed_size
+            assert shape == proposed_shape
 
         shape, ndim, full_size = _infer_shape_from_size(7)
         assert ndim == 1
         assert full_size == 7
         assert shape == (7)
+
+    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_generate_shape_from_rank(self, size):
+        from arkouda.util import _generate_test_shape
+
+        for rank in multi_dim_ranks():
+            local_shape, local_size = _generate_test_shape(rank, size)
+            assert len(local_shape) == rank
+            assert all(item > 0 for item in local_shape)
+            assert local_size <= size
 
     def test_bigint_creation(self):
         bi = 2**200
@@ -176,6 +225,27 @@ class TestPdarrayCreation:
         for i, uint_bits in enumerate(t.bigint_to_uint_arrays()):
             slice_bits = t.slice_bits(64 * (4 - (i + 1)), 64 * (4 - i) - 1)
             assert uint_bits.to_list() == slice_bits.to_list()
+
+    @pytest.mark.skip_if_max_rank_less_than(2)
+    def test_bigint_creation_multi_dim(self):
+        # bigint_from_uint_arrays does not currently handle multi-dim inputs, so those tests are skipped
+        # Strings does not have a reshape method, so those tests are also skipped
+        from arkouda.util import _generate_test_shape
+
+        bi = 2**200
+
+        for rank in multi_dim_ranks():
+            size = 2**rank
+            shape, local_size = _generate_test_shape(rank, size)
+
+            pda_from_str = ak.array([f"{i}" for i in range(bi, bi + size)], dtype=ak.bigint).reshape(
+                shape
+            )
+            pda_from_int = ak.array([i for i in range(bi, bi + size)]).reshape(shape)
+            for pda in [pda_from_str, pda_from_int]:
+                assert isinstance(pda, ak.pdarray)
+                assert size == len(pda)
+                assert ak.bigint == pda.dtype
 
     def test_arange(self):
         assert np.arange(0, 10, 1).tolist() == ak.arange(0, 10, 1).to_list()
@@ -251,8 +321,24 @@ class TestPdarrayCreation:
         assert (size,) == test_array.shape
         assert ((0 <= test_array) & (test_array <= size)).all()
 
+    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("array_type", [ak.int64, ak.float64, bool])
+    def test_randint_array_dtype_multi_dim(self, size, array_type):
+        from arkouda.util import _generate_test_shape
+
+        for rank in multi_dim_ranks():
+            shape, local_size = _generate_test_shape(rank, size)
+            test_array = ak.randint(0, size, shape, array_type)
+            assert isinstance(test_array, ak.pdarray)
+            assert size == len(test_array)
+            assert array_type == test_array.dtype
+            assert shape == test_array.shape
+            assert ((0 <= test_array) & (test_array <= size)).all()
+
     # (The above function tests randint with various ARRAY dtypes; the function below
     #  tests with various dtypes for the other parameters passed to randint)
+
     @pytest.mark.parametrize("dtype", NUMERIC_SCALARS)
     def test_randint_num_dtype(self, dtype):
         for test_array in ak.randint(dtype(0), 100, 1000), ak.randint(0, dtype(100), 1000):
@@ -260,7 +346,22 @@ class TestPdarrayCreation:
             assert 1000 == len(test_array)
             assert ak.int64 == test_array.dtype
             assert (1000,) == test_array.shape
-            assert ((0 <= test_array) & (test_array <= 1000)).all()
+            assert ((0 <= test_array) & (test_array <= 100)).all()
+
+    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.parametrize("dtype", NUMERIC_SCALARS)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_randint_num_dtype_multi_dim(self, size, dtype):
+        from arkouda.util import _generate_test_shape
+
+        for rank in multi_dim_ranks():
+            shape, local_size = _generate_test_shape(rank, size)
+            for test_array in ak.randint(dtype(0), 100, shape), ak.randint(0, dtype(100), shape):
+                assert isinstance(test_array, ak.pdarray)
+                assert local_size == len(test_array)
+                assert ak.int64 == test_array.dtype
+                assert shape == test_array.shape
+                assert ((0 <= test_array) & (test_array <= 100)).all()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_randint_misc(self, size):
@@ -337,18 +438,10 @@ class TestPdarrayCreation:
         assert (size,) == test_array.shape
 
         u_array = ak.uniform(size=3, low=0, high=5, seed=0)
-        assert [
-            0.30013431967121934,
-            0.47383036230759112,
-            1.0441791878997098,
-        ] == u_array.to_list()
+        assert [0.30013431967121934, 0.47383036230759112, 1.0441791878997098] == u_array.to_list()
 
         u_array = ak.uniform(size=np.int64(3), low=np.int64(0), high=np.int64(5), seed=np.int64(0))
-        assert [
-            0.30013431967121934,
-            0.47383036230759112,
-            1.0441791878997098,
-        ] == u_array.to_list()
+        assert [0.30013431967121934, 0.47383036230759112, 1.0441791878997098] == u_array.to_list()
 
         with pytest.raises(TypeError):
             ak.uniform(low="0", high=5, size=size)
@@ -372,27 +465,36 @@ class TestPdarrayCreation:
         assert dtype == zeros.dtype
         assert (0 == zeros).all()
 
-    @pytest.mark.skip_if_rank_not_compiled([2])
-    @pytest.mark.parametrize("dtype", [int, ak.int64, float, ak.float64, bool, ak.bool_])
-    @pytest.mark.parametrize("shape", [0, 2, (2, 3)])
-    def test_ones_match_numpy(self, shape, dtype):
-        assert_equivalent(ak.zeros(shape, dtype=dtype), np.zeros(shape, dtype=dtype))
-
-    @pytest.mark.skip_if_rank_not_compiled([3])
+    @pytest.mark.skip_if_max_rank_less_than(2)
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [ak.int64, float, ak.float64, bool, ak.bool_, ak.bigint])
-    def test_zeros_dtype_mult_dim(self, size, dtype):
-        shape = (2, 2, size)
-        zeros = ak.zeros(shape, dtype)
-        assert isinstance(zeros, ak.pdarray)
-        assert dtype == zeros.dtype
-        assert zeros.shape == shape
-        assert (0 == zeros).all()
+    def test_zeros_dtype_multi_dim(self, size, dtype):
+        from arkouda.util import _generate_test_shape
 
-    @pytest.mark.skip_if_max_rank_greater_than(3)
+        for rank in multi_dim_ranks():
+            shape, local_size = _generate_test_shape(rank, size)
+            zeros = ak.zeros(shape, dtype)
+            assert isinstance(zeros, ak.pdarray)
+            assert dtype == zeros.dtype
+            assert zeros.shape == shape
+            assert (0 == zeros).all()
+
+    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", [int, ak.int64, float, ak.float64, bool, ak.bool_])
+    def test_zeros_match_numpy(self, size, dtype):
+        from arkouda.util import _generate_test_shape
+
+        for rank in multi_dim_ranks():
+            shape, local_size = _generate_test_shape(rank, size)
+            assert_equivalent(ak.zeros(shape, dtype=dtype), np.zeros(shape, dtype=dtype))
+
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
     def test_zeros_error(self, dtype):
-        shape = (2, 2, 2, 2)
+        from arkouda.util import _generate_test_shape
+
+        rank = ak.client.get_max_array_rank() + 1
+        shape, local_size = _generate_test_shape(rank, 2**rank)
         with pytest.raises(ValueError):
             ak.zeros(shape, dtype)
 
@@ -411,6 +513,31 @@ class TestPdarrayCreation:
         for arg in np.uint8(5), np.uint16(5), np.uint32(5), str(5):
             assert (int_arr == ak.zeros(arg, dtype=ak.int64)).all()
 
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
+    def test_zeros_like(self, size, dtype):
+        ran_arr = ak.array(ak.arange(size, dtype=dtype))
+        zeros_like_arr = ak.zeros_like(ran_arr)
+        assert isinstance(zeros_like_arr, ak.pdarray)
+        assert dtype == zeros_like_arr.dtype
+        assert (zeros_like_arr == 0).all()
+        assert zeros_like_arr.size == ran_arr.size
+
+    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
+    def test_zeros_like_multi_dim(self, size, dtype):
+        from arkouda.util import _generate_test_shape
+
+        for rank in multi_dim_ranks():
+            shape, local_size = _generate_test_shape(rank, size)
+            ran_arr = ak.array(ak.arange(local_size, dtype=dtype)).reshape(shape)
+            zeros_like_arr = ak.zeros_like(ran_arr)
+            assert isinstance(zeros_like_arr, ak.pdarray)
+            assert dtype == zeros_like_arr.dtype
+            assert (zeros_like_arr == 0).all()
+            assert zeros_like_arr.size == ran_arr.size
+
     @pytest.mark.parametrize("dtype", [int, ak.int64, float, ak.float64, bool, ak.bool_, ak.bigint])
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_ones_dtype(self, size, dtype):
@@ -419,21 +546,36 @@ class TestPdarrayCreation:
         assert dtype == ones.dtype
         assert (1 == ones).all()
 
-    @pytest.mark.parametrize("dtype", [int, ak.int64, float, ak.float64, bool, ak.bool_, ak.bigint])
+    @pytest.mark.skip_if_max_rank_less_than(2)
     @pytest.mark.parametrize("size", pytest.prob_size)
-    @pytest.mark.skip_if_rank_not_compiled([3])
+    @pytest.mark.parametrize("dtype", [ak.int64, float, ak.float64, bool, ak.bool_, ak.bigint])
     def test_ones_dtype_multi_dim(self, size, dtype):
-        shape = (2, 2, size)
-        ones = ak.ones(shape, dtype)
-        assert isinstance(ones, ak.pdarray)
-        assert ones.shape == shape
-        assert dtype == ones.dtype
-        assert (1 == ones).all()
+        from arkouda.util import _generate_test_shape
 
-    @pytest.mark.skip_if_max_rank_greater_than(3)
+        for rank in multi_dim_ranks():
+            shape, local_size = _generate_test_shape(rank, size)
+            ones = ak.ones(shape, dtype)
+            assert isinstance(ones, ak.pdarray)
+            assert dtype == ones.dtype
+            assert ones.shape == shape
+            assert (1 == ones).all()
+
+    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", [int, ak.int64, float, ak.float64, bool, ak.bool_])
+    def test_ones_match_numpy(self, size, dtype):
+        from arkouda.util import _generate_test_shape
+
+        for rank in multi_dim_ranks():
+            shape, local_size = _generate_test_shape(rank, size)
+            assert_equivalent(ak.ones(shape, dtype=dtype), np.ones(shape, dtype=dtype))
+
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
     def test_ones_error(self, dtype):
-        shape = (2, 2, 2, 2)
+        from arkouda.util import _generate_test_shape
+
+        rank = ak.client.get_max_array_rank() + 1
+        shape, local_size = _generate_test_shape(rank, 2**rank)
         with pytest.raises(ValueError):
             ak.ones(shape, dtype)
 
@@ -462,6 +604,21 @@ class TestPdarrayCreation:
         assert (1 == ones_like_arr).all()
         assert ones_like_arr.size == ran_arr.size
 
+    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
+    def test_ones_like_multi_dim(self, size, dtype):
+        from arkouda.util import _generate_test_shape
+
+        for rank in multi_dim_ranks():
+            shape, local_size = _generate_test_shape(rank, size)
+            ran_arr = ak.array(ak.arange(local_size, dtype=dtype)).reshape(shape)
+            ones_like_arr = ak.ones_like(ran_arr)
+            assert isinstance(ones_like_arr, ak.pdarray)
+            assert dtype == ones_like_arr.dtype
+            assert (ones_like_arr == 1).all()
+            assert ones_like_arr.size == ran_arr.size
+
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
     def test_full_dtype(self, size, dtype):
@@ -470,32 +627,42 @@ class TestPdarrayCreation:
         assert dtype == type_full.dtype
         assert (1 == type_full).all()
 
-    @pytest.mark.skip_if_rank_not_compiled([2])
-    @pytest.mark.parametrize("dtype", [int, ak.int64, float, ak.float64, bool, ak.bool_])
-    @pytest.mark.parametrize("shape", [0, 2, (2, 3)])
-    def test_full_match_numpy(self, shape, dtype):
-        assert_equivalent(
-            ak.full(shape, fill_value=2, dtype=dtype),
-            np.full(shape, fill_value=2, dtype=dtype),
-        )
-
-    @pytest.mark.skip_if_rank_not_compiled([3])
+    @pytest.mark.skip_if_max_rank_less_than(2)
     @pytest.mark.parametrize("size", pytest.prob_size)
-    @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
+    @pytest.mark.parametrize("dtype", [ak.int64, float, ak.float64, bool, ak.bool_, ak.bigint])
     def test_full_dtype_multi_dim(self, size, dtype):
-        shape = (2, 2, size)
-        type_full = ak.full(shape, 1, dtype)
-        assert isinstance(type_full, ak.pdarray)
-        assert dtype == type_full.dtype
-        assert type_full.shape == shape
-        assert (1 == type_full).all()
+        from arkouda.util import _generate_test_shape
 
-    @pytest.mark.skip_if_max_rank_greater_than(3)
+        for rank in multi_dim_ranks():
+            shape, local_size = _generate_test_shape(rank, size)
+            type_full = ak.full(shape, 1, dtype)
+            assert isinstance(type_full, ak.pdarray)
+            assert dtype == type_full.dtype
+            assert type_full.shape == shape
+            assert (1 == type_full).all()
+
+    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", [int, ak.int64, float, ak.float64, bool, ak.bool_])
+    def test_full_match_numpy(self, size, dtype):
+        from arkouda.util import _generate_test_shape
+
+        for rank in ak.client.get_array_ranks():
+            if rank == 1:
+                continue
+            shape, local_size = _generate_test_shape(rank, size)
+            assert_equivalent(
+                ak.full(shape, fill_value=2, dtype=dtype), np.full(shape, fill_value=2, dtype=dtype)
+            )
+
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
     def test_full_error(self, dtype):
-        shape = (2, 2, 2, 2)
+        from arkouda.util import _generate_test_shape
+
+        rank = ak.client.get_max_array_rank() + 1
+        shape, local_size = _generate_test_shape(rank, 2**rank)
         with pytest.raises(ValueError):
-            ak.full(shape, 1, dtype)
+            ak.full(shape, dtype)
 
     def test_full_misc(self):
         for arg in -1, False:
@@ -536,15 +703,20 @@ class TestPdarrayCreation:
         assert (full_like_arr == 1).all()
         assert full_like_arr.size == ran_arr.size
 
+    @pytest.mark.skip_if_max_rank_less_than(2)
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
-    def test_zeros_like(self, size, dtype):
-        ran_arr = ak.array(ak.arange(size, dtype=dtype))
-        zeros_like_arr = ak.zeros_like(ran_arr)
-        assert isinstance(zeros_like_arr, ak.pdarray)
-        assert dtype == zeros_like_arr.dtype
-        assert (zeros_like_arr == 0).all()
-        assert zeros_like_arr.size == ran_arr.size
+    def test_full_like_multi_dim(self, size, dtype):
+        from arkouda.util import _generate_test_shape
+
+        for rank in multi_dim_ranks():
+            shape, local_size = _generate_test_shape(rank, size)
+            ran_arr = ak.full(shape, 5, dtype)
+            full_like_arr = ak.full_like(ran_arr, 1)
+            assert isinstance(full_like_arr, ak.pdarray)
+            assert dtype == full_like_arr.dtype
+            assert (full_like_arr == 1).all()
+            assert full_like_arr.size == ran_arr.size
 
     def test_linspace(self):
         pda = ak.linspace(0, 100, 1000)
@@ -687,41 +859,16 @@ class TestPdarrayCreation:
 
     def test_random_strings_uniform_with_seed(self):
         pda = ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=10)
-        assert [
-            "VW",
-            "JEXI",
-            "EBBX",
-            "HG",
-            "S",
-            "WOVK",
-            "U",
-            "WL",
-            "JCSD",
-            "DSN",
-        ] == pda.to_list()
+        assert ["VW", "JEXI", "EBBX", "HG", "S", "WOVK", "U", "WL", "JCSD", "DSN"] == pda.to_list()
 
         pda = ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=10, characters="printable")
-        assert [
-            "eL",
-            "6<OD",
-            "o-GO",
-            " l",
-            "m",
-            "PV y",
-            "f",
-            "}.",
-            "b3Yc",
-            "Kw,",
-        ] == pda.to_list()
+        assert ["eL", "6<OD", "o-GO", " l", "m", "PV y", "f", "}.", "b3Yc", "Kw,"] == pda.to_list()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("num_dtype", NUMERIC_SCALARS)
     def test_random_strings_lognormal(self, size, num_dtype):
         pda = ak.random_strings_lognormal(
-            logmean=num_dtype(2),
-            logstd=num_dtype(1),
-            size=np.int64(size),
-            characters="printable",
+            logmean=num_dtype(2), logstd=num_dtype(1), size=np.int64(size), characters="printable"
         )
         assert isinstance(pda, ak.Strings)
         assert size == len(pda)
@@ -781,12 +928,6 @@ class TestPdarrayCreation:
         )
         assert printable_randoms == pda.to_list()
 
-    @pytest.mark.skip_if_rank_not_compiled([2])
-    def test_mulitdimensional_array_creation(self):
-        a = ak.array([[0, 0], [0, 1], [1, 1]])
-        assert isinstance(a, ak.pdarray)
-        assert a.shape == (3, 2)
-
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [bool, np.float64, np.int64, str])
     def test_from_series_dtypes(self, size, dtype):
@@ -840,10 +981,17 @@ class TestPdarrayCreation:
         ones.fill(dtype(2))
         assert (dtype(2) == ones).all()
 
-        # Test that int_scalars covers uint8, uint16, uint32
-        ones.fill(np.uint8(2))
-        ones.fill(np.uint16(2))
-        ones.fill(np.uint32(2))
+    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.parametrize("dtype", NUMERIC_SCALARS)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_fill_multi_dim(self, size, dtype):
+        from arkouda.util import _generate_test_shape
+
+        for rank in multi_dim_ranks():
+            shape, local_size = _generate_test_shape(rank, size)
+            ones = ak.ones(shape)
+            ones.fill(dtype(2))
+            assert (dtype(2) == ones).all()
 
     def test_endian(self):
         a = np.random.randint(1, 100, 100)
@@ -860,6 +1008,28 @@ class TestPdarrayCreation:
         aka = ak.array(a)
         npa = aka.to_ndarray()
         assert np.allclose(a, npa)
+
+    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_endian_multi_dim(self, size):
+        from arkouda.util import _generate_test_shape
+
+        for rank in multi_dim_ranks():
+            shape, local_size = _generate_test_shape(rank, size)
+            a = np.random.randint(1, 100, shape)
+            aka = ak.array(a)
+            npa = aka.to_ndarray()
+            assert np.allclose(a, npa)
+
+            a = a.newbyteorder().byteswap()
+            aka = ak.array(a)
+            npa = aka.to_ndarray()
+            assert np.allclose(a, npa)
+
+            a = a.newbyteorder().byteswap()
+            aka = ak.array(a)
+            npa = aka.to_ndarray()
+            assert np.allclose(a, npa)
 
     def test_clobber(self):
         n_arrs = 10
@@ -886,13 +1056,41 @@ class TestPdarrayCreation:
             assert np.all(a == i + 1)
             assert np.all(npa == i + 1)
 
+    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_clobber_multi_dim(self, size):
+        from arkouda.util import _generate_test_shape
+
+        for rank in multi_dim_ranks():
+            shape, local_size = _generate_test_shape(rank, size)
+            n_arrs = 10
+
+            arrs = [np.random.randint(1, 100, shape) for _ in range(n_arrs)]
+            ak_arrs = [ak.array(arr) for arr in arrs]
+            np_arrs = [arr.to_ndarray() for arr in ak_arrs]
+            for a, npa in zip(arrs, np_arrs):
+                assert np.allclose(a, npa)
+
+            arrs = [np.full(shape, i) for i in range(n_arrs)]
+            ak_arrs = [ak.array(arr) for arr in arrs]
+            np_arrs = [arr.to_ndarray() for arr in ak_arrs]
+
+            for a, npa, i in zip(arrs, np_arrs, range(n_arrs)):
+                assert np.all(a == i)
+                assert np.all(npa == i)
+
+                a += 1
+                assert np.all(a == i + 1)
+                assert np.all(npa == i)
+
+                npa += 1
+                assert np.all(a == i + 1)
+                assert np.all(npa == i + 1)
+
     def test_uint_greediness(self):
         # default to uint when all supportedInt and any value > 2**63
         # to avoid loss of precision see (#1297)
-        for greedy_list in (
-            [2**63, 6, 2**63 - 1, 2**63 + 1],
-            [2**64 - 1, 0, 2**64 - 1],
-        ):
+        for greedy_list in ([2**63, 6, 2**63 - 1, 2**63 + 1], [2**64 - 1, 0, 2**64 - 1]):
             greedy_pda = ak.array(greedy_list)
             assert greedy_pda.dtype == ak.uint64
             assert greedy_list == greedy_pda.to_list()
@@ -942,7 +1140,20 @@ class TestPdarrayCreation:
         a2 = ak.array([1.0, 2, 3])
         assert a2.inferred_type == "floating"
 
-    def testTo_ndarray(self):
+    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_inferred_type_multi_dim(self, size):
+        from arkouda.util import _generate_test_shape
+
+        for rank in multi_dim_ranks():
+            shape, local_size = _generate_test_shape(rank, size)
+            a = ak.arange(local_size).reshape(shape)
+            assert a.inferred_type == "integer"
+
+            a2 = ak.full(shape, 2.0)
+            assert a2.inferred_type == "floating"
+
+    def test_to_ndarray(self):
         ones = ak.ones(10)
         n_ones = ones.to_ndarray()
         new_ones = ak.array(n_ones)
@@ -952,3 +1163,15 @@ class TestPdarrayCreation:
         n_empty_ones = empty_ones.to_ndarray()
         new_empty_ones = ak.array(n_empty_ones)
         assert empty_ones.to_list() == new_empty_ones.to_list()
+
+    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_to_ndarray_multi_dim(self, size):
+        from arkouda.util import _generate_test_shape
+
+        for rank in multi_dim_ranks():
+            shape, local_size = _generate_test_shape(rank, size)
+            ones = ak.ones(shape)
+            n_ones = ones.to_ndarray()
+            new_ones = ak.array(n_ones)
+            assert ones.to_list() == new_ones.to_list()
