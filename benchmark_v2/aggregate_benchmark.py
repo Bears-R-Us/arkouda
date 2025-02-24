@@ -1,5 +1,6 @@
-import arkouda as ak
 import pytest
+
+import arkouda as ak
 
 
 def setup_agg(t="int"):
@@ -24,6 +25,7 @@ def run_agg(g, vals, op):
 
     return vals.size + vals.itemsize
 
+
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="GroupBy.aggregate")
 @pytest.mark.parametrize("op", ak.GroupBy.Reductions)
@@ -34,9 +36,9 @@ def bench_aggregate(benchmark, op):
         g, vals = setup_agg()
 
     numBytes = benchmark.pedantic(run_agg, args=(g, vals, op), rounds=pytest.trials)
-    benchmark.extra_info[
-        "description"
-    ] = f"Measures performance of GroupBy.aggregate using the {op} operator."
+    benchmark.extra_info["description"] = (
+        f"Measures performance of GroupBy.aggregate using the {op} operator."
+    )
     benchmark.extra_info["problem_size"] = pytest.prob_size
     benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
         (numBytes / benchmark.stats["mean"]) / 2**30

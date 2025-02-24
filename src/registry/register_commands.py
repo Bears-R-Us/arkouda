@@ -33,14 +33,23 @@ chapel_scalar_types = {
     "bigint": "bigint",
 }
 
+class formalKind(Enum):
+    ARRAY = 1
+    LIST = 2
+    BORROWED_CLASS = 3
+    HOMOG_TUPLE = 4
+    SCALAR = 5
+
 # type and variable names from arkouda infrastructure that could conceivable be changed in the future:
 ARGS_FORMAL_INTENT = "<default-intent>"
 ARGS_FORMAL_NAME = "msgArgs"
 ARGS_FORMAL_TYPE = "MessageArgs"
+ARGS_FORMAL_KIND = formalKind.BORROWED_CLASS
 
 SYMTAB_FORMAL_INTENT = "<default-intent>"
 SYMTAB_FORMAL_NAME = "st"
 SYMTAB_FORMAL_TYPE = "SymTab"
+SYMTAB_FORMAL_KIND = formalKind.BORROWED_CLASS
 
 ARRAY_ENTRY_CLASS_NAME = "SymEntry"
 
@@ -128,14 +137,6 @@ class StaticTypeInfo:
 
     def __str__(self):
         return f"static: '{self.value}'"
-
-
-class formalKind(Enum):
-    ARRAY = 1
-    LIST = 2
-    BORROWED_CLASS = 3
-    HOMOG_TUPLE = 4
-    SCALAR = 5
 
 
 class FormalTypeSpec:
@@ -706,13 +707,19 @@ def gen_signature(user_proc_name, generic_args=None):
 
     Return the signature and the name of the procedure
     """
+    args_formal_kind = "borrowed" if ARGS_FORMAL_KIND == formalKind.BORROWED_CLASS else ''
+    args_formal_type = f"{args_formal_kind} {ARGS_FORMAL_TYPE}"
+    symtab_formal_kind = "borrowed" if SYMTAB_FORMAL_KIND == formalKind.BORROWED_CLASS else ''
+    symtab_formal_type = f"{symtab_formal_kind} {SYMTAB_FORMAL_TYPE}"
+
+    cmd_plus_args_plus_symtab = f"cmd: string, {ARGS_FORMAL_NAME}: {args_formal_type}, {SYMTAB_FORMAL_NAME}: {symtab_formal_type}"
     if generic_args:
         name = "ark_reg_" + user_proc_name + "_generic"
         arg_strings = [formal_spec.stringify() for formal_spec in generic_args]
-        proc = f"proc {name}(cmd: string, {ARGS_FORMAL_NAME}: {ARGS_FORMAL_TYPE}, {SYMTAB_FORMAL_NAME}: {SYMTAB_FORMAL_TYPE}, {', '.join(arg_strings)}): {RESPONSE_TYPE_NAME} throws {'{'}"
+        proc = f"proc {name}({cmd_plus_args_plus_symtab}, {', '.join(arg_strings)}): {RESPONSE_TYPE_NAME} throws {'{'}"
     else:
         name = "ark_reg_" + user_proc_name
-        proc = f"proc {name}(cmd: string, {ARGS_FORMAL_NAME}: {ARGS_FORMAL_TYPE}, {SYMTAB_FORMAL_NAME}: {SYMTAB_FORMAL_TYPE}): {RESPONSE_TYPE_NAME} throws {'{'}"
+        proc = f"proc {name}({cmd_plus_args_plus_symtab}): {RESPONSE_TYPE_NAME} throws {'{'}"
     return (proc, name)
 
 
@@ -1219,10 +1226,11 @@ def register_commands(config, source_files):
 
     stamps += extract_enum_imports(config)
 
-    stamps.append("""proc getRegistrationConfig(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    stamps.append(
+        """proc getRegistrationConfig(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         return new MsgTuple(getRegConfig(), MsgType.NORMAL);
-    }""")
-
+    }"""
+    )
 
     stamps.append(
         "proc getRegConfig(): string throws do return try! regConfig;"

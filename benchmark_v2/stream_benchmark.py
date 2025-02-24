@@ -1,11 +1,13 @@
-import arkouda as ak
 import pytest
+
+import arkouda as ak
 
 DTYPES = ["int64", "float64", "bigint"]
 
 
 def run_test(a, b, alpha):
     return a + b * alpha
+
 
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="ak_stream")
@@ -23,8 +25,8 @@ def bench_ak_stream(benchmark, dtype):
     if dtype in ["int64", "float64"]:
         if pytest.random or pytest.seed is not None:
             if dtype == "int64":
-                a = ak.randint(0, 2 ** 32, N, seed=pytest.seed)
-                b = ak.randint(0, 2 ** 32, N, seed=pytest.seed)
+                a = ak.randint(0, 2**32, N, seed=pytest.seed)
+                b = ak.randint(0, 2**32, N, seed=pytest.seed)
                 benchmark.pedantic(run_test, args=(a, b, pytest.alpha), rounds=pytest.trials)
             elif dtype == "float64":
                 a = ak.randint(0, 1, N, dtype=ak.float64, seed=pytest.seed)
@@ -54,5 +56,5 @@ def bench_ak_stream(benchmark, dtype):
     benchmark.extra_info["description"] = f"Measures performance of stream using {dtype} types."
     benchmark.extra_info["problem_size"] = pytest.prob_size
     benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-        (nBytes / benchmark.stats["mean"]) / 2 ** 30
+        (nBytes / benchmark.stats["mean"]) / 2**30
     )

@@ -3,7 +3,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python>=3.9,<3.12.4   # minimum 3.9
+  - python>=3.9   # minimum 3.9
   - numpy>=1.24.1,<2.0
   - pandas>=1.4.0,!=2.2.0
   - pyzmq>=20.0.0
@@ -20,9 +20,10 @@ dependencies:
   - libiconv
   - libidn2
   - jupyter
-  - scipy<=1.13.1
+  - scipy
   - pytest>=6.0
   - pytest-env
+  - cloudpickle
   # - chapel-py
 
   # Developer dependencies
@@ -32,7 +33,6 @@ dependencies:
   - sphinx-autoapi
   - sphinx-design
   - sphinx-autodoc-typehints
-  - typed-ast
   - flake8
   - mypy>=0.931
   - black

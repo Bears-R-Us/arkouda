@@ -1,5 +1,3 @@
-import json
-
 import numpy as np
 import pytest
 
@@ -53,7 +51,8 @@ class TestUtilFunctions:
         # bool
         a = xp.asarray(ak.randint(0, 100, (5, 6, 7), dtype=ak.bool_, seed=s), dtype=ak.bool_)
         with pytest.raises(
-            RuntimeError, match="Error executing command: clip does not support dtype bool"
+            RuntimeError,
+            match="Error executing command: clip does not support dtype bool",
         ):
             xp.clip(a, 10, 90)
 
@@ -65,7 +64,8 @@ class TestUtilFunctions:
         )
         a = xp.asarray(bi_arr, dtype=ak.bool_)
         with pytest.raises(
-            RuntimeError, match="Error executing command: clip does not support dtype bigint"
+            RuntimeError,
+            match="Error executing command: clip does not support dtype bigint",
         ):
             xp.clip(a, 10, 90)
 
@@ -89,7 +89,8 @@ class TestUtilFunctions:
         # bool
         a = xp.asarray(ak.randint(0, 100, (5, 6, 7), dtype=ak.bool_, seed=s), dtype=ak.bool_)
         with pytest.raises(
-            RuntimeError, match="Error executing command: diff does not support dtype bool"
+            RuntimeError,
+            match="Error executing command: diff does not support dtype bool",
         ):
             xp.diff(a, n=2, axis=0)
 
@@ -101,7 +102,8 @@ class TestUtilFunctions:
         )
         a = xp.asarray(bi_arr, dtype=ak.bool_)
         with pytest.raises(
-            RuntimeError, match="Error executing command: diff does not support dtype bigint"
+            RuntimeError,
+            match="Error executing command: diff does not support dtype bigint",
         ):
             xp.diff(a, n=2, axis=0)
 
@@ -111,10 +113,16 @@ class TestUtilFunctions:
         anp = np.ones((5, 6, 7))
 
         a_p = xp.pad(
-            a, ((1, 1), (2, 2), (3, 3)), mode="constant", constant_values=((-1, 1), (-2, 2), (-3, 3))
+            a,
+            ((1, 1), (2, 2), (3, 3)),
+            mode="constant",
+            constant_values=((-1, 1), (-2, 2), (-3, 3)),
         )
         anp_p = np.pad(
-            anp, ((1, 1), (2, 2), (3, 3)), mode="constant", constant_values=((-1, 1), (-2, 2), (-3, 3))
+            anp,
+            ((1, 1), (2, 2), (3, 3)),
+            mode="constant",
+            constant_values=((-1, 1), (-2, 2), (-3, 3)),
         )
         assert a_p.tolist() == anp_p.tolist()
 
@@ -135,7 +143,8 @@ class TestUtilFunctions:
         )
         a = xp.asarray(bi_arr, dtype=ak.bool_)
         with pytest.raises(
-            RuntimeError, match="Error executing command: pad does not support dtype bigint"
+            RuntimeError,
+            match="Error executing command: pad does not support dtype bigint",
         ):
             xp.pad(a, ((1, 1)), mode="constant", constant_values=((-1, 1)))
             xp.diff(a, n=2, axis=0)

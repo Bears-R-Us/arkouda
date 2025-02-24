@@ -1,5 +1,3 @@
-import json
-
 import pytest
 
 import arkouda as ak
@@ -21,11 +19,11 @@ class TestArrayCreation:
     def test_binops(self, op, dtype):
 
         for shape_a, shape_b in zip(SHAPE_A, SHAPE_B):
-            x = xp.asarray(ak.randint(0, 100, shape_a, dtype=dtype, seed=SEED))
+            x = xp.asarray(ak.randint(0, 100, shape_a, dtype=dtype, seed=SEED))  # noqa F841
             y = xp.asarray(ak.randint(0, 100, shape_b, dtype=dtype, seed=SEED))
 
             z = eval("x " + op + " y")
-            ybc = xp.broadcast_to(y, z.shape)
+            ybc = xp.broadcast_to(y, z.shape)  # noqa F841
 
             if z.ndim == 1:
                 for i in range(shape_a[0]):

@@ -802,28 +802,36 @@ class TestNumeric:
                     nd_arry = ia.astype(dtype3)
                     ak_arry = ak.array(nd_arry)
                     assert np.allclose(
-                        np.clip(nd_arry, None, hi[0]), ak.clip(ak_arry, None, hi[0]).to_ndarray()
+                        np.clip(nd_arry, None, hi[0]),
+                        ak.clip(ak_arry, None, hi[0]).to_ndarray(),
                     )
                     assert np.allclose(
-                        np.clip(nd_arry, None, hi), ak.clip(ak_arry, None, akhi).to_ndarray()
+                        np.clip(nd_arry, None, hi),
+                        ak.clip(ak_arry, None, akhi).to_ndarray(),
                     )
                     assert np.allclose(
-                        np.clip(nd_arry, lo[0], hi[0]), ak.clip(ak_arry, lo[0], hi[0]).to_ndarray()
+                        np.clip(nd_arry, lo[0], hi[0]),
+                        ak.clip(ak_arry, lo[0], hi[0]).to_ndarray(),
                     )
                     assert np.allclose(
-                        np.clip(nd_arry, lo[0], hi), ak.clip(ak_arry, lo[0], akhi).to_ndarray()
+                        np.clip(nd_arry, lo[0], hi),
+                        ak.clip(ak_arry, lo[0], akhi).to_ndarray(),
                     )
                     assert np.allclose(
-                        np.clip(nd_arry, lo[0], None), ak.clip(ak_arry, lo[0], None).to_ndarray()
+                        np.clip(nd_arry, lo[0], None),
+                        ak.clip(ak_arry, lo[0], None).to_ndarray(),
                     )
                     assert np.allclose(
-                        np.clip(nd_arry, lo, hi[0]), ak.clip(ak_arry, aklo, hi[0]).to_ndarray()
+                        np.clip(nd_arry, lo, hi[0]),
+                        ak.clip(ak_arry, aklo, hi[0]).to_ndarray(),
                     )
                     assert np.allclose(
-                        np.clip(nd_arry, lo, hi), ak.clip(ak_arry, aklo, akhi).to_ndarray()
+                        np.clip(nd_arry, lo, hi),
+                        ak.clip(ak_arry, aklo, akhi).to_ndarray(),
                     )
                     assert np.allclose(
-                        np.clip(nd_arry, lo, None), ak.clip(ak_arry, aklo, None).to_ndarray()
+                        np.clip(nd_arry, lo, None),
+                        ak.clip(ak_arry, aklo, None).to_ndarray(),
                     )
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
@@ -1165,15 +1173,15 @@ class TestNumeric:
 
         seed = pytest.seed if pytest.seed is not None else 8675309
         np.random.seed(seed)
-        for rank in get_array_ranks(): 
+        for rank in get_array_ranks():
             last_dim = prob_size // (2 ** (rank - 1))  # build a dimension of (2,2,...n)
-            local_shape = (rank - 1) * [2]             # such that 2*2*..*n is close to prob_size
-            local_shape.append(last_dim)               # building local_shape really does take
-            local_shape = tuple(local_shape)           # multiple steps because .append doesn't
-            local_size = prod(local_shape)             # return a value.
+            local_shape = (rank - 1) * [2]  # such that 2*2*..*n is close to prob_size
+            local_shape.append(last_dim)  # building local_shape really does take
+            local_shape = tuple(local_shape)  # multiple steps because .append doesn't
+            local_size = prod(local_shape)  # return a value.
 
             sample = np.random.uniform(0, 100, local_size)  # make the data
             if rank > 1:
-                sample = sample.reshape(local_shape)   # reshape only needed if rank > 1
+                sample = sample.reshape(local_shape)  # reshape only needed if rank > 1
             aksample = ak.array(sample)
             assert np.all(npfunc(sample) == akfunc(aksample).to_ndarray())

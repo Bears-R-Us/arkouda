@@ -64,7 +64,7 @@ Advanced Options
 
 ```commandline
 Name: flake8     Group: External Tools
-Description: pep8 formating validation
+Description: pep8 formatting validation
 
 Tool Settings
     Program: $PyInterpreterDirectory$/flake8

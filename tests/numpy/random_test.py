@@ -63,9 +63,8 @@ class TestRandom:
 
         # ints are checked for equality; floats are checked for closeness
 
-        check = lambda a, b, t: (
-            (a == b).all() if t is ak.int64 else np.allclose(a.to_list(), b.to_list())
-        )
+        def check(a, b, t):
+            return (a == b).all() if t is ak.int64 else np.allclose(a.to_list(), b.to_list())
 
         # verify all the same elements are in the shuffle as in the original
 
@@ -92,9 +91,8 @@ class TestRandom:
 
         # ints are checked for equality; floats are checked for closeness
 
-        check = lambda a, b, t: (
-            (a == b).all() if t is ak.int64 else np.allclose(a.to_list(), b.to_list())
-        )
+        def check(a, b, t):
+            return (a == b).all() if t is ak.int64 else np.allclose(a.to_list(), b.to_list())
 
         # verify all the same elements are in the permutation as in the original
 
@@ -380,7 +378,7 @@ class TestRandom:
         # if pval <= 0.05, the difference from the expected distribution is significant
         assert pval > 0.05
 
-    @pytest.mark.parametrize("method", ["zig", "box"])
+    @pytest.mark.parametrize("method", ["zig", "inv"])
     def test_exponential_hypothesis_testing(self, method):
         # I tested this many times without a set seed, but with no seed
         # it's expected to fail one out of every ~20 runs given a pval limit of 0.05.
@@ -476,25 +474,6 @@ class TestRandom:
         exp_counts = sp_stats.poisson.pmf(range(num_elems), mu=lam) * num_samples
         _, pval = sp_stats.chisquare(f_obs=obs_counts, f_exp=exp_counts)
         assert pval > 0.05
-
-    @pytest.mark.parametrize("method", ["zig", "inv"])
-    def test_exponential_hypothesis_testing(self, method):
-        # I tested this many times without a set seed, but with no seed
-        # it's expected to fail one out of every ~20 runs given a pval limit of 0.05.
-        rng = ak.random.default_rng(43)
-        num_samples = 10**4
-
-        scale = rng.uniform(0, 10)
-        sample = rng.exponential(scale=scale, size=num_samples, method=method)
-        sample_list = sample.to_list()
-
-        # do the Kolmogorov-Smirnov test for goodness of fit
-        ks_res = sp_stats.kstest(
-            rvs=sample_list,
-            cdf=sp_stats.expon.cdf,
-            args=(0, scale),
-        )
-        assert ks_res.pvalue > 0.05
 
     def test_logistic_hypothesis_testing(self):
         # I tested this many times without a set seed, but with no seed
