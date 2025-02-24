@@ -372,6 +372,38 @@ Module Contents
 
 
 
+   .. py:method:: standard_gamma(shape, size=None)
+
+      Draw samples from a standard gamma distribution.
+
+      Samples are drawn from a Gamma distribution with specified parameters,
+      shape (sometimes designated “k”) and scale (sometimes designated “theta”),
+      where both parameters are > 0.
+
+      :param shape: specified parameter (sometimes designated “k”)
+      :type shape: numeric_scalars
+      :param size: Output shape. Default is None, in which case a single value is returned.
+      :type size: numeric_scalars, optional
+
+      :returns: Pdarray of floats (unless size=None, in which case a single float is returned).
+      :rtype: pdarray
+
+      .. rubric:: Notes
+
+      The probability density function for the Gamma distribution is
+      .. math::
+          p(x) = x^{k-1}\frac{e^{\frac{-x}{\theta}}}{\theta^k\Gamma(k)}
+
+      .. rubric:: Examples
+
+      >>> rng = ak.random.default_rng()
+      >>> rng.rng.standard_gamma(1)
+      0.8729704388729135 # random
+      >>> rng.standard_gamma(1, size=3)
+      array([0.4879818539586227 0.6534654349920751 0.40990997253631162]) # random
+
+
+
    .. py:method:: standard_normal(size=None, method='zig')
 
       Draw samples from a standard Normal distribution (mean=0, stdev=1).

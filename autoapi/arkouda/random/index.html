@@ -799,6 +799,43 @@ with a scale parameter of 1.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.random.Generator.standard_gamma">
+<span class="sig-name descname"><span class="pre">standard_gamma</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numpy/random/_generator.html#Generator.standard_gamma"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.random.Generator.standard_gamma" title="Link to this definition">¶</a></dt>
+<dd><p>Draw samples from a standard gamma distribution.</p>
+<p>Samples are drawn from a Gamma distribution with specified parameters,
+shape (sometimes designated “k”) and scale (sometimes designated “theta”),
+where both parameters are &gt; 0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>shape</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.numeric_scalars" title="arkouda.dtypes.numeric_scalars"><em>numeric_scalars</em></a>) – specified parameter (sometimes designated “k”)</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.numeric_scalars" title="arkouda.dtypes.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Pdarray of floats (unless size=None, in which case a single float is returned).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The probability density function for the Gamma distribution is
+.. math:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">p</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">=</span> <span class="n">x</span><span class="o">^</span><span class="p">{</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">}</span>\<span class="n">frac</span><span class="p">{</span><span class="n">e</span><span class="o">^</span><span class="p">{</span>\<span class="n">frac</span><span class="p">{</span><span class="o">-</span><span class="n">x</span><span class="p">}{</span>\<span class="n">theta</span><span class="p">}}}{</span>\<span class="n">theta</span><span class="o">^</span><span class="n">k</span>\<span class="n">Gamma</span><span class="p">(</span><span class="n">k</span><span class="p">)}</span>
+</pre></div>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">rng</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rng</span><span class="o">.</span><span class="n">rng</span><span class="o">.</span><span class="n">standard_gamma</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">0.8729704388729135 # random</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rng</span><span class="o">.</span><span class="n">standard_gamma</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="go">array([0.4879818539586227 0.6534654349920751 0.40990997253631162]) # random</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.random.Generator.standard_normal">
 <span class="sig-name descname"><span class="pre">standard_normal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'zig'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numpy/random/_generator.html#Generator.standard_normal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.random.Generator.standard_normal" title="Link to this definition">¶</a></dt>
 <dd><p>Draw samples from a standard Normal distribution (mean=0, stdev=1).</p>
@@ -1110,6 +1147,7 @@ is invoked with a dtype of float64</p>
 <li><a class="reference internal" href="#arkouda.random.Generator.random"><code class="docutils literal notranslate"><span class="pre">Generator.random()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.random.Generator.shuffle"><code class="docutils literal notranslate"><span class="pre">Generator.shuffle()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.random.Generator.standard_exponential"><code class="docutils literal notranslate"><span class="pre">Generator.standard_exponential()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.random.Generator.standard_gamma"><code class="docutils literal notranslate"><span class="pre">Generator.standard_gamma()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.random.Generator.standard_normal"><code class="docutils literal notranslate"><span class="pre">Generator.standard_normal()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.random.Generator.uniform"><code class="docutils literal notranslate"><span class="pre">Generator.uniform()</span></code></a></li>
 </ul>

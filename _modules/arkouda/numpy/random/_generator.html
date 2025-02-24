@@ -900,6 +900,71 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="Generator.standard_gamma">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/random/index.html#arkouda.numpy.random.Generator.standard_gamma">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">standard_gamma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Draw samples from a standard gamma distribution.</span>
+
+<span class="sd">        Samples are drawn from a Gamma distribution with specified parameters,</span>
+<span class="sd">        shape (sometimes designated “k”) and scale (sometimes designated “theta”),</span>
+<span class="sd">        where both parameters are &gt; 0.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        shape: numeric_scalars</span>
+<span class="sd">            specified parameter (sometimes designated “k”)</span>
+<span class="sd">        size: numeric_scalars, optional</span>
+<span class="sd">            Output shape. Default is None, in which case a single value is returned.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pdarray</span>
+<span class="sd">            Pdarray of floats (unless size=None, in which case a single float is returned).</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The probability density function for the Gamma distribution is</span>
+<span class="sd">        .. math::</span>
+<span class="sd">            p(x) = x^{k-1}\frac{e^{\frac{-x}{\theta}}}{\theta^k\Gamma(k)}</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; rng = ak.random.default_rng()</span>
+<span class="sd">        &gt;&gt;&gt; rng.rng.standard_gamma(1)</span>
+<span class="sd">        0.8729704388729135 # random</span>
+<span class="sd">        &gt;&gt;&gt; rng.standard_gamma(1, size=3)</span>
+<span class="sd">        array([0.4879818539586227 0.6534654349920751 0.40990997253631162]) # random</span>
+<span class="sd">        &quot;&quot;&quot;</span>  <span class="c1"># noqa: W605</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">_infer_shape_from_size</span>
+
+        <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># delegate to numpy when return size is 1</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_np_generator</span><span class="o">.</span><span class="n">standard_gamma</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="c1"># rename shape to avoid conflict, it&#39;s also referred to as k</span>
+        <span class="c1"># in the numpy doc string</span>
+        <span class="n">is_single_k</span><span class="p">,</span> <span class="n">k_arg</span> <span class="o">=</span> <span class="n">float_array_or_scalar_helper</span><span class="p">(</span><span class="s2">&quot;gamma&quot;</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+
+        <span class="n">shape</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">full_size</span> <span class="o">=</span> <span class="n">_infer_shape_from_size</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">full_size</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The size parameter must be &gt; 0&quot;</span><span class="p">)</span>
+
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;standardGamma&lt;</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name_dict</span><span class="p">[</span><span class="n">akdtype</span><span class="p">(</span><span class="s2">&quot;float64&quot;</span><span class="p">)],</span>
+                <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">shape</span><span class="p">,</span>
+                <span class="s2">&quot;is_single_k&quot;</span><span class="p">:</span> <span class="n">is_single_k</span><span class="p">,</span>
+                <span class="s2">&quot;k_arg&quot;</span><span class="p">:</span> <span class="n">k_arg</span><span class="p">,</span>
+                <span class="s2">&quot;has_seed&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="Generator.standard_normal">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/random/index.html#arkouda.numpy.random.Generator.standard_normal">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">standard_normal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;zig&quot;</span><span class="p">):</span>
