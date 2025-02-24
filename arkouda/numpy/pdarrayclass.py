@@ -54,7 +54,9 @@ if TYPE_CHECKING:
     min = numeric_reduce
 
     def boolean_reduce(
-        pda, axis: Optional[Union[int_scalars, Tuple[int_scalars, ...]]] = None, keepdims: bool = False
+        pda,
+        axis: Optional[Union[int_scalars, Tuple[int_scalars, ...]]] = None,
+        keepdims: bool = False,
     ) -> Union[bool_scalars, pdarray]:
         pass
 
@@ -64,7 +66,9 @@ if TYPE_CHECKING:
     any = boolean_reduce
 
     def index_reduce(
-        pda: pdarray, axis: Optional[Union[int_scalars, None]] = None, keepdims: bool = False
+        pda: pdarray,
+        axis: Optional[Union[int_scalars, None]] = None,
+        keepdims: bool = False,
     ) -> Union[akint64, akuint64, pdarray]:
         pass
 
@@ -113,7 +117,16 @@ __all__ = [
 ]
 logger = getArkoudaLogger(name="pdarrayclass")
 
-SUPPORTED_REDUCTION_OPS = ["any", "all", "isSorted", "isSortedLocally", "max", "min", "sum", "prod"]
+SUPPORTED_REDUCTION_OPS = [
+    "any",
+    "all",
+    "isSorted",
+    "isSortedLocally",
+    "max",
+    "min",
+    "sum",
+    "prod",
+]
 
 SUPPORTED_INDEX_REDUCTION_OPS = ["argmin", "argmax"]
 
@@ -326,7 +339,7 @@ def _array_memview(a) -> memoryview:
 class pdarray:
     """
     The basic arkouda array class. This class contains only the
-    attributies of the array; the data resides on the arkouda
+    attributes of the array; the data resides on the arkouda
     server. When a server operation results in a new array, arkouda
     will create a pdarray instance that points to the array data on
     the server. As such, the user should not initialize pdarray
@@ -341,7 +354,7 @@ class pdarray:
     size : int_scalars
         The number of elements in the array
     ndim : int_scalars
-        The rank of the array (currently only rank 1 arrays supported)
+        The rank of the array
     shape : Sequence[int]
         A list or tuple containing the sizes of each dimension of the array
     itemsize : int_scalars
@@ -469,8 +482,6 @@ class pdarray:
 
         Examples
         --------
-        >>> import arkouda as ak
-        >>> ak.connect()
         >>> a = ak.array([1, 2, 3])
         >>> a_cpy = ak.array([1, 2, 3])
         >>> a.equals(a_cpy)
@@ -561,7 +572,8 @@ class pdarray:
             except ValueError:
                 raise ValueError(f"shape mismatch {self.shape} {other.shape}")
             repMsg = generic_msg(
-                cmd=f"binopvv<{self.dtype},{other.dtype},{x1.ndim}>", args={"op": op, "a": x1, "b": x2}
+                cmd=f"binopvv<{self.dtype},{other.dtype},{x1.ndim}>",
+                args={"op": op, "a": x1, "b": x2},
             )
             if tmp_x1:
                 del x1
@@ -666,7 +678,12 @@ class pdarray:
         # hostname is the hostname to send to
         return generic_msg(
             cmd="sendArray",
-            args={"arg1": self, "hostname": hostname, "port": port, "objType": "pdarray"},
+            args={
+                "arg1": self,
+                "hostname": hostname,
+                "port": port,
+                "objType": "pdarray",
+            },
         )
 
     # overload + for pdarray, other can be {pdarray, int, float}
@@ -1035,7 +1052,10 @@ class pdarray:
             if key == slice(None):
                 # TODO: implement a cloneMsg to make this more efficient
                 return _slice_index(
-                    self, [0 for _ in range(self.ndim)], self.shape, [1 for _ in range(self.ndim)]
+                    self,
+                    [0 for _ in range(self.ndim)],
+                    self.shape,
+                    [1 for _ in range(self.ndim)],
                 )
             else:
                 # TODO: mimic numpy's behavior of applying the slice to only the first dimension?
@@ -1063,7 +1083,7 @@ class pdarray:
                             "array": self,
                             "idx": key,
                             "value": self.format_other(_value),
-                            "max_bits": self.max_bits if self.max_bits is not None else 0,
+                            "max_bits": (self.max_bits if self.max_bits is not None else 0),
                         },
                     )
                 else:
@@ -1071,7 +1091,8 @@ class pdarray:
             elif isinstance(key, pdarray):
                 if isinstance(_value, pdarray):
                     generic_msg(
-                        cmd="[pdarray]=pdarray", args={"array": self, "idx": key, "value": _value}
+                        cmd="[pdarray]=pdarray",
+                        args={"array": self, "idx": key, "value": _value},
                     )
                 else:
                     generic_msg(
@@ -1106,7 +1127,7 @@ class pdarray:
                             "stops": stop,
                             "strides": stride,
                             "value": self.format_other(_value),
-                            "max_bits": self.max_bits if self.max_bits is not None else 0,
+                            "max_bits": (self.max_bits if self.max_bits is not None else 0),
                         },
                     )
             else:
@@ -1208,7 +1229,7 @@ class pdarray:
                             "array": self,
                             "idx": key,
                             "value": self.format_other(_value),
-                            "max_bits": self.max_bits if self.max_bits is not None else 0,
+                            "max_bits": (self.max_bits if self.max_bits is not None else 0),
                         },
                     )
                 else:
@@ -1220,7 +1241,7 @@ class pdarray:
                             "stops": tuple(stops),
                             "strides": tuple(strides),
                             "value": self.format_other(_value),
-                            "max_bits": self.max_bits if self.max_bits is not None else 0,
+                            "max_bits": (self.max_bits if self.max_bits is not None else 0),
                         },
                     )
             elif isinstance(key, slice):
@@ -1246,7 +1267,7 @@ class pdarray:
                                 "stops": tuple(self.shape),
                                 "strides": tuple([1 for _ in range(self.ndim)]),
                                 "value": self.format_other(_value),
-                                "max_bits": self.max_bits if self.max_bits is not None else 0,
+                                "max_bits": (self.max_bits if self.max_bits is not None else 0),
                             },
                         )
                 else:
@@ -1283,22 +1304,102 @@ class pdarray:
         """
         cmd = f"set<{self.dtype},{self.ndim}>"
         generic_msg(
-            cmd=cmd, args={"array": self, "dtype": self.dtype.name, "val": self.format_other(value)}
+            cmd=cmd,
+            args={
+                "array": self,
+                "dtype": self.dtype.name,
+                "val": self.format_other(value),
+            },
         )
 
     def any(
         self, axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False
     ) -> Union[bool_scalars, pdarray]:
         """
-        Return True iff any element of the array evaluates to True.
+        Return True iff any element of the array along the given axis evaluates to True.
+
+        Parameters
+        ----------
+        axis : int, Tuple[int, ...], optional, default = None
+            The axis or axes along which to do the operation
+            If None, the computation is done across the entire array.
+        keepdims : bool, optional, default = False
+            Whether to keep the singleton dimension(s) along `axis` in the result.
+
+        Returns
+        -------
+        boolean or pdarray
+            boolean if axis is omitted, else pdarray if axis is supplied
+
+        Examples
+        --------
+        >>> ak.any(ak.array([True,False,False]))
+        True
+        >>> ak.any(ak.array([[True,True,False],[False,True,True]]),axis=0)
+        array([True True True])
+        >>> ak.any(ak.array([[True,True,True],[False,False,False]]),axis=0,keepdims=True)
+        array([array([True True True])])
+        >>> ak.any(ak.array([[True,True,True],[False,False,False]]),axis=1,keepdims=True)
+        array([array([True]) array([False])])
+        >>> ak.array([True,False,False]).any()
+        True
+
+        Raises
+        ------
+        TypeError
+            Raised if pda is not a pdarray instance
+        RuntimeError
+            Raised if there's a server-side error thrown
+
+        Notes
+        -----
+        Works as a method of a pdarray (e.g. a.any()) or a standalone function (e.g. ak.any(a))
         """
+        #   Function is generated at runtime with _make_reduction_func.
         return any(self, axis=axis, keepdims=keepdims)
 
     def all(
         self, axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False
     ) -> Union[bool_scalars, pdarray]:
         """
-        Return True iff all elements of the array evaluate to True.
+        Return True iff all elements of the array along the given axis evaluate to True.
+
+        Parameters
+        ----------
+        axis : int, Tuple[int, ...], optional, default = None
+            The axis or axes along which to do the operation
+            If None, the computation is done across the entire array.
+        keepdims : bool, optional, default = False
+            Whether to keep the singleton dimension(s) along `axis` in the result.
+
+        Returns
+        -------
+        boolean or pdarray
+            boolean if axis is omitted, pdarray if axis is supplied
+
+        Examples
+        --------
+        >>> ak.all(ak.array([True,False,False]))
+        False
+        >>> ak.all(ak.array([[True,True,False],[False,True,True]]),axis=0)
+        array([False True False])
+        >>> ak.all(ak.array([[True,True,True],[False,False,False]]),axis=0,keepdims=True)
+        array([array([False False False])])
+        >>> ak.all(ak.array([[True,True,True],[False,False,False]]),axis=1,keepdims=True)
+        array([array([True]) array([False])])
+        >>> ak.array([True,False,False]).all()
+        False
+
+        Raises
+        ------
+        TypeError
+            Raised if pda is not a pdarray instance
+        RuntimeError
+            Raised if there's a server-side error thrown
+
+        Notes
+        -----
+        Works as a method of a pdarray (e.g. a.any()) or a standalone function (e.g. ak.all(a))
         """
         return all(self, axis=axis, keepdims=keepdims)
 
@@ -1379,16 +1480,20 @@ class pdarray:
         self, axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False
     ) -> Union[bool_scalars, pdarray]:
         """
-        Return True iff the array is monotonically non-decreasing.
+        Return True iff the array (or given axis of the array) is monotonically non-decreasing.
 
         Parameters
         ----------
-        None
+        axis : int, Tuple[int, ...], optional, default = None
+            The axis or axes along which to do the operation
+            If None, the computation is done across the entire array.
+        keepdims : bool, optional, default = False
+            Whether to keep the singleton dimension(s) along `axis` in the result.
 
         Returns
         -------
-        bool
-            Indicates if the array is monotonically non-decreasing
+        boolean or pdarray
+            boolean if axis is omitted, else pdarray if axis is supplied
 
         Raises
         ------
@@ -1396,7 +1501,22 @@ class pdarray:
             Raised if pda is not a pdarray instance
         RuntimeError
             Raised if there's a server-side error thrown
+
+        Examples
+        --------
+        >>> ak.is_sorted(ak.array([1,2,3,4,5]))
+        True
+        >>> ak.is_sorted(ak.array([5,4,3,2,1]))
+        False
+        >>> ak.array([[1,2,3],[5,4,3]]).is_sorted(axis=1)
+        array([True False])
+
+        Notes
+        -----
+        Works as a method of a pdarray (e.g. a.is_sorted()) or a
+        standalone function (e.g. ak.is_sorted(a))
         """
+        #   Function is generated at runtime with _make_reduction_func.
         return is_sorted(self, axis=axis, keepdims=keepdims)  # noqa: F821
 
     def sum(
@@ -1405,7 +1525,41 @@ class pdarray:
         keepdims: bool = False,
     ) -> Union[numpy_scalars, pdarray]:
         """
-        Return the sum of all elements in the array.
+        Return sum of array elements along the given axis.
+
+        Parameters
+        ----------
+        axis : int, Tuple[int, ...], optional, default = None
+            The axis or axes along which to do the operation
+            If None, the computation is done across the entire array.
+        keepdims : bool, optional, default = False
+            Whether to keep the singleton dimension(s) along `axis` in the result.
+
+        Returns
+        -------
+        numpy_scalar or pdarray
+            numpy_scalar if axis is omitted, in which case operation is done over entire array
+            pdarray if axis is supplied, in which case the operation is done along that axis
+
+        Raises
+        ------
+        TypeError
+            Raised if pda is not a pdarray instance
+        RuntimeError
+            Raised if there's a server-side error thrown
+
+        Examples
+        --------
+        >>> ak.sum(ak.array([1,2,3,4,5]))
+        15
+        >>> ak.sum(ak.array([5.5,4.5,3.5,2.5,1.5]))
+        17.5
+        >>> ak.array([[1,2,3],[5,4,3]]).sum(axis=1)
+        array([6 12])
+
+        Notes
+        -----
+        Works as a method of a pdarray (e.g. a.sum()) or a standalone function (e.g. ak.sum(a))
         """
         #   Function is generated at runtime with _make_reduction_func.
         return sum(self, axis=axis, keepdims=keepdims)
@@ -1416,8 +1570,41 @@ class pdarray:
         keepdims: bool = False,
     ) -> Union[numpy_scalars, pdarray]:
         """
-        Return the product of all elements in the array. Return value is
-        always a np.float64 or np.int64.
+        Return prod of array elements along the given axis.
+
+        Parameters
+        ----------
+        axis : int, Tuple[int, ...], optional, defalt = None
+            The axis or axes along which to do the operation
+            If None, the computation is done across the entire array.
+        keepdims : bool, optional, default = False
+            Whether to keep the singleton dimension(s) along `axis` in the result.
+
+        Returns
+        -------
+        numpy_scalar or pdarray
+            numpy_scalar if axis is omitted, in which case operation is done over entire array
+            pdarray if axis is supplied, in which case the operation is done along that axis
+
+        Raises
+        ------
+        TypeError
+            Raised if pda is not a pdarray instance
+        RuntimeError
+            Raised if there's a server-side error thrown
+
+        Examples
+        --------
+        >>> ak.prod(ak.array([1,2,3,4,5]))
+        120
+        >>> ak.prod(ak.array([5.5,4.5,3.5,2.5,1.5]))
+        324.84375
+        >>> ak.array([[1,2,3],[5,4,3]]).prod(axis=1)
+        array([6 60])
+
+        Notes
+        -----
+        Works as a method of a pdarray (e.g. a.prod()) or a standalone function (e.g. ak.prod(a))
         """
         #   Function is generated at runtime with _make_reduction_func.
         return prod(self, axis=axis, keepdims=keepdims)  # noqa: F821
@@ -1428,7 +1615,41 @@ class pdarray:
         keepdims: bool = False,
     ) -> Union[numpy_scalars, pdarray]:
         """
-        Return the minimum value of the array.
+        Return min of array elements along the given axis.
+
+        Parameters
+        ----------
+        axis : int, Tuple[int, ...], optional, default = None
+            The axis or axes along which to do the operation
+            If None, the computation is done across the entire array.
+        keepdims : bool, optional, default = False
+            Whether to keep the singleton dimension(s) along `axis` in the result.
+
+        Returns
+        -------
+        numpy_scalar or pdarray
+            numpy_scalar if axis is omitted, in which case operation is done over entire array
+            pdarray if axis is supplied, in which case the operation is done along that axis
+
+        Raises
+        ------
+        TypeError
+            Raised if pda is not a pdarray instance
+        RuntimeError
+            Raised if there's a server-side error thrown
+
+        Examples
+        --------
+        >>> ak.min(ak.array([1,2,3,4,5]))
+        1
+        >>> ak.min(ak.array([5.5,4.5,3.5,2.5,1.5]))
+        1.5
+        >>> ak.array([[1,2,3],[5,4,3]]).min(axis=1)
+        array([1 3])
+
+        Notes
+        -----
+        Works as a method of a pdarray (e.g. a.min()) or a standalone function (e.g. ak.min(a))
         """
         #   Function is generated at runtime with _make_reduction_func.
         return min(self, axis=axis, keepdims=keepdims)
@@ -1439,7 +1660,41 @@ class pdarray:
         keepdims: bool = False,
     ) -> Union[numpy_scalars, pdarray]:
         """
-        Return the maximum value of the array.
+        Return max of array elements along the given axis.
+
+        Parameters
+        ----------
+        axis : int, Tuple[int, ...], optional, default = None
+            The axis or axes along which to do the operation
+            If None, the computation is done across the entire array.
+        keepdims : bool, optional, default = False
+            Whether to keep the singleton dimension(s) along `axis` in the result.
+
+        Returns
+        -------
+        numpy_scalar or pdarray
+            numpy_scalar if axis is omitted, in which case operation is done over entire array
+            pdarray if axis is supplied, in which case the operation is done along that axis
+
+        Raises
+        ------
+        TypeError
+            Raised if pda is not a pdarray instance
+        RuntimeError
+            Raised if there's a server-side error thrown
+
+        Examples
+        --------
+        >>> ak.max(ak.array([1,2,3,4,5]))
+        5
+        >>> ak.max(ak.array([5.5,4.5,3.5,2.5,1.5]))
+        5.5
+        >>> ak.array([[1,2,3],[5,4,3]]).max(axis=1)
+        array([3 5])
+
+        Notes
+        -----
+        Works as a method of a pdarray (e.g. a.max()) or a standalone function (e.g. ak.max(a))
         """
         #   Function is generated at runtime with _make_reduction_func.
         return max(self, axis=axis, keepdims=keepdims)
@@ -1448,7 +1703,41 @@ class pdarray:
         self, axis: Optional[Union[int, None]] = None, keepdims: bool = False
     ) -> Union[np.int64, np.uint64, pdarray]:
         """
-        Return the index of the first occurrence of the array min value
+        Return index of the first occurrence of the minimum along the given axis.
+
+        Parameters
+        ----------
+        axis : int, Tuple[int, ...], optional, default = None
+            The axis or axes along which to do the operation
+            If None, the computation is done across the entire array.
+        keepdims : bool, optional, default = False
+            Whether to keep the singleton dimension(s) along `axis` in the result.
+
+        Returns
+        -------
+        int64, uint64 or pdarray
+            int64 or uint64 if axis is omitted, in which case operation is done over entire array
+            pdarray if axis is supplied, in which case the operation is done along that axis
+
+        Raises
+        ------
+        TypeError
+            Raised if pda is not a pdarray instance
+        RuntimeError
+            Raised if there's a server-side error thrown
+
+        Examples
+        --------
+        >>> ak.argmin(ak.array([1,2,3,4,5]))
+        0
+        >>> ak.argmin(ak.array([5.5,4.5,3.5,2.5,1.5]))
+        4
+        >>> ak.array([[1,2,3],[5,4,3]]).argmin(axis=1)
+        array([0 2])
+
+        Notes
+        -----
+        Works as a method of a pdarray (e.g. a.argmin()) or a standalone function (e.g. ak.argmin(a))
         """
         #   Function is generated at runtime with _make_index_reduction_func.
         return argmin(self, axis=axis, keepdims=keepdims)
@@ -1457,194 +1746,100 @@ class pdarray:
         self, axis: Optional[Union[int, None]] = None, keepdims: bool = False
     ) -> Union[np.int64, np.uint64, pdarray]:
         """
-        Return the index of the first occurrence of the array max value.
+        Return index of the first occurrence of the maximum along the given axis.
+
+        Parameters
+        ----------
+        axis : int, Tuple[int, ...], optional, default = None
+            The axis or axes along which to do the operation
+            If None, the computation is done across the entire array.
+        keepdims : bool, optional, default = False
+            Whether to keep the singleton dimension(s) along `axis` in the result.
+
+        Returns
+        -------
+        int64, uint64 or pdarray
+            int64 or uint64 if axis is omitted, in which case operation is done over entire array
+            pdarray if axis is supplied, in which case the operation is done along that axis
+
+        Raises
+        ------
+        TypeError
+            Raised if pda is not a pdarray instance
+        RuntimeError
+            Raised if there's a server-side error thrown
+
+        Examples
+        --------
+        >>> ak.argmax(ak.array([1,2,3,4,5]))
+        4
+        >>> ak.argmax(ak.array([5.5,4.5,3.5,2.5,1.5]))
+        0
+        >>> ak.array([[1,2,3],[5,4,3]]).argmax(axis=1)
+        array([2 0])
+
+        Notes
+        -----
+        Works as a method of a pdarray (e.g. a.argmax()) or a standalone function (e.g. ak.argmax(a))
         """
         #   Function is generated at runtime with _make_index_reduction_func.
         return argmax(self, axis=axis, keepdims=keepdims)
 
     def mean(self) -> np.float64:
         """
-        Return the mean of the array.
+        Compute the mean.  See ``arkouda.mean`` for details.
         """
         return mean(self)
 
     def var(self, ddof: int_scalars = 0) -> np.float64:
         """
         Compute the variance. See ``arkouda.var`` for details.
-
-        Parameters
-        ----------
-        ddof : int_scalars
-            "Delta Degrees of Freedom" used in calculating var
-
-        Returns
-        -------
-        np.float64
-            The scalar variance of the array
-
-        Raises
-        ------
-        TypeError
-            Raised if pda is not a pdarray instance
-        ValueError
-            Raised if the ddof >= pdarray size
-        RuntimeError
-            Raised if there's a server-side error thrown
-
         """
         return var(self, ddof=ddof)
 
     def std(self, ddof: int_scalars = 0) -> np.float64:
         """
         Compute the standard deviation. See ``arkouda.std`` for details.
-
-        Parameters
-        ----------
-        ddof : int_scalars
-            "Delta Degrees of Freedom" used in calculating std
-
-        Returns
-        -------
-        np.float64
-            The scalar standard deviation of the array
-
-        Raises
-        ------
-        TypeError
-            Raised if pda is not a pdarray instance
-        RuntimeError
-            Raised if there's a server-side error thrown
         """
         return std(self, ddof=ddof)
 
     def cov(self, y: pdarray) -> np.float64:
         """
         Compute the covariance between self and y.
-
-        Parameters
-        ----------
-        y : pdarray
-            Other pdarray used to calculate covariance
-
-        Returns
-        -------
-        np.float64
-            The scalar covariance of the two arrays
-
-        Raises
-        ------
-        TypeError
-            Raised if y is not a pdarray instance
-        RuntimeError
-            Raised if there's a server-side error thrown
         """
         return cov(self, y)
 
     def corr(self, y: pdarray) -> np.float64:
         """
         Compute the correlation between self and y using pearson correlation coefficient.
-
-        Parameters
-        ----------
-        y : pdarray
-            Other pdarray used to calculate correlation
-
-        Returns
-        -------
-        np.float64
-            The scalar correlation of the two arrays
-
-        Raises
-        ------
-        TypeError
-            Raised if y is not a pdarray instance
-        RuntimeError
-            Raised if there's a server-side error thrown
+        See ``arkouda.corr`` for details.
         """
         return corr(self, y)
 
     def mink(self, k: int_scalars) -> pdarray:
         """
-        Compute the minimum "k" values.
-
-        Parameters
-        ----------
-        k : int_scalars
-            The desired count of maximum values to be returned by the output.
-
-        Returns
-        -------
-        pdarray, int
-            The maximum `k` values from pda
-
-        Raises
-        ------
-        TypeError
-            Raised if pda is not a pdarray
+        Compute the minimum "k" values.  See ``arkouda.mink`` for details.
         """
         return mink(self, k)
 
     @typechecked
     def maxk(self, k: int_scalars) -> pdarray:
         """
-        Compute the maximum "k" values.
-
-        Parameters
-        ----------
-        k : int_scalars
-            The desired count of maximum values to be returned by the output.
-
-        Returns
-        -------
-        pdarray, int
-            The maximum `k` values from pda
-
-        Raises
-        ------
-        TypeError
-            Raised if pda is not a pdarray
+        Compute the maximum "k" values.  See ``arkouda.maxk`` for details.
         """
         return maxk(self, k)
 
     def argmink(self, k: int_scalars) -> pdarray:
         """
-        Compute the minimum "k" values.
-
-        Parameters
-        ----------
-        k : int_scalars
-            The desired count of maximum values to be returned by the output.
-
-        Returns
-        -------
-        pdarray, int
-            Indices corresponding to the maximum `k` values from pda
-
-        Raises
-        ------
-        TypeError
-            Raised if pda is not a pdarray
+        Finds the indices corresponding to the `k` minimum values of an array.
+        See ``arkouda.argmink`` for details.
         """
         return argmink(self, k)
 
     def argmaxk(self, k: int_scalars) -> pdarray:
         """
-        Finds the indices corresponding to the maximum "k" values.
-
-        Parameters
-        ----------
-        k : int_scalars
-            The desired count of maximum values to be returned by the output.
-
-        Returns
-        -------
-        pdarray, int
-            Indices corresponding to the  maximum `k` values, sorted
-
-        Raises
-        ------
-        TypeError
-            Raised if pda is not a pdarray
+        Finds the indices corresponding to the `k` maximum values of an array.
+        See ``arkouda.argmaxk`` for details.
         """
         return argmaxk(self, k)
 
@@ -1701,7 +1896,11 @@ class pdarray:
         >>> ak.array([2, 0, 2, 4, 0, 0]).value_counts()
         (array([0, 2, 4]), array([3, 2, 1]))
         """
+
         from arkouda.numpy import value_counts
+
+        if self.ndim > 1:
+            raise ValueError(f"value_counts is only implemented for 1D arrays; got {self.ndim}")
 
         return value_counts(self)
 
@@ -1713,6 +1912,15 @@ class pdarray:
         __________
         dtype: np.dtype or str
             Dtype to cast to
+
+        Examples
+        --------
+        >>> ak.array([1,2,3]).astype(ak.float64)
+        array([1.00000000000000000 2.00000000000000000 3.00000000000000000])
+        >>> ak.array([1.5,2.5]).astype(ak.int64)
+        array([1 2])
+        >>> ak.array([True,False]).astype(ak.int64)
+        array([1 0])
 
         Returns
         _______
@@ -1757,9 +1965,15 @@ class pdarray:
         >>> p = ak.array([2**65 + (2**64 - 1)])
         >>> bin(p[0])
         '0b101111111111111111111111111111111111111111111111111111111111111111'
-
         >>> bin(p.slice_bits(64, 65)[0])
         '0b10'
+        >>> a = ak.array([143,15])
+        >>> a.slice_bits(1,3)
+        array([7 7])
+        >>> a.slice_bits(4,9)
+        array([8 0])
+        >>> a.slice_bits(1,9)
+        array([71 7])
         """
         if low > high:
             raise ValueError("low must not exceed high")
@@ -1792,9 +2006,8 @@ class pdarray:
         --------
         >>> a = ak.arange(2**64, 2**64 + 5)
         >>> a
-        array(["18446744073709551616" "18446744073709551617" "18446744073709551618"
-        "18446744073709551619" "18446744073709551620"])
-
+        array([18446744073709551616 18446744073709551617 18446744073709551618
+        18446744073709551619 18446744073709551620])
         >>> a.bigint_to_uint_arrays()
         [array([1 1 1 1 1]), array([0 1 2 3 4])]
         """
@@ -1814,6 +2027,21 @@ class pdarray:
         -------
         pdarray
             a pdarray with the same data, reshaped to the new shape
+
+        Examples
+        --------
+        >>> a = ak.array([[3,2,1],[2,3,1]])
+        >>> a.reshape((3,2))
+        array([array([3 2]) array([1 2]) array([3 1])])
+        >>> a.reshape(3,2)
+        array([array([3 2]) array([1 2]) array([3 1])])
+        >>> a.reshape((6,1))
+        array([array([3]) array([2]) array([1]) array([2]) array([3]) array([1])])
+
+        Notes
+        -----
+            only available as a method, not as a standalone function, i.e.,
+            a.reshape(compatibleShape) is valid, but ak.reshape(a,compatibleShape) is not.
         """
         # allows the elements of the shape parameter to be passed in as separate arguments
         # For example, a.reshape(10, 11) is equivalent to a.reshape((10, 11))
@@ -1842,6 +2070,12 @@ class pdarray:
         Returns
         -------
         A copy of the input array, flattened to one dimension.
+
+        Examples
+        --------
+        >>> a = ak.array([[3,2,1],[2,3,1]])
+        >>> a.flatten()
+        array([3 2 1 2 3 1])
         """
         return create_pdarray(
             generic_msg(
@@ -1887,9 +2121,8 @@ class pdarray:
         >>> a = ak.arange(0, 5, 1)
         >>> a.to_ndarray()
         array([0, 1, 2, 3, 4])
-
         >>> type(a.to_ndarray())
-        numpy.ndarray
+        <class 'numpy.ndarray'>
         """
         from arkouda.client import maxTransferBytes
 
@@ -1911,7 +2144,9 @@ class pdarray:
         data = cast(
             memoryview,
             generic_msg(
-                cmd=f"tondarray<{self.dtype},{self.ndim}>", args={"array": self}, recv_binary=True
+                cmd=f"tondarray<{self.dtype},{self.ndim}>",
+                args={"array": self},
+                recv_binary=True,
             ),
         )
         # Make sure the received data has the expected length
@@ -1972,9 +2207,8 @@ class pdarray:
         >>> a = ak.arange(0, 5, 1)
         >>> a.to_list()
         [0, 1, 2, 3, 4]
-
         >>> type(a.to_list())
-        list
+        <class 'list'>
         """
         return self.to_ndarray().tolist()
 
@@ -2018,7 +2252,6 @@ class pdarray:
         >>> a = ak.arange(0, 5, 1)
         >>> a.to_cuda()
         array([0, 1, 2, 3, 4])
-
         >>> type(a.to_cuda())
         numpy.devicendarray
         """
@@ -2050,6 +2283,7 @@ class pdarray:
         one file per locale of the arkouda server, where each filename starts
         with prefix_path. Each locale saves its chunk of the array to its
         corresponding file.
+
         Parameters
         ----------
         prefix_path : str
@@ -2062,13 +2296,16 @@ class pdarray:
         compression : str (Optional)
             (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
             Sets the compression type used with Parquet files
+
         Returns
         -------
         string message indicating result of save operation
+
         Raises
         ------
         RuntimeError
             Raised if a server-side error is thrown saving the pdarray
+
         Notes
         -----
         - The prefix_path must be visible to the arkouda server and the user must
@@ -2082,6 +2319,7 @@ class pdarray:
         dataset with the same name already exists, a ``RuntimeError`` will result.
         - Any file extension can be used.The file I/O does not rely on the extension to
         determine the file format.
+
         Examples
         --------
         >>> a = ak.arange(25)
@@ -2122,6 +2360,7 @@ class pdarray:
         """
         Save the pdarray to HDF5.
         The object can be saved to a collection of files or single file.
+
         Parameters
         ----------
         prefix_path : str
@@ -2136,13 +2375,16 @@ class pdarray:
             When set to single, dataset is written to a single file.
             When distribute, dataset is written on a file per locale.
             This is only supported by HDF5 files and will have no impact of Parquet Files.
+
         Returns
         -------
         string message indicating result of save operation
+
         Raises
         -------
         RuntimeError
             Raised if a server-side error is thrown saving the pdarray
+
         Notes
         -----
         - The prefix_path must be visible to the arkouda server and the user must
@@ -2156,6 +2398,7 @@ class pdarray:
         dataset with the same name already exists, a ``RuntimeError`` will result.
         - Any file extension can be used.The file I/O does not rely on the extension to
         determine the file format.
+
         Examples
         --------
         >>> a = ak.arange(25)
@@ -2195,7 +2438,7 @@ class pdarray:
         the dataset does not exist it is added
 
         Parameters
-        -----------
+        ----------
         prefix_path : str
             Directory and filename prefix that all output files share
         dataset : str
@@ -2258,45 +2501,46 @@ class pdarray:
         overwrite: bool = False,
     ):
         """
-        Write pdarray to CSV file(s). File will contain a single column with the pdarray data.
-        All CSV Files written by Arkouda include a header denoting data types of the columns.
+        Write pdarry to CSV file(s).  File will contain a single column
+        with the pdarray data.  All CSV files written by Arkouda include
+        a header denoting data types of the columns.
 
         Parameters
-        -----------
-        prefix_path: str
-            The filename prefix to be used for saving files. Files will have _LOCALE#### appended
-            when they are written to disk.
-        dataset: str
-            Column name to save the pdarray under. Defaults to "array".
-        col_delim: str
-            Defaults to ",". Value to be used to separate columns within the file.
-            Please be sure that the value used DOES NOT appear in your dataset.
-        overwrite: bool
-            Defaults to False. If True, any existing files matching your provided prefix_path will
-            be overwritten. If False, an error will be returned if existing files are found.
+        ----------
+        prefix_path : str
+            filename prefix to be used for saving files.  Files will have
+            _LOCALE#### appended when they are written to disk.
+        dataset : str, defaults to "array"
+            column name to save the pdarray under.
+        col_delim : str, defaults to ","
+            value to be used to separate columns within the file.  Please
+            be sure that the value used DOES NOT appear in your dataset.
+        overwrite: bool, defaults to False
+            If True, existing files matching the provided path will be overwritten.
+            if False and existing files are found, an error will be returned.
 
         Returns
-        --------
-        str reponse message
+        -------
+        response message : str
 
         Raises
         ------
         ValueError
-            Raised if all datasets are not present in all parquet files or if one or
-            more of the specified files do not exist
+            Raised if all datasets are not present in all parquet files or if one
+            or more of the specified files do not exist
         RuntimeError
             Raised if one or more of the specified files cannot be opened.
-            If `allow_errors` is true this may be raised if no values are returned
+            if 'allow_errors' is true, this may be raised if no values are returned
             from the server.
         TypeError
-            Raised if we receive an unknown arkouda_type returned from the server
+            Raise if the server returns an unknown arkouda_type
 
         Notes
-        ------
+        -----
         - CSV format is not currently supported by load/load_all operations
-        - The column delimiter is expected to be the same for column names and data
+        - The column delimiter is expected to be the same for all column names and data
         - Be sure that column delimiters are not found within your data.
-        - All CSV files must delimit rows using newline (`\n`) at this time.
+        - All CSV files must delimit rows using newline ("\\n") at this time.
         """
         return cast(
             str,
@@ -2331,6 +2575,7 @@ class pdarray:
         with prefix_path. HDF5 support single files, in which case the file name will
         only be that provided. Each locale saves its chunk of the array to its
         corresponding file.
+
         Parameters
         ----------
         prefix_path : str
@@ -2352,9 +2597,11 @@ class pdarray:
             When set to single, dataset is written to a single file.
             When distribute, dataset is written on a file per locale.
             This is only supported by HDF5 files and will have no impact of Parquet Files.
+
         Returns
         -------
         string message indicating result of save operation
+
         Raises
         ------
         RuntimeError
@@ -2366,9 +2613,11 @@ class pdarray:
         TypeError
             Raised if any one of the prefix_path, dataset, or mode parameters
             is not a string
+
         See Also
         --------
         save_all, load, read, to_parquet, to_hdf
+
         Notes
         -----
         The prefix_path must be visible to the arkouda server and the user must
@@ -2383,6 +2632,7 @@ class pdarray:
         an older file is not being found.
         Any file extension can be used.The file I/O does not rely on the extension to
         determine the file format.
+
         Examples
         --------
         >>> a = ak.arange(25)
@@ -2621,7 +2871,7 @@ def create_pdarray(repMsg: str, max_bits=None) -> pdarray:
         A pdarray with the same attributes and data as the pdarray; on GPU
 
     Raises
-    -----
+    ------
     ValueError
         If there's an error in parsing the repMsg parameter into the six
         values needed to create the pdarray instance
@@ -2728,10 +2978,10 @@ def _make_reduction_func(
     ----------
     pda : pdarray
         The pdarray instance to be evaluated.
-    axis : int or Tuple[int, ...], optional
-        The axis or axes along which to compute the sum. If None, the reduction of the entire array is
-        computed (returning a scalar).
-    keepdims : bool, optional
+    axis : int or Tuple[int, ...], optional, default = None
+        The axis or axes along which to compute the function.
+        If None, the computation is done across the entire array.
+    keepdims : bool, optional, default = False
         Whether to keep the singleton dimension(s) along `axis` in the result.
 
     Returns
@@ -2774,11 +3024,11 @@ def _make_index_reduction_func(
     ----------
     pda : pdarray
         The pdarray instance to be evaluated.
-    axis : int, optional
+    axis : int, optional, default = None
         The axis along which to compute the index reduction.
         If None, the reduction of the entire array is
         computed (returning a scalar).
-    keepdims : bool, optional
+    keepdims : bool, optional, default = False
         Whether to keep the singleton dimension(s) along `axis` in the result.
 
     Returns
@@ -2832,11 +3082,12 @@ def _common_reduction(
         The name of the reduction operation.  Must be a member of SUPPORTED_REDUCTION_OPS.
     pda : pdarray
         The pdarray instance to be evaluated.
-    axis : int or Tuple[int, ...], optional
+    axis : int or Tuple[int, ...], optional, default = None
         The axis or axes along which to compute the reduction. If None, the sum of the entire array is
         computed (returning a scalar).
-    keepdims : bool, optional
+    keepdims : bool, optional, default = False
         Whether to keep the singleton dimension(s) along `axis` in the result.
+
     Returns
     -------
     numpy_scalars, pdarray
@@ -2908,11 +3159,12 @@ def _common_index_reduction(
         The name of the reduction operation.  Must be a member of SUPPORTED_INDEX_REDUCTION_OPS.
     pda : pdarray
         The pdarray instance to be evaluated.
-    axis : int or Tuple[int, ...], optional
+    axis : int or Tuple[int, ...], optional, default = None
         The axis or axes along which to compute the reduction. If None, the sum of the entire array is
         computed (returning a scalar).
-    keepdims : bool, optional
+    keepdims : bool, optional, default = False
         Whether to keep the singleton dimension(s) along `axis` in the result.
+
     Returns
     -------
     int64
@@ -3064,6 +3316,8 @@ setattr(
     ),
 )
 
+# TODO: align dot to numpy in multi-dimensional case; presently = np.sum(a*b), not np.dot(a,b)
+
 
 @typechecked
 def dot(
@@ -3079,7 +3333,6 @@ def dot(
     pda1 : Union[numeric_scalars, pdarray]
 
     pda2 : Union[numeric_scalars, pdarray]
-
 
     Returns
     -------
@@ -3101,12 +3354,15 @@ def dot(
     >>> ak.dot(x,2)
     array([4 6])
     """
-    if (
-        not isinstance(pda1, pdarray)
-        and not isinstance(pda2, pdarray)
-        and ((pda1 is akuint64 and pda2 is akint64) or (pda1 is akint64 and pda2 is akuint64))
-    ):
-        raise TypeError(f"incompatible types {type(pda1)}, {type(pda2)}")
+
+    def resolve(pda) :  # get type, either of pda or scalar
+        return pda.dtype.name if isinstance(pda, pdarray) else resolve_scalar_dtype(pda)
+
+    t1 = resolve(pda1)
+    t2 = resolve(pda2)
+
+    if (t1 == "uint64" and t2 == "int64") or (t1 == "int64" and t2 == "uint64"):
+        raise TypeError(f"incompatible types {t1}, {t2}")
     if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
         if pda1.size != pda2.size:
             raise ValueError(f"Arrays must be same size, {pda1.size}, {pda2.size}")
@@ -3130,6 +3386,14 @@ def mean(pda: pdarray) -> np.float64:
     -------
     np.float64
         The mean calculated from the pda sum and size
+
+    Examples
+    --------
+    >>> a = ak.arange(10)
+    >>> ak.mean(a)
+    4.5
+    >>> a.mean()
+    4.5
 
     Raises
     ------
@@ -3162,6 +3426,14 @@ def var(pda: pdarray, ddof: int_scalars = 0) -> np.float64:
     -------
     np.float64
         The scalar variance of the array
+
+    Examples
+    --------
+    >>> a = ak.arange(10)
+    >>> ak.var(a)
+    8.25
+    >>> a.var()
+    8.25
 
     Raises
     ------
@@ -3215,6 +3487,14 @@ def std(pda: pdarray, ddof: int_scalars = 0) -> np.float64:
     -------
     np.float64
         The scalar standard deviation of the array
+
+    Examples
+    --------
+    >>> a = ak.arange(10)
+    >>> ak.std(a)
+    2.8722813232690143
+    >>> a.std()
+    2.8722813232690143
 
     Raises
     ------
@@ -3271,6 +3551,15 @@ def cov(x: pdarray, y: pdarray) -> np.float64:
     np.float64
         The scalar covariance of the two pdarrays
 
+    Examples
+    --------
+    >>> a = ak.arange(10)
+    >>> b = a + 1
+    >>> ak.cov(a,b)
+    9.166666666666666
+    >>> a.cov(b)
+    9.166666666666666
+
     Raises
     ------
     TypeError
@@ -3308,6 +3597,15 @@ def corr(x: pdarray, y: pdarray) -> np.float64:
     -------
     np.float64
         The scalar correlation of the two pdarrays
+
+    Examples
+    --------
+    >>> a = ak.arange(10)
+    >>> b = a + 1
+    >>> ak.corr(a,b)
+    0.9999999999999998
+    >>> a.corr(b)
+    0.9999999999999998
 
     Raises
     ------
@@ -3380,7 +3678,7 @@ def divmod(
     """
     from arkouda.numpy import cast as akcast
     from arkouda.numpy import where as akwhere
-    from arkouda.numpy.pdarraycreation import full
+    from arkouda.pdarraycreation import full
 
     if not isinstance(x, pdarray) and not isinstance(y, pdarray):
         raise TypeError("At least one entry must be a pdarray.")
@@ -3402,7 +3700,10 @@ def divmod(
     else:
         div = cast(pdarray, x // y)
         mod = cast(pdarray, x % y)
-        return (akwhere(where, div, akcast(x, div.dtype)), akwhere(where, mod, akcast(x, mod.dtype)))
+        return (
+            akwhere(where, div, akcast(x, div.dtype)),
+            akwhere(where, mod, akcast(x, mod.dtype)),
+        )
 
 
 @typechecked
@@ -3429,14 +3730,11 @@ def mink(pda: pdarray, k: int_scalars) -> pdarray:
     TypeError
         Raised if pda is not a pdarray
     ValueError
-        Raised if the pda is empty or k < 1
+        Raised if the pda is empty, or pda.ndim > 1, or k < 1
 
     Notes
     -----
-    This call is equivalent in value to:
-
-        a[ak.argsort(a)[:k]]
-
+    This call is equivalent in value to a[ak.argsort(a)[:k]]
     and generally outperforms this operation.
 
     This reduction will see a significant drop in performance as `k` grows
@@ -3455,6 +3753,8 @@ def mink(pda: pdarray, k: int_scalars) -> pdarray:
         raise ValueError("k must be 1 or greater")
     if pda.size == 0:
         raise ValueError("must be a non-empty pdarray of type int or float")
+    if pda.ndim > 1:
+        raise ValueError(f"mink is only implemented for 1D arrays; got {pda.ndim}")
 
     repMsg = generic_msg(cmd="mink", args={"array": pda, "k": k, "rtnInd": False})
     return create_pdarray(cast(str, repMsg))
@@ -3484,20 +3784,17 @@ def maxk(pda: pdarray, k: int_scalars) -> pdarray:
     TypeError
         Raised if pda is not a pdarray or k is not an integer
     ValueError
-        Raised if the pda is empty or k < 1
+        Raised if the pda is empty, or pda.ndim > 1, or k < 1
 
     Notes
     -----
-    This call is equivalent in value to:
-
-        a[ak.argsort(a)[k:]]
+    This call is equivalent in value to a[ak.argsort(a)[k:]]
 
     and generally outperforms this operation.
 
     This reduction will see a significant drop in performance as `k` grows
     beyond a certain value. This value is system dependent, but generally
     about a `k` of 5 million is where performance degredation has been observed.
-
 
     Examples
     --------
@@ -3511,6 +3808,8 @@ def maxk(pda: pdarray, k: int_scalars) -> pdarray:
         raise ValueError("k must be 1 or greater")
     if pda.size == 0:
         raise ValueError("must be a non-empty pdarray of type int or float")
+    if pda.ndim > 1:
+        raise ValueError(f"maxk is only implemented for 1D arrays; got {pda.ndim}")
 
     repMsg = generic_msg(cmd="maxk", args={"array": pda, "k": k, "rtnInd": False})
     return create_pdarray(repMsg)
@@ -3538,14 +3837,11 @@ def argmink(pda: pdarray, k: int_scalars) -> pdarray:
     TypeError
         Raised if pda is not a pdarray or k is not an integer
     ValueError
-        Raised if the pda is empty or k < 1
+        Raised if the pda is empty, or pda.ndim > 1, or k < 1
 
     Notes
     -----
-    This call is equivalent in value to:
-
-        ak.argsort(a)[:k]
-
+    This call is equivalent in value to ak.argsort(a)[:k]
     and generally outperforms this operation.
 
     This reduction will see a significant drop in performance as `k` grows
@@ -3564,6 +3860,8 @@ def argmink(pda: pdarray, k: int_scalars) -> pdarray:
         raise ValueError("k must be 1 or greater")
     if pda.size == 0:
         raise ValueError("must be a non-empty pdarray of type int or float")
+    if pda.ndim > 1:
+        raise ValueError(f"argmink is only implemented for 1D arrays; got {pda.ndim}")
 
     repMsg = generic_msg(cmd="mink", args={"array": pda, "k": k, "rtnInd": True})
     return create_pdarray(repMsg)
@@ -3593,20 +3891,16 @@ def argmaxk(pda: pdarray, k: int_scalars) -> pdarray:
     TypeError
         Raised if pda is not a pdarray or k is not an integer
     ValueError
-        Raised if the pda is empty or k < 1
+        Raised if the pda is empty, or pda.ndim > 1, or k < 1
 
     Notes
     -----
-    This call is equivalent in value to:
-
-        ak.argsort(a)[k:]
-
+    This call is equivalent in value to ak.argsort(a)[k:]
     and generally outperforms this operation.
 
     This reduction will see a significant drop in performance as `k` grows
     beyond a certain value. This value is system dependent, but generally
     about a `k` of 5 million is where performance degradation has been observed.
-
 
     Examples
     --------
@@ -3620,6 +3914,8 @@ def argmaxk(pda: pdarray, k: int_scalars) -> pdarray:
         raise ValueError("k must be 1 or greater")
     if pda.size == 0:
         raise ValueError("must be a non-empty pdarray of type int or float")
+    if pda.ndim > 1:
+        raise ValueError(f"argmaxk is only implemented for 1D arrays; got {pda.ndim}")
 
     repMsg = generic_msg(cmd="maxk", args={"array": pda, "k": k, "rtnInd": True})
     return create_pdarray(repMsg)
@@ -3737,7 +4033,7 @@ def clz(pda: pdarray) -> pdarray:
         if pda.max_bits == -1:
             raise ValueError("max_bits must be set to count leading zeros")
         from arkouda.numpy import where
-        from arkouda.numpy.pdarraycreation import zeros
+        from arkouda.pdarraycreation import zeros
 
         uint_arrs = pda.bigint_to_uint_arrays()
 
@@ -3822,7 +4118,7 @@ def ctz(pda: pdarray) -> pdarray:
         # which is only relevant when ctz(0) which is defined to be 0
 
         from arkouda.numpy import where
-        from arkouda.numpy.pdarraycreation import zeros
+        from arkouda.pdarraycreation import zeros
 
         # reverse the list, so we visit low bits first
 
@@ -3946,7 +4242,9 @@ def rotr(x, rot) -> pdarray:
 
 @typechecked
 def power(
-    pda: pdarray, pwr: Union[int, float, pdarray], where: Union[bool_scalars, pdarray] = True
+    pda: pdarray,
+    pwr: Union[int, float, pdarray],
+    where: Union[bool_scalars, pdarray] = True,
 ) -> pdarray:
     """
     Raises an array to a power. If where is given, the operation will only take place in the positions
@@ -3971,8 +4269,8 @@ def power(
 
     Returns
     -------
-        pdarray
-        Returns a pdarray of values raised to a power, under the boolean where condition.
+    pdarray
+        a pdarray of values raised to a power, under the boolean where condition.
 
     Examples
     --------
@@ -3981,6 +4279,14 @@ def power(
     array([0, 1, 8, 27, 64])
     >>> ak.power(a), 3, a % 2 == 0)
     array([0, 1, 8, 3, 64])
+
+
+    Raises
+    ------
+    TypeError
+        raised if pda is not a pdarray, or if pwe is not an int, float, or pdarray
+    ValueError
+        raised if pda and power are of incompatible dimensions
     """
     from arkouda.numpy import cast as akcast
     from arkouda.numpy import where as akwhere
@@ -4003,7 +4309,7 @@ def sqrt(pda: pdarray, where: Union[bool_scalars, pdarray] = True) -> pdarray:
     Parameters
     ----------
     pda : pdarray
-        A pdarray of values that will be square rooted
+        A pdarray of values the square roots of which will be computed
     where : Boolean or pdarray
         This condition is broadcast over the input. At locations where the condition is True, the
         corresponding value will be square rooted. Elsewhere, it will retain its original value.
@@ -4011,15 +4317,28 @@ def sqrt(pda: pdarray, where: Union[bool_scalars, pdarray] = True) -> pdarray:
 
     Returns
     -------
-        pdarray
-        Returns a pdarray of square rooted values, under the boolean where condition.
+    pdarray
+        a pdarray of square roots of the original values, or the original values themselves,
+        subject to the boolean where condition.
 
-    Examples:
+    Examples
+    --------
     >>> a = ak.arange(5)
     >>> ak.sqrt(a)
-    array([0 1 1.4142135623730951 1.7320508075688772 2])
-    >>> ak.sqrt(a, ak.sqrt([True, True, False, False, True]))
-    array([0, 1, 2, 3, 2])
+    array([0.00000000000000000 1.00000000000000000 1.4142135623730951
+             1.7320508075688772 2.00000000000000000])
+    >>> ak.sqrt(a, ak.array([True, True, False, False, True]))
+    array([0.00000000000000000 1.00000000000000000 2.00000000000000000
+             3.00000000000000000 2.00000000000000000])
+
+    Raises
+    ------
+    TypeError
+        raised if pda is not a pdarray of ak.int64 or ak.float64
+
+    Notes
+    -----
+    Square roots of negative numbers are returned as nan.
     """
     return power(pda, 0.5, where)
 
@@ -4036,19 +4355,31 @@ def skew(pda: pdarray, bias: bool = True) -> np.float64:
     Parameters
     ----------
     pda : pdarray
-        A pdarray of values that will be calculated to find the skew
-    bias : bool, optional
+        A pdarray of ak.int64 or ak.float64 values that will be calculated to find the skew
+    bias : bool, optional, default = True
         If False, then the calculations are corrected for statistical bias.
 
     Returns
     -------
-        np.float64
-            The skew of all elements in the array
+    np.float64
+        The skew of all elements in the array
 
-    Examples:
+    Examples
+    --------
     >>> a = ak.array([1, 1, 1, 5, 10])
     >>> ak.skew(a)
-    0.9442193396379163
+    0.9442193396379165
+    >>> ak.skew(ak.array([9,9,9,5,0]))
+    -0.9442193396379165
+    >>> ak.skew(ak.array([10,10,10,10,10]))
+    0
+
+    Raises
+    ------
+    RuntimeError
+        raised if pda.dtype is ak.bigint
+    TypeError
+        raised if pda.dtype is Strings
     """
 
     deviations = pda - pda.mean()
@@ -4080,14 +4411,27 @@ def mod(dividend, divisor) -> pdarray:
     Parameters
     ----------
     dividend
-        The array being acted on by the bases for the modular division.
+        pdarray : The numeric scalar or pdarray being acted on by the bases for the modular division.
     divisor
-        The array that will be the bases for the modular division.
+        pdarray : The numeric scalar or pdarray that will be the bases for the modular division.
 
     Returns
     -------
     pdarray
-        Returns an array that contains the element-wise remainder of division.
+        an array that contains the element-wise remainder of division.
+
+    Examples
+    --------
+    >>> a = ak.array([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20])
+    >>> b = ak.array([2,2,2,3,3,3,4,4,4,5,5,5,6,6,6,7,7,7,8,8])
+    >>> ak.mod(a,b)
+    array([1 0 1 1 2 0 3 0 1 0 1 2 1 2 3 2 3 4 3 4])
+
+
+    Raises
+    ------
+    ValueError
+        raised if shapes of dividend and divisor are incompatible
     """
     return dividend % divisor
 
@@ -4109,7 +4453,7 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
     Returns
     -------
     pdarray
-        Returns an array that contains the element-wise remainder of division.
+        an array that contains the element-wise remainder of division.
 
     Raises
     ------
@@ -4131,31 +4475,42 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
         )
     # TODO: handle shape broadcasting for multidimensional arrays
 
+    #   The code below creates a command string for fmod2vv, fmod2vs or fmod2sv.
 
-#   The code below creates a command string for fmod2vv, fmod2vs or fmod2sv.
-
-    if isinstance(dividend, pdarray) and isinstance(divisor, pdarray) :
+    if isinstance(dividend, pdarray) and isinstance(divisor, pdarray):
+        if not (dividend.dtype.name == "float64" or divisor.dtype.name == "float64"):
+            raise TypeError(
+                "At least one arg to fmod must be float. " +
+                f"Got f{dividend.dtype.name} and {divisor.dtype.name}"
+            )
         cmdstring = f"fmod2vv<{dividend.dtype},{dividend.ndim},{divisor.dtype}>"
 
-    elif isinstance(dividend, pdarray) and not (isinstance(divisor, pdarray)) :
-        if resolve_scalar_dtype(divisor) in ['float64', 'int64', 'uint64', 'bool'] :
-            acmd = 'fmod2vs_'+resolve_scalar_dtype(divisor)
-        else :  # this condition *should* be impossible because of the isSupportedNumber check
-            raise TypeError(f"Scalar divisor type {resolve_scalar_dtype(divisor)} not allowed in fmod")
+    elif isinstance(dividend, pdarray) and not (isinstance(divisor, pdarray)):
+        scalar_dtype = resolve_scalar_dtype(divisor)
+        if scalar_dtype in ["float64", "int64", "uint64", "bool"]:
+            acmd = "fmod2vs_" + scalar_dtype
+        else:  # this condition *should* be impossible because of the isSupportedNumber check
+            raise TypeError(f"Scalar divisor type {scalar_dtype} not allowed in fmod")
+        if not (dividend.dtype.name == "float64" or scalar_dtype == "float64"):
+            raise TypeError(
+                "At least one arg to fmod must be float. " +
+                f"Got {dividend.dtype.name} and {scalar_dtype}"
+            )
         cmdstring = f"{acmd}<{dividend.dtype},{dividend.ndim}>"
 
-    elif not (isinstance(dividend, pdarray) and isinstance(divisor, pdarray)) :
-        if resolve_scalar_dtype(dividend) in ['float64', 'int64', 'uint64', 'bool'] :
-            acmd = 'fmod2sv_'+resolve_scalar_dtype(dividend)
-        else :  # this condition *should* be impossible because of the isSupportedNumber check
-            raise TypeError(f"Scalar dividend type {resolve_scalar_dtype(dividend)} not allowed in fmod")
+    else:  # then the only case left is where dividend is scalar and divisor is pdarray
+        scalar_dtype = resolve_scalar_dtype(dividend)
+        if scalar_dtype in ["float64", "int64", "uint64", "bool"]:
+            acmd = "fmod2sv_" + scalar_dtype
+        else:  # this condition *should* be impossible because of the isSupportedNumber check
+            raise TypeError(f"Scalar dividend type {scalar_dtype} not allowed in fmod")
+        if not (divisor.dtype.name == "float64" or  # type: ignore[union-attr]
+                scalar_dtype == "float64"):  # type: ignore[union-attr]
+            raise TypeError(
+                "At least one arg to fmod must be float. " +
+                f"Got {scalar_dtype} and {divisor.dtype.name}"  # type: ignore[union-attr]
+            )
         cmdstring = f"{acmd}<{divisor.dtype},{divisor.ndim}>"  # type: ignore[union-attr]
-
-    else:
-        m = mod(dividend, divisor)
-        return _create_scalar_array(m)
-
-#   We reach here if this was any case other than scalar & scalar
 
     return create_pdarray(
         cast(
@@ -4207,7 +4562,48 @@ def broadcast_if_needed(x1: pdarray, x2: pdarray) -> Tuple[pdarray, pdarray, boo
 @typechecked
 def broadcast_to_shape(pda: pdarray, shape: Tuple[int, ...]) -> pdarray:
     """
-    expand an array's rank to the specified shape using broadcasting
+    Create a "broadcasted" array (of rank 'nd') by copying an array into an
+    array of the given shape.
+
+    E.g., given the following broadcast:\n
+    pda    (3d array):  1 x 4 x 1\n
+    shape  ( shape  ):  7 x 4 x 2\n
+    Result (3d array):  7 x 4 x 2
+
+    When copying from a singleton dimension, the value is repeated along
+    that dimension (e.g., pda's 1st and 3rd above).
+    For non singleton dimensions, the size of the two arrays must match,
+    and the values are copied into the result array.
+
+    When prepending a new dimension to increase an array's rank, the
+    values from the other dimensions are repeated along the new dimension.
+
+
+    Parameters
+    ----------
+    pda : pdarray
+        the input to be broadcast
+    shape: tuple of int
+        the shape to which pda is to be broadcast
+
+    Returns
+    -------
+    pdarray
+        the result of the broadcast operation
+
+    Examples
+    --------
+    >>> a = ak.arange(2).reshape(1,2,1)
+    >>> ak.broadcast_to_shape(a,(2,2,2))
+    array([array([array([0 0]) array([1 1])]) array([array([0 0]) array([1 1])])])
+    >>> a = ak.array([5,19]).reshape(1,2)
+    >>> ak.broadcast_to_shape(a,(2,2,2))
+    array([array([array([5 19]) array([5 19])]) array([array([5 19]) array([5 19])])])
+
+    Raises
+    ------
+    RuntimeError
+        raised if the pda can't be broadcast to the given shape
     """
 
     return create_pdarray(
@@ -4244,7 +4640,7 @@ def attach_pdarray(user_defined_name: str) -> pdarray:
     Raises
     ------
     TypeError
-      Raised if user_defined_name is not a str
+        Raised if user_defined_name is not a str
 
     See also
     --------
@@ -4295,7 +4691,7 @@ def attach(user_defined_name: str) -> pdarray:
     Raises
     ------
     TypeError
-      Raised if user_defined_name is not a str
+        Raised if user_defined_name is not a str
 
     See also
     --------
@@ -4308,10 +4704,15 @@ def attach(user_defined_name: str) -> pdarray:
 
     Examples
     --------
-    >>> a = zeros(100)
-    >>> a.register("my_zeros")
-    >>> # potentially disconnect from server and reconnect to server
-    >>> b = ak.pdarrayclass.attach("my_zeros")
+    >>> a = ak.arange(10)
+    >>> a.register("my_range")
+    array([0 1 2 3 4 5 6 7 8 9])
+
+    Disconnect from server and reconnect to server
+
+    >>> b = ak.pdarrayclass.attach("my_range")
+    >>> b
+    array([0 1 2 3 4 5 6 7 8 9])
     >>> # ...other work...
     >>> b.unregister()
     """
