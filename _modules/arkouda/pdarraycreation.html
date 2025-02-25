@@ -510,7 +510,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    a: Union[pdarray, np.ndarray]</span>
-<span class="sd">        Rank-1 array of a supported dtype</span>
+<span class="sd">        array of a supported dtype</span>
 <span class="sd">    dtype: np.dtype, type, or str</span>
 <span class="sd">        The target dtype to cast values to</span>
 <span class="sd">    max_bits: int</span>
@@ -531,7 +531,7 @@
 <span class="sd">        Raised if nbytes &gt; maxTransferBytes, a.dtype is not supported (not in DTypes),</span>
 <span class="sd">        or if the product of a size and a.itemsize &gt; maxTransferBytes</span>
 <span class="sd">    ValueError</span>
-<span class="sd">        Raised if a has rank &gt; get_max_array_rank(), or if the returned message is malformed or does</span>
+<span class="sd">        Raised if a has rank is not in get_array_ranks(), or if the returned message is malformed or does</span>
 <span class="sd">        not contain the fields required to generate the array.</span>
 
 <span class="sd">    See Also</span>
@@ -836,7 +836,7 @@
 <span class="sd">        Raised if the size parameter is neither an int nor a str that is parseable to an int.</span>
 
 <span class="sd">    ValueError</span>
-<span class="sd">        Raised if the given shape exceeds get_max_array_rank() or is empty</span>
+<span class="sd">        Raised if the rank of the given shape is not in get_array_ranks() or is empty</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -898,7 +898,7 @@
 <span class="sd">        Raised if the size parameter is neither an int nor a str that is parseable to an int.</span>
 
 <span class="sd">    ValueError</span>
-<span class="sd">        Raised if the given shape exceeds get_max_array_rank() or is empty</span>
+<span class="sd">        Raised if the rank of the given shape is not in get_array_ranks() or is empty</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -961,7 +961,7 @@
 <span class="sd">        Raised if the size parameter is neither an int nor a str that is parseable to an int.</span>
 
 <span class="sd">    ValueError</span>
-<span class="sd">        Raised if the given shape exceeds get_max_array_rank() or is empty</span>
+<span class="sd">        Raised if the rank of the given shape is not in get_array_ranks() or is empty</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>

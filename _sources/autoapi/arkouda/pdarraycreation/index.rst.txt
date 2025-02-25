@@ -90,7 +90,7 @@ Module Contents
    Convert a Python or Numpy Iterable to a pdarray or Strings object, sending
    the corresponding data to the arkouda server.
 
-   :param a: Rank-1 array of a supported dtype
+   :param a: array of a supported dtype
    :type a: Union[pdarray, np.ndarray]
    :param dtype: The target dtype to cast values to
    :type dtype: np.dtype, type, or str
@@ -105,7 +105,7 @@ Module Contents
        list, array, tuple, or deque
    :raises RuntimeError: Raised if nbytes > maxTransferBytes, a.dtype is not supported (not in DTypes),
        or if the product of a size and a.itemsize > maxTransferBytes
-   :raises ValueError: Raised if a has rank > get_max_array_rank(), or if the returned message is malformed or does
+   :raises ValueError: Raised if a has rank is not in get_array_ranks(), or if the returned message is malformed or does
        not contain the fields required to generate the array.
 
    .. seealso:: :obj:`pdarray.to_ndarray`
@@ -249,7 +249,7 @@ Module Contents
 
    :raises TypeError: Raised if the supplied dtype is not supported
    :raises RuntimeError: Raised if the size parameter is neither an int nor a str that is parseable to an int.
-   :raises ValueError: Raised if the given shape exceeds get_max_array_rank() or is empty
+   :raises ValueError: Raised if the rank of the given shape is not in get_array_ranks() or is empty
 
    .. seealso:: :obj:`zeros`, :obj:`ones`
 
@@ -354,7 +354,7 @@ Module Contents
 
    :raises TypeError: Raised if the supplied dtype is not supported
    :raises RuntimeError: Raised if the size parameter is neither an int nor a str that is parseable to an int.
-   :raises ValueError: Raised if the given shape exceeds get_max_array_rank() or is empty
+   :raises ValueError: Raised if the rank of the given shape is not in get_array_ranks() or is empty
 
    .. seealso:: :obj:`zeros`, :obj:`ones_like`
 
@@ -653,7 +653,7 @@ Module Contents
 
    :raises TypeError: Raised if the supplied dtype is not supported
    :raises RuntimeError: Raised if the size parameter is neither an int nor a str that is parseable to an int.
-   :raises ValueError: Raised if the given shape exceeds get_max_array_rank() or is empty
+   :raises ValueError: Raised if the rank of the given shape is not in get_array_ranks() or is empty
 
    .. seealso:: :obj:`ones`, :obj:`zeros_like`
 

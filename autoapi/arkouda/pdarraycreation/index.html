@@ -495,7 +495,7 @@ the corresponding data to the arkouda server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>np.ndarray</em><em>]</em>) – Rank-1 array of a supported dtype</p></li>
+<li><p><strong>a</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>np.ndarray</em><em>]</em>) – array of a supported dtype</p></li>
 <li><p><strong>dtype</strong> (<em>np.dtype</em><em>, </em><em>type</em><em>, or </em><em>str</em>) – The target dtype to cast values to</p></li>
 <li><p><strong>max_bits</strong> (<em>int</em>) – Specifies the maximum number of bits; only used for bigint pdarrays</p></li>
 </ul>
@@ -505,7 +505,7 @@ the corresponding data to the arkouda server.</p>
 is composed of two pdarrays stored on arkouda server</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../index.html#id721" title="arkouda.Strings">Strings</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings">Strings</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -513,7 +513,7 @@ is composed of two pdarrays stored on arkouda server</p>
 list, array, tuple, or deque</p></li>
 <li><p><strong>RuntimeError</strong> – Raised if nbytes &gt; maxTransferBytes, a.dtype is not supported (not in DTypes),
 or if the product of a size and a.itemsize &gt; maxTransferBytes</p></li>
-<li><p><strong>ValueError</strong> – Raised if a has rank &gt; get_max_array_rank(), or if the returned message is malformed or does
+<li><p><strong>ValueError</strong> – Raised if a has rank is not in get_array_ranks(), or if the returned message is malformed or does
 not contain the fields required to generate the array.</p></li>
 </ul>
 </dd>
@@ -614,7 +614,7 @@ dtype is object).</p>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union">Union</a>[<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>,<a class="reference internal" href="../index.html#id721" title="arkouda.Strings">Strings</a>]</p>
+<dd class="field-even"><p><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union">Union</a>[<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>,<a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings">Strings</a>]</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -685,13 +685,13 @@ contains strings and sets the dtype to str</p>
 <dd class="field-even"><p>array of the requested size and dtype filled with fill_value</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../index.html#id721" title="arkouda.Strings">Strings</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings">Strings</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if the supplied dtype is not supported</p></li>
 <li><p><strong>RuntimeError</strong> – Raised if the size parameter is neither an int nor a str that is parseable to an int.</p></li>
-<li><p><strong>ValueError</strong> – Raised if the given shape exceeds get_max_array_rank() or is empty</p></li>
+<li><p><strong>ValueError</strong> – Raised if the rank of the given shape is not in get_array_ranks() or is empty</p></li>
 </ul>
 </dd>
 </dl>
@@ -828,7 +828,7 @@ of max_bits</p></li>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if the supplied dtype is not supported</p></li>
 <li><p><strong>RuntimeError</strong> – Raised if the size parameter is neither an int nor a str that is parseable to an int.</p></li>
-<li><p><strong>ValueError</strong> – Raised if the given shape exceeds get_max_array_rank() or is empty</p></li>
+<li><p><strong>ValueError</strong> – Raised if the rank of the given shape is not in get_array_ranks() or is empty</p></li>
 </ul>
 </dd>
 </dl>
@@ -998,7 +998,7 @@ with characters drawn from a specified set.</p>
 <dd class="field-even"><p>The Strings object encapsulating a pdarray of random strings</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id721" title="arkouda.Strings">Strings</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings">Strings</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1047,7 +1047,7 @@ minlen and maxlen, and with characters drawn from a specified set.</p>
 <dd class="field-even"><p>The array of random strings</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id721" title="arkouda.Strings">Strings</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings">Strings</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ValueError</strong> – Raised if minlen &lt; 0, maxlen &lt; minlen, or size &lt; 0</p>
@@ -1204,7 +1204,7 @@ of the value of max_bits</p></li>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if the supplied dtype is not supported</p></li>
 <li><p><strong>RuntimeError</strong> – Raised if the size parameter is neither an int nor a str that is parseable to an int.</p></li>
-<li><p><strong>ValueError</strong> – Raised if the given shape exceeds get_max_array_rank() or is empty</p></li>
+<li><p><strong>ValueError</strong> – Raised if the rank of the given shape is not in get_array_ranks() or is empty</p></li>
 </ul>
 </dd>
 </dl>
