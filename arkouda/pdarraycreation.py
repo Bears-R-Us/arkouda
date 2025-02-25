@@ -150,7 +150,7 @@ def array(
     Parameters
     ----------
     a: Union[pdarray, np.ndarray]
-        Rank-1 array of a supported dtype
+        array of a supported dtype
     dtype: np.dtype, type, or str
         The target dtype to cast values to
     max_bits: int
@@ -171,7 +171,7 @@ def array(
         Raised if nbytes > maxTransferBytes, a.dtype is not supported (not in DTypes),
         or if the product of a size and a.itemsize > maxTransferBytes
     ValueError
-        Raised if a has rank > get_max_array_rank(), or if the returned message is malformed or does
+        Raised if a has rank is not in get_array_ranks(), or if the returned message is malformed or does
         not contain the fields required to generate the array.
 
     See Also
@@ -467,7 +467,7 @@ def zeros(
         Raised if the size parameter is neither an int nor a str that is parseable to an int.
 
     ValueError
-        Raised if the given shape exceeds get_max_array_rank() or is empty
+        Raised if the rank of the given shape is not in get_array_ranks() or is empty
 
     See Also
     --------
@@ -526,7 +526,7 @@ def ones(
         Raised if the size parameter is neither an int nor a str that is parseable to an int.
 
     ValueError
-        Raised if the given shape exceeds get_max_array_rank() or is empty
+        Raised if the rank of the given shape is not in get_array_ranks() or is empty
 
     See Also
     --------
@@ -586,7 +586,7 @@ def full(
         Raised if the size parameter is neither an int nor a str that is parseable to an int.
 
     ValueError
-        Raised if the given shape exceeds get_max_array_rank() or is empty
+        Raised if the rank of the given shape is not in get_array_ranks() or is empty
 
     See Also
     --------
