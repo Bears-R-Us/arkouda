@@ -925,13 +925,14 @@
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
 <span class="sd">        The probability density function for the Gamma distribution is</span>
+
 <span class="sd">        .. math::</span>
 <span class="sd">            p(x) = x^{k-1}\frac{e^{\frac{-x}{\theta}}}{\theta^k\Gamma(k)}</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; rng = ak.random.default_rng()</span>
-<span class="sd">        &gt;&gt;&gt; rng.rng.standard_gamma(1)</span>
+<span class="sd">        &gt;&gt;&gt; rng.standard_gamma(1)</span>
 <span class="sd">        0.8729704388729135 # random</span>
 <span class="sd">        &gt;&gt;&gt; rng.standard_gamma(1, size=3)</span>
 <span class="sd">        array([0.4879818539586227 0.6534654349920751 0.40990997253631162]) # random</span>

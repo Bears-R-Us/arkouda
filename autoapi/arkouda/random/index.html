@@ -820,14 +820,14 @@ where both parameters are &gt; 0.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The probability density function for the Gamma distribution is
-.. math:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">p</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">=</span> <span class="n">x</span><span class="o">^</span><span class="p">{</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">}</span>\<span class="n">frac</span><span class="p">{</span><span class="n">e</span><span class="o">^</span><span class="p">{</span>\<span class="n">frac</span><span class="p">{</span><span class="o">-</span><span class="n">x</span><span class="p">}{</span>\<span class="n">theta</span><span class="p">}}}{</span>\<span class="n">theta</span><span class="o">^</span><span class="n">k</span>\<span class="n">Gamma</span><span class="p">(</span><span class="n">k</span><span class="p">)}</span>
-</pre></div>
+<p>The probability density function for the Gamma distribution is</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[p(x) = x^{k-1}\frac{e^{\frac{-x}{\theta}}}{\theta^k\Gamma(k)}\]</div>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">rng</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">rng</span><span class="o">.</span><span class="n">rng</span><span class="o">.</span><span class="n">standard_gamma</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rng</span><span class="o">.</span><span class="n">standard_gamma</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="go">0.8729704388729135 # random</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">rng</span><span class="o">.</span><span class="n">standard_gamma</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 <span class="go">array([0.4879818539586227 0.6534654349920751 0.40990997253631162]) # random</span>
