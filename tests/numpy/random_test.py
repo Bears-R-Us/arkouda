@@ -64,7 +64,11 @@ class TestRandom:
         # ints are checked for equality; floats are checked for closeness
 
         def check(a, b, t):
-            return (a == b).all() if t is ak.int64 else np.allclose(a.to_list(), b.to_list())
+            return (
+                (a == b).all()
+                if t is ak.int64
+                else np.allclose(a.to_list(), b.to_list())
+            )
 
         # verify all the same elements are in the shuffle as in the original
 
@@ -92,7 +96,11 @@ class TestRandom:
         # ints are checked for equality; floats are checked for closeness
 
         def check(a, b, t):
-            return (a == b).all() if t is ak.int64 else np.allclose(a.to_list(), b.to_list())
+            return (
+                (a == b).all()
+                if t is ak.int64
+                else np.allclose(a.to_list(), b.to_list())
+            )
 
         # verify all the same elements are in the permutation as in the original
 
@@ -265,7 +273,23 @@ class TestRandom:
         # reset rng with same seed and ensure we get same results
         rng = ak.random.default_rng(12345)
         assert rng.standard_gamma(2, size=num_samples).to_list() == scal_sample
-        assert rng.standard_gamma(ak.arange(5), size=num_samples).to_list() == arr_sample
+        assert (
+            rng.standard_gamma(ak.arange(num_samples), size=num_samples).to_list()
+            == arr_sample
+        )
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_standard_gamma_no_seed(self, size):
+        num_tests = 10
+
+        for i in range(num_tests):
+            rng = ak.random.default_rng()
+
+            arr_sample = rng.standard_gamma(rng.uniform(0, 10, size), size=size)
+
+            assert (
+                ak.sum(arr_sample > 0) > size / 2
+            ), "Majority of values should be > 0."
 
     def test_standard_gamma_hypothesis_testing(self):
         # I tested this many times without a set seed, but with no seed
@@ -278,12 +302,15 @@ class TestRandom:
         sample_list = sample.to_list()
 
         # second goodness of fit test against the distribution with proper mean and std
-        good_fit_res = sp_stats.goodness_of_fit(sp_stats.gamma, sample_list, known_params={"a": k})
+        good_fit_res = sp_stats.goodness_of_fit(
+            sp_stats.gamma, sample_list, known_params={"a": k}
+        )
         assert good_fit_res.pvalue > 0.05
 
     def test_standard_gamma_kolmogorov_smirnov_testing(self):
         from scipy.stats import kstest, gamma
-        num_samples = 10 ** 3
+
+        num_samples = 10**3
 
         rng = ak.random.default_rng(17)
         k = rng.uniform(0, 10)
