@@ -17,9 +17,9 @@ from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import int_scalars, isSupportedInt, str_
 from arkouda.numpy.dtypes import uint64 as akuint64
-from arkouda.pdarrayclass import RegistrationError, create_pdarray, is_sorted, pdarray
-from arkouda.pdarraycreation import arange, array, ones, zeros
-from arkouda.pdarraysetops import concatenate
+from arkouda.numpy.pdarrayclass import RegistrationError, create_pdarray, is_sorted, pdarray
+from arkouda.numpy.pdarraycreation import arange, array, ones, zeros
+from arkouda.numpy.pdarraysetops import concatenate
 from arkouda.strings import Strings
 
 SEG_SUFFIX = "_segments"
@@ -1178,7 +1178,7 @@ class SegArray:
         [4]
         ])
         """
-        from arkouda.pdarraysetops import intersect1d
+        from arkouda.numpy.pdarraysetops import intersect1d
 
         a_seg_inds = self.grouping.broadcast(arange(self.size)[self.non_empty])
         b_seg_inds = other.grouping.broadcast(arange(other.size)[other.non_empty])
@@ -1232,7 +1232,7 @@ class SegArray:
         [1, 2, 3, 4, 5]
         ])
         """
-        from arkouda.pdarraysetops import union1d
+        from arkouda.numpy.pdarraysetops import union1d
 
         a_seg_inds = self.grouping.broadcast(arange(self.size)[self.non_empty])
         b_seg_inds = other.grouping.broadcast(arange(other.size)[other.non_empty])
@@ -1286,7 +1286,7 @@ class SegArray:
         [1, 3, 5]
         ])
         """
-        from arkouda.pdarraysetops import setdiff1d
+        from arkouda.numpy.pdarraysetops import setdiff1d
 
         a_seg_inds = self.grouping.broadcast(arange(self.size)[self.non_empty])
         b_seg_inds = other.grouping.broadcast(arange(other.size)[other.non_empty])
@@ -1340,7 +1340,7 @@ class SegArray:
         [1, 3, 5, 2]
         ])
         """
-        from arkouda.pdarraysetops import setxor1d
+        from arkouda.numpy.pdarraysetops import setxor1d
 
         a_seg_inds = self.grouping.broadcast(arange(self.size)[self.non_empty])
         b_seg_inds = other.grouping.broadcast(arange(other.size)[other.non_empty])
@@ -1378,7 +1378,7 @@ class SegArray:
         --------
         SegArray
         """
-        from arkouda.pdarraysetops import in1d
+        from arkouda.numpy.pdarraysetops import in1d
 
         # convert to pdarray if more than 1 element
         if isinstance(filter, Sequence):

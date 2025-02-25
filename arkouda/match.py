@@ -3,7 +3,7 @@ from enum import Enum
 from typing import cast
 
 from arkouda.client import generic_msg
-from arkouda.pdarrayclass import create_pdarray, pdarray
+from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 
 __all__ = ["Match"]
 

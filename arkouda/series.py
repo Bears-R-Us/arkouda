@@ -17,15 +17,15 @@ from arkouda.index import Index, MultiIndex
 from arkouda.numpy import cast as akcast
 from arkouda.numpy import isnan, value_counts
 from arkouda.numpy.dtypes import bool_scalars, dtype, float64, int64
-from arkouda.pdarrayclass import (
+from arkouda.numpy.pdarrayclass import (
     RegistrationError,
     any,
     argmaxk,
     create_pdarray,
     pdarray,
 )
-from arkouda.pdarraycreation import arange, array, full, zeros
-from arkouda.pdarraysetops import argsort, concatenate, in1d, indexof1d
+from arkouda.numpy.pdarraycreation import arange, array, full, zeros
+from arkouda.numpy.pdarraysetops import argsort, concatenate, in1d, indexof1d
 from arkouda.segarray import SegArray
 from arkouda.strings import Strings
 from arkouda.util import get_callback, is_float
@@ -446,7 +446,7 @@ class Series:
 
         See Also
         --------
-        arkouda.pdarrayclass.nbytes
+        arkouda.numeric.pdarrayclass.nbytes
         arkouda.index.Index.memory_usage
         arkouda.series.Series.memory_usage
         arkouda.dataframe.DataFrame.memory_usage

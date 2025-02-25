@@ -3,7 +3,7 @@ from typing import Iterable, Tuple, Union
 from numpy import ndarray
 
 from arkouda.numpy.dtypes import all_scalars, isSupportedDType
-from arkouda.pdarrayclass import pdarray
+from arkouda.numpy.pdarrayclass import pdarray
 from arkouda.strings import Strings
 
 __all__ = ["shape"]

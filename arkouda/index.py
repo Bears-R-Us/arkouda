@@ -17,9 +17,9 @@ from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import bool_scalars
 from arkouda.numpy.dtypes import float64 as akfloat64
 from arkouda.numpy.dtypes import int64 as akint64
-from arkouda.pdarrayclass import RegistrationError, pdarray
-from arkouda.pdarraycreation import arange, array, create_pdarray, ones
-from arkouda.pdarraysetops import argsort, in1d
+from arkouda.numpy.pdarrayclass import RegistrationError, pdarray
+from arkouda.numpy.pdarraycreation import arange, array, create_pdarray, ones
+from arkouda.numpy.pdarraysetops import argsort, in1d
 from arkouda.sorting import coargsort
 from arkouda.util import convert_if_categorical, generic_concat, get_callback
 
@@ -341,7 +341,7 @@ class Index:
         if len(self) != len(other):
             return False
 
-        from arkouda.pdarrayclass import all as akall
+        from arkouda.numpy.pdarrayclass import all as akall
 
         if isinstance(self, MultiIndex) and isinstance(other, MultiIndex):
             if self.nlevels != other.nlevels:
@@ -374,7 +374,7 @@ class Index:
 
         See Also
         --------
-        arkouda.pdarrayclass.nbytes
+        arkouda.numeric.pdarrayclass.nbytes
         arkouda.index.MultiIndex.memory_usage
         arkouda.series.Series.memory_usage
         arkouda.dataframe.DataFrame.memory_usage
@@ -1244,7 +1244,7 @@ class MultiIndex(Index):
 
         See Also
         --------
-        arkouda.pdarrayclass.nbytes
+        arkouda.numeric.pdarrayclass.nbytes
         arkouda.index.Index.memory_usage
         arkouda.series.Series.memory_usage
         arkouda.dataframe.DataFrame.memory_usage

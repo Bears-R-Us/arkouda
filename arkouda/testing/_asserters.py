@@ -19,7 +19,7 @@ from arkouda import (
     pdarray,
     sort,
 )
-from arkouda.pdarrayclass import sum as aksum
+from arkouda.numpy.pdarrayclass import sum as aksum
 from arkouda.util import is_numeric
 
 DEBUG = True

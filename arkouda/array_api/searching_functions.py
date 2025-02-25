@@ -5,7 +5,7 @@ from typing import Literal, Optional, Tuple, cast
 import arkouda as ak
 from arkouda.client import generic_msg
 from arkouda.numpy import cast as akcast
-from arkouda.pdarrayclass import create_pdarray, create_pdarrays
+from arkouda.numpy.pdarrayclass import create_pdarray, create_pdarrays
 
 from ._dtypes import _real_floating_dtypes, _real_numeric_dtypes
 from .array_object import Array

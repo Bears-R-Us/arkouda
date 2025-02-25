@@ -163,7 +163,7 @@ def main():
     write_stub(akDataframe, "arkouda/dataframe.pyi", all_only=True, allow_arkouda=True)
     write_stub(akGroupbyclass, "arkouda/groupbyclass.pyi", all_only=True, allow_arkouda=True)
     write_stub(akSeries, "arkouda/series.pyi", all_only=True, allow_arkouda=True)
-    write_stub(ak.pdarrayclass, "arkouda/pdarrayclass.pyi", all_only=True, allow_arkouda=True)
+    write_stub(ak.pdarrayclass, "arkouda/numpy/pdarrayclass.pyi", all_only=True, allow_arkouda=True)
 
 if __name__ == "__main__":
     main()

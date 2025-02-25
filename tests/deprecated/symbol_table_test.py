@@ -1,7 +1,7 @@
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
-from arkouda.pdarrayclass import RegistrationError
+from arkouda.numpy.pdarrayclass import RegistrationError
 
 
 def cleanup():

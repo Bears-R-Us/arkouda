@@ -6,7 +6,7 @@ from base_test import ArkoudaTest
 from arkouda.client import _json_args_to_str
 from arkouda.client_dtypes import Fields, ip_address
 from arkouda.message import MessageFormat, MessageType, ReplyMessage, RequestMessage
-from arkouda.pdarraycreation import arange, array
+from arkouda.numpy.pdarraycreation import arange, array
 from arkouda.timeclass import date_range
 
 

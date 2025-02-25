@@ -10,8 +10,8 @@ from arkouda.numpy import cast as akcast
 from arkouda.numpy import where
 from arkouda.numpy.dtypes import bitType, intTypes, isSupportedInt
 from arkouda.numpy.dtypes import uint64 as akuint64
-from arkouda.pdarrayclass import RegistrationError, pdarray
-from arkouda.pdarraycreation import arange, array, create_pdarray, zeros
+from arkouda.numpy.pdarrayclass import RegistrationError, pdarray
+from arkouda.numpy.pdarraycreation import arange, array, create_pdarray, zeros
 from arkouda.strings import Strings
 
 
