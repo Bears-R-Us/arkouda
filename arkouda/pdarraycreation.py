@@ -868,8 +868,6 @@ def arange(*args, **kwargs) -> pdarray:
         Raised if start, stop, or stride is not an int object
     ZeroDivisionError
         Raised if stride == 0
-    ValueError
-        Raised if (stop - start) and stride are not the same sign, or if stop==start
 
     See Also
     --------
@@ -895,7 +893,10 @@ def arange(*args, **kwargs) -> pdarray:
     >>> ak.arange(-5, -10, -1)
     array([-5 -6 -7 -8 -9])
     """
+    from arkouda.numpy import cast as akcast
+
     # if one arg is given then arg is stop
+
     if len(args) == 1:
         start = 0
         stop = args[0]
@@ -918,6 +919,19 @@ def arange(*args, **kwargs) -> pdarray:
         raise ZeroDivisionError("division by zero")
 
     dtype = akint64 if "dtype" not in kwargs.keys() else kwargs["dtype"]
+
+    # check the conditions that cause numpy to return an empty array, and
+    # return one also.  This includes a fix needed for empty bigint arrays.
+
+    # The fix: ak.array calls ak.cast to handle the dtype parameter.  This
+    # caused an error on empty arrays of bigint type (the empty array defaulted
+    # to float64, and cast fails when  converting empty float64 arrays to bigint).
+    # So empty arrays are initially created as akint64, and then cast to
+    # the requested dtype.
+    # This matters for several tests in tests/series_test.py
+
+    if (start == stop) | ((np.sign(stop - start) * np.sign(stride)) <= 0) :
+        return akcast(array([], dtype=akint64), dt=dtype)
 
     if isSupportedInt(start) and isSupportedInt(stop) and isSupportedInt(stride):
         arg_dtypes = [resolve_scalar_dtype(arg) for arg in (start, stop, stride)]
