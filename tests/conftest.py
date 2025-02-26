@@ -144,13 +144,13 @@ def skip_by_rank(request):
         array_ranks = get_array_ranks()
         if isinstance(ranks_requested, int):
             if ranks_requested not in array_ranks:
-                pytest.skip("this test requires server compiled with rank {}".format(array_ranks))
+                pytest.skip("this test requires server compiled with rank {}".format(ranks_requested))
         elif isinstance(ranks_requested, Iterable):
             for i in ranks_requested:
                 if isinstance(i, int):
                     if i not in array_ranks:
                         pytest.skip(
-                            "this test requires server compiled with rank(s) {}".format(array_ranks)
+                            "this test requires server compiled with rank(s) {}".format(i)
                         )
                 else:
                     raise TypeError("skip_if_rank_not_compiled only accepts type int or list of int.")
