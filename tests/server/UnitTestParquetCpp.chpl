@@ -333,6 +333,76 @@ proc testMultiColWriteIntBool() {
   return 0;
 }
 
+proc testMultiColWriteIntSegArr() {
+
+  record fakeSegArray {
+    var totalSize: int;
+    var SegmentsDom = {1..0};
+    var Segments: [SegmentsDom] int;
+    var Data: [0..<totalSize] int;
+    var Sizes: [Segments.domain] int;
+
+    proc init(totalSize, Segments) {
+      this.totalSize = totalSize;
+      this.SegmentsDom = Segments.domain;
+      this.Segments = Segments;
+
+      init this;
+
+      for i in Segments.domain {
+        if i == Segments.domain.high then
+          Sizes[i] = totalSize - Segments[i];
+        else
+          Sizes[i] = Segments[i+1] - Segments[i];
+      }
+    }
+  }
+
+  const numCols = 2;
+  const numElems = 4;
+
+  proc createArray(type elemType) {
+    var Arr: [0..#numElems] elemType;
+    return Arr;
+  }
+
+  var colNames = [i in 0..#numCols] ("col"+i:string).buff;
+
+  var ArrInt = createArray(int);
+  var SegArr = new fakeSegArray(20, [0, 2, 3, 6]);
+
+  var ArrPtrs: [0..#numCols] c_ptr(void);
+
+  ArrPtrs[0] = c_ptrTo(ArrInt);
+  ArrPtrs[1] = c_ptrTo(SegArr.Data);
+
+  var OffsetArr: [0..#numCols] c_ptr(void);
+  OffsetArr[1] = c_ptrTo(SegArr.Segments);
+
+  var ObjTypes = [ObjType.PDARRAY, ObjType.SEGARRAY];
+  var DataTypes = [0..#numCols] ARROWINT64;
+
+  var SegArrSizes: [0..#numCols] c_ptr(void);
+  SegArrSizes[1] = c_ptrTo(SegArr.Sizes);
+
+  var errStr = "E"*200;
+
+  c_writeMultiColToParquet(filename="testMultiColWrite.parquet":c_string,
+                           column_names=c_ptrTo(colNames),
+                           ptr_arr=c_ptrTo(ArrPtrs):c_ptr(c_ptr(void)),
+                           offset_arr=c_ptrTo(OffsetArr),
+                           objTypes=c_ptrTo(ObjTypes),
+                           datatypes=c_ptrTo(DataTypes),
+                           segArr_sizes=c_ptrTo(SegArrSizes),
+                           colnum=numCols,
+                           numelems=numElems,
+                           rowGroupSize=ROWGROUPS,
+                           compression=0,
+                           errMsg=c_ptrTo(errStr.buff));
+
+  return 0;
+}
+
 proc main() {
   var errors = 0;
 
@@ -353,6 +423,7 @@ proc main() {
   errors += testReadStrings(strFilename, strDsetname);
   errors += testMultiColWriteIntInt();
   errors += testMultiColWriteIntBool();
+  errors += testMultiColWriteIntSegArr();
 
   if errors != 0 then
     writeln(errors, " Parquet tests failed");
