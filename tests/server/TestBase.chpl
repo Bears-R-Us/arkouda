@@ -31,13 +31,13 @@ record CommDiagSummary {
 }
 
 record Diags {
-  var T: Timer;
+  var T: stopwatch;
   var elapsedTime: real;
   var gatherDiags = dfltGatherDiags;
   var D: [LocaleSpace] commDiagnostics;
 
   proc init() {
-    this.complete();
+    init this;
     resetCommDiagnostics();
     D = getCommDiagnostics();
   }
@@ -88,9 +88,8 @@ record Diags {
 // Message helpers
 
 proc parseName(s: string): string {
-  const low = [1..1].domain.low;
   var fields = s.split();
-  return fields[low+1];
+  return fields[1];
 }
 
 proc parseTwoNames(s: string): (string, string) {

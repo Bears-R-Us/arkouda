@@ -2,11 +2,27 @@ use ParquetMsg, CTypes, FileSystem;
 use UnitTest;
 use TestBase;
 
+type c_string = c_ptrConst(c_char);
+
+extern proc c_readColumnByName(filename, arr_chpl, where_null_chpl, colNum,
+                               numElems, startIdx, batchSize, byteLength,
+                               hasNonFloatNulls, errMsg): int;
+extern proc c_writeColumnToParquet(filename, arr_chpl, colnum,
+                                   dsetname, numelems, rowGroupSize,
+                                   dtype, compression, errMsg): int;
+extern proc c_getStringColumnNumBytes(filename, colname, offsets, numElems,
+                                      startIdx, batchSize, errMsg): int;
+extern proc c_getDatasetNames(f: c_string, r: c_ptr(c_ptr(c_char)),
+                              readNested, e: c_ptr(c_ptr(c_char))): int(32);
+
+extern proc c_getNumRows(chpl_str, err): int;
+extern proc c_getType(filename, colname, errMsg): c_int;
+extern proc c_getVersionInfo(): c_ptrConst(c_char);
+
+extern proc c_free_string(a);
+extern proc strlen(a): int;
+
 proc testReadWrite(filename: c_string, dsetname: c_string, size: int) {
-  extern proc c_readColumnByName(filename, chpl_arr, colNum, numElems, startIdx, batchSize, errMsg): int;
-  extern proc c_writeColumnToParquet(filename, chpl_arr, colnum,
-                                     dsetname, numelems, rowGroupSize, compressed,
-                                     dtype, errMsg): int;
   extern proc c_free_string(a);
   extern proc strlen(a): int;
   var errMsg: c_ptr(uint(8));
@@ -18,7 +34,8 @@ proc testReadWrite(filename: c_string, dsetname: c_string, size: int) {
   var a: [0..#size] int;
   for i in 0..#size do a[i] = i;
 
-  if c_writeColumnToParquet(filename, c_ptrTo(a), 0, dsetname, size, 10000, false, 1, errMsg) < 0 {
+  if c_writeColumnToParquet(filename, c_ptrTo(a), 0, dsetname, size, 10000,
+      ARROWINT64, 1, errMsg) < 0 {
     var chplMsg;
     try! chplMsg = string.createCopyingBuffer(errMsg, strlen(errMsg));
     writeln(chplMsg);
@@ -26,7 +43,8 @@ proc testReadWrite(filename: c_string, dsetname: c_string, size: int) {
 
   var b: [0..#size] int;
 
-  if(c_readColumnByName(filename, c_ptrTo(b), dsetname, size, 0, 10000, c_ptrTo(errMsg)) < 0) {
+  if(c_readColumnByName(filename, c_ptrTo(b), false, dsetname, size, 0, 10000,
+                        -1, false, c_ptrTo(errMsg)) < 0) {
     var chplMsg;
     try! chplMsg = string.createCopyingBuffer(errMsg, strlen(errMsg));
     writeln(chplMsg);
@@ -41,9 +59,6 @@ proc testReadWrite(filename: c_string, dsetname: c_string, size: int) {
 }
 
 proc testInt32Read() {
-  extern proc c_readColumnByName(filename, chpl_arr, colNum, numElems, startIdx, batchSize, errMsg): int;
-  extern proc c_free_string(a);
-  extern proc strlen(a): int;
   var errMsg: c_ptr(uint(8));
   defer {
     c_free_string(errMsg);
@@ -53,8 +68,8 @@ proc testInt32Read() {
   var expected: [0..#50] int;
   for i in 0..#50 do expected[i] = i;
   
-  if(c_readColumnByName("resources/int32.parquet".c_str(), c_ptrTo(a),
-                        "array".c_str(), 50, 0, 1, c_ptrTo(errMsg)) < 0) {
+  if(c_readColumnByName("resources/int32.parquet".c_str(), c_ptrTo(a), false,
+                        "array".c_str(), 50, 0, 1, -1, false, c_ptrTo(errMsg)) < 0) {
     var chplMsg;
     try! chplMsg = string.createCopyingBuffer(errMsg, strlen(errMsg));
     writeln(chplMsg);
@@ -69,9 +84,6 @@ proc testInt32Read() {
 }
 
 proc testGetNumRows(filename: c_string, expectedSize: int) {
-  extern proc c_getNumRows(chpl_str, err): int;
-  extern proc c_free_string(a);
-  extern proc strlen(a): int;
   var errMsg: c_ptr(uint(8));
   defer {
     c_free_string(errMsg);
@@ -90,9 +102,6 @@ proc testGetNumRows(filename: c_string, expectedSize: int) {
 }
 
 proc testGetType(filename: c_string, dsetname: c_string) {
-  extern proc c_getType(filename, colname, errMsg): c_int;
-  extern proc c_free_string(a);
-  extern proc strlen(a): int;
   var errMsg: c_ptr(uint(8));
   defer {
     c_free_string(errMsg);
@@ -114,8 +123,6 @@ proc testGetType(filename: c_string, dsetname: c_string) {
 }
 
 proc testVersionInfo() {
-  extern proc c_getVersionInfo(): c_string;
-  extern proc c_free_string(ptr);
   var cVersionString = c_getVersionInfo();
   defer {
     c_free_string(cVersionString);
@@ -134,12 +141,10 @@ proc testVersionInfo() {
 }
 
 proc testGetDsets(filename) {
-  extern proc c_getDatasetNames(f: c_string, r: c_ptr(c_ptr(c_char)), e: c_ptr(c_ptr(c_char))): int(32);
-  extern proc c_free_string(ptr);
-  extern proc strlen(a): int;
   var cDsetString: c_ptr(c_char);
   var errMsg: c_ptr(c_char);
-  var st = c_getDatasetNames(filename, c_ptrTo(cDsetString), c_ptrTo(errMsg));
+  var st = c_getDatasetNames(filename, c_ptrTo(cDsetString), false,
+                             c_ptrTo(errMsg));
   defer {
     c_free_string(cDsetString);
     c_free_string(errMsg);
@@ -162,12 +167,6 @@ proc testGetDsets(filename) {
 }
 
 proc testReadStrings(filename, dsetname) {
-  extern proc c_readColumnByName(filename, chpl_arr, colNum, numElems, startIdx, batchSize, errMsg): int;
-  extern proc c_getStringColumnNumBytes(filename, colname, offsets, numElems, startIdx, errMsg): int;
-  extern proc c_getNumRows(chpl_str, err): int;
-
-  extern proc c_free_string(a);
-  extern proc strlen(a): int;
   var errMsg: c_ptr(uint(8));
   defer {
     c_free_string(errMsg);
@@ -176,7 +175,8 @@ proc testReadStrings(filename, dsetname) {
   var size = c_getNumRows(filename, c_ptrTo(errMsg));
   var offsets: [0..#size] int;
   
-  c_getStringColumnNumBytes(filename, dsetname, c_ptrTo(offsets[0]), size, 0, c_ptrTo(errMsg));
+  c_getStringColumnNumBytes(filename, dsetname, c_ptrTo(offsets[0]), size, 0,
+                            256, c_ptrTo(errMsg));
   var byteSize  = + reduce offsets;
   if byteSize < 0 {
     var chplMsg;
@@ -186,7 +186,8 @@ proc testReadStrings(filename, dsetname) {
 
   var a: [0..#byteSize] uint(8);
 
-  if(c_readColumnByName(filename, c_ptrTo(a), dsetname, 3, 0, 1, c_ptrTo(errMsg)) < 0) {
+  if(c_readColumnByName(filename, c_ptrTo(a), false, dsetname, 3, 0, 1, -1,
+                        false, c_ptrTo(errMsg)) < 0) {
     var chplMsg;
     try! chplMsg = string.createCopyingBuffer(errMsg, strlen(errMsg));
     writeln(chplMsg);
@@ -206,12 +207,9 @@ proc testReadStrings(filename, dsetname) {
 
 proc testMultiDset() {
   const filename = 'resources/multi-col.parquet'.c_str();
-  extern proc c_getDatasetNames(f: c_string, r: c_ptr(c_ptr(c_char)), e: c_ptr(c_ptr(c_char))): int(32);
-  extern proc c_free_string(ptr);
-  extern proc strlen(a): int;
   var cDsetString: c_ptr(c_char);
   var errMsg: c_ptr(c_char);
-  var st = c_getDatasetNames(filename, c_ptrTo(cDsetString), c_ptrTo(errMsg));
+  var st = c_getDatasetNames(filename, c_ptrTo(cDsetString), false, c_ptrTo(errMsg));
   defer {
     c_free_string(cDsetString);
     c_free_string(errMsg);

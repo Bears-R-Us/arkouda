@@ -14,6 +14,8 @@ TEST_FLAGS=$(cd $ARKOUDA_HOME && make -s print-TEST_CHPL_FLAGS)
 # -M dir
 SRC_DIR=$(cd $ARKOUDA_HOME && make -s print-ARKOUDA_SOURCE_DIR)
 
+PARQUET_FLAG=-I$SRC_DIR/parquet
+
 # Compat modules
 COMPAT_MODULES=$(cd $ARKOUDA_HOME && make -s print-ARKOUDA_COMPAT_MODULES)
 
@@ -27,4 +29,4 @@ if [[ ! -f $SRC_DIR/ArrowFunctions.o ]]; then
   make -s -C ${ARKOUDA_HOME} compile-arrow-cpp > /dev/null 2> /dev/null
 fi
 
-echo "${TEST_FLAGS} -M ${SRC_DIR} ${COMPAT_MODULES} ${CONFIG_OPTS} ${TEST_OPTS}"
+echo "${TEST_FLAGS} -M ${SRC_DIR} ${PARQUET_FLAG} ${COMPAT_MODULES} ${CONFIG_OPTS} ${TEST_OPTS}"
