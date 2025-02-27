@@ -1,3 +1,4 @@
+import builtins
 import json
 from enum import Enum
 from typing import TYPE_CHECKING, List, Sequence, Tuple, TypeVar, Union
@@ -125,7 +126,7 @@ def _merge_where(new_pda, where, ret):
     return new_pda
 
 
-def can_cast(from_, to) -> ak_bool:
+def can_cast(from_, to) -> builtins.bool:
     """
     Returns True if cast between data types can occur according to the casting rule.
 
