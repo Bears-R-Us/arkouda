@@ -17,7 +17,7 @@ def bumpup(a) :
         blob = list(a.shape)
         blob.insert(0, 2)
         blob = tuple(blob)
-    return np.broadcast_to(a,i blob)
+    return np.broadcast_to(a, blob)
 
 
 class TestStats:
