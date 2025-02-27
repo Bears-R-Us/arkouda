@@ -30,14 +30,14 @@ from arkouda.numpy.dtypes import bool_scalars
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import int_scalars, resolve_scalar_dtype, str_, str_scalars
-from arkouda.pdarrayclass import RegistrationError
-from arkouda.pdarrayclass import all as akall
-from arkouda.pdarrayclass import create_pdarray, pdarray
-from arkouda.pdarraycreation import arange, array, ones, zeros, zeros_like
-from arkouda.pdarraysetops import concatenate, in1d
-from arkouda.sorting import argsort
-from arkouda.sorting import sort as pda_sort
-from arkouda.strings import Strings
+from arkouda.numpy.pdarrayclass import RegistrationError
+from arkouda.numpy.pdarrayclass import all as akall
+from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
+from arkouda.numpy.pdarraycreation import arange, array, ones, zeros, zeros_like
+from arkouda.numpy.pdarraysetops import concatenate, in1d
+from arkouda.numpy.sorting import argsort
+from arkouda.numpy.sorting import sort as pda_sort
+from arkouda.numpy.strings import Strings
 
 __all__ = ["Categorical"]
 
@@ -457,7 +457,7 @@ class Categorical:
 
         Returns
         -------
-        arkouda.strings.Strings
+        arkouda.numpy.strings.Strings
             A Strings object corresponding to the values in
             this Categorical.
 
@@ -1290,7 +1290,7 @@ class Categorical:
         Objects registered with the server are immune to deletion until
         they are unregistered.
         """
-        from arkouda.util import unregister
+        from arkouda.numpy.util import unregister
 
         if not self.registered_name:
             raise RegistrationError("This object is not registered")
@@ -1321,7 +1321,7 @@ class Categorical:
         Objects registered with the server are immune to deletion until
         they are unregistered.
         """
-        from arkouda.util import is_registered
+        from arkouda.numpy.util import is_registered
 
         if self.registered_name is None:
             result = True
@@ -1434,7 +1434,7 @@ class Categorical:
         """
         import warnings
 
-        from arkouda.util import attach
+        from arkouda.numpy.util import attach
 
         warnings.warn(
             "ak.Categorical.attach() is deprecated. Please use ak.attach() instead.",
@@ -1467,7 +1467,7 @@ class Categorical:
         """
         import warnings
 
-        from arkouda.util import unregister
+        from arkouda.numpy.util import unregister
 
         warnings.warn(
             "ak.Categorical.unregister_categorical_by_name() is deprecated. "

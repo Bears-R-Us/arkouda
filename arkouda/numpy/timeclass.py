@@ -14,8 +14,8 @@ from arkouda.client import generic_msg
 from arkouda.numpy import abs as akabs
 from arkouda.numpy import cast
 from arkouda.numpy.dtypes import int64, int_scalars, intTypes, isSupportedInt
-from arkouda.pdarrayclass import RegistrationError, create_pdarray, pdarray
-from arkouda.pdarraycreation import from_series
+from arkouda.numpy.pdarrayclass import RegistrationError, create_pdarray, pdarray
+from arkouda.numpy.pdarraycreation import from_series
 
 _BASE_UNIT = "ns"
 
@@ -706,7 +706,7 @@ class Datetime(_AbstractBaseTime):
         Objects registered with the server are immune to deletion until
         they are unregistered.
         """
-        from arkouda.util import unregister
+        from arkouda.numpy.util import unregister
 
         if not self.registered_name:
             raise RegistrationError("This object is not registered")
@@ -737,7 +737,7 @@ class Datetime(_AbstractBaseTime):
         Objects registered with the server are immune to deletion until
         they are unregistered.
         """
-        from arkouda.util import is_registered
+        from arkouda.numpy.util import is_registered
 
         if self.registered_name is None:
             return np.bool_(is_registered(self.values.name, as_component=True))
@@ -961,7 +961,7 @@ class Timedelta(_AbstractBaseTime):
         Objects registered with the server are immune to deletion until
         they are unregistered.
         """
-        from arkouda.util import unregister
+        from arkouda.numpy.util import unregister
 
         if not self.registered_name:
             raise RegistrationError("This object is not registered")
@@ -992,7 +992,7 @@ class Timedelta(_AbstractBaseTime):
         Objects registered with the server are immune to deletion until
         they are unregistered.
         """
-        from arkouda.util import is_registered
+        from arkouda.numpy.util import is_registered
 
         if self.registered_name is None:
             return np.bool_(is_registered(self.values.name, as_component=True))

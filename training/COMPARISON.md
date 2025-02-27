@@ -155,11 +155,11 @@ array([0, 3, 4, 5, 7, 9])
 ### Set Operations
 Arkouda and `NumPy` support set operations. Just like array creation, these functions are very similar. Both packages support `in1d`, `intersect1d`, `union1d`, `setdiff1d`, and `setxor1d`. In this section we will only demonstrate utilization of `intersect1d`. Documentation on all set operations in Arkouda can be found below:
 
-- [in1d](https://bears-r-us.github.io/arkouda/autoapi/arkouda/pdarraysetops/index.html?highlight=in1d#arkouda.pdarraysetops.in1d)
-- [intersect1d](https://bears-r-us.github.io/arkouda/autoapi/arkouda/pdarraysetops/index.html?highlight=intersect1d#arkouda.pdarraysetops.intersect1d)
-- [union1d](https://bears-r-us.github.io/arkouda/autoapi/arkouda/pdarraysetops/index.html?highlight=union1d#arkouda.pdarraysetops.union1d)
-- [setdiff1d](https://bears-r-us.github.io/arkouda/autoapi/arkouda/pdarraysetops/index.html?highlight=setdiff1d#arkouda.pdarraysetops.setdiff1d)
-- [setxor1d](https://bears-r-us.github.io/arkouda/autoapi/arkouda/pdarraysetops/index.html?highlight=setdiff1d#arkouda.pdarraysetops.setxor1d)
+- [in1d](https://bears-r-us.github.io/arkouda/autoapi/arkouda/pdarraysetops/index.html?highlight=in1d#arkouda.numpy.pdarraysetops.in1d)
+- [intersect1d](https://bears-r-us.github.io/arkouda/autoapi/arkouda/pdarraysetops/index.html?highlight=intersect1d#arkouda.numpy.pdarraysetops.intersect1d)
+- [union1d](https://bears-r-us.github.io/arkouda/autoapi/arkouda/pdarraysetops/index.html?highlight=union1d#arkouda.numpy.pdarraysetops.union1d)
+- [setdiff1d](https://bears-r-us.github.io/arkouda/autoapi/arkouda/pdarraysetops/index.html?highlight=setdiff1d#arkouda.numpy.pdarraysetops.setdiff1d)
+- [setxor1d](https://bears-r-us.github.io/arkouda/autoapi/arkouda/pdarraysetops/index.html?highlight=setdiff1d#arkouda.numpy.pdarraysetops.setxor1d)
 
 #### Intersect1d Arkouda vs NumPy
 ```python

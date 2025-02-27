@@ -16,9 +16,9 @@ from arkouda.numpy.dtypes import (
     int_scalars,
     uint64,
 )
-from arkouda.pdarrayclass import create_pdarray, pdarray
-from arkouda.pdarraycreation import zeros
-from arkouda.strings import Strings
+from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
+from arkouda.numpy.pdarraycreation import zeros
+from arkouda.numpy.strings import Strings
 
 numeric_dtypes = {dtype(int64), dtype(uint64), dtype(float64)}
 

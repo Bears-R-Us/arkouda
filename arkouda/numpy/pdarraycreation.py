@@ -24,8 +24,8 @@ from arkouda.numpy.dtypes import (
     resolve_scalar_dtype,
 )
 from arkouda.numpy.dtypes import uint64 as akuint64
-from arkouda.pdarrayclass import create_pdarray, pdarray
-from arkouda.strings import Strings
+from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
+from arkouda.numpy.strings import Strings
 
 __all__ = [
     "array",
@@ -201,7 +201,7 @@ def array(
 
     >>> strings = ak.array([f'string {i}' for i in range(0,5)])
     >>> type(strings)
-    <class 'arkouda.strings.Strings'>
+    <class 'arkouda.numpy.strings.Strings'>
     """
     from arkouda.numpy import cast as akcast
 
@@ -281,7 +281,7 @@ def array(
         except TypeError:
             raise RuntimeError(f"Unhandled dtype {a.dtype}")
     else:
-        from arkouda.util import _infer_shape_from_size
+        from arkouda.numpy.util import _infer_shape_from_size
 
         shape, ndim, full_size = _infer_shape_from_size(a.shape)
 
@@ -612,7 +612,7 @@ def full(
     # check dtype for error
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-    from arkouda.util import _infer_shape_from_size
+    from arkouda.numpy.util import _infer_shape_from_size
 
     shape, ndim, full_size = _infer_shape_from_size(size)
 

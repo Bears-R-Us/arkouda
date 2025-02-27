@@ -21,7 +21,7 @@ Below are the functions that enable both sides of this transfer.
 		  
 .. autofunction:: arkouda.pdarray.to_ndarray
 
-.. autofunction:: arkouda.Strings.to_ndarray
+.. autofunction:: arkouda.numpy.Strings.to_ndarray
 
 Large Datasets
 =================

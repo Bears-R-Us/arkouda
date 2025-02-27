@@ -7,7 +7,7 @@ from arkouda.numpy.dtypes import str_scalars
 from arkouda.infoclass import list_symbol_table
 from arkouda.logger import getArkoudaLogger
 from arkouda.match import Match, MatchType
-from arkouda.pdarrayclass import create_pdarray, pdarray
+from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 
 
 class Matcher:
@@ -112,7 +112,7 @@ class Matcher:
         """
         Split string by the occurrences of pattern. If maxsplit is nonzero, at most maxsplit splits occur
         """
-        from arkouda.strings import Strings
+        from arkouda.numpy.strings import Strings
 
         if re.search(self.pattern, ""):
             raise ValueError("Cannot split or flatten with a pattern that matches the empty string")
@@ -140,7 +140,7 @@ class Matcher:
         """
         Return all non-overlapping matches of pattern in Strings as a new Strings object
         """
-        from arkouda.strings import Strings
+        from arkouda.numpy.strings import Strings
 
         self.find_locations()
         repMsg = cast(
@@ -171,7 +171,7 @@ class Matcher:
         If count is nonzero, at most count substitutions occur
         If return_num_subs is True, return the number of substitutions that occurred
         """
-        from arkouda.strings import Strings
+        from arkouda.numpy.strings import Strings
 
         repMsg = cast(
             str,

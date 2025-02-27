@@ -46,7 +46,7 @@ import numpy as np
 
 import arkouda as ak
 from arkouda import array_api
-from arkouda.pdarraycreation import scalar_array
+from arkouda.numpy.pdarraycreation import scalar_array
 
 HANDLED_FUNCTIONS: Dict[str, Callable] = {}
 

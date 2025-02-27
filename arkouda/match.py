@@ -3,7 +3,7 @@ from enum import Enum
 from typing import cast
 
 from arkouda.client import generic_msg
-from arkouda.pdarrayclass import create_pdarray, pdarray
+from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 
 __all__ = ["Match"]
 
@@ -150,7 +150,7 @@ class Match:
         >>> strings.search('_+').find_matches(return_match_origins=True)
         (array(['_', '____', '__']), array([0 1 3]))
         """
-        from arkouda.strings import Strings
+        from arkouda.numpy.strings import Strings
 
         repMsg = cast(
             str,
@@ -205,7 +205,7 @@ class Match:
         (array(['Newton', 'Leibniz']), array([0 2]))
         """
         from arkouda.client import regexMaxCaptures
-        from arkouda.strings import Strings
+        from arkouda.numpy.strings import Strings
 
         if group_num < 0:
             raise ValueError("group_num cannot be negative")

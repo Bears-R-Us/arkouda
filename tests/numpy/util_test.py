@@ -1,7 +1,7 @@
 import numpy as np
 
 import arkouda as ak
-from arkouda.util import is_float, is_int, is_numeric, map
+from arkouda.numpy.util import is_float, is_int, is_numeric, map
 
 
 class TestUtil:

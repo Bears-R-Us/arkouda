@@ -23,25 +23,25 @@ from arkouda.numpy.dtypes import (
 from arkouda.numpy.dtypes import str_
 from arkouda.numpy.dtypes import str_ as akstr_
 from arkouda.numpy.dtypes import uint64 as ak_uint64
-from arkouda.pdarrayclass import all as ak_all
-from arkouda.pdarrayclass import any as ak_any
-from arkouda.pdarrayclass import (
+from arkouda.numpy.pdarrayclass import all as ak_all
+from arkouda.numpy.pdarrayclass import any as ak_any
+from arkouda.numpy.pdarrayclass import (
     argmax,
     broadcast_if_needed,
     create_pdarray,
     pdarray,
     sum,
 )
-from arkouda.pdarraycreation import array, linspace, scalar_array
-from arkouda.sorting import sort
-from arkouda.strings import Strings
+from arkouda.numpy.pdarraycreation import array, linspace, scalar_array
+from arkouda.numpy.sorting import sort
+from arkouda.numpy.strings import Strings
 
 NUMERIC_TYPES = [ak_int64, ak_float64, ak_bool, ak_uint64]
 
 
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
-    from arkouda.segarray import SegArray
+    from arkouda.numpy.segarray import SegArray
 else:
     Categorical = TypeVar("Categorical")
     SegArray = TypeVar("SegArray")
@@ -533,10 +533,10 @@ def isnan(pda: pdarray) -> pdarray:
     >>> ak.isnan(ak.array([1.0, 2.0, np.log(-1)]))
     array([False False True])
     """
-    from arkouda.util import is_float, is_numeric
+    from arkouda.numpy.util import is_float, is_numeric
 
     if is_numeric(pda) and not is_float(pda):
-        from arkouda.pdarraycreation import full
+        from arkouda.numpy.pdarraycreation import full
 
         return full(pda.size, False, dtype=bool)
     elif not is_numeric(pda):
@@ -1571,7 +1571,7 @@ def _str_cat_where(
     # added @no_type_check because mypy can't handle Categorical not being declared
     # sooner, but there are circular dependencies preventing that
     from arkouda.categorical import Categorical
-    from arkouda.pdarraysetops import concatenate
+    from arkouda.numpy.pdarraysetops import concatenate
 
     if isinstance(A, str) and isinstance(B, (Categorical, Strings)):
         # This allows us to assume if a str is present it is B
@@ -2090,7 +2090,7 @@ def clip(
 
     Returns
     -------
-    arkouda.pdarrayclass.pdarray
+    arkouda.numpy.pdarrayclass.pdarray
         A pdarray matching pda, except that element x remains x if lo <= x <= hi,
                                                 or becomes lo if x < lo,
                                                 or becomes hi if x > hi.
@@ -2234,7 +2234,7 @@ def count_nonzero(pda: pdarray) -> np.int64:
 
     """
 
-    from arkouda.util import is_numeric
+    from arkouda.numpy.util import is_numeric
 
     #  Handle different data types.
 

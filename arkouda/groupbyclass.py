@@ -31,10 +31,10 @@ from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import int_scalars
 from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.random import default_rng
-from arkouda.pdarrayclass import RegistrationError, create_pdarray, is_sorted, pdarray
-from arkouda.pdarraycreation import arange, full
-from arkouda.sorting import argsort, sort
-from arkouda.strings import Strings
+from arkouda.numpy.pdarrayclass import RegistrationError, create_pdarray, is_sorted, pdarray
+from arkouda.numpy.pdarraycreation import arange, full
+from arkouda.numpy.sorting import argsort, sort
+from arkouda.numpy.strings import Strings
 
 __all__ = ["unique", "GroupBy", "broadcast", "GROUPBY_REDUCTION_TYPES"]
 
@@ -1864,7 +1864,7 @@ class GroupBy:
             Raised if values is or contains Strings or Categorical
         """
         from arkouda import Categorical
-        from arkouda.segarray import SegArray
+        from arkouda.numpy.segarray import SegArray
 
         if isinstance(values, (Strings, Categorical)) or (
             isinstance(values, Sequence) and any([isinstance(v, (Strings, Categorical)) for v in values])
@@ -2158,7 +2158,7 @@ class GroupBy:
         Objects registered with the server are immune to deletion until
         they are unregistered.
         """
-        from arkouda.util import unregister
+        from arkouda.numpy.util import unregister
 
         if not self.registered_name:
             raise RegistrationError(
@@ -2192,7 +2192,7 @@ class GroupBy:
         Objects registered with the server are immune to deletion until
         they are unregistered.
         """
-        from arkouda.util import is_registered
+        from arkouda.numpy.util import is_registered
 
         if self.registered_name is None:
             return False
@@ -2225,7 +2225,7 @@ class GroupBy:
         """
         import warnings
 
-        from arkouda.util import attach
+        from arkouda.numpy.util import attach
 
         warnings.warn(
             "ak.GroupBy.attach() is deprecated. Please use ak.attach() instead.",
@@ -2258,7 +2258,7 @@ class GroupBy:
         """
         import warnings
 
-        from arkouda.util import unregister
+        from arkouda.numpy.util import unregister
 
         warnings.warn(
             "ak.GroupBy.unregister_groupby_by_name() is deprecated. Please use ak.unregister() instead.",

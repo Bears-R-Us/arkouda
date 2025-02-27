@@ -119,7 +119,7 @@ class ParameterObject:
 
     @staticmethod
     def _format_param(p):
-        from arkouda.segarray import SegArray
+        from arkouda.numpy.segarray import SegArray
 
         return (
             json.dumps({"segments": p.segments.name, "values": p.values.name})
@@ -163,9 +163,9 @@ class ParameterObject:
         -------
         ParameterObject
         """
-        from arkouda.pdarrayclass import pdarray
-        from arkouda.segarray import SegArray
-        from arkouda.strings import Strings
+        from arkouda.numpy.pdarrayclass import pdarray
+        from arkouda.numpy.segarray import SegArray
+        from arkouda.numpy.strings import Strings
 
         # want the object type. If pdarray the content dtypes can vary
         dtypes = {
@@ -231,8 +231,8 @@ class ParameterObject:
         -------
         Dictionary - mapping the parameter type to the build function
         """
-        from arkouda.segarray import SegArray
-        from arkouda.strings import Strings
+        from arkouda.numpy.segarray import SegArray
+        from arkouda.numpy.strings import Strings
 
         return {
             Strings.__name__: ParameterObject._build_strings_param,
@@ -258,7 +258,7 @@ class ParameterObject:
         --------
         ParameterObject - The parameter object formatted to be parsed by the chapel server
         """
-        from arkouda.pdarrayclass import pdarray
+        from arkouda.numpy.pdarrayclass import pdarray
         from arkouda.sparrayclass import sparray
 
         dispatch = ParameterObject.generate_dispatch()
