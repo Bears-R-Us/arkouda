@@ -509,7 +509,7 @@ always a np.float64 or np.int64.</p>
 <dd><p>Compute the variance. See <code class="docutils literal notranslate"><span class="pre">arkouda.var</span></code> for details.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ddof</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id905" title="arkouda.int_scalars"><em>int_scalars</em></a>) – “Delta Degrees of Freedom” used in calculating var</p>
+<dd class="field-odd"><p><strong>ddof</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id598" title="arkouda.int_scalars"><em>int_scalars</em></a>) – “Delta Degrees of Freedom” used in calculating var</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The scalar variance of the array</p>
@@ -533,7 +533,7 @@ always a np.float64 or np.int64.</p>
 <dd><p>Compute the standard deviation. See <code class="docutils literal notranslate"><span class="pre">arkouda.std</span></code> for details.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ddof</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id905" title="arkouda.int_scalars"><em>int_scalars</em></a>) – “Delta Degrees of Freedom” used in calculating std</p>
+<dd class="field-odd"><p><strong>ddof</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id598" title="arkouda.int_scalars"><em>int_scalars</em></a>) – “Delta Degrees of Freedom” used in calculating std</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The scalar standard deviation of the array</p>
@@ -556,7 +556,7 @@ always a np.float64 or np.int64.</p>
 <dd><p>Compute the minimum “k” values.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id905" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of maximum values to be returned by the output.</p>
+<dd class="field-odd"><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id598" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of maximum values to be returned by the output.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The maximum <cite>k</cite> values from pda</p>
@@ -576,7 +576,7 @@ always a np.float64 or np.int64.</p>
 <dd><p>Compute the maximum “k” values.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id905" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of maximum values to be returned by the output.</p>
+<dd class="field-odd"><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id598" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of maximum values to be returned by the output.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The maximum <cite>k</cite> values from pda</p>
@@ -596,7 +596,7 @@ always a np.float64 or np.int64.</p>
 <dd><p>Compute the minimum “k” values.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id905" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of maximum values to be returned by the output.</p>
+<dd class="field-odd"><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id598" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of maximum values to be returned by the output.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Indices corresponding to the maximum <cite>k</cite> values from pda</p>
@@ -616,7 +616,7 @@ always a np.float64 or np.int64.</p>
 <dd><p>Finds the indices corresponding to the maximum “k” values.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id905" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of maximum values to be returned by the output.</p>
+<dd class="field-odd"><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id598" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of maximum values to be returned by the output.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Indices corresponding to the  maximum <cite>k</cite> values, sorted</p>
@@ -642,14 +642,14 @@ always a np.float64 or np.int64.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The values to histogram</p></li>
-<li><p><strong>bins</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id905" title="arkouda.int_scalars"><em>int_scalars</em></a><em>, </em><em>default=10</em>) – The number of equal-size bins to use (default: 10)</p></li>
+<li><p><strong>bins</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id598" title="arkouda.int_scalars"><em>int_scalars</em></a><em>, </em><em>default=10</em>) – The number of equal-size bins to use (default: 10)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The number of values present in each bin and the bin edges</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>(<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../autoapi/arkouda/dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union">Union</a>[<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#id884" title="arkouda.int64">int64</a> or <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.float64" title="arkouda.float64">float64</a>])</p>
+<dd class="field-odd"><p>(<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../autoapi/arkouda/dtypes/index.html#arkouda.dtypes.Union" title="arkouda.dtypes.Union">Union</a>[<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#id577" title="arkouda.int64">int64</a> or <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.float64" title="arkouda.float64">float64</a>])</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">

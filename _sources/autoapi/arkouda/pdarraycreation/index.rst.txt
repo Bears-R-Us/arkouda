@@ -60,7 +60,6 @@ Module Contents
 
    :raises TypeError: Raised if start, stop, or stride is not an int object
    :raises ZeroDivisionError: Raised if stride == 0
-   :raises ValueError: Raised if (stop - start) and stride are not the same sign, or if stop==start
 
    .. seealso:: :obj:`linspace`, :obj:`zeros`, :obj:`ones`, :obj:`randint`
 

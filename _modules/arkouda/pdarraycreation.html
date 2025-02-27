@@ -1258,8 +1258,6 @@
 <span class="sd">        Raised if start, stop, or stride is not an int object</span>
 <span class="sd">    ZeroDivisionError</span>
 <span class="sd">        Raised if stride == 0</span>
-<span class="sd">    ValueError</span>
-<span class="sd">        Raised if (stop - start) and stride are not the same sign, or if stop==start</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1285,7 +1283,10 @@
 <span class="sd">    &gt;&gt;&gt; ak.arange(-5, -10, -1)</span>
 <span class="sd">    array([-5 -6 -7 -8 -9])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
+
     <span class="c1"># if one arg is given then arg is stop</span>
+
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">stop</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -1308,6 +1309,19 @@
         <span class="k">raise</span> <span class="ne">ZeroDivisionError</span><span class="p">(</span><span class="s2">&quot;division by zero&quot;</span><span class="p">)</span>
 
     <span class="n">dtype</span> <span class="o">=</span> <span class="n">akint64</span> <span class="k">if</span> <span class="s2">&quot;dtype&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;dtype&quot;</span><span class="p">]</span>
+
+    <span class="c1"># check the conditions that cause numpy to return an empty array, and</span>
+    <span class="c1"># return one also.  This includes a fix needed for empty bigint arrays.</span>
+
+    <span class="c1"># The fix: ak.array calls ak.cast to handle the dtype parameter.  This</span>
+    <span class="c1"># caused an error on empty arrays of bigint type (the empty array defaulted</span>
+    <span class="c1"># to float64, and cast fails when  converting empty float64 arrays to bigint).</span>
+    <span class="c1"># So empty arrays are initially created as akint64, and then cast to</span>
+    <span class="c1"># the requested dtype.</span>
+    <span class="c1"># This matters for several tests in tests/series_test.py</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">start</span> <span class="o">==</span> <span class="n">stop</span><span class="p">)</span> <span class="o">|</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">stop</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">stride</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">:</span>
+        <span class="k">return</span> <span class="n">akcast</span><span class="p">(</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">akint64</span><span class="p">),</span> <span class="n">dt</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">start</span><span class="p">)</span> <span class="ow">and</span> <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">stop</span><span class="p">)</span> <span class="ow">and</span> <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">stride</span><span class="p">):</span>
         <span class="n">arg_dtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">stride</span><span class="p">)]</span>
