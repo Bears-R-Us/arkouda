@@ -2,6 +2,8 @@ use ParquetMsg, CTypes, FileSystem;
 use UnitTest;
 use TestBase;
 
+private config const ROWGROUPS = 512*1024*1024 / numBytes(int); // 512 mb of int64
+
 type c_string = c_ptrConst(c_char);
 
 extern proc c_readColumnByName(filename, arr_chpl, where_null_chpl, colNum,
@@ -14,6 +16,18 @@ extern proc c_getStringColumnNumBytes(filename, colname, offsets, numElems,
                                       startIdx, batchSize, errMsg): int;
 extern proc c_getDatasetNames(f: c_string, r: c_ptr(c_ptr(c_char)),
                               readNested, e: c_ptr(c_ptr(c_char))): int(32);
+extern proc c_writeMultiColToParquet(filename: c_string,
+                                     column_names: c_ptr(void),
+                                     ptr_arr: c_ptr(c_ptr(void)),
+                                     offset_arr: c_ptr(c_ptr(void)),
+                                     objTypes: c_ptr(void),
+                                     datatypes: c_ptr(void),
+                                     segArr_sizes: c_ptr(void),
+                                     colnum: int,
+                                     numelems: int,
+                                     rowGroupSize: int,
+                                     compression: int,
+                                     errMsg: c_ptr(c_ptr(c_uchar))): int;
 
 extern proc c_getNumRows(chpl_str, err): int;
 extern proc c_getType(filename, colname, errMsg): c_int;
@@ -231,6 +245,49 @@ proc testMultiDset() {
   }
 }
 
+proc testMultiColWrite() {
+
+  type elemType = int;
+
+  const numCols = 4;
+  const numElems = 10;
+
+  var colNames = [i in 0..#numCols] ("col"+i:string).buff;
+  var Arrs: [0..#numCols][0..#numElems] elemType;
+
+  for col in Arrs.domain {
+    for row in Arrs[col].domain {
+      Arrs[col][row] = col+row;
+    }
+  }
+
+  var ArrPtrs: [0..#numCols] c_ptr(elemType);
+
+  for (ptr, Arr) in zip(ArrPtrs, Arrs) {
+    ptr = c_ptrTo(Arr);
+  }
+
+  var ObjTypes = [0..#numCols] 1; // 1 is PDARRAY
+  var DataTypes = [0..#numCols] ARROWINT64;
+
+  var errStr = "E"*200;
+
+  c_writeMultiColToParquet(filename="testMultiColWrite.parquet":c_string,
+                           column_names=c_ptrTo(colNames),
+                           ptr_arr=c_ptrTo(ArrPtrs):c_ptr(c_ptr(void)),
+                           offset_arr=nil,
+                           objTypes=c_ptrTo(ObjTypes),
+                           datatypes=c_ptrTo(DataTypes),
+                           segArr_sizes=nil,
+                           colnum=numCols,
+                           numelems=numElems,
+                           rowGroupSize=ROWGROUPS,
+                           compression=0,
+                           errMsg=c_ptrTo(errStr.buff));
+
+  return 0;
+}
+
 proc main() {
   var errors = 0;
 
@@ -249,6 +306,7 @@ proc main() {
   errors += testGetDsets(filename);
   errors += testMultiDset();
   errors += testReadStrings(strFilename, strDsetname);
+  errors += testMultiColWrite();
 
   if errors != 0 then
     writeln(errors, " Parquet tests failed");
