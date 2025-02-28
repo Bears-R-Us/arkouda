@@ -8,34 +8,34 @@ use ParquetMsg;
 private config const ROWGROUPS = 512*1024*1024 / numBytes(int); // 512 mb of int64
 config const n = 100;
 
-/*proc testWriteRead() {*/
-  /*var st = new owned SymTab();*/
+proc testWriteRead() {
+  var st = new owned SymTab();
 
-  /*var arrName = st.nextName();*/
-  /*var a = st.addEntry(arrName, n, int);*/
+  var arrName = st.nextName();
+  var a = st.addEntry(arrName, n, int);
 
-  /*a.a = 2;*/
+  a.a = 2;
 
-  /*var (ok, filenames, sizes) = writeDistArrayToParquet(a.a, "test.parquet",*/
-                                                       /*"col", "int64",*/
-                                                       /*ROWGROUPS, compression=0,*/
-                                                       /*mode=0);*/
+  var (ok, filenames, sizes) = writeDistArrayToParquet(a.a, "test.parquet",
+                                                       "col", "int64",
+                                                       ROWGROUPS, compression=0,
+                                                       mode=0);
 
-  /*var readEntry = createSymEntry(n, int);*/
-  /*readFilesByName(readEntry.a, filenames, sizes, "col", "int64");*/
-  /*var valName = st.nextName();*/
-  /*st.addEntry(valName, readEntry);*/
+  var readEntry = createSymEntry(n, int);
+  readFilesByName(readEntry.a, filenames, sizes, "col", "int64");
+  var valName = st.nextName();
+  st.addEntry(valName, readEntry);
 
-  /*assert(&& reduce (readEntry.a == a.a));*/
+  assert(&& reduce (readEntry.a == a.a));
 
-  /*defer {*/
-    /*for filename in filenames {*/
-      /*if FileSystem.exists(filename) {*/
-        /*FileSystem.remove(filename);*/
-      /*}*/
-    /*}*/
-  /*}*/
-/*}*/
+  defer {
+    for filename in filenames {
+      if FileSystem.exists(filename) {
+        FileSystem.remove(filename);
+      }
+    }
+  }
+}
 
 proc testWriteReadMultiCol() {
   var st = new owned SymTab();
@@ -59,6 +59,9 @@ proc testWriteReadMultiCol() {
                        compression=0,
                        st=st.borrow());
 
+
+  // TODO read it back
+
 }
 
 proc createArray(type t, size, st) {
@@ -70,6 +73,6 @@ proc createArray(type t, size, st) {
 }
 
 proc main() {
-  /*testWriteRead();*/
+  testWriteRead();
   testWriteReadMultiCol();
 }
