@@ -10,6 +10,7 @@ s = SEED
 DTYPES = [ak.int64, ak.float64, ak.uint64, ak.uint8]
 DTYPES_WITH_BOOL = [ak.int64, ak.float64, ak.uint64, ak.uint8, ak.bool_]
 
+
 def randArr(shape, dtype):
 
     global s
