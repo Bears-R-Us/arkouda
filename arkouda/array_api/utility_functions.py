@@ -169,6 +169,7 @@ def diff(a: Array, /, n: int = 1, axis: int = -1, prepend=None, append=None) -> 
         )
     )
 
+
 def trapz(y: Array, x: Optional[Array] = None, dx: Optional[float] = 1.0, axis: int = -1) -> Array:
     r"""
     Integrate along the given axis using the composite trapezoidal rule.
@@ -302,8 +303,10 @@ def trapz(y: Array, x: Optional[Array] = None, dx: Optional[float] = 1.0, axis: 
 
     return ret
 
+
 def trapezoid(y: Array, x: Optional[Array] = None, dx: Optional[float] = 1.0, axis: int = -1) -> Array:
     return trapz(y, x, dx, axis)
+
 
 def pad(
     array: Array,

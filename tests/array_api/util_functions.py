@@ -158,19 +158,19 @@ class TestUtilFunctions:
         for axis in [-1, 0]:
             t = xp.trapz(y, axis=axis)
             t_np = np.trapz(y_np, axis=axis)
-            assert(t == t_np)
+            assert (t == t_np)
 
         # Single array version, specified dx
         for axis in [-1, 0]:
             t = xp.trapz(y, dx=2.5, axis=axis)
             t_np = np.trapz(y_np, dx=2.5, axis=axis)
-            assert(t == t_np)
+            assert (t == t_np)
 
         # Two array version
         for axis in [-1, 0]:
             t = xp.trapz(y, x, axis=axis)
             t_np = np.trapz(y_np, x_np, axis=axis)
-            assert(t == t_np)
+            assert (t == t_np)
 
     @pytest.mark.parametrize("dtype", DTYPES_WITH_BOOL)
     @pytest.mark.skip_if_rank_not_compiled([2])
@@ -223,4 +223,3 @@ class TestUtilFunctions:
             t = xp.trapz(y, x, axis=axis)
             t_np = np.trapz(y_np, x_np, axis=axis)
             assert np.allclose(t.to_ndarray(), t_np)
-
