@@ -8,7 +8,7 @@ SEED = 314159
 s = SEED
 
 DTYPES = [ak.int64, ak.float64, ak.uint64, ak.uint8]
-
+DTYPES_WITH_BOOL = [ak.int64, ak.float64, ak.uint64, ak.uint8, ak.bool_]
 
 def randArr(shape, dtype):
 
@@ -69,11 +69,15 @@ class TestUtilFunctions:
         ):
             xp.clip(a, 10, 90)
 
-    @pytest.mark.parametrize("dtype", DTYPES)
+    @pytest.mark.parametrize("dtype", DTYPES_WITH_BOOL)
     @pytest.mark.skip_if_rank_not_compiled([3])
     def test_diff(self, dtype):
         a = randArr((5, 6, 7), dtype)
         anp = a.to_ndarray()
+
+        a_d = xp.diff(a, n=1)
+        anp_d = np.diff(anp, n=1)
+        assert a_d.tolist() == anp_d.tolist()
 
         a_d = xp.diff(a, n=1, axis=1)
         anp_d = np.diff(anp, n=1, axis=1)
