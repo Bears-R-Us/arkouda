@@ -113,7 +113,8 @@ def diff(a: Array, /, n: int = 1, axis: int = -1, prepend=None, append=None) -> 
         a_ = concat((a, append), axis=axis)
     else:
         a_ = a
-
+    if axis < 0:
+        axis = a_.ndim + axis
     return Array._new(
         create_pdarray(
             generic_msg(
