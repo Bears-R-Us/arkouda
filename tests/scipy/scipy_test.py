@@ -19,6 +19,14 @@ PAIRS = [
 
 
 class TestStats:
+
+    @classmethod
+    def setup_class(cls):
+        import sys
+        # skip tests with 3.13+
+        if sys.version_info >= (3, 13):
+            pytest.skip("scipy tests do not work yet with Python 3.13+")
+
     @pytest.mark.parametrize(
         "lambda_",
         [
