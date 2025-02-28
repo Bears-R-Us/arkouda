@@ -302,6 +302,9 @@ def trapz(y: Array, x: Optional[Array] = None, dx: Optional[float] = 1.0, axis: 
 
     return ret
 
+def trapezoid(y: Array, x: Optional[Array] = None, dx: Optional[float] = 1.0, axis: int = -1) -> Array:
+    return trapz(y, x, dx, axis)
+
 def pad(
     array: Array,
     pad_width,  # Union[int, Tuple[int, int], Tuple[Tuple[int, int], ...]]
