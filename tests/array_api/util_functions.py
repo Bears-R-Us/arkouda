@@ -145,3 +145,82 @@ class TestUtilFunctions:
         ):
             xp.pad(a, ((1, 1)), mode="constant", constant_values=((-1, 1)))
             xp.diff(a, n=2, axis=0)
+
+    @pytest.mark.parametrize("dtype", DTYPES_WITH_BOOL)
+    def test_trapz_1D(self, dtype):
+        # 1D array test
+        x = randArr((10), dtype)
+        y = randArr((10), dtype)
+        x_np = x.to_ndarray()
+        y_np = y.to_ndarray()
+
+        # Single array version, default dx
+        for axis in [-1, 0]:
+            t = xp.trapz(y, axis=axis)
+            t_np = np.trapz(y_np, axis=axis)
+            assert(t == t_np)
+
+        # Single array version, specified dx
+        for axis in [-1, 0]:
+            t = xp.trapz(y, dx=2.5, axis=axis)
+            t_np = np.trapz(y_np, dx=2.5, axis=axis)
+            assert(t == t_np)
+
+        # Two array version
+        for axis in [-1, 0]:
+            t = xp.trapz(y, x, axis=axis)
+            t_np = np.trapz(y_np, x_np, axis=axis)
+            assert(t == t_np)
+
+    @pytest.mark.parametrize("dtype", DTYPES_WITH_BOOL)
+    @pytest.mark.skip_if_rank_not_compiled([2])
+    def test_trapz_2D(self, dtype):
+        # 2D array test
+        x = randArr((10, 12), dtype)
+        y = randArr((10, 12), dtype)
+        x_np = x.to_ndarray()
+        y_np = y.to_ndarray()
+
+        # Single array version, default dx
+        for axis in [-1, 0, 1]:
+            t = xp.trapz(y, axis=axis)
+            t_np = np.trapz(y_np, axis=axis)
+            assert np.allclose(t.to_ndarray(), t_np)
+
+        # Single array version, specified dx
+        for axis in [-1, 0, 1]:
+            t = xp.trapz(y, dx=2.5, axis=axis)
+            t_np = np.trapz(y_np, dx=2.5, axis=axis)
+            assert np.allclose(t.to_ndarray(), t_np)
+
+        # Two array version
+        for axis in [-1, 0, 1]:
+            t = xp.trapz(y, x, axis=axis)
+            t_np = np.trapz(y_np, x_np, axis=axis)
+            assert np.allclose(t.to_ndarray(), t_np)
+
+    @pytest.mark.parametrize("dtype", DTYPES_WITH_BOOL)
+    @pytest.mark.skip_if_rank_not_compiled([3])
+    def test_trapz_3D(self, dtype):
+        x = randArr((10, 11, 12), dtype)
+        y = randArr((10, 11, 12), dtype)
+        x_np = x.to_ndarray()
+        y_np = y.to_ndarray()
+        # Single array version, default dx
+        for axis in [-1, 0, 1, 2]:
+            t = xp.trapz(y, axis=axis)
+            t_np = np.trapz(y_np, axis=axis)
+            assert np.allclose(t.to_ndarray(), t_np)
+
+        # Single array version, specified dx
+        for axis in [-1, 0, 1, 2]:
+            t = xp.trapz(y, dx=2.5, axis=axis)
+            t_np = np.trapz(y_np, dx=2.5, axis=axis)
+            assert np.allclose(t.to_ndarray(), t_np)
+
+        # Two array version
+        for axis in [-1, 0, 1, 2]:
+            t = xp.trapz(y, x, axis=axis)
+            t_np = np.trapz(y_np, x_np, axis=axis)
+            assert np.allclose(t.to_ndarray(), t_np)
+
