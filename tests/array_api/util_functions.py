@@ -223,3 +223,43 @@ class TestUtilFunctions:
             t = xp.trapz(y, x, axis=axis)
             t_np = np.trapz(y_np, x_np, axis=axis)
             assert np.allclose(t.to_ndarray(), t_np)
+
+    @pytest.mark.parametrize("dtype", DTYPES_WITH_BOOL)
+    def test_trapezoid(self, dtype):
+        # 1D array test
+        x = randArr((10), dtype)
+        y = randArr((10), dtype)
+        # Single array version, specified dx
+        for axis in [-1, 0]:
+            t1 = xp.trapz(y, dx=2.5, axis=axis)
+            t2 = xp.trapezoid(y, dx=2.5, axis=axis)
+            assert (t1 == t2)
+
+        # Two array version
+        for axis in [-1, 0]:
+            t1 = xp.trapz(y, x, axis=axis)
+            t2 = xp.trapezoid(y, x, axis=axis)
+            assert (t1 == t2)
+
+    @pytest.mark.parametrize("dtype", DTYPES_WITH_BOOL)
+    def test_trapz_error(self, dtype):
+        # bigint y
+        bi_arr = ak.array(
+            [0, 1, 2, 3, 4, 2**64 - 5, 2**64 - 4, 2**64 - 3, 2**64 - 2, 2**64 - 1],
+            dtype=ak.bigint,
+            max_bits=64,
+        )
+        y = xp.asarray(bi_arr, dtype=ak.bigint)
+        with pytest.raises(
+            RuntimeError,
+            match="Error executing command: trapz does not support dtype bigint",
+        ):
+            xp.trapz(y)
+        # bigint x
+        y = randArr((10), dtype)
+        x = xp.asarray(bi_arr, dtype=ak.bigint)
+        with pytest.raises(
+            RuntimeError,
+            match="Error executing command: trapz does not support dtype bigint",
+        ):
+            xp.trapz(y, x)
