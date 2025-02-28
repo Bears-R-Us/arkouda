@@ -224,7 +224,7 @@ def trapz(y: Array, x: Optional[Array] = None, dx: Optional[float] = 1.0, axis: 
 
     Examples
     --------
-    >>> y = xp.asarray(ak.arra([1, 2, 3]))
+    >>> y = xp.asarray(ak.array([1, 2, 3]))
 
     Use the trapezoidal rule on evenly spaced points:
     >>> xp.trapz(y)
@@ -272,34 +272,36 @@ def trapz(y: Array, x: Optional[Array] = None, dx: Optional[float] = 1.0, axis: 
     [2.0,  8.0]
 
     """
+    # Implementation is the same as Numpy's implementation of trapezoid
+    # Modified slightly to fit Arkouda
+    # https://github.com/numpy/numpy/blob/d35cd07ea997f033b2d89d349734c61f5de54b0d/numpy/lib/function_base.py#L4857-L4984
 
-    if y.dtype == ak.bigint or y.dtype == ak.bool_:
+    if y.dtype == ak.bigint:
         raise RuntimeError(f"Error executing command: trapz does not support dtype {y.dtype}")
 
     nd = y.ndim
     if axis < 0:
         axis = nd + axis
 
-    if x is None:
-        d = dx
-    else:
-        if x.dtype == ak.bigint or x.dtype == ak.bool_:
-            raise RuntimeError(f"Error executing command: trapz does not support dtype {x.dtype}")
-        if x.ndim == 1:
-            d = diff(x, axis=axis)
-            # reshape to correct shape
-            shape = [1]*y.ndim
-            shape[axis] = d.shape[0]
-            d = reshape(d, shape)
-        else:
-            d = diff(x, axis=axis)
-
     slice1 = [slice(None)]*nd
     slice2 = [slice(None)]*nd
     slice1[axis] = slice(1, None)
     slice2[axis] = slice(None, -1)
 
-    ret = sum(d * (y[tuple(slice1)] + y[tuple(slice2)]) / 2.0, axis=axis)
+    if x is None:
+        if dx is None:
+            raise ValueError("dx cannot be None when x is None for trapz")
+        ret = sum(dx * (y[tuple(slice1)] + y[tuple(slice2)]) / 2.0, axis=axis)
+    else:
+        if x.dtype == ak.bigint:
+            raise RuntimeError(f"Error executing command: trapz does not support dtype {x.dtype}")
+        d = diff(x, axis=axis)
+        if x.ndim == 1:
+            shape = [1] * y.ndim
+            shape[axis] = d.shape[0]
+            d = reshape(d, tuple(shape))
+
+        ret = sum(d * (y[tuple(slice1)] + y[tuple(slice2)]) / 2.0, axis=axis)
 
     return ret
 
