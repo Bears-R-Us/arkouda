@@ -1,9 +1,11 @@
 import importlib
 import os
 import subprocess
+import sys
 from typing import Iterable
 
 import pytest
+import scipy
 
 from arkouda import get_max_array_rank
 from arkouda.client import get_array_ranks
@@ -132,12 +134,14 @@ def manage_connection():
 @pytest.fixture(autouse=True)
 def skip_by_rank(request):
     if request.node.get_closest_marker("skip_if_max_rank_less_than"):
-        if request.node.get_closest_marker("skip_if_max_rank_less_than").args[0] > pytest.max_rank:
-            pytest.skip("this test requires server with max_array_dims >= {}".format(pytest.max_rank))
+        rank_requirement = request.node.get_closest_marker("skip_if_max_rank_less_than").args[0]
+        if pytest.max_rank < rank_requirement:
+            pytest.skip("this test requires server with max_array_dims >= {}".format(rank_requirement))
 
     if request.node.get_closest_marker("skip_if_max_rank_greater_than"):
-        if request.node.get_closest_marker("skip_if_max_rank_greater_than").args[0] < pytest.max_rank:
-            pytest.skip("this test requires server with max_array_dims =< {}".format(pytest.max_rank))
+        rank_requirement = request.node.get_closest_marker("skip_if_max_rank_greater_than").args[0]
+        if pytest.max_rank > rank_requirement:
+            pytest.skip("this test requires server with max_array_dims <= {}".format(rank_requirement))
 
     if request.node.get_closest_marker("skip_if_rank_not_compiled"):
         ranks_requested = request.node.get_closest_marker("skip_if_rank_not_compiled").args[0]
@@ -149,9 +153,7 @@ def skip_by_rank(request):
             for i in ranks_requested:
                 if isinstance(i, int):
                     if i not in array_ranks:
-                        pytest.skip(
-                            "this test requires server compiled with rank(s) {}".format(i)
-                        )
+                        pytest.skip("this test requires server compiled with rank(s) {}".format(i))
                 else:
                     raise TypeError("skip_if_rank_not_compiled only accepts type int or list of int.")
         else:
@@ -161,17 +163,69 @@ def skip_by_rank(request):
 @pytest.fixture(autouse=True)
 def skip_by_num_locales(request):
     if request.node.get_closest_marker("skip_if_nl_less_than"):
-        if request.node.get_closest_marker("skip_if_nl_less_than").args[0] > pytest.nl:
-            pytest.skip("this test requires server with nl >= {}".format(pytest.nl))
+        nl_requirement = request.node.get_closest_marker("skip_if_nl_less_than").args[0]
+        if pytest.nl < nl_requirement:
+            pytest.skip("this test requires server with nl <= {}".format(nl_requirement))
 
     if request.node.get_closest_marker("skip_if_nl_greater_than"):
-        if request.node.get_closest_marker("skip_if_nl_greater_than").args[0] < pytest.nl:
-            pytest.skip("this test requires server with nl =< {}".format(pytest.nl))
+        nl_requirement = request.node.get_closest_marker("skip_if_nl_greater_than").args[0]
+        if pytest.nl > nl_requirement:
+            pytest.skip("this test requires server with nl <= {}".format(nl_requirement))
 
     if request.node.get_closest_marker("skip_if_nl_eq"):
-        if request.node.get_closest_marker("skip_if_nl_eq").args[0] == pytest.nl:
-            pytest.skip("this test requires server with nl == {}".format(pytest.nl))
+        nl_requirement = request.node.get_closest_marker("skip_if_nl_eq").args[0]
+        if nl_requirement == pytest.nl:
+            pytest.skip("this test requires server with nl != {}".format(nl_requirement))
 
     if request.node.get_closest_marker("skip_if_nl_neq"):
-        if request.node.get_closest_marker("skip_if_nl_neq").args[0] != pytest.nl:
-            pytest.skip("this test requires server with nl != {}".format(pytest.nl))
+        nl_requirement = request.node.get_closest_marker("skip_if_nl_neq").args[0]
+        if nl_requirement != pytest.nl:
+            pytest.skip("this test requires server with nl == {}".format(nl_requirement))
+
+
+@pytest.fixture(autouse=True)
+def skip_by_python_version(request):
+    if request.node.get_closest_marker("skip_if_python_version_less_than"):
+        python_requirement = request.node.get_closest_marker("skip_if_python_version_less_than").args[0]
+        if sys.version_info < python_requirement:
+            pytest.skip("this test requires python version >= {}".format(python_requirement))
+
+    if request.node.get_closest_marker("skip_if_python_version_greater_than"):
+        python_requirement = request.node.get_closest_marker("skip_if_python_version_greater_than").args[
+            0
+        ]
+        if sys.version_info > python_requirement:
+            pytest.skip("this test requires python version =< {}".format(python_requirement))
+
+    if request.node.get_closest_marker("skip_if_python_version_eq"):
+        python_requirement = request.node.get_closest_marker("skip_if_python_version_eq").args[0]
+        if sys.version_info == python_requirement:
+            pytest.skip("this test requires python version != {}".format(python_requirement))
+
+    if request.node.get_closest_marker("skip_if_python_version_neq"):
+        python_requirement = request.node.get_closest_marker("skip_if_python_version_neq").args[0]
+        if sys.version_info != python_requirement:
+            pytest.skip("this test requires python version == {}".format(python_requirement))
+
+
+@pytest.fixture(autouse=True)
+def skip_by_scipy_version(request):
+    if request.node.get_closest_marker("skip_if_scipy_version_less_than"):
+        scipy_requirement = request.node.get_closest_marker("skip_if_scipy_version_less_than").args[0]
+        if scipy.__version__ < scipy_requirement:
+            pytest.skip("this test requires scipy version >= {}".format(scipy_requirement))
+
+    if request.node.get_closest_marker("skip_if_scipy_version_greater_than"):
+        scipy_requirement = request.node.get_closest_marker("skip_if_scipy_version_greater_than").args[0]
+        if scipy.__version__ > scipy_requirement:
+            pytest.skip("this test requires scipy version =< {}".format(scipy_requirement))
+
+    if request.node.get_closest_marker("skip_if_scipy_version_eq"):
+        scipy_requirement = request.node.get_closest_marker("skip_if_scipy_version_eq").args[0]
+        if scipy.__version__ == scipy_requirement:
+            pytest.skip("this test requires scipy version != {}".format(scipy_requirement))
+
+    if request.node.get_closest_marker("skip_if_scipy_version_neq"):
+        scipy_requirement = request.node.get_closest_marker("skip_if_scipy_version_neq").args[0]
+        if scipy.__version__ != scipy_requirement:
+            pytest.skip("this test requires scipy version == {}".format(scipy_requirement))
