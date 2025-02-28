@@ -142,7 +142,7 @@ def diff(a: Array, /, n: int = 1, axis: int = -1, prepend=None, append=None) -> 
     array([[-1,  2,  0, -2]])
 
     """
-    if a.dtype == ak.bigint or a.dtype == ak.bool_:
+    if a.dtype == ak.bigint:
         raise RuntimeError(f"Error executing command: diff does not support dtype {a.dtype}")
 
     if prepend is not None and append is not None:
