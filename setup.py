@@ -129,8 +129,9 @@ setup(
         "types-tabulate",
         "tables>=3.8.0",
         "pyarrow",
-        "scipy<=1.13.1; python_version<='3.12'",
-        "scipy; python_version>'3.12'",
+        "scipy",
+        #"scipy<=1.13.1; python_version<='3.12'",
+        #"scipy; python_version>'3.12'",
         "cloudpickle"
         # chapel-py
     ],
