@@ -104,8 +104,18 @@ def dtype(x):
         return bigint()
     if isinstance(x, str) and x in ["Strings"]:
         return np.dtype(np.str_)
-    else:
-        return np.dtype(x)
+    if isinstance(x, int):
+        if 0 < x and x < 2**64:
+            return np.dtype(np.uint64)
+        elif x >= 2**64:
+            return bigint()
+        else:
+            return np.dtype(np.int64)
+    if isinstance(x, float):
+        return np.dtype(np.float64)
+    if isinstance(x, bool):
+        return np.dtype(np.bool)
+    return np.dtype(x)
 
 
 def _is_dtype_in_union(dtype, union_type) -> builtins.bool:
@@ -284,7 +294,18 @@ ARKOUDA_SUPPORTED_NUMBERS = (
 # missing full support for: float32, int32, int16, int8, uint32, uint16, complex64, complex128
 # ARKOUDA_SUPPORTED_DTYPES = frozenset([member.value for _, member in DType.__members__.items()])
 ARKOUDA_SUPPORTED_DTYPES = frozenset(
-    ["bool_", "float", "float64", "int", "int64", "uint", "uint64", "uint8", "bigint", "str"]
+    [
+        "bool_",
+        "float",
+        "float64",
+        "int",
+        "int64",
+        "uint",
+        "uint64",
+        "uint8",
+        "bigint",
+        "str",
+    ]
 )
 
 DTypes = frozenset([member.value for _, member in DType.__members__.items()])
@@ -347,9 +368,9 @@ def resolve_scalar_dtype(val: object) -> str:
         else:
             return "int64"
     # Python float or np.float*
-    elif isinstance(val, float) or (hasattr(val, "dtype") and cast(np.float_, val).dtype.kind == "f"):
+    elif isinstance(val, float) or (hasattr(val, "dtype") and cast(np.float64, val).dtype.kind == "f"):
         return "float64"
-    elif isinstance(val, complex) or (hasattr(val, "dtype") and cast(np.float_, val).dtype.kind == "c"):
+    elif isinstance(val, complex) or (hasattr(val, "dtype") and cast(np.float64, val).dtype.kind == "c"):
         return "float64"  # TODO: actually support complex values in the backend
     elif isinstance(val, builtins.str) or isinstance(val, np.str_):
         return "str"
