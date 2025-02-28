@@ -1,0 +1,12 @@
+Calling jsonToMap with segments: id_qaHXXAs_2, values: id_qaHXXAs_3
+Calling jsonToMap with segments: id_qaHXXAs_2, values: id_qaHXXAs_3
+LOCALE0 int_vals.locale is: LOCALE0
+LOCALE0 ii is: 0
+LOCALE0 int_vals[ii].locales is: LOCALE0
+LOCALE0int_vals.domain: {0..19}
+LOCALE0valIdxRange: 0..19
+LOCALE1 int_vals.locale is: LOCALE1
+LOCALE1 ii is: 0
+LOCALE1 int_vals[ii].locales is: LOCALE1
+LOCALE1int_vals.domain: {0..79}
+LOCALE1valIdxRange: 20..99
