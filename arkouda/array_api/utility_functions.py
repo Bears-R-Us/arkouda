@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from .array_object import Array
-from .manipulation_functions import concat
+from .manipulation_functions import concat, reshape
+from .statistical_functions import sum
 
 from typing import Optional, Tuple, Union
 
@@ -168,6 +169,138 @@ def diff(a: Array, /, n: int = 1, axis: int = -1, prepend=None, append=None) -> 
         )
     )
 
+def trapz(y: Array, x: Optional[Array] = None, dx: Optional[float] = 1.0, axis: int = -1) -> Array:
+    r"""
+    Integrate along the given axis using the composite trapezoidal rule.
+
+    If `x` is provided, the integration happens in sequence along its
+    elements - they are not sorted.
+
+    Integrate `y` (`x`) along each 1d slice on the given axis, compute
+    :math:`\int y(x) dx`.
+    When `x` is specified, this integrates along the parametric curve,
+    computing :math:`\int_t y(t) dt =
+    \int_t y(t) \left.\frac{dx}{dt}\right|_{x=x(t)} dt`.
+
+    See https://numpy.org/doc/1.26/reference/generated/numpy.trapz.html#numpy.trapz
+
+    Parameters
+    ----------
+    y : array_like
+        Input array to integrate.
+    x : array_like, optional
+        The sample points corresponding to the `y` values. If `x` is None,
+        the sample points are assumed to be evenly spaced `dx` apart. The
+        default is None.
+    dx : scalar, optional
+        The spacing between sample points when `x` is None. The default is 1.
+    axis : int, optional
+        The axis along which to integrate.
+
+    Returns
+    -------
+    trapezoid : float or pdarray
+        Definite integral of `y` = n-dimensional array as approximated along
+        a single axis by the trapezoidal rule. If `y` is a 1-dimensional array,
+        then the result is a float. If `n` is greater than 1, then the result
+        is an `n`-1 dimensional array.
+
+    Notes
+    -----
+    Image [2]_ illustrates trapezoidal rule -- y-axis locations of points
+    will be taken from `y` array, by default x-axis distances between
+    points will be 1.0, alternatively they can be provided with `x` array
+    or with `dx` scalar.  Return value will be equal to combined area under
+    the red lines.
+
+
+    References
+    ----------
+    .. [1] Wikipedia page: https://en.wikipedia.org/wiki/Trapezoidal_rule
+
+    .. [2] Illustration image:
+           https://en.wikipedia.org/wiki/File:Composite_trapezoidal_rule_illustration.png
+
+    Examples
+    --------
+    >>> y = xp.asarray(ak.arra([1, 2, 3]))
+
+    Use the trapezoidal rule on evenly spaced points:
+    >>> xp.trapz(y)
+    4.0
+
+    The spacing between sample points can be selected by either the
+    ``x`` or ``dx`` arguments:
+
+    >>> x = xp.asarray(ak.array([4, 6, 8]))
+    >>> xp.trapz(y, x)
+    8.0
+    >>> xp.trapz(y, dx=2.0)
+    8.0
+
+    Using a decreasing ``x`` corresponds to integrating in reverse:
+
+    >>> x = xp.asarray(ak.array([8, 6, 4]))
+    >>> xp.trapz(y, x)
+    -8.0
+
+    More generally ``x`` is used to integrate along a parametric curve. We can
+    estimate the integral :math:`\int_0^1 x^2 = 1/3` using:
+
+    >>> x = xp.linspace(0, 1, num=50)
+    >>> y = x**2
+    >>> xp.trapz(y, x)
+    0.33340274885464394
+
+    Or estimate the area of a circle, noting we repeat the sample which closes
+    the curve:
+
+    >>> theta = xp.linspace(0, 2 * xp.pi, num=1000, endpoint=True)
+    >>> xp.trapz(xp.cos(theta), x=xp.sin(theta))
+    3.141571941375841
+
+    ``np.trapz`` can be applied along a specified axis to do multiple
+    computations in one call:
+
+    >>> a = xp.asarray(ak.arange(6).reshape(2, 3))
+    >>> a
+    [[0, 1, 2], [3, 4, 5]]
+    >>> xp.trapz(a, axis=0)
+    [1.5, 2.5, 3.5]
+    >>> xp.trapz(a, axis=1)
+    [2.0,  8.0]
+
+    """
+
+    if y.dtype == ak.bigint or y.dtype == ak.bool_:
+        raise RuntimeError(f"Error executing command: trapz does not support dtype {y.dtype}")
+
+    nd = y.ndim
+    if axis < 0:
+        axis = nd + axis
+
+    if x is None:
+        d = dx
+    else:
+        if x.dtype == ak.bigint or x.dtype == ak.bool_:
+            raise RuntimeError(f"Error executing command: trapz does not support dtype {x.dtype}")
+        if x.ndim == 1:
+            d = diff(x, axis=axis)
+            # reshape to correct shape
+            shape = [1]*y.ndim
+            shape[axis] = d.shape[0]
+            d = reshape(d, shape)
+        else:
+            d = diff(x, axis=axis)
+
+    slice1 = [slice(None)]*nd
+    slice2 = [slice(None)]*nd
+    slice1[axis] = slice(1, None)
+    slice2[axis] = slice(None, -1)
+
+    ret = sum(d * (y[tuple(slice1)] + y[tuple(slice2)]) / 2.0, axis=axis)
+
+    return ret
 
 def pad(
     array: Array,
