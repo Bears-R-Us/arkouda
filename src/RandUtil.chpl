@@ -52,7 +52,6 @@ module RandUtil {
                                                                 const scale: scalarOrArray(?) = new scalarOrArray(),
                                                                 const kArg: scalarOrArray(?) = new scalarOrArray()) throws 
         where D.rank == 1 {
-        if hasSeed {
             // use a fixed number of elements per stream instead of relying on number of locales or numTasksPerLoc because these
             // can vary from run to run / machine to mahchine. And it's important for the same seed to give the same results
             use Time;
@@ -149,7 +148,6 @@ module RandUtil {
                     }  // coforall over randomStreams created
                 }
             }  // coforall over locales
-        }
     }
     proc uniformStreamPerElem(ref randArr: [?D] ?t, ref rng, param function: GenerationFunction, hasSeed: bool,
                                                                 const lam: scalarOrArray(?) = new scalarOrArray(),
