@@ -3,9 +3,10 @@ from __future__ import annotations
 import builtins
 import json
 from math import prod as maprod
-from typing import TYPE_CHECKING, Sequence, Tuple, Union, cast
+from typing import TYPE_CHECKING, Literal, Sequence, Tuple, TypeVar, Union, cast
 from warnings import warn
 
+import numpy as np
 from typeguard import typechecked
 
 from arkouda.categorical import Categorical
@@ -31,6 +32,9 @@ from arkouda.timeclass import Datetime, Timedelta
 if TYPE_CHECKING:
     from arkouda.index import Index
     from arkouda.series import Series
+else:
+    Index = TypeVar("Index")
+    Series = TypeVar("Series")
 
 
 def identity(x):
@@ -107,17 +111,21 @@ def enrich_inplace(data, keynames, aggregations, **kwargs):
         data[resname] = g.broadcast(pergroupval, permute=True)
 
 
-def expand(size, segs, vals):
+@typechecked
+def expand(size: Union[int, np.int64, np.uint64], segs: pdarray, vals: pdarray) -> pdarray:
     """
     Expand an array with values placed into the indicated segments.
 
     Parameters
     ----------
-    size : ak.pdarray
+    size : int, np.int64, or np.uint64
+
         The size of the array to be expanded
-    segs : ak.pdarray
+    segs : pdarray
+
         The indices where the values should be placed
-    vals : ak.pdarray
+    vals : pdarray
+
         The values to be placed in each segment
 
     Returns
@@ -139,22 +147,24 @@ def expand(size, segs, vals):
     return broadcast(segs, vals, size=size)
 
 
-def invert_permutation(perm):
+@typechecked
+def invert_permutation(perm: pdarray) -> pdarray:
     """
     Find the inverse of a permutation array.
 
     Parameters
     ----------
-    perm : ak.pdarray
+    perm : pdarray
         The permutation array.
 
     Returns
     -------
-    ak.array
+    pdarray
         The inverse of the permutation array.
 
     """
-    if unique(perm).size != perm.size:
+    unique_vals = unique(perm)
+    if (not isinstance(unique_vals, pdarray)) or unique_vals.size != perm.size:
         raise ValueError("The array is not a permutation.")
     return coargsort([perm, arange(0, perm.size)])
 
@@ -245,8 +255,7 @@ def is_registered(name: str, as_component: bool = False) -> bool:
     ----------
     name: str
         The name to check for in the registry
-    as_component: bool
-        Default: False
+    as_component : bool, default=False
         When True, the name will be checked to determine if it is registered as a component of
         a registered object
 
@@ -262,7 +271,7 @@ def register_all(data: dict):
     Register all objects in the provided dictionary
 
     Parameters
-    -----------
+    ----------
     data: dict
         Maps name to register the object to the object. For example, {"MyArray": ak.array([0, 1, 2])
 
@@ -279,7 +288,7 @@ def unregister_all(names: list):
     Unregister all names provided
 
     Parameters
-    -----------
+    ----------
     names : list
         List of names used to register objects to be unregistered
 
@@ -296,7 +305,8 @@ def attach_all(names: list):
     Attach to all objects registered with the names provide
 
     Parameters
-    -----------
+    ----------
+
     names: list
         List of names to attach to
 
@@ -307,7 +317,14 @@ def attach_all(names: list):
     return {n: attach(n) for n in names}
 
 
-def sparse_sum_help(idx1, idx2, val1, val2, merge=True, percent_transfer_limit=100):
+def sparse_sum_help(
+    idx1: pdarray,
+    idx2: pdarray,
+    val1: pdarray,
+    val2: pdarray,
+    merge: bool = True,
+    percent_transfer_limit: int = 100,
+) -> Tuple[pdarray, pdarray]:
     """
     Helper for summing two sparse matrices together
 
@@ -315,7 +332,8 @@ def sparse_sum_help(idx1, idx2, val1, val2, merge=True, percent_transfer_limit=1
     ak.GroupBy(ak.concatenate([idx1, idx2])).sum(ak.concatenate((val1, val2)))
 
     Parameters
-    -----------
+    ----------
+
     idx1: pdarray
         indices for the first sparse matrix
     idx2: pdarray
@@ -324,10 +342,10 @@ def sparse_sum_help(idx1, idx2, val1, val2, merge=True, percent_transfer_limit=1
         values for the first sparse matrix
     val2: pdarray
         values for the second sparse matrix
-    merge: bool
+    merge : bool, default=True
         If true the indices are combined using a merge based workflow,
         otherwise they are combine using a sort based workflow.
-    percent_transfer_limit: int
+    percent_transfer_limit : int, default=100
         Only used when merge is true. This is the maximum percentage of the data allowed
         to be moved between locales during the merge workflow. If we would exceed this percentage,
         we fall back to using the sort based workflow.
@@ -343,7 +361,7 @@ def sparse_sum_help(idx1, idx2, val1, val2, merge=True, percent_transfer_limit=1
     >>> idx2 = ak.array([0, 1, 3, 6, 9])
     >>> vals1 = idx1
     >>> vals2 = ak.array([10, 11, 13, 16, 19])
-    >>> ak.util.sparse_sum_help(idx1, inds2, vals1, vals2)
+    >>> ak.util.sparse_sum_help(idx1, idx2, vals1, vals2)
     (array([0 1 3 4 6 7 9]), array([10 12 16 4 16 7 28]))
 
     >>> ak.GroupBy(ak.concatenate([idx1, idx2])).sum(ak.concatenate((vals1, vals2)))
@@ -360,7 +378,7 @@ def sparse_sum_help(idx1, idx2, val1, val2, merge=True, percent_transfer_limit=1
             "percent_transfer_limit": percent_transfer_limit,
         },
     )
-    inds, vals = repMsg.split("+", maxsplit=1)
+    inds, vals = cast(str, repMsg).split("+", maxsplit=1)
     return create_pdarray(inds), create_pdarray(vals)
 
 
@@ -398,13 +416,15 @@ def broadcast_dims(sa: Sequence[int], sb: Sequence[int]) -> Tuple[int, ...]:
     return tuple(shapeOut)
 
 
-def convert_bytes(nbytes, unit="B"):
+def convert_bytes(nbytes: int_scalars, unit: Literal["B", "KB", "MB", "GB"] = "B") -> numeric_scalars:
     """
     Convert the number of bytes to KB, MB, or GB.
 
     Parameters
     ----------
-    unit : str, default = "B"
+    nbytes : int_scalars
+        The number of bytes to convert
+    unit : {"B", "KB", "MB", "GB"}, default="B"
         Unit to return. One of {'B', 'KB', 'MB', 'GB'}.
 
     Returns
@@ -425,14 +445,13 @@ def convert_bytes(nbytes, unit="B"):
         return nbytes / gb
 
 
-def is_numeric(
-    arry: Union[pdarray, Strings, Categorical, "Series", "Index"]  # noqa: F821
-) -> builtins.bool:
+def is_numeric(arry: Union[pdarray, Strings, Categorical, Series, Index]) -> builtins.bool:
     """
     Check if the dtype of the given array is numeric.
 
-    Parameters:
-         arry ((pdarray, Strings, Categorical)):
+    Parameters
+    ----------
+         arry : ((pdarray, Strings, Categorical))
             The input pdarray, Strings, or Categorical object.
 
     Returns
@@ -440,15 +459,14 @@ def is_numeric(
     bool:
         True if the dtype of pda is numeric, False otherwise.
 
-    Example:
-        >>> import arkouda as ak
-        >>> ak.connect()
+    Examples
+    --------
         >>> data = ak.array([1, 2, 3, 4, 5])
-        >>> is_numeric(data)
+        >>> ak.util.is_numeric(data)
         True
 
         >>> strings = ak.array(["a", "b", "c"])
-        >>> is_numeric(strings)
+        >>> ak.util.is_numeric(strings)
         False
 
     """
@@ -461,12 +479,13 @@ def is_numeric(
         return False
 
 
-def is_float(arry: Union[pdarray, Strings, Categorical, "Series", "Index"]):  # noqa: F821
+def is_float(arry: Union[pdarray, Strings, Categorical, Series, Index]) -> builtins.bool:
     """
     Check if the dtype of the given array is float.
 
-    Parameters:
-         arry ((pdarray, Strings, Categorical)):
+    Parameters
+    ----------
+         arry : ((pdarray, Strings, Categorical))
             The input pdarray, Strings, or Categorical object.
 
     Returns
@@ -474,15 +493,14 @@ def is_float(arry: Union[pdarray, Strings, Categorical, "Series", "Index"]):  # 
     bool:
         True if the dtype of pda is of type float, False otherwise.
 
-    Example:
-        >>> import arkouda as ak
-        >>> ak.connect()
+    Examples
+    --------
         >>> data = ak.array([1.0, 2, 3, 4, np.nan])
-        >>> is_float(data)
+        >>> ak.util.is_float(data)
         True
 
         >>> data2 = ak.arange(5)
-        >>> is_float(data2)
+        >>> ak.util.is_float(data2)
         False
 
     """
@@ -495,13 +513,13 @@ def is_float(arry: Union[pdarray, Strings, Categorical, "Series", "Index"]):  # 
         return False
 
 
-def is_int(arry: Union[pdarray, Strings, Categorical, "Series", "Index"]):  # noqa: F821
+def is_int(arry: Union[pdarray, Strings, Categorical, Series, Index]) -> builtins.bool:
     """
     Check if the dtype of the given array is int.
 
     Parameters
     ----------
-    arry ((pdarray, Strings, Categorical)):
+    arry : pdarray, Strings, Categorical, Series, or Index
             The input pdarray, Strings, or Categorical object.
 
     Returns
@@ -509,15 +527,14 @@ def is_int(arry: Union[pdarray, Strings, Categorical, "Series", "Index"]):  # no
     bool:
         True if the dtype of pda is of type int, False otherwise.
 
-    Example:
-    >>> import arkouda as ak
-    >>> ak.connect()
+    Examples
+    --------
     >>> data = ak.array([1.0, 2, 3, 4, np.nan])
-    >>> is_int(data)
+    >>> ak.util.is_int(data)
     False
 
     >>> data2 = ak.arange(5)
-    >>> is_int(data2)
+    >>> ak.util.is_int(data2)
     True
 
     """
@@ -531,7 +548,7 @@ def is_int(arry: Union[pdarray, Strings, Categorical, "Series", "Index"]):  # no
 
 
 def map(
-    values: Union[pdarray, Strings, Categorical], mapping: Union[dict, "Series"]
+    values: Union[pdarray, Strings, Categorical], mapping: Union[dict, Series]
 ) -> Union[pdarray, Strings]:
     """
     Map values of an array according to an input mapping.
@@ -540,7 +557,7 @@ def map(
     ----------
     values :  pdarray, Strings, or Categorical
         The values to be mapped.
-    mapping : dict or arkouda.Series
+    mapping : dict or Series
         The mapping correspondence.
 
     Returns
@@ -550,25 +567,25 @@ def map(
         When the input Series has Categorical values,
         the return Series will have Strings values.
         Otherwise, the return type will match the input type.
+
     Raises
     ------
     TypeError
         Raised if arg is not of type dict or arkouda.Series.
         Raised if values not of type pdarray, Categorical, or Strings.
+
     Examples
     --------
-    >>> import arkouda as ak
-    >>> ak.connect()
-    >>> from arkouda.util import map
     >>> a = ak.array([2, 3, 2, 3, 4])
     >>> a
     array([2 3 2 3 4])
-    >>> map(a, {4: 25.0, 2: 30.0, 1: 7.0, 3: 5.0})
+    >>> ak.util.map(a, {4: 25.0, 2: 30.0, 1: 7.0, 3: 5.0})
     array([30.00000000000000000 5.00000000000000000 30.00000000000000000
     5.00000000000000000 25.00000000000000000])
     >>> s = ak.Series(ak.array(["a","b","c","d"]), index = ak.array([4,2,1,3]))
-    >>> map(a, s)
-    array(['b', 'b', 'd', 'd', 'a'])
+    >>> ak.util.map(a, s)
+    array(['b', 'd', 'b', 'd', 'a'])
+
 
     """
     import numpy as np
