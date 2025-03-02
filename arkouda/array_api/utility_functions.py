@@ -101,8 +101,48 @@ def diff(a: Array, /, n: int = 1, axis: int = -1, prepend=None, append=None) -> 
         Array to prepend to `a` along `axis` before calculating the difference.
     append : Array, optional
         Array to append to `a` along `axis` before calculating the difference.
+
+    Returns
+    -------
+    diff : ndarray
+        The n-th differences. The shape of the output is the same as `a`
+        except along `axis` where the dimension is smaller by `n`. The
+        type of the output is the same as the type of the difference
+        between any two elements of `a`. This is the same as the type of
+        `a` in most cases. A notable exception is `datetime64`, which
+        results in a `timedelta64` output array.
+
+    Notes
+    -----
+    Type is preserved for boolean arrays, so the result will contain
+    `False` when consecutive elements are the same and `True` when they
+    differ.
+
+    For unsigned integer arrays, the results will also be unsigned. This
+    should not be surprising, as the result is consistent with
+    calculating the difference directly.
+
+    If this is not desirable, then the array should be cast to a larger
+    integer type first:
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> import arkouda.array_api as xp
+    >>> x = xp.asarray(ak.array([1, 2, 4, 7, 0]))
+    >>> xp.diff(x)
+    [ 1,  2,  3, -7]
+    >>> xp.diff(x, n=2)
+    [  1,   1, -10]
+
+    >>> x = xp.asarray(ak.array([[1, 3, 6, 10], [0, 5, 6, 8]]))
+    >>> xp.diff(x)
+    [[2, 3, 4], [5, 1, 2]]
+    >>> xp.diff(x, axis=0)
+    array([[-1,  2,  0, -2]])
+
     """
-    if a.dtype == ak.bigint or a.dtype == ak.bool_:
+    if a.dtype == ak.bigint:
         raise RuntimeError(f"Error executing command: diff does not support dtype {a.dtype}")
 
     if prepend is not None and append is not None:
@@ -113,7 +153,8 @@ def diff(a: Array, /, n: int = 1, axis: int = -1, prepend=None, append=None) -> 
         a_ = concat((a, append), axis=axis)
     else:
         a_ = a
-
+    if axis < 0:
+        axis = a_.ndim + axis
     return Array._new(
         create_pdarray(
             generic_msg(

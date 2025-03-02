@@ -8,6 +8,7 @@ SEED = 314159
 s = SEED
 
 DTYPES = [ak.int64, ak.float64, ak.uint64, ak.uint8]
+DTYPES_WITH_BOOL = [ak.int64, ak.float64, ak.uint64, ak.uint8, ak.bool_]
 
 
 def randArr(shape, dtype):
@@ -69,11 +70,15 @@ class TestUtilFunctions:
         ):
             xp.clip(a, 10, 90)
 
-    @pytest.mark.parametrize("dtype", DTYPES)
+    @pytest.mark.parametrize("dtype", DTYPES_WITH_BOOL)
     @pytest.mark.skip_if_rank_not_compiled([3])
     def test_diff(self, dtype):
         a = randArr((5, 6, 7), dtype)
         anp = a.to_ndarray()
+
+        a_d = xp.diff(a, n=1)
+        anp_d = np.diff(anp, n=1)
+        assert a_d.tolist() == anp_d.tolist()
 
         a_d = xp.diff(a, n=1, axis=1)
         anp_d = np.diff(anp, n=1, axis=1)
@@ -86,14 +91,6 @@ class TestUtilFunctions:
 
     @pytest.mark.skip_if_rank_not_compiled([3])
     def test_diff_error(self):
-        # bool
-        a = xp.asarray(ak.randint(0, 100, (5, 6, 7), dtype=ak.bool_, seed=s), dtype=ak.bool_)
-        with pytest.raises(
-            RuntimeError,
-            match="Error executing command: diff does not support dtype bool",
-        ):
-            xp.diff(a, n=2, axis=0)
-
         # bigint
         bi_arr = ak.array(
             [0, 1, 2, 3, 4, 2**64 - 5, 2**64 - 4, 2**64 - 3, 2**64 - 2, 2**64 - 1],
