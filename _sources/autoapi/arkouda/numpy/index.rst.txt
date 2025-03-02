@@ -231,6 +231,7 @@ Functions
    arkouda.numpy.squeeze
    arkouda.numpy.tan
    arkouda.numpy.tanh
+   arkouda.numpy.tile
    arkouda.numpy.transpose
    arkouda.numpy.tril
    arkouda.numpy.triu
@@ -6593,6 +6594,45 @@ Module Contents
    :rtype: pdarray
 
    :raises TypeError: Raised if the parameter is not a pdarray
+
+
+.. py:function:: tile(A: arkouda.pdarrayclass.pdarray, /, reps: Union[int, Tuple[int, Ellipsis]]) -> arkouda.pdarrayclass.pdarray
+
+   Construct an array by repeating A the number of times given by reps.
+
+   If reps has length ``d``, the result will have dimension of ``max(d, A.ndim)``.
+
+   If ``A.ndim < d``, A is promoted to be d-dimensional by prepending new axes. So a shape (3,) array is promoted to (1, 3) for 2-D replication, or shape (1, 1, 3) for 3-D replication. If this is not the desired behavior, promote A to d-dimensions manually before calling this function.
+
+   If ``A.ndim > d``, reps is promoted to A.ndim by prepending 1’s to it. Thus for an A of shape (2, 3, 4, 5), a reps of (2, 2) is treated as (1, 1, 2, 2).
+
+   :param A: The input pdarray to be tiled
+   :type A: pdarray
+   :param reps: The number of repetitions of A along each axis.
+   :type reps: int or Tuple of int
+
+   :returns: A new pdarray with the tiled data.
+   :rtype: pdarray
+
+   .. rubric:: Examples
+
+   >>> a = ak.array([0, 1, 2])
+   >>> ak.tile(a, 2)
+   array([0 1 2 0 1 2])
+   >>> ak.tile(a, (2, 2))
+   array([array([0 1 2 0 1 2]) array([0 1 2 0 1 2])])
+   >>> ak.tile(a, (2, 1, 2))
+   array([array([array([0 1 2 0 1 2])]) array([array([0 1 2 0 1 2])])])
+
+   >>> b = ak.array([[1, 2], [3, 4]])
+   >>> ak.tile(b, 2)
+   array([array([1 2 1 2]) array([3 4 3 4])])
+   >>> ak.tile(b, (2, 1))
+   array([array([1 2]) array([3 4]) array([1 2]) array([3 4])])
+
+   >>> c = ak.array([1, 2, 3, 4])
+   >>> ak.tile(c, (4, 1))
+   array([array([1 2 3 4]) array([1 2 3 4]) array([1 2 3 4]) array([1 2 3 4])])
 
 
 .. py:class:: timedelta64(value)

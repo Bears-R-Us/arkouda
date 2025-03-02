@@ -987,28 +987,31 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.tanh" title="arkouda.numpy.tanh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tanh</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise hyperbolic tangent of the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.transpose" title="arkouda.numpy.transpose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transpose</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.tile" title="arkouda.numpy.tile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tile</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<td><p>Construct an array by repeating A the number of times given by reps.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.transpose" title="arkouda.numpy.transpose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transpose</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Compute the transpose of a matrix.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.tril" title="arkouda.numpy.tril"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tril</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.tril" title="arkouda.numpy.tril"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tril</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return a copy of the pda with the upper triangle zeroed out</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.triu" title="arkouda.numpy.triu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">triu</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.triu" title="arkouda.numpy.triu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">triu</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return a copy of the pda with the lower triangle zeroed out</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.trunc" title="arkouda.numpy.trunc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trunc</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.trunc" title="arkouda.numpy.trunc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trunc</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise truncation of the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.typename" title="arkouda.numpy.typename"><code class="xref py py-obj docutils literal notranslate"><span class="pre">typename</span></code></a>(char)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.typename" title="arkouda.numpy.typename"><code class="xref py py-obj docutils literal notranslate"><span class="pre">typename</span></code></a>(char)</p></td>
 <td><p>Return a description for the given data type code.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.value_counts" title="arkouda.numpy.value_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">value_counts</span></code></a>(→ tuple)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.value_counts" title="arkouda.numpy.value_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">value_counts</span></code></a>(→ tuple)</p></td>
 <td><p>Count the occurrences of the unique values of an array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.vecdot" title="arkouda.numpy.vecdot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vecdot</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.vecdot" title="arkouda.numpy.vecdot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vecdot</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Compute the generalized dot product of two vectors along the given axis.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.where" title="arkouda.numpy.where"><code class="xref py py-obj docutils literal notranslate"><span class="pre">where</span></code></a>(→ Union[arkouda.pdarrayclass.pdarray, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.where" title="arkouda.numpy.where"><code class="xref py py-obj docutils literal notranslate"><span class="pre">where</span></code></a>(→ Union[arkouda.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Returns an array with elements chosen from A and B based upon a</p></td>
 </tr>
 </tbody>
@@ -7960,6 +7963,51 @@ of the original pdarray</p>
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numpy.tile">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">tile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/_manipulation_functions.html#tile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.tile" title="Link to this definition">¶</a></dt>
+<dd><p>Construct an array by repeating A the number of times given by reps.</p>
+<p>If reps has length <code class="docutils literal notranslate"><span class="pre">d</span></code>, the result will have dimension of <code class="docutils literal notranslate"><span class="pre">max(d,</span> <span class="pre">A.ndim)</span></code>.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">A.ndim</span> <span class="pre">&lt;</span> <span class="pre">d</span></code>, A is promoted to be d-dimensional by prepending new axes. So a shape (3,) array is promoted to (1, 3) for 2-D replication, or shape (1, 1, 3) for 3-D replication. If this is not the desired behavior, promote A to d-dimensions manually before calling this function.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">A.ndim</span> <span class="pre">&gt;</span> <span class="pre">d</span></code>, reps is promoted to A.ndim by prepending 1’s to it. Thus for an A of shape (2, 3, 4, 5), a reps of (2, 2) is treated as (1, 1, 2, 2).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The input pdarray to be tiled</p></li>
+<li><p><strong>reps</strong> (<em>int</em><em> or </em><em>Tuple</em><em> of </em><em>int</em>) – The number of repetitions of A along each axis.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new pdarray with the tiled data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="go">array([0 1 2 0 1 2])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="go">array([array([0 1 2 0 1 2]) array([0 1 2 0 1 2])])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="go">array([array([array([0 1 2 0 1 2])]) array([array([0 1 2 0 1 2])])])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="go">array([array([1 2 1 2]) array([3 4 3 4])])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="go">array([array([1 2]) array([3 4]) array([1 2]) array([3 4])])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="go">array([array([1 2 3 4]) array([1 2 3 4]) array([1 2 3 4]) array([1 2 3 4])])</span>
+</pre></div>
+</div>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.numpy.timedelta64">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">timedelta64</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.timedelta64" title="Link to this definition">¶</a></dt>
@@ -9373,6 +9421,7 @@ is not currently supported in Arkouda</p>
 <li><a class="reference internal" href="#arkouda.numpy.str_scalars"><code class="docutils literal notranslate"><span class="pre">str_scalars</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.tan"><code class="docutils literal notranslate"><span class="pre">tan()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.tanh"><code class="docutils literal notranslate"><span class="pre">tanh()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.tile"><code class="docutils literal notranslate"><span class="pre">tile()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.timedelta64"><code class="docutils literal notranslate"><span class="pre">timedelta64</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.transpose"><code class="docutils literal notranslate"><span class="pre">transpose()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.tril"><code class="docutils literal notranslate"><span class="pre">tril()</span></code></a></li>

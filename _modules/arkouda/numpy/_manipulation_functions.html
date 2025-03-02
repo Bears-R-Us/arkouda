@@ -361,12 +361,12 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">bool_scalars</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">bool_scalars</span><span class="p">,</span> <span class="n">numeric_scalars</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span> <span class="k">as</span> <span class="n">ak_array</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;flip&quot;</span><span class="p">,</span> <span class="s2">&quot;squeeze&quot;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;flip&quot;</span><span class="p">,</span> <span class="s2">&quot;squeeze&quot;</span><span class="p">,</span> <span class="s2">&quot;tile&quot;</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="flip">
@@ -525,6 +525,80 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to squeeze array: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Failed to squeeze array.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="tile">
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.tile">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">tile</span><span class="p">(</span><span class="n">A</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">reps</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Construct an array by repeating A the number of times given by reps.</span>
+
+<span class="sd">    If reps has length ``d``, the result will have dimension of ``max(d, A.ndim)``.</span>
+
+<span class="sd">    If ``A.ndim &lt; d``, A is promoted to be d-dimensional by prepending new axes. So a shape (3,) \</span>
+<span class="sd">array is promoted to (1, 3) for 2-D replication, or shape (1, 1, 3) for 3-D replication. \</span>
+<span class="sd">If this is not the desired behavior, promote A to d-dimensions manually before calling this function.</span>
+
+<span class="sd">    If ``A.ndim &gt; d``, reps is promoted to A.ndim by prepending 1’s to it. \</span>
+<span class="sd">Thus for an A of shape (2, 3, 4, 5), a reps of (2, 2) is treated as (1, 1, 2, 2).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    A : pdarray</span>
+<span class="sd">        The input pdarray to be tiled</span>
+<span class="sd">    reps : int or Tuple of int</span>
+<span class="sd">        The number of repetitions of A along each axis.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray</span>
+<span class="sd">        A new pdarray with the tiled data.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; a = ak.array([0, 1, 2])</span>
+<span class="sd">    &gt;&gt;&gt; ak.tile(a, 2)</span>
+<span class="sd">    array([0 1 2 0 1 2])</span>
+<span class="sd">    &gt;&gt;&gt; ak.tile(a, (2, 2))</span>
+<span class="sd">    array([array([0 1 2 0 1 2]) array([0 1 2 0 1 2])])</span>
+<span class="sd">    &gt;&gt;&gt; ak.tile(a, (2, 1, 2))</span>
+<span class="sd">    array([array([array([0 1 2 0 1 2])]) array([array([0 1 2 0 1 2])])])</span>
+
+<span class="sd">    &gt;&gt;&gt; b = ak.array([[1, 2], [3, 4]])</span>
+<span class="sd">    &gt;&gt;&gt; ak.tile(b, 2)</span>
+<span class="sd">    array([array([1 2 1 2]) array([3 4 3 4])])</span>
+<span class="sd">    &gt;&gt;&gt; ak.tile(b, (2, 1))</span>
+<span class="sd">    array([array([1 2]) array([3 4]) array([1 2]) array([3 4])])</span>
+
+<span class="sd">    &gt;&gt;&gt; c = ak.array([1, 2, 3, 4])</span>
+<span class="sd">    &gt;&gt;&gt; ak.tile(c, (4, 1))</span>
+<span class="sd">    array([array([1 2 3 4]) array([1 2 3 4]) array([1 2 3 4]) array([1 2 3 4])])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Ensure &#39;reps&#39; is a list</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">reps</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">reps_2</span> <span class="o">=</span> <span class="p">[</span><span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">reps</span><span class="p">)]</span>
+        <span class="n">l_reps</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">reps_2</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="n">reps</span><span class="p">))</span>
+        <span class="n">l_reps</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">reps</span><span class="p">)</span>
+
+    <span class="n">A_shape</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">dim_difference</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">A_shape</span><span class="p">)</span> <span class="o">-</span> <span class="n">l_reps</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">A_shape</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">l_reps</span><span class="p">:</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="n">dim_difference</span> <span class="o">+</span> <span class="n">A_shape</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">A_shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">l_reps</span><span class="p">:</span>
+        <span class="n">reps_2</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">dim_difference</span> <span class="o">+</span> <span class="n">reps_2</span>
+
+    <span class="c1"># Construct the command to send to the server</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;tile&lt;</span><span class="si">{</span><span class="n">A</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">A</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">A</span><span class="p">,</span> <span class="s2">&quot;reps&quot;</span><span class="p">:</span> <span class="n">reps_2</span><span class="p">}</span>
+
+    <span class="c1"># Send the command to the Arkouda server</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="n">cmd</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="c1"># Create and return the resulting pdarray</span>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span></div>
 
 </pre></div>
         </article>
