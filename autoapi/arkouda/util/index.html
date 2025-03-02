@@ -361,6 +361,18 @@
         <article role="main" id="furo-main-content">
           <section id="module-arkouda.util">
 <span id="arkouda-util"></span><h1>arkouda.util<a class="headerlink" href="#module-arkouda.util" title="Link to this heading">¶</a></h1>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading">¶</a></h2>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.Index" title="arkouda.util.Index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Index</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
@@ -378,7 +390,7 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.concatenate" title="arkouda.util.concatenate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">concatenate</span></code></a>(items[, ordered])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.convert_bytes" title="arkouda.util.convert_bytes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_bytes</span></code></a>(nbytes[, unit])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.convert_bytes" title="arkouda.util.convert_bytes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_bytes</span></code></a>(→ arkouda.numpy.dtypes.numeric_scalars)</p></td>
 <td><p>Convert the number of bytes to KB, MB, or GB.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.convert_if_categorical" title="arkouda.util.convert_if_categorical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_if_categorical</span></code></a>(values)</p></td>
@@ -387,7 +399,7 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.enrich_inplace" title="arkouda.util.enrich_inplace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enrich_inplace</span></code></a>(data, keynames, aggregations, **kwargs)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.expand" title="arkouda.util.expand"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expand</span></code></a>(size, segs, vals)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.expand" title="arkouda.util.expand"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expand</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Expand an array with values placed into the indicated segments.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.generic_concat" title="arkouda.util.generic_concat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generic_concat</span></code></a>(items[, ordered])</p></td>
@@ -399,13 +411,13 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.identity" title="arkouda.util.identity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">identity</span></code></a>(x)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.invert_permutation" title="arkouda.util.invert_permutation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">invert_permutation</span></code></a>(perm)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.invert_permutation" title="arkouda.util.invert_permutation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">invert_permutation</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Find the inverse of a permutation array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.is_float" title="arkouda.util.is_float"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_float</span></code></a>(arry)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.is_float" title="arkouda.util.is_float"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_float</span></code></a>(→ bool)</p></td>
 <td><p>Check if the dtype of the given array is float.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.is_int" title="arkouda.util.is_int"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_int</span></code></a>(arry)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.is_int" title="arkouda.util.is_int"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_int</span></code></a>(→ bool)</p></td>
 <td><p>Check if the dtype of the given array is int.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.is_numeric" title="arkouda.util.is_numeric"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_numeric</span></code></a>(→ bool)</p></td>
@@ -429,7 +441,7 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.report_mem" title="arkouda.util.report_mem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">report_mem</span></code></a>([pre])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.sparse_sum_help" title="arkouda.util.sparse_sum_help"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sparse_sum_help</span></code></a>(idx1, idx2, val1, val2[, merge, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.sparse_sum_help" title="arkouda.util.sparse_sum_help"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sparse_sum_help</span></code></a>(→ Tuple[arkouda.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Helper for summing two sparse matrices together</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.unregister" title="arkouda.util.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>(→ str)</p></td>
@@ -444,6 +456,11 @@
 </section>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="arkouda.util.Index">
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">Index</span></span><a class="headerlink" href="#arkouda.util.Index" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.util.attach">
 <span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">attach</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/util.html#attach"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.attach" title="Link to this definition">¶</a></dt>
@@ -477,11 +494,14 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.util.convert_bytes">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">convert_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nbytes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'B'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/util.html#convert_bytes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.convert_bytes" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">convert_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nbytes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'B'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'KB'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'MB'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'GB'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'B'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_scalars</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/util.html#convert_bytes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.convert_bytes" title="Link to this definition">¶</a></dt>
 <dd><p>Convert the number of bytes to KB, MB, or GB.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>unit</strong> (<em>str</em><em>, </em><em>default = &quot;B&quot;</em>) – Unit to return. One of {‘B’, ‘KB’, ‘MB’, ‘GB’}.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nbytes</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.int_scalars" title="arkouda.dtypes.int_scalars"><em>int_scalars</em></a>) – The number of bytes to convert</p></li>
+<li><p><strong>unit</strong> (<em>{&quot;B&quot;</em><em>, </em><em>&quot;KB&quot;</em><em>, </em><em>&quot;MB&quot;</em><em>, </em><em>&quot;GB&quot;}</em><em>, </em><em>default=&quot;B&quot;</em>) – Unit to return. One of {‘B’, ‘KB’, ‘MB’, ‘GB’}.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>int</p>
@@ -502,14 +522,14 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.util.expand">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">expand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vals</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/util.html#expand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.expand" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">expand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../numpy/index.html#arkouda.numpy.int64" title="arkouda.numpy.int64"><span class="pre">numpy.int64</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../numpy/index.html#arkouda.numpy.uint64" title="arkouda.numpy.uint64"><span class="pre">numpy.uint64</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">segs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/util.html#expand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.expand" title="Link to this definition">¶</a></dt>
 <dd><p>Expand an array with values placed into the indicated segments.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>size</strong> (<em>ak.pdarray</em>) – The size of the array to be expanded</p></li>
-<li><p><strong>segs</strong> (<em>ak.pdarray</em>) – The indices where the values should be placed</p></li>
-<li><p><strong>vals</strong> (<em>ak.pdarray</em>) – The values to be placed in each segment</p></li>
+<li><p><strong>size</strong> (<em>int</em><em>, </em><em>np.int64</em><em>, or </em><em>np.uint64</em>) – The size of the array to be expanded</p></li>
+<li><p><strong>segs</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The indices where the values should be placed</p></li>
+<li><p><strong>vals</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The values to be placed in each segment</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -541,77 +561,75 @@ proper as ak.broadcast. It is retained here for backwards compatibility.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.util.invert_permutation">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">invert_permutation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">perm</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/util.html#invert_permutation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.invert_permutation" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">invert_permutation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">perm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/util.html#invert_permutation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.invert_permutation" title="Link to this definition">¶</a></dt>
 <dd><p>Find the inverse of a permutation array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>perm</strong> (<em>ak.pdarray</em>) – The permutation array.</p>
+<dd class="field-odd"><p><strong>perm</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The permutation array.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The inverse of the permutation array.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ak.array</p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.util.is_float">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">is_float</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><span class="pre">arkouda.categorical.Categorical</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../series/index.html#arkouda.series.Series" title="arkouda.series.Series"><span class="pre">arkouda.series.Series</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../index/index.html#arkouda.index.Index" title="arkouda.index.Index"><span class="pre">arkouda.index.Index</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/util.html#is_float"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.is_float" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">is_float</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><span class="pre">arkouda.categorical.Categorical</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../series/index.html#arkouda.series.Series" title="arkouda.series.Series"><span class="pre">arkouda.series.Series</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../index/index.html#arkouda.index.Index" title="arkouda.index.Index"><span class="pre">arkouda.index.Index</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../../_modules/arkouda/util.html#is_float"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.is_float" title="Link to this definition">¶</a></dt>
 <dd><p>Check if the dtype of the given array is float.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>arry</strong> (<em>(</em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>)</em>) – The input pdarray, Strings, or Categorical object.</p>
+<dd class="field-odd"><p><strong>arry</strong> (<em>(</em><em>(</em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>)</em><em>)</em>) – The input pdarray, Strings, or Categorical object.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul>
-<li><p><em>bool</em> – True if the dtype of pda is of type float, False otherwise.</p></li>
-<li><p><em>Example</em> – &gt;&gt;&gt; import arkouda as ak
-&gt;&gt;&gt; ak.connect()
-&gt;&gt;&gt; data = ak.array([1.0, 2, 3, 4, np.nan])
-&gt;&gt;&gt; is_float(data)
-True</p>
+<dd class="field-even"><p>True if the dtype of pda is of type float, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">is_float</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data2</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_float</span><span class="p">(</span><span class="n">data2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">is_float</span><span class="p">(</span><span class="n">data2</span><span class="p">)</span>
 <span class="go">False</span>
 </pre></div>
 </div>
-</li>
-</ul>
-</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.util.is_int">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">is_int</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><span class="pre">arkouda.categorical.Categorical</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../series/index.html#arkouda.series.Series" title="arkouda.series.Series"><span class="pre">arkouda.series.Series</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../index/index.html#arkouda.index.Index" title="arkouda.index.Index"><span class="pre">arkouda.index.Index</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/util.html#is_int"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.is_int" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">is_int</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><span class="pre">arkouda.categorical.Categorical</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../series/index.html#arkouda.series.Series" title="arkouda.series.Series"><span class="pre">arkouda.series.Series</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../index/index.html#arkouda.index.Index" title="arkouda.index.Index"><span class="pre">arkouda.index.Index</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../../_modules/arkouda/util.html#is_int"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.is_int" title="Link to this definition">¶</a></dt>
 <dd><p>Check if the dtype of the given array is int.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>(</strong><strong>(</strong><strong>pdarray</strong> (<em>arry</em>) – The input pdarray, Strings, or Categorical object.</p></li>
-<li><p><strong>Strings</strong> – The input pdarray, Strings, or Categorical object.</p></li>
-<li><p><strong>Categorical</strong><strong>)</strong><strong>)</strong> – The input pdarray, Strings, or Categorical object.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>arry</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>, </em><a class="reference internal" href="../../../usage/series.html#arkouda.Series" title="arkouda.Series"><em>Series</em></a><em>, or </em><a class="reference internal" href="../../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a>) – The input pdarray, Strings, or Categorical object.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><em>bool</em> – True if the dtype of pda is of type int, False otherwise.</p></li>
-<li><p><em>Example</em></p></li>
-<li><p><em>&gt;&gt;&gt; import arkouda as ak</em></p></li>
-<li><p><em>&gt;&gt;&gt; ak.connect()</em></p></li>
-<li><p><em>&gt;&gt;&gt; data = ak.array([1.0, 2, 3, 4, np.nan])</em></p></li>
-<li><p><em>&gt;&gt;&gt; is_int(data)</em></p></li>
-<li><p><em>False</em></p></li>
-<li><p><em>&gt;&gt;&gt; data2 = ak.arange(5)</em></p></li>
-<li><p><em>&gt;&gt;&gt; is_int(data2)</em></p></li>
-<li><p><em>True</em></p></li>
-</ul>
-</p>
+<dd class="field-even"><p>True if the dtype of pda is of type int, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">is_int</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data2</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">is_int</span><span class="p">(</span><span class="n">data2</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -620,26 +638,26 @@ True</p>
 <dd><p>Check if the dtype of the given array is numeric.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>arry</strong> (<em>(</em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>)</em>) – The input pdarray, Strings, or Categorical object.</p>
+<dd class="field-odd"><p><strong>arry</strong> (<em>(</em><em>(</em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>)</em><em>)</em>) – The input pdarray, Strings, or Categorical object.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul>
-<li><p><em>bool</em> – True if the dtype of pda is numeric, False otherwise.</p></li>
-<li><p><em>Example</em> – &gt;&gt;&gt; import arkouda as ak
-&gt;&gt;&gt; ak.connect()
-&gt;&gt;&gt; data = ak.array([1, 2, 3, 4, 5])
-&gt;&gt;&gt; is_numeric(data)
-True</p>
+<dd class="field-even"><p>True if the dtype of pda is numeric, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">is_numeric</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_numeric</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">is_numeric</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>
 <span class="go">False</span>
 </pre></div>
 </div>
-</li>
-</ul>
-</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -650,8 +668,7 @@ True</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>str</em>) – The name to check for in the registry</p></li>
-<li><p><strong>as_component</strong> (<em>bool</em>) – Default: False
-When True, the name will be checked to determine if it is registered as a component of
+<li><p><strong>as_component</strong> (<em>bool</em><em>, </em><em>default=False</em>) – When True, the name will be checked to determine if it is registered as a component of
 a registered object</p></li>
 </ul>
 </dd>
@@ -669,7 +686,7 @@ a registered object</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – The values to be mapped.</p></li>
-<li><p><strong>mapping</strong> (<em>dict</em><em> or </em><a class="reference internal" href="../../../usage/series.html#arkouda.Series" title="arkouda.Series"><em>arkouda.Series</em></a>) – The mapping correspondence.</p></li>
+<li><p><strong>mapping</strong> (<em>dict</em><em> or </em><a class="reference internal" href="../../../usage/series.html#arkouda.Series" title="arkouda.Series"><em>Series</em></a>) – The mapping correspondence.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -687,18 +704,15 @@ Raised if values not of type pdarray, Categorical, or Strings.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.util</span><span class="w"> </span><span class="kn">import</span> <span class="nb">map</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
 <span class="go">array([2 3 2 3 4])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">map</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">{</span><span class="mi">4</span><span class="p">:</span> <span class="mf">25.0</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mf">30.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="mf">5.0</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">{</span><span class="mi">4</span><span class="p">:</span> <span class="mf">25.0</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mf">30.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="mf">5.0</span><span class="p">})</span>
 <span class="go">array([30.00000000000000000 5.00000000000000000 30.00000000000000000</span>
 <span class="go">5.00000000000000000 25.00000000000000000])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;b&quot;</span><span class="p">,</span><span class="s2">&quot;c&quot;</span><span class="p">,</span><span class="s2">&quot;d&quot;</span><span class="p">]),</span> <span class="n">index</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">]))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">map</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
-<span class="go">array([&#39;b&#39;, &#39;b&#39;, &#39;d&#39;, &#39;d&#39;, &#39;a&#39;])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+<span class="go">array([&#39;b&#39;, &#39;d&#39;, &#39;b&#39;, &#39;d&#39;, &#39;a&#39;])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -736,7 +750,7 @@ with earlier arkouda versions.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.util.sparse_sum_help">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">sparse_sum_help</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">percent_transfer_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/util.html#sparse_sum_help"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.sparse_sum_help" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">sparse_sum_help</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">val1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">val2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">percent_transfer_limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/arkouda/util.html#sparse_sum_help"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.util.sparse_sum_help" title="Link to this definition">¶</a></dt>
 <dd><p>Helper for summing two sparse matrices together</p>
 <p>Return is equivalent to
 ak.GroupBy(ak.concatenate([idx1, idx2])).sum(ak.concatenate((val1, val2)))</p>
@@ -747,9 +761,9 @@ ak.GroupBy(ak.concatenate([idx1, idx2])).sum(ak.concatenate((val1, val2)))</p>
 <li><p><strong>idx2</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – indices for the second sparse matrix</p></li>
 <li><p><strong>val1</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – values for the first sparse matrix</p></li>
 <li><p><strong>val2</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – values for the second sparse matrix</p></li>
-<li><p><strong>merge</strong> (<em>bool</em>) – If true the indices are combined using a merge based workflow,
+<li><p><strong>merge</strong> (<em>bool</em><em>, </em><em>default=True</em>) – If true the indices are combined using a merge based workflow,
 otherwise they are combine using a sort based workflow.</p></li>
-<li><p><strong>percent_transfer_limit</strong> (<em>int</em>) – Only used when merge is true. This is the maximum percentage of the data allowed
+<li><p><strong>percent_transfer_limit</strong> (<em>int</em><em>, </em><em>default=100</em>) – Only used when merge is true. This is the maximum percentage of the data allowed
 to be moved between locales during the merge workflow. If we would exceed this percentage,
 we fall back to using the sort based workflow.</p></li>
 </ul>
@@ -766,7 +780,7 @@ we fall back to using the sort based workflow.</p></li>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">idx2</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">9</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">vals1</span> <span class="o">=</span> <span class="n">idx1</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">vals2</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">19</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">sparse_sum_help</span><span class="p">(</span><span class="n">idx1</span><span class="p">,</span> <span class="n">inds2</span><span class="p">,</span> <span class="n">vals1</span><span class="p">,</span> <span class="n">vals2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">sparse_sum_help</span><span class="p">(</span><span class="n">idx1</span><span class="p">,</span> <span class="n">idx2</span><span class="p">,</span> <span class="n">vals1</span><span class="p">,</span> <span class="n">vals2</span><span class="p">)</span>
 <span class="go">(array([0 1 3 4 6 7 9]), array([10 12 16 4 16 7 28]))</span>
 </pre></div>
 </div>
@@ -854,8 +868,10 @@ we fall back to using the sort based workflow.</p></li>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">arkouda.util</a><ul>
+<li><a class="reference internal" href="#attributes">Attributes</a></li>
 <li><a class="reference internal" href="#functions">Functions</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
+<li><a class="reference internal" href="#arkouda.util.Index"><code class="docutils literal notranslate"><span class="pre">Index</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.attach"><code class="docutils literal notranslate"><span class="pre">attach()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.attach_all"><code class="docutils literal notranslate"><span class="pre">attach_all()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.broadcast_dims"><code class="docutils literal notranslate"><span class="pre">broadcast_dims()</span></code></a></li>

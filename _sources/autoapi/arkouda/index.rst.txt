@@ -28754,10 +28754,9 @@ Package Contents
 
    :param name: The name to check for in the registry
    :type name: str
-   :param as_component: Default: False
-                        When True, the name will be checked to determine if it is registered as a component of
+   :param as_component: When True, the name will be checked to determine if it is registered as a component of
                         a registered object
-   :type as_component: bool
+   :type as_component: bool, default=False
 
    :rtype: bool
 

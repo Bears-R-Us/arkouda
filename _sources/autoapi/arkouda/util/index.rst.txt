@@ -4,6 +4,14 @@ arkouda.util
 .. py:module:: arkouda.util
 
 
+Attributes
+----------
+
+.. autoapisummary::
+
+   arkouda.util.Index
+
+
 Functions
 ---------
 
@@ -38,6 +46,8 @@ Functions
 Module Contents
 ---------------
 
+.. py:data:: Index
+
 .. py:function:: attach(name: str)
 
 .. py:function:: attach_all(names: list)
@@ -59,12 +69,14 @@ Module Contents
 
 .. py:function:: concatenate(items, ordered=True)
 
-.. py:function:: convert_bytes(nbytes, unit='B')
+.. py:function:: convert_bytes(nbytes: arkouda.numpy.dtypes.int_scalars, unit: Literal['B', 'KB', 'MB', 'GB'] = 'B') -> arkouda.numpy.dtypes.numeric_scalars
 
    Convert the number of bytes to KB, MB, or GB.
 
+   :param nbytes: The number of bytes to convert
+   :type nbytes: int_scalars
    :param unit: Unit to return. One of {'B', 'KB', 'MB', 'GB'}.
-   :type unit: str, default = "B"
+   :type unit: {"B", "KB", "MB", "GB"}, default="B"
 
    :rtype: int
 
@@ -76,16 +88,16 @@ Module Contents
 
 .. py:function:: enrich_inplace(data, keynames, aggregations, **kwargs)
 
-.. py:function:: expand(size, segs, vals)
+.. py:function:: expand(size: Union[int, numpy.int64, numpy.uint64], segs: arkouda.pdarrayclass.pdarray, vals: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
 
    Expand an array with values placed into the indicated segments.
 
    :param size: The size of the array to be expanded
-   :type size: ak.pdarray
+   :type size: int, np.int64, or np.uint64
    :param segs: The indices where the values should be placed
-   :type segs: ak.pdarray
+   :type segs: pdarray
    :param vals: The values to be placed in each segment
-   :type vals: ak.pdarray
+   :type vals: pdarray
 
    :returns: The expanded array.
    :rtype: pdarray
@@ -102,54 +114,57 @@ Module Contents
 
 .. py:function:: identity(x)
 
-.. py:function:: invert_permutation(perm)
+.. py:function:: invert_permutation(perm: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
 
    Find the inverse of a permutation array.
 
    :param perm: The permutation array.
-   :type perm: ak.pdarray
+   :type perm: pdarray
 
    :returns: The inverse of the permutation array.
-   :rtype: ak.array
+   :rtype: pdarray
 
 
-.. py:function:: is_float(arry: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical, arkouda.series.Series, arkouda.index.Index])
+.. py:function:: is_float(arry: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical, arkouda.series.Series, arkouda.index.Index]) -> bool
 
    Check if the dtype of the given array is float.
 
    :param arry: The input pdarray, Strings, or Categorical object.
-   :type arry: (pdarray, Strings, Categorical)
+   :type arry: ((pdarray, Strings, Categorical))
 
-   :returns: * *bool* -- True if the dtype of pda is of type float, False otherwise.
-             * *Example* -- >>> import arkouda as ak
-               >>> ak.connect()
-               >>> data = ak.array([1.0, 2, 3, 4, np.nan])
-               >>> is_float(data)
-               True
+   :returns: True if the dtype of pda is of type float, False otherwise.
+   :rtype: bool
 
-               >>> data2 = ak.arange(5)
-               >>> is_float(data2)
-               False
+   .. rubric:: Examples
+
+   >>> data = ak.array([1.0, 2, 3, 4, np.nan])
+   >>> ak.util.is_float(data)
+   True
+
+   >>> data2 = ak.arange(5)
+   >>> ak.util.is_float(data2)
+   False
 
 
-.. py:function:: is_int(arry: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical, arkouda.series.Series, arkouda.index.Index])
+.. py:function:: is_int(arry: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical, arkouda.series.Series, arkouda.index.Index]) -> bool
 
    Check if the dtype of the given array is int.
 
-   :param arry ((pdarray: The input pdarray, Strings, or Categorical object.
-   :param Strings: The input pdarray, Strings, or Categorical object.
-   :param Categorical)): The input pdarray, Strings, or Categorical object.
+   :param arry: The input pdarray, Strings, or Categorical object.
+   :type arry: pdarray, Strings, Categorical, Series, or Index
 
-   :returns: * *bool* -- True if the dtype of pda is of type int, False otherwise.
-             * *Example*
-             * *>>> import arkouda as ak*
-             * *>>> ak.connect()*
-             * *>>> data = ak.array([1.0, 2, 3, 4, np.nan])*
-             * *>>> is_int(data)*
-             * *False*
-             * *>>> data2 = ak.arange(5)*
-             * *>>> is_int(data2)*
-             * *True*
+   :returns: True if the dtype of pda is of type int, False otherwise.
+   :rtype: bool
+
+   .. rubric:: Examples
+
+   >>> data = ak.array([1.0, 2, 3, 4, np.nan])
+   >>> ak.util.is_int(data)
+   False
+
+   >>> data2 = ak.arange(5)
+   >>> ak.util.is_int(data2)
+   True
 
 
 .. py:function:: is_numeric(arry: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical, arkouda.series.Series, arkouda.index.Index]) -> bool
@@ -157,18 +172,20 @@ Module Contents
    Check if the dtype of the given array is numeric.
 
    :param arry: The input pdarray, Strings, or Categorical object.
-   :type arry: (pdarray, Strings, Categorical)
+   :type arry: ((pdarray, Strings, Categorical))
 
-   :returns: * *bool* -- True if the dtype of pda is numeric, False otherwise.
-             * *Example* -- >>> import arkouda as ak
-               >>> ak.connect()
-               >>> data = ak.array([1, 2, 3, 4, 5])
-               >>> is_numeric(data)
-               True
+   :returns: True if the dtype of pda is numeric, False otherwise.
+   :rtype: bool
 
-               >>> strings = ak.array(["a", "b", "c"])
-               >>> is_numeric(strings)
-               False
+   .. rubric:: Examples
+
+   >>> data = ak.array([1, 2, 3, 4, 5])
+   >>> ak.util.is_numeric(data)
+   True
+
+   >>> strings = ak.array(["a", "b", "c"])
+   >>> ak.util.is_numeric(strings)
+   False
 
 
 .. py:function:: is_registered(name: str, as_component: bool = False) -> bool
@@ -177,10 +194,9 @@ Module Contents
 
    :param name: The name to check for in the registry
    :type name: str
-   :param as_component: Default: False
-                        When True, the name will be checked to determine if it is registered as a component of
+   :param as_component: When True, the name will be checked to determine if it is registered as a component of
                         a registered object
-   :type as_component: bool
+   :type as_component: bool, default=False
 
    :rtype: bool
 
@@ -192,7 +208,7 @@ Module Contents
    :param values: The values to be mapped.
    :type values: pdarray, Strings, or Categorical
    :param mapping: The mapping correspondence.
-   :type mapping: dict or arkouda.Series
+   :type mapping: dict or Series
 
    :returns: A new array with the values mapped by the mapping correspondence.
              When the input Series has Categorical values,
@@ -205,18 +221,15 @@ Module Contents
 
    .. rubric:: Examples
 
-   >>> import arkouda as ak
-   >>> ak.connect()
-   >>> from arkouda.util import map
    >>> a = ak.array([2, 3, 2, 3, 4])
    >>> a
    array([2 3 2 3 4])
-   >>> map(a, {4: 25.0, 2: 30.0, 1: 7.0, 3: 5.0})
+   >>> ak.util.map(a, {4: 25.0, 2: 30.0, 1: 7.0, 3: 5.0})
    array([30.00000000000000000 5.00000000000000000 30.00000000000000000
    5.00000000000000000 25.00000000000000000])
    >>> s = ak.Series(ak.array(["a","b","c","d"]), index = ak.array([4,2,1,3]))
-   >>> map(a, s)
-   array(['b', 'b', 'd', 'd', 'a'])
+   >>> ak.util.map(a, s)
+   array(['b', 'd', 'b', 'd', 'a'])
 
 
 .. py:function:: most_common(g, values)
@@ -239,7 +252,7 @@ Module Contents
 
 .. py:function:: report_mem(pre='')
 
-.. py:function:: sparse_sum_help(idx1, idx2, val1, val2, merge=True, percent_transfer_limit=100)
+.. py:function:: sparse_sum_help(idx1: arkouda.pdarrayclass.pdarray, idx2: arkouda.pdarrayclass.pdarray, val1: arkouda.pdarrayclass.pdarray, val2: arkouda.pdarrayclass.pdarray, merge: bool = True, percent_transfer_limit: int = 100) -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
 
    Helper for summing two sparse matrices together
 
@@ -256,11 +269,11 @@ Module Contents
    :type val2: pdarray
    :param merge: If true the indices are combined using a merge based workflow,
                  otherwise they are combine using a sort based workflow.
-   :type merge: bool
+   :type merge: bool, default=True
    :param percent_transfer_limit: Only used when merge is true. This is the maximum percentage of the data allowed
                                   to be moved between locales during the merge workflow. If we would exceed this percentage,
                                   we fall back to using the sort based workflow.
-   :type percent_transfer_limit: int
+   :type percent_transfer_limit: int, default=100
 
    :returns: indices and values for the summed sparse matrix
    :rtype: (pdarray, pdarray)
@@ -271,7 +284,7 @@ Module Contents
    >>> idx2 = ak.array([0, 1, 3, 6, 9])
    >>> vals1 = idx1
    >>> vals2 = ak.array([10, 11, 13, 16, 19])
-   >>> ak.util.sparse_sum_help(idx1, inds2, vals1, vals2)
+   >>> ak.util.sparse_sum_help(idx1, idx2, vals1, vals2)
    (array([0 1 3 4 6 7 9]), array([10 12 16 4 16 7 28]))
 
    >>> ak.GroupBy(ak.concatenate([idx1, idx2])).sum(ak.concatenate((vals1, vals2)))
