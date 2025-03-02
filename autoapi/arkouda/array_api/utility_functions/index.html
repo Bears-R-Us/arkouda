@@ -446,7 +446,44 @@
 <li><p><strong>append</strong> (<a class="reference internal" href="../array_object/index.html#arkouda.array_api.array_object.Array" title="arkouda.array_api.array_object.Array"><em>Array</em></a><em>, </em><em>optional</em>) – Array to append to <cite>a</cite> along <cite>axis</cite> before calculating the difference.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>diff</strong> – The n-th differences. The shape of the output is the same as <cite>a</cite>
+except along <cite>axis</cite> where the dimension is smaller by <cite>n</cite>. The
+type of the output is the same as the type of the difference
+between any two elements of <cite>a</cite>. This is the same as the type of
+<cite>a</cite> in most cases. A notable exception is <cite>datetime64</cite>, which
+results in a <cite>timedelta64</cite> output array.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Type is preserved for boolean arrays, so the result will contain
+<cite>False</cite> when consecutive elements are the same and <cite>True</cite> when they
+differ.</p>
+<p>For unsigned integer arrays, the results will also be unsigned. This
+should not be surprising, as the result is consistent with
+calculating the difference directly.</p>
+<p>If this is not desirable, then the array should be cast to a larger
+integer type first:</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda.array_api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xp</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">0</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xp</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="go">[ 1,  2,  3, -7]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xp</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">[  1,   1, -10]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">]]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xp</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="go">[[2, 3, 4], [5, 1, 2]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xp</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">array([[-1,  2,  0, -2]])</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">

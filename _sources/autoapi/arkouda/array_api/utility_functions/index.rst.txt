@@ -70,6 +70,43 @@ Module Contents
    :param append: Array to append to `a` along `axis` before calculating the difference.
    :type append: Array, optional
 
+   :returns: **diff** -- The n-th differences. The shape of the output is the same as `a`
+             except along `axis` where the dimension is smaller by `n`. The
+             type of the output is the same as the type of the difference
+             between any two elements of `a`. This is the same as the type of
+             `a` in most cases. A notable exception is `datetime64`, which
+             results in a `timedelta64` output array.
+   :rtype: ndarray
+
+   .. rubric:: Notes
+
+   Type is preserved for boolean arrays, so the result will contain
+   `False` when consecutive elements are the same and `True` when they
+   differ.
+
+   For unsigned integer arrays, the results will also be unsigned. This
+   should not be surprising, as the result is consistent with
+   calculating the difference directly.
+
+   If this is not desirable, then the array should be cast to a larger
+   integer type first:
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> import arkouda.array_api as xp
+   >>> x = xp.asarray(ak.array([1, 2, 4, 7, 0]))
+   >>> xp.diff(x)
+   [ 1,  2,  3, -7]
+   >>> xp.diff(x, n=2)
+   [  1,   1, -10]
+
+   >>> x = xp.asarray(ak.array([[1, 3, 6, 10], [0, 5, 6, 8]]))
+   >>> xp.diff(x)
+   [[2, 3, 4], [5, 1, 2]]
+   >>> xp.diff(x, axis=0)
+   array([[-1,  2,  0, -2]])
+
 
 .. py:function:: pad(array: arkouda.array_api.array_object.Array, pad_width, mode='constant', **kwargs) -> arkouda.array_api.array_object.Array
 

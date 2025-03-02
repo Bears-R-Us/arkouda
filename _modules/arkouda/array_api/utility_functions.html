@@ -467,8 +467,48 @@
 <span class="sd">        Array to prepend to `a` along `axis` before calculating the difference.</span>
 <span class="sd">    append : Array, optional</span>
 <span class="sd">        Array to append to `a` along `axis` before calculating the difference.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    diff : ndarray</span>
+<span class="sd">        The n-th differences. The shape of the output is the same as `a`</span>
+<span class="sd">        except along `axis` where the dimension is smaller by `n`. The</span>
+<span class="sd">        type of the output is the same as the type of the difference</span>
+<span class="sd">        between any two elements of `a`. This is the same as the type of</span>
+<span class="sd">        `a` in most cases. A notable exception is `datetime64`, which</span>
+<span class="sd">        results in a `timedelta64` output array.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Type is preserved for boolean arrays, so the result will contain</span>
+<span class="sd">    `False` when consecutive elements are the same and `True` when they</span>
+<span class="sd">    differ.</span>
+
+<span class="sd">    For unsigned integer arrays, the results will also be unsigned. This</span>
+<span class="sd">    should not be surprising, as the result is consistent with</span>
+<span class="sd">    calculating the difference directly.</span>
+
+<span class="sd">    If this is not desirable, then the array should be cast to a larger</span>
+<span class="sd">    integer type first:</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">    &gt;&gt;&gt; import arkouda.array_api as xp</span>
+<span class="sd">    &gt;&gt;&gt; x = xp.asarray(ak.array([1, 2, 4, 7, 0]))</span>
+<span class="sd">    &gt;&gt;&gt; xp.diff(x)</span>
+<span class="sd">    [ 1,  2,  3, -7]</span>
+<span class="sd">    &gt;&gt;&gt; xp.diff(x, n=2)</span>
+<span class="sd">    [  1,   1, -10]</span>
+
+<span class="sd">    &gt;&gt;&gt; x = xp.asarray(ak.array([[1, 3, 6, 10], [0, 5, 6, 8]]))</span>
+<span class="sd">    &gt;&gt;&gt; xp.diff(x)</span>
+<span class="sd">    [[2, 3, 4], [5, 1, 2]]</span>
+<span class="sd">    &gt;&gt;&gt; xp.diff(x, axis=0)</span>
+<span class="sd">    array([[-1,  2,  0, -2]])</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">ak</span><span class="o">.</span><span class="n">bigint</span> <span class="ow">or</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">ak</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">ak</span><span class="o">.</span><span class="n">bigint</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error executing command: diff does not support dtype </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">prepend</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">append</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -479,7 +519,8 @@
         <span class="n">a_</span> <span class="o">=</span> <span class="n">concat</span><span class="p">((</span><span class="n">a</span><span class="p">,</span> <span class="n">append</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">a_</span> <span class="o">=</span> <span class="n">a</span>
-
+    <span class="k">if</span> <span class="n">axis</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">a_</span><span class="o">.</span><span class="n">ndim</span> <span class="o">+</span> <span class="n">axis</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span>
         <span class="n">create_pdarray</span><span class="p">(</span>
             <span class="n">generic_msg</span><span class="p">(</span>
