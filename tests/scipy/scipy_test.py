@@ -13,20 +13,17 @@ PAIRS = [
         np.array([10000000, 20000000, 30000000, 40000000, 50000000, 60000000, 70000000]),
         np.array([10000000, 20000000, 30000000, 40000001, 50000000, 60000000, 70000000]),
     ),
-    (np.array([10000000, 20000000, 30000000, 40000000, 50000000, 60000000, 70000000]), None),
+    (
+        np.array([10000000, 20000000, 30000000, 40000000, 50000000, 60000000, 70000000]),
+        None,
+    ),
     (np.array([44, 24, 29, 3]) / 100 * 189, np.array([43, 52, 54, 40])),
 ]
 
 
 class TestStats:
 
-    @classmethod
-    def setup_class(cls):
-        import sys
-        # skip tests with 3.13+
-        if sys.version_info >= (3, 13):
-            pytest.skip("scipy tests do not work yet with Python 3.13+")
-
+    @pytest.mark.skip_if_scipy_version_greater_than("1.13.1")
     @pytest.mark.parametrize(
         "lambda_",
         [
@@ -50,6 +47,7 @@ class TestStats:
 
         assert np.allclose(ak_power_div, scipy_power_div, equal_nan=True)
 
+    @pytest.mark.skip_if_scipy_version_greater_than("1.13.1")
     @pytest.mark.parametrize("ddof", DDOF)
     @pytest.mark.parametrize("pair", PAIRS)
     def test_chisquare(self, ddof, pair):
