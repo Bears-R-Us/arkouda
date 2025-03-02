@@ -6,12 +6,12 @@ from typeguard import typechecked
 
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg
-from arkouda.numpy.dtypes import numeric_scalars, bool_scalars
+from arkouda.numpy.dtypes import bool_scalars, numeric_scalars
 from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import array as ak_array
 from arkouda.strings import Strings
 
-__all__ = ["flip", "squeeze"]
+__all__ = ["flip", "squeeze", "tile"]
 
 
 def flip(
@@ -165,3 +165,74 @@ def squeeze(
             raise ValueError(f"Failed to squeeze array: {e}")
 
     raise RuntimeError("Failed to squeeze array.")
+
+
+def tile(A: pdarray, /, reps: Union[int, Tuple[int, ...]]) -> pdarray:
+    """
+    Construct an array by repeating A the number of times given by reps.
+
+    If reps has length ``d``, the result will have dimension of ``max(d, A.ndim)``.
+
+    If ``A.ndim < d``, A is promoted to be d-dimensional by prepending new axes. So a shape (3,) \
+array is promoted to (1, 3) for 2-D replication, or shape (1, 1, 3) for 3-D replication. \
+If this is not the desired behavior, promote A to d-dimensions manually before calling this function.
+
+    If ``A.ndim > d``, reps is promoted to A.ndim by prepending 1’s to it. \
+Thus for an A of shape (2, 3, 4, 5), a reps of (2, 2) is treated as (1, 1, 2, 2).
+
+    Parameters
+    ----------
+    A : pdarray
+        The input pdarray to be tiled
+    reps : int or Tuple of int
+        The number of repetitions of A along each axis.
+
+    Returns
+    -------
+    pdarray
+        A new pdarray with the tiled data.
+
+    Examples
+    --------
+    >>> a = ak.array([0, 1, 2])
+    >>> ak.tile(a, 2)
+    array([0 1 2 0 1 2])
+    >>> ak.tile(a, (2, 2))
+    array([array([0 1 2 0 1 2]) array([0 1 2 0 1 2])])
+    >>> ak.tile(a, (2, 1, 2))
+    array([array([array([0 1 2 0 1 2])]) array([array([0 1 2 0 1 2])])])
+
+    >>> b = ak.array([[1, 2], [3, 4]])
+    >>> ak.tile(b, 2)
+    array([array([1 2 1 2]) array([3 4 3 4])])
+    >>> ak.tile(b, (2, 1))
+    array([array([1 2]) array([3 4]) array([1 2]) array([3 4])])
+
+    >>> c = ak.array([1, 2, 3, 4])
+    >>> ak.tile(c, (4, 1))
+    array([array([1 2 3 4]) array([1 2 3 4]) array([1 2 3 4]) array([1 2 3 4])])
+    """
+    # Ensure 'reps' is a list
+    if isinstance(reps, int):
+        reps_2 = [cast(int, reps)]
+        l_reps = 1
+    else:
+        reps_2 = list(cast(tuple, reps))
+        l_reps = len(reps)
+
+    A_shape = A.shape
+    dim_difference = abs(len(A_shape) - l_reps)
+    if len(A_shape) < l_reps:
+        A = A.reshape((1,) * dim_difference + A_shape)
+    elif len(A_shape) > l_reps:
+        reps_2 = [1] * dim_difference + reps_2
+
+    # Construct the command to send to the server
+    cmd = f"tile<{A.dtype},{A.ndim}>"
+    args = {"name": A, "reps": reps_2}
+
+    # Send the command to the Arkouda server
+    rep_msg = generic_msg(cmd=cmd, args=args)
+
+    # Create and return the resulting pdarray
+    return create_pdarray(cast(str, rep_msg))
