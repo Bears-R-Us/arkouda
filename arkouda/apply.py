@@ -1,15 +1,15 @@
-from typeguard import typechecked
-from typing import Callable, Union, Optional, cast
+import base64
 import sys
+from typing import Callable, Optional, Union, cast
+
+import cloudpickle
+import numpy as np
+from typeguard import typechecked
 
 from arkouda.client import generic_msg, get_config
-from arkouda.numpy.pdarrayclass import pdarray, parse_single_value
-from arkouda.numpy.pdarraycreation import create_pdarray
-import cloudpickle
-import base64
-import numpy as np
 from arkouda.numpy.dtypes import dtype
-
+from arkouda.numpy.pdarrayclass import parse_single_value, pdarray
+from arkouda.numpy.pdarraycreation import create_pdarray
 
 __all__ = [
     "apply",
@@ -77,8 +77,7 @@ def apply(
 
     if not getattr(apply, "is_apply_supported", False):
         raise RuntimeError(
-            "The apply module is not supported by the version of Chapel "
-            + "this server was built with."
+            "The apply module is not supported by the version of Chapel " + "this server was built with."
         )
 
     vers_supported = getattr(apply, "is_version_supported", None)

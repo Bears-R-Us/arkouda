@@ -1,11 +1,11 @@
-from typing import Tuple, List, Literal, Union, Optional
+from typing import List, Literal, Optional, Tuple, Union
+
+import numpy as np
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
-from arkouda.numpy.pdarrayclass import pdarray, create_pdarray
 from arkouda.numpy.dtypes import dtype as akdtype
-
-import numpy as np
+from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 
 __all__ = ["vstack", "delete"]
 
