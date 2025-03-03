@@ -9,7 +9,6 @@ import pytest
 
 import arkouda as ak
 from arkouda.testing import assert_arkouda_array_equal, assert_equivalent
-
 from arkouda.util import _generate_test_shape, _infer_shape_from_size
 
 INT_SCALARS = list(ak.dtypes.int_scalars.__args__)

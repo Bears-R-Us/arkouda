@@ -1,7 +1,7 @@
 import shutil
+from os.path import isdir
 from pathlib import Path
 from typing import Any, Dict, Mapping
-from os.path import isdir
 
 
 def get_directory(path: str) -> Path:

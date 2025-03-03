@@ -1,6 +1,7 @@
 import readline
-from IPython.core.history import HistoryAccessor
 from typing import List, Optional
+
+from IPython.core.history import HistoryAccessor
 
 
 class HistoryRetriever:
