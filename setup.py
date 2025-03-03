@@ -116,7 +116,7 @@ setup(
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
-        "numpy>=1.24.1,<2.0",
+        "numpy>=2.0",
         "pandas>=1.4.0,!=2.2.0",
         "pyzmq>=20.0.0",
         "typeguard==2.10.0",
@@ -129,8 +129,9 @@ setup(
         "types-tabulate",
         "tables>=3.8.0",
         "pyarrow",
-        "scipy<=1.13.1; python_version<='3.12'",
-        "scipy; python_version>'3.12'",
+        "scipy",
+        #"scipy<=1.13.1; python_version<='3.12'",
+        #"scipy; python_version>'3.12'",
         "cloudpickle"
         # chapel-py
     ],

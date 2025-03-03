@@ -99,7 +99,15 @@ class TestDTypes:
         assert dtypes.dtype("bigint") == ak.arange(2**200, 2**200 + 10).dtype
 
     def test_isSupportedInt(self):
-        for supported in -10, 1, np.int64(1), np.int64(1.0), np.uint32(1), 2**63 + 1, 2**200:
+        for supported in (
+            -10,
+            1,
+            np.int64(1),
+            np.int64(1.0),
+            np.uint32(1),
+            2**63 + 1,
+            2**200,
+        ):
             assert dtypes.isSupportedInt(supported)
         for unsupported in 1.0, "1":
             assert not dtypes.isSupportedInt(unsupported)
@@ -158,16 +166,22 @@ class TestDTypes:
         from arkouda.dtypes import bool_, float64, int64, uint64, uint8, bigint
 
         assert (
-            bool_,
-            float,
-            float64,
-            int,
-            int64,
-            uint64,
-            uint8,
-            bigint,
-            str,
-        ) == ak.ARKOUDA_SUPPORTED_DTYPES
+            frozenset(
+                {
+                    "bool_",
+                    "float",
+                    "float64",
+                    "int",
+                    "int64",
+                    "uint",
+                    "uint64",
+                    "uint8",
+                    "bigint",
+                    "str",
+                }
+            )
+            == ak.ARKOUDA_SUPPORTED_DTYPES
+        )
 
     def test_NumericDTypes(self):
         num_types = frozenset(["bool", "bool_", "float", "float64", "int", "int64", "uint64", "bigint"])
@@ -187,7 +201,7 @@ class TestDTypes:
             assert dtypes.SeriesDTypes[dt] == np.bool_
 
     def test_scalars(self):
-        assert "typing.Union[bool, numpy.bool_]" == str(ak.bool_scalars)
+        assert "typing.Union[bool, numpy.bool]" == str(ak.bool_scalars)
         assert "typing.Union[float, numpy.float64, numpy.float32]" == str(ak.float_scalars)
         assert (
             "typing.Union[int, numpy.int8, numpy.int16, numpy.int32, numpy.int64, "
@@ -202,12 +216,12 @@ class TestDTypes:
         assert "typing.Union[str, numpy.str_]" == str(ak.str_scalars)
         assert (
             "typing.Union[numpy.float64, numpy.float32, numpy.int8, numpy.int16, numpy.int32, "
-            + "numpy.int64, numpy.bool_, numpy.str_, numpy.uint8, numpy.uint16, numpy.uint32, "
+            + "numpy.int64, numpy.bool, numpy.str_, numpy.uint8, numpy.uint16, numpy.uint32, "
             + "numpy.uint64]"
         ) == str(ak.numpy_scalars)
 
         assert (
-            "typing.Union[bool, numpy.bool_, float, numpy.float64, numpy.float32, int, numpy.int8, "
+            "typing.Union[bool, numpy.bool, float, numpy.float64, numpy.float32, int, numpy.int8, "
             + "numpy.int16, numpy.int32, numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32,"
             + " numpy.uint64, numpy.str_, str]"
         ) == str(ak.all_scalars)
