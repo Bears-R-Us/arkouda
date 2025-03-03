@@ -214,6 +214,7 @@ def eye(
         cols = n_cols
 
     from arkouda import dtype as akdtype
+
     return Array._new(ak.eye(rows=n_rows, cols=cols, diag=k, dt=akdtype(dtype)))
 
 

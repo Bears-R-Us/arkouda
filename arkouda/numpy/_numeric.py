@@ -9,7 +9,10 @@ from typeguard import typechecked
 
 from arkouda.client import generic_msg
 from arkouda.groupbyclass import GroupBy, groupable
-from arkouda.numpy.dtypes import _datatype_check, bigint
+from arkouda.numpy.dtypes import (
+    _datatype_check,
+    bigint,
+)
 from arkouda.numpy.dtypes import bool_ as ak_bool
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import float64 as ak_float64

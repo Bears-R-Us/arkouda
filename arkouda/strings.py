@@ -657,7 +657,7 @@ class Strings:
 
         Special Character Examples
 
-        >>> special_strings = ak.array(["3.14", "\u0030", "\u00B2", "2³₇", "2³x₇"])
+        >>> special_strings = ak.array(["3.14", "\u0030", "\u00b2", "2³₇", "2³x₇"])
         >>> special_strings
         array(['3.14', '0', '²', '2³₇', '2³x₇'])
         >>> special_strings.isdecimal()
@@ -928,7 +928,7 @@ class Strings:
 
         Special Character Examples
 
-        >>> special_strings = ak.array(["3.14", "\u0030", "\u00B2", "2³₇", "2³x₇"])
+        >>> special_strings = ak.array(["3.14", "\u0030", "\u00b2", "2³₇", "2³x₇"])
         >>> special_strings
         array(['3.14', '0', '²', '2³₇', '2³x₇'])
         >>> special_strings.isdigit()
