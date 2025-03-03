@@ -196,4 +196,6 @@ def create_sparray(repMsg: str, max_bits=None) -> sparray:
         f"created Chapel sparse array with name: {name} dtype: {mydtype} ndim: {ndim} "
         + f"nnz:{nnz} shape: {shape} layout: {layout} itemsize: {itemsize}"
     )
-    return sparray(name, dtype(mydtype), size, nnz, ndim, shape, layout, itemsize, max_bits)
+    return sparray(
+        name, dtype(mydtype), size, nnz, ndim, shape, layout, itemsize, max_bits  # type: ignore
+    )
