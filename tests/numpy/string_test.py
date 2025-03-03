@@ -25,12 +25,8 @@ class TestString:
 
     @staticmethod
     def base_words(size):
-        base_words1 = ak.random_strings_uniform(
-            1, 10, size // 4, characters="printable"
-        )
-        base_words2 = ak.random_strings_lognormal(
-            2, 0.25, size // 4, characters="printable"
-        )
+        base_words1 = ak.random_strings_uniform(1, 10, size // 4, characters="printable")
+        base_words2 = ak.random_strings_lognormal(2, 0.25, size // 4, characters="printable")
         base_words = ak.concatenate((base_words1, base_words2))
         np_base_words = np.hstack((base_words1.to_ndarray(), base_words2.to_ndarray()))
 
@@ -49,9 +45,7 @@ class TestString:
         gremlins_strings = ak.concatenate((base_words[choices], self.gremlins))
         gremlins_test_strings = gremlins_strings.to_ndarray()
         gremlins_cat = ak.Categorical(gremlins_strings)
-        return self.Gremlins(
-            gremlins_base_words, gremlins_strings, gremlins_test_strings, gremlins_cat
-        )
+        return self.Gremlins(gremlins_base_words, gremlins_strings, gremlins_test_strings, gremlins_cat)
 
     def delim(self, base_words):
         x, w = tuple(zip(*Counter("".join(base_words)).items()))
@@ -130,9 +124,7 @@ class TestString:
         permStrings = strings[g.permutation].to_ndarray()
         # Check each group individually
         lengths = np.diff(np.hstack((g.segments.to_ndarray(), np.array([g.length]))))
-        for uk, s, l in zip(
-            g.unique_keys.to_ndarray(), g.segments.to_ndarray(), lengths
-        ):
+        for uk, s, l in zip(g.unique_keys.to_ndarray(), g.segments.to_ndarray(), lengths):
             # All values in group should equal key
             assert (permStrings[s : s + l] == uk).all()
             # Key should not appear anywhere outside of group
@@ -181,17 +173,11 @@ class TestString:
         cat = ak.Categorical(strings)
 
         inds = ak.arange(0, strings.size, 10)
-        assert self.compare_strings(
-            strings[inds].to_ndarray(), test_strings[inds.to_ndarray()]
-        )
-        assert self.compare_strings(
-            cat[inds].to_ndarray(), test_strings[inds.to_ndarray()]
-        )
+        assert self.compare_strings(strings[inds].to_ndarray(), test_strings[inds.to_ndarray()])
+        assert self.compare_strings(cat[inds].to_ndarray(), test_strings[inds.to_ndarray()])
         logical = ak.zeros(strings.size, dtype=ak.bool_)
         logical[inds] = True
-        assert self.compare_strings(
-            strings[logical].to_ndarray(), test_strings[logical.to_ndarray()]
-        )
+        assert self.compare_strings(strings[logical].to_ndarray(), test_strings[logical.to_ndarray()])
         # Indexing with a one-element pdarray (int) should return Strings array, not string scalar
         i = size // 2
         singleton = ak.array([i])
@@ -272,9 +258,7 @@ class TestString:
         with pytest.raises(ValueError):
             # updated to raise ValueError since regex doesn't currently support patterns
             # matching empty string
-            assert not self._ends_with_help(
-                g.gremlins_strings, g.gremlins_test_strings, ""
-            )
+            assert not self._ends_with_help(g.gremlins_strings, g.gremlins_test_strings, "")
 
     def test_ends_with_delimiter_match(self):
         strings = ak.array(["string{} ".format(i) for i in range(0, 5)])
@@ -362,9 +346,7 @@ class TestString:
             return h2, s2, newt
 
         for times, inc, part in it.product(range(1, 4), tf, tf):
-            ls, rs = strings.peel(
-                delim, times=times, includeDelimiter=inc, keepPartial=part
-            )
+            ls, rs = strings.peel(delim, times=times, includeDelimiter=inc, keepPartial=part)
             triples = [s.partition(delim) for s in test_strings]
             for _ in range(times - 1):
                 triples = [slide(t, delim) for t in triples]
@@ -372,9 +354,7 @@ class TestString:
             assert (ltest == ls.to_ndarray()).all() and (rtest == rs.to_ndarray()).all()
 
         for times, inc, part in it.product(range(1, 4), tf, tf):
-            ls, rs = strings.rpeel(
-                delim, times=times, includeDelimiter=inc, keepPartial=part
-            )
+            ls, rs = strings.rpeel(delim, times=times, includeDelimiter=inc, keepPartial=part)
             triples = [s.rpartition(delim) for s in test_strings]
             for _ in range(times - 1):
                 triples = [rslide(t, delim) for t in triples]
@@ -443,16 +423,12 @@ class TestString:
         test_strings2 = np.random.choice(base_words.to_ndarray(), size, replace=True)
         strings2 = ak.array(test_strings2)
         stuck = strings.stick(strings2, delimiter=delim).to_ndarray()
-        tstuck = np.array(
-            [delim.join((a, b)) for a, b in zip(test_strings, test_strings2)]
-        )
+        tstuck = np.array([delim.join((a, b)) for a, b in zip(test_strings, test_strings2)])
         assert (stuck == tstuck).all()
         assert ((strings + strings2) == strings.stick(strings2, delimiter="")).all()
 
         lstuck = strings.lstick(strings2, delimiter=delim).to_ndarray()
-        tlstuck = np.array(
-            [delim.join((b, a)) for a, b in zip(test_strings, test_strings2)]
-        )
+        tlstuck = np.array([delim.join((b, a)) for a, b in zip(test_strings, test_strings2)])
         assert (lstuck == tlstuck).all()
         assert ((strings2 + strings) == strings.lstick(strings2, delimiter="")).all()
 
@@ -464,9 +440,7 @@ class TestString:
         delim = self.delim(np_base_words)
         self._stick_help(strings, test_strings, base_words, delim, size)
         self._stick_help(strings, test_strings, base_words, np.str_(delim), size)
-        self._stick_help(
-            strings, test_strings, base_words, str.encode(str(delim)), size
-        )
+        self._stick_help(strings, test_strings, base_words, str.encode(str(delim)), size)
 
         # Test gremlins delimiters
         g = self._get_ak_gremlins(size)
@@ -490,9 +464,7 @@ class TestString:
         assert flat.to_list() == ["one", "two", "three", "four", "five", "six"]
         assert mapping.to_list() == [0, 2, 5]
         thirds = [ak.cast(ak.arange(i, 99, 3), "str") for i in range(3)]
-        thickrange = (
-            thirds[0].stick(thirds[1], delimiter=", ").stick(thirds[2], delimiter=", ")
-        )
+        thickrange = thirds[0].stick(thirds[1], delimiter=", ").stick(thirds[2], delimiter=", ")
         flatrange = thickrange.split(", ")
         assert ak.cast(flatrange, "int64").to_list(), np.arange(99).tolist()
 
@@ -575,7 +547,7 @@ class TestString:
                 "\n",
                 "3.14",
                 "\u0030",
-                "\u00B2",
+                "\u00b2",
             ]
         )
 
@@ -613,7 +585,7 @@ class TestString:
                 "\n",
                 "3.14",
                 "\u0030",  # Unicode for zero
-                "\u00B2",
+                "\u00b2",
                 "2³₇",  # additional tests for super/subscripts
                 "2³x₇",
             ]
@@ -655,7 +627,7 @@ class TestString:
                 "\n",
                 "3.14",
                 "\u0030",  # Unicode for zero
-                "\u00B2",
+                "\u00b2",
                 "2³₇",  # additional tests for super/subscripts
                 "2³x₇",
             ]
@@ -698,7 +670,7 @@ class TestString:
                 "\n",
                 "3.14",
                 "\u0030",
-                "\u00B2",
+                "\u00b2",
             ]
         )
 
@@ -747,7 +719,7 @@ class TestString:
                 "\n",
                 "3.14",
                 "\u0030",
-                "\u00B2",
+                "\u00b2",
             ]
         )
 
@@ -927,9 +899,7 @@ class TestString:
         str_broadcast_ans = str_vals[keys]
 
         gb_broadcasted = g.broadcast(str_vals)
-        manual_broadcasted = ak.broadcast(
-            g.segments, str_vals, permutation=g.permutation
-        )
+        manual_broadcasted = ak.broadcast(g.segments, str_vals, permutation=g.permutation)
         assert (gb_broadcasted == str_broadcast_ans).all()
         assert (manual_broadcasted == str_broadcast_ans).all()
 

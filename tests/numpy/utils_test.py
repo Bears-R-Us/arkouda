@@ -1,7 +1,7 @@
+import numpy as np
 import pytest
 
 import arkouda as ak
-import numpy as np
 
 
 class TestFromNumericFunctions:

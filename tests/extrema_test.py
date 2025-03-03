@@ -22,7 +22,7 @@ def make_np_edge_cases(dtype):
     if dtype == "int64":
         return np.array([np.iinfo(np.int64).min, -1, 0, 3, np.iinfo(np.int64).max])
     elif dtype == "uint64":
-        return np.array([17, 2**64-1, 0, 3, 2**63 + 10], dtype=np.uint64)
+        return np.array([17, 2**64 - 1, 0, 3, 2**63 + 10], dtype=np.uint64)
     elif dtype == "float64":
         return np.array(
             [

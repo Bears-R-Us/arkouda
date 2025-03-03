@@ -2071,13 +2071,10 @@ def save_checkpoint(name="", path=".akdata", mode: str = "overwrite"):
     ---------
     load_checkpoint
     """
-    if mode not in ('overwrite', 'error'):
-        raise ValueError("mode can be 'overwrite' or 'error' not {}".format(
-                         mode))
+    if mode not in ("overwrite", "error"):
+        raise ValueError("mode can be 'overwrite' or 'error' not {}".format(mode))
 
-    return cast(str, generic_msg(cmd="save_checkpoint", args={"name": name,
-                                                              "path": path,
-                                                              "mode": mode}))
+    return cast(str, generic_msg(cmd="save_checkpoint", args={"name": name, "path": path, "mode": mode}))
 
 
 def load_checkpoint(name, path=".akdata"):
@@ -2123,8 +2120,7 @@ def load_checkpoint(name, path=".akdata"):
     #
     # rep = json.loads(rep_msg)
     # ret = _build_objects(rep)
-    return generic_msg(cmd="load_checkpoint", args={"name": name,
-                                                    "path": path})
+    return generic_msg(cmd="load_checkpoint", args={"name": name, "path": path})
 
 
 def read_tagged_data(

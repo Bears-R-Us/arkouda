@@ -8,9 +8,7 @@ Encapsulates a variety of arkouda apply test cases.
 
 
 def supports_apply():
-    return ak.pdarrayclass.parse_single_value(
-        ak.client.generic_msg("isPythonModuleSupported")
-    )
+    return ak.pdarrayclass.parse_single_value(ak.client.generic_msg("isPythonModuleSupported"))
 
 
 class TestApply:
@@ -40,7 +38,7 @@ class TestApply:
     @pytest.mark.parametrize("dtype", [ak.int64, ak.uint64])
     def test_apply_lambda(self, prob_size, dtype):
         a = ak.arange(prob_size, dtype=dtype)
-        b = ak.apply(a, lambda x: x*x*x)
+        b = ak.apply(a, lambda x: x * x * x)
         assert ak.all(b == a * a * a)
         assert b.dtype == dtype
 
@@ -50,7 +48,7 @@ class TestApply:
         import math
 
         def times_pi(x):
-            return x*math.pi
+            return x * math.pi
 
         a = ak.arange(prob_size, dtype=dtype)
         b = ak.apply(a, times_pi, "float64")
@@ -64,7 +62,7 @@ class TestApply:
     @pytest.mark.parametrize("dtype", [ak.int64, ak.uint64])
     def test_apply_shapes(self, prob_size, dtype):
         for r in ak.client.get_array_ranks():
-            size = int(prob_size**(1/r))
+            size = int(prob_size ** (1 / r))
             shape = (size,) * r
             a = ak.randint(1, 100, shape, dtype)
             b = ak.apply(a, lambda x: x**4 - 1)

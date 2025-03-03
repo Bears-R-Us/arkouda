@@ -101,9 +101,7 @@ class Generator:
             raise TypeError("choice only accepts a pdarray or int scalar.")
 
         if not replace and size > pop_size:
-            raise ValueError(
-                "Cannot take a larger sample than population when replace is False"
-            )
+            raise ValueError("Cannot take a larger sample than population when replace is False")
 
         has_weights = p is not None
         if has_weights:
@@ -269,9 +267,7 @@ class Generator:
 
         if size is None:
             # delegate to numpy when return size is 1
-            return self._np_generator.integers(
-                low=low, high=high, dtype=dtype, endpoint=endpoint
-            )
+            return self._np_generator.integers(low=low, high=high, dtype=dtype, endpoint=endpoint)
 
         if high is None:
             high = low
@@ -347,9 +343,7 @@ class Generator:
             return self._np_generator.logistic(loc=loc, scale=scale, size=size)
 
         is_single_mu, mu = float_array_or_scalar_helper("logistic", "loc", loc, size)
-        is_single_scale, scale = float_array_or_scalar_helper(
-            "logistic", "scale", scale, size
-        )
+        is_single_scale, scale = float_array_or_scalar_helper("logistic", "scale", scale, size)
         if (scale < 0).any() if isinstance(scale, pdarray) else scale < 0:
             raise TypeError("scale must be non-negative.")
 
@@ -781,9 +775,7 @@ class Generator:
             # delegate to numpy when return size is 1
             return self._np_generator.poisson(lam, size)
 
-        is_single_lambda, lam = float_array_or_scalar_helper(
-            "poisson", "lam", lam, size
-        )
+        is_single_lambda, lam = float_array_or_scalar_helper("poisson", "lam", lam, size)
         if (lam < 0).any() if isinstance(lam, pdarray) else lam < 0:
             raise TypeError("lam must be non-negative.")
 
@@ -920,7 +912,5 @@ def float_array_or_scalar_helper(func_name, var_name, var, size):
 
             var = akcast(var, akfloat64)
     else:
-        raise TypeError(
-            f"{func_name} only accepts a pdarray or float scalar for {var_name}"
-        )
+        raise TypeError(f"{func_name} only accepts a pdarray or float scalar for {var_name}")
     return is_scalar, var

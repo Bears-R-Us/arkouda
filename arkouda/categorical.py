@@ -1479,7 +1479,7 @@ class Categorical:
     @staticmethod
     @typechecked
     def parse_hdf_categoricals(
-        d: Mapping[str, Union[pdarray, Strings]]
+        d: Mapping[str, Union[pdarray, Strings]],
     ) -> Tuple[List[str], Dict[str, Categorical]]:
         """
         This function should be used in conjunction with the load_all function which reads hdf5 files

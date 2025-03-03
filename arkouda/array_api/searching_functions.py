@@ -90,7 +90,11 @@ def where(condition: Array, x1: Array, x2: Array, /) -> Array:
         create_pdarray(
             generic_msg(
                 cmd=f"wherevv<{c.ndim},{a.dtype},{b.dtype}>",
-                args={"condition" : c, "a" : a, "b" : b, },
+                args={
+                    "condition": c,
+                    "a": a,
+                    "b": b,
+                },
             )
         )
     )

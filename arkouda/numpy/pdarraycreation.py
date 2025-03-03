@@ -14,7 +14,11 @@ from arkouda.numpy.dtypes import (
     bigint,
 )
 from arkouda.numpy.dtypes import dtype as akdtype
-from arkouda.numpy.dtypes import float64, get_byteorder, get_server_byteorder
+from arkouda.numpy.dtypes import (
+    float64,
+    get_byteorder,
+    get_server_byteorder,
+)
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import (
     int_scalars,
@@ -945,7 +949,7 @@ def arange(*args, **kwargs) -> pdarray:
     # the requested dtype.
     # This matters for several tests in tests/series_test.py
 
-    if (start == stop) | ((np.sign(stop - start) * np.sign(stride)) <= 0) :
+    if (start == stop) | ((np.sign(stop - start) * np.sign(stride)) <= 0):
         return akcast(array([], dtype=akint64), dt=dtype)
 
     if isSupportedInt(start) and isSupportedInt(stop) and isSupportedInt(stride):

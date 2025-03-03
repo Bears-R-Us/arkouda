@@ -155,7 +155,7 @@ class TestDTypes:
             )
             == ak.DTypes
         )
-        from arkouda.dtypes import bool_, float64, int64, uint64, uint8, bigint
+        from arkouda.dtypes import bigint, bool_, float64, int64, uint8, uint64
 
         assert (
             bool_,

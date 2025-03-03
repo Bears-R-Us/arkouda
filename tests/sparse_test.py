@@ -69,18 +69,12 @@ class TestSparse:
                         result[(rA, cB)] += vA * vB
 
             # Extract the results into separate lists
-            result_rows, result_cols, result_vals = zip(
-                *[(r, c, v) for (r, c), v in result.items()]
-            )
+            result_rows, result_cols, result_vals = zip(*[(r, c, v) for (r, c), v in result.items()])
 
             return list(result_rows), list(result_cols), list(result_vals)
 
-        matA = ak.random_sparse_matrix(
-            10, 1, "CSC"
-        )  # Make it fully dense to make testing easy
-        matB = ak.random_sparse_matrix(
-            10, 1, "CSR"
-        )  # Make it fully dense to make testing easy
+        matA = ak.random_sparse_matrix(10, 1, "CSC")  # Make it fully dense to make testing easy
+        matB = ak.random_sparse_matrix(10, 1, "CSR")  # Make it fully dense to make testing easy
         fill_vals_a = ak.randint(0, 10, matA.nnz)
         fill_vals_b = ak.randint(0, 10, matB.nnz)
         matA.fill_vals(fill_vals_a)
@@ -89,14 +83,10 @@ class TestSparse:
         rowsB, colsB, valsB = (arr.to_ndarray() for arr in matB.to_pdarray())
         assert np.all(valsA == fill_vals_a.to_ndarray())
         assert np.all(valsB == fill_vals_b.to_ndarray())
-        ans_rows, ans_cols, ans_vals = matmatmult(
-            rowsA, colsA, valsA, rowsB, colsB, valsB
-        )
+        ans_rows, ans_cols, ans_vals = matmatmult(rowsA, colsA, valsA, rowsB, colsB, valsB)
 
         result = ak.sparse_matrix_matrix_mult(matA, matB)
-        result_rows, result_cols, result_vals = (
-            arr.to_ndarray() for arr in result.to_pdarray()
-        )
+        result_rows, result_cols, result_vals = (arr.to_ndarray() for arr in result.to_pdarray())
 
         # Check the result is correct
         assert np.all(result_rows == ans_rows)

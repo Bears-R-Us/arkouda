@@ -1,15 +1,15 @@
 from __future__ import annotations
 
+from typing import Optional, Tuple, Union
+
+import arkouda as ak
+from arkouda.client import generic_msg
+from arkouda.numpy.pdarrayclass import create_pdarray
+from arkouda.numpy.pdarraycreation import scalar_array
+
 from .array_object import Array
 from .manipulation_functions import concat, reshape
 from .statistical_functions import sum
-
-from typing import Optional, Tuple, Union
-
-from arkouda.numpy.pdarraycreation import scalar_array
-from arkouda.client import generic_msg
-from arkouda.numpy.pdarrayclass import create_pdarray
-import arkouda as ak
 
 
 def all(
@@ -283,8 +283,8 @@ def trapz(y: Array, x: Optional[Array] = None, dx: Optional[float] = 1.0, axis: 
     if axis < 0:
         axis = nd + axis
 
-    slice1 = [slice(None)]*nd
-    slice2 = [slice(None)]*nd
+    slice1 = [slice(None)] * nd
+    slice2 = [slice(None)] * nd
     slice1[axis] = slice(1, None)
     slice2[axis] = slice(None, -1)
 
