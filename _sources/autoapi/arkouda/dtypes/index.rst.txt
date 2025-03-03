@@ -101,73 +101,27 @@ Package Contents
 
 .. py:class:: ARKOUDA_SUPPORTED_DTYPES
 
-   frozenset() -> empty frozenset object
-   frozenset(iterable) -> frozenset object
+   Built-in immutable sequence.
 
-   Build an immutable unordered collection of unique elements.
+   If no argument is given, the constructor returns an empty tuple.
+   If iterable is specified the tuple is initialized from iterable's items.
 
-
-
-   .. py:method:: copy(*args, **kwargs)
-
-      Return a shallow copy of a set.
+   If the argument is a tuple, the return value is the same object.
 
 
 
+   .. py:method:: count(value, /)
 
-   .. py:method:: difference(*args, **kwargs)
-
-      Return the difference of two or more sets as a new set.
-
-      (i.e. all elements that are in this set but not the others.)
+      Return number of occurrences of value.
 
 
 
 
-   .. py:method:: intersection(*args, **kwargs)
+   .. py:method:: index(value, start=0, stop=9223372036854775807, /)
 
-      Return the intersection of two sets as a new set.
+      Return first index of value.
 
-      (i.e. all elements that are in both sets.)
-
-
-
-
-   .. py:method:: isdisjoint(*args, **kwargs)
-
-      Return True if two sets have a null intersection.
-
-
-
-
-   .. py:method:: issubset(*args, **kwargs)
-
-      Report whether another set contains this set.
-
-
-
-
-   .. py:method:: issuperset(*args, **kwargs)
-
-      Report whether this set contains another set.
-
-
-
-
-   .. py:method:: symmetric_difference(*args, **kwargs)
-
-      Return the symmetric difference of two sets as a new set.
-
-      (i.e. all elements that are in exactly one of the sets.)
-
-
-
-
-   .. py:method:: union(*args, **kwargs)
-
-      Return the union of sets as a new set.
-
-      (i.e. all elements that are in either set.)
+      Raises ValueError if the value is not present.
 
 
 
@@ -1017,6 +971,12 @@ Package Contents
 
 .. py:class:: bigint
 
+   Datatype for representing integers of variable size.
+
+   May be used for integers that exceed 64 bits.
+
+
+
    .. py:method:: itemsize(*args, **kwargs)
 
       int([x]) -> integer
@@ -1192,7 +1152,15 @@ Package Contents
 
 
 
-.. py:function:: dtype(x)
+.. py:function:: dtype(dtype)
+
+   Create a data type object.
+
+   :param dtype: Object to be converted to a data type object.
+   :type dtype: object
+
+   :rtype: type
+
 
 .. py:class:: float16(value)
 
@@ -1386,14 +1354,35 @@ Package Contents
 
 .. py:function:: get_byteorder(dt: np.dtype) -> str
 
-   Get a concrete byteorder (turns '=' into '<' or '>')
+   Get a concrete byteorder (turns '=' into '<' or '>') on the client.
 
+   :param dt: The numpy dtype to determine the byteorder of.
+   :type dt: np.dtype
+
+   :returns: Returns "<" for little endian and ">" for big endian.
+   :rtype: str
+
+   :raises ValueError: Returned if sys.byteorder is not "little" or "big"
+
+   .. rubric:: Examples
+
+   >>> ak.get_byteorder(ak.dtype(ak.int64))
+   '<'
 
 
 .. py:function:: get_server_byteorder() -> str
 
    Get the server's byteorder
 
+   :returns: Returns "little" for little endian and "big" for big endian.
+   :rtype: str
+
+   :raises ValueError: Raised if Server byteorder is not 'little' or 'big'
+
+   .. rubric:: Examples
+
+   >>> ak.get_server_byteorder()
+   'little'
 
 
 .. py:class:: int16(value)
@@ -1606,13 +1595,93 @@ Package Contents
 
 .. py:function:: isSupportedBool(num)
 
-.. py:function:: isSupportedDType(scalar)
+   Whether a scalar is an arkouda supported boolean dtype.
+
+   :param scalar:
+   :type scalar: object
+
+   :returns: True if scalar is an instance of an arkouda supported boolean dtype, else False.
+   :rtype: bool
+
+   .. rubric:: Examples
+
+   >>> ak.isSupportedBool(ak.int64)
+   False
+   >>> ak.isSupportedBool(bool)
+   True
+
+
+.. py:function:: isSupportedDType(scalar: object) -> bool
+
+   Whether a scalar is an arkouda supported dtype.
+
+   :param scalar:
+   :type scalar: object
+
+   :returns: True if scalar is an instance of an arkouda supported dtype, else False.
+   :rtype: bool
+
+   .. rubric:: Examples
+
+   >>> ak.isSupportedDType(ak.int64)
+   True
+   >>> ak.isSupportedDType(np.complex128(1+2j))
+   False
+
 
 .. py:function:: isSupportedFloat(num)
 
+   Whether a scalar is an arkouda supported float dtype.
+
+   :param scalar:
+   :type scalar: object
+
+   :returns: True if scalar is an instance of an arkouda supported float dtype, else False.
+   :rtype: bool
+
+   .. rubric:: Examples
+
+   >>> ak.isSupportedFloat(ak.int64)
+   False
+   >>> ak.isSupportedFloat(ak.float64)
+   True
+
+
 .. py:function:: isSupportedInt(num)
 
+   Whether a scalar is an arkouda supported integer dtype.
+
+   :param scalar:
+   :type scalar: object
+
+   :returns: True if scalar is an instance of an arkouda supported integer dtype, else False.
+   :rtype: bool
+
+   .. rubric:: Examples
+
+   >>> ak.isSupportedInt(ak.int64)
+   True
+   >>> ak.isSupportedInt(ak.float64)
+   False
+
+
 .. py:function:: isSupportedNumber(num)
+
+   Whether a scalar is an arkouda supported numeric dtype.
+
+   :param scalar:
+   :type scalar: object
+
+   :returns: True if scalar is an instance of an arkouda supported numeric dtype, else False.
+   :rtype: bool
+
+   .. rubric:: Examples
+
+   >>> ak.isSupportedNumber(ak.int64)
+   True
+   >>> ak.isSupportedNumber(ak.str_)
+   False
+
 
 .. py:class:: numeric_and_bool_scalars(origin, params, *, inst=True, name=None)
 
@@ -1660,6 +1729,18 @@ Package Contents
 
    Try to infer what dtype arkouda_server should treat val as.
 
+   :param val: The object to determine the dtype of.
+   :type val: object
+
+   :returns: The dtype name, if it can be resolved, otherwise the type (as str).
+   :rtype: str
+
+   .. rubric:: Examples
+
+   >>> ak.resolve_scalar_dtype(1)
+   'int64'
+   >>> ak.resolve_scalar_dtype(2.0)
+   'float64'
 
 
 .. py:class:: str_

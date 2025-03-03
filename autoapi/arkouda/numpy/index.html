@@ -427,7 +427,7 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES" title="arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ARKOUDA_SUPPORTED_DTYPES</span></code></a></p></td>
-<td><p>frozenset() -&gt; empty frozenset object</p></td>
+<td><p>Built-in immutable sequence.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.ARKOUDA_SUPPORTED_INTS" title="arkouda.numpy.ARKOUDA_SUPPORTED_INTS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ARKOUDA_SUPPORTED_INTS</span></code></a></p></td>
 <td><p>Built-in immutable sequence.</p></td>
@@ -574,7 +574,7 @@
 <td><p>The central part of internal API.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.bigint" title="arkouda.numpy.bigint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bigint</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Datatype for representing integers of variable size.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.bitType" title="arkouda.numpy.bitType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bitType</span></code></a></p></td>
 <td><p>Unsigned integer type, compatible with C <code class="docutils literal notranslate"><span class="pre">unsigned</span> <span class="pre">long</span></code>.</p></td>
@@ -852,8 +852,8 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.disp" title="arkouda.numpy.disp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">disp</span></code></a>(mesg[, device, linefeed])</p></td>
 <td><p>Display a message on a device.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtype" title="arkouda.numpy.dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dtype</span></code></a>(x)</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtype" title="arkouda.numpy.dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dtype</span></code></a>(dtype)</p></td>
+<td><p>Create a data type object.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.exp" title="arkouda.numpy.exp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">exp</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise exponential of the array.</p></td>
@@ -877,7 +877,7 @@
 <td><p>Format a floating-point scalar as a decimal string in scientific notation.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.get_byteorder" title="arkouda.numpy.get_byteorder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_byteorder</span></code></a>(→ str)</p></td>
-<td><p>Get a concrete byteorder (turns '=' into '&lt;' or '&gt;')</p></td>
+<td><p>Get a concrete byteorder (turns '=' into '&lt;' or '&gt;') on the client.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.get_server_byteorder" title="arkouda.numpy.get_server_byteorder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_server_byteorder</span></code></a>(→ str)</p></td>
 <td><p>Get the server's byteorder</p></td>
@@ -895,19 +895,19 @@
 <td><p>Compute the multidimensional histogram of data in sample with evenly spaced bins.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.isSupportedBool" title="arkouda.numpy.isSupportedBool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedBool</span></code></a>(num)</p></td>
-<td><p></p></td>
+<td><p>Whether a scalar is an arkouda supported boolean dtype.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.isSupportedDType" title="arkouda.numpy.isSupportedDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedDType</span></code></a>(scalar)</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.isSupportedDType" title="arkouda.numpy.isSupportedDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedDType</span></code></a>(→ bool)</p></td>
+<td><p>Whether a scalar is an arkouda supported dtype.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.isSupportedFloat" title="arkouda.numpy.isSupportedFloat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedFloat</span></code></a>(num)</p></td>
-<td><p></p></td>
+<td><p>Whether a scalar is an arkouda supported float dtype.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.isSupportedInt" title="arkouda.numpy.isSupportedInt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedInt</span></code></a>(num)</p></td>
-<td><p></p></td>
+<td><p>Whether a scalar is an arkouda supported integer dtype.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.isSupportedNumber" title="arkouda.numpy.isSupportedNumber"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedNumber</span></code></a>(num)</p></td>
-<td><p></p></td>
+<td><p>Whether a scalar is an arkouda supported numeric dtype.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.isfinite" title="arkouda.numpy.isfinite"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isfinite</span></code></a>(→ arkouda.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise isfinite check applied to the array.</p></td>
@@ -1023,59 +1023,21 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">ARKOUDA_SUPPORTED_DTYPES</span></span><a class="headerlink" href="#arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES" title="Link to this definition">¶</a></dt>
-<dd><p>frozenset() -&gt; empty frozenset object
-frozenset(iterable) -&gt; frozenset object</p>
-<p>Build an immutable unordered collection of unique elements.</p>
+<dd><p>Built-in immutable sequence.</p>
+<p>If no argument is given, the constructor returns an empty tuple.
+If iterable is specified the tuple is initialized from iterable’s items.</p>
+<p>If the argument is a tuple, the return value is the same object.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES.copy">
-<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES.copy" title="Link to this definition">¶</a></dt>
-<dd><p>Return a shallow copy of a set.</p>
+<dt class="sig sig-object py" id="arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES.count">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES.count" title="Link to this definition">¶</a></dt>
+<dd><p>Return number of occurrences of value.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES.difference">
-<span class="sig-name descname"><span class="pre">difference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES.difference" title="Link to this definition">¶</a></dt>
-<dd><p>Return the difference of two or more sets as a new set.</p>
-<p>(i.e. all elements that are in this set but not the others.)</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES.intersection">
-<span class="sig-name descname"><span class="pre">intersection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES.intersection" title="Link to this definition">¶</a></dt>
-<dd><p>Return the intersection of two sets as a new set.</p>
-<p>(i.e. all elements that are in both sets.)</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES.isdisjoint">
-<span class="sig-name descname"><span class="pre">isdisjoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES.isdisjoint" title="Link to this definition">¶</a></dt>
-<dd><p>Return True if two sets have a null intersection.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES.issubset">
-<span class="sig-name descname"><span class="pre">issubset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES.issubset" title="Link to this definition">¶</a></dt>
-<dd><p>Report whether another set contains this set.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES.issuperset">
-<span class="sig-name descname"><span class="pre">issuperset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES.issuperset" title="Link to this definition">¶</a></dt>
-<dd><p>Report whether this set contains another set.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES.symmetric_difference">
-<span class="sig-name descname"><span class="pre">symmetric_difference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES.symmetric_difference" title="Link to this definition">¶</a></dt>
-<dd><p>Return the symmetric difference of two sets as a new set.</p>
-<p>(i.e. all elements that are in exactly one of the sets.)</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES.union">
-<span class="sig-name descname"><span class="pre">union</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES.union" title="Link to this definition">¶</a></dt>
-<dd><p>Return the union of sets as a new set.</p>
-<p>(i.e. all elements that are in either set.)</p>
+<dt class="sig sig-object py" id="arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES.index">
+<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9223372036854775807</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES.index" title="Link to this definition">¶</a></dt>
+<dd><p>Return first index of value.</p>
+<p>Raises ValueError if the value is not present.</p>
 </dd></dl>
 
 </dd></dl>
@@ -2627,7 +2589,9 @@ the default value is 2.</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.numpy.bigint">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">bigint</span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/dtypes/dtypes.html#bigint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.bigint" title="Link to this definition">¶</a></dt>
-<dd><dl class="py method">
+<dd><p>Datatype for representing integers of variable size.</p>
+<p>May be used for integers that exceed 64 bits.</p>
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.bigint.itemsize">
 <span class="sig-name descname"><span class="pre">itemsize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.bigint.itemsize" title="Link to this definition">¶</a></dt>
 <dd><p>int([x]) -&gt; integer
@@ -4198,8 +4162,17 @@ value, and <code class="docutils literal notranslate"><span class="pre">False</s
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.dtype">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numpy/dtypes/dtypes.html#dtype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.dtype" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numpy/dtypes/dtypes.html#dtype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.dtype" title="Link to this definition">¶</a></dt>
+<dd><p>Create a data type object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dtype</strong> (<em>object</em>) – Object to be converted to a data type object.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>type</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="arkouda.numpy.e">
@@ -5193,13 +5166,48 @@ will be used.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.get_byteorder">
 <span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">get_byteorder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">np.dtype</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/dtypes/dtypes.html#get_byteorder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.get_byteorder" title="Link to this definition">¶</a></dt>
-<dd><p>Get a concrete byteorder (turns ‘=’ into ‘&lt;’ or ‘&gt;’)</p>
+<dd><p>Get a concrete byteorder (turns ‘=’ into ‘&lt;’ or ‘&gt;’) on the client.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dt</strong> (<em>np.dtype</em>) – The numpy dtype to determine the byteorder of.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Returns “&lt;” for little endian and “&gt;” for big endian.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Returned if sys.byteorder is not “little” or “big”</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">get_byteorder</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
+<span class="go">&#39;&lt;&#39;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.get_server_byteorder">
 <span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">get_server_byteorder</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/dtypes/dtypes.html#get_server_byteorder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.get_server_byteorder" title="Link to this definition">¶</a></dt>
 <dd><p>Get the server’s byteorder</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Returns “little” for little endian and “big” for big endian.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – Raised if Server byteorder is not ‘little’ or ‘big’</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">get_server_byteorder</span><span class="p">()</span>
+<span class="go">&#39;little&#39;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py class">
@@ -5965,27 +5973,122 @@ Analogous to the builtin <cite>int.bit_count</cite> or <code class="docutils lit
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.isSupportedBool">
 <span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">isSupportedBool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numpy/dtypes/dtypes.html#isSupportedBool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.isSupportedBool" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Whether a scalar is an arkouda supported boolean dtype.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>scalar</strong> (<em>object</em>)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if scalar is an instance of an arkouda supported boolean dtype, else False.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">isSupportedBool</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">isSupportedBool</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.isSupportedDType">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">isSupportedDType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scalar</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numpy/dtypes/dtypes.html#isSupportedDType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.isSupportedDType" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">isSupportedDType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scalar</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/dtypes/dtypes.html#isSupportedDType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.isSupportedDType" title="Link to this definition">¶</a></dt>
+<dd><p>Whether a scalar is an arkouda supported dtype.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>scalar</strong> (<em>object</em>)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if scalar is an instance of an arkouda supported dtype, else False.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">isSupportedDType</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">isSupportedDType</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="mi">2</span><span class="n">j</span><span class="p">))</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.isSupportedFloat">
 <span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">isSupportedFloat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numpy/dtypes/dtypes.html#isSupportedFloat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.isSupportedFloat" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Whether a scalar is an arkouda supported float dtype.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>scalar</strong> (<em>object</em>)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if scalar is an instance of an arkouda supported float dtype, else False.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">isSupportedFloat</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">isSupportedFloat</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.isSupportedInt">
 <span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">isSupportedInt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numpy/dtypes/dtypes.html#isSupportedInt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.isSupportedInt" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Whether a scalar is an arkouda supported integer dtype.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>scalar</strong> (<em>object</em>)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if scalar is an instance of an arkouda supported integer dtype, else False.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">isSupportedInt</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">isSupportedInt</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.isSupportedNumber">
 <span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">isSupportedNumber</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numpy/dtypes/dtypes.html#isSupportedNumber"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.isSupportedNumber" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Whether a scalar is an arkouda supported numeric dtype.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>scalar</strong> (<em>object</em>)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if scalar is an instance of an arkouda supported numeric dtype, else False.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">isSupportedNumber</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">isSupportedNumber</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">str_</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.isfinite">
@@ -6799,6 +6902,24 @@ of the original pdarray</p>
 <dt class="sig sig-object py" id="arkouda.numpy.resolve_scalar_dtype">
 <span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">resolve_scalar_dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/dtypes/dtypes.html#resolve_scalar_dtype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.resolve_scalar_dtype" title="Link to this definition">¶</a></dt>
 <dd><p>Try to infer what dtype arkouda_server should treat val as.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>val</strong> (<em>object</em>) – The object to determine the dtype of.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The dtype name, if it can be resolved, otherwise the type (as str).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">&#39;int64&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)</span>
+<span class="go">&#39;float64&#39;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -8825,14 +8946,8 @@ is not currently supported in Arkouda</p>
 <li><a class="reference internal" href="#functions">Functions</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li><a class="reference internal" href="#arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES"><code class="docutils literal notranslate"><span class="pre">ARKOUDA_SUPPORTED_DTYPES</span></code></a><ul>
-<li><a class="reference internal" href="#arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES.copy"><code class="docutils literal notranslate"><span class="pre">ARKOUDA_SUPPORTED_DTYPES.copy()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES.difference"><code class="docutils literal notranslate"><span class="pre">ARKOUDA_SUPPORTED_DTYPES.difference()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES.intersection"><code class="docutils literal notranslate"><span class="pre">ARKOUDA_SUPPORTED_DTYPES.intersection()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES.isdisjoint"><code class="docutils literal notranslate"><span class="pre">ARKOUDA_SUPPORTED_DTYPES.isdisjoint()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES.issubset"><code class="docutils literal notranslate"><span class="pre">ARKOUDA_SUPPORTED_DTYPES.issubset()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES.issuperset"><code class="docutils literal notranslate"><span class="pre">ARKOUDA_SUPPORTED_DTYPES.issuperset()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES.symmetric_difference"><code class="docutils literal notranslate"><span class="pre">ARKOUDA_SUPPORTED_DTYPES.symmetric_difference()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES.union"><code class="docutils literal notranslate"><span class="pre">ARKOUDA_SUPPORTED_DTYPES.union()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES.count"><code class="docutils literal notranslate"><span class="pre">ARKOUDA_SUPPORTED_DTYPES.count()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.ARKOUDA_SUPPORTED_DTYPES.index"><code class="docutils literal notranslate"><span class="pre">ARKOUDA_SUPPORTED_DTYPES.index()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#arkouda.numpy.ARKOUDA_SUPPORTED_INTS"><code class="docutils literal notranslate"><span class="pre">ARKOUDA_SUPPORTED_INTS</span></code></a><ul>

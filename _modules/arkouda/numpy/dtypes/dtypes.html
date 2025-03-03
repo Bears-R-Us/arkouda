@@ -450,19 +450,32 @@
 
 <div class="viewcode-block" id="dtype">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/index.html#arkouda.dtypes.dtype">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">dtype</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a data type object.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dtype: object</span>
+<span class="sd">        Object to be converted to a data type object.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    type</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># we had to create our own bigint type since numpy</span>
     <span class="c1"># gives them dtype=object there&#39;s no np equivalent</span>
     <span class="k">if</span> <span class="p">(</span>
-        <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">==</span> <span class="s2">&quot;bigint&quot;</span><span class="p">)</span>
-        <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bigint</span><span class="p">)</span>
-        <span class="ow">or</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;bigint&quot;</span><span class="p">)</span>
+        <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;bigint&quot;</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">bigint</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;bigint&quot;</span><span class="p">)</span>
     <span class="p">):</span>
         <span class="k">return</span> <span class="n">bigint</span><span class="p">()</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Strings&quot;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Strings&quot;</span><span class="p">]:</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span></div>
 
 
 
@@ -502,6 +515,12 @@
 <div class="viewcode-block" id="bigint">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/index.html#arkouda.dtypes.bigint">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">bigint</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Datatype for representing integers of variable size.</span>
+
+<span class="sd">    May be used for integers that exceed 64 bits.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1"># an estimate of the itemsize of bigint (128 bytes)</span>
     <span class="n">itemsize</span> <span class="o">=</span> <span class="mi">128</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;bigint&quot;</span>
@@ -650,13 +669,24 @@
 <span class="c1"># TODO: bring supported data types into parity with all numpy dtypes</span>
 <span class="c1"># missing full support for: float32, int32, int16, int8, uint32, uint16, complex64, complex128</span>
 <span class="c1"># ARKOUDA_SUPPORTED_DTYPES = frozenset([member.value for _, member in DType.__members__.items()])</span>
-<span class="n">ARKOUDA_SUPPORTED_DTYPES</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span>
-    <span class="p">[</span><span class="s2">&quot;bool_&quot;</span><span class="p">,</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint8&quot;</span><span class="p">,</span> <span class="s2">&quot;bigint&quot;</span><span class="p">,</span> <span class="s2">&quot;str&quot;</span><span class="p">]</span>
+
+<span class="n">ARKOUDA_SUPPORTED_DTYPES</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">bool_</span><span class="p">,</span>
+    <span class="nb">float</span><span class="p">,</span>
+    <span class="n">float64</span><span class="p">,</span>
+    <span class="nb">int</span><span class="p">,</span>
+    <span class="n">int64</span><span class="p">,</span>
+    <span class="n">uint64</span><span class="p">,</span>
+    <span class="n">uint8</span><span class="p">,</span>
+    <span class="n">bigint</span><span class="p">,</span>
+    <span class="nb">str</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">DTypes</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="n">member</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">DType</span><span class="o">.</span><span class="n">__members__</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
 <span class="n">DTypeObjects</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="n">bool_</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">float64</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">int64</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">str_</span><span class="p">,</span> <span class="n">uint8</span><span class="p">,</span> <span class="n">uint64</span><span class="p">])</span>
-<span class="n">NumericDTypes</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="s2">&quot;bool_&quot;</span><span class="p">,</span> <span class="s2">&quot;bool&quot;</span><span class="p">,</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">,</span> <span class="s2">&quot;bigint&quot;</span><span class="p">])</span>
+<span class="n">NumericDTypes</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span>
+    <span class="p">[</span><span class="s2">&quot;bool_&quot;</span><span class="p">,</span> <span class="s2">&quot;bool&quot;</span><span class="p">,</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">,</span> <span class="s2">&quot;bigint&quot;</span><span class="p">]</span>
+<span class="p">)</span>
 <span class="n">SeriesDTypes</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;string&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">,</span>
     <span class="s2">&quot;&lt;class &#39;str&#39;&gt;&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">,</span>
@@ -676,6 +706,26 @@
 <div class="viewcode-block" id="isSupportedInt">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/index.html#arkouda.dtypes.isSupportedInt">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">isSupportedInt</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Whether a scalar is an arkouda supported integer dtype.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    scalar: object</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+<span class="sd">        True if scalar is an instance of an arkouda supported integer dtype, else False.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ak.isSupportedInt(ak.int64)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; ak.isSupportedInt(ak.float64)</span>
+<span class="sd">    False</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">ARKOUDA_SUPPORTED_INTS</span><span class="p">)</span></div>
 
 
@@ -683,6 +733,26 @@
 <div class="viewcode-block" id="isSupportedFloat">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/index.html#arkouda.dtypes.isSupportedFloat">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">isSupportedFloat</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Whether a scalar is an arkouda supported float dtype.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    scalar: object</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+<span class="sd">        True if scalar is an instance of an arkouda supported float dtype, else False.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ak.isSupportedFloat(ak.int64)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; ak.isSupportedFloat(ak.float64)</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">ARKOUDA_SUPPORTED_FLOATS</span><span class="p">)</span></div>
 
 
@@ -690,6 +760,26 @@
 <div class="viewcode-block" id="isSupportedNumber">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/index.html#arkouda.dtypes.isSupportedNumber">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">isSupportedNumber</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Whether a scalar is an arkouda supported numeric dtype.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    scalar: object</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+<span class="sd">        True if scalar is an instance of an arkouda supported numeric dtype, else False.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ak.isSupportedNumber(ak.int64)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; ak.isSupportedNumber(ak.str_)</span>
+<span class="sd">    False</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">ARKOUDA_SUPPORTED_NUMBERS</span><span class="p">)</span></div>
 
 
@@ -697,13 +787,53 @@
 <div class="viewcode-block" id="isSupportedBool">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/index.html#arkouda.dtypes.isSupportedBool">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">isSupportedBool</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Whether a scalar is an arkouda supported boolean dtype.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    scalar: object</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+<span class="sd">        True if scalar is an instance of an arkouda supported boolean dtype, else False.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ak.isSupportedBool(ak.int64)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; ak.isSupportedBool(bool)</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">ARKOUDA_SUPPORTED_BOOLS</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="isSupportedDType">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/index.html#arkouda.dtypes.isSupportedDType">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">isSupportedDType</span><span class="p">(</span><span class="n">scalar</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">isSupportedDType</span><span class="p">(</span><span class="n">scalar</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Whether a scalar is an arkouda supported dtype.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    scalar: object</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+<span class="sd">        True if scalar is an instance of an arkouda supported dtype, else False.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ak.isSupportedDType(ak.int64)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; ak.isSupportedDType(np.complex128(1+2j))</span>
+<span class="sd">    False</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalar</span><span class="p">,</span> <span class="n">ARKOUDA_SUPPORTED_DTYPES</span><span class="p">)</span></div>
 
 
@@ -713,6 +843,24 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">resolve_scalar_dtype</span><span class="p">(</span><span class="n">val</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Try to infer what dtype arkouda_server should treat val as.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    val: object</span>
+<span class="sd">        The object to determine the dtype of.</span>
+
+<span class="sd">    Return</span>
+<span class="sd">    ------</span>
+<span class="sd">    str</span>
+<span class="sd">        The dtype name, if it can be resolved, otherwise the type (as str).</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ak.resolve_scalar_dtype(1)</span>
+<span class="sd">    &#39;int64&#39;</span>
+<span class="sd">    &gt;&gt;&gt; ak.resolve_scalar_dtype(2.0)</span>
+<span class="sd">    &#39;float64&#39;</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Python bool or np.bool</span>
@@ -721,7 +869,9 @@
     <span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;bool&quot;</span>
     <span class="c1"># Python int or np.int* or np.uint*</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="s2">&quot;dtype&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">cast</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="s2">&quot;ui&quot;</span><span class="p">):</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+        <span class="nb">hasattr</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="s2">&quot;dtype&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">cast</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="s2">&quot;ui&quot;</span>
+    <span class="p">):</span>
         <span class="c1"># we&#39;ve established these are int, uint, or bigint,</span>
         <span class="c1"># so we can do comparisons</span>
         <span class="k">if</span> <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="ow">and</span> <span class="n">val</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">64</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
@@ -731,9 +881,13 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;int64&quot;</span>
     <span class="c1"># Python float or np.float*</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="s2">&quot;dtype&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">cast</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float_</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;f&quot;</span><span class="p">):</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+        <span class="nb">hasattr</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="s2">&quot;dtype&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">cast</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float_</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;f&quot;</span>
+    <span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;float64&quot;</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">complex</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="s2">&quot;dtype&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">cast</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float_</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;c&quot;</span><span class="p">):</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">complex</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+        <span class="nb">hasattr</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="s2">&quot;dtype&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">cast</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float_</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;c&quot;</span>
+    <span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;float64&quot;</span>  <span class="c1"># TODO: actually support complex values in the backend</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">builtins</span><span class="o">.</span><span class="n">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;str&quot;</span>
@@ -750,7 +904,28 @@
 <a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/index.html#arkouda.dtypes.get_byteorder">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_byteorder</span><span class="p">(</span><span class="n">dt</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Get a concrete byteorder (turns &#39;=&#39; into &#39;&lt;&#39; or &#39;&gt;&#39;)</span>
+<span class="sd">    Get a concrete byteorder (turns &#39;=&#39; into &#39;&lt;&#39; or &#39;&gt;&#39;) on the client.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dt: np.dtype</span>
+<span class="sd">        The numpy dtype to determine the byteorder of.</span>
+
+<span class="sd">    Return</span>
+<span class="sd">    ------</span>
+<span class="sd">    str</span>
+<span class="sd">        Returns &quot;&lt;&quot; for little endian and &quot;&gt;&quot; for big endian.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Returned if sys.byteorder is not &quot;little&quot; or &quot;big&quot;</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ak.get_byteorder(ak.dtype(ak.int64))</span>
+<span class="sd">    &#39;&lt;&#39;</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">dt</span><span class="o">.</span><span class="n">byteorder</span> <span class="o">==</span> <span class="s2">&quot;=&quot;</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">byteorder</span> <span class="o">==</span> <span class="s2">&quot;little&quot;</span><span class="p">:</span>
@@ -769,6 +944,22 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">get_server_byteorder</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the server&#39;s byteorder</span>
+
+<span class="sd">    Return</span>
+<span class="sd">    ------</span>
+<span class="sd">    str</span>
+<span class="sd">        Returns &quot;little&quot; for little endian and &quot;big&quot; for big endian.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Raised if Server byteorder is not &#39;little&#39; or &#39;big&#39;</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ak.get_server_byteorder()</span>
+<span class="sd">    &#39;little&#39;</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_config</span>
 
