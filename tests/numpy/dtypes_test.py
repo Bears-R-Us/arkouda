@@ -155,13 +155,19 @@ class TestDTypes:
             )
             == ak.DTypes
         )
+        from arkouda.dtypes import bool_, float64, int64, uint64, uint8, bigint
 
         assert (
-            frozenset(
-                {"bool_", "float", "float64", "int", "int64", "uint", "uint64", "uint8", "bigint", "str"}
-            )
-            == ak.ARKOUDA_SUPPORTED_DTYPES
-        )
+            bool_,
+            float,
+            float64,
+            int,
+            int64,
+            uint64,
+            uint8,
+            bigint,
+            str,
+        ) == ak.ARKOUDA_SUPPORTED_DTYPES
 
     def test_NumericDTypes(self):
         num_types = frozenset(["bool", "bool_", "float", "float64", "int", "int64", "uint64", "bigint"])
