@@ -9,6 +9,7 @@ module ManipulationMsg {
   use ServerErrorStrings;
   use CommAggregation;
   use AryUtil;
+  use BigInteger;
 
   use Reflection;
 
@@ -812,8 +813,58 @@ module ManipulationMsg {
     return shapeOut;
   }
 
-  // // https://data-apis.org/array-api/latest/API_specification/generated/array_api.unstack.html
-  // // unstack an array into multiple arrays along a specified axis
+  // https://data-apis.org/array-api/latest/API_specification/generated/array_api.repeat.html#array_api.repeat
+  @arkouda.registerCommand (name="repeat")
+  proc repeat (eIn : [?d] ?t, axis : int, reps : [?d2] ?t2 ) : [] t throws 
+    where ((t2 == int) &&
+           (t == int || t == real || t == bool || t == uint || t == uint(8) || t == bigint) &&
+           (d2.rank == 1)){
+    param pn = Reflection.getRoutineName();
+
+    var eOut = makeDistArray((...repeatShape(eIn.shape, reps, axis)), t);
+
+    if reps.size == 1{
+      forall idx in eOut.domain with (
+        var agg = newSrcAggregator(t)
+      ) {
+        var idx2 = if eIn.shape.size == 1 then (idx,) else idx;
+        idx2[axis] = idx2[axis] / reps[0];
+        agg.copy(eOut[idx], eIn[if eIn.shape.size == 1 then idx2[0] else idx2]);
+      }
+    }else{
+      var lookup: [0..<eOut.shape[axis]] int;
+      var breakpoints: [1..reps.size] int = + scan reps;
+      var shiftedBreakpoints: [0..<reps.size] int;
+      shiftedBreakpoints[0] = 0;
+      shiftedBreakpoints[1..<reps.size] = breakpoints[1..<reps.size];
+      forall (ind, l, i) in zip(0..<reps.size, reps, shiftedBreakpoints) with (ref lookup) {
+        for j in 0..<l do lookup[i + j] = ind;
+      }
+      forall idx in eOut.domain with (
+        var agg = newSrcAggregator(t)
+      ) {
+        var inIdx = if eIn.shape.size == 1 then (idx,) else idx;
+        inIdx[axis] = lookup[inIdx[axis]];
+        agg.copy(eOut[idx], eIn[if eIn.shape.size == 1 then inIdx[0] else inIdx]);
+      }
+    }
+
+    return eOut;
+  }
+
+  proc repeatShape(shape: ?N*int, reps: [] int, axis: int): N*int {
+    var shapeOut: N*int;
+    for i in 0..<N do shapeOut[i] = shape[i];
+    if reps.size == 1{
+      shapeOut[axis] = shapeOut[axis] * reps[0];
+    }else{
+      shapeOut[axis] = + reduce reps;
+    }
+    return shapeOut;
+  }
+
+  // https://data-apis.org/array-api/latest/API_specification/generated/array_api.unstack.html
+  // unstack an array into multiple arrays along a specified axis
   @arkouda.instantiateAndRegister(prefix='unstack')
   proc unstackMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
