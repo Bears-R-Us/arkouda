@@ -36,6 +36,8 @@ from arkouda.pdarraycreation import array, linspace, scalar_array
 from arkouda.sorting import sort
 from arkouda.strings import Strings
 
+from typing import Optional
+
 NUMERIC_TYPES = [ak_int64, ak_float64, ak_bool, ak_uint64]
 
 
@@ -71,6 +73,7 @@ __all__ = [
     "triu",
     "tril",
     "transpose",
+    "alt_transpose",
     "vecdot",
     "cumsum",
     "cumprod",
@@ -2587,6 +2590,54 @@ def transpose(pda: pdarray) -> pdarray:
             args=args,
         )
     )
+
+
+@typechecked
+def alt_transpose(pda: pdarray, axes: Optional[Tuple[int, ...]] = None) -> pdarray:
+    """
+    Compute the transpose of a matrix using the transpose function in array_api.
+    This matches the behavior of numpy transpose, which the above function does not.
+
+    Parameters
+    ----------
+    pda : pdarray
+    axes: Tuple[int,...] Optional, defaults to None
+        If specified, must be a tuple which contains a permutation of the axes of pda.
+
+    Returns
+    -------
+    pdarray
+        the transpose of the input matrix
+        For a 1-D array, this is the original array.
+        For a 2-D array, this is the standard matrix transpose.
+        For an n-D array, if axes are given, their order indicates how the axes are permuted.i
+        If axes is None, the axes are reversed.
+
+    Examples
+    --------
+    >>> a = ak.array([[1,2,3,4,5],[1,2,3,4,5]])
+    >>> ak.transpose(a)
+    array([array([1 1]) array([2 2]) array([3 3]) array([4 4]) array([5 5])])
+    >>> z = ak.array(np.arange(27).reshape(3,3,3))
+    >>> ak.transpose(z,axes=(1,0,2))
+    array([array([array([0 1 2]) array([9 10 11]) array([18 19 20])]) array([array([3 4 5])
+      array([12 13 14]) array([21 22 23])]) array([array([6 7 8]) array([15 16 17]) array([24 25 26])])])
+
+    Raises
+    ------
+    ValueError
+        Raised if axes is not a legitimate permutation of the axes of pda
+    TypeError
+        Raised if pda is not a pdarray, or if axes is neither a tuple nor None
+    """
+    import arkouda.array_api as xp
+
+    if axes is not None :
+        r = tuple(np.arange(pda.ndim).tolist())
+        if not (np.sort(axes) == r).all() :
+            raise ValueError(f"{axes} is not a valid set of axes for pdarray of rank {pda.ndim}")
+
+    return xp.asarray(pda).transpose(axes)._array
 
 
 def matmul(pdaLeft: pdarray, pdaRight: pdarray) -> pdarray:
