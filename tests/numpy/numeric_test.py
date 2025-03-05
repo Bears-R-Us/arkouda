@@ -1036,6 +1036,31 @@ class TestNumeric:
             ppa = ak.transpose(pda).to_ndarray()
             assert check(npa, ppa, data_type)
 
+    @pytest.mark.parametrize("data_type", INT_FLOAT_BOOL)
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_alt_transpose(self, data_type, prob_size):
+        size = 10
+        for n in get_array_ranks() :
+            if n==1 :
+                shape = size
+                array_size = size
+            else :
+                shape = (n-1)*[2]
+                shape.append(size)
+                array_size = (2**(n-1))*size
+
+            nda = np.arange(array_size).reshape(shape)
+            pda = ak.array(nda) 
+
+            if n==1 :   # trivial case
+                assert (np.transpose(nda) == ak.alt_transpose(pda).to_ndarray()).all()
+            else :      # all permutations of 'shape' must be checked 
+                from itertools import permutations
+                perms = set(permutations(np.arange(n).tolist()))
+                for perm in perms :
+                    assert (np.transpose(nda,perm) == ak.alt_transpose(pda,perm).to_ndarray()).all()
+                
+            
     # eye works on ints, floats, or bool
     @pytest.mark.skip_if_rank_not_compiled(2)
     @pytest.mark.parametrize("data_type", INT_FLOAT_BOOL)
