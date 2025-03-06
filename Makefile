@@ -659,7 +659,7 @@ $(DOC_PYTHON_OUTPUT_DIR)/index.html: $(DOC_PYTHON_SOURCES) $(ARKOUDA_MAKEFILES)
 
 CLEAN_TARGETS += doc-clean
 .PHONY: doc-clean
-doc-clean:
+doc-clean: stub-clean
 	$(RM) -r $(DOC_DIR)
 
 check:
