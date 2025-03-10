@@ -485,11 +485,26 @@ def zeros(
     >>> ak.zeros(5, dtype=ak.bool_)
     array([False False False False False])
 
-    Notes
-    -----
-    Logic for generating the pdarray is delegated to the ak.full method.
     """
-    return full(size=size, fill_value=0, dtype=dtype, max_bits=max_bits)
+    dtype = akdtype(dtype)  # normalize dtype
+    dtype_name = dtype.name if isinstance(dtype, bigint) else cast(np.dtype, dtype).name
+    # check dtype for error
+    if dtype_name not in NumericDTypes:
+        raise TypeError(f"unsupported dtype {dtype}")
+
+    from arkouda.numpy.util import _infer_shape_from_size  # placed here to avoid circ import
+
+    shape, ndim, full_size = _infer_shape_from_size(size)
+
+    if ndim not in get_array_ranks():
+        raise ValueError(f"array rank {ndim} is not in {get_array_ranks()}")
+
+    if isinstance(shape, tuple) and len(shape) == 0:
+        raise ValueError("size () not currently supported in ak.zeros.")
+
+    repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape})
+
+    return create_pdarray(repMsg, max_bits=max_bits)
 
 
 @typechecked
@@ -612,7 +627,7 @@ def full(
     # check dtype for error
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-    from arkouda.numpy.util import _infer_shape_from_size
+    from arkouda.numpy.util import _infer_shape_from_size  # placed here to avoid circ import
 
     shape, ndim, full_size = _infer_shape_from_size(size)
 
