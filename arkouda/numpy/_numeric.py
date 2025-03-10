@@ -1,3 +1,4 @@
+import builtins
 import json
 from enum import Enum
 from typing import TYPE_CHECKING, List, Sequence, Tuple, TypeVar, Union
@@ -9,13 +10,19 @@ from typeguard import typechecked
 
 from arkouda.client import generic_msg
 from arkouda.groupbyclass import GroupBy, groupable
-from arkouda.numpy.dtypes import _datatype_check, bigint
+from arkouda.numpy.dtypes import (
+    _datatype_check,
+    _is_dtype_in_union,
+    bigint,
+)
 from arkouda.numpy.dtypes import bool_ as ak_bool
+from arkouda.numpy.dtypes import dtype as ak_dtype
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import float64 as ak_float64
 from arkouda.numpy.dtypes import int64 as ak_int64
 from arkouda.numpy.dtypes import (
     int_scalars,
+    isSupportedInt,
     isSupportedNumber,
     numeric_scalars,
     resolve_scalar_dtype,
@@ -117,6 +124,36 @@ def _merge_where(new_pda, where, ret):
     new_pda = cast(new_pda, ret.dtype)
     new_pda[where] = ret
     return new_pda
+
+
+def can_cast(from_, to) -> builtins.bool:
+    """
+    Returns True if cast between data types can occur according to the casting rule.
+
+    Parameters
+    __________
+
+    from_: dtype, dtype specifier, NumPy scalar, or pdarray
+        Data type, NumPy scalar, or array to cast from.
+    to: dtype or dtype specifier
+        Data type to cast to.
+
+    Return
+    ------
+    bool
+        True if cast can occur according to the casting rule.
+
+    """
+    if isSupportedInt(from_):
+        if (from_ < 2**64) and (from_ >= 0) and (to == ak_dtype(ak_uint64)):
+            return True
+
+    if (np.isscalar(from_) or _is_dtype_in_union(from_, numeric_scalars)) and not isinstance(
+        from_, (int, float, complex)
+    ):
+        return np.can_cast(from_, to)
+
+    return False
 
 
 @typechecked
