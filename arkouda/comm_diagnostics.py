@@ -1,8 +1,8 @@
 from typing import cast as typecast
 
 from arkouda.client import generic_msg
-from arkouda.numpy.pdarrayclass import create_pdarray
 from arkouda.dataframe import DataFrame
+from arkouda.numpy.pdarrayclass import create_pdarray
 
 __all__ = [
     "start_comm_diagnostics",
