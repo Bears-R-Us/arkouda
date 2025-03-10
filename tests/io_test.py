@@ -1,6 +1,7 @@
 import copy
 import glob
 import os
+import shutil
 import tempfile
 from typing import List, Mapping, Union
 
@@ -14,8 +15,6 @@ from pandas.testing import assert_series_equal
 
 import arkouda as ak
 from arkouda import io_util, read_zarr, to_zarr
-
-import shutil
 from arkouda.testing import assert_frame_equal
 
 NUMERIC_TYPES = ["int64", "float64", "bool", "uint64"]

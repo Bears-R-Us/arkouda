@@ -8,9 +8,8 @@ import pandas as pd
 import pytest
 
 import arkouda as ak
-from arkouda.testing import assert_arkouda_array_equal, assert_equivalent
-
 from arkouda.numpy.util import _generate_test_shape
+from arkouda.testing import assert_arkouda_array_equal, assert_equivalent
 
 INT_SCALARS = list(ak.dtypes.int_scalars.__args__)
 NUMERIC_SCALARS = list(ak.dtypes.numeric_scalars.__args__)
@@ -150,6 +149,7 @@ class TestPdarrayCreation:
 
     def test_infer_shape_from_size(self):
         from arkouda.numpy.util import _infer_shape_from_size
+
         for rank in multi_dim_ranks():
             proposed_shape = tuple((rank * [2]))
             proposed_size = 2**rank

@@ -1,9 +1,11 @@
-import pytest
 from math import sqrt
+
+import numpy as np
+import pytest
+
 import arkouda as ak
 import arkouda.array_api as xp
 from arkouda.testing import assert_almost_equivalent
-import numpy as np
 
 
 class TestLinalg:
