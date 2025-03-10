@@ -32905,10 +32905,6 @@ Package Contents
    >>> ak.zeros(5, dtype=ak.bool_)
    array([False False False False False])
 
-   .. rubric:: Notes
-
-   Logic for generating the pdarray is delegated to the ak.full method.
-
 
 .. py:function:: zeros(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], dtype: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
@@ -32943,10 +32939,6 @@ Package Contents
 
    >>> ak.zeros(5, dtype=ak.bool_)
    array([False False False False False])
-
-   .. rubric:: Notes
-
-   Logic for generating the pdarray is delegated to the ak.full method.
 
 
 .. py:function:: zeros_like(pda: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray

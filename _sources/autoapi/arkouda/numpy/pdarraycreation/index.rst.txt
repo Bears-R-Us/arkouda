@@ -668,10 +668,6 @@ Module Contents
    >>> ak.zeros(5, dtype=ak.bool_)
    array([False False False False False])
 
-   .. rubric:: Notes
-
-   Logic for generating the pdarray is delegated to the ak.full method.
-
 
 .. py:function:: zeros_like(pda: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray
 

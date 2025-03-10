@@ -4948,8 +4948,4 @@ Package Contents
    >>> ak.zeros(5, dtype=ak.bool_)
    array([False False False False False])
 
-   .. rubric:: Notes
-
-   Logic for generating the pdarray is delegated to the ak.full method.
-
 
