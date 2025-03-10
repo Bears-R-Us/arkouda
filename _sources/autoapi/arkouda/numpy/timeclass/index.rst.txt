@@ -157,7 +157,33 @@ Module Contents
 
    .. py:method:: sum()
 
-      Return the sum of all elements in the array.
+      Return sum of array elements along the given axis.
+
+      :param axis: The axis or axes along which to do the operation
+                   If None, the computation is done across the entire array.
+      :type axis: int, Tuple[int, ...], optional, default = None
+      :param keepdims: Whether to keep the singleton dimension(s) along `axis` in the result.
+      :type keepdims: bool, optional, default = False
+
+      :returns: numpy_scalar if axis is omitted, in which case operation is done over entire array
+                pdarray if axis is supplied, in which case the operation is done along that axis
+      :rtype: numpy_scalar or pdarray
+
+      :raises TypeError: Raised if pda is not a pdarray instance
+      :raises RuntimeError: Raised if there's a server-side error thrown
+
+      .. rubric:: Examples
+
+      >>> ak.sum(ak.array([1,2,3,4,5]))
+      15
+      >>> ak.sum(ak.array([5.5,4.5,3.5,2.5,1.5]))
+      17.5
+      >>> ak.array([[1,2,3],[5,4,3]]).sum(axis=1)
+      array([6 12])
+
+      .. rubric:: Notes
+
+      Works as a method of a pdarray (e.g. a.sum()) or a standalone function (e.g. ak.sum(a))
 
 
 
@@ -333,7 +359,33 @@ Module Contents
 
    .. py:method:: sum()
 
-      Return the sum of all elements in the array.
+      Return sum of array elements along the given axis.
+
+      :param axis: The axis or axes along which to do the operation
+                   If None, the computation is done across the entire array.
+      :type axis: int, Tuple[int, ...], optional, default = None
+      :param keepdims: Whether to keep the singleton dimension(s) along `axis` in the result.
+      :type keepdims: bool, optional, default = False
+
+      :returns: numpy_scalar if axis is omitted, in which case operation is done over entire array
+                pdarray if axis is supplied, in which case the operation is done along that axis
+      :rtype: numpy_scalar or pdarray
+
+      :raises TypeError: Raised if pda is not a pdarray instance
+      :raises RuntimeError: Raised if there's a server-side error thrown
+
+      .. rubric:: Examples
+
+      >>> ak.sum(ak.array([1,2,3,4,5]))
+      15
+      >>> ak.sum(ak.array([5.5,4.5,3.5,2.5,1.5]))
+      17.5
+      >>> ak.array([[1,2,3],[5,4,3]]).sum(axis=1)
+      array([6 12])
+
+      .. rubric:: Notes
+
+      Works as a method of a pdarray (e.g. a.sum()) or a standalone function (e.g. ak.sum(a))
 
 
 

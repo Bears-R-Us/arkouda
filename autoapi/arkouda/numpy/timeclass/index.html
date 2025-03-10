@@ -593,7 +593,40 @@ they are unregistered.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.timeclass.Datetime.sum">
 <span class="sig-name descname"><span class="pre">sum</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/timeclass.html#Datetime.sum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.timeclass.Datetime.sum" title="Link to this definition">¶</a></dt>
-<dd><p>Return the sum of all elements in the array.</p>
+<dd><p>Return sum of array elements along the given axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>axis</strong> (<em>int</em><em>, </em><a class="reference internal" href="../../index.html#arkouda.Tuple" title="arkouda.Tuple"><em>Tuple</em></a><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default = None</em>) – The axis or axes along which to do the operation
+If None, the computation is done across the entire array.</p></li>
+<li><p><strong>keepdims</strong> (<em>bool</em><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy_scalar if axis is omitted, in which case operation is done over entire array
+pdarray if axis is supplied, in which case the operation is done along that axis</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy_scalar or <a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if pda is not a pdarray instance</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if there’s a server-side error thrown</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]))</span>
+<span class="go">15</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">5.5</span><span class="p">,</span><span class="mf">4.5</span><span class="p">,</span><span class="mf">3.5</span><span class="p">,</span><span class="mf">2.5</span><span class="p">,</span><span class="mf">1.5</span><span class="p">]))</span>
+<span class="go">17.5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">]])</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">array([6 12])</span>
+</pre></div>
+</div>
+<p class="rubric">Notes</p>
+<p>Works as a method of a pdarray (e.g. a.sum()) or a standalone function (e.g. ak.sum(a))</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -821,7 +854,40 @@ they are unregistered.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.timeclass.Timedelta.sum">
 <span class="sig-name descname"><span class="pre">sum</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/timeclass.html#Timedelta.sum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.timeclass.Timedelta.sum" title="Link to this definition">¶</a></dt>
-<dd><p>Return the sum of all elements in the array.</p>
+<dd><p>Return sum of array elements along the given axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>axis</strong> (<em>int</em><em>, </em><a class="reference internal" href="../../index.html#arkouda.Tuple" title="arkouda.Tuple"><em>Tuple</em></a><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default = None</em>) – The axis or axes along which to do the operation
+If None, the computation is done across the entire array.</p></li>
+<li><p><strong>keepdims</strong> (<em>bool</em><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy_scalar if axis is omitted, in which case operation is done over entire array
+pdarray if axis is supplied, in which case the operation is done along that axis</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy_scalar or <a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if pda is not a pdarray instance</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if there’s a server-side error thrown</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]))</span>
+<span class="go">15</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">5.5</span><span class="p">,</span><span class="mf">4.5</span><span class="p">,</span><span class="mf">3.5</span><span class="p">,</span><span class="mf">2.5</span><span class="p">,</span><span class="mf">1.5</span><span class="p">]))</span>
+<span class="go">17.5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">]])</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">array([6 12])</span>
+</pre></div>
+</div>
+<p class="rubric">Notes</p>
+<p>Works as a method of a pdarray (e.g. a.sum()) or a standalone function (e.g. ak.sum(a))</p>
 </dd></dl>
 
 <dl class="py attribute">

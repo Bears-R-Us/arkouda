@@ -640,9 +640,9 @@ of the original pdarray</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The pdarray instance to be evaluated.</p></li>
-<li><p><strong>axis</strong> (<em>int</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Tuple" title="arkouda.Tuple"><em>Tuple</em></a><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em>) – The axis or axes along which to compute the sum. If None, the reduction of the entire array is
-computed (returning a scalar).</p></li>
-<li><p><strong>keepdims</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
+<li><p><strong>axis</strong> (<em>int</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Tuple" title="arkouda.Tuple"><em>Tuple</em></a><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default = None</em>) – The axis or axes along which to compute the function.
+If None, the computation is done across the entire array.</p></li>
+<li><p><strong>keepdims</strong> (<em>bool</em><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -668,9 +668,9 @@ computed (returning a scalar).</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The pdarray instance to be evaluated.</p></li>
-<li><p><strong>axis</strong> (<em>int</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Tuple" title="arkouda.Tuple"><em>Tuple</em></a><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em>) – The axis or axes along which to compute the sum. If None, the reduction of the entire array is
-computed (returning a scalar).</p></li>
-<li><p><strong>keepdims</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
+<li><p><strong>axis</strong> (<em>int</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Tuple" title="arkouda.Tuple"><em>Tuple</em></a><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default = None</em>) – The axis or axes along which to compute the function.
+If None, the computation is done across the entire array.</p></li>
+<li><p><strong>keepdims</strong> (<em>bool</em><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -696,9 +696,9 @@ computed (returning a scalar).</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The pdarray instance to be evaluated.</p></li>
-<li><p><strong>axis</strong> (<em>int</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Tuple" title="arkouda.Tuple"><em>Tuple</em></a><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em>) – The axis or axes along which to compute the sum. If None, the reduction of the entire array is
-computed (returning a scalar).</p></li>
-<li><p><strong>keepdims</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
+<li><p><strong>axis</strong> (<em>int</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Tuple" title="arkouda.Tuple"><em>Tuple</em></a><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default = None</em>) – The axis or axes along which to compute the function.
+If None, the computation is done across the entire array.</p></li>
+<li><p><strong>keepdims</strong> (<em>bool</em><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -724,9 +724,9 @@ computed (returning a scalar).</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The pdarray instance to be evaluated.</p></li>
-<li><p><strong>axis</strong> (<em>int</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Tuple" title="arkouda.Tuple"><em>Tuple</em></a><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em>) – The axis or axes along which to compute the sum. If None, the reduction of the entire array is
-computed (returning a scalar).</p></li>
-<li><p><strong>keepdims</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
+<li><p><strong>axis</strong> (<em>int</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Tuple" title="arkouda.Tuple"><em>Tuple</em></a><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default = None</em>) – The axis or axes along which to compute the function.
+If None, the computation is done across the entire array.</p></li>
+<li><p><strong>keepdims</strong> (<em>bool</em><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -752,9 +752,9 @@ computed (returning a scalar).</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The pdarray instance to be evaluated.</p></li>
-<li><p><strong>axis</strong> (<em>int</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Tuple" title="arkouda.Tuple"><em>Tuple</em></a><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em>) – The axis or axes along which to compute the sum. If None, the reduction of the entire array is
-computed (returning a scalar).</p></li>
-<li><p><strong>keepdims</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
+<li><p><strong>axis</strong> (<em>int</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Tuple" title="arkouda.Tuple"><em>Tuple</em></a><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default = None</em>) – The axis or axes along which to compute the function.
+If None, the computation is done across the entire array.</p></li>
+<li><p><strong>keepdims</strong> (<em>bool</em><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -780,9 +780,9 @@ computed (returning a scalar).</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The pdarray instance to be evaluated.</p></li>
-<li><p><strong>axis</strong> (<em>int</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Tuple" title="arkouda.Tuple"><em>Tuple</em></a><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em>) – The axis or axes along which to compute the sum. If None, the reduction of the entire array is
-computed (returning a scalar).</p></li>
-<li><p><strong>keepdims</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
+<li><p><strong>axis</strong> (<em>int</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Tuple" title="arkouda.Tuple"><em>Tuple</em></a><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default = None</em>) – The axis or axes along which to compute the function.
+If None, the computation is done across the entire array.</p></li>
+<li><p><strong>keepdims</strong> (<em>bool</em><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -808,9 +808,9 @@ computed (returning a scalar).</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The pdarray instance to be evaluated.</p></li>
-<li><p><strong>axis</strong> (<em>int</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Tuple" title="arkouda.Tuple"><em>Tuple</em></a><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em>) – The axis or axes along which to compute the sum. If None, the reduction of the entire array is
-computed (returning a scalar).</p></li>
-<li><p><strong>keepdims</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
+<li><p><strong>axis</strong> (<em>int</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Tuple" title="arkouda.Tuple"><em>Tuple</em></a><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default = None</em>) – The axis or axes along which to compute the function.
+If None, the computation is done across the entire array.</p></li>
+<li><p><strong>keepdims</strong> (<em>bool</em><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -836,10 +836,10 @@ computed (returning a scalar).</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The pdarray instance to be evaluated.</p></li>
-<li><p><strong>axis</strong> (<em>int</em><em>, </em><em>optional</em>) – The axis along which to compute the index reduction.
+<li><p><strong>axis</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default = None</em>) – The axis along which to compute the index reduction.
 If None, the reduction of the entire array is
 computed (returning a scalar).</p></li>
-<li><p><strong>keepdims</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
+<li><p><strong>keepdims</strong> (<em>bool</em><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -866,10 +866,10 @@ computed (returning a scalar).</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The pdarray instance to be evaluated.</p></li>
-<li><p><strong>axis</strong> (<em>int</em><em>, </em><em>optional</em>) – The axis along which to compute the index reduction.
+<li><p><strong>axis</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default = None</em>) – The axis along which to compute the index reduction.
 If None, the reduction of the entire array is
 computed (returning a scalar).</p></li>
-<li><p><strong>keepdims</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
+<li><p><strong>keepdims</strong> (<em>bool</em><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -902,8 +902,18 @@ computed (returning a scalar).</p></li>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>np.float64</p>
 </dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="go">4.5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="go">4.5</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if pda is not a pdarray instance</p></li>
 <li><p><strong>RuntimeError</strong> – Raised if there’s a server-side error thrown</p></li>
 </ul>
@@ -928,8 +938,18 @@ computed (returning a scalar).</p></li>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>np.float64</p>
 </dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="go">8.25</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">var</span><span class="p">()</span>
+<span class="go">8.25</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if pda is not a pdarray instance</p></li>
 <li><p><strong>ValueError</strong> – Raised if the ddof &gt;= pdarray size</p></li>
 <li><p><strong>RuntimeError</strong> – Raised if there’s a server-side error thrown</p></li>
@@ -969,8 +989,18 @@ deviation is implemented as the square root of the variance.</p>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>np.float64</p>
 </dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="go">2.8722813232690143</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+<span class="go">2.8722813232690143</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if pda is not a pdarray instance or ddof is not an integer</p></li>
 <li><p><strong>ValueError</strong> – Raised if ddof is an integer &lt; 0</p></li>
 <li><p><strong>RuntimeError</strong> – Raised if there’s a server-side error thrown</p></li>
@@ -1016,16 +1046,13 @@ unbiased estimate of the standard deviation per se.</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if pda is not a pdarray</p></li>
-<li><p><strong>ValueError</strong> – Raised if the pda is empty or k &lt; 1</p></li>
+<li><p><strong>ValueError</strong> – Raised if the pda is empty, or pda.ndim &gt; 1, or k &lt; 1</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>This call is equivalent in value to:</p>
-<blockquote>
-<div><p>a[ak.argsort(a)[:k]]</p>
-</div></blockquote>
-<p>and generally outperforms this operation.</p>
+<p>This call is equivalent in value to a[ak.argsort(a)[:k]]
+and generally outperforms this operation.</p>
 <p>This reduction will see a significant drop in performance as <cite>k</cite> grows
 beyond a certain value. This value is system dependent, but generally
 about a <cite>k</cite> of 5 million is where performance degredation has been observed.</p>
@@ -1060,15 +1087,12 @@ about a <cite>k</cite> of 5 million is where performance degredation has been ob
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if pda is not a pdarray or k is not an integer</p></li>
-<li><p><strong>ValueError</strong> – Raised if the pda is empty or k &lt; 1</p></li>
+<li><p><strong>ValueError</strong> – Raised if the pda is empty, or pda.ndim &gt; 1, or k &lt; 1</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>This call is equivalent in value to:</p>
-<blockquote>
-<div><p>a[ak.argsort(a)[k:]]</p>
-</div></blockquote>
+<p>This call is equivalent in value to a[ak.argsort(a)[k:]]</p>
 <p>and generally outperforms this operation.</p>
 <p>This reduction will see a significant drop in performance as <cite>k</cite> grows
 beyond a certain value. This value is system dependent, but generally
@@ -1103,16 +1127,13 @@ about a <cite>k</cite> of 5 million is where performance degredation has been ob
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if pda is not a pdarray or k is not an integer</p></li>
-<li><p><strong>ValueError</strong> – Raised if the pda is empty or k &lt; 1</p></li>
+<li><p><strong>ValueError</strong> – Raised if the pda is empty, or pda.ndim &gt; 1, or k &lt; 1</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>This call is equivalent in value to:</p>
-<blockquote>
-<div><p>ak.argsort(a)[:k]</p>
-</div></blockquote>
-<p>and generally outperforms this operation.</p>
+<p>This call is equivalent in value to ak.argsort(a)[:k]
+and generally outperforms this operation.</p>
 <p>This reduction will see a significant drop in performance as <cite>k</cite> grows
 beyond a certain value. This value is system dependent, but generally
 about a <cite>k</cite> of 5 million is where performance degradation has been observed.</p>
@@ -1147,16 +1168,13 @@ about a <cite>k</cite> of 5 million is where performance degradation has been ob
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if pda is not a pdarray or k is not an integer</p></li>
-<li><p><strong>ValueError</strong> – Raised if the pda is empty or k &lt; 1</p></li>
+<li><p><strong>ValueError</strong> – Raised if the pda is empty, or pda.ndim &gt; 1, or k &lt; 1</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>This call is equivalent in value to:</p>
-<blockquote>
-<div><p>ak.argsort(a)[k:]</p>
-</div></blockquote>
-<p>and generally outperforms this operation.</p>
+<p>This call is equivalent in value to ak.argsort(a)[k:]
+and generally outperforms this operation.</p>
 <p>This reduction will see a significant drop in performance as <cite>k</cite> grows
 beyond a certain value. This value is system dependent, but generally
 about a <cite>k</cite> of 5 million is where performance degradation has been observed.</p>

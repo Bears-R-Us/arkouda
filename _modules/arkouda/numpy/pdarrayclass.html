@@ -433,7 +433,9 @@
     <span class="nb">min</span> <span class="o">=</span> <span class="n">numeric_reduce</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">boolean_reduce</span><span class="p">(</span>
-        <span class="n">pda</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">pda</span><span class="p">,</span>
+        <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">bool_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
         <span class="k">pass</span>
 
@@ -443,7 +445,9 @@
     <span class="nb">any</span> <span class="o">=</span> <span class="n">boolean_reduce</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">index_reduce</span><span class="p">(</span>
-        <span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
+        <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">akint64</span><span class="p">,</span> <span class="n">akuint64</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
         <span class="k">pass</span>
 
@@ -492,7 +496,16 @@
 <span class="p">]</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">getArkoudaLogger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;pdarrayclass&quot;</span><span class="p">)</span>
 
-<span class="n">SUPPORTED_REDUCTION_OPS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;any&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;isSorted&quot;</span><span class="p">,</span> <span class="s2">&quot;isSortedLocally&quot;</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="s2">&quot;min&quot;</span><span class="p">,</span> <span class="s2">&quot;sum&quot;</span><span class="p">,</span> <span class="s2">&quot;prod&quot;</span><span class="p">]</span>
+<span class="n">SUPPORTED_REDUCTION_OPS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;any&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;isSorted&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;isSortedLocally&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;max&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;min&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sum&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;prod&quot;</span><span class="p">,</span>
+<span class="p">]</span>
 
 <span class="n">SUPPORTED_INDEX_REDUCTION_OPS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;argmin&quot;</span><span class="p">,</span> <span class="s2">&quot;argmax&quot;</span><span class="p">]</span>
 
@@ -707,7 +720,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The basic arkouda array class. This class contains only the</span>
-<span class="sd">    attributies of the array; the data resides on the arkouda</span>
+<span class="sd">    attributes of the array; the data resides on the arkouda</span>
 <span class="sd">    server. When a server operation results in a new array, arkouda</span>
 <span class="sd">    will create a pdarray instance that points to the array data on</span>
 <span class="sd">    the server. As such, the user should not initialize pdarray</span>
@@ -722,7 +735,7 @@
 <span class="sd">    size : int_scalars</span>
 <span class="sd">        The number of elements in the array</span>
 <span class="sd">    ndim : int_scalars</span>
-<span class="sd">        The rank of the array (currently only rank 1 arrays supported)</span>
+<span class="sd">        The rank of the array</span>
 <span class="sd">    shape : Sequence[int]</span>
 <span class="sd">        A list or tuple containing the sizes of each dimension of the array</span>
 <span class="sd">    itemsize : int_scalars</span>
@@ -852,8 +865,6 @@
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; ak.connect()</span>
 <span class="sd">        &gt;&gt;&gt; a = ak.array([1, 2, 3])</span>
 <span class="sd">        &gt;&gt;&gt; a_cpy = ak.array([1, 2, 3])</span>
 <span class="sd">        &gt;&gt;&gt; a.equals(a_cpy)</span>
@@ -948,7 +959,8 @@
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;shape mismatch </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">other</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;binopvv&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">other</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">x1</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="n">op</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">x1</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">x2</span><span class="p">}</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;binopvv&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">other</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">x1</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="n">op</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">x1</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">x2</span><span class="p">},</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">tmp_x1</span><span class="p">:</span>
                 <span class="k">del</span> <span class="n">x1</span>
@@ -1055,7 +1067,12 @@
         <span class="c1"># hostname is the hostname to send to</span>
         <span class="k">return</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;sendArray&quot;</span><span class="p">,</span>
-            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;arg1&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;hostname&quot;</span><span class="p">:</span> <span class="n">hostname</span><span class="p">,</span> <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="n">port</span><span class="p">,</span> <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="s2">&quot;pdarray&quot;</span><span class="p">},</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;arg1&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
+                <span class="s2">&quot;hostname&quot;</span><span class="p">:</span> <span class="n">hostname</span><span class="p">,</span>
+                <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="n">port</span><span class="p">,</span>
+                <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="s2">&quot;pdarray&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
         <span class="p">)</span></div>
 
 
@@ -1428,7 +1445,10 @@
             <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">):</span>
                 <span class="c1"># TODO: implement a cloneMsg to make this more efficient</span>
                 <span class="k">return</span> <span class="n">_slice_index</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">)],</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">)]</span>
+                    <span class="bp">self</span><span class="p">,</span>
+                    <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">)],</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+                    <span class="p">[</span><span class="mi">1</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">)],</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># TODO: mimic numpy&#39;s behavior of applying the slice to only the first dimension?</span>
@@ -1456,7 +1476,7 @@
                             <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
                             <span class="s2">&quot;idx&quot;</span><span class="p">:</span> <span class="n">key</span><span class="p">,</span>
                             <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_other</span><span class="p">(</span><span class="n">_value</span><span class="p">),</span>
-                            <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
+                            <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span><span class="p">),</span>
                         <span class="p">},</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -1464,7 +1484,8 @@
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_value</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
                     <span class="n">generic_msg</span><span class="p">(</span>
-                        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;[pdarray]=pdarray&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;idx&quot;</span><span class="p">:</span> <span class="n">key</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">_value</span><span class="p">}</span>
+                        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;[pdarray]=pdarray&quot;</span><span class="p">,</span>
+                        <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;idx&quot;</span><span class="p">:</span> <span class="n">key</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">_value</span><span class="p">},</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">generic_msg</span><span class="p">(</span>
@@ -1499,7 +1520,7 @@
                             <span class="s2">&quot;stops&quot;</span><span class="p">:</span> <span class="n">stop</span><span class="p">,</span>
                             <span class="s2">&quot;strides&quot;</span><span class="p">:</span> <span class="n">stride</span><span class="p">,</span>
                             <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_other</span><span class="p">(</span><span class="n">_value</span><span class="p">),</span>
-                            <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
+                            <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span><span class="p">),</span>
                         <span class="p">},</span>
                     <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
@@ -1601,7 +1622,7 @@
                             <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
                             <span class="s2">&quot;idx&quot;</span><span class="p">:</span> <span class="n">key</span><span class="p">,</span>
                             <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_other</span><span class="p">(</span><span class="n">_value</span><span class="p">),</span>
-                            <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
+                            <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span><span class="p">),</span>
                         <span class="p">},</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -1613,7 +1634,7 @@
                             <span class="s2">&quot;stops&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">stops</span><span class="p">),</span>
                             <span class="s2">&quot;strides&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">strides</span><span class="p">),</span>
                             <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_other</span><span class="p">(</span><span class="n">_value</span><span class="p">),</span>
-                            <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
+                            <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span><span class="p">),</span>
                         <span class="p">},</span>
                     <span class="p">)</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
@@ -1639,7 +1660,7 @@
                                 <span class="s2">&quot;stops&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span>
                                 <span class="s2">&quot;strides&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">([</span><span class="mi">1</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">)]),</span>
                                 <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_other</span><span class="p">(</span><span class="n">_value</span><span class="p">),</span>
-                                <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
+                                <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span><span class="p">),</span>
                             <span class="p">},</span>
                         <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -1678,7 +1699,12 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;set&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
         <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="n">cmd</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_other</span><span class="p">(</span><span class="n">value</span><span class="p">)}</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="n">cmd</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
+                <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s2">&quot;val&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_other</span><span class="p">(</span><span class="n">value</span><span class="p">),</span>
+            <span class="p">},</span>
         <span class="p">)</span></div>
 
 
@@ -1688,8 +1714,46 @@
         <span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">bool_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return True iff any element of the array evaluates to True.</span>
+<span class="sd">        Return True iff any element of the array along the given axis evaluates to True.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        axis : int, Tuple[int, ...], optional, default = None</span>
+<span class="sd">            The axis or axes along which to do the operation</span>
+<span class="sd">            If None, the computation is done across the entire array.</span>
+<span class="sd">        keepdims : bool, optional, default = False</span>
+<span class="sd">            Whether to keep the singleton dimension(s) along `axis` in the result.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        boolean or pdarray</span>
+<span class="sd">            boolean if axis is omitted, else pdarray if axis is supplied</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; ak.any(ak.array([True,False,False]))</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; ak.any(ak.array([[True,True,False],[False,True,True]]),axis=0)</span>
+<span class="sd">        array([True True True])</span>
+<span class="sd">        &gt;&gt;&gt; ak.any(ak.array([[True,True,True],[False,False,False]]),axis=0,keepdims=True)</span>
+<span class="sd">        array([array([True True True])])</span>
+<span class="sd">        &gt;&gt;&gt; ak.any(ak.array([[True,True,True],[False,False,False]]),axis=1,keepdims=True)</span>
+<span class="sd">        array([array([True]) array([False])])</span>
+<span class="sd">        &gt;&gt;&gt; ak.array([True,False,False]).any()</span>
+<span class="sd">        True</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            Raised if pda is not a pdarray instance</span>
+<span class="sd">        RuntimeError</span>
+<span class="sd">            Raised if there&#39;s a server-side error thrown</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Works as a method of a pdarray (e.g. a.any()) or a standalone function (e.g. ak.any(a))</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#   Function is generated at runtime with _make_reduction_func.</span>
         <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span></div>
 
 
@@ -1699,7 +1763,44 @@
         <span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">bool_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return True iff all elements of the array evaluate to True.</span>
+<span class="sd">        Return True iff all elements of the array along the given axis evaluate to True.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        axis : int, Tuple[int, ...], optional, default = None</span>
+<span class="sd">            The axis or axes along which to do the operation</span>
+<span class="sd">            If None, the computation is done across the entire array.</span>
+<span class="sd">        keepdims : bool, optional, default = False</span>
+<span class="sd">            Whether to keep the singleton dimension(s) along `axis` in the result.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        boolean or pdarray</span>
+<span class="sd">            boolean if axis is omitted, pdarray if axis is supplied</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; ak.all(ak.array([True,False,False]))</span>
+<span class="sd">        False</span>
+<span class="sd">        &gt;&gt;&gt; ak.all(ak.array([[True,True,False],[False,True,True]]),axis=0)</span>
+<span class="sd">        array([False True False])</span>
+<span class="sd">        &gt;&gt;&gt; ak.all(ak.array([[True,True,True],[False,False,False]]),axis=0,keepdims=True)</span>
+<span class="sd">        array([array([False False False])])</span>
+<span class="sd">        &gt;&gt;&gt; ak.all(ak.array([[True,True,True],[False,False,False]]),axis=1,keepdims=True)</span>
+<span class="sd">        array([array([True]) array([False])])</span>
+<span class="sd">        &gt;&gt;&gt; ak.array([True,False,False]).all()</span>
+<span class="sd">        False</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            Raised if pda is not a pdarray instance</span>
+<span class="sd">        RuntimeError</span>
+<span class="sd">            Raised if there&#39;s a server-side error thrown</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Works as a method of a pdarray (e.g. a.any()) or a standalone function (e.g. ak.all(a))</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span></div>
 
@@ -1792,16 +1893,20 @@
         <span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">bool_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return True iff the array is monotonically non-decreasing.</span>
+<span class="sd">        Return True iff the array (or given axis of the array) is monotonically non-decreasing.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        None</span>
+<span class="sd">        axis : int, Tuple[int, ...], optional, default = None</span>
+<span class="sd">            The axis or axes along which to do the operation</span>
+<span class="sd">            If None, the computation is done across the entire array.</span>
+<span class="sd">        keepdims : bool, optional, default = False</span>
+<span class="sd">            Whether to keep the singleton dimension(s) along `axis` in the result.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        bool</span>
-<span class="sd">            Indicates if the array is monotonically non-decreasing</span>
+<span class="sd">        boolean or pdarray</span>
+<span class="sd">            boolean if axis is omitted, else pdarray if axis is supplied</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
@@ -1809,7 +1914,22 @@
 <span class="sd">            Raised if pda is not a pdarray instance</span>
 <span class="sd">        RuntimeError</span>
 <span class="sd">            Raised if there&#39;s a server-side error thrown</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; ak.is_sorted(ak.array([1,2,3,4,5]))</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; ak.is_sorted(ak.array([5,4,3,2,1]))</span>
+<span class="sd">        False</span>
+<span class="sd">        &gt;&gt;&gt; ak.array([[1,2,3],[5,4,3]]).is_sorted(axis=1)</span>
+<span class="sd">        array([True False])</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Works as a method of a pdarray (e.g. a.is_sorted()) or a</span>
+<span class="sd">        standalone function (e.g. ak.is_sorted(a))</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#   Function is generated at runtime with _make_reduction_func.</span>
         <span class="k">return</span> <span class="n">is_sorted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span>  <span class="c1"># noqa: F821</span></div>
 
 
@@ -1821,7 +1941,41 @@
         <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the sum of all elements in the array.</span>
+<span class="sd">        Return sum of array elements along the given axis.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        axis : int, Tuple[int, ...], optional, default = None</span>
+<span class="sd">            The axis or axes along which to do the operation</span>
+<span class="sd">            If None, the computation is done across the entire array.</span>
+<span class="sd">        keepdims : bool, optional, default = False</span>
+<span class="sd">            Whether to keep the singleton dimension(s) along `axis` in the result.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        numpy_scalar or pdarray</span>
+<span class="sd">            numpy_scalar if axis is omitted, in which case operation is done over entire array</span>
+<span class="sd">            pdarray if axis is supplied, in which case the operation is done along that axis</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            Raised if pda is not a pdarray instance</span>
+<span class="sd">        RuntimeError</span>
+<span class="sd">            Raised if there&#39;s a server-side error thrown</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; ak.sum(ak.array([1,2,3,4,5]))</span>
+<span class="sd">        15</span>
+<span class="sd">        &gt;&gt;&gt; ak.sum(ak.array([5.5,4.5,3.5,2.5,1.5]))</span>
+<span class="sd">        17.5</span>
+<span class="sd">        &gt;&gt;&gt; ak.array([[1,2,3],[5,4,3]]).sum(axis=1)</span>
+<span class="sd">        array([6 12])</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Works as a method of a pdarray (e.g. a.sum()) or a standalone function (e.g. ak.sum(a))</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1">#   Function is generated at runtime with _make_reduction_func.</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span></div>
@@ -1835,8 +1989,41 @@
         <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the product of all elements in the array. Return value is</span>
-<span class="sd">        always a np.float64 or np.int64.</span>
+<span class="sd">        Return prod of array elements along the given axis.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        axis : int, Tuple[int, ...], optional, defalt = None</span>
+<span class="sd">            The axis or axes along which to do the operation</span>
+<span class="sd">            If None, the computation is done across the entire array.</span>
+<span class="sd">        keepdims : bool, optional, default = False</span>
+<span class="sd">            Whether to keep the singleton dimension(s) along `axis` in the result.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        numpy_scalar or pdarray</span>
+<span class="sd">            numpy_scalar if axis is omitted, in which case operation is done over entire array</span>
+<span class="sd">            pdarray if axis is supplied, in which case the operation is done along that axis</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            Raised if pda is not a pdarray instance</span>
+<span class="sd">        RuntimeError</span>
+<span class="sd">            Raised if there&#39;s a server-side error thrown</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; ak.prod(ak.array([1,2,3,4,5]))</span>
+<span class="sd">        120</span>
+<span class="sd">        &gt;&gt;&gt; ak.prod(ak.array([5.5,4.5,3.5,2.5,1.5]))</span>
+<span class="sd">        324.84375</span>
+<span class="sd">        &gt;&gt;&gt; ak.array([[1,2,3],[5,4,3]]).prod(axis=1)</span>
+<span class="sd">        array([6 60])</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Works as a method of a pdarray (e.g. a.prod()) or a standalone function (e.g. ak.prod(a))</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1">#   Function is generated at runtime with _make_reduction_func.</span>
         <span class="k">return</span> <span class="n">prod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span>  <span class="c1"># noqa: F821</span></div>
@@ -1850,7 +2037,41 @@
         <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the minimum value of the array.</span>
+<span class="sd">        Return min of array elements along the given axis.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        axis : int, Tuple[int, ...], optional, default = None</span>
+<span class="sd">            The axis or axes along which to do the operation</span>
+<span class="sd">            If None, the computation is done across the entire array.</span>
+<span class="sd">        keepdims : bool, optional, default = False</span>
+<span class="sd">            Whether to keep the singleton dimension(s) along `axis` in the result.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        numpy_scalar or pdarray</span>
+<span class="sd">            numpy_scalar if axis is omitted, in which case operation is done over entire array</span>
+<span class="sd">            pdarray if axis is supplied, in which case the operation is done along that axis</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            Raised if pda is not a pdarray instance</span>
+<span class="sd">        RuntimeError</span>
+<span class="sd">            Raised if there&#39;s a server-side error thrown</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; ak.min(ak.array([1,2,3,4,5]))</span>
+<span class="sd">        1</span>
+<span class="sd">        &gt;&gt;&gt; ak.min(ak.array([5.5,4.5,3.5,2.5,1.5]))</span>
+<span class="sd">        1.5</span>
+<span class="sd">        &gt;&gt;&gt; ak.array([[1,2,3],[5,4,3]]).min(axis=1)</span>
+<span class="sd">        array([1 3])</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Works as a method of a pdarray (e.g. a.min()) or a standalone function (e.g. ak.min(a))</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1">#   Function is generated at runtime with _make_reduction_func.</span>
         <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span></div>
@@ -1864,7 +2085,41 @@
         <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the maximum value of the array.</span>
+<span class="sd">        Return max of array elements along the given axis.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        axis : int, Tuple[int, ...], optional, default = None</span>
+<span class="sd">            The axis or axes along which to do the operation</span>
+<span class="sd">            If None, the computation is done across the entire array.</span>
+<span class="sd">        keepdims : bool, optional, default = False</span>
+<span class="sd">            Whether to keep the singleton dimension(s) along `axis` in the result.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        numpy_scalar or pdarray</span>
+<span class="sd">            numpy_scalar if axis is omitted, in which case operation is done over entire array</span>
+<span class="sd">            pdarray if axis is supplied, in which case the operation is done along that axis</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            Raised if pda is not a pdarray instance</span>
+<span class="sd">        RuntimeError</span>
+<span class="sd">            Raised if there&#39;s a server-side error thrown</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; ak.max(ak.array([1,2,3,4,5]))</span>
+<span class="sd">        5</span>
+<span class="sd">        &gt;&gt;&gt; ak.max(ak.array([5.5,4.5,3.5,2.5,1.5]))</span>
+<span class="sd">        5.5</span>
+<span class="sd">        &gt;&gt;&gt; ak.array([[1,2,3],[5,4,3]]).max(axis=1)</span>
+<span class="sd">        array([3 5])</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Works as a method of a pdarray (e.g. a.max()) or a standalone function (e.g. ak.max(a))</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1">#   Function is generated at runtime with _make_reduction_func.</span>
         <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span></div>
@@ -1876,7 +2131,41 @@
         <span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the index of the first occurrence of the array min value</span>
+<span class="sd">        Return index of the first occurrence of the minimum along the given axis.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        axis : int, Tuple[int, ...], optional, default = None</span>
+<span class="sd">            The axis or axes along which to do the operation</span>
+<span class="sd">            If None, the computation is done across the entire array.</span>
+<span class="sd">        keepdims : bool, optional, default = False</span>
+<span class="sd">            Whether to keep the singleton dimension(s) along `axis` in the result.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int64, uint64 or pdarray</span>
+<span class="sd">            int64 or uint64 if axis is omitted, in which case operation is done over entire array</span>
+<span class="sd">            pdarray if axis is supplied, in which case the operation is done along that axis</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            Raised if pda is not a pdarray instance</span>
+<span class="sd">        RuntimeError</span>
+<span class="sd">            Raised if there&#39;s a server-side error thrown</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; ak.argmin(ak.array([1,2,3,4,5]))</span>
+<span class="sd">        0</span>
+<span class="sd">        &gt;&gt;&gt; ak.argmin(ak.array([5.5,4.5,3.5,2.5,1.5]))</span>
+<span class="sd">        4</span>
+<span class="sd">        &gt;&gt;&gt; ak.array([[1,2,3],[5,4,3]]).argmin(axis=1)</span>
+<span class="sd">        array([0 2])</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Works as a method of a pdarray (e.g. a.argmin()) or a standalone function (e.g. ak.argmin(a))</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1">#   Function is generated at runtime with _make_index_reduction_func.</span>
         <span class="k">return</span> <span class="n">argmin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span></div>
@@ -1888,7 +2177,41 @@
         <span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the index of the first occurrence of the array max value.</span>
+<span class="sd">        Return index of the first occurrence of the maximum along the given axis.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        axis : int, Tuple[int, ...], optional, default = None</span>
+<span class="sd">            The axis or axes along which to do the operation</span>
+<span class="sd">            If None, the computation is done across the entire array.</span>
+<span class="sd">        keepdims : bool, optional, default = False</span>
+<span class="sd">            Whether to keep the singleton dimension(s) along `axis` in the result.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int64, uint64 or pdarray</span>
+<span class="sd">            int64 or uint64 if axis is omitted, in which case operation is done over entire array</span>
+<span class="sd">            pdarray if axis is supplied, in which case the operation is done along that axis</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            Raised if pda is not a pdarray instance</span>
+<span class="sd">        RuntimeError</span>
+<span class="sd">            Raised if there&#39;s a server-side error thrown</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; ak.argmax(ak.array([1,2,3,4,5]))</span>
+<span class="sd">        4</span>
+<span class="sd">        &gt;&gt;&gt; ak.argmax(ak.array([5.5,4.5,3.5,2.5,1.5]))</span>
+<span class="sd">        0</span>
+<span class="sd">        &gt;&gt;&gt; ak.array([[1,2,3],[5,4,3]]).argmax(axis=1)</span>
+<span class="sd">        array([2 0])</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Works as a method of a pdarray (e.g. a.argmax()) or a standalone function (e.g. ak.argmax(a))</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1">#   Function is generated at runtime with _make_index_reduction_func.</span>
         <span class="k">return</span> <span class="n">argmax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span></div>
@@ -1898,7 +2221,7 @@
 <a class="viewcode-back" href="../../../usage/histogram.html#arkouda.pdarray.mean">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the mean of the array.</span>
+<span class="sd">        Compute the mean.  See ``arkouda.mean`` for details.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
@@ -1908,26 +2231,6 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ddof</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the variance. See ``arkouda.var`` for details.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        ddof : int_scalars</span>
-<span class="sd">            &quot;Delta Degrees of Freedom&quot; used in calculating var</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        np.float64</span>
-<span class="sd">            The scalar variance of the array</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        TypeError</span>
-<span class="sd">            Raised if pda is not a pdarray instance</span>
-<span class="sd">        ValueError</span>
-<span class="sd">            Raised if the ddof &gt;= pdarray size</span>
-<span class="sd">        RuntimeError</span>
-<span class="sd">            Raised if there&#39;s a server-side error thrown</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">var</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="n">ddof</span><span class="p">)</span></div>
 
@@ -1937,23 +2240,6 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">std</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ddof</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the standard deviation. See ``arkouda.std`` for details.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        ddof : int_scalars</span>
-<span class="sd">            &quot;Delta Degrees of Freedom&quot; used in calculating std</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        np.float64</span>
-<span class="sd">            The scalar standard deviation of the array</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        TypeError</span>
-<span class="sd">            Raised if pda is not a pdarray instance</span>
-<span class="sd">        RuntimeError</span>
-<span class="sd">            Raised if there&#39;s a server-side error thrown</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">std</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="n">ddof</span><span class="p">)</span></div>
 
@@ -1963,23 +2249,6 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">cov</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the covariance between self and y.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        y : pdarray</span>
-<span class="sd">            Other pdarray used to calculate covariance</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        np.float64</span>
-<span class="sd">            The scalar covariance of the two arrays</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        TypeError</span>
-<span class="sd">            Raised if y is not a pdarray instance</span>
-<span class="sd">        RuntimeError</span>
-<span class="sd">            Raised if there&#39;s a server-side error thrown</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">cov</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></div>
 
@@ -1989,23 +2258,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">corr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the correlation between self and y using pearson correlation coefficient.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        y : pdarray</span>
-<span class="sd">            Other pdarray used to calculate correlation</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        np.float64</span>
-<span class="sd">            The scalar correlation of the two arrays</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        TypeError</span>
-<span class="sd">            Raised if y is not a pdarray instance</span>
-<span class="sd">        RuntimeError</span>
-<span class="sd">            Raised if there&#39;s a server-side error thrown</span>
+<span class="sd">        See ``arkouda.corr`` for details.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">corr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></div>
 
@@ -2014,22 +2267,7 @@
 <a class="viewcode-back" href="../../../usage/histogram.html#arkouda.pdarray.mink">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">mink</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Compute the minimum &quot;k&quot; values.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        k : int_scalars</span>
-<span class="sd">            The desired count of maximum values to be returned by the output.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        pdarray, int</span>
-<span class="sd">            The maximum `k` values from pda</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        TypeError</span>
-<span class="sd">            Raised if pda is not a pdarray</span>
+<span class="sd">        Compute the minimum &quot;k&quot; values.  See ``arkouda.mink`` for details.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">mink</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span></div>
 
@@ -2039,22 +2277,7 @@
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">maxk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Compute the maximum &quot;k&quot; values.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        k : int_scalars</span>
-<span class="sd">            The desired count of maximum values to be returned by the output.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        pdarray, int</span>
-<span class="sd">            The maximum `k` values from pda</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        TypeError</span>
-<span class="sd">            Raised if pda is not a pdarray</span>
+<span class="sd">        Compute the maximum &quot;k&quot; values.  See ``arkouda.maxk`` for details.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">maxk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span></div>
 
@@ -2063,22 +2286,8 @@
 <a class="viewcode-back" href="../../../usage/histogram.html#arkouda.pdarray.argmink">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">argmink</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Compute the minimum &quot;k&quot; values.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        k : int_scalars</span>
-<span class="sd">            The desired count of maximum values to be returned by the output.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        pdarray, int</span>
-<span class="sd">            Indices corresponding to the maximum `k` values from pda</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        TypeError</span>
-<span class="sd">            Raised if pda is not a pdarray</span>
+<span class="sd">        Finds the indices corresponding to the `k` minimum values of an array.</span>
+<span class="sd">        See ``arkouda.argmink`` for details.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">argmink</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span></div>
 
@@ -2087,22 +2296,8 @@
 <a class="viewcode-back" href="../../../usage/histogram.html#arkouda.pdarray.argmaxk">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">argmaxk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Finds the indices corresponding to the maximum &quot;k&quot; values.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        k : int_scalars</span>
-<span class="sd">            The desired count of maximum values to be returned by the output.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        pdarray, int</span>
-<span class="sd">            Indices corresponding to the  maximum `k` values, sorted</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        TypeError</span>
-<span class="sd">            Raised if pda is not a pdarray</span>
+<span class="sd">        Finds the indices corresponding to the `k` maximum values of an array.</span>
+<span class="sd">        See ``arkouda.argmaxk`` for details.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">argmaxk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span></div>
 
@@ -2180,7 +2375,11 @@
 <span class="sd">        &gt;&gt;&gt; ak.array([2, 0, 2, 4, 0, 0]).value_counts()</span>
 <span class="sd">        (array([0, 2, 4]), array([3, 2, 1]))</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">value_counts</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;value_counts is only implemented for 1D arrays; got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">value_counts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
@@ -2195,6 +2394,15 @@
 <span class="sd">        __________</span>
 <span class="sd">        dtype: np.dtype or str</span>
 <span class="sd">            Dtype to cast to</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; ak.array([1,2,3]).astype(ak.float64)</span>
+<span class="sd">        array([1.00000000000000000 2.00000000000000000 3.00000000000000000])</span>
+<span class="sd">        &gt;&gt;&gt; ak.array([1.5,2.5]).astype(ak.int64)</span>
+<span class="sd">        array([1 2])</span>
+<span class="sd">        &gt;&gt;&gt; ak.array([True,False]).astype(ak.int64)</span>
+<span class="sd">        array([1 0])</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        _______</span>
@@ -2242,9 +2450,15 @@
 <span class="sd">        &gt;&gt;&gt; p = ak.array([2**65 + (2**64 - 1)])</span>
 <span class="sd">        &gt;&gt;&gt; bin(p[0])</span>
 <span class="sd">        &#39;0b101111111111111111111111111111111111111111111111111111111111111111&#39;</span>
-
 <span class="sd">        &gt;&gt;&gt; bin(p.slice_bits(64, 65)[0])</span>
 <span class="sd">        &#39;0b10&#39;</span>
+<span class="sd">        &gt;&gt;&gt; a = ak.array([143,15])</span>
+<span class="sd">        &gt;&gt;&gt; a.slice_bits(1,3)</span>
+<span class="sd">        array([7 7])</span>
+<span class="sd">        &gt;&gt;&gt; a.slice_bits(4,9)</span>
+<span class="sd">        array([8 0])</span>
+<span class="sd">        &gt;&gt;&gt; a.slice_bits(1,9)</span>
+<span class="sd">        array([71 7])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">low</span> <span class="o">&gt;</span> <span class="n">high</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;low must not exceed high&quot;</span><span class="p">)</span>
@@ -2280,9 +2494,8 @@
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; a = ak.arange(2**64, 2**64 + 5)</span>
 <span class="sd">        &gt;&gt;&gt; a</span>
-<span class="sd">        array([&quot;18446744073709551616&quot; &quot;18446744073709551617&quot; &quot;18446744073709551618&quot;</span>
-<span class="sd">        &quot;18446744073709551619&quot; &quot;18446744073709551620&quot;])</span>
-
+<span class="sd">        array([18446744073709551616 18446744073709551617 18446744073709551618</span>
+<span class="sd">        18446744073709551619 18446744073709551620])</span>
 <span class="sd">        &gt;&gt;&gt; a.bigint_to_uint_arrays()</span>
 <span class="sd">        [array([1 1 1 1 1]), array([0 1 2 3 4])]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2305,6 +2518,21 @@
 <span class="sd">        -------</span>
 <span class="sd">        pdarray</span>
 <span class="sd">            a pdarray with the same data, reshaped to the new shape</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; a = ak.array([[3,2,1],[2,3,1]])</span>
+<span class="sd">        &gt;&gt;&gt; a.reshape((3,2))</span>
+<span class="sd">        array([array([3 2]) array([1 2]) array([3 1])])</span>
+<span class="sd">        &gt;&gt;&gt; a.reshape(3,2)</span>
+<span class="sd">        array([array([3 2]) array([1 2]) array([3 1])])</span>
+<span class="sd">        &gt;&gt;&gt; a.reshape((6,1))</span>
+<span class="sd">        array([array([3]) array([2]) array([1]) array([2]) array([3]) array([1])])</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">            only available as a method, not as a standalone function, i.e.,</span>
+<span class="sd">            a.reshape(compatibleShape) is valid, but ak.reshape(a,compatibleShape) is not.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># allows the elements of the shape parameter to be passed in as separate arguments</span>
         <span class="c1"># For example, a.reshape(10, 11) is equivalent to a.reshape((10, 11))</span>
@@ -2336,6 +2564,12 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        A copy of the input array, flattened to one dimension.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; a = ak.array([[3,2,1],[2,3,1]])</span>
+<span class="sd">        &gt;&gt;&gt; a.flatten()</span>
+<span class="sd">        array([3 2 1 2 3 1])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
             <span class="n">generic_msg</span><span class="p">(</span>
@@ -2384,9 +2618,8 @@
 <span class="sd">        &gt;&gt;&gt; a = ak.arange(0, 5, 1)</span>
 <span class="sd">        &gt;&gt;&gt; a.to_ndarray()</span>
 <span class="sd">        array([0, 1, 2, 3, 4])</span>
-
 <span class="sd">        &gt;&gt;&gt; type(a.to_ndarray())</span>
-<span class="sd">        numpy.ndarray</span>
+<span class="sd">        &lt;class &#39;numpy.ndarray&#39;&gt;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">maxTransferBytes</span>
 
@@ -2408,7 +2641,9 @@
         <span class="n">data</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
             <span class="nb">memoryview</span><span class="p">,</span>
             <span class="n">generic_msg</span><span class="p">(</span>
-                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;tondarray&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">},</span> <span class="n">recv_binary</span><span class="o">=</span><span class="kc">True</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;tondarray&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">},</span>
+                <span class="n">recv_binary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="p">),</span>
         <span class="p">)</span>
         <span class="c1"># Make sure the received data has the expected length</span>
@@ -2472,9 +2707,8 @@
 <span class="sd">        &gt;&gt;&gt; a = ak.arange(0, 5, 1)</span>
 <span class="sd">        &gt;&gt;&gt; a.to_list()</span>
 <span class="sd">        [0, 1, 2, 3, 4]</span>
-
 <span class="sd">        &gt;&gt;&gt; type(a.to_list())</span>
-<span class="sd">        list</span>
+<span class="sd">        &lt;class &#39;list&#39;&gt;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div>
 
@@ -2521,7 +2755,6 @@
 <span class="sd">        &gt;&gt;&gt; a = ak.arange(0, 5, 1)</span>
 <span class="sd">        &gt;&gt;&gt; a.to_cuda()</span>
 <span class="sd">        array([0, 1, 2, 3, 4])</span>
-
 <span class="sd">        &gt;&gt;&gt; type(a.to_cuda())</span>
 <span class="sd">        numpy.devicendarray</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2556,6 +2789,7 @@
 <span class="sd">        one file per locale of the arkouda server, where each filename starts</span>
 <span class="sd">        with prefix_path. Each locale saves its chunk of the array to its</span>
 <span class="sd">        corresponding file.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        prefix_path : str</span>
@@ -2568,13 +2802,16 @@
 <span class="sd">        compression : str (Optional)</span>
 <span class="sd">            (None | &quot;snappy&quot; | &quot;gzip&quot; | &quot;brotli&quot; | &quot;zstd&quot; | &quot;lz4&quot;)</span>
 <span class="sd">            Sets the compression type used with Parquet files</span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        string message indicating result of save operation</span>
+
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        RuntimeError</span>
 <span class="sd">            Raised if a server-side error is thrown saving the pdarray</span>
+
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
 <span class="sd">        - The prefix_path must be visible to the arkouda server and the user must</span>
@@ -2588,6 +2825,7 @@
 <span class="sd">        dataset with the same name already exists, a ``RuntimeError`` will result.</span>
 <span class="sd">        - Any file extension can be used.The file I/O does not rely on the extension to</span>
 <span class="sd">        determine the file format.</span>
+
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; a = ak.arange(25)</span>
@@ -2631,6 +2869,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save the pdarray to HDF5.</span>
 <span class="sd">        The object can be saved to a collection of files or single file.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        prefix_path : str</span>
@@ -2645,13 +2884,16 @@
 <span class="sd">            When set to single, dataset is written to a single file.</span>
 <span class="sd">            When distribute, dataset is written on a file per locale.</span>
 <span class="sd">            This is only supported by HDF5 files and will have no impact of Parquet Files.</span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        string message indicating result of save operation</span>
+
 <span class="sd">        Raises</span>
 <span class="sd">        -------</span>
 <span class="sd">        RuntimeError</span>
 <span class="sd">            Raised if a server-side error is thrown saving the pdarray</span>
+
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
 <span class="sd">        - The prefix_path must be visible to the arkouda server and the user must</span>
@@ -2665,6 +2907,7 @@
 <span class="sd">        dataset with the same name already exists, a ``RuntimeError`` will result.</span>
 <span class="sd">        - Any file extension can be used.The file I/O does not rely on the extension to</span>
 <span class="sd">        determine the file format.</span>
+
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; a = ak.arange(25)</span>
@@ -2707,7 +2950,7 @@
 <span class="sd">        the dataset does not exist it is added</span>
 
 <span class="sd">        Parameters</span>
-<span class="sd">        -----------</span>
+<span class="sd">        ----------</span>
 <span class="sd">        prefix_path : str</span>
 <span class="sd">            Directory and filename prefix that all output files share</span>
 <span class="sd">        dataset : str</span>
@@ -2773,45 +3016,46 @@
         <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Write pdarray to CSV file(s). File will contain a single column with the pdarray data.</span>
-<span class="sd">        All CSV Files written by Arkouda include a header denoting data types of the columns.</span>
+<span class="sd">        Write pdarry to CSV file(s).  File will contain a single column</span>
+<span class="sd">        with the pdarray data.  All CSV files written by Arkouda include</span>
+<span class="sd">        a header denoting data types of the columns.</span>
 
 <span class="sd">        Parameters</span>
-<span class="sd">        -----------</span>
-<span class="sd">        prefix_path: str</span>
-<span class="sd">            The filename prefix to be used for saving files. Files will have _LOCALE#### appended</span>
-<span class="sd">            when they are written to disk.</span>
-<span class="sd">        dataset: str</span>
-<span class="sd">            Column name to save the pdarray under. Defaults to &quot;array&quot;.</span>
-<span class="sd">        col_delim: str</span>
-<span class="sd">            Defaults to &quot;,&quot;. Value to be used to separate columns within the file.</span>
-<span class="sd">            Please be sure that the value used DOES NOT appear in your dataset.</span>
-<span class="sd">        overwrite: bool</span>
-<span class="sd">            Defaults to False. If True, any existing files matching your provided prefix_path will</span>
-<span class="sd">            be overwritten. If False, an error will be returned if existing files are found.</span>
+<span class="sd">        ----------</span>
+<span class="sd">        prefix_path : str</span>
+<span class="sd">            filename prefix to be used for saving files.  Files will have</span>
+<span class="sd">            _LOCALE#### appended when they are written to disk.</span>
+<span class="sd">        dataset : str, defaults to &quot;array&quot;</span>
+<span class="sd">            column name to save the pdarray under.</span>
+<span class="sd">        col_delim : str, defaults to &quot;,&quot;</span>
+<span class="sd">            value to be used to separate columns within the file.  Please</span>
+<span class="sd">            be sure that the value used DOES NOT appear in your dataset.</span>
+<span class="sd">        overwrite: bool, defaults to False</span>
+<span class="sd">            If True, existing files matching the provided path will be overwritten.</span>
+<span class="sd">            if False and existing files are found, an error will be returned.</span>
 
 <span class="sd">        Returns</span>
-<span class="sd">        --------</span>
-<span class="sd">        str reponse message</span>
+<span class="sd">        -------</span>
+<span class="sd">        response message : str</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        ValueError</span>
-<span class="sd">            Raised if all datasets are not present in all parquet files or if one or</span>
-<span class="sd">            more of the specified files do not exist</span>
+<span class="sd">            Raised if all datasets are not present in all parquet files or if one</span>
+<span class="sd">            or more of the specified files do not exist</span>
 <span class="sd">        RuntimeError</span>
 <span class="sd">            Raised if one or more of the specified files cannot be opened.</span>
-<span class="sd">            If `allow_errors` is true this may be raised if no values are returned</span>
+<span class="sd">            if &#39;allow_errors&#39; is true, this may be raised if no values are returned</span>
 <span class="sd">            from the server.</span>
 <span class="sd">        TypeError</span>
-<span class="sd">            Raised if we receive an unknown arkouda_type returned from the server</span>
+<span class="sd">            Raise if the server returns an unknown arkouda_type</span>
 
 <span class="sd">        Notes</span>
-<span class="sd">        ------</span>
+<span class="sd">        -----</span>
 <span class="sd">        - CSV format is not currently supported by load/load_all operations</span>
-<span class="sd">        - The column delimiter is expected to be the same for column names and data</span>
+<span class="sd">        - The column delimiter is expected to be the same for all column names and data</span>
 <span class="sd">        - Be sure that column delimiters are not found within your data.</span>
-<span class="sd">        - All CSV files must delimit rows using newline (`\n`) at this time.</span>
+<span class="sd">        - All CSV files must delimit rows using newline (&quot;\\n&quot;) at this time.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span>
             <span class="nb">str</span><span class="p">,</span>
@@ -2849,6 +3093,7 @@
 <span class="sd">        with prefix_path. HDF5 support single files, in which case the file name will</span>
 <span class="sd">        only be that provided. Each locale saves its chunk of the array to its</span>
 <span class="sd">        corresponding file.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        prefix_path : str</span>
@@ -2870,9 +3115,11 @@
 <span class="sd">            When set to single, dataset is written to a single file.</span>
 <span class="sd">            When distribute, dataset is written on a file per locale.</span>
 <span class="sd">            This is only supported by HDF5 files and will have no impact of Parquet Files.</span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        string message indicating result of save operation</span>
+
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        RuntimeError</span>
@@ -2884,9 +3131,11 @@
 <span class="sd">        TypeError</span>
 <span class="sd">            Raised if any one of the prefix_path, dataset, or mode parameters</span>
 <span class="sd">            is not a string</span>
+
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
 <span class="sd">        save_all, load, read, to_parquet, to_hdf</span>
+
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
 <span class="sd">        The prefix_path must be visible to the arkouda server and the user must</span>
@@ -2901,6 +3150,7 @@
 <span class="sd">        an older file is not being found.</span>
 <span class="sd">        Any file extension can be used.The file I/O does not rely on the extension to</span>
 <span class="sd">        determine the file format.</span>
+
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; a = ak.arange(25)</span>
@@ -3152,7 +3402,7 @@
 <span class="sd">        A pdarray with the same attributes and data as the pdarray; on GPU</span>
 
 <span class="sd">    Raises</span>
-<span class="sd">    -----</span>
+<span class="sd">    ------</span>
 <span class="sd">    ValueError</span>
 <span class="sd">        If there&#39;s an error in parsing the repMsg parameter into the six</span>
 <span class="sd">        values needed to create the pdarray instance</span>
@@ -3263,10 +3513,10 @@
 <span class="s2">    ----------</span>
 <span class="s2">    pda : pdarray</span>
 <span class="s2">        The pdarray instance to be evaluated.</span>
-<span class="s2">    axis : int or Tuple[int, ...], optional</span>
-<span class="s2">        The axis or axes along which to compute the sum. If None, the reduction of the entire array is</span>
-<span class="s2">        computed (returning a scalar).</span>
-<span class="s2">    keepdims : bool, optional</span>
+<span class="s2">    axis : int or Tuple[int, ...], optional, default = None</span>
+<span class="s2">        The axis or axes along which to compute the function.</span>
+<span class="s2">        If None, the computation is done across the entire array.</span>
+<span class="s2">    keepdims : bool, optional, default = False</span>
 <span class="s2">        Whether to keep the singleton dimension(s) along `axis` in the result.</span>
 
 <span class="s2">    Returns</span>
@@ -3309,11 +3559,11 @@
 <span class="s2">    ----------</span>
 <span class="s2">    pda : pdarray</span>
 <span class="s2">        The pdarray instance to be evaluated.</span>
-<span class="s2">    axis : int, optional</span>
+<span class="s2">    axis : int, optional, default = None</span>
 <span class="s2">        The axis along which to compute the index reduction.</span>
 <span class="s2">        If None, the reduction of the entire array is</span>
 <span class="s2">        computed (returning a scalar).</span>
-<span class="s2">    keepdims : bool, optional</span>
+<span class="s2">    keepdims : bool, optional, default = False</span>
 <span class="s2">        Whether to keep the singleton dimension(s) along `axis` in the result.</span>
 
 <span class="s2">    Returns</span>
@@ -3367,11 +3617,12 @@
 <span class="sd">        The name of the reduction operation.  Must be a member of SUPPORTED_REDUCTION_OPS.</span>
 <span class="sd">    pda : pdarray</span>
 <span class="sd">        The pdarray instance to be evaluated.</span>
-<span class="sd">    axis : int or Tuple[int, ...], optional</span>
+<span class="sd">    axis : int or Tuple[int, ...], optional, default = None</span>
 <span class="sd">        The axis or axes along which to compute the reduction. If None, the sum of the entire array is</span>
 <span class="sd">        computed (returning a scalar).</span>
-<span class="sd">    keepdims : bool, optional</span>
+<span class="sd">    keepdims : bool, optional, default = False</span>
 <span class="sd">        Whether to keep the singleton dimension(s) along `axis` in the result.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    numpy_scalars, pdarray</span>
@@ -3443,11 +3694,12 @@
 <span class="sd">        The name of the reduction operation.  Must be a member of SUPPORTED_INDEX_REDUCTION_OPS.</span>
 <span class="sd">    pda : pdarray</span>
 <span class="sd">        The pdarray instance to be evaluated.</span>
-<span class="sd">    axis : int or Tuple[int, ...], optional</span>
+<span class="sd">    axis : int or Tuple[int, ...], optional, default = None</span>
 <span class="sd">        The axis or axes along which to compute the reduction. If None, the sum of the entire array is</span>
 <span class="sd">        computed (returning a scalar).</span>
-<span class="sd">    keepdims : bool, optional</span>
+<span class="sd">    keepdims : bool, optional, default = False</span>
 <span class="sd">        Whether to keep the singleton dimension(s) along `axis` in the result.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    int64</span>
@@ -3599,6 +3851,8 @@
     <span class="p">),</span>
 <span class="p">)</span>
 
+<span class="c1"># TODO: align dot to numpy in multi-dimensional case; presently = np.sum(a*b), not np.dot(a,b)</span>
+
 
 <div class="viewcode-block" id="dot">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pdarrayclass/index.html#arkouda.dot">[docs]</a>
@@ -3616,7 +3870,6 @@
 <span class="sd">    pda1 : Union[numeric_scalars, pdarray]</span>
 
 <span class="sd">    pda2 : Union[numeric_scalars, pdarray]</span>
-
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -3638,12 +3891,15 @@
 <span class="sd">    &gt;&gt;&gt; ak.dot(x,2)</span>
 <span class="sd">    array([4 6])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="p">(</span>
-        <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span>
-        <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda2</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span>
-        <span class="ow">and</span> <span class="p">((</span><span class="n">pda1</span> <span class="ow">is</span> <span class="n">akuint64</span> <span class="ow">and</span> <span class="n">pda2</span> <span class="ow">is</span> <span class="n">akint64</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">pda1</span> <span class="ow">is</span> <span class="n">akint64</span> <span class="ow">and</span> <span class="n">pda2</span> <span class="ow">is</span> <span class="n">akuint64</span><span class="p">))</span>
-    <span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;incompatible types </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">pda1</span><span class="p">)</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">pda2</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">resolve</span><span class="p">(</span><span class="n">pda</span><span class="p">)</span> <span class="p">:</span>  <span class="c1"># get type, either of pda or scalar</span>
+        <span class="k">return</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">pda</span><span class="p">)</span>
+
+    <span class="n">t1</span> <span class="o">=</span> <span class="n">resolve</span><span class="p">(</span><span class="n">pda1</span><span class="p">)</span>
+    <span class="n">t2</span> <span class="o">=</span> <span class="n">resolve</span><span class="p">(</span><span class="n">pda2</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">t1</span> <span class="o">==</span> <span class="s2">&quot;uint64&quot;</span> <span class="ow">and</span> <span class="n">t2</span> <span class="o">==</span> <span class="s2">&quot;int64&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">t1</span> <span class="o">==</span> <span class="s2">&quot;int64&quot;</span> <span class="ow">and</span> <span class="n">t2</span> <span class="o">==</span> <span class="s2">&quot;uint64&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;incompatible types </span><span class="si">{</span><span class="n">t1</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">t2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda2</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">pda1</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">pda2</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Arrays must be same size, </span><span class="si">{</span><span class="n">pda1</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">pda2</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -3670,6 +3926,14 @@
 <span class="sd">    -------</span>
 <span class="sd">    np.float64</span>
 <span class="sd">        The mean calculated from the pda sum and size</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; a = ak.arange(10)</span>
+<span class="sd">    &gt;&gt;&gt; ak.mean(a)</span>
+<span class="sd">    4.5</span>
+<span class="sd">    &gt;&gt;&gt; a.mean()</span>
+<span class="sd">    4.5</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
@@ -3705,6 +3969,14 @@
 <span class="sd">    -------</span>
 <span class="sd">    np.float64</span>
 <span class="sd">        The scalar variance of the array</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; a = ak.arange(10)</span>
+<span class="sd">    &gt;&gt;&gt; ak.var(a)</span>
+<span class="sd">    8.25</span>
+<span class="sd">    &gt;&gt;&gt; a.var()</span>
+<span class="sd">    8.25</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
@@ -3761,6 +4033,14 @@
 <span class="sd">    -------</span>
 <span class="sd">    np.float64</span>
 <span class="sd">        The scalar standard deviation of the array</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; a = ak.arange(10)</span>
+<span class="sd">    &gt;&gt;&gt; ak.std(a)</span>
+<span class="sd">    2.8722813232690143</span>
+<span class="sd">    &gt;&gt;&gt; a.std()</span>
+<span class="sd">    2.8722813232690143</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
@@ -3820,6 +4100,15 @@
 <span class="sd">    np.float64</span>
 <span class="sd">        The scalar covariance of the two pdarrays</span>
 
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; a = ak.arange(10)</span>
+<span class="sd">    &gt;&gt;&gt; b = a + 1</span>
+<span class="sd">    &gt;&gt;&gt; ak.cov(a,b)</span>
+<span class="sd">    9.166666666666666</span>
+<span class="sd">    &gt;&gt;&gt; a.cov(b)</span>
+<span class="sd">    9.166666666666666</span>
+
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    TypeError</span>
@@ -3860,6 +4149,15 @@
 <span class="sd">    -------</span>
 <span class="sd">    np.float64</span>
 <span class="sd">        The scalar correlation of the two pdarrays</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; a = ak.arange(10)</span>
+<span class="sd">    &gt;&gt;&gt; b = a + 1</span>
+<span class="sd">    &gt;&gt;&gt; ak.corr(a,b)</span>
+<span class="sd">    0.9999999999999998</span>
+<span class="sd">    &gt;&gt;&gt; a.corr(b)</span>
+<span class="sd">    0.9999999999999998</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
@@ -3935,7 +4233,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">where</span> <span class="k">as</span> <span class="n">akwhere</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">full</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">full</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;At least one entry must be a pdarray.&quot;</span><span class="p">)</span>
@@ -3957,7 +4255,10 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">div</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">x</span> <span class="o">//</span> <span class="n">y</span><span class="p">)</span>
         <span class="n">mod</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">x</span> <span class="o">%</span> <span class="n">y</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">akwhere</span><span class="p">(</span><span class="n">where</span><span class="p">,</span> <span class="n">div</span><span class="p">,</span> <span class="n">akcast</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">div</span><span class="o">.</span><span class="n">dtype</span><span class="p">)),</span> <span class="n">akwhere</span><span class="p">(</span><span class="n">where</span><span class="p">,</span> <span class="n">mod</span><span class="p">,</span> <span class="n">akcast</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">mod</span><span class="o">.</span><span class="n">dtype</span><span class="p">)))</span></div>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">akwhere</span><span class="p">(</span><span class="n">where</span><span class="p">,</span> <span class="n">div</span><span class="p">,</span> <span class="n">akcast</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">div</span><span class="o">.</span><span class="n">dtype</span><span class="p">)),</span>
+            <span class="n">akwhere</span><span class="p">(</span><span class="n">where</span><span class="p">,</span> <span class="n">mod</span><span class="p">,</span> <span class="n">akcast</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">mod</span><span class="o">.</span><span class="n">dtype</span><span class="p">)),</span>
+        <span class="p">)</span></div>
 
 
 
@@ -3987,14 +4288,11 @@
 <span class="sd">    TypeError</span>
 <span class="sd">        Raised if pda is not a pdarray</span>
 <span class="sd">    ValueError</span>
-<span class="sd">        Raised if the pda is empty or k &lt; 1</span>
+<span class="sd">        Raised if the pda is empty, or pda.ndim &gt; 1, or k &lt; 1</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    This call is equivalent in value to:</span>
-
-<span class="sd">        a[ak.argsort(a)[:k]]</span>
-
+<span class="sd">    This call is equivalent in value to a[ak.argsort(a)[:k]]</span>
 <span class="sd">    and generally outperforms this operation.</span>
 
 <span class="sd">    This reduction will see a significant drop in performance as `k` grows</span>
@@ -4013,6 +4311,8 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;k must be 1 or greater&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;must be a non-empty pdarray of type int or float&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;mink is only implemented for 1D arrays; got </span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;mink&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">:</span> <span class="n">k</span><span class="p">,</span> <span class="s2">&quot;rtnInd&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span></div>
@@ -4045,20 +4345,17 @@
 <span class="sd">    TypeError</span>
 <span class="sd">        Raised if pda is not a pdarray or k is not an integer</span>
 <span class="sd">    ValueError</span>
-<span class="sd">        Raised if the pda is empty or k &lt; 1</span>
+<span class="sd">        Raised if the pda is empty, or pda.ndim &gt; 1, or k &lt; 1</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    This call is equivalent in value to:</span>
-
-<span class="sd">        a[ak.argsort(a)[k:]]</span>
+<span class="sd">    This call is equivalent in value to a[ak.argsort(a)[k:]]</span>
 
 <span class="sd">    and generally outperforms this operation.</span>
 
 <span class="sd">    This reduction will see a significant drop in performance as `k` grows</span>
 <span class="sd">    beyond a certain value. This value is system dependent, but generally</span>
 <span class="sd">    about a `k` of 5 million is where performance degredation has been observed.</span>
-
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -4072,6 +4369,8 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;k must be 1 or greater&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;must be a non-empty pdarray of type int or float&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;maxk is only implemented for 1D arrays; got </span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;maxk&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">:</span> <span class="n">k</span><span class="p">,</span> <span class="s2">&quot;rtnInd&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
@@ -4102,14 +4401,11 @@
 <span class="sd">    TypeError</span>
 <span class="sd">        Raised if pda is not a pdarray or k is not an integer</span>
 <span class="sd">    ValueError</span>
-<span class="sd">        Raised if the pda is empty or k &lt; 1</span>
+<span class="sd">        Raised if the pda is empty, or pda.ndim &gt; 1, or k &lt; 1</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    This call is equivalent in value to:</span>
-
-<span class="sd">        ak.argsort(a)[:k]</span>
-
+<span class="sd">    This call is equivalent in value to ak.argsort(a)[:k]</span>
 <span class="sd">    and generally outperforms this operation.</span>
 
 <span class="sd">    This reduction will see a significant drop in performance as `k` grows</span>
@@ -4128,6 +4424,8 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;k must be 1 or greater&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;must be a non-empty pdarray of type int or float&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;argmink is only implemented for 1D arrays; got </span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;mink&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">:</span> <span class="n">k</span><span class="p">,</span> <span class="s2">&quot;rtnInd&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
@@ -4160,20 +4458,16 @@
 <span class="sd">    TypeError</span>
 <span class="sd">        Raised if pda is not a pdarray or k is not an integer</span>
 <span class="sd">    ValueError</span>
-<span class="sd">        Raised if the pda is empty or k &lt; 1</span>
+<span class="sd">        Raised if the pda is empty, or pda.ndim &gt; 1, or k &lt; 1</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    This call is equivalent in value to:</span>
-
-<span class="sd">        ak.argsort(a)[k:]</span>
-
+<span class="sd">    This call is equivalent in value to ak.argsort(a)[k:]</span>
 <span class="sd">    and generally outperforms this operation.</span>
 
 <span class="sd">    This reduction will see a significant drop in performance as `k` grows</span>
 <span class="sd">    beyond a certain value. This value is system dependent, but generally</span>
 <span class="sd">    about a `k` of 5 million is where performance degradation has been observed.</span>
-
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -4187,6 +4481,8 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;k must be 1 or greater&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;must be a non-empty pdarray of type int or float&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;argmaxk is only implemented for 1D arrays; got </span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;maxk&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">:</span> <span class="n">k</span><span class="p">,</span> <span class="s2">&quot;rtnInd&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
@@ -4313,7 +4609,7 @@
         <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">max_bits</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;max_bits must be set to count leading zeros&quot;</span><span class="p">)</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">where</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">zeros</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">zeros</span>
 
         <span class="n">uint_arrs</span> <span class="o">=</span> <span class="n">pda</span><span class="o">.</span><span class="n">bigint_to_uint_arrays</span><span class="p">()</span>
 
@@ -4401,7 +4697,7 @@
         <span class="c1"># which is only relevant when ctz(0) which is defined to be 0</span>
 
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">where</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">zeros</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">zeros</span>
 
         <span class="c1"># reverse the list, so we visit low bits first</span>
 
@@ -4534,7 +4830,9 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/pdarrayclass/index.html#arkouda.power">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">power</span><span class="p">(</span>
-    <span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">pwr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">bool_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
+    <span class="n">pwr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span>
+    <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">bool_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Raises an array to a power. If where is given, the operation will only take place in the positions</span>
@@ -4559,8 +4857,8 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">        pdarray</span>
-<span class="sd">        Returns a pdarray of values raised to a power, under the boolean where condition.</span>
+<span class="sd">    pdarray</span>
+<span class="sd">        a pdarray of values raised to a power, under the boolean where condition.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -4569,6 +4867,14 @@
 <span class="sd">    array([0, 1, 8, 27, 64])</span>
 <span class="sd">    &gt;&gt;&gt; ak.power(a), 3, a % 2 == 0)</span>
 <span class="sd">    array([0, 1, 8, 3, 64])</span>
+
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        raised if pda is not a pdarray, or if pwe is not an int, float, or pdarray</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        raised if pda and power are of incompatible dimensions</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">where</span> <span class="k">as</span> <span class="n">akwhere</span>
@@ -4594,7 +4900,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pda : pdarray</span>
-<span class="sd">        A pdarray of values that will be square rooted</span>
+<span class="sd">        A pdarray of values the square roots of which will be computed</span>
 <span class="sd">    where : Boolean or pdarray</span>
 <span class="sd">        This condition is broadcast over the input. At locations where the condition is True, the</span>
 <span class="sd">        corresponding value will be square rooted. Elsewhere, it will retain its original value.</span>
@@ -4602,15 +4908,28 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">        pdarray</span>
-<span class="sd">        Returns a pdarray of square rooted values, under the boolean where condition.</span>
+<span class="sd">    pdarray</span>
+<span class="sd">        a pdarray of square roots of the original values, or the original values themselves,</span>
+<span class="sd">        subject to the boolean where condition.</span>
 
-<span class="sd">    Examples:</span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; a = ak.arange(5)</span>
 <span class="sd">    &gt;&gt;&gt; ak.sqrt(a)</span>
-<span class="sd">    array([0 1 1.4142135623730951 1.7320508075688772 2])</span>
-<span class="sd">    &gt;&gt;&gt; ak.sqrt(a, ak.sqrt([True, True, False, False, True]))</span>
-<span class="sd">    array([0, 1, 2, 3, 2])</span>
+<span class="sd">    array([0.00000000000000000 1.00000000000000000 1.4142135623730951</span>
+<span class="sd">             1.7320508075688772 2.00000000000000000])</span>
+<span class="sd">    &gt;&gt;&gt; ak.sqrt(a, ak.array([True, True, False, False, True]))</span>
+<span class="sd">    array([0.00000000000000000 1.00000000000000000 2.00000000000000000</span>
+<span class="sd">             3.00000000000000000 2.00000000000000000])</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        raised if pda is not a pdarray of ak.int64 or ak.float64</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Square roots of negative numbers are returned as nan.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">power</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
 
@@ -4630,19 +4949,31 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pda : pdarray</span>
-<span class="sd">        A pdarray of values that will be calculated to find the skew</span>
-<span class="sd">    bias : bool, optional</span>
+<span class="sd">        A pdarray of ak.int64 or ak.float64 values that will be calculated to find the skew</span>
+<span class="sd">    bias : bool, optional, default = True</span>
 <span class="sd">        If False, then the calculations are corrected for statistical bias.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">        np.float64</span>
-<span class="sd">            The skew of all elements in the array</span>
+<span class="sd">    np.float64</span>
+<span class="sd">        The skew of all elements in the array</span>
 
-<span class="sd">    Examples:</span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; a = ak.array([1, 1, 1, 5, 10])</span>
 <span class="sd">    &gt;&gt;&gt; ak.skew(a)</span>
-<span class="sd">    0.9442193396379163</span>
+<span class="sd">    0.9442193396379165</span>
+<span class="sd">    &gt;&gt;&gt; ak.skew(ak.array([9,9,9,5,0]))</span>
+<span class="sd">    -0.9442193396379165</span>
+<span class="sd">    &gt;&gt;&gt; ak.skew(ak.array([10,10,10,10,10]))</span>
+<span class="sd">    0</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        raised if pda.dtype is ak.bigint</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        raised if pda.dtype is Strings</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">deviations</span> <span class="o">=</span> <span class="n">pda</span> <span class="o">-</span> <span class="n">pda</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
@@ -4677,14 +5008,27 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    dividend</span>
-<span class="sd">        The array being acted on by the bases for the modular division.</span>
+<span class="sd">        pdarray : The numeric scalar or pdarray being acted on by the bases for the modular division.</span>
 <span class="sd">    divisor</span>
-<span class="sd">        The array that will be the bases for the modular division.</span>
+<span class="sd">        pdarray : The numeric scalar or pdarray that will be the bases for the modular division.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    pdarray</span>
-<span class="sd">        Returns an array that contains the element-wise remainder of division.</span>
+<span class="sd">        an array that contains the element-wise remainder of division.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; a = ak.array([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20])</span>
+<span class="sd">    &gt;&gt;&gt; b = ak.array([2,2,2,3,3,3,4,4,4,5,5,5,6,6,6,7,7,7,8,8])</span>
+<span class="sd">    &gt;&gt;&gt; ak.mod(a,b)</span>
+<span class="sd">    array([1 0 1 1 2 0 3 0 1 0 1 2 1 2 3 2 3 4 3 4])</span>
+
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        raised if shapes of dividend and divisor are incompatible</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">dividend</span> <span class="o">%</span> <span class="n">divisor</span></div>
 
@@ -4709,7 +5053,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    pdarray</span>
-<span class="sd">        Returns an array that contains the element-wise remainder of division.</span>
+<span class="sd">        an array that contains the element-wise remainder of division.</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
@@ -4731,31 +5075,42 @@
         <span class="p">)</span>
     <span class="c1"># TODO: handle shape broadcasting for multidimensional arrays</span>
 
+    <span class="c1">#   The code below creates a command string for fmod2vv, fmod2vs or fmod2sv.</span>
 
-<span class="c1">#   The code below creates a command string for fmod2vv, fmod2vs or fmod2sv.</span>
-
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dividend</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">divisor</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="p">:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dividend</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">divisor</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">dividend</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;float64&quot;</span> <span class="ow">or</span> <span class="n">divisor</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;float64&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;At least one arg to fmod must be float. &quot;</span> <span class="o">+</span>
+                <span class="sa">f</span><span class="s2">&quot;Got f</span><span class="si">{</span><span class="n">dividend</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">divisor</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
         <span class="n">cmdstring</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;fmod2vv&lt;</span><span class="si">{</span><span class="n">dividend</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">dividend</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">divisor</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
 
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dividend</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">divisor</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">))</span> <span class="p">:</span>
-        <span class="k">if</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">divisor</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;float64&#39;</span><span class="p">,</span> <span class="s1">&#39;int64&#39;</span><span class="p">,</span> <span class="s1">&#39;uint64&#39;</span><span class="p">,</span> <span class="s1">&#39;bool&#39;</span><span class="p">]</span> <span class="p">:</span>
-            <span class="n">acmd</span> <span class="o">=</span> <span class="s1">&#39;fmod2vs_&#39;</span><span class="o">+</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">divisor</span><span class="p">)</span>
-        <span class="k">else</span> <span class="p">:</span>  <span class="c1"># this condition *should* be impossible because of the isSupportedNumber check</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Scalar divisor type </span><span class="si">{</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">divisor</span><span class="p">)</span><span class="si">}</span><span class="s2"> not allowed in fmod&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dividend</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">divisor</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)):</span>
+        <span class="n">scalar_dtype</span> <span class="o">=</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">divisor</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">scalar_dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">,</span> <span class="s2">&quot;bool&quot;</span><span class="p">]:</span>
+            <span class="n">acmd</span> <span class="o">=</span> <span class="s2">&quot;fmod2vs_&quot;</span> <span class="o">+</span> <span class="n">scalar_dtype</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># this condition *should* be impossible because of the isSupportedNumber check</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Scalar divisor type </span><span class="si">{</span><span class="n">scalar_dtype</span><span class="si">}</span><span class="s2"> not allowed in fmod&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">dividend</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;float64&quot;</span> <span class="ow">or</span> <span class="n">scalar_dtype</span> <span class="o">==</span> <span class="s2">&quot;float64&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;At least one arg to fmod must be float. &quot;</span> <span class="o">+</span>
+                <span class="sa">f</span><span class="s2">&quot;Got </span><span class="si">{</span><span class="n">dividend</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">scalar_dtype</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
         <span class="n">cmdstring</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">acmd</span><span class="si">}</span><span class="s2">&lt;</span><span class="si">{</span><span class="n">dividend</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">dividend</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
 
-    <span class="k">elif</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">dividend</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">divisor</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">))</span> <span class="p">:</span>
-        <span class="k">if</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">dividend</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;float64&#39;</span><span class="p">,</span> <span class="s1">&#39;int64&#39;</span><span class="p">,</span> <span class="s1">&#39;uint64&#39;</span><span class="p">,</span> <span class="s1">&#39;bool&#39;</span><span class="p">]</span> <span class="p">:</span>
-            <span class="n">acmd</span> <span class="o">=</span> <span class="s1">&#39;fmod2sv_&#39;</span><span class="o">+</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">dividend</span><span class="p">)</span>
-        <span class="k">else</span> <span class="p">:</span>  <span class="c1"># this condition *should* be impossible because of the isSupportedNumber check</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Scalar dividend type </span><span class="si">{</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">dividend</span><span class="p">)</span><span class="si">}</span><span class="s2"> not allowed in fmod&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># then the only case left is where dividend is scalar and divisor is pdarray</span>
+        <span class="n">scalar_dtype</span> <span class="o">=</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">dividend</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">scalar_dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">,</span> <span class="s2">&quot;bool&quot;</span><span class="p">]:</span>
+            <span class="n">acmd</span> <span class="o">=</span> <span class="s2">&quot;fmod2sv_&quot;</span> <span class="o">+</span> <span class="n">scalar_dtype</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># this condition *should* be impossible because of the isSupportedNumber check</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Scalar dividend type </span><span class="si">{</span><span class="n">scalar_dtype</span><span class="si">}</span><span class="s2"> not allowed in fmod&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">divisor</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;float64&quot;</span> <span class="ow">or</span>  <span class="c1"># type: ignore[union-attr]</span>
+                <span class="n">scalar_dtype</span> <span class="o">==</span> <span class="s2">&quot;float64&quot;</span><span class="p">):</span>  <span class="c1"># type: ignore[union-attr]</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;At least one arg to fmod must be float. &quot;</span> <span class="o">+</span>
+                <span class="sa">f</span><span class="s2">&quot;Got </span><span class="si">{</span><span class="n">scalar_dtype</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">divisor</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>  <span class="c1"># type: ignore[union-attr]</span>
+            <span class="p">)</span>
         <span class="n">cmdstring</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">acmd</span><span class="si">}</span><span class="s2">&lt;</span><span class="si">{</span><span class="n">divisor</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">divisor</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span>  <span class="c1"># type: ignore[union-attr]</span>
-
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">m</span> <span class="o">=</span> <span class="n">mod</span><span class="p">(</span><span class="n">dividend</span><span class="p">,</span> <span class="n">divisor</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">_create_scalar_array</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
-
-<span class="c1">#   We reach here if this was any case other than scalar &amp; scalar</span>
 
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
         <span class="n">cast</span><span class="p">(</span>
@@ -4810,7 +5165,48 @@
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">broadcast_to_shape</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">shape</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    expand an array&#39;s rank to the specified shape using broadcasting</span>
+<span class="sd">    Create a &quot;broadcasted&quot; array (of rank &#39;nd&#39;) by copying an array into an</span>
+<span class="sd">    array of the given shape.</span>
+
+<span class="sd">    E.g., given the following broadcast:\n</span>
+<span class="sd">    pda    (3d array):  1 x 4 x 1\n</span>
+<span class="sd">    shape  ( shape  ):  7 x 4 x 2\n</span>
+<span class="sd">    Result (3d array):  7 x 4 x 2</span>
+
+<span class="sd">    When copying from a singleton dimension, the value is repeated along</span>
+<span class="sd">    that dimension (e.g., pda&#39;s 1st and 3rd above).</span>
+<span class="sd">    For non singleton dimensions, the size of the two arrays must match,</span>
+<span class="sd">    and the values are copied into the result array.</span>
+
+<span class="sd">    When prepending a new dimension to increase an array&#39;s rank, the</span>
+<span class="sd">    values from the other dimensions are repeated along the new dimension.</span>
+
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pda : pdarray</span>
+<span class="sd">        the input to be broadcast</span>
+<span class="sd">    shape: tuple of int</span>
+<span class="sd">        the shape to which pda is to be broadcast</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray</span>
+<span class="sd">        the result of the broadcast operation</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; a = ak.arange(2).reshape(1,2,1)</span>
+<span class="sd">    &gt;&gt;&gt; ak.broadcast_to_shape(a,(2,2,2))</span>
+<span class="sd">    array([array([array([0 0]) array([1 1])]) array([array([0 0]) array([1 1])])])</span>
+<span class="sd">    &gt;&gt;&gt; a = ak.array([5,19]).reshape(1,2)</span>
+<span class="sd">    &gt;&gt;&gt; ak.broadcast_to_shape(a,(2,2,2))</span>
+<span class="sd">    array([array([array([5 19]) array([5 19])]) array([array([5 19]) array([5 19])])])</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        raised if the pda can&#39;t be broadcast to the given shape</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
@@ -4850,7 +5246,7 @@
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    TypeError</span>
-<span class="sd">      Raised if user_defined_name is not a str</span>
+<span class="sd">        Raised if user_defined_name is not a str</span>
 
 <span class="sd">    See also</span>
 <span class="sd">    --------</span>
@@ -4902,7 +5298,7 @@
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    TypeError</span>
-<span class="sd">      Raised if user_defined_name is not a str</span>
+<span class="sd">        Raised if user_defined_name is not a str</span>
 
 <span class="sd">    See also</span>
 <span class="sd">    --------</span>
@@ -4915,10 +5311,15 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; a = zeros(100)</span>
-<span class="sd">    &gt;&gt;&gt; a.register(&quot;my_zeros&quot;)</span>
-<span class="sd">    &gt;&gt;&gt; # potentially disconnect from server and reconnect to server</span>
-<span class="sd">    &gt;&gt;&gt; b = ak.pdarrayclass.attach(&quot;my_zeros&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; a = ak.arange(10)</span>
+<span class="sd">    &gt;&gt;&gt; a.register(&quot;my_range&quot;)</span>
+<span class="sd">    array([0 1 2 3 4 5 6 7 8 9])</span>
+
+<span class="sd">    Disconnect from server and reconnect to server</span>
+
+<span class="sd">    &gt;&gt;&gt; b = ak.pdarrayclass.attach(&quot;my_range&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; b</span>
+<span class="sd">    array([0 1 2 3 4 5 6 7 8 9])</span>
 <span class="sd">    &gt;&gt;&gt; # ...other work...</span>
 <span class="sd">    &gt;&gt;&gt; b.unregister()</span>
 <span class="sd">    &quot;&quot;&quot;</span>
